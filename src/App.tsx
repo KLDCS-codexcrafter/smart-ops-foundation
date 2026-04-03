@@ -32,6 +32,11 @@ const App = () => (
               <p className="text-muted-foreground text-sm">Profile — coming soon</p>
             </div>
           } />
+          <Route path="/settings" element={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+              <p className="text-muted-foreground text-sm">Settings — coming soon</p>
+            </div>
+          } />
           <Route path="/tower" element={<TowerDashboard />} />
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
