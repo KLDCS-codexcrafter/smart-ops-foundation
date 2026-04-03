@@ -132,24 +132,24 @@ export default function Welcome() {
       {/* ── Background Orbs ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
-          className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-30 blur-3xl"
-          style={{
-            background: "radial-gradient(circle, hsl(var(--orb-1) / 0.4), transparent 70%)",
-            animation: "float-1 20s ease-in-out infinite, pulse-glow 4s ease-in-out infinite",
-          }}
+          className="absolute -top-32 -right-32 w-96 h-96 rounded-full 
+            opacity-30 animate-float-1 animate-pulse-glow pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(var(--orb-1) / 0.4), transparent 70%)" }}
         />
         <div
-          className="absolute top-1/2 -left-24 w-80 h-80 rounded-full opacity-20 blur-3xl"
+          className="absolute top-1/2 -left-24 w-80 h-80 rounded-full 
+            opacity-20 animate-float-2 animate-pulse-glow pointer-events-none"
           style={{
             background: "radial-gradient(circle, hsl(var(--orb-2) / 0.3), transparent 70%)",
-            animation: "float-2 25s ease-in-out infinite, pulse-glow 4s ease-in-out infinite 2s",
+            animationDelay: "2s",
           }}
         />
         <div
-          className="absolute -bottom-20 right-1/3 w-72 h-72 rounded-full opacity-25 blur-3xl"
+          className="absolute -bottom-20 right-1/3 w-72 h-72 rounded-full 
+            opacity-25 animate-float-3 animate-pulse-glow pointer-events-none"
           style={{
             background: "radial-gradient(circle, hsl(var(--orb-3) / 0.35), transparent 70%)",
-            animation: "float-3 22s ease-in-out infinite, pulse-glow 4s ease-in-out infinite 4s",
+            animationDelay: "4s",
           }}
         />
       </div>
