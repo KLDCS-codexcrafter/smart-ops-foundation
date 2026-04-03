@@ -17,6 +17,7 @@ import Permissions from "./pages/tower/Permissions";
 import Billing from "./pages/tower/Billing";
 import Security from "./pages/tower/Security";
 import Notifications from "./pages/tower/Notifications";
+import AuditLogs from "./pages/tower/AuditLogs";
 
 const queryClient = new QueryClient();
 
