@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Zap,
 } from "lucide-react";
+import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -63,7 +64,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
           "flex flex-col h-full shrink-0 border-r border-white/[0.06] transition-all duration-300",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
-        style={{ background: "hsl(230,25%,18%)" }}
+        style={{ background: "hsl(var(--sidebar-background))" }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5">
@@ -105,7 +106,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                   <>
                     <span className="flex-1 text-left">{item.title}</span>
                     {item.v2 && (
-                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0 hover:bg-orange-500/20">
+                      <Badge className="bg-warning/20 text-warning border-warning/30 text-[10px] px-1.5 py-0 hover:bg-warning/20">
                         v2
                       </Badge>
                     )}
@@ -121,7 +122,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                   <TooltipContent side="right" className="flex items-center gap-2">
                     {item.title}
                     {item.v2 && (
-                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0">
+                      <Badge className="bg-warning/20 text-warning border-warning/30 text-[10px] px-1.5 py-0">
                         v2
                       </Badge>
                     )}
@@ -165,15 +166,11 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
             )}
           </div>
           <div className="flex items-center gap-4">
-            {/* Notification bell */}
             <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
             </button>
-            {/* Avatar */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
-              SA
-            </div>
+            <UserProfileDropdown />
           </div>
         </header>
 
