@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/layout/AppLayout";
+import { TowerLayout } from "@/components/layout/TowerLayout";
 import {
   Building2,
   CheckCircle2,
