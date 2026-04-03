@@ -1,10 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import TowerDashboard from "./pages/tower/Dashboard";
 import BridgeDashboard from "./pages/bridge/Dashboard";
@@ -20,14 +18,19 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/auth/login" replace />} />
+          <Route path="/auth/login" element={<Login />} />
           <Route path="/tower" element={<TowerDashboard />} />
+          <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
+          <Route path="/bridge/dashboard" element={<BridgeDashboard />} />
           <Route path="/erp" element={<ErpDashboard />} />
+          <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
+          <Route path="/partner/dashboard" element={<PartnerDashboard />} />
           <Route path="/customer" element={<CustomerDashboard />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="*" element={<Navigate to="/auth/login" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
