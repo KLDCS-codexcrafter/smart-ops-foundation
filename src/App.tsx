@@ -53,6 +53,7 @@ const App = () => (
           <Route path="/tower/billing" element={<Billing />} />
           <Route path="/tower/security" element={<Security />} />
           <Route path="/tower/notifications" element={<Notifications />} />
+          <Route path="/tower/audit-logs" element={<AuditLogs />} />
           {[
             "integrations", "settings",
             "support", "ai-insights", "themes",
