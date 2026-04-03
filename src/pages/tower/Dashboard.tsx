@@ -148,11 +148,11 @@ export default function TowerDashboard() {
                   <BarChart data={newTenantsChart}>
                     <XAxis
                       dataKey="month"
-                      tick={{ fontSize: 10, fill: "hsl(220,9%,60%)" }}
+                      tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                       axisLine={false}
                       tickLine={false}
                     />
-                    <Bar dataKey="count" fill="hsl(152,69%,40%)" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="count" fill="hsl(var(--success))" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -189,7 +189,7 @@ export default function TowerDashboard() {
                   className="h-full rounded-full"
                   style={{
                     width: "87%",
-                    background: "linear-gradient(90deg, hsl(173,80%,40%), hsl(152,69%,40%))",
+                    background: "linear-gradient(90deg, hsl(var(--accent)), hsl(var(--success)))",
                   }}
                 />
               </div>
