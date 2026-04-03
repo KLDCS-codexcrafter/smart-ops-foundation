@@ -73,6 +73,7 @@ const App = () => (
           <Route path="/bridge/sync-monitor" element={<SyncMonitor />} />
           <Route path="/bridge/approvals" element={<ApprovalInbox />} />
           <Route path="/bridge/exceptions" element={<ExceptionWorkbench />} />
+          <Route path="/bridge/reconciliation" element={<ReconciliationWorkbench />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
