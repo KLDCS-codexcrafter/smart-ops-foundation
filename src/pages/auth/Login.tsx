@@ -471,12 +471,12 @@ export default function Login() {
             return (
               <div
                 key={card.title}
-                className={`absolute right-0 w-40 glass-card-dark p-3 pointer-events-auto cursor-pointer ${pos.rotate} animate-float-in`}
+                className="absolute right-0 w-40 glass-card-dark p-3 pointer-events-auto cursor-pointer animate-float-in"
                 style={{
                   top: pos.top,
                   animationDelay: `${0.2 + i * 0.2}s`,
                   animationFillMode: "backwards",
-                  transform: `${pos.rotate.includes("-") ? `rotate(-${pos.rotate.replace("-rotate-", "")}deg)` : `rotate(${pos.rotate.replace("rotate-", "")}deg)`} translate(${mousePos.x * multiplier}px, ${mousePos.y * multiplier}px)`,
+                  transform: `rotate(${pos.deg}deg) translate(${mousePos.x * multiplier}px, ${mousePos.y * multiplier}px)`,
                 }}
                 onClick={() => setExpandedCard(expandedCard === i ? null : i)}
               >

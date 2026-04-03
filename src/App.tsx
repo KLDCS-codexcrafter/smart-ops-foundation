@@ -30,6 +30,8 @@ const App = () => (
           <Route path="/partner/dashboard" element={<PartnerDashboard />} />
           <Route path="/customer" element={<CustomerDashboard />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="/my" element={<CustomerDashboard />} />
+          <Route path="/my/dashboard" element={<CustomerDashboard />} />
           <Route path="*" element={<Navigate to="/auth/login" replace />} />
         </Routes>
       </BrowserRouter>
