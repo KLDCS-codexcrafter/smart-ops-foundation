@@ -217,10 +217,10 @@ const featureCards = [
 ];
 
 const cardPositions = [
-  { top: "12%", rotate: "rotate-3" },
-  { top: "28%", rotate: "-rotate-2" },
-  { top: "44%", rotate: "rotate-1" },
-  { top: "60%", rotate: "-rotate-3" },
+  { top: "12%", deg: 3 },
+  { top: "28%", deg: -2 },
+  { top: "44%", deg: 1 },
+  { top: "60%", deg: -3 },
 ];
 
 type AuthView = "login" | "forgot" | "forgot-sent" | "reset";
