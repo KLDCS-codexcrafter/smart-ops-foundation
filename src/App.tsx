@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Login from "./pages/auth/Login";
 import Welcome from "./pages/Welcome";
 import TowerDashboard from "./pages/tower/Dashboard";
-import { TowerLayout } from "./components/layout/TowerLayout";
+
 import ConsoleDashboard from "./pages/bridge/ConsoleDashboard";
 import SyncMonitor from "./pages/bridge/SyncMonitor";
 import ApprovalInbox from "./pages/bridge/ApprovalInbox";
