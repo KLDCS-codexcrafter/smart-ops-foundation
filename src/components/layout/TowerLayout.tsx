@@ -63,7 +63,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
           "flex flex-col h-full shrink-0 border-r border-white/[0.06] transition-all duration-300",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
-        style={{ background: "hsl(230,25%,18%)" }}
+        style={{ background: "hsl(var(--sidebar-background))" }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5">
