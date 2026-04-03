@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Zap,
 } from "lucide-react";
+import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
