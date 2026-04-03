@@ -69,6 +69,7 @@ const App = () => (
           <Route path="/tower/themes" element={<Themes />} />
           <Route path="/bridge" element={<ConsoleDashboard />} />
           <Route path="/bridge/dashboard" element={<ConsoleDashboard />} />
+          <Route path="/bridge/sync-monitor" element={<SyncMonitor />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
