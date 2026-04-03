@@ -108,7 +108,7 @@ function StatCard({
               <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
             )}
           </div>
-          <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", `${color.replace("text-", "bg-")}/10`)}>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary/10">
             <Icon className={cn("h-5 w-5", color)} />
           </div>
         </div>
