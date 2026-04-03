@@ -21,6 +21,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
           <Route path="/auth/login" element={<Login />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/tower" element={<TowerDashboard />} />
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
