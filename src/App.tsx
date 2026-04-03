@@ -14,6 +14,7 @@ import ExceptionWorkbench from "./pages/bridge/ExceptionWorkbench";
 import ReconciliationWorkbench from "./pages/bridge/ReconciliationWorkbench";
 import AgentFleet from "./pages/bridge/AgentFleet";
 import CompanyRegistry from "./pages/bridge/CompanyRegistry";
+import SyncProfiles from "./pages/bridge/SyncProfiles";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
