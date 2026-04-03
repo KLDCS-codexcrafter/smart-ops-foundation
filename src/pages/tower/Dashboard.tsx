@@ -292,6 +292,6 @@ export default function TowerDashboard() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </TowerLayout>
   );
 }
