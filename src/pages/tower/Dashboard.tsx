@@ -148,7 +148,7 @@ export default function TowerDashboard() {
                   <BarChart data={newTenantsChart}>
                     <XAxis
                       dataKey="month"
-                      tick={{ fontSize: 10, fill: "hsl(220,9%,60%)" }}
+                      tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                       axisLine={false}
                       tickLine={false}
                     />
