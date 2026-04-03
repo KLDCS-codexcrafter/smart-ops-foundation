@@ -66,11 +66,11 @@ const mockResetPassword = async (_password: string) => {
 };
 
 const routeByRole: Record<string, string> = {
-  super_admin: "/tower/dashboard",
-  partner_admin: "/partner/dashboard",
-  customer_user: "/my/dashboard",
-  operator: "/bridge/dashboard",
-  tenant_admin: "/erp/dashboard",
+  super_admin: "/welcome",
+  partner_admin: "/welcome",
+  customer_user: "/welcome",
+  operator: "/welcome",
+  tenant_admin: "/welcome",
 };
 
 // ── Helpers ──
