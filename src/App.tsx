@@ -20,6 +20,9 @@ import Notifications from "./pages/tower/Notifications";
 import AuditLogs from "./pages/tower/AuditLogs";
 import TowerSettings from "./pages/tower/Settings";
 import Support from "./pages/tower/Support";
+import Integrations from "./pages/tower/Integrations";
+import AIInsights from "./pages/tower/AIInsights";
+import Themes from "./pages/tower/Themes";
 
 const queryClient = new QueryClient();
 
