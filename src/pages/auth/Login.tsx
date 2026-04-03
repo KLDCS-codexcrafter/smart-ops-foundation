@@ -331,7 +331,7 @@ export default function Login() {
       if (attempts >= 5) setLockoutTimer(30);
       setShakeForm(true);
       setTimeout(() => setShakeForm(false), 600);
-      activeForm.setValue("password", "");
+      (activeForm as any).setValue("password", "");
       passwordRef.current?.focus();
       toast.error("Invalid credentials. Please try again.");
       return;
