@@ -166,15 +166,11 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
             )}
           </div>
           <div className="flex items-center gap-4">
-            {/* Notification bell */}
             <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
             </button>
-            {/* Avatar */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
-              SA
-            </div>
+            <UserProfileDropdown />
           </div>
         </header>
 
