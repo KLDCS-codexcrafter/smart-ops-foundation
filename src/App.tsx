@@ -55,8 +55,9 @@ const App = () => (
           <Route path="/tower/security" element={<Security />} />
           <Route path="/tower/notifications" element={<Notifications />} />
           <Route path="/tower/audit-logs" element={<AuditLogs />} />
+          <Route path="/tower/settings" element={<TowerSettings />} />
           {[
-            "integrations", "settings",
+            "integrations",
             "support", "ai-insights", "themes",
           ].map((slug) => (
             <Route
