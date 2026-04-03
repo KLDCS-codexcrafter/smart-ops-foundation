@@ -170,7 +170,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
             </button>
-            <UserProfileDropdown />
+            <UserProfileDropdown variant="app" />
           </div>
         </header>
 
