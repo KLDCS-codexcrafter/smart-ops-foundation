@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Login from "./pages/auth/Login";
 import Welcome from "./pages/Welcome";
 import TowerDashboard from "./pages/tower/Dashboard";
+import { TowerLayout } from "./components/layout/TowerLayout";
 import BridgeDashboard from "./pages/bridge/Dashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
@@ -39,6 +40,25 @@ const App = () => (
           } />
           <Route path="/tower" element={<TowerDashboard />} />
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
+          {[
+            "tenants", "users", "permissions", "billing", "security",
+            "notifications", "integrations", "audit-logs", "settings",
+            "support", "ai-insights", "partners", "themes",
+          ].map((slug) => (
+            <Route
+              key={slug}
+              path={`/tower/${slug}`}
+              element={
+                <TowerLayout title={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}>
+                  <div className="flex items-center justify-center h-64">
+                    <p className="text-muted-foreground text-sm">
+                      {slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} — coming soon
+                    </p>
+                  </div>
+                </TowerLayout>
+              }
+            />
+          ))}
           <Route path="/bridge" element={<BridgeDashboard />} />
           <Route path="/bridge/dashboard" element={<BridgeDashboard />} />
           <Route path="/erp" element={<ErpDashboard />} />

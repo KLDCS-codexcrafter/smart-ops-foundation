@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/layout/AppLayout";
+import { TowerLayout } from "@/components/layout/TowerLayout";
 import {
   Building2,
   CheckCircle2,
@@ -119,9 +119,9 @@ function StatCard({
 
 export default function TowerDashboard() {
   return (
-    <AppLayout
-      title="Control Tower"
-      breadcrumbs={[{ label: "Control Tower" }]}
+    <TowerLayout
+      title="Dashboard"
+      subtitle="Platform overview — Super Admin"
     >
       <div className="space-y-6">
         {/* Top Stats Row */}
@@ -292,6 +292,6 @@ export default function TowerDashboard() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </TowerLayout>
   );
 }
