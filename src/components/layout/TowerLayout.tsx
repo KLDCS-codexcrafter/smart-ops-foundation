@@ -106,7 +106,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                   <>
                     <span className="flex-1 text-left">{item.title}</span>
                     {item.v2 && (
-                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0 hover:bg-orange-500/20">
+                      <Badge className="bg-warning/20 text-warning border-warning/30 text-[10px] px-1.5 py-0 hover:bg-warning/20">
                         v2
                       </Badge>
                     )}
