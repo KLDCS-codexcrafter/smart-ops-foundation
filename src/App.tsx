@@ -61,24 +61,9 @@ const App = () => (
           <Route path="/tower/audit-logs" element={<AuditLogs />} />
           <Route path="/tower/settings" element={<TowerSettings />} />
           <Route path="/tower/support" element={<Support />} />
-          {[
-            "integrations",
-            "ai-insights", "themes",
-          ].map((slug) => (
-            <Route
-              key={slug}
-              path={`/tower/${slug}`}
-              element={
-                <TowerLayout title={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}>
-                  <div className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground text-sm">
-                      {slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} — coming soon
-                    </p>
-                  </div>
-                </TowerLayout>
-              }
-            />
-          ))}
+          <Route path="/tower/integrations" element={<Integrations />} />
+          <Route path="/tower/ai-insights" element={<AIInsights />} />
+          <Route path="/tower/themes" element={<Themes />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
           <Route path="/bridge/dashboard" element={<BridgeDashboard />} />
           <Route path="/erp" element={<ErpDashboard />} />
