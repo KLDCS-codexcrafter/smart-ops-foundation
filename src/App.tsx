@@ -13,6 +13,7 @@ import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
+import Permissions from "./pages/tower/Permissions";
 
 const queryClient = new QueryClient();
 
