@@ -19,6 +19,7 @@ import Security from "./pages/tower/Security";
 import Notifications from "./pages/tower/Notifications";
 import AuditLogs from "./pages/tower/AuditLogs";
 import TowerSettings from "./pages/tower/Settings";
+import Support from "./pages/tower/Support";
 
 const queryClient = new QueryClient();
 
