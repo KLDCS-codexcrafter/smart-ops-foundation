@@ -58,9 +58,7 @@ export function AppLayout({ children, title, breadcrumbs = [] }: AppLayoutProps)
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <Bell className="h-4 w-4" />
               </Button>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-xs font-semibold text-primary">
-                AM
-              </div>
+              <UserProfileDropdown variant="app" />
             </div>
           </header>
 
