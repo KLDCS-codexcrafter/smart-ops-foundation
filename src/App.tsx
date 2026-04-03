@@ -22,7 +22,7 @@ import AuditExplorer from "./pages/bridge/AuditExplorer";
 import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
-import CustomerDashboard from "./pages/customer/Dashboard";
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
 import Permissions from "./pages/tower/Permissions";
