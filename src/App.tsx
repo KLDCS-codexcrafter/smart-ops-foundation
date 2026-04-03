@@ -7,6 +7,7 @@ import Login from "./pages/auth/Login";
 import Welcome from "./pages/Welcome";
 import TowerDashboard from "./pages/tower/Dashboard";
 import { TowerLayout } from "./components/layout/TowerLayout";
+import { BridgeLayout } from "./components/layout/BridgeLayout";
 import BridgeDashboard from "./pages/bridge/Dashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
