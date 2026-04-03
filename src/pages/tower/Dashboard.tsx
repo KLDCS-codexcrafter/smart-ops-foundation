@@ -119,9 +119,9 @@ function StatCard({
 
 export default function TowerDashboard() {
   return (
-    <AppLayout
-      title="Control Tower"
-      breadcrumbs={[{ label: "Control Tower" }]}
+    <TowerLayout
+      title="Dashboard"
+      subtitle="Platform overview — Super Admin"
     >
       <div className="space-y-6">
         {/* Top Stats Row */}
