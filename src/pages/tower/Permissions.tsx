@@ -318,25 +318,14 @@ function MatrixView({ onSelect }: { onSelect: (p: PermissionKey) => void }) {
             {GROUPS.map((group, gi) => {
               const groupKeys = PERMISSION_KEYS.filter((k) => k.group === group);
               return (
-                <>{/* Group separator */}
-                  {gi > 0 && (
-                    <TableRow key={`sep-${group}`} className="border-0 hover:bg-transparent">
-                      <TableCell colSpan={6} className="py-1 px-4 bg-muted/30">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          {GROUP_CONFIG[group].label}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {gi === 0 && (
-                    <TableRow key={`sep-${group}`} className="border-0 hover:bg-transparent">
-                      <TableCell colSpan={6} className="py-1 px-4 bg-muted/30">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          {GROUP_CONFIG[group].label}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  )}
+                <>
+                  <TableRow key={`sep-${group}`} className="border-0 hover:bg-transparent">
+                    <TableCell colSpan={6} className="py-1 px-4 bg-muted/30">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {GROUP_CONFIG[group].label}
+                      </span>
+                    </TableCell>
+                  </TableRow>
                   {groupKeys.map((perm) => (
                     <TableRow
                       key={perm.key}
