@@ -9,6 +9,7 @@ import TowerDashboard from "./pages/tower/Dashboard";
 import { TowerLayout } from "./components/layout/TowerLayout";
 import ConsoleDashboard from "./pages/bridge/ConsoleDashboard";
 import SyncMonitor from "./pages/bridge/SyncMonitor";
+import ApprovalInbox from "./pages/bridge/ApprovalInbox";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
