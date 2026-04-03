@@ -68,7 +68,7 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2 py-3">
         {panels.map((group) => (
-          <SidebarGroup key={group.label} defaultOpen>
+          <SidebarGroup key={group.label}>
             <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/60 px-3">
               {!collapsed && group.label}
             </SidebarGroupLabel>
