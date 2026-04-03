@@ -189,7 +189,7 @@ export default function TowerDashboard() {
                   className="h-full rounded-full"
                   style={{
                     width: "87%",
-                    background: "linear-gradient(90deg, hsl(173,80%,40%), hsl(152,69%,40%))",
+                    background: "linear-gradient(90deg, hsl(var(--accent)), hsl(var(--success)))",
                   }}
                 />
               </div>
