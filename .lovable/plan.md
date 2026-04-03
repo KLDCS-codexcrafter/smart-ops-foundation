@@ -1,20 +1,49 @@
 
 
-## Fix Control Tower Dashboard
+## Match Control Tower Page to Reference Project
 
-The current `src/pages/tower/Dashboard.tsx` still has the old simple 4-stat + activity list layout. It needs to be replaced with the full dashboard from the reference project [SmartOps Control](/projects/fbb648f5-7864-4531-97a6-45d9a84d673d).
+The main content area already matches. The differences are in the **sidebar** and **header**. The reference project has a Control Tower-specific sidebar with 14 nav items and a dark background, while the current project has a cross-panel sidebar (Operations/Ecosystem groups).
 
-### What changes
+### Key Differences
 
-**File: `src/pages/tower/Dashboard.tsx`** — Full rewrite to match the reference dashboard:
+| Area | Current | Reference |
+|------|---------|-----------|
+| Sidebar background | Theme default (dark card) | Explicit dark navy `hsl(230,25%,18%)` |
+| Sidebar nav items | 5 items across 2 groups (Control Tower, Bridge, ERP, Partner, Customer) | 14 Control Tower-specific items (Dashboard, Tenants, Users, Permissions, Billing, Security, Notifications, Integrations, Audit Logs, Settings, Support, AI Insights, Partners, Themes) |
+| Sidebar logo subtitle | "Enterprise Ops" | "Control Tower" |
+| v2 badges | None | 4 items have orange "v2" badges (Integrations, AI Insights, Partners, Themes) |
+| Sidebar collapse | Uses shadcn SidebarProvider | Custom `useState` with fixed aside |
+| Header | Breadcrumbs + SidebarTrigger + UserProfileDropdown | Minimal — just bell icon + avatar circle |
+| Page title | "Control Tower" only | "Dashboard" with subtitle "Platform overview — Super Admin" |
 
-1. **4 Stat Cards row** — Total Tenants (142), Active Tenants (118), Trial Tenants (19), Monthly Revenue (₹18.4L) with colored icons via a local `StatCard` component
-2. **3 Metric Cards row** — New This Month (bar chart via recharts), Churned This Month, Avg Health Score (progress bar with gradient)
-3. **System Health strip** — API Status (badge), Database Health (3 regions with uptimes), Bridge Agents Online count
-4. **Alerts section** — 3 alert cards (Churn Risk, Payment Failures, Trial Expiring) with color-coded borders/backgrounds
-5. **Recent Activity table** — 10-row table with Tenant, Action, Time columns using Indian company names (Reliance, Tata, Infosys, etc.)
+### Approach
 
-Adapts the reference code to use our `AppLayout` wrapper (with `title="Control Tower"` and `breadcrumbs`), and uses our existing `Card`, `Table`, `Badge` components from `src/components/ui/`.
+Since the sidebar is shared by all panels (Bridge, ERP, Partner, Customer), replacing it globally would break other pages. Instead, we make the **Control Tower use its own layout** that matches the reference exactly.
 
-Removes old imports (`formatCurrency`, `Package`, `Truck`) and adds new ones (`Building2`, `CheckCircle2`, `Clock`, `Activity`, `Server`, `Database`, `Wifi`, `XCircle`, `Timer`, recharts components).
+### Changes
+
+**1. Create `src/components/layout/TowerLayout.tsx`** (new file)
+- Custom layout component matching the reference's `AppLayout` exactly
+- Fixed dark sidebar (`hsl(230,25%,18%)`) with `useState` collapse toggle
+- 14 nav items with v2 badges on 4 items
+- Routes prefixed with `/tower/` (e.g., `/tower/tenants`, `/tower/users`)
+- Header with bell icon (notification dot) and "SA" avatar circle
+- Collapse/expand button at bottom
+- Tooltip on collapsed items
+
+**2. Update `src/pages/tower/Dashboard.tsx`**
+- Switch from `AppLayout` to `TowerLayout`
+- Change page title from "Control Tower" to "Dashboard" with subtitle "Platform overview — Super Admin"
+- Remove breadcrumbs prop (TowerLayout handles its own header)
+
+**3. Add placeholder routes in `src/App.tsx`**
+- Add routes for `/tower/tenants`, `/tower/users`, `/tower/permissions`, `/tower/billing`, `/tower/security`, `/tower/notifications`, `/tower/integrations`, `/tower/audit-logs`, `/tower/settings`, `/tower/support`, `/tower/ai-insights`, `/tower/partners`, `/tower/themes`
+- Each renders TowerLayout with a "coming soon" placeholder
+
+### Technical Details
+
+- The `TowerLayout` will NOT use the shadcn `SidebarProvider`/`Sidebar` components — it uses a plain `<aside>` with `useState` for collapse, matching the reference exactly
+- Active state detection: `location.pathname === item.url`
+- Collapsed state shows icon-only with tooltips (using existing shadcn Tooltip)
+- The existing `AppLayout` + `AppSidebar` remain untouched for other panels
 
