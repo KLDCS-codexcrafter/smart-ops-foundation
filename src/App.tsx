@@ -45,6 +45,7 @@ const App = () => (
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/tower/tenants" element={<Tenants />} />
           <Route path="/tower/users" element={<Users />} />
+          <Route path="/tower/permissions" element={<Permissions />} />
           {[
             "billing", "security",
             "notifications", "integrations", "audit-logs", "settings",
