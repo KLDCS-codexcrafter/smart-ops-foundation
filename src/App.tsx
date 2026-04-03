@@ -9,6 +9,7 @@ import TowerDashboard from "./pages/tower/Dashboard";
 import { TowerLayout } from "./components/layout/TowerLayout";
 import { BridgeLayout } from "./components/layout/BridgeLayout";
 import BridgeDashboard from "./pages/bridge/Dashboard";
+import ConsoleDashboard from "./pages/bridge/ConsoleDashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
