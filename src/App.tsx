@@ -11,6 +11,7 @@ import BridgeDashboard from "./pages/bridge/Dashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
+import Tenants from "./pages/tower/Tenants";
 
 const queryClient = new QueryClient();
 
