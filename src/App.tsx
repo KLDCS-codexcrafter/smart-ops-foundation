@@ -47,8 +47,9 @@ const App = () => (
           <Route path="/tower/tenants" element={<Tenants />} />
           <Route path="/tower/users" element={<Users />} />
           <Route path="/tower/permissions" element={<Permissions />} />
+          <Route path="/tower/billing" element={<Billing />} />
           {[
-            "billing", "security",
+            "security",
             "notifications", "integrations", "audit-logs", "settings",
             "support", "ai-insights", "themes",
           ].map((slug) => (
