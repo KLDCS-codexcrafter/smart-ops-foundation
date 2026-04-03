@@ -152,7 +152,7 @@ export default function TowerDashboard() {
                       axisLine={false}
                       tickLine={false}
                     />
-                    <Bar dataKey="count" fill="hsl(152,69%,40%)" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="count" fill="hsl(var(--success))" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
