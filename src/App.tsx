@@ -9,6 +9,7 @@ import TowerDashboard from "./pages/tower/Dashboard";
 import { TowerLayout } from "./components/layout/TowerLayout";
 import { BridgeLayout } from "./components/layout/BridgeLayout";
 import BridgeDashboard from "./pages/bridge/Dashboard";
+import ConsoleDashboard from "./pages/bridge/ConsoleDashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
@@ -65,8 +66,8 @@ const App = () => (
           <Route path="/tower/integrations" element={<Integrations />} />
           <Route path="/tower/ai-insights" element={<AIInsights />} />
           <Route path="/tower/themes" element={<Themes />} />
-          <Route path="/bridge" element={<BridgeDashboard />} />
-          <Route path="/bridge/dashboard" element={<BridgeDashboard />} />
+          <Route path="/bridge" element={<ConsoleDashboard />} />
+          <Route path="/bridge/dashboard" element={<ConsoleDashboard />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
