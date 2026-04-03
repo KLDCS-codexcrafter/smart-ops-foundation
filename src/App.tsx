@@ -16,6 +16,10 @@ import AgentFleet from "./pages/bridge/AgentFleet";
 import CompanyRegistry from "./pages/bridge/CompanyRegistry";
 import SyncProfiles from "./pages/bridge/SyncProfiles";
 import FieldMapper from "./pages/bridge/FieldMapper";
+import ImportHub from "./pages/bridge/ImportHub";
+import ExportHub from "./pages/bridge/ExportHub";
+import AuditExplorer from "./pages/bridge/AuditExplorer";
+import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
@@ -82,6 +86,10 @@ const App = () => (
           <Route path="/bridge/companies" element={<CompanyRegistry />} />
           <Route path="/bridge/sync-profiles" element={<SyncProfiles />} />
           <Route path="/bridge/field-mapper" element={<FieldMapper />} />
+          <Route path="/bridge/import" element={<ImportHub />} />
+          <Route path="/bridge/export" element={<ExportHub />} />
+          <Route path="/bridge/audit" element={<AuditExplorer />} />
+          <Route path="/bridge/settings" element={<BridgeSettings />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
