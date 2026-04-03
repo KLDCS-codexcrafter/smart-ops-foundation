@@ -22,6 +22,16 @@ const App = () => (
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/prudent360" element={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+              <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
+            </div>
+          } />
+          <Route path="/profile" element={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+              <p className="text-muted-foreground text-sm">Profile — coming soon</p>
+            </div>
+          } />
           <Route path="/tower" element={<TowerDashboard />} />
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
