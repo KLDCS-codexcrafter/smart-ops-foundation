@@ -23,6 +23,13 @@ import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import Invoices from "./pages/customer/Invoices";
+import Payments from "./pages/customer/Payments";
+import Statement from "./pages/customer/Statement";
+import Orders from "./pages/customer/Orders";
+import Documents from "./pages/customer/Documents";
+import CustomerSupport from "./pages/customer/CustomerSupport";
+import CustomerProfile from "./pages/customer/Profile";
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
 import Permissions from "./pages/tower/Permissions";
@@ -96,6 +103,13 @@ const App = () => (
           <Route path="/partner/dashboard" element={<PartnerDashboard />} />
           <Route path="/customer" element={<CustomerDashboard />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="/customer/invoices" element={<Invoices />} />
+          <Route path="/customer/payments" element={<Payments />} />
+          <Route path="/customer/statement" element={<Statement />} />
+          <Route path="/customer/orders" element={<Orders />} />
+          <Route path="/customer/documents" element={<Documents />} />
+          <Route path="/customer/support" element={<CustomerSupport />} />
+          <Route path="/customer/profile" element={<CustomerProfile />} />
           <Route path="/my" element={<CustomerDashboard />} />
           <Route path="/my/dashboard" element={<CustomerDashboard />} />
           <Route path="*" element={<Navigate to="/auth/login" replace />} />
