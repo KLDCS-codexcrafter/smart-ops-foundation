@@ -13,7 +13,6 @@ import {
   Settings,
   HeadphonesIcon,
   BrainCircuit,
-  Handshake,
   Palette,
   ChevronLeft,
   ChevronRight,
