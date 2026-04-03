@@ -43,7 +43,7 @@ const App = () => (
           {[
             "tenants", "users", "permissions", "billing", "security",
             "notifications", "integrations", "audit-logs", "settings",
-            "support", "ai-insights", "partners", "themes",
+            "support", "ai-insights", "themes",
           ].map((slug) => (
             <Route
               key={slug}
