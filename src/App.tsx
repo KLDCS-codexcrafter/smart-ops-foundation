@@ -13,6 +13,7 @@ import ApprovalInbox from "./pages/bridge/ApprovalInbox";
 import ExceptionWorkbench from "./pages/bridge/ExceptionWorkbench";
 import ReconciliationWorkbench from "./pages/bridge/ReconciliationWorkbench";
 import AgentFleet from "./pages/bridge/AgentFleet";
+import CompanyRegistry from "./pages/bridge/CompanyRegistry";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
@@ -76,6 +77,7 @@ const App = () => (
           <Route path="/bridge/exceptions" element={<ExceptionWorkbench />} />
           <Route path="/bridge/reconciliation" element={<ReconciliationWorkbench />} />
           <Route path="/bridge/agents" element={<AgentFleet />} />
+          <Route path="/bridge/companies" element={<CompanyRegistry />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
