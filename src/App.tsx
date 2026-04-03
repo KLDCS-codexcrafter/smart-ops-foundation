@@ -14,6 +14,7 @@ import CustomerDashboard from "./pages/customer/Dashboard";
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
 import Permissions from "./pages/tower/Permissions";
+import Billing from "./pages/tower/Billing";
 
 const queryClient = new QueryClient();
 
@@ -46,8 +47,9 @@ const App = () => (
           <Route path="/tower/tenants" element={<Tenants />} />
           <Route path="/tower/users" element={<Users />} />
           <Route path="/tower/permissions" element={<Permissions />} />
+          <Route path="/tower/billing" element={<Billing />} />
           {[
-            "billing", "security",
+            "security",
             "notifications", "integrations", "audit-logs", "settings",
             "support", "ai-insights", "themes",
           ].map((slug) => (
