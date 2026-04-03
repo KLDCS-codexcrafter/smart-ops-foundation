@@ -86,6 +86,10 @@ const App = () => (
           <Route path="/bridge/companies" element={<CompanyRegistry />} />
           <Route path="/bridge/sync-profiles" element={<SyncProfiles />} />
           <Route path="/bridge/field-mapper" element={<FieldMapper />} />
+          <Route path="/bridge/import" element={<ImportHub />} />
+          <Route path="/bridge/export" element={<ExportHub />} />
+          <Route path="/bridge/audit" element={<AuditExplorer />} />
+          <Route path="/bridge/settings" element={<BridgeSettings />} />
           <Route path="/erp" element={<ErpDashboard />} />
           <Route path="/erp/dashboard" element={<ErpDashboard />} />
           <Route path="/partner" element={<PartnerDashboard />} />
