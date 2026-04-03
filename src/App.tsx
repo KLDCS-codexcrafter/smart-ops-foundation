@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import Login from "./pages/auth/Login";
+import Welcome from "./pages/Welcome";
 import TowerDashboard from "./pages/tower/Dashboard";
 import BridgeDashboard from "./pages/bridge/Dashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
@@ -20,6 +21,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
           <Route path="/auth/login" element={<Login />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/tower" element={<TowerDashboard />} />
           <Route path="/tower/dashboard" element={<TowerDashboard />} />
           <Route path="/bridge" element={<BridgeDashboard />} />
