@@ -423,7 +423,7 @@ function InvoiceDetail({ record }: { record: BillingRecord }) {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Permission changes take effect immediately for active sessions.
+          For billing queries contact support@4dsmartops.in
         </p>
       </div>
     </>
