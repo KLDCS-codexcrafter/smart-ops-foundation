@@ -122,7 +122,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                   <TooltipContent side="right" className="flex items-center gap-2">
                     {item.title}
                     {item.v2 && (
-                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0">
+                      <Badge className="bg-warning/20 text-warning border-warning/30 text-[10px] px-1.5 py-0">
                         v2
                       </Badge>
                     )}
