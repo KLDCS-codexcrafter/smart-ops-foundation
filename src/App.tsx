@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Login from "./pages/auth/Login";
 import Welcome from "./pages/Welcome";
 import TowerDashboard from "./pages/tower/Dashboard";
+import { TowerLayout } from "./components/layout/TowerLayout";
 import BridgeDashboard from "./pages/bridge/Dashboard";
 import ErpDashboard from "./pages/erp/Dashboard";
 import PartnerDashboard from "./pages/partner/Dashboard";
