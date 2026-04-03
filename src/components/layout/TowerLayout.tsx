@@ -13,7 +13,6 @@ import {
   Settings,
   HeadphonesIcon,
   BrainCircuit,
-  Handshake,
   Palette,
   ChevronLeft,
   ChevronRight,
@@ -41,7 +40,7 @@ const navItems = [
   { title: "Settings", url: "/tower/settings", icon: Settings },
   { title: "Support", url: "/tower/support", icon: HeadphonesIcon },
   { title: "AI Insights", url: "/tower/ai-insights", icon: BrainCircuit, v2: true },
-  { title: "Partners", url: "/tower/partners", icon: Handshake, v2: true },
+  
   { title: "Themes", url: "/tower/themes", icon: Palette, v2: true },
 ];
 
