@@ -15,6 +15,14 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/settings              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/settings?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/settings?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const SECTIONS = [
   { id: "agent", label: "Agent Config", icon: Server },
   { id: "sync", label: "Sync Defaults", icon: RefreshCw },

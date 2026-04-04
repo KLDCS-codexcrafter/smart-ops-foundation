@@ -36,6 +36,14 @@ interface MappingTemplate {
   mappings: FieldMapping[];
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/field-mappings              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/field-mappings?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/field-mappings?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const TEMPLATES: MappingTemplate[] = [
   {
     id: "MAP-001",

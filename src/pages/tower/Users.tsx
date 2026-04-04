@@ -192,7 +192,6 @@ const Users = () => {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Roles</SelectItem>
-            <SelectItem value="super_admin">Super Admin</SelectItem>
             <SelectItem value="tenant_admin">Tenant Admin</SelectItem>
             <SelectItem value="manager">Manager</SelectItem>
             <SelectItem value="operator">Operator</SelectItem>

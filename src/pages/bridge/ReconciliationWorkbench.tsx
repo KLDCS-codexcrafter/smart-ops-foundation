@@ -51,6 +51,14 @@ interface RecRequest {
   missing: number;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/reconciliation-sessions              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/reconciliation-sessions?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/reconciliation-sessions?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const REQUESTS: RecRequest[] = [
   { id: "REQ-0038", company: "Wipro Enterprises", tenantId: "TNT-004", module: "Sales Vouchers", totalRecords: 6, matched: 3, partial: 1, mismatch: 1, missing: 1 },
   { id: "REQ-0037", company: "Reliance Digital", tenantId: "TNT-001", module: "Ledger Masters", totalRecords: 12, matched: 11, partial: 1, mismatch: 0, missing: 0 },

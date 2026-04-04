@@ -46,6 +46,14 @@ interface Exception {
   status: "open" | "retrying" | "skipped" | "resolved";
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/exceptions              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/exceptions?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/exceptions?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const EXCEPTIONS: Exception[] = [
   {
     id: "EXC-001",

@@ -31,6 +31,14 @@ interface ExportJob {
   fileSize?: string;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/export-jobs              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/export-jobs?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/export-jobs?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const EXPORT_HISTORY: ExportJob[] = [
   { id: "EXP-001", name: "Q1 Sales Report", sourceModule: "Sales Vouchers", format: "excel", company: "Reliance Digital", records: 1560, status: "completed", completedAt: "02 Apr 2026, 16:00 IST", fileSize: "3.2 MB" },
   { id: "EXP-002", name: "Ledger Dump — All", sourceModule: "Ledger Masters", format: "csv", company: "Tata Motors Finance", records: 890, status: "completed", completedAt: "01 Apr 2026, 12:00 IST", fileSize: "1.8 MB" },

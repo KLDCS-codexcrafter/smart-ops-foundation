@@ -57,6 +57,14 @@ interface SyncRequest {
   notes?: string;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/sync-jobs              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/sync-jobs?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/sync-jobs?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const SYNC_REQUESTS: SyncRequest[] = [
   { id: "sr-001", requestNo: "REQ-0042", company: "Reliance Digital Solutions", tenantId: "TNT-001", module: "Sales Vouchers", direction: "tally_to_cloud", state: "executing", priority: "critical", records: 8920, processed: 6240, errors: 0, agentId: "AGENT-01", initiatedBy: "arjun.mehta@reliancedigital.in", createdAt: "03 Apr 2026, 08:00 IST", updatedAt: "03 Apr 2026, 09:10 IST", slaDeadline: "03 Apr 2026, 10:00 IST", slaStatus: "warning" },
   { id: "sr-002", requestNo: "REQ-0041", company: "Tata Motors Finance", tenantId: "TNT-002", module: "Ledger Masters", direction: "tally_to_cloud", state: "approved", priority: "high", records: 1200, processed: 0, errors: 0, agentId: "AGENT-02", initiatedBy: "vikram.nair@tatamotors.com", createdAt: "03 Apr 2026, 07:45 IST", updatedAt: "03 Apr 2026, 08:52 IST", slaDeadline: "03 Apr 2026, 12:00 IST", slaStatus: "ok" },

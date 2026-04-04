@@ -82,10 +82,10 @@ const panelCards = [
     highlight: false,
   },
   {
-    title: "Customer Panel",
-    icon: UserCircle,
-    route: "/my/dashboard",
-    description: "Account, subscription & support self-service",
+    title: "Customer Portal",
+    icon: Users,
+    route: "/customer/dashboard",
+    description: "Self-service invoices, payments, orders and support for your B2B clients",
     highlight: false,
   },
   {
