@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import {
-  Building2, Users, CreditCard, TrendingUp,
-  Search, Plus, Eye, Settings, AlertTriangle,
-  CheckCircle, SearchX, Copy, Check, Loader2,
-  ChevronRight, X,
+  Building2, Plus, CheckCircle, PauseCircle, Clock,
+  Search, UserCheck, Grid3X3, AlertTriangle,
 } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
@@ -14,524 +12,398 @@ import {
   SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Table, TableBody, TableCell, TableHead,
-  TableHeader, TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog, DialogContent, DialogHeader,
-  DialogTitle, DialogDescription,
-} from "@/components/ui/dialog";
-import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
-/* ── types ── */
-type TenantStatus = "active" | "trial" | "suspended";
-type TenantPlan = "Starter" | "Growth" | "Enterprise";
+type TenantStatus = "Active" | "Suspended" | "Trial";
+type TenantPlan = "Starter" | "Professional" | "Enterprise";
 
 interface Tenant {
   id: string;
   name: string;
   gstin: string;
-  city: string;
-  state: string;
+  owner: string;
   plan: TenantPlan;
   status: TenantStatus;
+  storageUsed: number;
+  storageTotal: number;
   users: number;
   modules: number;
-  mrr: number;
-  trialEndsAt?: string;
-  createdAt: string;
   lastActive: string;
-  healthScore: number;
 }
 
-/* ── mock data ── */
-const TENANTS: Tenant[] = [
-  { id: "TNT-001", name: "Reliance Digital Solutions Pvt Ltd", gstin: "27AABCR1234M1ZX", city: "Mumbai", state: "Maharashtra", plan: "Enterprise", status: "active", users: 142, modules: 14, mrr: 8500000, createdAt: "12 Jan 2024", lastActive: "2 min ago", healthScore: 94 },
-  { id: "TNT-002", name: "Tata Motors Finance Ltd", gstin: "27AAACT1234K1ZX", city: "Pune", state: "Maharashtra", plan: "Enterprise", status: "active", users: 98, modules: 11, mrr: 6200000, createdAt: "28 Feb 2024", lastActive: "15 min ago", healthScore: 88 },
-  { id: "TNT-003", name: "Infosys BPM Limited", gstin: "29AABCI1234A1ZX", city: "Bengaluru", state: "Karnataka", plan: "Growth", status: "active", users: 67, modules: 8, mrr: 3800000, createdAt: "05 Mar 2024", lastActive: "1 hr ago", healthScore: 91 },
-  { id: "TNT-004", name: "Wipro Enterprises Ltd", gstin: "29AABCW1234P1ZX", city: "Bengaluru", state: "Karnataka", plan: "Growth", status: "active", users: 54, modules: 7, mrr: 3200000, createdAt: "14 Mar 2024", lastActive: "3 hr ago", healthScore: 82 },
-  { id: "TNT-005", name: "Mahindra Logistics Ltd", gstin: "27AABCM1234L1ZX", city: "Mumbai", state: "Maharashtra", plan: "Growth", status: "active", users: 41, modules: 6, mrr: 2800000, createdAt: "22 Apr 2024", lastActive: "Yesterday", healthScore: 76 },
-  { id: "TNT-006", name: "Bajaj Finserv Limited", gstin: "27AABCB1234F1ZX", city: "Pune", state: "Maharashtra", plan: "Starter", status: "trial", users: 12, modules: 3, mrr: 0, trialEndsAt: "3 days", createdAt: "01 Jun 2024", lastActive: "2 days ago", healthScore: 61 },
-  { id: "TNT-007", name: "HCL Technologies Ltd", gstin: "09AABCH1234T1ZX", city: "Noida", state: "Uttar Pradesh", plan: "Starter", status: "trial", users: 8, modules: 2, mrr: 0, trialEndsAt: "7 days", createdAt: "10 Jun 2024", lastActive: "Today", healthScore: 55 },
-  { id: "TNT-008", name: "Godrej Industries Limited", gstin: "27AABCG1234I1ZX", city: "Mumbai", state: "Maharashtra", plan: "Enterprise", status: "suspended", users: 0, modules: 12, mrr: 0, createdAt: "03 Nov 2023", lastActive: "21 days ago", healthScore: 0 },
-  { id: "TNT-009", name: "Larsen & Toubro Infotech", gstin: "27AABCL1234T1ZX", city: "Navi Mumbai", state: "Maharashtra", plan: "Growth", status: "active", users: 33, modules: 5, mrr: 2400000, createdAt: "18 May 2024", lastActive: "4 hr ago", healthScore: 79 },
-  { id: "TNT-010", name: "Adani Ports & SEZ Ltd", gstin: "24AABCA1234P1ZX", city: "Ahmedabad", state: "Gujarat", plan: "Starter", status: "trial", users: 5, modules: 2, mrr: 0, trialEndsAt: "12 days", createdAt: "15 Jun 2024", lastActive: "1 hr ago", healthScore: 48 },
-  { id: "TNT-011", name: "Havells India Ltd", gstin: "07AABCH1234H1ZX", city: "New Delhi", state: "Delhi", plan: "Growth", status: "active", users: 28, modules: 6, mrr: 2100000, createdAt: "02 Feb 2024", lastActive: "30 min ago", healthScore: 85 },
-  { id: "TNT-012", name: "Muthoot Finance Limited", gstin: "32AABCM1234F1ZX", city: "Kochi", state: "Kerala", plan: "Starter", status: "active", users: 19, modules: 3, mrr: 950000, createdAt: "28 Apr 2024", lastActive: "6 hr ago", healthScore: 71 },
+// [JWT] In production: fetch from /api/tower/tenants
+const INITIAL_TENANTS: Tenant[] = [
+  { id: "T-001", name: "Acme India Pvt Ltd", gstin: "27AABCA1234F1Z5", owner: "cfo@acmeindia.in", plan: "Enterprise", status: "Active", storageUsed: 73, storageTotal: 200, users: 24, modules: 8, lastActive: "2 hr ago" },
+  { id: "T-002", name: "Bharat Traders Pvt Ltd", gstin: "29AADBT4567K2Z3", owner: "admin@bharattraders.com", plan: "Professional", status: "Active", storageUsed: 18, storageTotal: 50, users: 8, modules: 5, lastActive: "30 min ago" },
+  { id: "T-003", name: "Globe Exports Ltd", gstin: "33AAGCE8901P3Z1", owner: "it@globeexports.in", plan: "Enterprise", status: "Active", storageUsed: 91, storageTotal: 100, users: 31, modules: 9, lastActive: "5 min ago" },
+  { id: "T-004", name: "Sunrise Manufacturing", gstin: "24AAHCS2345N4Z7", owner: "owner@sunrisemfg.in", plan: "Professional", status: "Suspended", storageUsed: 8, storageTotal: 50, users: 12, modules: 4, lastActive: "14 days ago" },
+  { id: "T-005", name: "Raj & Associates CA", gstin: "07AABCR6789M5Z2", owner: "raj@rajca.in", plan: "Starter", status: "Active", storageUsed: 3, storageTotal: 10, users: 3, modules: 2, lastActive: "1 hr ago" },
+  { id: "T-006", name: "Vidya Textiles", gstin: "08AADCV3456Q6Z9", owner: "admin@vidyatextiles.com", plan: "Professional", status: "Active", storageUsed: 34, storageTotal: 50, users: 15, modules: 6, lastActive: "4 hr ago" },
+  { id: "T-007", name: "TechVision Solutions", gstin: "29AABCT7890R7Z4", owner: "cto@techvision.io", plan: "Professional", status: "Trial", storageUsed: 2, storageTotal: 10, users: 5, modules: 3, lastActive: "10 min ago" },
+  { id: "T-008", name: "Metro Distributors", gstin: "27AACPM1234S8Z6", owner: "accounts@metrodist.in", plan: "Starter", status: "Suspended", storageUsed: 1, storageTotal: 10, users: 2, modules: 1, lastActive: "30 days ago" },
 ];
+
+const PLAN_COLORS: Record<TenantPlan, string> = {
+  Starter: "bg-slate-500/15 text-slate-400 border-slate-500/20",
+  Professional: "bg-cyan-500/15 text-cyan-400 border-cyan-500/20",
+  Enterprise: "bg-purple-500/15 text-purple-400 border-purple-500/20",
+};
+const STATUS_COLORS: Record<TenantStatus, string> = {
+  Active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+  Suspended: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+  Trial: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+};
+const AVATAR_COLORS: Record<TenantPlan, string> = {
+  Starter: "bg-slate-600", Professional: "bg-cyan-600", Enterprise: "bg-purple-600",
+};
 
 const INDIAN_STATES = [
-  "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat",
-  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
-  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Delhi",
+  "Goa","Gujarat","Haryana","Himachal Pradesh","Jammu & Kashmir","Jharkhand",
+  "Karnataka","Kerala","Ladakh","Madhya Pradesh","Maharashtra","Manipur",
+  "Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim",
+  "Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
 ];
 
-const MODULES_LIST = [
-  "GST Filing", "Accounts & Finance", "Inventory Management",
-  "Purchase & Procurement", "Sales & CRM", "HR & Payroll",
-  "Production & Manufacturing", "Reports & Analytics",
+const PLANS = [
+  { name: "Starter" as TenantPlan, price: "₹2,999", storage: "10GB", users: "5 users", modules: "2 modules", extras: "" },
+  { name: "Professional" as TenantPlan, price: "₹7,999", storage: "50GB", users: "25 users", modules: "All modules", extras: "" },
+  { name: "Enterprise" as TenantPlan, price: "₹19,999", storage: "200GB", users: "Unlimited", modules: "All modules", extras: "+ Priority Support" },
 ];
 
-function formatMRR(paise: number): string {
-  if (paise === 0) return "—";
-  const rupees = paise / 100;
-  if (rupees >= 100000) return `₹${(rupees / 100000).toFixed(1)}L`;
-  if (rupees >= 1000) return `₹${(rupees / 1000).toFixed(1)}K`;
-  return `₹${rupees}`;
+function getInitials(name: string) {
+  return name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
 }
 
-/* ── stat card ── */
-function StatCard({ icon: Icon, label, value, valueClass, sub }: {
-  icon: React.ElementType; label: string; value: string | number;
-  valueClass?: string; sub?: string;
-}) {
-  return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
-        <Icon className="h-4 w-4 text-primary" />
-      </div>
-      <p className={cn("font-mono text-2xl font-bold text-foreground", valueClass)}>{value}</p>
-      {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
-    </div>
-  );
+function storageColor(used: number, total: number) {
+  const pct = (used / total) * 100;
+  if (pct > 90) return "bg-red-500";
+  if (pct > 70) return "bg-amber-500";
+  return "bg-emerald-500";
 }
 
-/* ── provision stepper ── */
-const STEP_LABELS = ["Organisation", "Plan", "Modules", "Admin", "Review"];
-const PROVISION_STEPS_TEXT = [
-  "Creating organisation database...",
-  "Running schema migrations...",
-  "Creating admin user...",
-  "Sending welcome email...",
-  "Provisioning complete!",
-];
-
-/* ── main component ── */
 export default function Tenants() {
+  const [tenants, setTenants] = useState<Tenant[]>(INITIAL_TENANTS);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<TenantStatus | "all">("all");
-  const [planFilter, setPlanFilter] = useState<TenantPlan | "all">("all");
-  const [showProvision, setShowProvision] = useState(false);
-  const [provisionStep, setProvisionStep] = useState(0);
-  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [provisionOpen, setProvisionOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<TenantPlan>("Professional");
+  const [trialEnabled, setTrialEnabled] = useState(false);
+  const [welcomeEmail, setWelcomeEmail] = useState(true);
+  const [suspendTarget, setSuspendTarget] = useState<Tenant | null>(null);
+  const [suspendReason, setSuspendReason] = useState("Billing overdue");
+  const [reactivateTarget, setReactivateTarget] = useState<Tenant | null>(null);
 
-  // provision form state
-  const [provisionForm, setProvisionForm] = useState({
-    company: "", gstin: "", city: "", state: "", contactName: "",
-    contactEmail: "", contactMobile: "",
-  });
-  const [selectedPlan, setSelectedPlan] = useState<TenantPlan>("Growth");
-  const [selectedModules, setSelectedModules] = useState<string[]>([...MODULES_LIST]);
-  const [adminName, setAdminName] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [provisioning, setProvisioning] = useState(false);
-  const [provisionProgress, setProvisionProgress] = useState<number>(-1);
-
-  const filtered = TENANTS.filter((t) => {
+  const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    const matchSearch =
-      t.name.toLowerCase().includes(q) ||
-      t.gstin.toLowerCase().includes(q) ||
-      t.city.toLowerCase().includes(q) ||
-      t.id.toLowerCase().includes(q);
-    const matchStatus = statusFilter === "all" || t.status === statusFilter;
-    const matchPlan = planFilter === "all" || t.plan === planFilter;
-    return matchSearch && matchStatus && matchPlan;
-  });
+    const result = tenants.filter(t => {
+      const ms = !q || t.name.toLowerCase().includes(q) || t.gstin.toLowerCase().includes(q) || t.owner.toLowerCase().includes(q);
+      return ms && (statusFilter === "all" || t.status === statusFilter) && (planFilter === "all" || t.plan === planFilter);
+    });
+    if (sortBy === "name") result.sort((a, b) => a.name.localeCompare(b.name));
+    if (sortBy === "storage") result.sort((a, b) => (b.storageUsed / b.storageTotal) - (a.storageUsed / a.storageTotal));
+    return result;
+  }, [tenants, search, statusFilter, planFilter, sortBy]);
 
-  const activeCount = TENANTS.filter((t) => t.status === "active").length;
-  const trialCount = TENANTS.filter((t) => t.status === "trial").length;
-  const suspendedCount = TENANTS.filter((t) => t.status === "suspended").length;
-  const expiringCount = TENANTS.filter((t) => t.status === "trial" && t.trialEndsAt && parseInt(t.trialEndsAt) <= 7).length;
+  const activeCount = tenants.filter(t => t.status === "Active").length;
+  const suspendedCount = tenants.filter(t => t.status === "Suspended").length;
+  const trialCount = tenants.filter(t => t.status === "Trial").length;
 
-  const openDetail = (t: Tenant) => { setSelectedTenant(t); setShowDetail(true); };
-
-  const resetProvision = () => {
-    setShowProvision(false); setProvisionStep(0); setProvisioning(false);
-    setProvisionProgress(-1);
-    setProvisionForm({ company: "", gstin: "", city: "", state: "", contactName: "", contactEmail: "", contactMobile: "" });
-    setSelectedPlan("Growth"); setSelectedModules([...MODULES_LIST]);
-    setAdminName(""); setAdminEmail("");
+  const handleProvision = () => {
+    // [JWT] POST /api/tower/tenants
+    toast.success("Tenant provisioned successfully. Welcome email sent to admin.");
+    setProvisionOpen(false);
   };
 
-  const runProvision = () => {
-    setProvisioning(true); setProvisionProgress(0);
-    let step = 0;
-    const interval = setInterval(() => {
-      step++;
-      if (step < PROVISION_STEPS_TEXT.length) {
-        setProvisionProgress(step);
-      } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          toast.success("Tenant provisioned successfully");
-          resetProvision();
-        }, 500);
-      }
-    }, 800);
+  const handleSuspend = () => {
+    if (!suspendTarget) return;
+    // [JWT] PATCH /api/tower/tenants/:id/suspend
+    setTenants(prev => prev.map(t => t.id === suspendTarget.id ? { ...t, status: "Suspended" as TenantStatus } : t));
+    toast.success(`Tenant "${suspendTarget.name}" suspended successfully.`);
+    setSuspendTarget(null);
   };
 
-  const planCards: { plan: TenantPlan; price: string; features: string[] }[] = [
-    { plan: "Starter", price: "₹9,500/mo", features: ["Up to 10 users", "3 modules", "Email support"] },
-    { plan: "Growth", price: "₹28,000/mo", features: ["Up to 50 users", "8 modules", "Priority support"] },
-    { plan: "Enterprise", price: "₹85,000/mo", features: ["Unlimited users", "All modules", "Dedicated support"] },
-  ];
+  const handleReactivate = () => {
+    if (!reactivateTarget) return;
+    // [JWT] PATCH /api/tower/tenants/:id/activate
+    setTenants(prev => prev.map(t => t.id === reactivateTarget.id ? { ...t, status: "Active" as TenantStatus } : t));
+    toast.success(`Tenant "${reactivateTarget.name}" reactivated successfully.`);
+    setReactivateTarget(null);
+  };
 
   return (
-    <TowerLayout title="Tenants" subtitle="Manage all tenant organisations on the platform">
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon={Building2} label="Total Tenants" value={TENANTS.length} />
-        <StatCard icon={Users} label="Active" value={activeCount} valueClass="text-success" />
-        <StatCard icon={CreditCard} label="On Trial" value={trialCount} valueClass="text-warning" sub={`${expiringCount} expiring ≤ 7 days`} />
-        <StatCard icon={TrendingUp} label="Suspended" value={suspendedCount} valueClass="text-destructive" />
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search tenants..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
-        </div>
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as TenantStatus | "all")}>
-          <SelectTrigger className="w-36"><SelectValue placeholder="All Status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="trial">Trial</SelectItem>
-            <SelectItem value="suspended">Suspended</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={planFilter} onValueChange={(v) => setPlanFilter(v as TenantPlan | "all")}>
-          <SelectTrigger className="w-36"><SelectValue placeholder="All Plans" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Plans</SelectItem>
-            <SelectItem value="Starter">Starter</SelectItem>
-            <SelectItem value="Growth">Growth</SelectItem>
-            <SelectItem value="Enterprise">Enterprise</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button className="ml-auto" style={{ background: "var(--gradient-primary)" }} onClick={() => setShowProvision(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Provision Tenant
-        </Button>
-      </div>
-
-      {/* Results count */}
-      <p className="text-xs text-muted-foreground mb-3">Showing {filtered.length} of {TENANTS.length} tenants</p>
-
-      {/* Table */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tenant</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Users</TableHead>
-              <TableHead>MRR</TableHead>
-              <TableHead>Health</TableHead>
-              <TableHead>Last Active</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="py-16 text-center">
-                  <div className="flex flex-col items-center">
-                    <SearchX className="h-10 w-10 text-muted-foreground/40 mb-3" />
-                    <p className="text-sm font-medium text-muted-foreground">No tenants found</p>
-                    <p className="text-xs text-muted-foreground/60">Try adjusting your search or filters</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((t) => (
-                <TableRow key={t.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => openDetail(t)}>
-                  <TableCell>
-                    <p className="text-sm font-medium text-foreground">{t.name}</p>
-                    <p className="text-xs text-muted-foreground font-mono">{t.id} · {t.city}, {t.state}</p>
-                  </TableCell>
-                  <TableCell>
-                    <span className={cn("text-xs font-medium px-2 py-0.5 rounded-md", {
-                      "bg-secondary text-muted-foreground": t.plan === "Starter",
-                      "bg-primary/10 text-primary": t.plan === "Growth",
-                      "bg-accent/10 text-accent": t.plan === "Enterprise",
-                    })}>{t.plan}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className={cn("text-xs px-2 py-1 rounded-lg border", {
-                      "bg-success/10 text-success border-success/20": t.status === "active",
-                      "bg-warning/10 text-warning border-warning/20": t.status === "trial",
-                      "bg-destructive/10 text-destructive border-destructive/20": t.status === "suspended",
-                    })}>
-                      {t.status === "trial" && t.trialEndsAt ? `Trial · ${t.trialEndsAt}` : t.status.charAt(0).toUpperCase() + t.status.slice(1)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm font-mono text-foreground">{t.users}</TableCell>
-                  <TableCell>
-                    {t.mrr > 0 ? (
-                      <span className="font-mono text-success">{formatMRR(t.mrr)}</span>
-                    ) : (
-                      <span className={cn("font-mono", t.status === "suspended" ? "text-destructive" : "text-muted-foreground")}>—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className={cn("h-full rounded-full", {
-                            "bg-success": t.healthScore >= 80,
-                            "bg-warning": t.healthScore >= 60 && t.healthScore < 80,
-                            "bg-destructive": t.healthScore > 0 && t.healthScore < 60,
-                          })}
-                          style={{ width: `${t.healthScore}%` }}
-                        />
-                      </div>
-                      <span className={cn("text-xs font-mono ml-2", t.healthScore === 0 ? "text-muted-foreground" : "text-foreground")}>{t.healthScore}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground font-mono">{t.lastActive}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetail(t)}><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Settings coming soon")}><Settings className="h-4 w-4" /></Button>
-                      {t.status === "suspended" ? (
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Activate feature coming soon")}><CheckCircle className="h-4 w-4 text-success" /></Button>
-                      ) : (
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Suspend feature coming soon")}><AlertTriangle className="h-4 w-4 text-warning" /></Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Provision Dialog */}
-      <Dialog open={showProvision} onOpenChange={(o) => { if (!o) resetProvision(); }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Provision New Tenant</DialogTitle>
-            <DialogDescription>Set up a new tenant organisation on the platform</DialogDescription>
-          </DialogHeader>
-
-          {/* Stepper */}
-          <div className="flex items-center justify-between mb-6 px-2">
-            {STEP_LABELS.map((label, i) => (
-              <div key={label} className="flex flex-col items-center flex-1">
-                <div className="flex items-center w-full">
-                  {i > 0 && <div className={cn("h-0.5 flex-1", i <= provisionStep ? "bg-success" : "bg-muted")} />}
-                  <div className={cn("w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0", {
-                    "bg-primary text-primary-foreground": i === provisionStep && !provisioning,
-                    "bg-success text-success-foreground": i < provisionStep || provisioning,
-                    "bg-muted text-muted-foreground": i > provisionStep,
-                  })}>
-                    {i < provisionStep ? <Check className="h-3.5 w-3.5" /> : i + 1}
-                  </div>
-                  {i < STEP_LABELS.length - 1 && <div className={cn("h-0.5 flex-1", i < provisionStep ? "bg-success" : "bg-muted")} />}
-                </div>
-                <span className="text-[10px] text-muted-foreground mt-1">{label}</span>
-              </div>
-            ))}
+    <TowerLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+              <Building2 className="h-6 w-6 text-cyan-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Tenant Management</h1>
+              <p className="text-sm text-slate-400">Manage all platform tenants — provisioning, storage, plan and status</p>
+            </div>
           </div>
+          <Button className="bg-cyan-600 hover:bg-cyan-700 text-white" onClick={() => setProvisionOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />Provision New Tenant
+          </Button>
+        </div>
 
-          {/* Step content */}
-          <div className="min-h-[260px]">
-            {provisionStep === 0 && (
-              <div className="space-y-3">
-                <Input placeholder="Reliance Digital Solutions Pvt Ltd" value={provisionForm.company} onChange={(e) => setProvisionForm((f) => ({ ...f, company: e.target.value }))} />
-                <Input placeholder="27AABCR1234M1ZX" maxLength={15} className="uppercase font-mono" value={provisionForm.gstin} onChange={(e) => setProvisionForm((f) => ({ ...f, gstin: e.target.value.toUpperCase() }))} />
-                <Input placeholder="Mumbai" value={provisionForm.city} onChange={(e) => setProvisionForm((f) => ({ ...f, city: e.target.value }))} />
-                <Select value={provisionForm.state} onValueChange={(v) => setProvisionForm((f) => ({ ...f, state: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
-                  <SelectContent>{INDIAN_STATES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-                <Input placeholder="Contact Name" value={provisionForm.contactName} onChange={(e) => setProvisionForm((f) => ({ ...f, contactName: e.target.value }))} />
-                <Input type="email" placeholder="Contact Email" value={provisionForm.contactEmail} onChange={(e) => setProvisionForm((f) => ({ ...f, contactEmail: e.target.value }))} />
-                <Input placeholder="9876543210" maxLength={10} value={provisionForm.contactMobile} onChange={(e) => setProvisionForm((f) => ({ ...f, contactMobile: e.target.value.replace(/\D/g, "") }))} />
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-4">
+          {[
+            { label: "Total Tenants", value: tenants.length, icon: Building2, color: "text-white" },
+            { label: "Active", value: activeCount, icon: CheckCircle, color: "text-emerald-400" },
+            { label: "Suspended", value: suspendedCount, icon: PauseCircle, color: "text-amber-400" },
+            { label: "Trial", value: trialCount, icon: Clock, color: "text-cyan-400" },
+          ].map(s => (
+            <div key={s.label} className="bg-[#1E3A5F] border border-slate-700 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-slate-400">{s.label}</p>
+                <s.icon className={cn("h-4 w-4", s.color)} />
               </div>
-            )}
+              <p className={cn("text-2xl font-bold font-mono mt-1", s.color)}>{s.value}</p>
+            </div>
+          ))}
+        </div>
 
-            {provisionStep === 1 && (
-              <div className="grid gap-3">
-                {planCards.map((p) => (
-                  <button
-                    key={p.plan}
-                    onClick={() => setSelectedPlan(p.plan)}
-                    className={cn("text-left rounded-xl p-4 transition-all", selectedPlan === p.plan ? "border-2 border-primary bg-primary/5" : "border border-border bg-card hover:border-primary/50")}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-foreground">{p.plan}</span>
-                      <span className="font-mono text-sm text-primary">{p.price}</span>
+        {/* Filters */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Input placeholder="Search tenants by name, GSTIN, owner..." className="pl-9 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-36 bg-slate-800 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Suspended">Suspended</SelectItem>
+              <SelectItem value="Trial">Trial</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={planFilter} onValueChange={setPlanFilter}>
+            <SelectTrigger className="w-36 bg-slate-800 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Plans</SelectItem>
+              <SelectItem value="Starter">Starter</SelectItem>
+              <SelectItem value="Professional">Professional</SelectItem>
+              <SelectItem value="Enterprise">Enterprise</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-32 bg-slate-800 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="storage">Storage</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Tenant Grid */}
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 text-slate-500 text-sm">No tenants match your filters</div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {filtered.map(t => {
+              const pct = (t.storageUsed / t.storageTotal) * 100;
+              return (
+                <div key={t.id} className="bg-[#1E3A5F] border border-slate-700 rounded-xl p-5 flex flex-col gap-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold", AVATAR_COLORS[t.plan])}>
+                        {getInitials(t.name)}
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold text-sm">{t.name}</p>
+                        <p className="text-xs text-slate-400 font-mono">{t.gstin}</p>
+                      </div>
                     </div>
-                    <ul className="text-xs text-muted-foreground space-y-0.5">
-                      {p.features.map((f) => <li key={f}>• {f}</li>)}
-                    </ul>
+                    <div className="flex items-center gap-2">
+                      <span className={cn("text-[10px] font-semibold border rounded-full px-2 py-0.5", PLAN_COLORS[t.plan])}>{t.plan}</span>
+                      <span className={cn("text-[10px] font-semibold border rounded-full px-2 py-0.5", STATUS_COLORS[t.status])}>{t.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <span className="text-slate-400">Owner:</span>
+                    <span className="text-white">{t.owner}</span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-slate-400">Storage Used</span>
+                      <span className="text-xs text-slate-300 font-mono">{t.storageUsed} GB / {t.storageTotal} GB</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-slate-700">
+                      <div className={cn("h-full rounded-full transition-all", storageColor(t.storageUsed, t.storageTotal))} style={{ width: `${Math.min(pct, 100)}%` }} />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <UserCheck className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs text-slate-300 font-mono">{t.users}</span>
+                      <span className="text-[10px] text-slate-500">users</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Grid3X3 className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs text-slate-300 font-mono">{t.modules}</span>
+                      <span className="text-[10px] text-slate-500">modules</span>
+                    </div>
+                    <div className="ml-auto text-[10px] text-slate-500">Last active: {t.lastActive}</div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1 border-t border-slate-700/50">
+                    <Button variant="outline" size="sm" className="text-xs border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 h-7 px-2.5">View Details</Button>
+                    <Button variant="outline" size="sm" className="text-xs border-slate-600 text-slate-300 hover:bg-slate-800 h-7 px-2.5">Manage</Button>
+                    {t.status === "Active" && (
+                      <Button variant="outline" size="sm" className="text-xs border-red-500/30 text-red-400 hover:bg-red-500/10 h-7 px-2.5 ml-auto" onClick={() => setSuspendTarget(t)}>Suspend</Button>
+                    )}
+                    {t.status === "Suspended" && (
+                      <Button variant="outline" size="sm" className="text-xs border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 h-7 px-2.5 ml-auto" onClick={() => setReactivateTarget(t)}>Reactivate</Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Provision Drawer */}
+      <Sheet open={provisionOpen} onOpenChange={setProvisionOpen}>
+        <SheetContent className="w-[480px] bg-[#0D1B2A] border-l border-slate-700 overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-lg text-white flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-cyan-400" />Provision New Tenant
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 space-y-6">
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Company Details</h3>
+              <div className="space-y-2.5">
+                <div><label className="text-xs text-slate-400 mb-1 block">Company Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="e.g. Acme India Pvt Ltd" /></div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><label className="text-xs text-slate-400 mb-1 block">GSTIN *</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="27AABCA1234F1Z5" maxLength={15} /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">PAN</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="AABCA1234F" maxLength={10} /></div>
+                </div>
+                <div><label className="text-xs text-slate-400 mb-1 block">Registered Address</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Address line" /></div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div><label className="text-xs text-slate-400 mb-1 block">City</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Mumbai" /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">State</label>
+                    <Select><SelectTrigger className="bg-slate-800 border-slate-600 text-white text-xs"><SelectValue placeholder="State" /></SelectTrigger>
+                      <SelectContent>{INDIAN_STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">PIN Code</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="400001" maxLength={6} /></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Select Plan</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {PLANS.map(p => (
+                  <button key={p.name} className={cn("rounded-xl border p-3 text-left transition-all", selectedPlan === p.name ? "border-cyan-500 bg-cyan-500/10" : "border-slate-600 bg-slate-800 hover:border-slate-500")} onClick={() => setSelectedPlan(p.name)}>
+                    <p className="text-xs font-bold text-white">{p.name}</p>
+                    <p className="text-lg font-bold text-cyan-400 font-mono mt-1">{p.price}<span className="text-[10px] text-slate-400 font-normal">/mo</span></p>
+                    <div className="mt-2 space-y-0.5">
+                      <p className="text-[10px] text-slate-400">{p.storage}</p>
+                      <p className="text-[10px] text-slate-400">{p.users}</p>
+                      <p className="text-[10px] text-slate-400">{p.modules}</p>
+                      {p.extras && <p className="text-[10px] text-cyan-400">{p.extras}</p>}
+                    </div>
                   </button>
                 ))}
               </div>
-            )}
+            </div>
 
-            {provisionStep === 2 && (
-              <div className="space-y-3">
-                {MODULES_LIST.map((m) => (
-                  <label key={m} className="flex items-center gap-3 cursor-pointer">
-                    <Checkbox
-                      checked={selectedModules.includes(m)}
-                      onCheckedChange={(checked) => {
-                        setSelectedModules((prev) => checked ? [...prev, m] : prev.filter((x) => x !== m));
-                      }}
-                    />
-                    <span className="text-sm text-foreground">{m}</span>
-                  </label>
-                ))}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Admin User</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="text-xs text-slate-400 mb-1 block">First Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="First name" /></div>
+                <div><label className="text-xs text-slate-400 mb-1 block">Last Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Last name" /></div>
               </div>
-            )}
-
-            {provisionStep === 3 && (
-              <div className="space-y-3">
-                <Input placeholder="Admin Name" value={adminName} onChange={(e) => setAdminName(e.target.value)} />
-                <Input type="email" placeholder="Admin Email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} />
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Temporary Password</label>
-                  <div className="flex items-center gap-2">
-                    <Input readOnly value="Sm@rtOps#2026" className="font-mono" />
-                    <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText("Sm@rtOps#2026"); toast.success("Password copied"); }}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">Admin will be required to change password on first login</p>
+              <div><label className="text-xs text-slate-400 mb-1 block">Email *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="admin@company.in" type="email" /></div>
+              <div><label className="text-xs text-slate-400 mb-1 block">Mobile *</label>
+                <div className="flex gap-2">
+                  <span className="flex items-center px-3 bg-slate-800 border border-slate-600 rounded-md text-xs text-slate-400">+91</span>
+                  <Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="9876543210" maxLength={10} />
                 </div>
               </div>
-            )}
+            </div>
 
-            {provisionStep === 4 && !provisioning && (
-              <div className="bg-muted/30 rounded-xl p-4 space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Company</span><span className="font-medium text-foreground">{provisionForm.company || "—"}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">GSTIN</span><span className="font-mono text-foreground">{provisionForm.gstin || "—"}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Plan</span><span className="text-foreground">{selectedPlan}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Modules</span><span className="text-foreground">{selectedModules.length}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Admin Email</span><span className="text-foreground">{adminEmail || "—"}</span></div>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Settings</h3>
+              <div><label className="text-xs text-slate-400 mb-1 block">Subdomain</label>
+                <div className="flex items-center">
+                  <Input className="bg-slate-800 border-slate-600 text-white rounded-r-none" placeholder="acme-india" />
+                  <span className="flex items-center px-3 h-10 bg-slate-700 border border-l-0 border-slate-600 rounded-r-md text-xs text-slate-400 whitespace-nowrap">.4dsmartops.in</span>
+                </div>
               </div>
-            )}
-
-            {provisionStep === 4 && provisioning && (
-              <div className="space-y-3">
-                {PROVISION_STEPS_TEXT.map((text, i) => (
-                  <div key={i} className={cn("flex items-center gap-3 text-sm transition-opacity", i > provisionProgress ? "opacity-30" : "opacity-100")}>
-                    {i <= provisionProgress ? (
-                      i < provisionProgress ? <Check className="h-4 w-4 text-success shrink-0" /> : <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0" />
-                    ) : (
-                      <div className="h-4 w-4 rounded-full border border-muted shrink-0" />
-                    )}
-                    <span className={cn(i <= provisionProgress && i < provisionProgress ? "text-success" : "text-foreground")}>{text}</span>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between py-2">
+                <div><p className="text-sm text-white">Trial Period</p><p className="text-[10px] text-slate-400">14-day free trial before billing starts</p></div>
+                <Switch checked={trialEnabled} onCheckedChange={setTrialEnabled} />
               </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          {!provisioning && (
-            <div className="flex items-center justify-between pt-2">
-              <button className="text-xs text-muted-foreground hover:underline" onClick={resetProvision}>Cancel</button>
-              <div className="flex gap-2">
-                {provisionStep > 0 && <Button variant="outline" onClick={() => setProvisionStep((s) => s - 1)}>Back</Button>}
-                {provisionStep < 4 ? (
-                  <Button onClick={() => setProvisionStep((s) => s + 1)}>Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
-                ) : (
-                  <Button onClick={runProvision} style={{ background: "var(--gradient-primary)" }}>Provision</Button>
-                )}
+              <div className="flex items-center justify-between py-2">
+                <div><p className="text-sm text-white">Send Welcome Email</p><p className="text-[10px] text-slate-400">Credentials and onboarding link to admin</p></div>
+                <Switch checked={welcomeEmail} onCheckedChange={setWelcomeEmail} />
               </div>
             </div>
-          )}
+
+            <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" onClick={handleProvision}>Provision Tenant</Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Suspend Dialog */}
+      <Dialog open={!!suspendTarget} onOpenChange={(o) => !o && setSuspendTarget(null)}>
+        <DialogContent className="bg-[#0D1B2A] border-slate-700 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-400" />Suspend Tenant: {suspendTarget?.name}?
+            </DialogTitle>
+            <DialogDescription className="text-slate-400 text-sm mt-2">This will immediately log out all users of this tenant and prevent access. Data is preserved.</DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <label className="text-xs text-slate-400 mb-1.5 block">Reason</label>
+            <Select value={suspendReason} onValueChange={setSuspendReason}>
+              <SelectTrigger className="bg-slate-800 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+              <SelectContent>{["Billing overdue", "Policy violation", "Owner request", "Investigation", "Other"].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setSuspendTarget(null)}>Cancel</Button>
+            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSuspend}>Suspend Tenant</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Tenant Detail Sheet */}
-      <Sheet open={showDetail} onOpenChange={setShowDetail}>
-        <SheetContent className="w-[480px] sm:w-[540px] overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="text-lg">{selectedTenant?.name}</SheetTitle>
-            {selectedTenant && (
-              <div className="flex items-center gap-2 mt-1">
-                <span className={cn("text-xs px-2 py-1 rounded-lg border", {
-                  "bg-success/10 text-success border-success/20": selectedTenant.status === "active",
-                  "bg-warning/10 text-warning border-warning/20": selectedTenant.status === "trial",
-                  "bg-destructive/10 text-destructive border-destructive/20": selectedTenant.status === "suspended",
-                })}>{selectedTenant.status.charAt(0).toUpperCase() + selectedTenant.status.slice(1)}</span>
-                <span className={cn("text-xs font-medium px-2 py-0.5 rounded-md", {
-                  "bg-secondary text-muted-foreground": selectedTenant.plan === "Starter",
-                  "bg-primary/10 text-primary": selectedTenant.plan === "Growth",
-                  "bg-accent/10 text-accent": selectedTenant.plan === "Enterprise",
-                })}>{selectedTenant.plan}</span>
-              </div>
-            )}
-          </SheetHeader>
-
-          {selectedTenant && (
-            <div className="mt-6 space-y-6">
-              {/* Overview */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Overview</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-muted/30 rounded-lg p-3"><p className="text-xs text-muted-foreground">Users</p><p className="font-mono text-lg font-bold text-foreground">{selectedTenant.users}</p></div>
-                  <div className="bg-muted/30 rounded-lg p-3"><p className="text-xs text-muted-foreground">Modules</p><p className="font-mono text-lg font-bold text-foreground">{selectedTenant.modules}</p></div>
-                  <div className="bg-muted/30 rounded-lg p-3"><p className="text-xs text-muted-foreground">MRR</p><p className="font-mono text-lg font-bold text-success">{formatMRR(selectedTenant.mrr)}</p></div>
-                  <div className="bg-muted/30 rounded-lg p-3"><p className="text-xs text-muted-foreground">Health Score</p><p className="font-mono text-lg font-bold text-foreground">{selectedTenant.healthScore}</p></div>
-                </div>
-              </div>
-
-              {/* Organisation Details */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Organisation Details</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Tenant ID</span><span className="font-mono text-xs text-foreground">{selectedTenant.id}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">GSTIN</span><span className="font-mono text-foreground">{selectedTenant.gstin}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span className="text-foreground">{selectedTenant.city}, {selectedTenant.state}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Member since</span><span className="text-foreground">{selectedTenant.createdAt}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Last active</span><span className="text-foreground">{selectedTenant.lastActive}</span></div>
-                </div>
-              </div>
-
-              {/* Module Access */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Module Access</h4>
-                <div className="flex flex-wrap gap-2">
-                  {["GST Filing", "Accounts & Finance", "Inventory", "Sales & CRM", "Reports & Analytics"].slice(0, Math.min(5, selectedTenant.modules)).map((m) => (
-                    <span key={m} className="bg-primary/10 text-primary rounded-md text-xs px-2 py-1">{m}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Quick Actions</h4>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start" onClick={() => toast("Navigating to audit logs...")}>View Audit Logs</Button>
-                  <Button variant="outline" className="w-full justify-start" onClick={() => toast("Navigate to users...")}>Manage Users</Button>
-                  {selectedTenant.status === "suspended" ? (
-                    <Button className="w-full bg-success hover:bg-success/90 text-success-foreground">Reactivate Tenant</Button>
-                  ) : (
-                    <Button variant="outline" className="w-full bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">Suspend Tenant</Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      {/* Reactivate Dialog */}
+      <Dialog open={!!reactivateTarget} onOpenChange={(o) => !o && setReactivateTarget(null)}>
+        <DialogContent className="bg-[#0D1B2A] border-slate-700 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">Reactivate Tenant: {reactivateTarget?.name}?</DialogTitle>
+            <DialogDescription className="text-slate-400 text-sm mt-2">This will restore full access for all users of this tenant immediately.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setReactivateTarget(null)}>Cancel</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleReactivate}>Reactivate Tenant</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TowerLayout>
   );
 }
