@@ -41,6 +41,14 @@ interface ApprovalRequest {
   notes?: string;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/approval-requests              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/approval-requests?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/approval-requests?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 interface ApprovalHistory {
   id: string;
   company: string;

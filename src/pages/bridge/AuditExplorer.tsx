@@ -37,6 +37,14 @@ interface SyncAuditLog {
   agentId: string;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/audit-events              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/audit-events?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/audit-events?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const SYNC_AUDIT: SyncAuditLog[] = [
   { id: "SAU-0091", requestId: "REQ-0042", operation: "read", actor: "AGENT-01", company: "Reliance Digital", module: "Sales Vouchers", records: 8920, result: "success", timestamp: "03 Apr 2026, 09:10:22 IST", details: "ODBC read completed — 8,920 records", agentId: "AGENT-01" },
   { id: "SAU-0090", requestId: "REQ-0042", operation: "validate", actor: "System", company: "Reliance Digital", module: "Sales Vouchers", records: 8920, result: "success", timestamp: "03 Apr 2026, 09:11:30 IST", details: "Validation passed — 0 errors, 0 warnings", agentId: "AGENT-01" },

@@ -53,6 +53,14 @@ const MODULE_LABELS: Record<SyncModule, string> = {
   currency: "Currency",
 };
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/sync-profiles              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/sync-profiles?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/sync-profiles?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const SAVED_PROFILES: SyncProfile[] = [
   {
     id: "PROF-001", name: "Q1 Monthly Close — Reliance Digital",

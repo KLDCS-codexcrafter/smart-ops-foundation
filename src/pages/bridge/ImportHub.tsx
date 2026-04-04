@@ -29,6 +29,14 @@ interface ImportJob {
   fileSize: string;
 }
 
+// ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
+// Replace this mock data with a real fetch scoped by JWT tier:
+//   Tier 1 (4DSO Dev/IT Team):  GET /api/bridge/import-jobs              → full fleet, all clients
+//   Tier 2 (Partner IT Team):   GET /api/bridge/import-jobs?partnerId={jwt.partnerId}  → their clients only
+//   Tier 3 (Customer IT Admin): GET /api/bridge/import-jobs?tenantId={jwt.tenantId}    → own company only
+// JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
+// ─────────────────────────────────────────────────────────────────────────
+
 const IMPORT_HISTORY: ImportJob[] = [
   { id: "IMP-001", name: "Q1 Purchase Data", source: "Excel Upload", targetModule: "Purchase Vouchers", company: "Reliance Digital", records: 1240, status: "completed", createdAt: "02 Apr 2026, 15:00 IST", fileSize: "2.4 MB" },
   { id: "IMP-002", name: "Supplier Master List", source: "CSV Upload", targetModule: "Ledger Masters", company: "Tata Motors Finance", records: 380, status: "completed", createdAt: "01 Apr 2026, 11:00 IST", fileSize: "0.8 MB" },
