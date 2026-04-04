@@ -1,351 +1,696 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import {
-  ShieldCheck, ShieldAlert, Activity, Lock,
-  CheckCircle2, XCircle, Ban, AlertTriangle, Key,
-  Globe, Timer,
+  Search, Shield, ShieldCheck, ShieldAlert, AlertTriangle, XCircle,
+  Lock, Activity, Server, Database, Cable, Globe, Layers,
+  ChevronDown, ChevronRight, Users, Settings, FileText,
+  Eye, Trash2, Plus, UserPlus, Building2, Zap, Mail,
+  Share2, MessageSquare, Workflow, Palette, Download,
 } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
-} from "recharts";
-import {
-  Sheet, SheetContent, SheetHeader, SheetTitle,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
-// ── Types ──────────────────────────────────────────────
-interface SecurityEvent {
+// ── Section / Panel definitions ──────────────────────
+interface PanelDef {
   id: string;
-  type: "login_success" | "login_failed" | "mfa_challenge"
-      | "ip_blocked" | "suspicious_activity" | "password_reset";
-  user: string;
-  tenant: string;
-  ip: string;
-  location: string;
-  time: string;
-  severity: "info" | "warning" | "critical";
+  label: string;
 }
-
-interface PolicyStatus {
+interface SectionDef {
   id: string;
-  name: string;
-  status: "enforced" | "partial" | "disabled";
-  description: string;
-  affectedTenants: number;
-  lastUpdated: string;
+  label: string;
+  icon: React.ElementType;
+  emoji: string;
+  panels: PanelDef[];
 }
 
-interface LoginTrend {
-  day: string;
-  successful: number;
-  failed: number;
-  blocked: number;
-}
-
-// ── Data ───────────────────────────────────────────────
-const SECURITY_SCORE = 82;
-
-const SUB_METRICS = [
-  { label: "Authentication", value: 91, icon: ShieldCheck },
-  { label: "Access Control", value: 84, icon: Lock },
-  { label: "Session Security", value: 78, icon: Timer },
-  { label: "IP Compliance", value: 88, icon: Globe },
+const SECTIONS: SectionDef[] = [
+  {
+    id: "monitoring", label: "Security Monitoring", icon: Search, emoji: "🔍",
+    panels: [
+      { id: "security-dashboard", label: "Security Dashboard" },
+      { id: "org-analytics", label: "Org Analytics" },
+      { id: "system-health", label: "System Health" },
+    ],
+  },
+  {
+    id: "policies", label: "Security Policies", icon: Shield, emoji: "🛡️",
+    panels: [
+      { id: "security-templates", label: "Security Templates" },
+      { id: "password-policy", label: "Password Policy" },
+      { id: "geo-fencing", label: "Geo-Fencing" },
+      { id: "ip-whitelist", label: "IP Whitelist" },
+      { id: "mfa-settings", label: "MFA Settings" },
+      { id: "mfa-recovery", label: "MFA Recovery" },
+      { id: "device-sign-in", label: "Device Sign-In" },
+      { id: "trusted-browsers", label: "Trusted Browsers" },
+      { id: "app-passwords", label: "App Passwords" },
+    ],
+  },
+  {
+    id: "entity", label: "Entity Management", icon: Users, emoji: "👥",
+    panels: [
+      { id: "role-management", label: "Role Management" },
+      { id: "admin-hierarchy", label: "Admin Hierarchy" },
+      { id: "entity-security", label: "Entity Security" },
+      { id: "identity-access", label: "Identity & Access" },
+    ],
+  },
+  {
+    id: "compliance", label: "Compliance & Audit", icon: FileText, emoji: "📋",
+    panels: [
+      { id: "compliance-dashboard", label: "Compliance Dashboard" },
+      { id: "audit-log", label: "Audit Log" },
+      { id: "email-digest", label: "Email Digest" },
+      { id: "integrations", label: "Integrations" },
+    ],
+  },
+  {
+    id: "operations", label: "Operations", icon: Settings, emoji: "⚙️",
+    panels: [
+      { id: "user-impersonation", label: "User Impersonation" },
+      { id: "tenant-management", label: "Tenant Management" },
+      { id: "super-admin-controls", label: "Super Admin Controls" },
+      { id: "workflows", label: "Workflows" },
+      { id: "portal-branding", label: "Portal Branding" },
+    ],
+  },
+  {
+    id: "data", label: "Data & Sharing", icon: Database, emoji: "💾",
+    panels: [
+      { id: "export-import", label: "Export / Import" },
+      { id: "shared-preview", label: "Shared Preview" },
+      { id: "message-templates", label: "Message Templates" },
+    ],
+  },
 ];
 
-const SECURITY_EVENTS: SecurityEvent[] = [
-  { id: "EVT-001", type: "login_failed", user: "arjun.mehta@reliancedigital.in", tenant: "Reliance Digital", ip: "103.21.58.44", location: "Mumbai, MH", time: "2 min ago", severity: "warning" },
-  { id: "EVT-002", type: "mfa_challenge", user: "vikram.nair@tatamotors.com", tenant: "Tata Motors Finance", ip: "49.36.112.88", location: "Pune, MH", time: "5 min ago", severity: "info" },
-  { id: "EVT-003", type: "ip_blocked", user: "unknown", tenant: "—", ip: "185.220.101.34", location: "Unknown", time: "8 min ago", severity: "critical" },
-  { id: "EVT-004", type: "login_success", user: "rajesh.iyer@infosysbpm.com", tenant: "Infosys BPM", ip: "49.206.4.12", location: "Bengaluru, KA", time: "12 min ago", severity: "info" },
-  { id: "EVT-005", type: "suspicious_activity", user: "sanjay.g@muthoot.com", tenant: "Muthoot Finance", ip: "106.51.22.18", location: "Kochi, KL", time: "20 min ago", severity: "critical" },
-  { id: "EVT-006", type: "password_reset", user: "pooja.reddy@havells.com", tenant: "Havells India", ip: "117.195.84.22", location: "New Delhi, DL", time: "35 min ago", severity: "info" },
-  { id: "EVT-007", type: "login_failed", user: "meera.joshi@bajajfinserv.com", tenant: "Bajaj Finserv", ip: "122.168.44.56", location: "Pune, MH", time: "42 min ago", severity: "warning" },
-  { id: "EVT-008", type: "ip_blocked", user: "unknown", tenant: "—", ip: "45.142.212.100", location: "Unknown", time: "1 hr ago", severity: "critical" },
-];
+const IMPLEMENTED_PANELS = new Set([
+  "security-dashboard", "password-policy", "geo-fencing",
+  "mfa-settings", "ip-whitelist", "audit-log",
+]);
 
-const POLICIES: PolicyStatus[] = [
-  { id: "POL-001", name: "Password Policy", status: "enforced", description: "Min 8 chars, uppercase, number, special char", affectedTenants: 12, lastUpdated: "15 Jun 2026" },
-  { id: "POL-002", name: "MFA Enforcement", status: "partial", description: "Required for admin roles only — all roles pending", affectedTenants: 8, lastUpdated: "01 Jul 2026" },
-  { id: "POL-003", name: "Session Timeout", status: "enforced", description: "Auto-logout after 30 min inactivity", affectedTenants: 12, lastUpdated: "10 Jun 2026" },
-  { id: "POL-004", name: "IP Whitelist", status: "partial", description: "3 violations in last 24 hours", affectedTenants: 5, lastUpdated: "03 Jul 2026" },
-  { id: "POL-005", name: "Geo-Fencing", status: "disabled", description: "Not yet configured for any tenant", affectedTenants: 0, lastUpdated: "—" },
-  { id: "POL-006", name: "Audit Trail", status: "enforced", description: "All admin actions logged in real-time", affectedTenants: 12, lastUpdated: "12 Jan 2024" },
-];
+const ALL_PANELS = SECTIONS.flatMap(s => s.panels);
 
-const LOGIN_TREND: LoginTrend[] = [
-  { day: "Mon", successful: 342, failed: 18, blocked: 4 },
-  { day: "Tue", successful: 398, failed: 24, blocked: 7 },
-  { day: "Wed", successful: 412, failed: 31, blocked: 9 },
-  { day: "Thu", successful: 387, failed: 19, blocked: 5 },
-  { day: "Fri", successful: 356, failed: 22, blocked: 6 },
-  { day: "Sat", successful: 189, failed: 8, blocked: 2 },
-  { day: "Sun", successful: 124, failed: 5, blocked: 1 },
-];
+// ── Main Component ───────────────────────────────────
+export default function Security() {
+  const [activePanel, setActivePanel] = useState("security-dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
-// ── Config ─────────────────────────────────────────────
-const EVENT_CONFIG: Record<SecurityEvent["type"], { label: string; Icon: React.ElementType; color: string }> = {
-  login_success:       { label: "Login Success",      Icon: CheckCircle2, color: "text-success" },
-  login_failed:        { label: "Login Failed",        Icon: XCircle,      color: "text-warning" },
-  mfa_challenge:       { label: "MFA Challenge",       Icon: ShieldAlert,  color: "text-info" },
-  ip_blocked:          { label: "IP Blocked",          Icon: Ban,          color: "text-destructive" },
-  suspicious_activity: { label: "Suspicious Activity", Icon: AlertTriangle,color: "text-destructive" },
-  password_reset:      { label: "Password Reset",      Icon: Key,          color: "text-primary" },
-};
-
-const SEVERITY_CONFIG: Record<SecurityEvent["severity"], string> = {
-  info:     "bg-info/10 text-info border-info/20",
-  warning:  "bg-warning/10 text-warning border-warning/20",
-  critical: "bg-destructive/10 text-destructive border-destructive/20",
-};
-
-const POLICY_CONFIG: Record<PolicyStatus["status"], { label: string; color: string }> = {
-  enforced: { label: "Enforced", color: "bg-success/10 text-success border-success/20" },
-  partial:  { label: "Partial",  color: "bg-warning/10 text-warning border-warning/20" },
-  disabled: { label: "Disabled", color: "bg-muted text-muted-foreground border-border" },
-};
-
-// ── Component ──────────────────────────────────────────
-const Security = () => {
-  const [selectedEvent, setSelectedEvent] = useState<SecurityEvent | null>(null);
-  const [showEventDetail, setShowEventDetail] = useState(false);
-
-  const openDetail = (event: SecurityEvent) => {
-    setSelectedEvent(event);
-    setShowEventDetail(true);
+  const toggleSection = (id: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
-  const scoreColor = SECURITY_SCORE >= 80 ? "text-success" : SECURITY_SCORE >= 60 ? "text-warning" : "text-destructive";
-  const scoreBarColor = SECURITY_SCORE >= 80 ? "bg-success" : SECURITY_SCORE >= 60 ? "bg-warning" : "bg-destructive";
+  const filteredSections = useMemo(() => {
+    if (!searchQuery.trim()) return SECTIONS;
+    const q = searchQuery.toLowerCase();
+    return SECTIONS.map(s => ({
+      ...s,
+      panels: s.panels.filter(p => p.label.toLowerCase().includes(q)),
+    })).filter(s => s.panels.length > 0);
+  }, [searchQuery]);
+
+  const activePanelLabel = ALL_PANELS.find(p => p.id === activePanel)?.label || activePanel;
 
   return (
-    <TowerLayout title="Security" subtitle="Platform security posture, policies and threat monitoring">
-      {/* Score + KPI Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-        {/* Security Score */}
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Security Score</h3>
-          <div className="flex items-baseline gap-1 mb-3">
-            <span className={cn("text-5xl font-bold font-mono", scoreColor)}>{SECURITY_SCORE}</span>
-            <span className="text-xl text-muted-foreground">/100</span>
+    <TowerLayout title="Security Console" subtitle="Platform security posture — 27 panels">
+      <div className="flex h-[calc(100vh-120px)] -m-6">
+        {/* Sub-nav */}
+        <aside className="w-[280px] shrink-0 bg-[#0D1B2A] border-r border-slate-700 flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-slate-700">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-white">Security Console</h2>
+              <span className="text-[10px] bg-cyan-900/60 text-cyan-400 px-2 py-0.5 rounded-full font-bold">27 panels</span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+              <Input
+                placeholder="Search panels..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="pl-8 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
+              />
+            </div>
           </div>
-          <div className="w-full h-2 bg-secondary rounded-full mb-4">
-            <div className={cn("h-2 rounded-full", scoreBarColor)} style={{ width: `${SECURITY_SCORE}%` }} />
-          </div>
-          <div className="space-y-2">
-            {SUB_METRICS.map((m) => (
-              <div key={m.label}>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">{m.label}</span>
-                  <span className="font-mono text-foreground">{m.value}%</span>
-                </div>
-                <div className="w-full h-1 bg-secondary rounded-full">
-                  <div className="h-1 bg-primary rounded-full" style={{ width: `${m.value}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* KPI Cards */}
-        <StatCard icon={ShieldCheck} label="Active MFA Users" value="142" color="text-success" sub="Across all tenants" />
-        <StatCard icon={ShieldAlert} label="Blocked Sign-Ins (7d)" value="28" color="text-destructive" />
-        <StatCard icon={Activity} label="Active Sessions" value="89" color="text-primary" sub="Right now" />
-      </div>
-
-      {/* Login Trend Chart */}
-      <div className="bg-card border border-border rounded-xl p-5 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-foreground">Login Activity — Last 7 Days</h3>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" />Successful</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" />Failed</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" />Blocked</span>
-          </div>
-        </div>
-        <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={LOGIN_TREND} barGap={2} barCategoryGap="30%">
-            <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
-            <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-            <YAxis hide />
-            <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }} />
-            <Bar dataKey="successful" fill="hsl(var(--success))" fillOpacity={0.7} radius={[3, 3, 0, 0]} barSize={12} />
-            <Bar dataKey="failed" fill="hsl(var(--warning))" fillOpacity={0.8} radius={[3, 3, 0, 0]} barSize={12} />
-            <Bar dataKey="blocked" fill="hsl(var(--destructive))" fillOpacity={0.9} radius={[3, 3, 0, 0]} barSize={12} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Events + Policies */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Events */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h3 className="text-sm font-semibold text-foreground">Recent Events</h3>
-            <span className="bg-destructive/10 text-destructive text-xs px-2 py-0.5 rounded-md">
-              {SECURITY_EVENTS.length} today
-            </span>
-          </div>
-          <div className="max-h-96 overflow-y-auto">
-            {SECURITY_EVENTS.map((evt) => {
-              const cfg = EVENT_CONFIG[evt.type];
+          <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+            {filteredSections.map(section => {
+              const collapsed = collapsedSections.has(section.id);
               return (
-                <div
-                  key={evt.id}
-                  className="flex items-start gap-3 p-4 border-b border-border/50 last:border-0 hover:bg-muted/20 cursor-pointer"
-                  onClick={() => openDetail(evt)}
-                >
-                  <cfg.Icon className={cn("h-4 w-4 mt-0.5 shrink-0", cfg.color)} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground">{cfg.label}</div>
-                    <div className="text-xs text-muted-foreground truncate max-w-[200px]">{evt.user}</div>
-                    <div className="text-xs font-mono text-muted-foreground/60">{evt.ip} · {evt.location}</div>
-                  </div>
-                  <div className="flex flex-col items-end shrink-0">
-                    <span className={cn("text-[10px] px-1.5 py-0.5 rounded border", SEVERITY_CONFIG[evt.severity])}>
-                      {evt.severity}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-1">{evt.time}</span>
-                  </div>
+                <div key={section.id}>
+                  <button
+                    onClick={() => toggleSection(section.id)}
+                    className="flex items-center gap-2 w-full px-2 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/50 transition-colors"
+                  >
+                    {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                    <span>{section.emoji}</span>
+                    <span className="flex-1 text-left">{section.label}</span>
+                    <span className="text-[10px] text-slate-600">{section.panels.length}</span>
+                  </button>
+                  {!collapsed && (
+                    <div className="ml-4 space-y-0.5 mt-0.5">
+                      {section.panels.map(panel => (
+                        <button
+                          key={panel.id}
+                          onClick={() => setActivePanel(panel.id)}
+                          className={cn(
+                            "w-full text-left px-3 py-1.5 text-xs rounded-lg transition-colors",
+                            activePanel === panel.id
+                              ? "bg-cyan-500 text-white font-medium"
+                              : "text-slate-400 hover:text-white hover:bg-slate-800"
+                          )}
+                        >
+                          {panel.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
-          </div>
-        </div>
+          </nav>
+        </aside>
 
-        {/* Security Policies */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h3 className="text-sm font-semibold text-foreground">Security Policies</h3>
-            <span className="text-xs text-muted-foreground">6 policies</span>
-          </div>
-          <div>
-            {POLICIES.map((pol) => {
-              const cfg = POLICY_CONFIG[pol.status];
-              return (
-                <div key={pol.id} className="p-4 border-b border-border/50 last:border-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">{pol.name}</span>
-                    <span className={cn("text-xs px-2 py-0.5 rounded border ml-auto", cfg.color)}>{cfg.label}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{pol.description}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-muted-foreground">{pol.affectedTenants} tenants affected</span>
-                    <span className="text-[10px] text-muted-foreground">Updated {pol.lastUpdated}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {/* Content area */}
+        <main className="flex-1 overflow-y-auto p-6 bg-[#0D1B2A]">
+          {IMPLEMENTED_PANELS.has(activePanel) ? (
+            <>
+              {activePanel === "security-dashboard" && <SecurityDashboardPanel />}
+              {activePanel === "password-policy" && <PasswordPolicyPanel />}
+              {activePanel === "geo-fencing" && <GeoFencingPanel />}
+              {activePanel === "mfa-settings" && <MFASettingsPanel />}
+              {activePanel === "ip-whitelist" && <IPWhitelistPanel />}
+              {activePanel === "audit-log" && <AuditLogPanel />}
+            </>
+          ) : (
+            <ComingSoonPanel name={activePanelLabel} />
+          )}
+        </main>
       </div>
-
-      {/* Event Detail Sheet */}
-      <Sheet open={showEventDetail} onOpenChange={setShowEventDetail}>
-        <SheetContent side="right" className="w-[400px]">
-          {selectedEvent && <EventDetail event={selectedEvent} />}
-        </SheetContent>
-      </Sheet>
     </TowerLayout>
   );
-};
+}
 
-// ── StatCard ───────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, color, sub }: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  color: string;
-  sub?: string;
-}) {
+// ── Coming Soon Placeholder ──────────────────────────
+function ComingSoonPanel({ name }: { name: string }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary/10">
-          <Icon className={cn("h-5 w-5", color)} />
-        </div>
-      </div>
-      <div className="font-mono text-2xl font-bold text-foreground">{value}</div>
-      <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-      {sub && <div className="text-[10px] text-muted-foreground/60 mt-0.5">{sub}</div>}
+    <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+      <Lock className="h-12 w-12 text-slate-600 mb-4" />
+      <h2 className="text-xl font-bold text-slate-400 mb-2">{name}</h2>
+      <span className="text-xs bg-slate-700 text-slate-400 px-3 py-1 rounded-full mb-3">Under Development</span>
+      <p className="text-sm text-slate-500 text-center max-w-xs mb-4">
+        This panel is secured and ready for activation in the next sprint.
+      </p>
+      <span className="text-[10px] bg-amber-900/40 text-amber-400 px-2 py-0.5 rounded-full">Sprint: C2 — Q3 2026</span>
     </div>
   );
 }
 
-// ── Event Detail ───────────────────────────────────────
-function EventDetail({ event }: { event: SecurityEvent }) {
-  const cfg = EVENT_CONFIG[event.type];
-
-  const rows: { label: string; value: React.ReactNode }[] = [
-    { label: "Event ID", value: <span className="font-mono text-xs">{event.id}</span> },
-    { label: "Type", value: cfg.label },
-    { label: "User", value: event.user },
-    { label: "Tenant", value: event.tenant },
-    { label: "IP Address", value: <span className="font-mono">{event.ip}</span> },
-    { label: "Location", value: event.location },
-    { label: "Time", value: event.time },
-    {
-      label: "Severity",
-      value: (
-        <span className={cn("text-xs px-2 py-0.5 rounded border", SEVERITY_CONFIG[event.severity])}>
-          {event.severity}
-        </span>
-      ),
-    },
+// ══════════════════════════════════════════════════════
+// PANEL 1: Security Dashboard
+// ══════════════════════════════════════════════════════
+function SecurityDashboardPanel() {
+  // [JWT] Replace with real security metrics from API
+  const policyCoverage = [
+    { name: "MFA Enforcement", status: true },
+    { name: "Password Policy", status: true },
+    { name: "Geo-Fencing", status: true },
+    { name: "IP Whitelist", status: true },
+    { name: "Device Sign-In", status: false },
+    { name: "Trusted Browsers", status: true },
+    { name: "Session Timeout", status: "30 min" },
+    { name: "Audit Logging", status: true },
   ];
 
-  return (
-    <>
-      <SheetHeader>
-        <SheetTitle className="flex items-center gap-3">
-          <span className="text-lg font-semibold">{cfg.label}</span>
-          <span className={cn("text-xs px-2 py-0.5 rounded border", SEVERITY_CONFIG[event.severity])}>
-            {event.severity}
-          </span>
-        </SheetTitle>
-      </SheetHeader>
+  const securityEvents = [
+    { type: "Security", desc: "Failed login blocked: unknown@hacker.xyz", time: "3 min ago", severity: "critical" },
+    { type: "Policy", desc: "IP Whitelist violation — 103.24.55.12", time: "18 min ago", severity: "warning" },
+    { type: "Auth", desc: "MFA challenge passed: admin@acmeindia.in", time: "32 min ago", severity: "info" },
+    { type: "System", desc: "Geo-fence rule triggered — China IP blocked", time: "1 hr ago", severity: "critical" },
+    { type: "Policy", desc: "Password policy violation — weak password attempt", time: "2 hr ago", severity: "warning" },
+  ];
 
-      <div className="mt-4 space-y-5">
-        <div className="space-y-2">
-          {rows.map((r) => (
-            <div key={r.label} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted/20">
-              <span className="text-xs text-muted-foreground">{r.label}</span>
-              <span className="text-sm text-foreground">{r.value}</span>
+  const sevColor: Record<string, string> = {
+    critical: "bg-red-900/40 text-red-400",
+    warning: "bg-amber-900/40 text-amber-400",
+    info: "bg-emerald-900/40 text-emerald-400",
+  };
+
+  const r = 40, stroke = 8, size = (r + stroke) * 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (91 / 100) * circ;
+
+  return (
+    <div className="space-y-6">
+      {/* Top stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-5 flex flex-col items-center">
+          <svg width={size} height={size} className="mb-2">
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#334155" strokeWidth={stroke} />
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#10B981" strokeWidth={stroke}
+              strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+              transform={`rotate(-90 ${size/2} ${size/2})`} />
+            <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
+              fill="#10B981" fontSize="18" fontWeight="bold" fontFamily="JetBrains Mono, monospace">91</text>
+          </svg>
+          <span className="text-xs text-slate-400">Platform Security Score</span>
+        </div>
+        <DashStatCard icon={ShieldCheck} value="0" label="Active Threats" color="text-emerald-400" />
+        <DashStatCard icon={AlertTriangle} value="3" label="Policy Violations (24h)" color="text-amber-400" />
+        <DashStatCard icon={XCircle} value="7" label="Failed Logins (24h)" color="text-red-400" />
+      </div>
+
+      {/* Policy Coverage */}
+      <div>
+        <h3 className="text-sm font-semibold text-slate-300 mb-3">Policy Coverage</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {policyCoverage.map(p => (
+            <div key={p.name} className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-4 flex items-center justify-between">
+              <span className="text-xs text-white font-medium">{p.name}</span>
+              {typeof p.status === "boolean" ? (
+                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full",
+                  p.status ? "bg-emerald-900/60 text-emerald-400" : "bg-slate-700 text-slate-400"
+                )}>{p.status ? "ON" : "OFF"}</span>
+              ) : (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-900/60 text-cyan-400">{p.status}</span>
+              )}
             </div>
           ))}
         </div>
-
-        <div className="h-px bg-border" />
-
-        <div className="space-y-2">
-          {event.severity === "critical" && (
-            <>
-              <Button className="w-full bg-destructive text-destructive-foreground" onClick={() => toast(`IP ${event.ip} blocked`)}>
-                Block IP Address
-              </Button>
-              <Button variant="outline" className="w-full" onClick={() => toast("Escalated to platform admin")}>
-                Escalate to Admin
-              </Button>
-            </>
-          )}
-          {(event.type === "login_failed" || event.type === "suspicious_activity") && (
-            <Button variant="outline" className="w-full" onClick={() => toast("User sessions terminated")}>
-              Force User Logout
-            </Button>
-          )}
-          <Button variant="outline" className="w-full" onClick={() => toast("Opening audit trail...")}>
-            View Full Audit Trail
-          </Button>
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          Security events are retained for 90 days per compliance policy.
-        </p>
       </div>
-    </>
+
+      {/* Recent Security Events */}
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-5">
+        <h3 className="text-sm font-semibold text-white mb-4">Recent Security Events</h3>
+        <div className="space-y-3">
+          {securityEvents.map((evt, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5", sevColor[evt.severity])}>{evt.type}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white">{evt.desc}</p>
+                <span className="text-xs text-slate-400">{evt.time}</span>
+              </div>
+              <span className={cn("text-[10px] px-2 py-0.5 rounded-full shrink-0", sevColor[evt.severity])}>{evt.severity}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
-export default Security;
+function DashStatCard({ icon: Icon, value, label, color }: {
+  icon: React.ElementType; value: string; label: string; color: string;
+}) {
+  return (
+    <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-5 flex flex-col items-center justify-center">
+      <Icon className={cn("h-6 w-6 mb-2", color)} />
+      <span className={cn("text-3xl font-bold font-mono", color)}>{value}</span>
+      <span className="text-xs text-slate-400 text-center mt-1">{label}</span>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// PANEL 2: Password Policy
+// ══════════════════════════════════════════════════════
+function PasswordPolicyPanel() {
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-5">Password Requirements</h3>
+        <div className="space-y-4">
+          <PolicyRow label="Minimum length" right={<span className="text-sm font-mono text-cyan-400">12</span>} />
+          <PolicyToggle label="Require uppercase" on />
+          <PolicyToggle label="Require lowercase" on />
+          <PolicyToggle label="Require numbers" on />
+          <PolicyToggle label="Require special characters" on />
+          <PolicyToggle label="Prevent common passwords" on />
+        </div>
+      </div>
+
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-5">Password Expiry</h3>
+        <div className="space-y-4">
+          <PolicyRow label="Password expires every" right={<span className="text-sm font-mono text-cyan-400">90 days</span>} />
+          <PolicyToggle label="Force change on next login" on={false} />
+          <PolicyRow label="Remember last N passwords" right={<span className="text-sm font-mono text-cyan-400">5</span>} />
+        </div>
+      </div>
+
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-4">Strength Indicator Preview</h3>
+        <div className="flex gap-1.5 mb-2">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="flex-1 h-2 rounded-full bg-emerald-400" />
+          ))}
+        </div>
+        <span className="text-xs text-emerald-400 font-semibold">Strong</span>
+      </div>
+
+      <Button
+        className="w-full bg-cyan-500 hover:bg-cyan-600 text-white"
+        onClick={() => toast.success("Password Policy updated successfully")}
+      >
+        Save Policy
+      </Button>
+    </div>
+  );
+}
+
+function PolicyToggle({ label, on }: { label: string; on: boolean }) {
+  const [checked, setChecked] = useState(on);
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
+      <span className="text-sm text-slate-300">{label}</span>
+      <Switch checked={checked} onCheckedChange={setChecked} />
+    </div>
+  );
+}
+
+function PolicyRow({ label, right }: { label: string; right: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
+      <span className="text-sm text-slate-300">{label}</span>
+      {right}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// PANEL 3: Geo-Fencing
+// ══════════════════════════════════════════════════════
+function GeoFencingPanel() {
+  // [JWT] Replace with real geo-fencing rules from API
+  const blocked = [
+    { country: "🇨🇳 China", date: "12 Jan 2026" },
+    { country: "🇷🇺 Russia", date: "12 Jan 2026" },
+    { country: "🇰🇵 North Korea", date: "12 Jan 2026" },
+    { country: "🇵🇰 Pakistan", date: "14 Feb 2026" },
+  ];
+
+  const allowed = [
+    { country: "🇮🇳 India", note: "Fully allowed", primary: true },
+    { country: "🇦🇪 UAE", note: "Allowed" },
+    { country: "🇸🇬 Singapore", note: "Allowed" },
+    { country: "🇬🇧 UK", note: "Allowed" },
+  ];
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-white">Active Rules</h3>
+          <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10">
+            <Plus className="h-3 w-3 mr-1" /> Add Rule
+          </Button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-700 text-xs text-slate-400">
+                <th className="text-left py-2 font-medium">Country</th>
+                <th className="text-left py-2 font-medium">Action</th>
+                <th className="text-left py-2 font-medium">Status</th>
+                <th className="text-left py-2 font-medium">Added</th>
+                <th className="text-right py-2 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {blocked.map(r => (
+                <tr key={r.country} className="border-b border-slate-700/50">
+                  <td className="py-3 text-white">{r.country}</td>
+                  <td><span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-900/40 text-red-400">Block</span></td>
+                  <td><span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/40 text-emerald-400">Active</span></td>
+                  <td className="text-xs text-slate-400 font-mono">{r.date}</td>
+                  <td className="text-right">
+                    <button onClick={() => toast("Rule removed")} className="text-slate-500 hover:text-red-400 transition-colors">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-4">Allowed Regions</h3>
+        <div className="space-y-2">
+          {allowed.map(r => (
+            <div key={r.country} className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
+              <span className="text-sm text-white">{r.country}</span>
+              <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full",
+                r.primary ? "bg-cyan-900/60 text-cyan-400" : "bg-emerald-900/40 text-emerald-400"
+              )}>{r.note}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 mt-4">
+          <Input placeholder="Add country..." className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+          <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white h-8"><Plus className="h-3 w-3" /></Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// PANEL 4: MFA Settings
+// ══════════════════════════════════════════════════════
+function MFASettingsPanel() {
+  const [mfaEnabled, setMfaEnabled] = useState(true);
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      {/* Enforcement toggle */}
+      <div className={cn("rounded-xl border p-5 flex items-center justify-between",
+        mfaEnabled ? "bg-emerald-900/20 border-emerald-700/40" : "bg-[#1E3A5F] border-slate-700"
+      )}>
+        <div>
+          <h3 className="text-sm font-semibold text-white">MFA Enforcement</h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {mfaEnabled ? "Multi-Factor Authentication is required for all users" : "MFA is currently disabled"}
+          </p>
+          <p className="text-[10px] text-slate-500 mt-1">Users must verify their identity with a second factor at login</p>
+        </div>
+        <Switch checked={mfaEnabled} onCheckedChange={setMfaEnabled} />
+      </div>
+
+      {/* Methods */}
+      <div>
+        <h3 className="text-sm font-semibold text-slate-300 mb-3">Allowed MFA Methods</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <MFAMethodCard name="TOTP" desc="Google Authenticator, Authy etc." checked recommended />
+          <MFAMethodCard name="SMS OTP" desc="One-time password via SMS" checked />
+          <MFAMethodCard name="Email OTP" desc="OTP sent to registered email" checked={false} />
+        </div>
+      </div>
+
+      {/* Trusted Device */}
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-4">Trusted Device Duration</h3>
+        <PolicyRow label="Remember device for" right={<span className="text-sm font-mono text-cyan-400">7 days</span>} />
+        <PolicyRow label="Max trusted devices per user" right={<span className="text-sm font-mono text-cyan-400">3</span>} />
+      </div>
+
+      {/* Enrollment status */}
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-3">Enforcement Status</h3>
+        <p className="text-sm text-slate-300">
+          <span className="font-mono text-emerald-400 font-bold">187</span> users enrolled · <span className="font-mono text-emerald-400">0</span> pending
+        </p>
+        <div className="w-full h-2 rounded-full bg-slate-700 mt-3 overflow-hidden">
+          <div className="h-full rounded-full bg-emerald-400" style={{ width: "100%" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MFAMethodCard({ name, desc, checked, recommended }: {
+  name: string; desc: string; checked: boolean; recommended?: boolean;
+}) {
+  return (
+    <div className={cn("rounded-xl border p-4",
+      checked ? "bg-[#1E3A5F] border-slate-700" : "bg-slate-800/40 border-slate-700/50 opacity-60"
+    )}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-semibold text-white">{name}</span>
+        {recommended && <span className="text-[10px] bg-cyan-900/60 text-cyan-400 px-2 py-0.5 rounded-full">Recommended</span>}
+      </div>
+      <p className="text-xs text-slate-400">{desc}</p>
+      <div className="mt-3 flex items-center gap-2">
+        <div className={cn("w-4 h-4 rounded border-2 flex items-center justify-center",
+          checked ? "border-emerald-400 bg-emerald-400" : "border-slate-600"
+        )}>
+          {checked && <span className="text-[10px] text-white">✓</span>}
+        </div>
+        <span className="text-xs text-slate-400">{checked ? "Enabled" : "Disabled"}</span>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// PANEL 5: IP Whitelist
+// ══════════════════════════════════════════════════════
+function IPWhitelistPanel() {
+  const [enabled, setEnabled] = useState(true);
+
+  // [JWT] Replace with real IP whitelist data from API
+  const ips = [
+    { ip: "103.24.108.0/24", label: "Mumbai Office", addedBy: "superadmin", date: "01 Jan 2026" },
+    { ip: "49.36.0.0/16", label: "Hyderabad DC", addedBy: "superadmin", date: "01 Jan 2026" },
+    { ip: "202.88.128.0/20", label: "Delhi HQ", addedBy: "admin@4d", date: "15 Feb 2026" },
+    { ip: "127.0.0.1", label: "Localhost Dev", addedBy: "system", date: "01 Jan 2026" },
+  ];
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      <div className={cn("rounded-xl border p-5 flex items-center justify-between",
+        enabled ? "bg-emerald-900/20 border-emerald-700/40" : "bg-[#1E3A5F] border-slate-700"
+      )}>
+        <div>
+          <h3 className="text-sm font-semibold text-white">IP Whitelist Enabled</h3>
+          <p className="text-xs text-slate-400 mt-0.5">Only requests from listed IP addresses will be permitted.</p>
+        </div>
+        <Switch checked={enabled} onCheckedChange={setEnabled} />
+      </div>
+
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6">
+        <h3 className="text-sm font-semibold text-white mb-4">Whitelisted IPs</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-700 text-xs text-slate-400">
+                <th className="text-left py-2 font-medium">IP Address</th>
+                <th className="text-left py-2 font-medium">Label</th>
+                <th className="text-left py-2 font-medium">Added By</th>
+                <th className="text-left py-2 font-medium">Added On</th>
+                <th className="text-right py-2 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ips.map(r => (
+                <tr key={r.ip} className="border-b border-slate-700/50">
+                  <td className="py-3 font-mono text-xs text-cyan-400">{r.ip}</td>
+                  <td className="py-3 text-sm text-white">{r.label}</td>
+                  <td className="py-3 text-xs text-slate-400 font-mono">{r.addedBy}</td>
+                  <td className="py-3 text-xs text-slate-400 font-mono">{r.date}</td>
+                  <td className="py-3 text-right">
+                    <button onClick={() => toast("IP removed")} className="text-slate-500 hover:text-red-400">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex gap-2 mt-4">
+          <Input placeholder="e.g. 192.168.1.0/24" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white font-mono placeholder:text-slate-500" />
+          <Input placeholder="e.g. Office Network" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+          <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white h-8">Add</Button>
+        </div>
+      </div>
+
+      <div className="bg-amber-900/20 border border-amber-700/40 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <span className="text-sm font-semibold text-amber-400">3 blocked requests from unlisted IPs</span>
+          <p className="text-xs text-slate-400 mt-0.5">Violations in last 24 hours</p>
+        </div>
+        <button className="text-xs text-cyan-400 hover:underline" onClick={() => toast("Opening violation log...")}>View Log</button>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// PANEL 6: Audit Log
+// ══════════════════════════════════════════════════════
+function AuditLogPanel() {
+  // [JWT] Replace with real audit data — CERT-In compliant, read-only
+  const logs = [
+    { id: "AUD-4821", time: "04 Apr 2026, 14:32 IST", actor: "superadmin", action: "MFA Enabled", target: "admin@acmeindia.in", category: "Security", severity: "info" },
+    { id: "AUD-4820", time: "04 Apr 2026, 14:14 IST", actor: "superadmin", action: "Tenant Provisioned", target: "Bharat Traders Pvt Ltd", category: "Tenant", severity: "info" },
+    { id: "AUD-4819", time: "04 Apr 2026, 13:31 IST", actor: "admin@4d", action: "User Invited", target: "priya.sharma@acmeindia.in", category: "User", severity: "info" },
+    { id: "AUD-4818", time: "04 Apr 2026, 13:00 IST", actor: "system", action: "IP Whitelist Updated", target: "3 IPs added", category: "Security", severity: "warning" },
+    { id: "AUD-4817", time: "04 Apr 2026, 12:00 IST", actor: "system", action: "Failed Login Blocked", target: "unknown@hacker.xyz", category: "Security", severity: "critical" },
+    { id: "AUD-4816", time: "04 Apr 2026, 10:45 IST", actor: "superadmin", action: "Billing Invoice Generated", target: "INV-2026-047 — ₹18,500", category: "Billing", severity: "info" },
+    { id: "AUD-4815", time: "04 Apr 2026, 08:12 IST", actor: "system", action: "Bridge Agent Deployed", target: "v2.4.1 — all agents", category: "System", severity: "info" },
+    { id: "AUD-4814", time: "03 Apr 2026, 22:30 IST", actor: "superadmin", action: "Audit Log Exported", target: "2,847 events", category: "Audit", severity: "info" },
+  ];
+
+  const sevColor: Record<string, string> = {
+    info: "bg-emerald-900/40 text-emerald-400",
+    warning: "bg-amber-900/40 text-amber-400",
+    critical: "bg-red-900/40 text-red-400",
+  };
+
+  const catColor: Record<string, string> = {
+    Security: "text-red-400",
+    Tenant: "text-cyan-400",
+    User: "text-purple-400",
+    Billing: "text-amber-400",
+    System: "text-emerald-400",
+    Audit: "text-slate-400",
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* CERT-In banner */}
+      <div className="bg-amber-900/20 border border-amber-700/40 rounded-xl p-3 flex items-center gap-2">
+        <Shield className="h-4 w-4 text-amber-400 shrink-0" />
+        <span className="text-xs text-amber-400">CERT-In Compliant — 7-year retention · Read-only · No edit or delete permitted</span>
+      </div>
+
+      <div className="flex gap-2 mb-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+          <Input placeholder="Search audit logs..." className="pl-8 h-9 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+        </div>
+        <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 h-9">
+          <Download className="h-3 w-3 mr-1" /> Export
+        </Button>
+      </div>
+
+      <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-700 text-xs text-slate-400">
+              <th className="text-left p-3 font-medium">Log ID</th>
+              <th className="text-left p-3 font-medium">Timestamp</th>
+              <th className="text-left p-3 font-medium">Actor</th>
+              <th className="text-left p-3 font-medium">Action</th>
+              <th className="text-left p-3 font-medium">Target</th>
+              <th className="text-left p-3 font-medium">Category</th>
+              <th className="text-left p-3 font-medium">Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map(log => (
+              <tr key={log.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                <td className="p-3 font-mono text-xs text-cyan-400">{log.id}</td>
+                <td className="p-3 font-mono text-[11px] text-slate-400">{log.time}</td>
+                <td className="p-3 text-xs text-slate-300 font-mono">{log.actor}</td>
+                <td className="p-3 text-xs text-white font-medium">{log.action}</td>
+                <td className="p-3 text-xs text-slate-400 truncate max-w-[180px]">{log.target}</td>
+                <td className="p-3"><span className={cn("text-[10px] font-bold uppercase", catColor[log.category])}>{log.category}</span></td>
+                <td className="p-3"><span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", sevColor[log.severity])}>{log.severity}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
