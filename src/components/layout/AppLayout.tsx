@@ -55,10 +55,11 @@ export function AppLayout({ children, title, breadcrumbs = [] }: AppLayoutProps)
               </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="ml-auto flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <Bell className="h-4 w-4" />
-              </Button>
+            <div className="flex items-center gap-4">
+              <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
+              </button>
               <ThemeToggle />
               <UserProfileDropdown variant="app" />
             </div>
