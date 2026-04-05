@@ -1,8 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
+function DishaniGate() {
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/auth")) return null;
+  return (
+    <>
+      <DishaniFloatingButton />
+      <DishaniPanel />
+    </>
+  );
+}
 
 import Login from "./pages/auth/Login";
 import Welcome from "./pages/Welcome";
@@ -116,8 +127,7 @@ const App = () => (
             <Route path="/my/dashboard" element={<CustomerDashboard />} />
             <Route path="*" element={<Navigate to="/auth/login" replace />} />
           </Routes>
-          <DishaniFloatingButton />
-          <DishaniPanel />
+          <DishaniGate />
         </BrowserRouter>
       </DishaniProvider>
     </TooltipProvider>
