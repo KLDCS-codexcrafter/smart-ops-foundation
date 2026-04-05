@@ -55,7 +55,7 @@ function AppCard({ app }: { app: AppDefinition }) {
   const categoryColor = CATEGORY_COLORS[app.category] ?? "";
 
   function handleClick() {
-    if (app.status) return;
+    if (app.status === 'coming_soon') return;
     navigate(app.route);
   }
 
