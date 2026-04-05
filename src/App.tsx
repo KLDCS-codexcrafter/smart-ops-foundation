@@ -35,6 +35,8 @@ import ExportHub from "./pages/bridge/ExportHub";
 import AuditExplorer from "./pages/bridge/AuditExplorer";
 import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
+import CommandCenterWelcome from "./features/command-center/pages/CommandCenterWelcome";
+import CommandCenterPage from "./features/command-center/pages/CommandCenterPage";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
