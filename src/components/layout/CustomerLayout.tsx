@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, Building2, Bell, LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme";
 import {
   Tooltip, TooltipContent, TooltipTrigger,
 } from "@/components/ui/tooltip";
@@ -152,6 +153,7 @@ export function CustomerLayout({ children, title, subtitle }: CustomerLayoutProp
               <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
                 <Bell className="h-4 w-4 text-muted-foreground" />
               </button>
+              <ThemeToggle />
               <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">
                 {CUSTOMER.initials}
               </div>
