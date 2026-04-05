@@ -68,10 +68,10 @@ const panelCards = [
     highlight: false,
   },
   {
-    title: "ERP Application",
+    title: "Operix Udyam Kendra Prism Nexus",
     icon: BarChart3,
     route: "/erp/dashboard",
-    description: "Sales, Purchase, Finance, Inventory & HR",
+    description: "Business Operations Hub — Full ERP · Modules · Small Projects",
     highlight: false,
   },
   {
