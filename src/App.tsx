@@ -134,6 +134,7 @@ const App = () => (
         </BrowserRouter>
       </DishaniProvider>
     </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
