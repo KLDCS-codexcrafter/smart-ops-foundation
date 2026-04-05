@@ -111,6 +111,7 @@ export function DishaniProvider({ children }: { children: ReactNode }) {
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
 
+    try {
       // [AI-BACKEND] Direct Anthropic call with browser access enabled.
       // Replace with Lovable Cloud edge function for production.
       const history = [...messages, userMsg].map(m => ({
