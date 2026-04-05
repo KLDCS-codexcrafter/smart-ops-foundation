@@ -115,10 +115,7 @@ export function DishaniProvider({ children }: { children: ReactNode }) {
       // Simulated delay to mimic network latency
       await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 600));
 
-      const text = generateMockResponse(userMsg.content, currentPage);
-
-      const data = await response.json();
-      const text = data.content?.[0]?.text ?? "I could not process that. Please try again.";
+      const text = getMockResponse(userMsg.content);
 
       setMessages(prev => [...prev, {
         id: crypto.randomUUID(),
