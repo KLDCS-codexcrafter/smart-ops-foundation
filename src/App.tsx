@@ -35,6 +35,8 @@ import ExportHub from "./pages/bridge/ExportHub";
 import AuditExplorer from "./pages/bridge/AuditExplorer";
 import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
+import CommandCenterWelcome from "./features/command-center/pages/CommandCenterWelcome";
+import CommandCenterPage from "./features/command-center/pages/CommandCenterPage";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -113,6 +115,8 @@ const App = () => (
             <Route path="/bridge/export" element={<ExportHub />} />
             <Route path="/bridge/audit" element={<AuditExplorer />} />
             <Route path="/bridge/settings" element={<BridgeSettings />} />
+            <Route path="/erp/command-center" element={<CommandCenterWelcome />} />
+            <Route path="/erp/command-center/hub" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
             <Route path="/partner" element={<PartnerDashboard />} />
