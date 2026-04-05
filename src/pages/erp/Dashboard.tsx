@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
 import {
   applications,
   ALL_CATEGORIES,
@@ -22,7 +23,7 @@ import {
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
-  DoorOpen, Factory, ClipboardList, TrendingUp,
+  DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Users, Building2, Headphones, BarChart3,
 };
 
@@ -161,7 +162,10 @@ export default function ErpDashboard() {
             </Button>
           </div>
         </div>
-        <UserProfileDropdown variant="dashboard" />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <UserProfileDropdown variant="dashboard" />
+        </div>
       </header>
 
       {/* Main Content */}
