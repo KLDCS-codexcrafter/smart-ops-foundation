@@ -1,3 +1,2 @@
-export { DishaniProvider, useDishani } from './DishaniContext';
-export { DishaniFloatingButton } from './DishaniFloatingButton';
-export { DishaniPanel } from './DishaniPanel';
+export { applications, CATEGORY_COLORS, ALL_CATEGORIES } from './applications';
+export type { AppDefinition, AppCategory, AppStatus } from './applications';
