@@ -1,92 +1,94 @@
-import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
-import {
-  Settings, Shield, Users, Database, Building2,
-  Calendar, Hash, Globe, Key, Smartphone,
-  FileText, AlertTriangle,
-} from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-/* ── Foundation & Core items ───────────────────────────────────────── */
-const foundationItems = [
-  { icon: Building2, label: "Organisation Structure", desc: "Company, branches, departments and cost centres" },
-  { icon: Calendar, label: "Fiscal Year & Periods", desc: "Financial year setup, period locking" },
-  { icon: Hash, label: "Numbering Series", desc: "Auto-numbering for PO, SO, invoices and more" },
-  { icon: Globe, label: "Currency & Exchange Rates", desc: "Multi-currency support and rate management" },
-  { icon: Database, label: "Unit of Measure", desc: "UoM definitions, conversions and groups" },
-  { icon: FileText, label: "Document Templates", desc: "Print layouts, email templates, PDF formats" },
-];
+export type CommandCenterModule = "overview" | "core" | "console";
 
-/* ── Security Console items ────────────────────────────────────────── */
-const securityItems = [
-  { icon: Key, label: "Roles & Permissions", desc: "Role definitions, module-level access" },
-  { icon: Users, label: "User Management", desc: "Invite, deactivate, reset passwords" },
-  { icon: Smartphone, label: "MFA Settings", desc: "Two-factor authentication policies" },
-  { icon: Globe, label: "IP Whitelisting", desc: "Restrict access by IP range or geo-fence" },
-  { icon: AlertTriangle, label: "Audit & Compliance", desc: "Audit trail, data retention policies" },
-  { icon: Shield, label: "Session Policies", desc: "Timeout, concurrent sessions, device trust" },
-];
-
-function ConfigGrid({ items }: { items: typeof foundationItems }) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className="rounded-xl border border-border bg-card hover:border-primary/40 p-4 transition-all cursor-pointer group"
-        >
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-muted shrink-0">
-              <item.icon className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <span className="text-sm font-semibold text-foreground block group-hover:text-primary transition-colors">
-                {item.label}
-              </span>
-              <span className="text-xs text-muted-foreground">{item.desc}</span>
-              <Badge variant="outline" className="mt-2 text-[10px] border-amber-500/40 text-amber-500">
-                Coming Soon
-              </Badge>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+const SEEN_KEY = "operix-welcome-seen-command-center";
 
 export default function CommandCenterPage() {
-  const [tab, setTab] = useState("foundation");
+  const navigate = useNavigate();
+
+  const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash === "core" || hash === "console") return hash;
+    return "overview";
+  });
+
+  // Sync URL hash with active module
+  useEffect(() => {
+    const hash = activeModule === "overview" ? "" : `#${activeModule}`;
+    const url = window.location.pathname + hash;
+    window.history.replaceState(null, "", url);
+  }, [activeModule]);
+
+  // Home button handler — clears skip flag and returns to welcome
+  function handleHome() {
+    localStorage.removeItem(SEEN_KEY);
+    navigate("/erp/command-center");
+  }
 
   return (
-    <AppLayout
-      title="Command Center Hub"
-      breadcrumbs={[
-        { label: "ERP", href: "/erp" },
-        { label: "Command Center", href: "/erp/command-center" },
-        { label: "Hub" },
-      ]}
-    >
-      <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-4">
-        <TabsList className="w-fit">
-          <TabsTrigger value="foundation" className="gap-1.5">
-            <Settings className="h-3.5 w-3.5" /> Foundation & Core
-          </TabsTrigger>
-          <TabsTrigger value="security" className="gap-1.5">
-            <Shield className="h-3.5 w-3.5" /> Security Console
-          </TabsTrigger>
-        </TabsList>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
 
-        <TabsContent value="foundation">
-          <ConfigGrid items={foundationItems} />
-        </TabsContent>
+        {/* SIDEBAR — placeholder until Prompt 2 */}
+        <aside className="w-60 border-r border-border bg-card hidden md:block">
+          <div className="p-4 text-sm text-muted-foreground">
+            Sidebar — Prompt 2
+          </div>
+        </aside>
 
-        <TabsContent value="security">
-          <ConfigGrid items={securityItems} />
-        </TabsContent>
-      </Tabs>
-    </AppLayout>
+        {/* MAIN AREA */}
+        <SidebarInset className="flex-1 flex flex-col min-w-0">
+          {/* HEADER — placeholder until Prompt 2 */}
+          <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border/50 h-14 flex items-center px-4 sm:px-6">
+            <span className="text-sm text-muted-foreground">Command Center Header — Prompt 2</span>
+          </header>
+
+          {/* CONTENT */}
+          <ScrollArea className="flex-1">
+            <main className="p-6">
+
+              {/* Module tab switcher — temporary visual */}
+              <div className="flex gap-2 mb-6">
+                {(["overview", "core", "console"] as CommandCenterModule[]).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setActiveModule(m)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      activeModule === m
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {m === "overview" ? "Overview" : m === "core" ? "Foundation & Core" : "Security Console"}
+                  </button>
+                ))}
+              </div>
+
+              {/* Module placeholders until Prompt 2 and 3 */}
+              {activeModule === "overview" && (
+                <div className="rounded-xl border border-border bg-card/60 p-8 text-center">
+                  <p className="text-sm text-muted-foreground">Overview Module — built in Prompt 2</p>
+                </div>
+              )}
+              {activeModule === "core" && (
+                <div className="rounded-xl border border-border bg-card/60 p-8 text-center">
+                  <p className="text-sm text-muted-foreground">Foundation &amp; Core — built in Prompt 3</p>
+                </div>
+              )}
+              {activeModule === "console" && (
+                <div className="rounded-xl border border-border bg-card/60 p-8 text-center">
+                  <p className="text-sm text-muted-foreground">Security Console — built in Prompt 3</p>
+                </div>
+              )}
+
+            </main>
+          </ScrollArea>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
