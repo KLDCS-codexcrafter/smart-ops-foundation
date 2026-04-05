@@ -50,7 +50,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/command-center',
     icon: 'LayoutDashboard',
-    status: 'coming_soon',
+    status: 'wip',
   },
   {
     id: 'procure360',
