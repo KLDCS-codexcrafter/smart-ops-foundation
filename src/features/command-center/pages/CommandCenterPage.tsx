@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CommandCenterSidebar } from "../components/CommandCenterSidebar";
 import { CommandCenterHeader } from "../components/CommandCenterHeader";
 import { OverviewModule } from "../modules/OverviewModule";
+import { FoundationModule } from "../modules/FoundationModule";
+import { SecurityModule } from "../modules/SecurityModule";
 
 export type CommandCenterModule = "overview" | "core" | "console";
 
@@ -54,16 +56,8 @@ export default function CommandCenterPage() {
               {activeModule === "overview" && (
                 <OverviewModule onNavigate={handleNavigate} />
               )}
-              {activeModule === "core" && (
-                <div className="glass-card rounded-2xl p-8 border border-border text-center">
-                  <p className="text-muted-foreground text-sm">Foundation & Core — built in Prompt 3</p>
-                </div>
-              )}
-              {activeModule === "console" && (
-                <div className="glass-card rounded-2xl p-8 border border-border text-center">
-                  <p className="text-muted-foreground text-sm">Security Console — built in Prompt 3</p>
-                </div>
-              )}
+              {activeModule === "core" && <FoundationModule />}
+              {activeModule === "console" && <SecurityModule />}
             </div>
           </ScrollArea>
         </SidebarInset>
