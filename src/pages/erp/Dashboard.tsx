@@ -22,7 +22,7 @@ import {
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
-  DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
+  DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Users, Building2, Headphones, BarChart3,
 };
 
