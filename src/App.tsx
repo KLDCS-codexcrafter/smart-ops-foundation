@@ -60,8 +60,8 @@ import Themes from "./pages/tower/Themes";
 const queryClient = new QueryClient();
 
 const App = () => (
+  <ThemeProvider>
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
     <TooltipProvider>
       <DishaniProvider>
         <Sonner />
@@ -134,8 +134,8 @@ const App = () => (
         </BrowserRouter>
       </DishaniProvider>
     </TooltipProvider>
-    </ThemeProvider>
   </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;
