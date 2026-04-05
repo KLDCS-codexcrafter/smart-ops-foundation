@@ -50,11 +50,11 @@ function getUserName(): string {
 function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
   const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
-  const isLive = !app.status;
+  const isClickable = !app.status || app.status === "wip";
   const categoryColor = CATEGORY_COLORS[app.category] ?? "";
 
   function handleClick() {
-    if (app.status) return;
+    if (app.status === "coming_soon") return;
     navigate(app.route);
   }
 
@@ -64,7 +64,7 @@ function AppCard({ app }: { app: AppDefinition }) {
       className={[
         "group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-300",
         "bg-card/60 backdrop-blur-xl border border-border",
-        isLive
+        isClickable
           ? "hover:scale-[1.02] hover:border-accent/50 cursor-pointer"
           : "opacity-60 cursor-default",
       ].join(" ")}
