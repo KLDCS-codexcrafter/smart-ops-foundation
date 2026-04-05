@@ -65,11 +65,9 @@ function AppCard({ app }: { app: AppDefinition }) {
       className={[
         "group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-300",
         "bg-card/60 backdrop-blur-xl border border-border",
-        isLive
-          ? "hover:scale-[1.02] hover:border-accent/50 cursor-pointer"
-          : app.status === "coming_soon"
-            ? "opacity-60 cursor-default"
-            : "cursor-default",
+        app.status === "coming_soon"
+          ? "opacity-60 cursor-default"
+          : "hover:scale-[1.02] hover:border-primary/40 cursor-pointer",
       ].join(" ")}
     >
       {app.status === "coming_soon" && (
