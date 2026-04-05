@@ -112,22 +112,35 @@ export function DishaniProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // [AI-BACKEND] Replace with Lovable Cloud edge function when backend is enabled.
-      // Target: POST ${SUPABASE_URL}/functions/v1/dishani-chat
-      // Headers: { "Content-Type": "application/json", "Authorization": "Bearer <anon-key>" }
-      // Body: { messages: history, currentPage }
-      //
-      // For now, simulate a response client-side.
-
+      // [AI-BACKEND] Direct Anthropic call with browser access enabled.
+      // Replace with Lovable Cloud edge function for production.
       const history = [...messages, userMsg].map(m => ({
         role: m.role,
         content: m.content,
       }));
 
-      // Simulated delay to mimic network latency
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 600));
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY ?? "",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT + `\n\nCURRENT CONTEXT: User is on the ${currentPage} page of Operix.`,
+          messages: history,
+        }),
+      });
 
-      const text = getMockResponse(userMsg.content);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const text = data.content?.[0]?.text ?? getMockResponse(userMsg.content);
 
       setMessages(prev => [...prev, {
         id: crypto.randomUUID(),
