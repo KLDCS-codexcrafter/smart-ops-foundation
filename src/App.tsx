@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import Login from "./pages/auth/Login";
@@ -48,73 +49,77 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/auth/login" replace />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/prudent360" element={
-            <div className="min-h-screen bg-background flex items-center justify-center">
-              <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
-            </div>
-          } />
-          <Route path="/profile" element={
-            <div className="min-h-screen bg-background flex items-center justify-center">
-              <p className="text-muted-foreground text-sm">Profile — coming soon</p>
-            </div>
-          } />
-          <Route path="/settings" element={
-            <div className="min-h-screen bg-background flex items-center justify-center">
-              <p className="text-muted-foreground text-sm">Settings — coming soon</p>
-            </div>
-          } />
-          <Route path="/tower" element={<TowerDashboard />} />
-          <Route path="/tower/dashboard" element={<TowerDashboard />} />
-          <Route path="/tower/tenants" element={<Tenants />} />
-          <Route path="/tower/users" element={<Users />} />
-          <Route path="/tower/permissions" element={<Permissions />} />
-          <Route path="/tower/billing" element={<Billing />} />
-          <Route path="/tower/security" element={<Security />} />
-          <Route path="/tower/notifications" element={<Notifications />} />
-          <Route path="/tower/audit-logs" element={<AuditLogs />} />
-          <Route path="/tower/settings" element={<TowerSettings />} />
-          <Route path="/tower/support" element={<Support />} />
-          <Route path="/tower/integrations" element={<Integrations />} />
-          <Route path="/tower/ai-insights" element={<AIInsights />} />
-          <Route path="/tower/themes" element={<Themes />} />
-          <Route path="/bridge" element={<ConsoleDashboard />} />
-          <Route path="/bridge/dashboard" element={<ConsoleDashboard />} />
-          <Route path="/bridge/sync-monitor" element={<SyncMonitor />} />
-          <Route path="/bridge/approvals" element={<ApprovalInbox />} />
-          <Route path="/bridge/exceptions" element={<ExceptionWorkbench />} />
-          <Route path="/bridge/reconciliation" element={<ReconciliationWorkbench />} />
-          <Route path="/bridge/agents" element={<AgentFleet />} />
-          <Route path="/bridge/companies" element={<CompanyRegistry />} />
-          <Route path="/bridge/sync-profiles" element={<SyncProfiles />} />
-          <Route path="/bridge/field-mapper" element={<FieldMapper />} />
-          <Route path="/bridge/import" element={<ImportHub />} />
-          <Route path="/bridge/export" element={<ExportHub />} />
-          <Route path="/bridge/audit" element={<AuditExplorer />} />
-          <Route path="/bridge/settings" element={<BridgeSettings />} />
-          <Route path="/erp" element={<ErpDashboard />} />
-          <Route path="/erp/dashboard" element={<ErpDashboard />} />
-          <Route path="/partner" element={<PartnerDashboard />} />
-          <Route path="/partner/dashboard" element={<PartnerDashboard />} />
-          <Route path="/customer" element={<CustomerDashboard />} />
-          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-          <Route path="/customer/invoices" element={<Invoices />} />
-          <Route path="/customer/payments" element={<Payments />} />
-          <Route path="/customer/statement" element={<Statement />} />
-          <Route path="/customer/orders" element={<Orders />} />
-          <Route path="/customer/documents" element={<Documents />} />
-          <Route path="/customer/support" element={<CustomerSupport />} />
-          <Route path="/customer/profile" element={<CustomerProfile />} />
-          <Route path="/my" element={<CustomerDashboard />} />
-          <Route path="/my/dashboard" element={<CustomerDashboard />} />
-          <Route path="*" element={<Navigate to="/auth/login" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <DishaniProvider>
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/auth/login" replace />} />
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/prudent360" element={
+              <div className="min-h-screen bg-background flex items-center justify-center">
+                <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
+              </div>
+            } />
+            <Route path="/profile" element={
+              <div className="min-h-screen bg-background flex items-center justify-center">
+                <p className="text-muted-foreground text-sm">Profile — coming soon</p>
+              </div>
+            } />
+            <Route path="/settings" element={
+              <div className="min-h-screen bg-background flex items-center justify-center">
+                <p className="text-muted-foreground text-sm">Settings — coming soon</p>
+              </div>
+            } />
+            <Route path="/tower" element={<TowerDashboard />} />
+            <Route path="/tower/dashboard" element={<TowerDashboard />} />
+            <Route path="/tower/tenants" element={<Tenants />} />
+            <Route path="/tower/users" element={<Users />} />
+            <Route path="/tower/permissions" element={<Permissions />} />
+            <Route path="/tower/billing" element={<Billing />} />
+            <Route path="/tower/security" element={<Security />} />
+            <Route path="/tower/notifications" element={<Notifications />} />
+            <Route path="/tower/audit-logs" element={<AuditLogs />} />
+            <Route path="/tower/settings" element={<TowerSettings />} />
+            <Route path="/tower/support" element={<Support />} />
+            <Route path="/tower/integrations" element={<Integrations />} />
+            <Route path="/tower/ai-insights" element={<AIInsights />} />
+            <Route path="/tower/themes" element={<Themes />} />
+            <Route path="/bridge" element={<ConsoleDashboard />} />
+            <Route path="/bridge/dashboard" element={<ConsoleDashboard />} />
+            <Route path="/bridge/sync-monitor" element={<SyncMonitor />} />
+            <Route path="/bridge/approvals" element={<ApprovalInbox />} />
+            <Route path="/bridge/exceptions" element={<ExceptionWorkbench />} />
+            <Route path="/bridge/reconciliation" element={<ReconciliationWorkbench />} />
+            <Route path="/bridge/agents" element={<AgentFleet />} />
+            <Route path="/bridge/companies" element={<CompanyRegistry />} />
+            <Route path="/bridge/sync-profiles" element={<SyncProfiles />} />
+            <Route path="/bridge/field-mapper" element={<FieldMapper />} />
+            <Route path="/bridge/import" element={<ImportHub />} />
+            <Route path="/bridge/export" element={<ExportHub />} />
+            <Route path="/bridge/audit" element={<AuditExplorer />} />
+            <Route path="/bridge/settings" element={<BridgeSettings />} />
+            <Route path="/erp" element={<ErpDashboard />} />
+            <Route path="/erp/dashboard" element={<ErpDashboard />} />
+            <Route path="/partner" element={<PartnerDashboard />} />
+            <Route path="/partner/dashboard" element={<PartnerDashboard />} />
+            <Route path="/customer" element={<CustomerDashboard />} />
+            <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+            <Route path="/customer/invoices" element={<Invoices />} />
+            <Route path="/customer/payments" element={<Payments />} />
+            <Route path="/customer/statement" element={<Statement />} />
+            <Route path="/customer/orders" element={<Orders />} />
+            <Route path="/customer/documents" element={<Documents />} />
+            <Route path="/customer/support" element={<CustomerSupport />} />
+            <Route path="/customer/profile" element={<CustomerProfile />} />
+            <Route path="/my" element={<CustomerDashboard />} />
+            <Route path="/my/dashboard" element={<CustomerDashboard />} />
+            <Route path="*" element={<Navigate to="/auth/login" replace />} />
+          </Routes>
+          <DishaniFloatingButton />
+          <DishaniPanel />
+        </BrowserRouter>
+      </DishaniProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
