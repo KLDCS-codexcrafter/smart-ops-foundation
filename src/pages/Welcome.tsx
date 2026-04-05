@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
 
 // ── Greeting helper ──
 function getGreeting() {
@@ -184,7 +185,10 @@ export default function Welcome() {
             </Button>
           </div>
         </div>
-        <UserProfileDropdown variant="dashboard" />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <UserProfileDropdown variant="dashboard" />
+        </div>
       </header>
 
       {/* ── Main Content ── */}

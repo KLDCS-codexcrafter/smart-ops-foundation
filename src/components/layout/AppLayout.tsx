@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -55,6 +56,7 @@ export function AppLayout({ children, title, breadcrumbs = [] }: AppLayoutProps)
             </Breadcrumb>
 
             <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle />
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <Bell className="h-4 w-4" />
               </Button>
