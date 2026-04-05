@@ -1,26 +1,230 @@
-import { AppLayout } from "@/components/layout/AppLayout";
+import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Cpu, ArrowLeft, Home, Search, Clock, Wrench,
+  LayoutDashboard, ShoppingCart, Package, CheckSquare,
+  DoorOpen, Factory, ClipboardList, TrendingUp,
+  Landmark, Users, Building2, Headphones, BarChart3,
+  type LucideIcon,
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import {
+  applications,
+  ALL_CATEGORIES,
+  CATEGORY_COLORS,
+  type AppCategory,
+  type AppDefinition,
+} from "@/components/operix-core/applications";
 
-export default function ErpDashboard() {
+// ── Icon lookup map ──────────────────────────────────────────────────────────
+const ICON_MAP: Record<string, LucideIcon> = {
+  LayoutDashboard, ShoppingCart, Package, CheckSquare,
+  DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
+  Landmark, Users, Building2, Headphones, BarChart3,
+};
+
+// ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour <= 11) return { text: "Good Morning", emoji: "🌅" };
+  if (hour >= 12 && hour <= 16) return { text: "Good Afternoon", emoji: "☀️" };
+  if (hour >= 17 && hour <= 20) return { text: "Good Evening", emoji: "🌆" };
+  return { text: "Working Late", emoji: "🌙" };
+}
+
+function getUserName(): string {
+  try {
+    const raw = localStorage.getItem("4ds_login_credential");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed.value ?? "there";
+    }
+  } catch { /* ignore */ }
+  return "there";
+}
+
+// ── App Card ─────────────────────────────────────────────────────────────────
+function AppCard({ app }: { app: AppDefinition }) {
+  const navigate = useNavigate();
+  const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
+  const isLive = !app.status;
+  const categoryColor = CATEGORY_COLORS[app.category] ?? "";
+
+  function handleClick() {
+    if (app.status) return;
+    navigate(app.route);
+  }
+
   return (
-    <AppLayout title="ERP Application" breadcrumbs={[{ label: "ERP Application" }]}>
-      <div className="glass-card p-8 text-center">
-        <div className="flex flex-col items-center gap-4">
-          <h2 className="text-2xl font-bold text-foreground">
-            Operix Udyam Kendra Prism Nexus
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Business Operations Hub
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Full ERP · Standalone Modules · Small Projects
-          </p>
-        </div>
-        <div className="mt-6">
-          <span className="inline-block px-3 py-1 rounded-full bg-amber-400/20 text-amber-400 text-sm font-medium border border-amber-400/30">
-            Sprint O1 — Build starting soon
-          </span>
-        </div>
+    <button
+      onClick={handleClick}
+      className={[
+        "group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-300",
+        "bg-card/60 backdrop-blur-xl border border-border",
+        isLive
+          ? "hover:scale-[1.02] hover:border-accent/50 cursor-pointer"
+          : "opacity-60 cursor-default",
+      ].join(" ")}
+    >
+      {app.status === "coming_soon" && (
+        <span className="absolute top-3 right-3 z-20 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+          <Clock className="h-3 w-3" />
+          Coming Soon
+        </span>
+      )}
+      {app.status === "wip" && (
+        <span className="absolute top-3 right-3 z-20 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-warning/20 text-warning border border-warning/30">
+          <Wrench className="h-3 w-3" />
+          In Progress
+        </span>
+      )}
+
+      <div className="w-11 h-11 rounded-xl bg-muted/50 flex items-center justify-center mb-4">
+        <IconComponent className="h-5 w-5 text-primary" />
       </div>
-    </AppLayout>
+
+      <div className="mb-2">
+        <h3 className="text-sm font-semibold text-foreground leading-tight">
+          {app.name}
+        </h3>
+        <span className={`inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColor}`}>
+          {app.category}
+        </span>
+      </div>
+
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        {app.description}
+      </p>
+    </button>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function ErpDashboard() {
+  const navigate = useNavigate();
+  const greeting = getGreeting();
+  const userName = getUserName();
+
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<"All" | AppCategory>("All");
+
+  const filtered = useMemo(() => {
+    return applications.filter((app) => {
+      const matchesCategory =
+        activeCategory === "All" || app.category === activeCategory;
+      const q = search.toLowerCase();
+      const matchesSearch =
+        !q ||
+        app.name.toLowerCase().includes(q) ||
+        app.description.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [search, activeCategory]);
+
+  return (
+    <div className="min-h-screen bg-background overflow-hidden relative">
+      {/* Background Orbs */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div
+          className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-30 animate-pulse pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(var(--orb-1) / 0.4), transparent 70%)" }}
+        />
+        <div
+          className="absolute top-1/2 -left-24 w-80 h-80 rounded-full opacity-20 animate-pulse pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(var(--orb-2) / 0.3), transparent 70%)", animationDelay: "2s" }}
+        />
+        <div
+          className="absolute -bottom-20 right-1/3 w-72 h-72 rounded-full opacity-25 animate-pulse pointer-events-none"
+          style={{ background: "radial-gradient(circle, hsl(var(--orb-3) / 0.35), transparent 70%)", animationDelay: "4s" }}
+        />
+      </div>
+
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border/50 h-14 flex items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
+            <Cpu className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="font-bold text-sm text-foreground">4DSmartOps</span>
+          <Separator orientation="vertical" className="h-5 bg-border/50" />
+          <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-0.5 gap-0.5">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate("/welcome")}>
+              <Home className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+        <UserProfileDropdown variant="dashboard" />
+      </header>
+
+      {/* Main Content */}
+      <main className="relative z-10 container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            {greeting.emoji} {greeting.text}, {userName}
+          </h1>
+          <p className="text-lg font-semibold text-primary mt-1">
+            Operix — Udyam Kendra Prism Nexus
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your business operations hub. Select a module to get started.
+          </p>
+        </div>
+
+        <div className="relative mb-6 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search modules..."
+            className="pl-10"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
+          {(["All", ...ALL_CATEGORIES] as const).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={[
+                "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors border-none outline-none",
+                activeCategory === cat
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80",
+              ].join(" ")}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-16">
+            No modules match your search.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filtered.map((app, i) => (
+              <div
+                key={app.id}
+                className="animate-fade-in"
+                style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+              >
+                <AppCard app={app} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <footer className="mt-12 py-4 border-t border-border/30 text-center text-xs text-muted-foreground">
+          © 2026 4DSmartOps · Operix · Built for Indian SMEs
+        </footer>
+      </main>
+    </div>
   );
 }
