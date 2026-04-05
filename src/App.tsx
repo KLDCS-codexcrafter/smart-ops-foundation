@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-route
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme";
 
 const ConditionalDishani = () => {
   const location = useLocation();
