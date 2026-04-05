@@ -19,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -164,11 +165,12 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
               <p className="text-xs text-muted-foreground">{subtitle}</p>
             )}
           </div>
-          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
             <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
             </button>
+            <ThemeToggle />
             <UserProfileDropdown variant="app" />
           </div>
         </header>
