@@ -56,10 +56,10 @@ export function AppLayout({ children, title, breadcrumbs = [] }: AppLayoutProps)
             </Breadcrumb>
 
             <div className="ml-auto flex items-center gap-2">
-              <ThemeToggle />
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <Bell className="h-4 w-4" />
               </Button>
+              <ThemeToggle />
               <UserProfileDropdown variant="app" />
             </div>
           </header>
