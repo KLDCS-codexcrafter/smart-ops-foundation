@@ -115,6 +115,8 @@ const App = () => (
             <Route path="/bridge/export" element={<ExportHub />} />
             <Route path="/bridge/audit" element={<AuditExplorer />} />
             <Route path="/bridge/settings" element={<BridgeSettings />} />
+            <Route path="/erp/command-center" element={<CommandCenterWelcome />} />
+            <Route path="/erp/command-center/hub" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
             <Route path="/partner" element={<PartnerDashboard />} />
