@@ -128,7 +128,7 @@ const App = () => (
             <Route path="/my/dashboard" element={<CustomerDashboard />} />
             <Route path="*" element={<Navigate to="/auth/login" replace />} />
           </Routes>
-          <DishaniGate />
+          <ConditionalDishani />
         </BrowserRouter>
       </DishaniProvider>
     </TooltipProvider>
