@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 
 type ConnMode = "json_http" | "odbc" | "file_watch";
 type CompanyStatus = "connected" | "disconnected" | "syncing" | "error";
+type DomainStatus = "done" | "in_progress" | "pending";
 
 interface TallyCompany {
   id: string;
@@ -49,7 +50,27 @@ interface TallyCompany {
   financialYear: string;
   gstin: string;
   baseCurrency: string;
+  syncMode: "FULL_SYNC" | "DELTA_SYNC";
+  baselineComplete: boolean;
+  lastCheckpoint: string;
+  domains: {
+    company: DomainStatus; ledgers: DomainStatus;
+    stock: DomainStatus; voucherHeaders: DomainStatus;
+    voucherLines: DomainStatus; tax: DomainStatus;
+    balances: DomainStatus; payroll: DomainStatus;
+  };
 }
+
+const DOMAIN_LABELS: Record<string, string> = {
+  company: "Company", ledgers: "Ledgers", stock: "Stock",
+  voucherHeaders: "Vch Headers", voucherLines: "Vch Lines",
+  tax: "GST/Tax", balances: "Balances", payroll: "Payroll",
+};
+const DOMAIN_DOT: Record<DomainStatus, string> = {
+  done: "bg-emerald-500",
+  in_progress: "bg-amber-400 animate-pulse",
+  pending: "bg-muted-foreground/30",
+};
 
 // ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
 // Replace this mock data with a real fetch scoped by JWT tier:
@@ -66,6 +87,8 @@ const COMPANIES: TallyCompany[] = [
     tallyVersion: "Tally Prime 7.0", tallyPort: 9000, odbcEnabled: true, lastSync: "03 Apr 2026, 09:10 IST",
     lastSyncStatus: "success", syncCount: 156, errorCount: 2, healthScore: 94, financialYear: "2025-26",
     gstin: "27AABCR1234M1ZX", baseCurrency: "INR",
+    syncMode: "DELTA_SYNC", baselineComplete: true, lastCheckpoint: "Sales Vouchers · up to 3 Apr 2026 · Batch 312",
+    domains: { company: "done", ledgers: "done", stock: "done", voucherHeaders: "done", voucherLines: "done", tax: "done", balances: "done", payroll: "pending" },
   },
   {
     id: "COMP-002", name: "Tata Motors Finance Ltd", tallyCompanyName: "Tata Motors Finance Limited",
@@ -73,6 +96,8 @@ const COMPANIES: TallyCompany[] = [
     tallyVersion: "Tally Prime 7.0", tallyPort: 9000, odbcEnabled: true, lastSync: "03 Apr 2026, 08:52 IST",
     lastSyncStatus: "success", syncCount: 89, errorCount: 8, healthScore: 78, financialYear: "2025-26",
     gstin: "27AAACT1234K1ZX", baseCurrency: "INR",
+    syncMode: "FULL_SYNC", baselineComplete: false, lastCheckpoint: "Voucher Headers · up to 30 Jun 2025 · Batch 89",
+    domains: { company: "done", ledgers: "done", stock: "done", voucherHeaders: "in_progress", voucherLines: "pending", tax: "pending", balances: "pending", payroll: "pending" },
   },
   {
     id: "COMP-003", name: "Infosys BPM Limited", tallyCompanyName: "Infosys BPM Ltd",
@@ -80,6 +105,8 @@ const COMPANIES: TallyCompany[] = [
     tallyVersion: "Tally Prime 6.1", tallyPort: 9000, odbcEnabled: false, lastSync: "03 Apr 2026, 07:30 IST",
     lastSyncStatus: "success", syncCount: 234, errorCount: 1, healthScore: 97, financialYear: "2025-26",
     gstin: "29AABCI1234A1ZX", baseCurrency: "INR",
+    syncMode: "DELTA_SYNC", baselineComplete: true, lastCheckpoint: "Sync paused — agent offline since 15 Mar 2026",
+    domains: { company: "done", ledgers: "done", stock: "done", voucherHeaders: "done", voucherLines: "done", tax: "done", balances: "done", payroll: "pending" },
   },
   {
     id: "COMP-004", name: "Wipro Enterprises Ltd", tallyCompanyName: "Wipro Enterprises Limited",
@@ -87,6 +114,8 @@ const COMPANIES: TallyCompany[] = [
     tallyVersion: "Tally Prime 7.0", tallyPort: 9000, odbcEnabled: true, lastSync: "02 Apr 2026, 11:45 IST",
     lastSyncStatus: "failed", syncCount: 45, errorCount: 12, healthScore: 62, financialYear: "2025-26",
     gstin: "29AABCW1234P1ZX", baseCurrency: "INR",
+    syncMode: "FULL_SYNC", baselineComplete: false, lastCheckpoint: "Blocked at Voucher Lines · EX-UPL-002 · Batch 45",
+    domains: { company: "done", ledgers: "done", stock: "in_progress", voucherHeaders: "pending", voucherLines: "pending", tax: "pending", balances: "pending", payroll: "pending" },
   },
   {
     id: "COMP-005", name: "Mahindra Logistics Ltd", tallyCompanyName: "Mahindra Logistics Limited",
@@ -94,6 +123,8 @@ const COMPANIES: TallyCompany[] = [
     tallyVersion: "Tally Prime 7.0", tallyPort: 9000, odbcEnabled: false, lastSync: "03 Apr 2026, 06:30 IST",
     lastSyncStatus: "partial", syncCount: 67, errorCount: 4, healthScore: 81, financialYear: "2025-26",
     gstin: "27AABCM1234L1ZX", baseCurrency: "INR",
+    syncMode: "DELTA_SYNC", baselineComplete: true, lastCheckpoint: "Journal Entries · up to 2 Apr 2026 · Batch 67",
+    domains: { company: "done", ledgers: "done", stock: "done", voucherHeaders: "done", voucherLines: "done", tax: "pending", balances: "pending", payroll: "pending" },
   },
 ];
 
@@ -234,6 +265,7 @@ export default function CompanyRegistry() {
               <TableHead>Conn Mode</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Health</TableHead>
+              <TableHead>Domains</TableHead>
               <TableHead>Last Sync</TableHead>
               <TableHead>Syncs</TableHead>
               <TableHead>Actions</TableHead>
@@ -242,7 +274,7 @@ export default function CompanyRegistry() {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-12">
+                <TableCell colSpan={10} className="text-center py-12">
                   <SearchX className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">No companies found</p>
                 </TableCell>
@@ -254,7 +286,17 @@ export default function CompanyRegistry() {
                 onClick={() => openDetail(c)}
               >
                 <TableCell>
-                  <p className="text-sm font-medium text-foreground">{c.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">{c.name}</p>
+                    <span className={cn(
+                      "text-[10px] border rounded px-1.5 py-0.5 whitespace-nowrap",
+                      c.syncMode === "DELTA_SYNC"
+                        ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                        : "text-amber-400 bg-amber-500/10 border-amber-500/20"
+                    )}>
+                      {c.syncMode === "DELTA_SYNC" ? "DELTA" : "FULL SYNC"}
+                    </span>
+                  </div>
                   <p className="text-[10px] text-muted-foreground italic">{c.tallyCompanyName}</p>
                   <p className="font-mono text-[10px] text-muted-foreground/60">{c.id}</p>
                 </TableCell>
@@ -287,6 +329,16 @@ export default function CompanyRegistry() {
                     <span className={cn("font-mono text-xs", c.healthScore >= 90 ? "text-success" : c.healthScore >= 70 ? "text-warning" : "text-destructive")}>
                       {c.healthScore}
                     </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    {Object.entries(c.domains).map(([key, val]) => (
+                      <div key={key} className="flex flex-col items-center gap-0.5" title={`${DOMAIN_LABELS[key]}: ${val}`}>
+                        <span className={cn("w-2 h-2 rounded-full", DOMAIN_DOT[val as DomainStatus])} />
+                        <span className="text-[7px] text-muted-foreground leading-none">{DOMAIN_LABELS[key]}</span>
+                      </div>
+                    ))}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -433,6 +485,14 @@ export default function CompanyRegistry() {
                   <span className={cn("text-xs border rounded-md px-2 py-0.5", CONN_MODE_CONFIG[selectedCompany.connMode].color)}>
                     {CONN_MODE_CONFIG[selectedCompany.connMode].label}
                   </span>
+                  <span className={cn(
+                    "text-[10px] border rounded px-1.5 py-0.5",
+                    selectedCompany.syncMode === "DELTA_SYNC"
+                      ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                      : "text-amber-400 bg-amber-500/10 border-amber-500/20"
+                  )}>
+                    {selectedCompany.syncMode === "DELTA_SYNC" ? "DELTA" : "FULL SYNC"}
+                  </span>
                 </div>
               </SheetHeader>
 
@@ -441,17 +501,33 @@ export default function CompanyRegistry() {
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Identity</p>
                   <div className="space-y-2">
-                    {[
+                    {([
                       ["Company ID", selectedCompany.id, true],
                       ["Tenant", selectedCompany.tenantName, false],
                       ["Tenant ID", selectedCompany.tenantId, true],
                       ["GSTIN", selectedCompany.gstin, true],
                       ["Financial Year", selectedCompany.financialYear, false],
                       ["Base Currency", selectedCompany.baseCurrency, false],
-                    ].map(([label, value, mono]) => (
-                      <div key={label as string} className="flex justify-between py-1.5 border-b border-border last:border-0">
-                        <span className="text-xs text-muted-foreground">{label as string}</span>
-                        <span className={cn("text-xs text-foreground", mono && "font-mono")}>{value as string}</span>
+                      ["Sync Mode", selectedCompany.syncMode === "DELTA_SYNC" ? "Delta (incremental)" : "Full Sync (baseline)", false],
+                      ["Last Checkpoint", selectedCompany.lastCheckpoint, false],
+                      ["Baseline", selectedCompany.baselineComplete ? "Complete" : "In Progress", false],
+                    ] as [string, string, boolean][]).map(([label, value, mono]) => (
+                      <div key={label} className="flex justify-between py-1.5 border-b border-border last:border-0">
+                        <span className="text-xs text-muted-foreground">{label}</span>
+                        <span className={cn("text-xs text-foreground", mono && "font-mono")}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Domain Progress */}
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Domain Progress</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {Object.entries(selectedCompany.domains).map(([key, val]) => (
+                      <div key={key} className="flex flex-col items-center gap-0.5">
+                        <span className={cn("w-3 h-3 rounded-full", DOMAIN_DOT[val as DomainStatus])} />
+                        <span className="text-[9px] text-muted-foreground">{DOMAIN_LABELS[key]}</span>
                       </div>
                     ))}
                   </div>
@@ -461,19 +537,19 @@ export default function CompanyRegistry() {
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Connection</p>
                   <div className="space-y-2">
-                    {[
+                    {([
                       ["Agent ID", selectedCompany.agentId, true],
                       ["Tally Version", selectedCompany.tallyVersion, false],
                       ["HTTP Port", String(selectedCompany.tallyPort), true],
                       ["Connection Mode", CONN_MODE_CONFIG[selectedCompany.connMode].label, false],
                       ["ODBC", selectedCompany.odbcEnabled ? "Enabled" : "Disabled", false],
-                    ].map(([label, value]) => (
-                      <div key={label as string} className="flex justify-between py-1.5 border-b border-border last:border-0">
-                        <span className="text-xs text-muted-foreground">{label as string}</span>
+                    ] as [string, string, boolean][]).map(([label, value]) => (
+                      <div key={label} className="flex justify-between py-1.5 border-b border-border last:border-0">
+                        <span className="text-xs text-muted-foreground">{label}</span>
                         <span className={cn("text-xs text-foreground",
                           (label === "Agent ID" || label === "HTTP Port") && "font-mono",
                           label === "ODBC" && (value === "Enabled" ? "text-success" : "text-muted-foreground")
-                        )}>{value as string}</span>
+                        )}>{value}</span>
                       </div>
                     ))}
                   </div>
