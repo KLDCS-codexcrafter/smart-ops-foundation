@@ -1158,6 +1158,7 @@ export default function ParentCompany() {
 
   // ── Main render ────────────────────────────────────────────────────────────
   return (
+    <SidebarProvider>
     <div className="min-h-screen bg-background">
       <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
       <ERPHeader
