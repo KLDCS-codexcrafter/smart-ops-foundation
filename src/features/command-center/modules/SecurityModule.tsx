@@ -213,6 +213,103 @@ const INTEGRATIONS_DATA = [
   { name: "SMS Gateway",        status: "disconnected", category: "Communication",icon: Smartphone },
 ];
 
+// ── Scope Architecture ────────────────────────────────────────
+type ScopeLevel = 'global' | 'company' | 'user';
+
+interface ScopeContext {
+  level: ScopeLevel;
+  entityName: string;
+}
+
+const PANEL_SCOPE: Record<ConsoleTab, ScopeLevel> = {
+  'org-analytics': 'global',
+  'dashboard': 'global',
+  'monitoring': 'global',
+  'security': 'global',
+  'password-policy': 'global',
+  'geo-fencing': 'company',
+  'ip-whitelist': 'company',
+  'app-passwords': 'user',
+  'device-signin': 'global',
+  'mfa': 'global',
+  'mfa-recovery': 'global',
+  'trusted-browsers': 'user',
+  'entities': 'company',
+  'roles': 'global',
+  'hierarchy': 'global',
+  'identity-access': 'global',
+  'compliance': 'global',
+  'audit': 'global',
+  'email-digest': 'global',
+  'integrations': 'global',
+  'impersonation': 'user',
+  'workflows': 'global',
+  'portal-branding': 'company',
+  'export': 'global',
+  'preview': 'global',
+  'message-templates': 'global',
+};
+
+function ScopeBar({ scope, onScopeChange }: {
+  scope: ScopeContext;
+  onScopeChange: (s: ScopeContext) => void;
+}) {
+  const scopeColors: Record<ScopeLevel, string> = {
+    global: 'text-teal-400 bg-teal-500/10 border-teal-500/20',
+    company: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+    user: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+  };
+  const scopeIcons: Record<ScopeLevel, string> = {
+    global: '🌐', company: '🏢', user: '👤',
+  };
+  const scopeLabels: Record<ScopeLevel, string> = {
+    global: 'Global', company: 'Company', user: 'User',
+  };
+  return (
+    <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-muted/10">
+      <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mr-1">Scope:</span>
+      {(['global', 'company', 'user'] as ScopeLevel[]).map(level => (
+        <button
+          key={level}
+          onClick={() => onScopeChange({
+            level,
+            entityName: level === 'global' ? 'All Companies' :
+              level === 'company' ? 'Sharma Traders Pvt Ltd' :
+              'Rajesh Kumar',
+          })}
+          className={cn(
+            'flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors',
+            scope.level === level
+              ? scopeColors[level]
+              : 'text-muted-foreground bg-transparent border-transparent hover:bg-muted/40'
+          )}
+        >
+          {scopeIcons[level]}
+          {scopeLabels[level]}
+        </button>
+      ))}
+      <span className="text-[10px] text-muted-foreground ml-auto">
+        Applies to: <span className="font-medium text-foreground">{scope.entityName}</span>
+      </span>
+    </div>
+  );
+}
+
+function ScopeBadge({ tab }: { tab: ConsoleTab }) {
+  const scope = PANEL_SCOPE[tab];
+  const config = {
+    global: { label: '🌐 Global', cls: 'text-teal-400 bg-teal-500/10 border-teal-500/20' },
+    company: { label: '🏢 Company', cls: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+    user: { label: '👤 User', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+  };
+  const { label, cls } = config[scope];
+  return (
+    <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium ml-2', cls)}>
+      {label}
+    </span>
+  );
+}
+
 // ── Shared helper components ──────────────────────────────────
 function SectionHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
@@ -604,7 +701,7 @@ function PasswordPolicyPanel() {
   const [expiryEnabled, setExpiryEnabled] = useState(true);
   return (
     <div className="space-y-5">
-      <SectionHeader title="Password Policy">Define password strength requirements and expiry rules.</SectionHeader>
+      <SectionHeader title="Password Policy">Define password strength requirements and expiry rules. This is a Global policy — applies to all users and companies.</SectionHeader>
       <AffectedBadge />
       <Card className="bg-card/60 border-border">
         <CardContent className="pt-5 space-y-4">
@@ -639,7 +736,7 @@ function GeoFencingPanel() {
   function toggle(c: string) { setSelected(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]); }
   return (
     <div className="space-y-5">
-      <SectionHeader title="Geo-Fencing">Restrict platform access based on user geography.</SectionHeader>
+      <SectionHeader title="Geo-Fencing">Restrict platform access based on user geography. This is a Company-level policy — set per entity. Select a company in the Scope bar above.</SectionHeader>
       <AffectedBadge />
       <Card className="bg-card/60 border-border">
         <CardContent className="pt-5 space-y-4">
@@ -670,7 +767,7 @@ function IPWhitelistPanel() {
   const [input, setInput] = useState("");
   return (
     <div className="space-y-5">
-      <SectionHeader title="IP Whitelist">Restrict platform access to specific IP addresses or CIDR ranges.</SectionHeader>
+      <SectionHeader title="IP Whitelist">Restrict platform access to specific IP addresses or CIDR ranges. This is a Company-level policy — set per entity. Select a company in the Scope bar above.</SectionHeader>
       <AffectedBadge />
       <Card className="bg-card/60 border-border">
         <CardContent className="pt-5 space-y-4">
@@ -712,7 +809,7 @@ function AppPasswordsPanel() {
   ];
   return (
     <div className="space-y-5">
-      <SectionHeader title="App Passwords">Manage application-specific passwords for integrations and services.</SectionHeader>
+      <SectionHeader title="App Passwords">Manage application-specific passwords for integrations and services. This is a User-level setting — specific to each individual user.</SectionHeader>
       <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info("Create App Password — backend pending")}><Plus className="w-3.5 h-3.5" /> Create App Password</Button>
       <Card className="bg-card/60 border-border">
         <CardContent className="p-0">
@@ -762,7 +859,7 @@ function DeviceSignInPanel() {
 function MFAPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="MFA">Configure MFA requirements and allowed methods.</SectionHeader>
+      <SectionHeader title="MFA">Configure MFA requirements and allowed methods. This is a Global policy — applies to all users and companies.</SectionHeader>
       <AffectedBadge />
       <Card className="bg-card/60 border-border">
         <CardContent className="pt-5 space-y-4">
@@ -824,7 +921,7 @@ function TrustedBrowsersPanel() {
   ];
   return (
     <div className="space-y-5">
-      <SectionHeader title="Trusted Browsers">Manage browsers and devices that bypass MFA step-up.</SectionHeader>
+      <SectionHeader title="Trusted Browsers">Manage browsers and devices that bypass MFA step-up. This is a User-level setting — specific to each individual user.</SectionHeader>
       <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info("Revoke all — backend pending")}><XCircle className="w-3.5 h-3.5" /> Revoke All</Button>
       <Card className="bg-card/60 border-border">
         <CardContent className="p-0">
@@ -860,7 +957,7 @@ function EntitySecurityPanel() {
   ];
   return (
     <div className="space-y-5">
-      <SectionHeader title="Entity Security">Security settings applied per entity in your organisation structure.</SectionHeader>
+      <SectionHeader title="Entity Security">Security settings applied per entity in your organisation structure. This is a Company-level policy — set per entity. Select a company in the Scope bar above.</SectionHeader>
       <Card className="bg-card/60 border-border">
         <CardContent className="p-0">
           <Table>
@@ -1162,7 +1259,7 @@ function IntegrationsPanel() {
 function ImpersonationPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="Impersonation">Temporarily act as another user to troubleshoot issues. All impersonation sessions are fully logged.</SectionHeader>
+      <SectionHeader title="Impersonation">Temporarily act as another user to troubleshoot issues. All impersonation sessions are fully logged. This is a User-level setting — specific to each individual user.</SectionHeader>
       <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
         <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-400">All impersonation sessions are logged and visible to Super Admins. Use with caution.</p>
@@ -1246,7 +1343,7 @@ function PortalBrandingPanel() {
   const [primaryColor, setPrimaryColor] = useState("#0ea5e9");
   return (
     <div className="space-y-5">
-      <SectionHeader title="Portal Branding">Customise how your ERP portal looks for end users.</SectionHeader>
+      <SectionHeader title="Portal Branding">Customise how your ERP portal looks for end users. This is a Company-level policy — set per entity. Select a company in the Scope bar above.</SectionHeader>
       <Card className="bg-card/60 border-border">
         <CardHeader className="pb-2"><CardTitle className="text-sm">Identity</CardTitle></CardHeader>
         <CardContent className="space-y-4">
