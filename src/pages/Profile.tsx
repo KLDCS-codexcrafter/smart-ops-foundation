@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   User, Settings, Monitor, Bell, Shield,
-  ArrowLeft, Save, Globe, Lock, Smartphone, CheckCircle,
+  ArrowLeft, Save, Globe, Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,7 +73,7 @@ function LanguageGrid() {
                 });
                 return;
               }
-              setLanguage(lang.code as any);
+              setLanguage(lang.code);
               toast.success('Language updated to ' + lang.name);
             }}
             className={cn(
@@ -137,7 +137,10 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 export default function Profile() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = (searchParams.get('tab') as TabKey) || 'profile';
+  const VALID_TABS = TABS.map(t => t.key);
+  const rawTab = searchParams.get('tab');
+  const activeTab: TabKey = (rawTab && VALID_TABS.includes(rawTab as TabKey))
+    ? (rawTab as TabKey) : 'profile';
   const setTab = (t: string) => setSearchParams(t === 'profile' ? {} : { tab: t }, { replace: true });
 
   // Profile fields
@@ -145,6 +148,7 @@ export default function Profile() {
   const [mobile, setMobile] = useState(MOCK_USER.mobile);
   const [designation, setDesignation] = useState(MOCK_USER.designation);
   const [saving, setSaving] = useState(false);
+  const [savingOrg, setSavingOrg] = useState(false);
 
   // Settings — organisation
   const [division, setDivision] = useState(MOCK_USER.division);
@@ -202,12 +206,21 @@ export default function Profile() {
     }, 800);
   }
 
+  function handleSaveOrg() {
+    setSavingOrg(true);
+    setTimeout(() => {
+      setSavingOrg(false);
+      // [JWT] Replace with: PATCH /api/users/me body: { division, department, employee_id }
+      toast.success('Organisation details saved');
+    }, 800);
+  }
+
   return (
     <div className='min-h-screen bg-background'>
       {/* Top bar */}
       <div className='border-b border-border bg-card/80 backdrop-blur-xl'>
         <div className='flex items-center gap-3 px-6 h-14 max-w-5xl mx-auto'>
-          <Button variant='ghost' size='icon' className='h-8 w-8 shrink-0' onClick={() => navigate(-1)}>
+          <Button variant='ghost' size='icon' className='h-8 w-8 shrink-0' onClick={() => navigate('/welcome')}>
             <ArrowLeft className='h-4 w-4' />
           </Button>
           <Avatar className='h-9 w-9'>
@@ -277,6 +290,10 @@ export default function Profile() {
               <FieldRow label='Company'>
                 <Input value={MOCK_USER.company} readOnly className='opacity-60 cursor-not-allowed' />
               </FieldRow>
+              <FieldRow label='Role'>
+                <Input value={MOCK_USER.role} readOnly className='opacity-60 cursor-not-allowed' />
+                <p className='text-[10px] text-muted-foreground mt-1'>Assigned by administrator</p>
+              </FieldRow>
               <Button
                 className='mt-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground'
                 size='sm'
@@ -308,9 +325,10 @@ export default function Profile() {
                 variant='outline'
                 size='sm'
                 className='mt-4'
-                onClick={() => { /* [JWT] PATCH /api/users/me body: { division, department, employee_id } */ toast.success('Organisation details saved'); }}>
+                onClick={handleSaveOrg}
+                disabled={savingOrg}>
                 <Save className='h-3.5 w-3.5 mr-1.5' />
-                Save
+                {savingOrg ? 'Saving...' : 'Save'}
               </Button>
             </Section>
             <Section title='Language'>
@@ -338,6 +356,9 @@ export default function Profile() {
                 checked={displaySettings.animations}
                 onChange={v => updateDisplay('animations', v)}
               />
+              <p className='text-xs text-muted-foreground italic mt-4'>
+                Layout preferences will apply after page reload. Full theme integration in Phase 2.
+              </p>
             </Section>
           </TabsContent>
 
@@ -397,7 +418,7 @@ export default function Profile() {
               {/* [JWT] Replace with real: GET /api/auth/sessions */}
               <div className='flex items-center justify-between py-3'>
                 <div className='flex items-center gap-3'>
-                  <Smartphone className='h-4 w-4 text-muted-foreground' />
+                  <Monitor className='h-4 w-4 text-muted-foreground' />
                   <div>
                     <p className='text-sm text-foreground'>Current Session</p>
                     <p className='text-xs text-muted-foreground'>Chrome · Windows · This device · Started just now</p>

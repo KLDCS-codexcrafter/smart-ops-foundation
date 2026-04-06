@@ -48,6 +48,7 @@ import SubsidiaryEdit from './pages/erp/foundation/SubsidiaryEdit';
 import BranchOfficeList from './pages/erp/foundation/BranchOfficeList';
 import BranchOfficeCreate from './pages/erp/foundation/BranchOfficeCreate';
 import BranchOfficeEdit from './pages/erp/foundation/BranchOfficeEdit';
+import FoundationEntityHub from './pages/erp/foundation/FoundationEntityHub';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -126,13 +127,17 @@ const App = () => (
             <Route path="/bridge/audit" element={<AuditExplorer />} />
             <Route path="/bridge/settings" element={<BridgeSettings />} />
             <Route path="/erp/foundation/company" element={<ParentCompany />} />
-            <Route path="/erp/foundation/companies" element={<CompanyList />} />
+            <Route path="/erp/foundation/entities" element={<FoundationEntityHub />} />
+            <Route path="/erp/foundation/companies"
+              element={<Navigate to="/erp/foundation/entities?tab=companies" replace />} />
+            <Route path="/erp/foundation/subsidiaries"
+              element={<Navigate to="/erp/foundation/entities?tab=subsidiaries" replace />} />
+            <Route path="/erp/foundation/branch-offices"
+              element={<Navigate to="/erp/foundation/entities?tab=branch-offices" replace />} />
             <Route path="/erp/foundation/companies/create" element={<CompanyCreate />} />
             <Route path="/erp/foundation/companies/:id/edit" element={<CompanyEdit />} />
-            <Route path="/erp/foundation/subsidiaries" element={<SubsidiaryList />} />
             <Route path="/erp/foundation/subsidiaries/create" element={<SubsidiaryCreate />} />
             <Route path="/erp/foundation/subsidiaries/:id/edit" element={<SubsidiaryEdit />} />
-            <Route path="/erp/foundation/branch-offices" element={<BranchOfficeList />} />
             <Route path="/erp/foundation/branch-offices/create" element={<BranchOfficeCreate />} />
             <Route path="/erp/foundation/branch-offices/:id/edit" element={<BranchOfficeEdit />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
