@@ -206,6 +206,15 @@ export default function Profile() {
     }, 800);
   }
 
+  function handleSaveOrg() {
+    setSavingOrg(true);
+    setTimeout(() => {
+      setSavingOrg(false);
+      // [JWT] Replace with: PATCH /api/users/me body: { division, department, employee_id }
+      toast.success('Organisation details saved');
+    }, 800);
+  }
+
   return (
     <div className='min-h-screen bg-background'>
       {/* Top bar */}
