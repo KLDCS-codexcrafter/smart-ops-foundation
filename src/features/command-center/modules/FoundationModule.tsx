@@ -4,7 +4,7 @@
  * [JWT] Replace MOCK object with real API queries.
  */
 import { useNavigate } from 'react-router-dom';
-import { Building, Building2, GitBranch, Layers, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Building, Building2, GitBranch, Layers, MapPin, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -77,7 +77,7 @@ export function FoundationModule() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           icon={<Building className="h-5 w-5" />}
           title="Parent Company"
@@ -112,6 +112,14 @@ export function FoundationModule() {
           status={stats.branchOfficesTotal > 0 ? 'ok' : 'empty'}
           href="/erp/foundation/entities?tab=branch-offices"
           description="Operational locations: service centres, stores, offices."
+        />
+        <StatCard
+          icon={<MapPin className="h-5 w-5" />}
+          title="Geography"
+          value="Configure"
+          status="empty"
+          href="/erp/foundation/geography"
+          description="Countries, states, cities, ports, and sales regions."
         />
       </div>
     </div>

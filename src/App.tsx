@@ -140,6 +140,13 @@ const App = () => (
             <Route path="/erp/foundation/subsidiaries/:id/edit" element={<SubsidiaryEdit />} />
             <Route path="/erp/foundation/branch-offices/create" element={<BranchOfficeCreate />} />
             <Route path="/erp/foundation/branch-offices/:id/edit" element={<BranchOfficeEdit />} />
+            <Route path="/erp/foundation/geography" element={<GeographyHub />} />
+            <Route path="/erp/foundation/geography/countries" element={<CountryMaster />} />
+            <Route path="/erp/foundation/geography/states" element={<StateMaster />} />
+            <Route path="/erp/foundation/geography/districts" element={<DistrictMaster />} />
+            <Route path="/erp/foundation/geography/cities" element={<CityMaster />} />
+            <Route path="/erp/foundation/geography/ports" element={<PortMaster />} />
+            <Route path="/erp/foundation/geography/regions" element={<RegionMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
