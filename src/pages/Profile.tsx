@@ -356,6 +356,9 @@ export default function Profile() {
                 checked={displaySettings.animations}
                 onChange={v => updateDisplay('animations', v)}
               />
+              <p className='text-xs text-muted-foreground italic mt-4'>
+                Layout preferences will apply after page reload. Full theme integration in Phase 2.
+              </p>
             </Section>
           </TabsContent>
 
