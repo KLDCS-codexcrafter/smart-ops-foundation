@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   ShieldAlert, Clock, AlertTriangle, XCircle,
-  CheckCircle2, Info, ChevronRight,
+  CheckCircle2, Info, ChevronRight, Layers,
 } from "lucide-react";
 import { BridgeLayout } from "@/components/layout/BridgeLayout";
 import {
@@ -39,13 +39,15 @@ const RISK_ICONS: Record<string, React.ElementType> = {
   Clock,
   AlertTriangle,
   XCircle,
+  Layers,
 };
 
 const RISK_CARDS = [
-  { label: "Blocked Requests",      value: 2, detail: "Oldest: 3h 15m",       icon: "ShieldAlert",   color: "text-destructive", link: "/bridge/exceptions" },
-  { label: "Pending Approvals",     value: 3, detail: "SLA: 1h 45m left",     icon: "Clock",         color: "text-warning",     link: "/bridge/approvals" },
-  { label: "Agent Errors",          value: 1, detail: "AGENT-04 timeout",      icon: "AlertTriangle", color: "text-destructive", link: "/bridge/agents" },
-  { label: "Failed Reconciliations",value: 2, detail: "1 pending sign-off",    icon: "XCircle",       color: "text-warning",     link: "/bridge/reconciliation" },
+  { label: "Blocked Requests",      value: 2,  detail: "Oldest: 3h 15m",       icon: "ShieldAlert",   color: "text-destructive", link: "/bridge/exceptions" },
+  { label: "Pending Approvals",     value: 3,  detail: "SLA: 1h 45m left",     icon: "Clock",         color: "text-warning",     link: "/bridge/approvals" },
+  { label: "Agent Errors",          value: 1,  detail: "AGENT-04 timeout",      icon: "AlertTriangle", color: "text-destructive", link: "/bridge/agents" },
+  { label: "Failed Reconciliations",value: 2,  detail: "1 pending sign-off",    icon: "XCircle",       color: "text-warning",     link: "/bridge/reconciliation" },
+  { label: "Queue Depth",           value: 47, detail: "Oldest batch: 2h 14m",  icon: "Layers",        color: "text-cyan-400",    link: "/bridge/agents" },
 ];
 
 const COMPANY_HEALTH = [
@@ -149,7 +151,7 @@ export default function ConsoleDashboard() {
       </div>
 
       {/* 2. RISK CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {RISK_CARDS.map((card) => {
           const RiskIcon = RISK_ICONS[card.icon];
           return (
