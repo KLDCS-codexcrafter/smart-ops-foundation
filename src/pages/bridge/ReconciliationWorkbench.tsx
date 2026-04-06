@@ -143,6 +143,51 @@ const STATUS_CONFIG: Record<MatchStatus, { label: string; rowBg: string; badge: 
   missing:  { label: "Missing",  rowBg: "bg-destructive/5", badge: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
+function SSOTSummaryBar({ reqId }: { reqId: string }) {
+  const s = RECONCILE_SUMMARY[reqId];
+  if (!s) return null;
+  const delta = s.source - s.canonical;
+  const steps = [
+    { label: "Source", value: s.source, ok: true },
+    { label: "Extracted", value: s.extracted, ok: s.extracted === s.source },
+    { label: "Uploaded", value: s.uploaded, ok: s.uploaded === s.source },
+    { label: "Accepted", value: s.accepted, ok: s.accepted === s.source },
+    { label: "Canonical", value: s.canonical, ok: s.canonical === s.source },
+  ];
+  return (
+    <div className="bg-muted/20 border border-border rounded-xl p-4 mb-4">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        SSOT Reconciliation Pipeline
+      </p>
+      <div className="flex items-center gap-1 flex-wrap">
+        {steps.map((step, i) => (
+          <div key={step.label} className="flex items-center gap-1">
+            <div className={cn("flex flex-col items-center px-3 py-2 rounded-lg border",
+              step.ok ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20")}>
+              <span className={cn("font-mono text-xl font-bold", step.ok ? "text-emerald-400" : "text-red-400")}>
+                {step.value}
+              </span>
+              <span className="text-[10px] text-muted-foreground">{step.label}</span>
+            </div>
+            {i < steps.length - 1 && <span className="text-muted-foreground/40 text-sm">→</span>}
+          </div>
+        ))}
+        <div className="ml-3 flex flex-col items-center px-3 py-2 rounded-lg border border-emerald-400">
+          <span className={cn("font-mono text-xl font-bold", delta === 0 ? "text-emerald-400" : "text-amber-400")}>
+            {delta === 0 ? "✓" : `+${delta}`}
+          </span>
+          <span className="text-[10px] text-muted-foreground">Delta</span>
+        </div>
+      </div>
+      {delta > 0 && (
+        <p className="text-xs text-amber-400 mt-2">
+          {delta} record{delta > 1 ? "s" : ""} in source not yet in canonical layer. Check exception workbench.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ReconciliationWorkbench() {
   const [selectedReqId, setSelectedReqId] = useState("REQ-0038");
   const [signOffDialog, setSignOffDialog] = useState(false);
