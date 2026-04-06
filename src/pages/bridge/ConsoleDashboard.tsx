@@ -151,7 +151,7 @@ export default function ConsoleDashboard() {
       </div>
 
       {/* 2. RISK CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {RISK_CARDS.map((card) => {
           const RiskIcon = RISK_ICONS[card.icon];
           return (
