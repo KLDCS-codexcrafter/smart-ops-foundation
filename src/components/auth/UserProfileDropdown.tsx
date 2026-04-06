@@ -10,7 +10,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, Globe } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogoutConfirmDialog } from "./LogoutConfirmDialog";
 import { mockLogout } from "@/lib/auth";
+import { useLanguage } from "@/hooks/useLanguage";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface UserProfileDropdownProps {
@@ -61,6 +62,8 @@ export function UserProfileDropdown({
 }: UserProfileDropdownProps) {
   const navigate = useNavigate();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const { language, languages } = useLanguage();
+  const currentLangName = languages.find(l => l.code === language)?.name ?? 'English';
 
   // [JWT] Replace with real useProfile hook
   const user = getMockUser();
@@ -159,6 +162,15 @@ export function UserProfileDropdown({
           >
             <Settings className="mr-2 h-4 w-4" />
             Account Settings
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => navigate("/profile?tab=settings")}
+            className="cursor-pointer"
+          >
+            <Globe className="mr-2 h-4 w-4" />
+            Language
+            <span className="ml-auto text-[10px] text-muted-foreground">{currentLangName}</span>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
