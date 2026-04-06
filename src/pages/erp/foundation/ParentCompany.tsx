@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
