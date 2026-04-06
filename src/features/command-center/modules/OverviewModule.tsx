@@ -2,7 +2,6 @@ import {
   Users, Activity, Clock, Shield, Building2, Terminal,
   ArrowRight, FileText, Database,
 } from "lucide-react";
-import { ModuleHealthMatrix } from "../components/ModuleHealthMatrix";
 import type { CommandCenterModule } from "../pages/CommandCenterPage";
 
 interface OverviewModuleProps {
@@ -11,7 +10,7 @@ interface OverviewModuleProps {
 
 const KPI_CARDS = [
   { label: "Active Users", value: "—", sub: "placeholder", icon: Users, color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20" },
-  { label: "Platform Modules", value: "14", sub: "registered", icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Audit Events Today", value: "0", sub: "placeholder", icon: Shield, color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
   { label: "Foundation Setup", value: "0%", sub: "configured", icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
   { label: "Security Score", value: "87", sub: "out of 100", icon: Shield, color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
 ];
@@ -51,9 +50,6 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
           );
         })}
       </div>
-
-      {/* Module Health Matrix */}
-      <ModuleHealthMatrix />
 
       {/* Runway Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
