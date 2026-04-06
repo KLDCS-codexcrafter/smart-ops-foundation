@@ -34,7 +34,7 @@ export const PRESET_LABELS: Record<DatePreset, string> = {
 };
 
 // April = month index 3 (Indian FY)
-const FY_START_MONTH = 3;
+const FY_START_MONTH = parseInt(localStorage.getItem('erp_fy_start_month') ?? '3', 10);
 const COMPANY_START_YEAR = 2020;
 
 function getFYDates(offset = 0): DateRange {
