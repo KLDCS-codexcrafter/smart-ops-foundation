@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Cpu, ArrowLeft, Home, LayoutDashboard,
+  Cpu, ArrowLeft, Home, LayoutDashboard, Building2,
   Users, Activity, Clock, Shield, ScrollText,
   ChevronRight, CheckCircle,
 } from "lucide-react";
@@ -33,7 +33,7 @@ function getUserName(): string {
 
 const PULSE_METRICS = [
   { label: "Active Users", value: "—", icon: Users, color: "text-cyan-400" },
-  { label: "Module Health", value: "0/14", icon: Activity, color: "text-emerald-400" },
+  { label: "Active Sessions", value: "0", icon: Activity, color: "text-emerald-400" },
   { label: "Pending Approvals", value: "0", icon: Clock, color: "text-amber-400" },
   { label: "Audit Events Today", value: "0", icon: Shield, color: "text-violet-400" },
 ];
@@ -41,7 +41,7 @@ const PULSE_METRICS = [
 const QUICK_ACTIONS = [
   { label: "View Audit Logs", icon: ScrollText, href: "/erp/command-center/hub" },
   { label: "Manage Roles", icon: Shield, href: "/erp/command-center/hub" },
-  { label: "Module Health", icon: Activity, href: "/erp/command-center/hub" },
+  { label: "Foundation Setup", icon: Building2, href: "/erp/command-center/hub" },
 ];
 
 const RECENT_ACTIVITY = [
@@ -130,7 +130,7 @@ export default function CommandCenterWelcome() {
             {greeting.emoji} {greeting.text}, {userName}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            You are the platform administrator. Platform health, security and access control are your responsibility.
+            You are the system administrator. User access, security policies and ERP configuration are your responsibility.
           </p>
         </div>
 

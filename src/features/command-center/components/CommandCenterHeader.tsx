@@ -21,9 +21,8 @@ import {
 import type { CommandCenterModule } from "../pages/CommandCenterPage";
 
 const MODULE_LABELS: Record<CommandCenterModule, string> = {
-  overview: "Overview",
-  core: "Foundation & Core",
   console: "Security Console",
+  core: "Foundation & Core",
 };
 
 function getFY(): string {
