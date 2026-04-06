@@ -155,59 +155,133 @@ export default function BridgeSettings() {
 
           {/* Sync Defaults */}
           {section === "sync" && (
-            <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-foreground mb-2">Sync Defaults</h2>
+            <div className="bg-card border border-border rounded-xl p-5 space-y-5">
+              <h2 className="text-sm font-semibold text-foreground">Sync Policy</h2>
+              <p className="text-xs text-muted-foreground -mt-3">
+                Pulled by the agent on every heartbeat. Changes take effect on next sync cycle.
+              </p>
 
+              {/* Schedule */}
               <div>
-                <label className="text-xs text-muted-foreground mb-1.5 block">Default Sync Mode</label>
-                <Select defaultValue="json_http">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="json_http">JSON HTTP (Primary)</SelectItem>
-                    <SelectItem value="odbc">ODBC</SelectItem>
-                    <SelectItem value="file_watch">File Watch</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label className="text-sm text-foreground">Auto-Retry on Failure</label>
-                <Switch checked={autoRetry} onCheckedChange={setAutoRetry} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1.5 block">Max Retry Attempts</label>
-                  <Input type="number" defaultValue={3} />
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Schedule</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Sync Interval</label>
+                    <Select defaultValue="30m">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5m">Every 5 minutes</SelectItem>
+                        <SelectItem value="15m">Every 15 minutes</SelectItem>
+                        <SelectItem value="30m">Every 30 minutes</SelectItem>
+                        <SelectItem value="1h">Every 1 hour</SelectItem>
+                        <SelectItem value="manual">Manual only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Overlap Window</label>
+                    <Select defaultValue="6h">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1h">1 hour</SelectItem>
+                        <SelectItem value="6h">6 hours</SelectItem>
+                        <SelectItem value="24h">24 hours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground mt-1">Re-checks this window on every delta sync</p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1.5 block">Retry Delay</label>
-                  <Select defaultValue="1m">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="30s">30 seconds</SelectItem>
-                      <SelectItem value="1m">1 minute</SelectItem>
-                      <SelectItem value="5m">5 minutes</SelectItem>
-                      <SelectItem value="15m">15 minutes</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Quiet Hours — From</label>
+                    <Input type="time" defaultValue="23:00" className="font-mono" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Quiet Hours — To</label>
+                    <Input type="time" defaultValue="06:00" className="font-mono" />
+                    <p className="text-[10px] text-muted-foreground mt-1">No syncs start during this window</p>
+                  </div>
                 </div>
               </div>
 
+              {/* Extraction */}
               <div>
-                <label className="text-xs text-muted-foreground mb-1.5 block">Auto-Approve Below Records</label>
-                <Input type="number" className="font-mono" defaultValue={500} />
-                <p className="text-[10px] text-muted-foreground mt-1">Requests below this count are auto-approved</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Extraction</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Batch Size Profile</label>
+                    <Select defaultValue="standard">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="small">Small — 500 records/batch</SelectItem>
+                        <SelectItem value="standard">Standard — 2,000 records/batch</SelectItem>
+                        <SelectItem value="large">Large — 5,000 records/batch</SelectItem>
+                        <SelectItem value="custom">Custom</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Financial Year Scope</label>
+                    <Select defaultValue="2fy">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="current">Current FY only</SelectItem>
+                        <SelectItem value="2fy">Last 2 financial years</SelectItem>
+                        <SelectItem value="3fy">Last 3 financial years</SelectItem>
+                        <SelectItem value="custom">Custom from date</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
 
+              {/* Failure & Retry */}
               <div>
-                <label className="text-xs text-muted-foreground mb-1.5 block">Batch Size</label>
-                <Input type="number" className="font-mono" defaultValue={1000} />
-                <p className="text-[10px] text-muted-foreground mt-1">Records per sync batch sent to Tally</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Failure &amp; Retry</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Retry Limit</label>
+                    <Input type="number" defaultValue={5} min={0} max={20} />
+                    <p className="text-[10px] text-muted-foreground mt-1">0 = no auto-retry. Max 20.</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Offline Behaviour</label>
+                    <Select defaultValue="queue_auto">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="queue_auto">Queue locally and auto-resume</SelectItem>
+                        <SelectItem value="queue_approval">Queue and wait for approval</SelectItem>
+                        <SelectItem value="pause">Pause extraction until online</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
 
-              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Sync defaults saved")}>
-                Save Sync Defaults
+              {/* Module Inclusion */}
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Module Inclusion</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { key: "company", label: "Company", on: true },
+                    { key: "ledgers", label: "Ledgers", on: true },
+                    { key: "stock", label: "Stock", on: true },
+                    { key: "vouchers", label: "Vouchers", on: true },
+                    { key: "tax", label: "GST/Tax", on: true },
+                    { key: "balances", label: "Balances", on: true },
+                    { key: "payroll", label: "Payroll", on: false },
+                    { key: "audit", label: "Audit Meta", on: false },
+                  ].map((m) => (
+                    <div key={m.key} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/20 border border-border/40">
+                      <span className="text-xs text-foreground">{m.label}</span>
+                      <Switch defaultChecked={m.on} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Sync policy saved — agent applies on next heartbeat")}>
+                Save Sync Policy
               </Button>
             </div>
           )}
