@@ -1044,9 +1044,9 @@ export default function ParentCompany() {
             <div key={f.key}>
               <p className="text-xs font-medium text-foreground mb-2">{f.label}</p>
               <div className="relative border-2 border-dashed border-border rounded-lg h-28 flex items-center justify-center hover:border-primary/30 transition-colors">
-                {(form as Record<string, string>)[f.key] ? (
+                {(form as unknown as Record<string, string>)[f.key] ? (
                   <>
-                    <img src={(form as Record<string, string>)[f.key]} alt={f.label} className="h-full w-full object-contain p-2 rounded-lg" />
+                    <img src={(form as unknown as Record<string, string>)[f.key]} alt={f.label} className="h-full w-full object-contain p-2 rounded-lg" />
                     <button onClick={() => upd(f.key, '')} className="absolute top-1 right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center">
                       <X className="h-3 w-3" />
                     </button>
