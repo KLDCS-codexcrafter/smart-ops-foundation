@@ -45,7 +45,7 @@ export default function BridgeSettings() {
   const [exceptionSpike, setExceptionSpike] = useState(false);
 
   // Sync defaults
-  const [autoRetry, setAutoRetry] = useState(true);
+  
 
   // Connection
   const [odbcFallback, setOdbcFallback] = useState(true);
