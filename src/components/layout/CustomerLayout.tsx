@@ -47,9 +47,10 @@ export function CustomerLayout({ children, title, subtitle }: CustomerLayoutProp
       {/* Sidebar — lighter card-style design */}
       <aside
         className={cn(
-          "h-screen sticky top-0 flex flex-col border-r border-border bg-card transition-all duration-300",
+          "h-screen sticky top-0 flex flex-col border-r transition-all duration-300",
           collapsed ? "w-[60px]" : "w-[220px]"
         )}
+        style={{ background: "hsl(222 47% 11%)", borderColor: "rgba(255,255,255,0.06)" }}
       >
         {/* Tenant branding */}
         <div className={cn(
