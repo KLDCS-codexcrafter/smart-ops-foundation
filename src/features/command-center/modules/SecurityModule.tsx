@@ -1592,6 +1592,10 @@ export function SecurityModule() {
 
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [collapsed, setCollapsed] = useState<string[]>([]);
+  const [scope, setScope] = useState<ScopeContext>({
+    level: 'global',
+    entityName: 'All Companies',
+  });
 
   const handleTabChange = useCallback((tab: ConsoleTab) => {
     setActiveTab(tab);
@@ -1645,14 +1649,22 @@ export function SecurityModule() {
             )}
           </div>
         </ScrollArea>
+        {/* Sidebar footer with scope badge */}
+        {activeConfig && (
+          <div className="px-3 py-2 border-t border-border text-[10px] text-muted-foreground flex items-center">
+            {activeConfig.label}
+            <ScopeBadge tab={activeTab} />
+          </div>
+        )}
       </div>
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
+        <ScopeBar scope={scope} onScopeChange={setScope} />
         {activeConfig && (
           <div className="px-6 pt-4 pb-2 border-b border-border">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{activeConfig.section}</p>
-            <h2 className="text-lg font-semibold text-foreground">{activeConfig.label}</h2>
+            <h2 className="text-lg font-semibold text-foreground">{activeConfig.label}<ScopeBadge tab={activeTab} /></h2>
           </div>
         )}
         <div className="p-6">
