@@ -21,8 +21,9 @@ import {
 import type { CommandCenterModule } from "../pages/CommandCenterPage";
 
 const MODULE_LABELS: Record<CommandCenterModule, string> = {
-  console: "Security Console",
+  overview: "Overview",
   core: "Foundation & Core",
+  console: "Security Console",
 };
 
 function getFY(): string {
@@ -37,10 +38,9 @@ function getFY(): string {
 interface CommandCenterHeaderProps {
   activeModule: CommandCenterModule;
   onModuleChange: (module: CommandCenterModule) => void;
-  onHome: () => void;
 }
 
-export function CommandCenterHeader({ activeModule, onModuleChange, onHome }: CommandCenterHeaderProps) {
+export function CommandCenterHeader({ activeModule, onModuleChange }: CommandCenterHeaderProps) {
   const navigate = useNavigate();
   const { openDishani } = useDishani();
 
@@ -138,20 +138,11 @@ export function CommandCenterHeader({ activeModule, onModuleChange, onHome }: Co
           <BreadcrumbList className="text-xs">
             <BreadcrumbItem>
               <BreadcrumbLink
-                onClick={onHome}
+                onClick={() => navigate("/erp/dashboard")}
                 className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors"
               >
                 <Home className="h-3 w-3" />
-                <span className="hidden sm:inline">Welcome</span>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator><ChevronRight className="h-3 w-3" /></BreadcrumbSeparator>
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                onClick={() => navigate("/erp/dashboard")}
-                className="hidden sm:inline cursor-pointer hover:text-foreground transition-colors"
-              >
-                Operix Core
+                <span className="hidden sm:inline">Operix Core</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator><ChevronRight className="h-3 w-3" /></BreadcrumbSeparator>
