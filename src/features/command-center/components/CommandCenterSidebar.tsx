@@ -19,7 +19,7 @@ interface CommandCenterSidebarProps {
 
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
+    <Sidebar collapsible="icon" className="border-r" style={{ background: "hsl(222 47% 11%)", borderColor: "rgba(255,255,255,0.06)" }}>
       <SidebarHeader className="p-3">
         <div className="flex items-center gap-2.5">
           <div
