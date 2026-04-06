@@ -234,6 +234,7 @@ export default function ReconciliationWorkbench() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Match Summary */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+          <SSOTSummaryBar reqId={selectedReq.id} />
           <p className="text-sm font-semibold">{`Match Summary — ${selectedReq.id}`}</p>
           <p className="text-xs text-muted-foreground">{selectedReq.company} · {selectedReq.module}</p>
 
