@@ -22,9 +22,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 const MODULE_ITEMS: { id: CommandCenterModule; label: string; icon: React.ElementType }[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "core", label: "Foundation & Core", icon: Building2 },
   { id: "console", label: "Security Console", icon: Terminal },
+  { id: "core", label: "Foundation & Core", icon: Building2 },
 ];
 
 const QUICK_SWITCH_APPS = [
