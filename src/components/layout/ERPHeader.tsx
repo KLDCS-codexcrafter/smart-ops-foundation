@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { ERPDatePicker } from '@/components/layout/ERPDatePicker';
 import { ERPCompanySelector, useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';
-import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
+
 import { useGlobalDateRange, formatIndianDate } from '@/hooks/useGlobalDateRange';
 import { cn } from '@/lib/utils';
 
@@ -234,8 +234,6 @@ export function ERPHeader({
             <TooltipContent>Ask Dishani</TooltipContent>
           </Tooltip>
 
-          {/* Language switcher */}
-          <LanguageSwitcher />
 
           {/* Theme toggle */}
           <ThemeToggle />

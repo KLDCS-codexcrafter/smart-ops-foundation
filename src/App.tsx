@@ -47,6 +47,7 @@ import Orders from "./pages/customer/Orders";
 import Documents from "./pages/customer/Documents";
 import CustomerSupport from "./pages/customer/CustomerSupport";
 import CustomerProfile from "./pages/customer/Profile";
+import Profile from "./pages/Profile";
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
 import Permissions from "./pages/tower/Permissions";
@@ -80,11 +81,7 @@ const App = () => (
                 <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
               </div>
             } />
-            <Route path="/profile" element={
-              <div className="min-h-screen bg-background flex items-center justify-center">
-                <p className="text-muted-foreground text-sm">Profile — coming soon</p>
-              </div>
-            } />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={
               <div className="min-h-screen bg-background flex items-center justify-center">
                 <p className="text-muted-foreground text-sm">Settings — coming soon</p>
