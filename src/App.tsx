@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme";
+import { GlobalDateRangeProvider } from '@/hooks/useGlobalDateRange';
+import { LanguageProvider } from '@/hooks/useLanguage';
 
 const ConditionalDishani = () => {
   const location = useLocation();
@@ -62,6 +64,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ThemeProvider>
+  <LanguageProvider>
+  <GlobalDateRangeProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <DishaniProvider>
@@ -137,6 +141,8 @@ const App = () => (
       </DishaniProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </GlobalDateRangeProvider>
+  </LanguageProvider>
   </ThemeProvider>
 );
 
