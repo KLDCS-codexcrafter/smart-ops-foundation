@@ -281,6 +281,10 @@ export default function Profile() {
               <FieldRow label='Company'>
                 <Input value={MOCK_USER.company} readOnly className='opacity-60 cursor-not-allowed' />
               </FieldRow>
+              <FieldRow label='Role'>
+                <Input value={MOCK_USER.role} readOnly className='opacity-60 cursor-not-allowed' />
+                <p className='text-[10px] text-muted-foreground mt-1'>Assigned by administrator</p>
+              </FieldRow>
               <Button
                 className='mt-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground'
                 size='sm'
@@ -312,9 +316,10 @@ export default function Profile() {
                 variant='outline'
                 size='sm'
                 className='mt-4'
-                onClick={() => { /* [JWT] PATCH /api/users/me body: { division, department, employee_id } */ toast.success('Organisation details saved'); }}>
+                onClick={handleSaveOrg}
+                disabled={savingOrg}>
                 <Save className='h-3.5 w-3.5 mr-1.5' />
-                Save
+                {savingOrg ? 'Saving...' : 'Save'}
               </Button>
             </Section>
             <Section title='Language'>
