@@ -1,0 +1,342 @@
+/**
+ * StateMaster.tsx — Full CRUD with country-level filter and smart auto-seed
+ * [JWT] All mutations mock. Real: POST/PATCH/DELETE /api/geography/states
+ */
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { ERPHeader } from '@/components/layout/ERPHeader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import { Map, Plus, Search, Edit, Trash2, Zap, ArrowLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { indianStates } from '@/data/india-geography';
+import { UAE_EMIRATES } from '@/data/geo-seed-data';
+
+interface StateRecord {
+  code: string; name: string; countryCode: string;
+  gstStateCode: string; unionTerritory: boolean; region: string;
+  status: 'active' | 'inactive';
+}
+
+const EMPTY: StateRecord = {
+  code:'', name:'', countryCode:'', gstStateCode:'',
+  unionTerritory:false, region:'', status:'active',
+};
+
+export default function StateMaster() {
+  const navigate = useNavigate();
+  const [records, setRecords] = useState<StateRecord[]>([]);
+  const [search, setSearch] = useState('');
+  const [countryFilter, setCountryFilter] = useState<string>('all');
+  const [formOpen, setFormOpen] = useState(false);
+  const [formData, setFormData] = useState<StateRecord>({...EMPTY});
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewTarget, setPreviewTarget] = useState<'india' | 'uae' | null>(null);
+
+  const filtered = useMemo(() =>
+    records.filter(r => {
+      if (countryFilter !== 'all' && r.countryCode !== countryFilter) return false;
+      return `${r.code} ${r.name}`.toLowerCase().includes(search.toLowerCase());
+    }), [records, search, countryFilter]);
+
+  function seedIndia() {
+    const newRecs: StateRecord[] = indianStates.map(s => ({
+      code: s.code, name: s.name, countryCode: 'IN',
+      gstStateCode: s.gstStateCode, unionTerritory: s.unionTerritory,
+      region: '', status: 'active',
+    }));
+    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
+    toast.success(`Seeded ${indianStates.length} Indian states/UTs`);
+    setPreviewOpen(false);
+  }
+
+  function seedUAE() {
+    const newRecs: StateRecord[] = UAE_EMIRATES.map(e => ({
+      code: e.code, name: e.name, countryCode: 'AE',
+      gstStateCode: '', unionTerritory: false, region: '', status: 'active',
+    }));
+    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
+    toast.success('Seeded 7 UAE Emirates');
+    setPreviewOpen(false);
+  }
+
+  function openCreate() {
+    setFormData({...EMPTY, countryCode: countryFilter !== 'all' ? countryFilter : ''});
+    setEditIndex(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(idx: number) {
+    setFormData({...records[idx]});
+    setEditIndex(idx);
+    setFormOpen(true);
+  }
+
+  function handleSave() {
+    if (!formData.code || !formData.name || !formData.countryCode) {
+      toast.error('Code, Name, and Country are required');
+      return;
+    }
+    if (editIndex !== null) {
+      setRecords(prev => prev.map((r, i) => i === editIndex ? {...formData} : r));
+      toast.success(`State ${formData.code} updated`);
+    } else {
+      setRecords(prev => [...prev, {...formData}]);
+      toast.success(`State ${formData.code} created`);
+    }
+    setFormOpen(false);
+  }
+
+  function handleDelete() {
+    if (deleteIndex === null) return;
+    const r = records[deleteIndex];
+    setRecords(prev => prev.filter((_, i) => i !== deleteIndex));
+    toast.success(`State ${r.code} deleted`);
+    setDeleteIndex(null);
+  }
+
+  const showIndiaSeed = countryFilter === 'IN' || countryFilter === 'all';
+  const showUAESeed = countryFilter === 'AE' || countryFilter === 'all';
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader
+          breadcrumbs={[
+            { label:'Operix Core', href:'/erp/dashboard' },
+            { label:'Command Center', href:'/erp/command-center' },
+            { label:'Foundation' },
+            { label:'Geography', href:'/erp/foundation/geography' },
+            { label:'States' },
+          ]}
+          showDatePicker={false} showCompany={false}
+        />
+        <main className="p-6 space-y-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">State / Province Master</h1>
+              <p className="text-sm text-muted-foreground">States, union territories, and emirates.</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={countryFilter} onValueChange={setCountryFilter}>
+              <SelectTrigger className="w-[180px]"><SelectValue placeholder="All Countries" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Countries</SelectItem>
+                <SelectItem value="IN">🇮🇳 India</SelectItem>
+                <SelectItem value="AE">🇦🇪 UAE</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search states..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            </div>
+            {showIndiaSeed && (
+              <Button variant="outline" className="gap-1.5" onClick={() => { setPreviewTarget('india'); setPreviewOpen(true); }}>
+                <Zap className="h-4 w-4" /> Auto-Create All 38 Indian States
+              </Button>
+            )}
+            {showUAESeed && (
+              <Button variant="outline" className="gap-1.5" onClick={() => { setPreviewTarget('uae'); setPreviewOpen(true); }}>
+                <Zap className="h-4 w-4" /> Auto-Create 7 Emirates
+              </Button>
+            )}
+            <Button onClick={openCreate} className="gap-1.5">
+              <Plus className="h-4 w-4" /> Add State
+            </Button>
+          </div>
+
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Country</TableHead>
+                  <TableHead>GST Code</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Region</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      No states found. Use the auto-seed buttons or add manually.
+                    </TableCell>
+                  </TableRow>
+                ) : filtered.map((r) => {
+                  const realIdx = records.indexOf(r);
+                  return (
+                    <TableRow key={r.code}>
+                      <TableCell className="font-mono font-medium">{r.code}</TableCell>
+                      <TableCell className="font-medium">{r.name}</TableCell>
+                      <TableCell>{r.countryCode}</TableCell>
+                      <TableCell className="font-mono">{r.gstStateCode || '—'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={cn(
+                          r.unionTerritory
+                            ? 'bg-purple-500/10 text-purple-600 border-purple-500/20'
+                            : 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+                        )}>
+                          {r.unionTerritory ? 'Union Territory' : 'State'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{r.region || '—'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={cn(
+                          r.status === 'active'
+                            ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                            : 'bg-muted text-muted-foreground',
+                        )}>
+                          {r.status === 'active' ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(realIdx)}><Edit className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => setDeleteIndex(realIdx)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </main>
+
+        {/* Preview Dialog */}
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="sm:max-w-lg max-h-[70vh] overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle>
+                {previewTarget === 'india' ? 'Preview: 38 Indian States/UTs' : 'Preview: 7 UAE Emirates'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
+              {(previewTarget === 'india' ? indianStates : UAE_EMIRATES).map(s => (
+                <div key={s.code ?? s.name} className="flex items-center gap-2 p-2 rounded border text-sm">
+                  <span className="font-mono text-xs w-16">{s.code}</span>
+                  <span className="flex-1">{s.name}</span>
+                  {'gstStateCode' in s && s.gstStateCode && (
+                    <Badge variant="outline" className="text-xs">GST {s.gstStateCode}</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPreviewOpen(false)}>Cancel</Button>
+              <Button onClick={() => previewTarget === 'india' ? seedIndia() : seedUAE()}>
+                Confirm & Seed
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create/Edit Dialog */}
+        <Dialog open={formOpen} onOpenChange={setFormOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{editIndex !== null ? 'Edit State' : 'Add State'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>Code *</Label>
+                  <Input value={formData.code} onChange={e => setFormData(p => ({...p, code:e.target.value.toUpperCase()}))} placeholder="MH" className="font-mono" disabled={editIndex !== null} />
+                </div>
+                <div className="space-y-1">
+                  <Label>Country *</Label>
+                  <Select value={formData.countryCode} onValueChange={v => setFormData(p => ({...p, countryCode:v}))}>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="IN">🇮🇳 India</SelectItem>
+                      <SelectItem value="AE">🇦🇪 UAE</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label>Name *</Label>
+                <Input value={formData.name} onChange={e => setFormData(p => ({...p, name:e.target.value}))} placeholder="Maharashtra" />
+              </div>
+              {formData.countryCode === 'IN' && (
+                <>
+                  <div className="space-y-1">
+                    <Label>GST State Code</Label>
+                    <Input value={formData.gstStateCode} onChange={e => setFormData(p => ({...p, gstStateCode:e.target.value}))} placeholder="27" className="font-mono" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={formData.unionTerritory} onCheckedChange={v => setFormData(p => ({...p, unionTerritory:v}))} />
+                    <Label>Union Territory</Label>
+                  </div>
+                </>
+              )}
+              <div className="space-y-1">
+                <Label>Region</Label>
+                <Input value={formData.region} onChange={e => setFormData(p => ({...p, region:e.target.value}))} placeholder="West India" />
+              </div>
+              <div className="space-y-1">
+                <Label>Status</Label>
+                <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
+              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation */}
+        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete State</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete {deleteIndex !== null ? records[deleteIndex]?.name : ''}?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </SidebarProvider>
+  );
+}
