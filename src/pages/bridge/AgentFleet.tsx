@@ -13,7 +13,28 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-type AgentStatus = "online" | "offline" | "error";
+type AgentStatus =
+  | "IDLE"              // No active sync — scheduler waiting
+  | "PRECHECK"          // Verifying ODBC, internet, API health
+  | "FULL_SYNC"         // Historical baseline sync in progress
+  | "DELTA_SYNC"        // Regular incremental sync running
+  | "OFFLINE_QUEUE"     // Internet unavailable — batches queued locally
+  | "RETRY_WAIT"        // Backoff period after transient failure
+  | "DEADLETTER_REVIEW" // Batch exceeded retry limit — operator action required
+  | "PAUSED"            // Admin or maintenance pause
+  | "FAULTED";          // Fatal error — service cannot continue safely
+
+const STATE_CONFIG: Record<AgentStatus, {label:string;color:string;dot:string;desc:string}> = {
+  IDLE:              {label:'Idle',            color:'text-muted-foreground bg-muted border-border',                          dot:'bg-muted-foreground',            desc:'Waiting for next scheduled sync'},
+  PRECHECK:          {label:'Pre-Check',       color:'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',                      dot:'bg-cyan-400 animate-pulse',      desc:'Verifying ODBC, internet, and API health'},
+  FULL_SYNC:         {label:'Full Sync',       color:'text-amber-400 bg-amber-500/10 border-amber-500/20',                   dot:'bg-amber-400 animate-pulse',     desc:'Historical baseline sync in progress'},
+  DELTA_SYNC:        {label:'Delta Sync',      color:'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',             dot:'bg-emerald-400 animate-pulse',   desc:'Incremental sync running'},
+  OFFLINE_QUEUE:     {label:'Offline-Queuing',  color:'text-orange-400 bg-orange-500/10 border-orange-500/20',               dot:'bg-orange-400 animate-pulse',    desc:'Internet unavailable — batches queued locally'},
+  RETRY_WAIT:        {label:'Retry Wait',      color:'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',                dot:'bg-yellow-400',                  desc:'Backoff period after transient failure'},
+  DEADLETTER_REVIEW: {label:'Action Required', color:'text-red-400 bg-red-500/10 border-red-500/20',                         dot:'bg-red-400 animate-pulse',       desc:'Batch exceeded retry limit — operator must act'},
+  PAUSED:            {label:'Paused',          color:'text-slate-400 bg-slate-500/10 border-slate-500/20',                    dot:'bg-slate-400',                   desc:'Manually paused by admin'},
+  FAULTED:           {label:'Faulted',         color:'text-red-600 bg-red-600/10 border-red-600/30 font-bold',               dot:'bg-red-600 animate-pulse',       desc:'Fatal error — service cannot continue safely'},
+};
 
 interface Agent {
   id: string;
@@ -45,7 +66,7 @@ const AGENTS: Agent[] = [
     id: "AGENT-01",
     hostname: "tally-srv-01.reliancedigital.in",
     tallyVersion: "Tally Prime 7.0",
-    status: "online",
+    status: "DELTA_SYNC",
     lastHeartbeat: "2s ago",
     currentTask: "Sync Sales Vouchers — Reliance Digital",
     uptimePercent: 99.8,
@@ -60,7 +81,7 @@ const AGENTS: Agent[] = [
     id: "AGENT-02",
     hostname: "tally-srv-02.tatamotors.in",
     tallyVersion: "Tally Prime 7.0",
-    status: "online",
+    status: "FULL_SYNC",
     lastHeartbeat: "5s ago",
     currentTask: null,
     uptimePercent: 97.2,
@@ -76,7 +97,7 @@ const AGENTS: Agent[] = [
     id: "AGENT-03",
     hostname: "tally-branch-01.infosysbpm.in",
     tallyVersion: "Tally Prime 6.1",
-    status: "offline",
+    status: "OFFLINE_QUEUE",
     lastHeartbeat: "15m ago",
     currentTask: null,
     uptimePercent: 82.1,
@@ -91,7 +112,7 @@ const AGENTS: Agent[] = [
     id: "AGENT-04",
     hostname: "tally-branch-02.wipro.in",
     tallyVersion: "Tally Prime 7.0",
-    status: "error",
+    status: "DEADLETTER_REVIEW",
     lastHeartbeat: "1m ago",
     currentTask: "Connection retry — attempt 3/5",
     uptimePercent: 91.5,
@@ -140,8 +161,9 @@ function Sparkline({ data, status }: { data: number[]; status: AgentStatus }) {
   const h = 32;
   const points = data.map((v, i) => `${(i / 23) * 100},${(1 - v / 100) * h}`).join(" ");
   const strokeColor =
-    status === "online" ? "hsl(var(--success))" :
-    status === "error" ? "hsl(var(--destructive))" :
+    ["DELTA_SYNC","IDLE","PRECHECK"].includes(status) ? "hsl(var(--success))" :
+    ["FAULTED","DEADLETTER_REVIEW"].includes(status) ? "hsl(var(--destructive))" :
+    ["FULL_SYNC","RETRY_WAIT"].includes(status) ? "hsl(45 93% 47%)" :
     "hsl(var(--muted-foreground))";
   return (
     <svg width="100%" height={h} className="mt-3 mb-3" preserveAspectRatio="none" viewBox={`0 0 100 ${h}`}>
@@ -149,7 +171,7 @@ function Sparkline({ data, status }: { data: number[]; status: AgentStatus }) {
         points={points}
         fill="none"
         stroke={strokeColor}
-        strokeWidth={status === "offline" ? 1 : 1.5}
+        strokeWidth={1.5}
         vectorEffect="non-scaling-stroke"
       />
     </svg>
@@ -167,9 +189,10 @@ export default function AgentFleet() {
   const openLogs = (agent: Agent) => { setSelectedAgent(agent); setActiveTab("logs"); };
   const openDiagnostics = (agent: Agent) => { setSelectedAgent(agent); setActiveTab("diagnostics"); };
 
-  const onlineCount = AGENTS.filter(a => a.status === "online").length;
-  const offlineCount = AGENTS.filter(a => a.status === "offline").length;
-  const errorCount = AGENTS.filter(a => a.status === "error").length;
+  const syncingCount   = AGENTS.filter(a=>["FULL_SYNC","DELTA_SYNC","PRECHECK"].includes(a.status)).length;
+  const healthyCount   = AGENTS.filter(a=>a.status==="IDLE").length;
+  const degradedCount  = AGENTS.filter(a=>["OFFLINE_QUEUE","RETRY_WAIT","PAUSED"].includes(a.status)).length;
+  const criticalCount  = AGENTS.filter(a=>["DEADLETTER_REVIEW","FAULTED"].includes(a.status)).length;
 
   const diagData = selectedAgent ? (DIAGNOSTICS[selectedAgent.id] || DIAGNOSTICS["AGENT-01"]) : DIAGNOSTICS["AGENT-01"];
   const logData = selectedAgent ? (LOGS[selectedAgent.id] || LOGS["AGENT-01"]) : LOGS["AGENT-01"];
@@ -179,10 +202,10 @@ export default function AgentFleet() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Total Agents", count: AGENTS.length, icon: Radio, color: "text-primary", sub: "Registered agents" },
-          { label: "Online", count: onlineCount, icon: Wifi, color: "text-success", sub: "Connected & healthy" },
-          { label: "Offline", count: offlineCount, icon: WifiOff, color: "text-muted-foreground", sub: "Disconnected" },
-          { label: "Errors", count: errorCount, icon: AlertTriangle, color: "text-destructive", sub: "Immediate attention needed" },
+          { label: "Syncing", count: syncingCount, icon: Radio, color: "text-cyan-400", sub: "Active sync in progress" },
+          { label: "Idle / Healthy", count: healthyCount, icon: Wifi, color: "text-muted-foreground", sub: "Waiting for next schedule" },
+          { label: "Degraded", count: degradedCount, icon: WifiOff, color: "text-amber-400", sub: "Offline-queue, retry, or paused" },
+          { label: "Action Required", count: criticalCount, icon: AlertTriangle, color: "text-red-400", sub: "Dead-letter or faulted", pulse: criticalCount > 0 },
         ].map((s) => (
           <div key={s.label} className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
@@ -203,9 +226,11 @@ export default function AgentFleet() {
             onClick={() => { setSelectedAgent(agent); setActiveTab("diagnostics"); }}
             className={cn(
               "bg-card border rounded-xl p-5 cursor-pointer transition-colors",
-              agent.status === "online" && "border-success/20",
-              agent.status === "offline" && "border-border",
-              agent.status === "error" && "border-destructive/20 bg-destructive/5",
+              agent.status==="FAULTED"            && "border-red-600/30 bg-red-600/5",
+              agent.status==="DEADLETTER_REVIEW"   && "border-red-400/20 bg-red-500/5",
+              agent.status==="DELTA_SYNC"           && "border-emerald-500/20",
+              agent.status==="FULL_SYNC"            && "border-amber-500/20",
+              !["FAULTED","DEADLETTER_REVIEW","DELTA_SYNC","FULL_SYNC"].includes(agent.status) && "border-border",
               selectedAgent?.id === agent.id && "ring-1 ring-primary/40"
             )}
           >
@@ -222,18 +247,11 @@ export default function AgentFleet() {
               </div>
               <div className="text-right shrink-0">
                 <span className={cn(
-                  "inline-flex items-center gap-1.5 text-xs border rounded-lg px-2 py-1",
-                  agent.status === "online" && "bg-success/10 text-success border-success/20",
-                  agent.status === "offline" && "bg-secondary text-muted-foreground border-border",
-                  agent.status === "error" && "bg-destructive/10 text-destructive border-destructive/20",
+                  "inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border",
+                  STATE_CONFIG[agent.status].color
                 )}>
-                  <span className={cn(
-                    "w-2 h-2 rounded-full",
-                    agent.status === "online" && "bg-success animate-pulse",
-                    agent.status === "offline" && "bg-muted-foreground",
-                    agent.status === "error" && "bg-destructive animate-pulse",
-                  )} />
-                  {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                  <span className={cn("w-2 h-2 rounded-full", STATE_CONFIG[agent.status].dot)} />
+                  {STATE_CONFIG[agent.status].label}
                 </span>
                 <p className="text-[10px] font-mono text-muted-foreground mt-1">{agent.lastHeartbeat}</p>
               </div>
@@ -241,8 +259,11 @@ export default function AgentFleet() {
 
             <Sparkline data={agent.sparkline} status={agent.status} />
 
+            {/* Description line */}
+            <p className="text-[10px] text-muted-foreground mt-0.5">{STATE_CONFIG[agent.status].desc}</p>
+
             {/* Stats */}
-            <div className="flex gap-6 text-xs flex-wrap">
+            <div className="flex gap-6 text-xs flex-wrap mt-2">
               <span>
                 Uptime:{" "}
                 <span className={cn(
@@ -267,7 +288,7 @@ export default function AgentFleet() {
             <div className="flex gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
               <Button variant="outline" size="sm" onClick={() => openLogs(agent)}>View Logs</Button>
               <Button variant="outline" size="sm" onClick={() => openDiagnostics(agent)}>Diagnostics</Button>
-              {(agent.status === "error" || agent.status === "offline") && (
+              {(["DEADLETTER_REVIEW","FAULTED","OFFLINE_QUEUE"].includes(agent.status)) && (
                 <Button size="sm" className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => toast(`Restart command sent to ${agent.id}...`)}>
                   Restart Agent
                 </Button>
