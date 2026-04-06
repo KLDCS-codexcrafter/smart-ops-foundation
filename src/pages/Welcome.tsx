@@ -337,7 +337,7 @@ function SupportOpsTab() {
                 filtered.map((ticket) => {
                   const SlaIcon = slaConfig[ticket.sla].icon;
                   return (
-                    <tr key={ticket.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <tr key={ticket.id} className={cn("border-b border-border/50 hover:bg-muted/30 transition-colors", ticket.sla === "breach" && "bg-red-500/5")}>
                       <td className="px-4 py-3">
                         <p className="font-mono font-semibold text-foreground">{ticket.id}</p>
                         <p className="text-xs text-muted-foreground truncate max-w-[250px]">{ticket.title}</p>
@@ -471,7 +471,7 @@ function ServerOpsTab() {
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <bridge.Icon className={cn("h-3.5 w-3.5", bridge.color)} />
-                  <span className="text-muted-foreground">{bridge.label}</span>
+                  <span className={bridge.color}>{bridge.label}</span>
                 </div>
                 <span className="text-muted-foreground">Latency: <span className="font-mono text-foreground">{tenant.latency}ms</span></span>
                 <span className="text-muted-foreground">Uptime: <span className="font-mono text-foreground">{tenant.uptime}%</span></span>
@@ -485,7 +485,7 @@ function ServerOpsTab() {
       <div className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Error Rate by Tenant (%)</p>
         <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={ERROR_RATE_DATA}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="tenant" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
@@ -588,16 +588,16 @@ export default function Welcome() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-1">
+        <div className="flex gap-1 mb-8 overflow-x-auto border-b border-border">
           {tabs.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap",
+                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap",
                 activeTab === tab.key
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               )}
             >
               <tab.icon className="h-4 w-4" />
