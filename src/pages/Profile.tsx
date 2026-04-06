@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   User, Settings, Monitor, Bell, Shield,
-  ArrowLeft, Save, Globe, Lock, Monitor,
+  ArrowLeft, Save, Globe, Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
