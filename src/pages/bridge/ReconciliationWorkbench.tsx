@@ -65,6 +65,12 @@ const REQUESTS: RecRequest[] = [
   { id: "REQ-0036", company: "Tata Motors Finance", tenantId: "TNT-002", module: "Stock Items", totalRecords: 8, matched: 7, partial: 0, mismatch: 1, missing: 0 },
 ];
 
+const RECONCILE_SUMMARY: Record<string, { source: number; extracted: number; uploaded: number; accepted: number; canonical: number }> = {
+  "REQ-0038": { source: 6, extracted: 6, uploaded: 6, accepted: 5, canonical: 5 },
+  "REQ-0037": { source: 12, extracted: 12, uploaded: 12, accepted: 12, canonical: 12 },
+  "REQ-0036": { source: 8, extracted: 8, uploaded: 8, accepted: 7, canonical: 7 },
+};
+
 const ROWS: RecRow[] = [
   {
     id: "row-1", voucherNo: "SV-2847", status: "matched", confidence: 100,
@@ -137,6 +143,51 @@ const STATUS_CONFIG: Record<MatchStatus, { label: string; rowBg: string; badge: 
   missing:  { label: "Missing",  rowBg: "bg-destructive/5", badge: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
+function SSOTSummaryBar({ reqId }: { reqId: string }) {
+  const s = RECONCILE_SUMMARY[reqId];
+  if (!s) return null;
+  const delta = s.source - s.canonical;
+  const steps = [
+    { label: "Source", value: s.source, ok: true },
+    { label: "Extracted", value: s.extracted, ok: s.extracted === s.source },
+    { label: "Uploaded", value: s.uploaded, ok: s.uploaded === s.source },
+    { label: "Accepted", value: s.accepted, ok: s.accepted === s.source },
+    { label: "Canonical", value: s.canonical, ok: s.canonical === s.source },
+  ];
+  return (
+    <div className="bg-muted/20 border border-border rounded-xl p-4 mb-4">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        SSOT Reconciliation Pipeline
+      </p>
+      <div className="flex items-center gap-1 flex-wrap">
+        {steps.map((step, i) => (
+          <div key={step.label} className="flex items-center gap-1">
+            <div className={cn("flex flex-col items-center px-3 py-2 rounded-lg border",
+              step.ok ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20")}>
+              <span className={cn("font-mono text-xl font-bold", step.ok ? "text-emerald-400" : "text-red-400")}>
+                {step.value}
+              </span>
+              <span className="text-[10px] text-muted-foreground">{step.label}</span>
+            </div>
+            {i < steps.length - 1 && <span className="text-muted-foreground/40 text-sm">→</span>}
+          </div>
+        ))}
+        <div className="ml-3 flex flex-col items-center px-3 py-2 rounded-lg border border-emerald-400">
+          <span className={cn("font-mono text-xl font-bold", delta === 0 ? "text-emerald-400" : "text-amber-400")}>
+            {delta === 0 ? "✓" : `+${delta}`}
+          </span>
+          <span className="text-[10px] text-muted-foreground">Delta</span>
+        </div>
+      </div>
+      {delta > 0 && (
+        <p className="text-xs text-amber-400 mt-2">
+          {delta} record{delta > 1 ? "s" : ""} in source not yet in canonical layer. Check exception workbench.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ReconciliationWorkbench() {
   const [selectedReqId, setSelectedReqId] = useState("REQ-0038");
   const [signOffDialog, setSignOffDialog] = useState(false);
@@ -183,6 +234,7 @@ export default function ReconciliationWorkbench() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Match Summary */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+          <SSOTSummaryBar reqId={selectedReq.id} />
           <p className="text-sm font-semibold">{`Match Summary — ${selectedReq.id}`}</p>
           <p className="text-xs text-muted-foreground">{selectedReq.company} · {selectedReq.module}</p>
 
