@@ -401,7 +401,7 @@ export default function Profile() {
               {/* [JWT] Replace with real: GET /api/auth/sessions */}
               <div className='flex items-center justify-between py-3'>
                 <div className='flex items-center gap-3'>
-                  <Smartphone className='h-4 w-4 text-muted-foreground' />
+                  <Monitor className='h-4 w-4 text-muted-foreground' />
                   <div>
                     <p className='text-sm text-foreground'>Current Session</p>
                     <p className='text-xs text-muted-foreground'>Chrome · Windows · This device · Started just now</p>
