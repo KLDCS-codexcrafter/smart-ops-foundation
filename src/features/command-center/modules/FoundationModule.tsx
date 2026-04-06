@@ -93,7 +93,7 @@ export function FoundationModule() {
           title="Companies"
           value={stats.companiesCount === 0 ? 'None registered' : `${stats.companiesCount} registered`}
           status={stats.companiesCount > 0 ? 'ok' : 'empty'}
-          href="/erp/foundation/companies"
+          href="/erp/foundation/entities?tab=companies"
           description="Registered legal entities under the parent."
         />
         <StatCard
@@ -101,7 +101,7 @@ export function FoundationModule() {
           title="Subsidiaries"
           value={stats.subsidiariesCount === 0 ? 'None registered' : `${stats.subsidiariesCount} registered`}
           status={stats.subsidiariesCount > 0 ? 'ok' : 'empty'}
-          href="/erp/foundation/subsidiaries"
+          href="/erp/foundation/entities?tab=subsidiaries"
           description="Owned entities linked for consolidated reporting."
         />
         <StatCard
@@ -110,7 +110,7 @@ export function FoundationModule() {
           value={stats.branchOfficesTotal === 0 ? 'None registered'
             : `${stats.branchOfficesActive} active / ${stats.branchOfficesTotal} total`}
           status={stats.branchOfficesTotal > 0 ? 'ok' : 'empty'}
-          href="/erp/foundation/branch-offices"
+          href="/erp/foundation/entities?tab=branch-offices"
           description="Operational locations: service centres, stores, offices."
         />
       </div>
