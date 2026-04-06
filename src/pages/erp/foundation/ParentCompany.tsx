@@ -1224,5 +1224,6 @@ export default function ParentCompany() {
         </div>
       </div>
     </div>
+    </SidebarProvider>
   );
 }
