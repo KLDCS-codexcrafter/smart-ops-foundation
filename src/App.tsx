@@ -49,6 +49,13 @@ import BranchOfficeList from './pages/erp/foundation/BranchOfficeList';
 import BranchOfficeCreate from './pages/erp/foundation/BranchOfficeCreate';
 import BranchOfficeEdit from './pages/erp/foundation/BranchOfficeEdit';
 import FoundationEntityHub from './pages/erp/foundation/FoundationEntityHub';
+import GeographyHub from './pages/erp/foundation/geography/GeographyHub';
+import CountryMaster from './pages/erp/foundation/geography/CountryMaster';
+import StateMaster from './pages/erp/foundation/geography/StateMaster';
+import DistrictMaster from './pages/erp/foundation/geography/DistrictMaster';
+import CityMaster from './pages/erp/foundation/geography/CityMaster';
+import PortMaster from './pages/erp/foundation/geography/PortMaster';
+import RegionMaster from './pages/erp/foundation/geography/RegionMaster';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -140,6 +147,13 @@ const App = () => (
             <Route path="/erp/foundation/subsidiaries/:id/edit" element={<SubsidiaryEdit />} />
             <Route path="/erp/foundation/branch-offices/create" element={<BranchOfficeCreate />} />
             <Route path="/erp/foundation/branch-offices/:id/edit" element={<BranchOfficeEdit />} />
+            <Route path="/erp/foundation/geography" element={<GeographyHub />} />
+            <Route path="/erp/foundation/geography/countries" element={<CountryMaster />} />
+            <Route path="/erp/foundation/geography/states" element={<StateMaster />} />
+            <Route path="/erp/foundation/geography/districts" element={<DistrictMaster />} />
+            <Route path="/erp/foundation/geography/cities" element={<CityMaster />} />
+            <Route path="/erp/foundation/geography/ports" element={<PortMaster />} />
+            <Route path="/erp/foundation/geography/regions" element={<RegionMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
