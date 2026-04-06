@@ -65,6 +65,12 @@ const REQUESTS: RecRequest[] = [
   { id: "REQ-0036", company: "Tata Motors Finance", tenantId: "TNT-002", module: "Stock Items", totalRecords: 8, matched: 7, partial: 0, mismatch: 1, missing: 0 },
 ];
 
+const RECONCILE_SUMMARY: Record<string, { source: number; extracted: number; uploaded: number; accepted: number; canonical: number }> = {
+  "REQ-0038": { source: 6, extracted: 6, uploaded: 6, accepted: 5, canonical: 5 },
+  "REQ-0037": { source: 12, extracted: 12, uploaded: 12, accepted: 12, canonical: 12 },
+  "REQ-0036": { source: 8, extracted: 8, uploaded: 8, accepted: 7, canonical: 7 },
+};
+
 const ROWS: RecRow[] = [
   {
     id: "row-1", voucherNo: "SV-2847", status: "matched", confidence: 100,
