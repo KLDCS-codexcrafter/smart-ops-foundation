@@ -100,7 +100,7 @@ export const L3_FINANCIAL_GROUPS: L3FinancialGroup[] = [
   { code: 'BOND',   name: 'Debentures & Bonds',                  tallyName: 'Debentures',                   l2Code: 'L-NCL', nature: 'Cr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: true,  order: 6 },
 
   // Under Current Liabilities (L-CL) — 9 groups
-  { code: 'STBOR',  name: 'Short-Term Borrowings',               tallyName: 'Unsecured Loans',              l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: true,  order: 1 },
+  { code: 'STBOR',  name: 'Short-Term Borrowings',               tallyName: 'Unsecured Loans',              l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 1 },
   { code: 'TPAY',   name: 'Trade Payables',                      tallyName: 'Sundry Creditors',             l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: true,  tdsApplicable: true,  order: 2 },
   { code: 'STPROV', name: 'Short-Term Provisions',               tallyName: 'Provisions (Current)',         l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 3 },
   { code: 'DUTYP',  name: 'Duties & Taxes Payable',              tallyName: 'Duties & Taxes',               l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: true,  gstApplicable: false, tdsApplicable: false, order: 4 },
