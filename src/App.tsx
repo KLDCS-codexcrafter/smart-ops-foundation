@@ -67,6 +67,7 @@ import StatutoryRegistrations from './pages/erp/accounting/StatutoryRegistration
 import GSTEntityConfig from './pages/erp/accounting/GSTEntityConfig';
 import Comply360Config from './pages/erp/accounting/Comply360Config';
 import FinFrame from './pages/erp/accounting/FinFrame';
+import LedgerMaster from './pages/erp/accounting/LedgerMaster';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -176,6 +177,7 @@ const App = () => (
             <Route path="/erp/accounting/gst-config" element={<GSTEntityConfig />} />
             <Route path="/erp/accounting/comply360-config" element={<Comply360Config />} />
             <Route path="/erp/accounting/finframe" element={<FinFrame />} />
+            <Route path="/erp/accounting/ledger-master" element={<LedgerMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

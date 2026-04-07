@@ -17,6 +17,7 @@ import { StatutoryRegistrationsPanel } from '@/pages/erp/accounting/StatutoryReg
 import { GSTEntityConfigPanel } from '@/pages/erp/accounting/GSTEntityConfig';
 import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
+import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -33,6 +34,7 @@ export type CommandCenterModule =
   | 'finecore-gst-config'
   | 'finecore-comply360'
   | 'finecore-finframe'
+  | 'finecore-ledgers'
   | 'console';
 
 export default function CommandCenterPage() {
@@ -42,7 +44,7 @@ export default function CommandCenterPage() {
     if (['geography', 'console', 'finecore-hub',
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-statutory-reg',
-      'finecore-gst-config', 'finecore-comply360', 'finecore-finframe'].includes(hash)) {
+      'finecore-gst-config', 'finecore-comply360', 'finecore-finframe', 'finecore-ledgers'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -73,6 +75,7 @@ export default function CommandCenterPage() {
       case 'finecore-gst-config': return <GSTEntityConfigPanel />;
       case 'finecore-comply360': return <Comply360ConfigPanel />;
       case 'finecore-finframe': return <FinFramePanel />;
+      case 'finecore-ledgers': return <LedgerMasterPanel />;
       case 'console': return <SecurityModule />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }

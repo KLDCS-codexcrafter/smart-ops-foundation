@@ -1,6 +1,6 @@
 import {
   Calculator, Shield, FileText, BookOpen, MapPin, Users,
-  Settings, ArrowRight, Lock, Landmark, BarChart3, FolderTree,
+  Settings, ArrowRight, Lock, Landmark, BarChart3, FolderTree, Wallet,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -23,6 +23,7 @@ const MASTER_CARDS: {
   { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, module: 'finecore-gst-config', status: 'seeded' },
   { title: 'Comply360 Config', desc: 'Enable GST automation, Auto RCM, Auto TDS', icon: Shield, module: 'finecore-comply360', status: 'seeded' },
   { title: 'FinFrame', desc: '4-level account group hierarchy — L1 to L4. L3 seeded, L4 user-created.', icon: FolderTree, module: 'finecore-finframe', status: 'empty' },
+  { title: 'Ledger Master', desc: 'Cash, Bank, Expense, Income, Party — all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', status: 'empty' },
 ];
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
