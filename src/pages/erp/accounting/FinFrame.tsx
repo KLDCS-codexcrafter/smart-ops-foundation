@@ -67,11 +67,6 @@ export function FinFramePanel() {
   const [expandedL3, setExpandedL3] = useState<Set<string>>(new Set());
   const [expandedL4, setExpandedL4] = useState<Set<string>>(new Set());
 
-  // Quick Setup
-  const [showQuickSetup, setShowQuickSetup] = useState(false);
-  const [selectedIndustry, setSelectedIndustry] = useState<'manufacturing' | 'trading' | 'services' | 'common'>('common');
-  const [quickSetupPreview, setQuickSetupPreview] = useState<L4IndustryGroup[]>([]);
-
   // Create/Edit L4 dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,8 +79,6 @@ export function FinFramePanel() {
   // Search & filter (My Groups tab)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterL3, setFilterL3] = useState('all');
-
-  const packLoaded = userGroups.length > 0;
 
   // ─── Helpers ────────────────────────────────────────────────
   const getL3ByCode = (code: string) => L3_FINANCIAL_GROUPS.find(g => g.code === code);

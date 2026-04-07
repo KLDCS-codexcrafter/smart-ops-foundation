@@ -68,6 +68,7 @@ import GSTEntityConfig from './pages/erp/accounting/GSTEntityConfig';
 import Comply360Config from './pages/erp/accounting/Comply360Config';
 import FinFrame from './pages/erp/accounting/FinFrame';
 import LedgerMaster from './pages/erp/accounting/LedgerMaster';
+import IncomeTaxMaster from './pages/erp/accounting/IncomeTaxMaster';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
