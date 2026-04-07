@@ -179,6 +179,7 @@ const App = () => (
             <Route path="/erp/accounting/comply360-config" element={<Comply360Config />} />
             <Route path="/erp/accounting/finframe" element={<FinFrame />} />
             <Route path="/erp/accounting/ledger-master" element={<LedgerMaster />} />
+            <Route path="/erp/accounting/income-tax" element={<IncomeTaxMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

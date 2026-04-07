@@ -538,42 +538,8 @@ export function FinFramePanel() {
         </TabsContent>
       </Tabs>
 
-      {/* ─── Quick Setup Preview Modal ───────────────────────── */}
-      <Dialog open={showQuickSetup} onOpenChange={setShowQuickSetup}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Industry Pack Preview — {selectedIndustry === 'common' ? 'All Common' : selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1)}</DialogTitle>
-          </DialogHeader>
-          <ScrollArea className="max-h-[400px]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Group Name</TableHead>
-                  <TableHead>L3 Parent</TableHead>
-                  <TableHead>Nature</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quickSetupPreview.map((g, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-sm">{g.name}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{getL3ByCode(g.l3Code)?.name || g.l3Code}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`text-[9px] ${g.nature === 'Dr' ? 'text-blue-600 border-blue-500/30' : 'text-emerald-600 border-emerald-500/30'}`}>
-                        {g.nature}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowQuickSetup(false)}>Cancel</Button>
-            <Button onClick={handleLoadPack}>Load {quickSetupPreview.length} Groups</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+
 
       {/* ─── Create / Edit L4 Group Dialog ───────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
