@@ -106,6 +106,48 @@ export default function AccountingHub() {
             </div>
           </div>
 
+          {/* Payroll Statutory & Compliance */}
+          <div>
+            <h2 className="text-lg font-semibold text-foreground mb-3">Payroll Statutory & Compliance</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {PAYROLL_CARDS.map(c => (
+                <button
+                  key={c.title}
+                  onClick={() => navigate(c.href)}
+                  className="group flex flex-col gap-3 p-5 rounded-xl border bg-card hover:border-primary/40 hover:bg-accent/30 transition-all text-left"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <c.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
+                  </div>
+                </button>
+              ))}
+              {PAYROLL_COMING_SOON.map(c => (
+                <div
+                  key={c.title}
+                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                      <c.icon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Coming Soon */}
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-3">Coming Soon</h2>
