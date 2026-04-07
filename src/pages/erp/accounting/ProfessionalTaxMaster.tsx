@@ -95,7 +95,7 @@ export default function ProfessionalTaxMaster() {
       stateCode: form.stateCode ?? '',
       stateName: form.stateName ?? '',
       slabFrom: Number(form.slabFrom) || 0,
-      slabTo: form.slabTo === null || form.slabTo === undefined || form.slabTo === '' ? null : Number(form.slabTo),
+      slabTo: form.slabTo === null || form.slabTo === undefined || String(form.slabTo) === '' ? null : Number(form.slabTo),
       monthlyTax: Number(form.monthlyTax) || 0,
       annualMax: form.annualMax ? Number(form.annualMax) : null,
       genderExemption: form.genderExemption ?? 'none',
