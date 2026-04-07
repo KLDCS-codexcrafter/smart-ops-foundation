@@ -42,6 +42,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     { label: 'Statutory Registrations', module: 'finecore-statutory-reg' },
     { label: 'GST Entity Config', module: 'finecore-gst-config' },
     { label: 'Comply360 Config', module: 'finecore-comply360' },
+    { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
   ];
 
   const COMING_SOON = [

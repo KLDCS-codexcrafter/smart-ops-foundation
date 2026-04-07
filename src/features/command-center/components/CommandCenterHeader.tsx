@@ -15,6 +15,7 @@ const MODULE_OPTIONS = [
   { value: 'finecore-statutory-reg', label: 'Statutory Registrations' },
   { value: 'finecore-gst-config', label: 'GST Entity Config' },
   { value: 'finecore-comply360', label: 'Comply360 Config' },
+  { value: 'finecore-finframe', label: 'FinFrame — Account Groups' },
   { value: 'console', label: 'Security Console' },
 ];
 

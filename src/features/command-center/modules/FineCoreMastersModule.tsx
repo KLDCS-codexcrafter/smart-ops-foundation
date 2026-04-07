@@ -1,6 +1,6 @@
 import {
   Calculator, Shield, FileText, BookOpen, MapPin, Users,
-  Settings, ArrowRight, Lock, Landmark, BarChart3,
+  Settings, ArrowRight, Lock, Landmark, BarChart3, FolderTree,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -22,7 +22,7 @@ const MASTER_CARDS: {
   { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, module: 'finecore-statutory-reg', status: 'seeded' },
   { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, module: 'finecore-gst-config', status: 'seeded' },
   { title: 'Comply360 Config', desc: 'Enable GST automation, Auto RCM, Auto TDS', icon: Shield, module: 'finecore-comply360', status: 'seeded' },
-  { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3, module: 'finecore-hub', status: 'coming_soon' },
+  { title: 'FinFrame', desc: '4-level account group hierarchy — L1 to L4. L3 seeded, L4 user-created.', icon: FolderTree, module: 'finecore-finframe', status: 'empty' },
 ];
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
