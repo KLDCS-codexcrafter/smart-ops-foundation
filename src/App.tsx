@@ -56,6 +56,11 @@ import DistrictMaster from './pages/erp/foundation/geography/DistrictMaster';
 import CityMaster from './pages/erp/foundation/geography/CityMaster';
 import PortMaster from './pages/erp/foundation/geography/PortMaster';
 import RegionMaster from './pages/erp/foundation/geography/RegionMaster';
+import AccountingHub from './pages/erp/accounting/AccountingHub';
+import TaxRateMaster from './pages/erp/accounting/TaxRateMaster';
+import TDSSectionMaster from './pages/erp/accounting/TDSSectionMaster';
+import TCSSectionMaster from './pages/erp/accounting/TCSSectionMaster';
+import HSNSACMaster from './pages/erp/accounting/HSNSACMaster';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -154,6 +159,11 @@ const App = () => (
             <Route path="/erp/foundation/geography/cities" element={<CityMaster />} />
             <Route path="/erp/foundation/geography/ports" element={<PortMaster />} />
             <Route path="/erp/foundation/geography/regions" element={<RegionMaster />} />
+            <Route path="/erp/accounting" element={<AccountingHub />} />
+            <Route path="/erp/accounting/tax-rates" element={<TaxRateMaster />} />
+            <Route path="/erp/accounting/tds-sections" element={<TDSSectionMaster />} />
+            <Route path="/erp/accounting/tcs-sections" element={<TCSSectionMaster />} />
+            <Route path="/erp/accounting/hsn-sac" element={<HSNSACMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
