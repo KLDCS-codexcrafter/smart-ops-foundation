@@ -65,6 +65,11 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Delivery Point': 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
 };
 
+const BUSINESS_ACTIVITIES = [
+  'Manufacturing', 'Trading', 'Services', 'IT Services', 'Consulting',
+  'Import / Export', 'Distribution',
+];
+
 interface BranchFormData {
   name: string; code: string; shortCode: string;
   branchType: string; parentCompanyId: string; parentCompanyName: string;
@@ -75,6 +80,7 @@ interface BranchFormData {
   branchHead: string; establishmentDate: string; officeArea: string;
   employeeCapacity: string; operatingLicenseNo: string; branchRegistrationNo: string;
   notes: string;
+  businessActivity: string;
 }
 
 const INITIAL: BranchFormData = {
@@ -87,6 +93,7 @@ const INITIAL: BranchFormData = {
   branchHead: '', establishmentDate: '', officeArea: '',
   employeeCapacity: '', operatingLicenseNo: '', branchRegistrationNo: '',
   notes: '',
+  businessActivity: 'Services',
 };
 
 interface BranchOfficeFormProps {
@@ -316,7 +323,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
       entityType="branch"
       businessEntity="Branch Office"
       industry={form.branchType ?? 'Others'}
-      businessActivity="Services"
+      businessActivity={form.businessActivity}
       onComplete={(result) => {
         toast.success(`${form.name} is ready. ${result.ledgersCreated} ledgers created.`);
         navigate('/erp/foundation/branch-offices');

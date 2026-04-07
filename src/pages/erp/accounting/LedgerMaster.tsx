@@ -192,7 +192,8 @@ const autoCreateInstances = (
   openingBalance: number,
   openingBalanceType: 'Dr' | 'Cr' = 'Dr',
 ) => {
-  MOCK_ENTITIES.forEach((entity, idx) => {
+  const allEntities = loadEntities();
+  allEntities.forEach((entity, idx) => {
     saveInstance({
       id: crypto.randomUUID(),
       ledgerDefinitionId: def.id,
@@ -259,13 +260,14 @@ const defaultBankForm = {
 // ─── Component ────────────────────────────────────────────────────────
 
 export function LedgerMasterPanel() {
+  const [entities] = useState(() => loadEntities());
   const [cashDefs, setCashDefs] = useState<CashLedgerDefinition[]>(() => loadCashDefs());
   const [bankDefs, setBankDefs] = useState<BankLedgerDefinition[]>(() => loadBankDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
   const [defSubTab, setDefSubTab] = useState<'cash' | 'bank'>('cash');
-  const [selEntityId, setSelEntityId] = useState(MOCK_ENTITIES[0].id);
+  const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
-    () => loadInstances(MOCK_ENTITIES[0].id)
+    () => loadInstances(loadEntities()[0]?.id ?? '')
   );
 
   // Cash dialog state
