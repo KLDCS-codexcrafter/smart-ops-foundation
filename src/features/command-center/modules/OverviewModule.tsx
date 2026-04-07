@@ -53,12 +53,12 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
     <div className="space-y-6 relative">
       {/* Orbs */}
       <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-20 animate-pulse"
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-20 animate-float-1 animate-pulse-glow"
           style={{ background: 'radial-gradient(circle, hsl(var(--orb-1) / 0.3), transparent 70%)' }} />
-        <div className="absolute top-1/2 -left-24 w-80 h-80 rounded-full opacity-15 animate-pulse"
-          style={{ background: 'radial-gradient(circle, hsl(var(--orb-2) / 0.2), transparent 70%)', animationDelay: '2s' }} />
-        <div className="absolute -bottom-20 right-1/3 w-64 h-64 rounded-full opacity-15 animate-pulse"
-          style={{ background: 'radial-gradient(circle, hsl(var(--orb-3) / 0.25), transparent 70%)', animationDelay: '4s' }} />
+        <div className="absolute top-1/2 -left-24 w-80 h-80 rounded-full opacity-15 animate-float-2 animate-pulse-glow"
+          style={{ background: 'radial-gradient(circle, hsl(var(--orb-2) / 0.2), transparent 70%)' }} />
+        <div className="absolute -bottom-20 right-1/3 w-64 h-64 rounded-full opacity-15 animate-float-3 animate-pulse-glow"
+          style={{ background: 'radial-gradient(circle, hsl(var(--orb-3) / 0.25), transparent 70%)' }} />
       </div>
 
       {/* Greeting */}
