@@ -18,6 +18,33 @@ interface CommandCenterSidebarProps {
   onModuleChange: (module: CommandCenterModule) => void;
 }
 
+const STATUTORY_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Hub Overview', module: 'finecore-hub' },
+  { label: 'GST Rate Reference', module: 'finecore-tax-rates' },
+  { label: 'TDS / TCS Sections', module: 'finecore-tds' },
+  { label: 'HSN / SAC Directory', module: 'finecore-hsn-sac' },
+  { label: 'Payroll Statutory', module: 'finecore-epf-esi-lwf' },
+  { label: 'Income Tax Reference', module: 'finecore-income-tax' },
+];
+
+const ENTITY_CONFIG_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Statutory Registrations', module: 'finecore-statutory-reg' },
+  { label: 'GST Entity Config', module: 'finecore-gst-config' },
+  { label: 'Comply360 Config', module: 'finecore-comply360' },
+];
+
+const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
+  { label: 'Ledger Master', module: 'finecore-ledgers' },
+];
+
+const COMING_SOON = [
+  { label: 'Procure Masters', icon: ShoppingCart },
+  { label: 'Inventory Masters', icon: Package },
+  { label: 'Sales Masters', icon: TrendingUp },
+  { label: 'HR & Payroll Masters', icon: Users },
+];
+
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
   const [foundationOpen, setFoundationOpen] = useState(
     activeModule === 'foundation' || activeModule === 'geography'
@@ -31,27 +58,24 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     if (activeModule.startsWith('finecore')) setFinecoreOpen(true);
   }, [activeModule]);
 
-  const FINECORE_ITEMS: { label: string; module: CommandCenterModule }[] = [
-    { label: 'Hub Overview', module: 'finecore-hub' },
-    { label: 'Tax Rate Master', module: 'finecore-tax-rates' },
-    { label: 'TDS Sections', module: 'finecore-tds' },
-    { label: 'TCS Sections', module: 'finecore-tcs' },
-    { label: 'HSN / SAC Codes', module: 'finecore-hsn-sac' },
-    { label: 'Professional Tax', module: 'finecore-professional-tax' },
-    { label: 'EPF / ESI / LWF', module: 'finecore-epf-esi-lwf' },
-    { label: 'Statutory Registrations', module: 'finecore-statutory-reg' },
-    { label: 'GST Entity Config', module: 'finecore-gst-config' },
-    { label: 'Comply360 Config', module: 'finecore-comply360' },
-    { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
-    { label: 'Ledger Master', module: 'finecore-ledgers' },
-  ];
+  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS].map(i => i.module);
 
-  const COMING_SOON = [
-    { label: 'Procure Masters', icon: ShoppingCart },
-    { label: 'Inventory Masters', icon: Package },
-    { label: 'Sales Masters', icon: TrendingUp },
-    { label: 'HR & Payroll Masters', icon: Users },
-  ];
+  const renderSubSection = (label: string, items: { label: string; module: CommandCenterModule }[]) => (
+    <>
+      <SidebarMenuSubItem>
+        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          {label}
+        </p>
+      </SidebarMenuSubItem>
+      {items.map(item => (
+        <SidebarMenuSubItem key={item.module}>
+          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+            <span>{item.label}</span>
+          </SidebarMenuSubButton>
+        </SidebarMenuSubItem>
+      ))}
+    </>
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r" style={{ background: "hsl(222 47% 11%)", borderColor: "rgba(255,255,255,0.06)" }}>
@@ -132,13 +156,9 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {FINECORE_ITEMS.map(item => (
-                        <SidebarMenuSubItem key={item.module}>
-                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
-                            <span>{item.label}</span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
+                      {renderSubSection('Statutory Reference', STATUTORY_ITEMS)}
+                      {renderSubSection('Entity Configuration', ENTITY_CONFIG_ITEMS)}
+                      {renderSubSection('Account Structure', ACCOUNT_STRUCTURE_ITEMS)}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>

@@ -137,3 +137,75 @@ export const LWF_RATES: LWFRate[] = [
   { stateCode: 'OR', stateName: 'Odisha', employeeContribution: 8, employerContribution: 12, frequency: 'annual', dueMonth: 'December', effectiveFrom: '2023-04-01', notes: 'Annual payment due in December' },
   { stateCode: 'WB', stateName: 'West Bengal', employeeContribution: 3, employerContribution: 15, frequency: 'monthly', dueMonth: null, effectiveFrom: '2023-04-01', notes: 'Monthly deduction and payment' },
 ];
+
+// ── Income Tax — FY 2024-25 (AY 2025-26) ────────────────────
+export interface ITSlab {
+  incomeFrom: number;
+  incomeTo: number | null;
+  ratePercent: number;
+  label: string;
+}
+
+export const IT_SLABS_OLD_REGIME: ITSlab[] = [
+  { incomeFrom: 0, incomeTo: 250000, ratePercent: 0, label: 'Up to ₹2.5 Lakh' },
+  { incomeFrom: 250001, incomeTo: 500000, ratePercent: 5, label: '₹2.5L to ₹5L' },
+  { incomeFrom: 500001, incomeTo: 1000000, ratePercent: 20, label: '₹5L to ₹10L' },
+  { incomeFrom: 1000001, incomeTo: null, ratePercent: 30, label: 'Above ₹10L' },
+];
+
+export const IT_SLABS_NEW_REGIME: ITSlab[] = [
+  { incomeFrom: 0, incomeTo: 300000, ratePercent: 0, label: 'Up to ₹3 Lakh' },
+  { incomeFrom: 300001, incomeTo: 700000, ratePercent: 5, label: '₹3L to ₹7L' },
+  { incomeFrom: 700001, incomeTo: 1000000, ratePercent: 10, label: '₹7L to ₹10L' },
+  { incomeFrom: 1000001, incomeTo: 1200000, ratePercent: 15, label: '₹10L to ₹12L' },
+  { incomeFrom: 1200001, incomeTo: 1500000, ratePercent: 20, label: '₹12L to ₹15L' },
+  { incomeFrom: 1500001, incomeTo: null, ratePercent: 30, label: 'Above ₹15L' },
+];
+
+export interface SurchargeSlab {
+  incomeFrom: number;
+  incomeTo: number | null;
+  ratePercent: number;
+  label: string;
+}
+
+export const SURCHARGE_RATES: SurchargeSlab[] = [
+  { incomeFrom: 5000000, incomeTo: 10000000, ratePercent: 10, label: '₹50L to ₹1Cr' },
+  { incomeFrom: 10000001, incomeTo: 20000000, ratePercent: 15, label: '₹1Cr to ₹2Cr' },
+  { incomeFrom: 20000001, incomeTo: null, ratePercent: 25, label: 'Above ₹2Cr (capped at 25% post Jul 2023)' },
+];
+
+export const IT_CESS_RATE = 4; // Health & Education Cess %
+
+export const STANDARD_DEDUCTION = {
+  oldRegime: 50000,
+  newRegime: 75000,
+};
+
+export const REBATE_87A = {
+  oldRegime: { maxIncome: 500000, rebateAmount: 12500 },
+  newRegime: { maxIncome: 700000, rebateAmount: 25000 },
+};
+
+export const DEDUCTION_LIMITS = {
+  section80C: 150000,
+  section80D: { self: 25000, seniorCitizen: 50000 },
+  section80CCD1B: 50000,
+  hraMetroPercent: 50,
+  hraNonMetroPercent: 40,
+};
+
+export const GRATUITY_CONFIG = {
+  formula: '(basicSalary × 15 × yearsOfService) / 26',
+  maxExemption: 2000000,
+  minimumServiceYears: 5,
+};
+
+export const NPS_CONFIG = {
+  governmentEmployerPercent: 14,
+  privateMaxPercent: 10,
+  employeeMax80CCD1B: 50000,
+};
+
+export const IT_EFFECTIVE_FY = '2024-25';
+export const IT_SOURCE = 'Finance Act 2024 — Budget presented 23 Jul 2024';

@@ -1,22 +1,20 @@
 /**
- * EPFESILWFMaster.tsx — Zone 3 Session 2
- * Three-tab master for EPF, ESI, and LWF statutory rates.
- * [JWT] Replace with GET/POST/PATCH /api/payroll-statutory/epf, /esi, /lwf
+ * EPFESILWFMaster.tsx — Read-only Payroll Statutory Reference
+ * 4 tabs: EPF, ESI, LWF, Income Tax (summary)
+ * Maintained by 4DSmartOps. No CRUD.
  */
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Trash2, Download, Info } from 'lucide-react';
-import { toast } from 'sonner';
+import { ArrowRight, Info } from 'lucide-react';
 import {
   EPF_RATES, ESI_RATES, LWF_RATES,
-  type EPFRate, type ESIRate, type LWFRate,
+  IT_SLABS_OLD_REGIME, IT_SLABS_NEW_REGIME, STANDARD_DEDUCTION, IT_EFFECTIVE_FY,
 } from '@/data/payroll-statutory-seed-data';
 
 const COMPONENT_COLORS: Record<string, string> = {
@@ -36,23 +34,27 @@ const FREQ_COLORS: Record<string, string> = {
 const fmt = (n: number) => n.toLocaleString('en-IN');
 
 export function EPFESILWFMasterPanel() {
-  const [epfRecords, setEpfRecords] = useState<EPFRate[]>([]);
-  const [esiRecords, setEsiRecords] = useState<ESIRate[]>([]);
-  const [lwfRecords, setLwfRecords] = useState<LWFRate[]>([]);
-
-  const epfEmpTotal = epfRecords.filter(r => r.contributionType === 'employee').reduce((s, r) => s + r.ratePercentage, 0);
-  const epfErTotal = epfRecords.filter(r => r.contributionType === 'employer').reduce((s, r) => s + r.ratePercentage, 0);
-  const esiEmpRate = esiRecords.find(r => r.contributionType === 'employee')?.ratePercentage ?? 0;
-  const esiErRate = esiRecords.find(r => r.contributionType === 'employer')?.ratePercentage ?? 0;
-  const lwfStates = new Set(lwfRecords.map(r => r.stateCode)).size;
-  const lwfMonthly = lwfRecords.filter(r => r.frequency === 'monthly').length;
-  const lwfHalfYearly = lwfRecords.filter(r => r.frequency === 'half_yearly').length;
+  const epfEmpTotal = EPF_RATES.filter(r => r.contributionType === 'employee').reduce((s, r) => s + r.ratePercentage, 0);
+  const epfErTotal = EPF_RATES.filter(r => r.contributionType === 'employer').reduce((s, r) => s + r.ratePercentage, 0);
+  const esiEmpRate = ESI_RATES.find(r => r.contributionType === 'employee')?.ratePercentage ?? 0;
+  const esiErRate = ESI_RATES.find(r => r.contributionType === 'employer')?.ratePercentage ?? 0;
+  const lwfStates = new Set(LWF_RATES.map(r => r.stateCode)).size;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Payroll Statutory Rates</h1>
-        <p className="text-sm text-muted-foreground">EPF, ESI and Labour Welfare Fund configuration</p>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-bold text-foreground">Payroll Statutory Reference</h1>
+          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20 text-[10px]">
+            Maintained by 4DSmartOps
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          EPF, ESI and LWF contribution rates — maintained by 4DSmartOps per EPFO/ESIC notifications
+        </p>
+        <p className="text-xs text-muted-foreground/70 mt-0.5">
+          Last updated: Apr 2024 · EPFO, ESIC and State Labour Dept notifications
+        </p>
       </div>
 
       <Tabs defaultValue="epf" className="space-y-4">
@@ -60,6 +62,7 @@ export function EPFESILWFMasterPanel() {
           <TabsTrigger value="epf">EPF</TabsTrigger>
           <TabsTrigger value="esi">ESI</TabsTrigger>
           <TabsTrigger value="lwf">LWF</TabsTrigger>
+          <TabsTrigger value="income-tax">Income Tax</TabsTrigger>
         </TabsList>
 
         {/* EPF Tab */}
@@ -68,11 +71,6 @@ export function EPFESILWFMasterPanel() {
             <Card className="p-4"><p className="text-sm text-muted-foreground">Employee Total</p><p className="text-2xl font-bold">{epfEmpTotal}%</p></Card>
             <Card className="p-4"><p className="text-sm text-muted-foreground">Employer Total</p><p className="text-2xl font-bold">{epfErTotal.toFixed(2)}%</p></Card>
           </div>
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={() => { setEpfRecords(EPF_RATES); toast.success(`Loaded ${EPF_RATES.length} EPF rates`); }}>
-              <Download className="h-4 w-4 mr-1" /> Load Official Rates
-            </Button>
-          </div>
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
@@ -80,19 +78,15 @@ export function EPFESILWFMasterPanel() {
                   <TableHead>Component</TableHead>
                   <TableHead>Contribution Type</TableHead>
                   <TableHead className="text-right">Rate %</TableHead>
-                  <TableHead className="text-right">Wage Ceiling (Rs)</TableHead>
-                  <TableHead className="text-right">Max Amount (Rs)</TableHead>
-                  <TableHead className="text-right">Min Amount (Rs)</TableHead>
+                  <TableHead className="text-right">Wage Ceiling (₹)</TableHead>
+                  <TableHead className="text-right">Max Amount (₹)</TableHead>
+                  <TableHead className="text-right">Min Amount (₹)</TableHead>
                   <TableHead>Effective From</TableHead>
                   <TableHead>Notes</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {epfRecords.length === 0 && (
-                  <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Click "Load Official Rates" to seed EPF data.</TableCell></TableRow>
-                )}
-                {epfRecords.map((r, i) => (
+                {EPF_RATES.map((r, i) => (
                   <TableRow key={i}>
                     <TableCell><Badge className={`text-[10px] ${COMPONENT_COLORS[r.component] ?? ''}`}>{r.component.toUpperCase().replace('_', ' ')}</Badge></TableCell>
                     <TableCell className="text-xs capitalize">{r.contributionType}</TableCell>
@@ -102,11 +96,6 @@ export function EPFESILWFMasterPanel() {
                     <TableCell className="text-right font-mono text-xs">{r.minAmount ? `₹${fmt(r.minAmount)}` : '—'}</TableCell>
                     <TableCell className="text-xs">{r.effectiveFrom}</TableCell>
                     <TableCell className="text-xs max-w-[200px] truncate">{r.notes}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setEpfRecords(prev => prev.filter((_, j) => j !== i)); toast.success('Deleted'); }}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -117,7 +106,7 @@ export function EPFESILWFMasterPanel() {
               <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
               <div className="text-xs text-blue-700 dark:text-blue-300">
                 <p className="font-semibold mb-1">EPF Calculation Note</p>
-                <p>Employee contribution: 12% of Basic+DA. Employer split: 3.67% to PF account + 8.33% to Pension (capped at Rs 1,250/month) + 0.50% EDLI. Admin charges: 0.50% EPF (min Rs 500) + 0.01% EDLI (min Rs 200).</p>
+                <p>Employee contribution: 12% of Basic+DA. Employer split: 3.67% to PF account + 8.33% to Pension (capped at ₹1,250/month) + 0.50% EDLI. Admin charges: 0.50% EPF (min ₹500) + 0.01% EDLI (min ₹200).</p>
               </div>
             </div>
           </Card>
@@ -129,39 +118,25 @@ export function EPFESILWFMasterPanel() {
             <Card className="p-4"><p className="text-sm text-muted-foreground">Employee Rate</p><p className="text-2xl font-bold">{esiEmpRate}%</p></Card>
             <Card className="p-4"><p className="text-sm text-muted-foreground">Employer Rate</p><p className="text-2xl font-bold">{esiErRate}%</p></Card>
           </div>
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={() => { setEsiRecords(ESI_RATES); toast.success(`Loaded ${ESI_RATES.length} ESI rates`); }}>
-              <Download className="h-4 w-4 mr-1" /> Load Official Rates
-            </Button>
-          </div>
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Contribution Type</TableHead>
                   <TableHead className="text-right">Rate %</TableHead>
-                  <TableHead className="text-right">Wage Ceiling (Rs)</TableHead>
+                  <TableHead className="text-right">Wage Ceiling (₹)</TableHead>
                   <TableHead>Effective From</TableHead>
                   <TableHead>Notes</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {esiRecords.length === 0 && (
-                  <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">Click "Load Official Rates" to seed ESI data.</TableCell></TableRow>
-                )}
-                {esiRecords.map((r, i) => (
+                {ESI_RATES.map((r, i) => (
                   <TableRow key={i}>
                     <TableCell className="text-xs capitalize">{r.contributionType}</TableCell>
                     <TableCell className="text-right font-mono text-xs font-semibold">{r.ratePercentage}%</TableCell>
                     <TableCell className="text-right font-mono text-xs">₹{fmt(r.wageCeiling)}</TableCell>
                     <TableCell className="text-xs">{r.effectiveFrom}</TableCell>
                     <TableCell className="text-xs">{r.notes}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setEsiRecords(prev => prev.filter((_, j) => j !== i)); toast.success('Deleted'); }}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -172,7 +147,7 @@ export function EPFESILWFMasterPanel() {
               <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
               <div className="text-xs text-blue-700 dark:text-blue-300">
                 <p className="font-semibold mb-1">ESI Applicability Note</p>
-                <p>ESI applies only when gross monthly wages are Rs 21,000 or below. Both employee and employer stop contributing when employee wages exceed this ceiling.</p>
+                <p>ESI applies only when gross monthly wages are ₹21,000 or below. Both employee and employer stop contributing when employee wages exceed this ceiling.</p>
               </div>
             </div>
           </Card>
@@ -182,13 +157,8 @@ export function EPFESILWFMasterPanel() {
         <TabsContent value="lwf" className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <Card className="p-4"><p className="text-sm text-muted-foreground">States Configured</p><p className="text-2xl font-bold">{lwfStates}</p></Card>
-            <Card className="p-4"><p className="text-sm text-muted-foreground">Monthly Frequency</p><p className="text-2xl font-bold">{lwfMonthly}</p></Card>
-            <Card className="p-4"><p className="text-sm text-muted-foreground">Half-Yearly</p><p className="text-2xl font-bold">{lwfHalfYearly}</p></Card>
-          </div>
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={() => { setLwfRecords(LWF_RATES); toast.success(`Loaded ${LWF_RATES.length} LWF states`); }}>
-              <Download className="h-4 w-4 mr-1" /> Load 10 States
-            </Button>
+            <Card className="p-4"><p className="text-sm text-muted-foreground">Monthly Frequency</p><p className="text-2xl font-bold">{LWF_RATES.filter(r => r.frequency === 'monthly').length}</p></Card>
+            <Card className="p-4"><p className="text-sm text-muted-foreground">Half-Yearly</p><p className="text-2xl font-bold">{LWF_RATES.filter(r => r.frequency === 'half_yearly').length}</p></Card>
           </div>
           <div className="border rounded-lg overflow-hidden">
             <Table>
@@ -196,19 +166,15 @@ export function EPFESILWFMasterPanel() {
                 <TableRow>
                   <TableHead>State Code</TableHead>
                   <TableHead>State Name</TableHead>
-                  <TableHead className="text-right">Employee (Rs)</TableHead>
-                  <TableHead className="text-right">Employer (Rs)</TableHead>
+                  <TableHead className="text-right">Employee (₹)</TableHead>
+                  <TableHead className="text-right">Employer (₹)</TableHead>
                   <TableHead>Frequency</TableHead>
                   <TableHead>Due Month</TableHead>
                   <TableHead>Effective From</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {lwfRecords.length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground">Click "Load 10 States" to seed LWF data.</TableCell></TableRow>
-                )}
-                {lwfRecords.map((r, i) => (
+                {LWF_RATES.map((r, i) => (
                   <TableRow key={i}>
                     <TableCell className="text-xs font-mono">{r.stateCode}</TableCell>
                     <TableCell className="text-xs">{r.stateName}</TableCell>
@@ -221,16 +187,58 @@ export function EPFESILWFMasterPanel() {
                     </TableCell>
                     <TableCell className="text-xs">{r.dueMonth ?? '—'}</TableCell>
                     <TableCell className="text-xs">{r.effectiveFrom}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setLwfRecords(prev => prev.filter((_, j) => j !== i)); toast.success('Deleted'); }}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+        </TabsContent>
+
+        {/* Income Tax Tab */}
+        <TabsContent value="income-tax" className="space-y-4">
+          <Card className="p-4 border-indigo-200 bg-indigo-50/50 dark:bg-indigo-950/20 dark:border-indigo-800">
+            <p className="text-sm font-semibold text-foreground mb-1">FY {IT_EFFECTIVE_FY} · New Tax Regime is default from this FY</p>
+            <p className="text-xs text-muted-foreground">Quick summary — see full Income Tax Reference for deductions, surcharge, and gratuity.</p>
+          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="p-4">
+              <h3 className="text-sm font-semibold mb-2">Old Regime</h3>
+              <p className="text-xs text-muted-foreground mb-3">Standard Deduction: ₹{fmt(STANDARD_DEDUCTION.oldRegime)}</p>
+              <div className="space-y-1">
+                {IT_SLABS_OLD_REGIME.map(s => (
+                  <div key={s.label} className="flex justify-between text-xs">
+                    <span>{s.label}</span>
+                    <span className="font-mono font-semibold">{s.ratePercent}%</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            <Card className="p-4 border-indigo-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-semibold">New Regime</h3>
+                <Badge className="bg-indigo-500/10 text-indigo-600 border-indigo-500/20 text-[9px]">DEFAULT</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Standard Deduction: ₹{fmt(STANDARD_DEDUCTION.newRegime)}</p>
+              <div className="space-y-1">
+                {IT_SLABS_NEW_REGIME.map(s => (
+                  <div key={s.label} className="flex justify-between text-xs">
+                    <span>{s.label}</span>
+                    <span className="font-mono font-semibold">{s.ratePercent}%</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => {
+              window.location.hash = 'finecore-income-tax';
+              window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }}
+          >
+            View Full IT Slabs <ArrowRight className="h-4 w-4" />
+          </Button>
         </TabsContent>
       </Tabs>
     </div>
@@ -238,7 +246,6 @@ export function EPFESILWFMasterPanel() {
 }
 
 export default function EPFESILWFMaster() {
-  const navigate = useNavigate();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
@@ -246,17 +253,11 @@ export default function EPFESILWFMaster() {
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
             { label: 'FineCore', href: '/erp/accounting' },
-            { label: 'Payroll Statutory Rates' },
+            { label: 'Payroll Statutory Reference' },
           ]}
-          showDatePicker={false}
-          showCompany={false}
+          showDatePicker={false} showCompany={false}
         />
         <main className="p-6 space-y-6">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/erp/accounting')}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </div>
           <EPFESILWFMasterPanel />
         </main>
       </div>

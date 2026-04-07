@@ -67,11 +67,6 @@ export function FinFramePanel() {
   const [expandedL3, setExpandedL3] = useState<Set<string>>(new Set());
   const [expandedL4, setExpandedL4] = useState<Set<string>>(new Set());
 
-  // Quick Setup
-  const [showQuickSetup, setShowQuickSetup] = useState(false);
-  const [selectedIndustry, setSelectedIndustry] = useState<'manufacturing' | 'trading' | 'services' | 'common'>('common');
-  const [quickSetupPreview, setQuickSetupPreview] = useState<L4IndustryGroup[]>([]);
-
   // Create/Edit L4 dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,8 +79,6 @@ export function FinFramePanel() {
   // Search & filter (My Groups tab)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterL3, setFilterL3] = useState('all');
-
-  const packLoaded = userGroups.length > 0;
 
   // ─── Helpers ────────────────────────────────────────────────
   const getL3ByCode = (code: string) => L3_FINANCIAL_GROUPS.find(g => g.code === code);
@@ -121,38 +114,7 @@ export function FinFramePanel() {
     setter(next);
   };
 
-  // ─── Quick Setup ────────────────────────────────────────────
-  const handlePreviewPack = () => {
-    const groups = [
-      ...L4_INDUSTRY_PACKS.common,
-      ...(selectedIndustry !== 'common' ? L4_INDUSTRY_PACKS[selectedIndustry] : []),
-    ];
-    setQuickSetupPreview(groups);
-    setShowQuickSetup(true);
-  };
-
-  const handleLoadPack = () => {
-    const groups = quickSetupPreview.map(g => ({
-      id: crypto.randomUUID(),
-      name: g.name,
-      code: `${g.l3Code}-${String(
-        userGroups.filter(ug => ug.parentL3Code === g.l3Code).length +
-        groups.filter((og, oi) => og.l3Code === g.l3Code && oi < groups.indexOf(g)).length +
-        1
-      ).padStart(6, '0')}`,
-      parentL3Code: g.l3Code,
-      parentGroupId: null,
-      nature: g.nature,
-      gstApplicable: getL3ByCode(g.l3Code)?.gstApplicable ?? false,
-      tdsApplicable: getL3ByCode(g.l3Code)?.tdsApplicable ?? false,
-      notes: '',
-      status: 'active' as const,
-    }));
-    // [JWT] Replace with POST /api/accounting/user-groups/bulk
-    saveGroups([...userGroups, ...groups]);
-    setShowQuickSetup(false);
-    const label = selectedIndustry === 'common' ? 'Common' : selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1);
-    toast.success(`Loaded ${quickSetupPreview.length} account groups from ${label} pack`);
+  // ─── (Quick Setup removed — industry packs loaded via Entity Auto-Setup) ──
   };
 
   // ─── Create / Edit L4 ──────────────────────────────────────
@@ -350,9 +312,6 @@ export function FinFramePanel() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handlePreviewPack}>
-            <Package className="h-4 w-4 mr-1" /> Load Industry Pack
-          </Button>
           <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
             <button
               onClick={() => setNamingMode('indas')}
@@ -371,7 +330,7 @@ export function FinFramePanel() {
         {[
           { label: 'L3 System Groups', value: L3_FINANCIAL_GROUPS.length, icon: TreePine },
           { label: 'Your Groups', value: userGroups.filter(g => g.status === 'active').length, icon: FolderTree },
-          { label: 'Industry Pack', value: packLoaded ? 'Yes' : 'No', icon: Package },
+          { label: 'L2 Parent Groups', value: L2_PARENT_GROUPS.length, icon: Package },
           { label: 'Total Groups', value: L3_FINANCIAL_GROUPS.length + userGroups.filter(g => g.status === 'active').length, icon: Layers },
         ].map(s => (
           <Card key={s.label} className="bg-card/60 backdrop-blur-xl border-border">
@@ -393,28 +352,10 @@ export function FinFramePanel() {
 
         {/* Tab 1 — Account Tree */}
         <TabsContent value="tree" className="space-y-4">
-          {/* Quick Setup Banner */}
           {userGroups.length === 0 && (
-            <Card className="border-indigo-500/30 bg-indigo-500/5">
-              <CardContent className="p-4 flex items-center justify-between flex-wrap gap-3">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Load a pre-built account pack to get started quickly</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Choose an industry to load groups tailored for your business type</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Select value={selectedIndustry} onValueChange={(v) => setSelectedIndustry(v as typeof selectedIndustry)}>
-                    <SelectTrigger className="w-[180px] h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="common">All Common</SelectItem>
-                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                      <SelectItem value="trading">Trading</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button size="sm" onClick={handlePreviewPack}>Preview Pack</Button>
-                </div>
+            <Card className="border-muted">
+              <CardContent className="p-4 text-center text-sm text-muted-foreground">
+                No account groups yet. Use the <strong>+ Add Group</strong> button next to any L3 group to create your first group.
               </CardContent>
             </Card>
           )}
@@ -597,42 +538,8 @@ export function FinFramePanel() {
         </TabsContent>
       </Tabs>
 
-      {/* ─── Quick Setup Preview Modal ───────────────────────── */}
-      <Dialog open={showQuickSetup} onOpenChange={setShowQuickSetup}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Industry Pack Preview — {selectedIndustry === 'common' ? 'All Common' : selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1)}</DialogTitle>
-          </DialogHeader>
-          <ScrollArea className="max-h-[400px]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Group Name</TableHead>
-                  <TableHead>L3 Parent</TableHead>
-                  <TableHead>Nature</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quickSetupPreview.map((g, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-sm">{g.name}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{getL3ByCode(g.l3Code)?.name || g.l3Code}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`text-[9px] ${g.nature === 'Dr' ? 'text-blue-600 border-blue-500/30' : 'text-emerald-600 border-emerald-500/30'}`}>
-                        {g.nature}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowQuickSetup(false)}>Cancel</Button>
-            <Button onClick={handleLoadPack}>Load {quickSetupPreview.length} Groups</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+
 
       {/* ─── Create / Edit L4 Group Dialog ───────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
