@@ -169,6 +169,11 @@ const App = () => (
             <Route path="/erp/accounting/tds-sections" element={<TDSSectionMaster />} />
             <Route path="/erp/accounting/tcs-sections" element={<TCSSectionMaster />} />
             <Route path="/erp/accounting/hsn-sac" element={<HSNSACMaster />} />
+            <Route path="/erp/accounting/professional-tax" element={<ProfessionalTaxMaster />} />
+            <Route path="/erp/accounting/epf-esi-lwf" element={<EPFESILWFMaster />} />
+            <Route path="/erp/accounting/statutory-registrations" element={<StatutoryRegistrations />} />
+            <Route path="/erp/accounting/gst-config" element={<GSTEntityConfig />} />
+            <Route path="/erp/accounting/comply360-config" element={<Comply360Config />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
