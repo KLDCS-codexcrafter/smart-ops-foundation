@@ -31,6 +31,7 @@ import {
   suggestShortCode, INDIAN_STATE_NAMES,
 } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
+import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
@@ -171,6 +172,8 @@ export default function ParentCompany() {
   const [lutBonds, setLutBonds] = useState<LUTBond[]>([]);
   const [govTab, setGovTab] = useState('companyInfo');
   const [addrTab, setAddrTab] = useState('hq');
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [savedEntityId] = useState(() => crypto.randomUUID());
   const [fyFromDate, setFyFromDate] = useState<Date>();
   const [fyToDate, setFyToDate] = useState<Date>();
   const [booksDate, setBooksDate] = useState<Date>();
@@ -294,6 +297,7 @@ export default function ParentCompany() {
       toast.success('Parent Company saved', {
         description: 'Financial year and deployment mode applied to all modules.',
       });
+      setSetupOpen(true);
     }, 900);
   }
 

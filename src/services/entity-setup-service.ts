@@ -144,33 +144,26 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
   // Auto-create entity instances for ALL registered entities
   const entities = loadEntities();
   toCreate.forEach(def => {
-    entities.forEach(() => {
-      entities.forEach(entity => {
-        const key = `erp_entity_${entity.id}_ledger_instances`;
-        const inst = JSON.parse(localStorage.getItem(key) || '[]');
-        if (!inst.find((i: any) => i.ledgerDefinitionId === def.id)) {
-          inst.push({
-            id: crypto.randomUUID(),
-            ledgerDefinitionId: def.id,
-            entityId: entity.id,
-            entityName: entity.name,
-            entityShortCode: entity.shortCode,
-            openingBalance: 0,
-            openingBalanceType: 'Dr',
-            isActive: true,
-            displayCode: def.code,
-          });
-          localStorage.setItem(key, JSON.stringify(inst));
-          // [JWT] POST /api/entity/${entity.id}/finecore/ledger-instances
-        }
-      });
+    entities.forEach(entity => {
+      const key = `erp_entity_${entity.id}_ledger_instances`;
+      const inst = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!inst.find((i: any) => i.ledgerDefinitionId === def.id)) {
+        inst.push({
+          id: crypto.randomUUID(),
+          ledgerDefinitionId: def.id,
+          entityId: entity.id,
+          entityName: entity.name,
+          entityShortCode: entity.shortCode,
+          openingBalance: 0,
+          openingBalanceType: 'Dr',
+          isActive: true,
+          displayCode: def.code,
+        });
+        localStorage.setItem(key, JSON.stringify(inst));
+        // [JWT] POST /api/entity/${entity.id}/finecore/ledger-instances
+      }
     });
   });
-
-  // Fix: the prompt has a nested forEach that's wrong — flatten it
-  // Actually re-reading the prompt, the inner loop is entities.forEach twice — that's a doc formatting issue.
-  // The correct logic is: for each def, for each entity, create instance. Already done above but double-nested.
-  // Let me fix by removing the extra nesting — but the code above already wrote. We'll fix below.
 
   return toCreate.length;
 };
