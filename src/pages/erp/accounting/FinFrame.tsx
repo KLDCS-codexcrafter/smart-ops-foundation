@@ -114,38 +114,7 @@ export function FinFramePanel() {
     setter(next);
   };
 
-  // ─── Quick Setup ────────────────────────────────────────────
-  const handlePreviewPack = () => {
-    const groups = [
-      ...L4_INDUSTRY_PACKS.common,
-      ...(selectedIndustry !== 'common' ? L4_INDUSTRY_PACKS[selectedIndustry] : []),
-    ];
-    setQuickSetupPreview(groups);
-    setShowQuickSetup(true);
-  };
-
-  const handleLoadPack = () => {
-    const groups = quickSetupPreview.map(g => ({
-      id: crypto.randomUUID(),
-      name: g.name,
-      code: `${g.l3Code}-${String(
-        userGroups.filter(ug => ug.parentL3Code === g.l3Code).length +
-        groups.filter((og, oi) => og.l3Code === g.l3Code && oi < groups.indexOf(g)).length +
-        1
-      ).padStart(6, '0')}`,
-      parentL3Code: g.l3Code,
-      parentGroupId: null,
-      nature: g.nature,
-      gstApplicable: getL3ByCode(g.l3Code)?.gstApplicable ?? false,
-      tdsApplicable: getL3ByCode(g.l3Code)?.tdsApplicable ?? false,
-      notes: '',
-      status: 'active' as const,
-    }));
-    // [JWT] Replace with POST /api/accounting/user-groups/bulk
-    saveGroups([...userGroups, ...groups]);
-    setShowQuickSetup(false);
-    const label = selectedIndustry === 'common' ? 'Common' : selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1);
-    toast.success(`Loaded ${quickSetupPreview.length} account groups from ${label} pack`);
+  // ─── (Quick Setup removed — industry packs loaded via Entity Auto-Setup) ──
   };
 
   // ─── Create / Edit L4 ──────────────────────────────────────
