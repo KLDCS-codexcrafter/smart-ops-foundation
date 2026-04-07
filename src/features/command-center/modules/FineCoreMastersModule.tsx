@@ -13,15 +13,15 @@ const MASTER_CARDS: {
   title: string; desc: string; icon: React.ElementType; module: CommandCenterModule;
   status: 'seeded' | 'empty' | 'coming_soon';
 }[] = [
-  { title: 'Tax Rate Master', desc: 'GST, VAT, Cess and international tax rate library', icon: Calculator, module: 'finecore-tax-rates', status: 'empty' },
-  { title: 'TDS Sections', desc: 'Tax Deducted at Source — all 30 sections with thresholds', icon: Shield, module: 'finecore-tds', status: 'empty' },
-  { title: 'TCS Sections', desc: 'Tax Collected at Source — goods and services rates', icon: FileText, module: 'finecore-tcs', status: 'empty' },
-  { title: 'HSN / SAC Codes', desc: 'Harmonised System and Service Accounting codes with GST rates', icon: BookOpen, module: 'finecore-hsn-sac', status: 'empty' },
-  { title: 'Professional Tax', desc: 'State-wise professional tax slabs for all employees', icon: MapPin, module: 'finecore-professional-tax', status: 'empty' },
-  { title: 'EPF / ESI / LWF', desc: 'Provident fund, state insurance and welfare fund rates', icon: Users, module: 'finecore-epf-esi-lwf', status: 'empty' },
-  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, module: 'finecore-statutory-reg', status: 'empty' },
-  { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, module: 'finecore-gst-config', status: 'empty' },
-  { title: 'Comply360 Config', desc: 'Enable GST automation, Auto RCM, Auto TDS', icon: Shield, module: 'finecore-comply360', status: 'empty' },
+  { title: 'Tax Rate Master', desc: 'GST, VAT, Cess and international tax rate library', icon: Calculator, module: 'finecore-tax-rates', status: 'seeded' },
+  { title: 'TDS Sections', desc: 'Tax Deducted at Source — all 30 sections with thresholds', icon: Shield, module: 'finecore-tds', status: 'seeded' },
+  { title: 'TCS Sections', desc: 'Tax Collected at Source — goods and services rates', icon: FileText, module: 'finecore-tcs', status: 'seeded' },
+  { title: 'HSN / SAC Codes', desc: 'Harmonised System and Service Accounting codes with GST rates', icon: BookOpen, module: 'finecore-hsn-sac', status: 'seeded' },
+  { title: 'Professional Tax', desc: 'State-wise professional tax slabs for all employees', icon: MapPin, module: 'finecore-professional-tax', status: 'seeded' },
+  { title: 'EPF / ESI / LWF', desc: 'Provident fund, state insurance and welfare fund rates', icon: Users, module: 'finecore-epf-esi-lwf', status: 'seeded' },
+  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, module: 'finecore-statutory-reg', status: 'seeded' },
+  { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, module: 'finecore-gst-config', status: 'seeded' },
+  { title: 'Comply360 Config', desc: 'Enable GST automation, Auto RCM, Auto TDS', icon: Shield, module: 'finecore-comply360', status: 'seeded' },
   { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3, module: 'finecore-hub', status: 'coming_soon' },
 ];
 
