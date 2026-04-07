@@ -43,6 +43,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     { label: 'GST Entity Config', module: 'finecore-gst-config' },
     { label: 'Comply360 Config', module: 'finecore-comply360' },
     { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
+    { label: 'Ledger Master', module: 'finecore-ledgers' },
   ];
 
   const COMING_SOON = [

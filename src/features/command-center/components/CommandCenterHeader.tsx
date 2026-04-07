@@ -16,6 +16,7 @@ const MODULE_OPTIONS = [
   { value: 'finecore-gst-config', label: 'GST Entity Config' },
   { value: 'finecore-comply360', label: 'Comply360 Config' },
   { value: 'finecore-finframe', label: 'FinFrame — Account Groups' },
+  { value: 'finecore-ledgers', label: 'Ledger Master' },
   { value: 'console', label: 'Security Console' },
 ];
 
