@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowLeft, Info, ExternalLink, Check, Minus } from 'lucide-react';
+import { MOCK_ENTITIES } from '@/data/mock-entities';
 
 interface GSTEntityRow {
   id: string;

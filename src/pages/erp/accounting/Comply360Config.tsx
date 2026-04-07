@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Save, Shield, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { MOCK_ENTITIES } from '@/data/mock-entities';
 
 interface GroupConfig {
   enableAdvancedGST: boolean;
@@ -53,11 +54,6 @@ const DEFAULT_LEDGER: EntityLedgerMapping = {
   discountJournalVCH: '', discountLedger: '',
 };
 
-const MOCK_ENTITIES = [
-  { id: 'e1', name: '4DSmartOps Pvt Ltd' },
-  { id: 'e2', name: 'SmartOps Digital LLP' },
-  { id: 'e3', name: '4D Exports SEZ Unit' },
-];
 
 export function Comply360ConfigPanel() {
   const [groupConfig, setGroupConfig] = useState<GroupConfig>({

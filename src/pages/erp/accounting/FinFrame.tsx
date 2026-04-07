@@ -48,7 +48,18 @@ interface UserGroup {
 export function FinFramePanel() {
   const navigate = useNavigate();
   const [namingMode, setNamingMode] = useState<'indas' | 'tally'>('indas');
-  const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
+  const [userGroups, setUserGroups] = useState<UserGroup[]>(() => {
+    try {
+      const raw = localStorage.getItem('erp_group_finframe_l4_groups');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+
+  const saveGroups = (groups: UserGroup[]) => {
+    setUserGroups(groups);
+    localStorage.setItem('erp_group_finframe_l4_groups', JSON.stringify(groups));
+    // [JWT] Replace with sync to /api/group/finecore/account-groups
+  };
 
   // Tree expand state
   const [expandedL1, setExpandedL1] = useState<Set<string>>(new Set(['A']));
@@ -124,7 +135,11 @@ export function FinFramePanel() {
     const groups = quickSetupPreview.map(g => ({
       id: crypto.randomUUID(),
       name: g.name,
-      code: `${g.l3Code}-${String(Math.floor(Math.random() * 900) + 100)}`,
+      code: `${g.l3Code}-${String(
+        userGroups.filter(ug => ug.parentL3Code === g.l3Code).length +
+        groups.filter((og, oi) => og.l3Code === g.l3Code && oi < groups.indexOf(g)).length +
+        1
+      ).padStart(6, '0')}`,
       parentL3Code: g.l3Code,
       parentGroupId: null,
       nature: g.nature,
@@ -134,7 +149,7 @@ export function FinFramePanel() {
       status: 'active' as const,
     }));
     // [JWT] Replace with POST /api/accounting/user-groups/bulk
-    setUserGroups(prev => [...prev, ...groups]);
+    saveGroups([...userGroups, ...groups]);
     setShowQuickSetup(false);
     const label = selectedIndustry === 'common' ? 'Common' : selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1);
     toast.success(`Loaded ${quickSetupPreview.length} account groups from ${label} pack`);
@@ -149,7 +164,7 @@ export function FinFramePanel() {
     // Auto-suggest code
     const parentCode = l3Code || '';
     const existingCount = userGroups.filter(g => g.parentL3Code === l3Code || g.code.startsWith(parentCode)).length;
-    const suggestedCode = `${parentCode}-${String(existingCount + 1).padStart(3, '0')}`;
+    const suggestedCode = `${parentCode}-${String(existingCount + 1).padStart(6, '0')}`;
 
     setCreateForm({
       parentL3Code: l3Code || '',
@@ -189,7 +204,7 @@ export function FinFramePanel() {
 
     if (editingId) {
       // [JWT] Replace with PATCH /api/accounting/user-groups/:id
-      setUserGroups(prev => prev.map(g => g.id === editingId ? {
+      saveGroups(userGroups.map(g => g.id === editingId ? {
         ...g,
         name: createForm.name,
         code: createForm.code.toUpperCase(),
@@ -215,7 +230,7 @@ export function FinFramePanel() {
         notes: createForm.notes,
         status: 'active',
       };
-      setUserGroups(prev => [...prev, newGroup]);
+      saveGroups([...userGroups, newGroup]);
       toast.success(`${createForm.name} added under ${parentName}`);
     }
     setCreateOpen(false);
@@ -223,7 +238,7 @@ export function FinFramePanel() {
 
   const handleDeactivate = (id: string) => {
     // [JWT] Replace with PATCH /api/accounting/user-groups/:id/deactivate
-    setUserGroups(prev => prev.map(g => g.id === id ? { ...g, status: g.status === 'active' ? 'inactive' as const : 'active' as const } : g));
+    saveGroups(userGroups.map(g => g.id === id ? { ...g, status: g.status === 'active' ? 'inactive' as const : 'active' as const } : g));
     toast.success('Group status updated');
   };
 
@@ -238,7 +253,7 @@ export function FinFramePanel() {
         nature: l3.nature,
         gstApplicable: l3.gstApplicable,
         tdsApplicable: l3.tdsApplicable,
-        code: `${value}-${String(userGroups.filter(g => g.parentL3Code === value).length + 1).padStart(3, '0')}`.toUpperCase(),
+        code: `${value}-${String(userGroups.filter(g => g.parentL3Code === value).length + 1).padStart(6, '0')}`.toUpperCase(),
       }));
     } else {
       const parent = userGroups.find(g => g.id === value);
@@ -251,7 +266,7 @@ export function FinFramePanel() {
           nature: parent.nature,
           gstApplicable: rootL3?.gstApplicable ?? parent.gstApplicable,
           tdsApplicable: rootL3?.tdsApplicable ?? parent.tdsApplicable,
-          code: `${parent.code}-${String(getChildrenOfL4(value).length + 1).padStart(3, '0')}`.toUpperCase(),
+          code: `${parent.code}-${String(getChildrenOfL4(value).length + 1).padStart(6, '0')}`.toUpperCase(),
         }));
       }
     }

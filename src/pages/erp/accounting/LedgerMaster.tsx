@@ -214,7 +214,7 @@ const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; l
   if (!raw) return [];
   try {
     const groups = JSON.parse(raw);
-    return groups.filter((g: any) => l3Codes.includes(g.l3Code));
+    return groups.filter((g: any) => l3Codes.includes(g.parentL3Code) && g.status === 'active');
   } catch { return []; }
 };
 
