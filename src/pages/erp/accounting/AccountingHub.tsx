@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
   BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
+  MapPin, Users, Settings, Building2,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
@@ -19,12 +20,23 @@ const COMPLIANCE_CARDS = [
   { title: 'HSN / SAC Codes', desc: 'Harmonised System and Service Accounting codes with GST rates', icon: BookOpen, href: '/erp/accounting/hsn-sac' },
 ];
 
+const PAYROLL_CARDS = [
+  { title: 'Professional Tax', desc: 'State-wise professional tax slabs for all employees', icon: MapPin, href: '/erp/accounting/professional-tax' },
+  { title: 'EPF / ESI / LWF', desc: 'Provident fund, state insurance and welfare fund rates', icon: Users, href: '/erp/accounting/epf-esi-lwf' },
+  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, href: '/erp/accounting/statutory-registrations' },
+  { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, href: '/erp/accounting/gst-config' },
+  { title: 'Comply360 Configuration', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/comply360-config' },
+];
+
+const PAYROLL_COMING_SOON = [
+  { title: 'Capital Assets', desc: 'Asset register, depreciation, disposal and transfer', icon: Building2 },
+];
+
 const COMING_SOON_CARDS = [
   { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3 },
   { title: 'Ledger Master', desc: 'General and sub-ledger configuration', icon: Landmark },
   { title: 'Voucher Types', desc: 'Payment, receipt, journal, contra types', icon: FileSpreadsheet },
   { title: 'Cost Centres', desc: 'Departmental and project cost tracking', icon: Briefcase },
-  { title: 'Capital Assets', desc: 'Fixed asset register and depreciation', icon: Coins },
   { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];
 
