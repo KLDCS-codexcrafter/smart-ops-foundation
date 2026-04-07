@@ -58,7 +58,7 @@ export default function CommandCenterPage() {
     switch (activeModule) {
       case 'overview': return <OverviewModule onNavigate={handleNavigate} />;
       case 'foundation': return <FoundationModule />;
-      case 'geography': return <FoundationModule section="geography" />;
+      case 'geography': return <FoundationModule />;
       case 'finecore-hub': return <FineCoreMastersModule onNavigate={handleNavigate} />;
       case 'finecore-tax-rates': return <TaxRateMasterPanel />;
       case 'finecore-tds': return <TDSSectionMasterPanel />;
