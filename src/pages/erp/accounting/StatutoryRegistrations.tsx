@@ -44,12 +44,84 @@ const STATUS_COLORS: Record<string, string> = {
   Suspended: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
 };
 
-export default function StatutoryRegistrations() {
+export function StatutoryRegistrationsPanel() {
   const navigate = useNavigate();
 
   const total = MOCK_DATA.length;
   const active = MOCK_DATA.filter(r => r.status === 'Active').length;
   const types = new Set(MOCK_DATA.map(r => r.registrationType)).size;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Statutory Registrations</h1>
+        <p className="text-sm text-muted-foreground">Consolidated view of all statutory registrations across entities</p>
+      </div>
+
+      <Card className="p-4 border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
+        <div className="flex gap-2">
+          <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+          <p className="text-xs text-blue-700 dark:text-blue-300">
+            Statutory registrations are managed in Entity Core → Governance. This page shows all registrations in one place for reference.
+          </p>
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {[
+          { label: 'Total Registrations', value: total },
+          { label: 'Active', value: active },
+          { label: 'Registration Types', value: types },
+        ].map(s => (
+          <Card key={s.label} className="p-4">
+            <p className="text-sm text-muted-foreground">{s.label}</p>
+            <p className="text-2xl font-bold text-foreground">{s.value}</p>
+          </Card>
+        ))}
+      </div>
+
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Entity Name</TableHead>
+              <TableHead>Entity Type</TableHead>
+              <TableHead>Registration Type</TableHead>
+              <TableHead>Registration Number</TableHead>
+              <TableHead>State</TableHead>
+              <TableHead>Valid From</TableHead>
+              <TableHead>Valid To</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {MOCK_DATA.map(r => (
+              <TableRow key={r.id}>
+                <TableCell className="text-xs font-medium">{r.entityName}</TableCell>
+                <TableCell><Badge variant="outline" className="text-[10px]">{r.entityType}</Badge></TableCell>
+                <TableCell><Badge className={`text-[10px] ${TYPE_COLORS[r.registrationType] ?? ''}`}>{r.registrationType}</Badge></TableCell>
+                <TableCell className="text-xs font-mono">{r.registrationNumber}</TableCell>
+                <TableCell className="text-xs">{r.state}</TableCell>
+                <TableCell className="text-xs">{r.validFrom}</TableCell>
+                <TableCell className="text-xs">{r.validTo}</TableCell>
+                <TableCell><Badge className={`text-[10px] ${STATUS_COLORS[r.status] ?? ''}`}>{r.status}</Badge></TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/erp/foundation/entities')}>
+                    <ExternalLink className="h-3 w-3 mr-1" /> Edit in Entity Profile
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+export default function StatutoryRegistrations() {
+  const navigate = useNavigate();
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -68,73 +140,8 @@ export default function StatutoryRegistrations() {
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/accounting')}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Statutory Registrations</h1>
-              <p className="text-sm text-muted-foreground">Consolidated view of all statutory registrations across entities</p>
-            </div>
           </div>
-
-          {/* Info banner */}
-          <Card className="p-4 border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
-            <div className="flex gap-2">
-              <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-              <p className="text-xs text-blue-700 dark:text-blue-300">
-                Statutory registrations are managed in Entity Core → Governance. This page shows all registrations in one place for reference.
-              </p>
-            </div>
-          </Card>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { label: 'Total Registrations', value: total },
-              { label: 'Active', value: active },
-              { label: 'Registration Types', value: types },
-            ].map(s => (
-              <Card key={s.label} className="p-4">
-                <p className="text-sm text-muted-foreground">{s.label}</p>
-                <p className="text-2xl font-bold text-foreground">{s.value}</p>
-              </Card>
-            ))}
-          </div>
-
-          {/* Table */}
-          <div className="border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Entity Name</TableHead>
-                  <TableHead>Entity Type</TableHead>
-                  <TableHead>Registration Type</TableHead>
-                  <TableHead>Registration Number</TableHead>
-                  <TableHead>State</TableHead>
-                  <TableHead>Valid From</TableHead>
-                  <TableHead>Valid To</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {MOCK_DATA.map(r => (
-                  <TableRow key={r.id}>
-                    <TableCell className="text-xs font-medium">{r.entityName}</TableCell>
-                    <TableCell><Badge variant="outline" className="text-[10px]">{r.entityType}</Badge></TableCell>
-                    <TableCell><Badge className={`text-[10px] ${TYPE_COLORS[r.registrationType] ?? ''}`}>{r.registrationType}</Badge></TableCell>
-                    <TableCell className="text-xs font-mono">{r.registrationNumber}</TableCell>
-                    <TableCell className="text-xs">{r.state}</TableCell>
-                    <TableCell className="text-xs">{r.validFrom}</TableCell>
-                    <TableCell className="text-xs">{r.validTo}</TableCell>
-                    <TableCell><Badge className={`text-[10px] ${STATUS_COLORS[r.status] ?? ''}`}>{r.status}</Badge></TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/erp/foundation/entities')}>
-                        <ExternalLink className="h-3 w-3 mr-1" /> Edit in Entity Profile
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <StatutoryRegistrationsPanel />
         </main>
       </div>
     </SidebarProvider>

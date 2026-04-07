@@ -40,6 +40,45 @@ const COMING_SOON_CARDS = [
   { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];
 
+export function FineCoreHubPanel() {
+  const navigate = useNavigate();
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Accounting Masters</h1>
+        <p className="text-sm text-muted-foreground">Zone 3 — Chart of Accounts, Compliance Masters, Capital Assets</p>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Tax Rates', count: 0 },
+          { label: 'TDS Sections', count: 0 },
+          { label: 'TCS Sections', count: 0 },
+          { label: 'HSN/SAC Codes', count: 0 },
+        ].map(s => (
+          <div key={s.label} className="rounded-lg border bg-card p-4">
+            <p className="text-sm text-muted-foreground">{s.label}</p>
+            <p className="text-2xl font-bold text-foreground">{s.count}</p>
+          </div>
+        ))}
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-3">Compliance Masters</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {COMPLIANCE_CARDS.map(c => (
+            <button key={c.title} onClick={() => navigate(c.href)} className="group flex flex-col gap-3 p-5 rounded-xl border bg-card hover:border-primary/40 hover:bg-accent/30 transition-all text-left">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><c.icon className="h-5 w-5 text-primary" /></div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div><h3 className="text-sm font-semibold text-foreground">{c.title}</h3><p className="text-xs text-muted-foreground mt-1">{c.desc}</p></div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AccountingHub() {
   const navigate = useNavigate();
 

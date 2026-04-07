@@ -59,10 +59,7 @@ const MOCK_ENTITIES = [
   { id: 'e3', name: '4D Exports SEZ Unit' },
 ];
 
-export default function Comply360ConfigPage() {
-  const navigate = useNavigate();
-
-  // Group-level feature flags
+export function Comply360ConfigPanel() {
   const [groupConfig, setGroupConfig] = useState<GroupConfig>({
     enableAdvancedGST: false,
     enableAutoRCM: false,
@@ -71,13 +68,11 @@ export default function Comply360ConfigPage() {
     enableTaxAuditReport: false,
   });
 
-  // Per-entity ledger mappings
   const [selectedEntityId, setSelectedEntityId] = useState('');
   const [ledgerMap, setLedgerMap] = useState<Record<string, EntityLedgerMapping>>({});
 
   const currentLedger = selectedEntityId ? (ledgerMap[selectedEntityId] ?? { ...DEFAULT_LEDGER }) : null;
 
-  // Dependency: disable Auto RCM when Advanced GST is off
   useEffect(() => {
     if (!groupConfig.enableAdvancedGST && groupConfig.enableAutoRCM) {
       setGroupConfig(prev => ({ ...prev, enableAutoRCM: false }));
@@ -121,6 +116,157 @@ export default function Comply360ConfigPage() {
   );
 
   return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Comply360 Configuration</h1>
+        <p className="text-sm text-muted-foreground">Enable compliance automations and map ledgers for auto-posting</p>
+      </div>
+
+      {/* Group Configuration */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Shield className="h-4 w-4 text-primary" />
+              Group Configuration
+            </CardTitle>
+            <Badge variant="secondary" className="text-[10px]">Applies to all entities</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">GST</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm">Enable Advanced GST Reports</Label>
+              <p className="text-[10px] text-muted-foreground">GSTR-1, GSTR-3B, GSTR-2B reconciliation</p>
+            </div>
+            <Switch checked={groupConfig.enableAdvancedGST} onCheckedChange={v => updateGroupFlag('enableAdvancedGST', v)} />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className={`text-sm ${!groupConfig.enableAdvancedGST ? 'text-muted-foreground' : ''}`}>Enable Auto RCM Management</Label>
+              <p className="text-[10px] text-muted-foreground">
+                {!groupConfig.enableAdvancedGST ? 'Requires Advanced GST Reports to be enabled first' : 'Auto-create reverse charge entries on eligible purchases'}
+              </p>
+            </div>
+            <Switch checked={groupConfig.enableAutoRCM} disabled={!groupConfig.enableAdvancedGST} onCheckedChange={v => updateGroupFlag('enableAutoRCM', v)} />
+          </div>
+          <Separator />
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Income Tax</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm">Enable Auto TDS Payable</Label>
+              <p className="text-[10px] text-muted-foreground">Auto-deduct TDS on vendor payments</p>
+            </div>
+            <Switch checked={groupConfig.enableAutoTDSPayable} onCheckedChange={v => updateGroupFlag('enableAutoTDSPayable', v)} />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm">Enable Auto TDS Receivable</Label>
+              <p className="text-[10px] text-muted-foreground">Track TDS deducted by customers</p>
+            </div>
+            <Switch checked={groupConfig.enableAutoTDSReceivable} onCheckedChange={v => updateGroupFlag('enableAutoTDSReceivable', v)} />
+          </div>
+          <Separator />
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Audit</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm">Enable Tax Audit Report</Label>
+              <p className="text-[10px] text-muted-foreground">Generate Form 3CD and supporting schedules</p>
+            </div>
+            <Switch checked={groupConfig.enableTaxAuditReport} onCheckedChange={v => updateGroupFlag('enableTaxAuditReport', v)} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Entity Ledger Mapping */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="h-4 w-4 text-primary" />
+              Entity Ledger Mapping
+            </CardTitle>
+            <Badge className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Per entity</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-3">
+            <Label className="text-sm font-medium shrink-0">Select Entity</Label>
+            <Select value={selectedEntityId} onValueChange={setSelectedEntityId}>
+              <SelectTrigger className="w-72 h-9">
+                <SelectValue placeholder="Choose an entity..." />
+              </SelectTrigger>
+              <SelectContent>
+                {MOCK_ENTITIES.map(e => (
+                  <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {!selectedEntityId && (
+            <div className="p-8 text-center rounded-lg bg-muted/50 border border-border/50">
+              <p className="text-sm text-muted-foreground">Select an entity above to configure its ledger mappings</p>
+            </div>
+          )}
+
+          {selectedEntityId && currentLedger && (
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">RCM Ledgers</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <LedgerField label="RCM CGST Ledger" field="rcmCGSTLedger" placeholder="e.g. RCM CGST Input" />
+                  <LedgerField label="RCM SGST Ledger" field="rcmSGSTLedger" placeholder="e.g. RCM SGST Input" />
+                  <LedgerField label="RCM IGST Ledger" field="rcmIGSTLedger" placeholder="e.g. RCM IGST Input" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <LedgerField label="Input CGST Ledger" field="inputCGSTLedger" placeholder="e.g. Input CGST" />
+                  <LedgerField label="Input SGST Ledger" field="inputSGSTLedger" placeholder="e.g. Input SGST" />
+                  <LedgerField label="Input IGST Ledger" field="inputIGSTLedger" placeholder="e.g. Input IGST" />
+                </div>
+                <LedgerField label="Reverse Charge Input Ledger" field="reverseChargeInputLedger" placeholder="e.g. RC Input Type" />
+              </div>
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">TDS Payable</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <LedgerField label="TDS Payable Journal VCH" field="tdsPayableJournalVCH" placeholder="e.g. TDS Payment Journal" />
+                  <LedgerField label="TDS Payable Ledger" field="tdsPayableLedger" placeholder="e.g. TDS Payable A/c" />
+                </div>
+              </div>
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">TDS Receivable</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <LedgerField label="TDS Receivable Journal VCH" field="tdsReceivableJournalVCH" placeholder="e.g. TDS Receipt Journal" />
+                  <LedgerField label="TDS Receivable Ledger" field="tdsReceivableLedger" placeholder="e.g. TDS Receivable A/c" />
+                </div>
+              </div>
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Discount</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <LedgerField label="Discount Journal VCH" field="discountJournalVCH" placeholder="e.g. Discount Journal" />
+                  <LedgerField label="Discount Ledger" field="discountLedger" placeholder="e.g. Discount Allowed A/c" />
+                </div>
+              </div>
+              <Separator />
+              <Button className="w-full" onClick={handleSaveLedger}>
+                <Save className="h-4 w-4 mr-1" /> Save Ledger Mappings
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function Comply360ConfigPage() {
+  const navigate = useNavigate();
+
+  return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader
@@ -137,169 +283,8 @@ export default function Comply360ConfigPage() {
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/accounting')}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Comply360 Configuration</h1>
-              <p className="text-sm text-muted-foreground">Enable compliance automations and map ledgers for auto-posting</p>
-            </div>
           </div>
-
-          {/* ── Top Section — Group Configuration ──────────── */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-primary" />
-                  Group Configuration
-                </CardTitle>
-                <Badge variant="secondary" className="text-[10px]">Applies to all entities</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* GST */}
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">GST</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm">Enable Advanced GST Reports</Label>
-                  <p className="text-[10px] text-muted-foreground">GSTR-1, GSTR-3B, GSTR-2B reconciliation</p>
-                </div>
-                <Switch checked={groupConfig.enableAdvancedGST} onCheckedChange={v => updateGroupFlag('enableAdvancedGST', v)} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className={`text-sm ${!groupConfig.enableAdvancedGST ? 'text-muted-foreground' : ''}`}>Enable Auto RCM Management</Label>
-                  <p className="text-[10px] text-muted-foreground">
-                    {!groupConfig.enableAdvancedGST ? 'Requires Advanced GST Reports to be enabled first' : 'Auto-create reverse charge entries on eligible purchases'}
-                  </p>
-                </div>
-                <Switch checked={groupConfig.enableAutoRCM} disabled={!groupConfig.enableAdvancedGST} onCheckedChange={v => updateGroupFlag('enableAutoRCM', v)} />
-              </div>
-
-              <Separator />
-
-              {/* Income Tax */}
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Income Tax</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm">Enable Auto TDS Payable</Label>
-                  <p className="text-[10px] text-muted-foreground">Auto-deduct TDS on vendor payments</p>
-                </div>
-                <Switch checked={groupConfig.enableAutoTDSPayable} onCheckedChange={v => updateGroupFlag('enableAutoTDSPayable', v)} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm">Enable Auto TDS Receivable</Label>
-                  <p className="text-[10px] text-muted-foreground">Track TDS deducted by customers</p>
-                </div>
-                <Switch checked={groupConfig.enableAutoTDSReceivable} onCheckedChange={v => updateGroupFlag('enableAutoTDSReceivable', v)} />
-              </div>
-
-              <Separator />
-
-              {/* Audit */}
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Audit</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-sm">Enable Tax Audit Report</Label>
-                  <p className="text-[10px] text-muted-foreground">Generate Form 3CD and supporting schedules</p>
-                </div>
-                <Switch checked={groupConfig.enableTaxAuditReport} onCheckedChange={v => updateGroupFlag('enableTaxAuditReport', v)} />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ── Bottom Section — Entity Ledger Mapping ──────────── */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  Entity Ledger Mapping
-                </CardTitle>
-                <Badge className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Per entity</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Entity selector */}
-              <div className="flex items-center gap-3">
-                <Label className="text-sm font-medium shrink-0">Select Entity</Label>
-                <Select value={selectedEntityId} onValueChange={setSelectedEntityId}>
-                  <SelectTrigger className="w-72 h-9">
-                    <SelectValue placeholder="Choose an entity..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MOCK_ENTITIES.map(e => (
-                      <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {!selectedEntityId && (
-                <div className="p-8 text-center rounded-lg bg-muted/50 border border-border/50">
-                  <p className="text-sm text-muted-foreground">Select an entity above to configure its ledger mappings</p>
-                </div>
-              )}
-
-              {selectedEntityId && currentLedger && (
-                <div className="space-y-6">
-                  {/* RCM Ledgers */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">RCM Ledgers</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <LedgerField label="RCM CGST Ledger" field="rcmCGSTLedger" placeholder="e.g. RCM CGST Input" />
-                      <LedgerField label="RCM SGST Ledger" field="rcmSGSTLedger" placeholder="e.g. RCM SGST Input" />
-                      <LedgerField label="RCM IGST Ledger" field="rcmIGSTLedger" placeholder="e.g. RCM IGST Input" />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <LedgerField label="Input CGST Ledger" field="inputCGSTLedger" placeholder="e.g. Input CGST" />
-                      <LedgerField label="Input SGST Ledger" field="inputSGSTLedger" placeholder="e.g. Input SGST" />
-                      <LedgerField label="Input IGST Ledger" field="inputIGSTLedger" placeholder="e.g. Input IGST" />
-                    </div>
-                    <LedgerField label="Reverse Charge Input Ledger" field="reverseChargeInputLedger" placeholder="e.g. RC Input Type" />
-                  </div>
-
-                  <Separator />
-
-                  {/* TDS Payable */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">TDS Payable</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <LedgerField label="TDS Payable Journal VCH" field="tdsPayableJournalVCH" placeholder="e.g. TDS Payment Journal" />
-                      <LedgerField label="TDS Payable Ledger" field="tdsPayableLedger" placeholder="e.g. TDS Payable A/c" />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* TDS Receivable */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">TDS Receivable</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <LedgerField label="TDS Receivable Journal VCH" field="tdsReceivableJournalVCH" placeholder="e.g. TDS Receipt Journal" />
-                      <LedgerField label="TDS Receivable Ledger" field="tdsReceivableLedger" placeholder="e.g. TDS Receivable A/c" />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Discount */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Discount</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <LedgerField label="Discount Journal VCH" field="discountJournalVCH" placeholder="e.g. Discount Journal" />
-                      <LedgerField label="Discount Ledger" field="discountLedger" placeholder="e.g. Discount Allowed A/c" />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <Button className="w-full" onClick={handleSaveLedger}>
-                    <Save className="h-4 w-4 mr-1" /> Save Ledger Mappings
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <Comply360ConfigPanel />
         </main>
       </div>
     </SidebarProvider>
