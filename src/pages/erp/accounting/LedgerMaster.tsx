@@ -19,7 +19,7 @@ import {
 import {
   Wallet, Lock, Plus, Landmark, Building2, CreditCard, Banknote,
   TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch,
-  PiggyBank, HandCoins, ArrowLeft, Edit2, Ban,
+  PiggyBank, HandCoins, Edit2, Ban, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { MOCK_ENTITIES } from '@/data/mock-entities';
@@ -28,15 +28,40 @@ import { MOCK_ENTITIES } from '@/data/mock-entities';
 
 interface CashLedgerDefinition {
   id: string;
+  ledgerType: 'cash';
   name: string;
-  code: string;               // 'CASH-000001' or 'SMRT-CASH-000001'
+  code: string;
   alias: string;
-  parentGroupCode: string;    // 'CASH' or FinFrame L4 code
+  parentGroupCode: string;
   parentGroupName: string;
-  entityId: string | null;    // null = group level
+  entityId: string | null;
   entityShortCode: string | null;
   status: 'active' | 'inactive';
 }
+
+type BankAccountType =
+  | 'current' | 'savings' | 'fixed_deposit' | 'eefc'
+  | 'cash_credit' | 'overdraft';
+
+interface BankLedgerDefinition {
+  id: string;
+  ledgerType: 'bank';
+  name: string;
+  code: string;
+  alias: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  status: 'active' | 'inactive';
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  accountType: BankAccountType;
+  odLimit: number;
+}
+
+type AnyLedgerDefinition = CashLedgerDefinition | BankLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -44,23 +69,84 @@ interface EntityLedgerInstance {
   entityId: string;
   entityName: string;
   entityShortCode: string;
-  openingBalance: number;     // always Dr for cash
+  openingBalance: number;
+  openingBalanceType: 'Dr' | 'Cr';
   isActive: boolean;
-  displayCode: string;        // shortCode + '/' + definitionCode
+  displayCode: string;
 }
+
+// ─── Constants ────────────────────────────────────────────────────────
+
+const INDIAN_BANKS = [
+  'State Bank of India (SBI)', 'HDFC Bank', 'ICICI Bank',
+  'Axis Bank', 'Kotak Mahindra Bank', 'Punjab National Bank (PNB)',
+  'Bank of Baroda', 'Union Bank of India', 'Canara Bank',
+  'IndusInd Bank', 'IDFC FIRST Bank', 'Yes Bank',
+  'Federal Bank', 'Karnataka Bank', 'South Indian Bank',
+  'IDBI Bank', 'Bank of India', 'Central Bank of India',
+  'RBL Bank', 'DCB Bank', 'Other',
+] as const;
+
+const ACCOUNT_TYPE_LABELS: Record<BankAccountType, string> = {
+  current: 'Current',
+  savings: 'Savings',
+  fixed_deposit: 'Fixed Deposit',
+  eefc: 'EEFC',
+  cash_credit: 'Cash Credit',
+  overdraft: 'Overdraft',
+};
+
+const ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
+  current: 'bg-teal-500/10 text-teal-600 border-teal-500/20',
+  savings: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  fixed_deposit: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
+  eefc: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
+  cash_credit: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  overdraft: 'bg-red-500/10 text-red-500 border-red-500/20',
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────
+
+const validateIFSC = (code: string): boolean =>
+  /^[A-Z]{4}0[A-Z0-9]{6}$/.test(code.toUpperCase());
+
+const getDefaultNature = (type: BankAccountType): 'Dr' | 'Cr' =>
+  ['cash_credit', 'overdraft'].includes(type) ? 'Cr' : 'Dr';
+
+const getSuggestedParent = (type: BankAccountType) => {
+  if (['cash_credit', 'overdraft'].includes(type))
+    return { code: 'STBOR', name: 'Short-Term Borrowings (Bank OD A/c)' };
+  return { code: 'BANK', name: 'Bank Balances (Bank Accounts)' };
+};
+
+const maskAccountNo = (num: string): string => {
+  if (num.length <= 4) return num;
+  return '•'.repeat(num.length - 4) + num.slice(-4);
+};
 
 // ─── localStorage Helpers ─────────────────────────────────────────────
 
-const loadDefinitions = (): CashLedgerDefinition[] => {
+const loadAllDefinitions = (): AnyLedgerDefinition[] => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
-  const all: CashLedgerDefinition[] = raw ? JSON.parse(raw) : [];
-  return all.filter(d => d.parentGroupCode === 'CASH' || d.parentGroupCode?.startsWith('CASH'));
+  if (!raw) return [];
+  const all = JSON.parse(raw);
+  // Backward compat: add ledgerType:'cash' to old records missing it
+  return all.map((d: any) => ({
+    ...d,
+    ledgerType: d.ledgerType ?? 'cash',
+  }));
 };
 
-const saveDefinition = (def: CashLedgerDefinition) => {
+const loadCashDefs = (): CashLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'cash') as CashLedgerDefinition[];
+
+const loadBankDefs = (): BankLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'bank') as BankLedgerDefinition[];
+
+const saveDefinition = (def: AnyLedgerDefinition) => {
   // [JWT] POST /api/group/finecore/ledger-definitions
   const raw = localStorage.getItem('erp_group_ledger_definitions');
-  const all: CashLedgerDefinition[] = raw ? JSON.parse(raw) : [];
+  const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
@@ -68,13 +154,18 @@ const saveDefinition = (def: CashLedgerDefinition) => {
 
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
-  return raw ? JSON.parse(raw) : [];
+  if (!raw) return [];
+  // Backward compat: add openingBalanceType:'Dr' to old records missing it
+  return JSON.parse(raw).map((i: any) => ({
+    ...i,
+    openingBalanceType: i.openingBalanceType ?? 'Dr',
+  }));
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
   // [JWT] PATCH /api/entity/{entityId}/finecore/ledger-instances
   const raw = localStorage.getItem(`erp_entity_${inst.entityId}_ledger_instances`);
-  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw) : [];
+  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({ ...i, openingBalanceType: i.openingBalanceType ?? 'Dr' })) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   localStorage.setItem(`erp_entity_${inst.entityId}_ledger_instances`, JSON.stringify(all));
@@ -82,15 +173,25 @@ const saveInstance = (inst: EntityLedgerInstance) => {
 
 // ─── Code Generation ──────────────────────────────────────────────────
 
-const genGroupCode = (all: CashLedgerDefinition[]) =>
-  'CASH-' + String(all.filter(d => !d.entityId).length + 1).padStart(6, '0');
+const genCashGroupCode = (all: AnyLedgerDefinition[]) =>
+  'CASH-' + String(all.filter(d => d.ledgerType === 'cash' && !d.entityId).length + 1).padStart(6, '0');
 
-const genEntityCode = (all: CashLedgerDefinition[], sc: string) =>
-  `${sc}-CASH-${String(all.filter(d => d.entityShortCode === sc).length + 1).padStart(6, '0')}`;
+const genCashEntityCode = (all: AnyLedgerDefinition[], sc: string) =>
+  `${sc}-CASH-${String(all.filter(d => d.ledgerType === 'cash' && d.entityShortCode === sc).length + 1).padStart(6, '0')}`;
+
+const genBankGroupCode = (all: AnyLedgerDefinition[]) =>
+  'BANK-' + String(all.filter(d => d.ledgerType === 'bank' && !d.entityId).length + 1).padStart(6, '0');
+
+const genBankEntityCode = (all: AnyLedgerDefinition[], sc: string) =>
+  `${sc}-BANK-${String(all.filter(d => d.ledgerType === 'bank' && d.entityShortCode === sc).length + 1).padStart(6, '0')}`;
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
-const autoCreateInstances = (def: CashLedgerDefinition, openingBalance: number) => {
+const autoCreateInstances = (
+  def: AnyLedgerDefinition,
+  openingBalance: number,
+  openingBalanceType: 'Dr' | 'Cr' = 'Dr',
+) => {
   MOCK_ENTITIES.forEach((entity, idx) => {
     saveInstance({
       id: crypto.randomUUID(),
@@ -99,6 +200,7 @@ const autoCreateInstances = (def: CashLedgerDefinition, openingBalance: number) 
       entityName: entity.name,
       entityShortCode: entity.shortCode,
       openingBalance: idx === 0 ? openingBalance : 0,
+      openingBalanceType,
       isActive: true,
       displayCode: def.code,
     });
@@ -107,12 +209,12 @@ const autoCreateInstances = (def: CashLedgerDefinition, openingBalance: number) 
 
 // ─── FinFrame L4 Groups Reader ────────────────────────────────────────
 
-const getFinFrameL4CashGroups = (): { code: string; name: string }[] => {
+const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; l3Code: string }[] => {
   const raw = localStorage.getItem('erp_group_finframe_l4_groups');
   if (!raw) return [];
   try {
     const groups = JSON.parse(raw);
-    return groups.filter((g: any) => g.l3Code === 'CASH');
+    return groups.filter((g: any) => l3Codes.includes(g.l3Code));
   } catch { return []; }
 };
 
@@ -120,7 +222,7 @@ const getFinFrameL4CashGroups = (): { code: string; name: string }[] => {
 
 const TYPE_BUTTONS = [
   { label: 'Cash', icon: Wallet, row: 'Balance Sheet', active: true },
-  { label: 'Bank', icon: Landmark, row: 'Balance Sheet', active: false },
+  { label: 'Bank', icon: Landmark, row: 'Balance Sheet', active: true },
   { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: false },
   { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: false },
   { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: false },
@@ -135,19 +237,41 @@ const TYPE_BUTTONS = [
   { label: 'Branch & Division', icon: GitBranch, row: 'Masters', active: false },
 ];
 
+// ─── Default Bank Form ────────────────────────────────────────────────
+
+const defaultBankForm = {
+  parentGroupCode: 'BANK',
+  parentGroupName: 'Bank Balances (Bank Accounts)',
+  name: '',
+  alias: '',
+  bankName: '',
+  bankNameOther: '',
+  accountNumber: '',
+  ifscCode: '',
+  accountType: '' as BankAccountType | '',
+  odLimit: 0,
+  openingBalance: 0,
+  openingBalanceType: 'Dr' as 'Dr' | 'Cr',
+  scope: 'group' as 'group' | 'entity',
+  entityId: '',
+};
+
 // ─── Component ────────────────────────────────────────────────────────
 
 export function LedgerMasterPanel() {
-  const [defs, setDefs] = useState<CashLedgerDefinition[]>(() => loadDefinitions());
+  const [cashDefs, setCashDefs] = useState<CashLedgerDefinition[]>(() => loadCashDefs());
+  const [bankDefs, setBankDefs] = useState<BankLedgerDefinition[]>(() => loadBankDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
+  const [defSubTab, setDefSubTab] = useState<'cash' | 'bank'>('cash');
   const [selEntityId, setSelEntityId] = useState(MOCK_ENTITIES[0].id);
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(MOCK_ENTITIES[0].id)
   );
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<CashLedgerDefinition | null>(null);
 
-  const defaultForm = {
+  // Cash dialog state
+  const [cashCreateOpen, setCashCreateOpen] = useState(false);
+  const [cashEditTarget, setCashEditTarget] = useState<CashLedgerDefinition | null>(null);
+  const defaultCashForm = {
     parentGroupCode: 'CASH',
     parentGroupName: 'Cash & Cash Equivalents (Cash-in-Hand)',
     name: '',
@@ -156,39 +280,58 @@ export function LedgerMasterPanel() {
     scope: 'group' as 'group' | 'entity',
     entityId: '',
   };
-  const [form, setForm] = useState(defaultForm);
+  const [cashForm, setCashForm] = useState(defaultCashForm);
+
+  // Bank dialog state
+  const [bankCreateOpen, setBankCreateOpen] = useState(false);
+  const [bankEditTarget, setBankEditTarget] = useState<BankLedgerDefinition | null>(null);
+  const [bankForm, setBankForm] = useState(defaultBankForm);
+  const [ifscValid, setIfscValid] = useState<boolean | null>(null);
+  const [showAccountPreview, setShowAccountPreview] = useState(false);
 
   // Reload instances when entity changes
   useEffect(() => {
     setInstances(loadInstances(selEntityId));
   }, [selEntityId]);
 
-  const refreshDefs = () => setDefs(loadDefinitions());
-  const refreshInstances = () => setInstances(loadInstances(selEntityId));
+  const refreshAll = () => {
+    setCashDefs(loadCashDefs());
+    setBankDefs(loadBankDefs());
+    setInstances(loadInstances(selEntityId));
+  };
 
   // ── Stats ──
-  const totalDefined = defs.length;
-  const groupLevel = defs.filter(d => !d.entityId).length;
-  const entitySpecific = defs.filter(d => d.entityId).length;
-  const activeLedgers = defs.filter(d => d.status === 'active').length;
+  const allDefs = [...cashDefs, ...bankDefs];
+  const totalDefined = allDefs.length;
+  const groupLevel = allDefs.filter(d => !d.entityId).length;
+  const entitySpecific = allDefs.filter(d => d.entityId).length;
+  const activeLedgers = allDefs.filter(d => d.status === 'active').length;
 
-  // ── Quick Start ──
-  const handleQuickStart = (name: string) => {
-    setForm({ ...defaultForm, name });
-    setCreateOpen(true);
+  // ── Cash Quick Start ──
+  const handleCashQuickStart = (name: string) => {
+    setCashForm({ ...defaultCashForm, name });
+    setCashEditTarget(null);
+    setCashCreateOpen(true);
   };
 
-  // ── Open Create ──
-  const openCreate = () => {
-    setForm(defaultForm);
-    setEditTarget(null);
-    setCreateOpen(true);
+  // ── Bank Quick Start ──
+  const handleBankQuickStart = (preset: Partial<typeof defaultBankForm>) => {
+    setBankForm({ ...defaultBankForm, ...preset });
+    setBankEditTarget(null);
+    setBankCreateOpen(true);
   };
 
-  // ── Open Edit ──
-  const openEdit = (def: CashLedgerDefinition) => {
-    setEditTarget(def);
-    setForm({
+  // ── Open Cash Create ──
+  const openCashCreate = () => {
+    setCashForm(defaultCashForm);
+    setCashEditTarget(null);
+    setCashCreateOpen(true);
+  };
+
+  // ── Open Cash Edit ──
+  const openCashEdit = (def: CashLedgerDefinition) => {
+    setCashEditTarget(def);
+    setCashForm({
       parentGroupCode: def.parentGroupCode,
       parentGroupName: def.parentGroupName,
       name: def.name,
@@ -197,96 +340,192 @@ export function LedgerMasterPanel() {
       scope: def.entityId ? 'entity' : 'group',
       entityId: def.entityId ?? '',
     });
-    setCreateOpen(true);
+    setCashCreateOpen(true);
   };
 
-  // ── Save ──
-  const handleSave = () => {
-    if (!form.name.trim()) {
-      toast.error('Ledger name is required');
-      return;
-    }
-    if (!form.parentGroupCode) {
-      toast.error('Select a parent group first');
-      return;
-    }
+  // ── Open Bank Create ──
+  const openBankCreate = () => {
+    setBankForm(defaultBankForm);
+    setBankEditTarget(null);
+    setIfscValid(null);
+    setShowAccountPreview(false);
+    setBankCreateOpen(true);
+  };
 
-    const allDefs = loadDefinitions();
+  // ── Open Bank Edit ──
+  const openBankEdit = (def: BankLedgerDefinition) => {
+    setBankEditTarget(def);
+    setBankForm({
+      parentGroupCode: def.parentGroupCode,
+      parentGroupName: def.parentGroupName,
+      name: def.name,
+      alias: def.alias,
+      bankName: INDIAN_BANKS.includes(def.bankName as any) ? def.bankName : 'Other',
+      bankNameOther: INDIAN_BANKS.includes(def.bankName as any) ? '' : def.bankName,
+      accountNumber: def.accountNumber,
+      ifscCode: def.ifscCode,
+      accountType: def.accountType,
+      odLimit: def.odLimit,
+      openingBalance: 0,
+      openingBalanceType: getDefaultNature(def.accountType),
+      scope: def.entityId ? 'entity' : 'group',
+      entityId: def.entityId ?? '',
+    });
+    setIfscValid(validateIFSC(def.ifscCode));
+    setShowAccountPreview(true);
+    setBankCreateOpen(true);
+  };
 
-    if (editTarget) {
+  // ── Save Cash ──
+  const handleCashSave = () => {
+    if (!cashForm.name.trim()) { toast.error('Ledger name is required'); return; }
+    if (!cashForm.parentGroupCode) { toast.error('Select a parent group first'); return; }
+
+    const all = loadAllDefinitions();
+
+    if (cashEditTarget) {
       // [JWT] PUT /api/group/finecore/ledger-definitions/{id}
       const updated: CashLedgerDefinition = {
-        ...editTarget,
-        name: form.name.trim(),
-        alias: form.alias.trim(),
-        parentGroupCode: form.parentGroupCode,
-        parentGroupName: form.parentGroupName,
+        ...cashEditTarget,
+        name: cashForm.name.trim(),
+        alias: cashForm.alias.trim(),
+        parentGroupCode: cashForm.parentGroupCode,
+        parentGroupName: cashForm.parentGroupName,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
-    } else if (form.scope === 'group') {
-      const code = genGroupCode(allDefs);
+    } else if (cashForm.scope === 'group') {
+      const code = genCashGroupCode(all);
       const def: CashLedgerDefinition = {
-        id: crypto.randomUUID(),
-        name: form.name.trim(),
-        code,
-        alias: form.alias.trim(),
-        parentGroupCode: form.parentGroupCode,
-        parentGroupName: form.parentGroupName,
-        entityId: null,
-        entityShortCode: null,
-        status: 'active',
+        id: crypto.randomUUID(), ledgerType: 'cash',
+        name: cashForm.name.trim(), code,
+        alias: cashForm.alias.trim(),
+        parentGroupCode: cashForm.parentGroupCode,
+        parentGroupName: cashForm.parentGroupName,
+        entityId: null, entityShortCode: null, status: 'active',
       };
       saveDefinition(def);
-      autoCreateInstances(def, form.openingBalance);
-      toast.success(`${form.name} created. Opening balances set for ${MOCK_ENTITIES.length} entities.`);
+      autoCreateInstances(def, cashForm.openingBalance, 'Dr');
+      toast.success(`${cashForm.name} created. Opening balances set for ${MOCK_ENTITIES.length} entities.`);
     } else {
-      const entity = MOCK_ENTITIES.find(e => e.id === form.entityId);
-      if (!entity) {
-        toast.error('Select an entity');
-        return;
-      }
-      const code = genEntityCode(allDefs, entity.shortCode);
+      const entity = MOCK_ENTITIES.find(e => e.id === cashForm.entityId);
+      if (!entity) { toast.error('Select an entity'); return; }
+      const code = genCashEntityCode(all, entity.shortCode);
       const def: CashLedgerDefinition = {
-        id: crypto.randomUUID(),
-        name: form.name.trim(),
-        code,
-        alias: form.alias.trim(),
-        parentGroupCode: form.parentGroupCode,
-        parentGroupName: form.parentGroupName,
-        entityId: entity.id,
-        entityShortCode: entity.shortCode,
-        status: 'active',
+        id: crypto.randomUUID(), ledgerType: 'cash',
+        name: cashForm.name.trim(), code,
+        alias: cashForm.alias.trim(),
+        parentGroupCode: cashForm.parentGroupCode,
+        parentGroupName: cashForm.parentGroupName,
+        entityId: entity.id, entityShortCode: entity.shortCode, status: 'active',
       };
       saveDefinition(def);
       // [JWT] POST /api/entity/{id}/finecore/ledger-instances
       saveInstance({
         id: crypto.randomUUID(),
         ledgerDefinitionId: def.id,
-        entityId: entity.id,
-        entityName: entity.name,
+        entityId: entity.id, entityName: entity.name,
         entityShortCode: entity.shortCode,
-        openingBalance: form.openingBalance,
-        isActive: true,
-        displayCode: def.code,
+        openingBalance: cashForm.openingBalance,
+        openingBalanceType: 'Dr',
+        isActive: true, displayCode: def.code,
       });
       toast.success(`${code} created for ${entity.name}`);
     }
 
-    setCreateOpen(false);
-    setEditTarget(null);
-    setForm(defaultForm);
-    refreshDefs();
-    refreshInstances();
+    setCashCreateOpen(false);
+    setCashEditTarget(null);
+    setCashForm(defaultCashForm);
+    refreshAll();
+  };
+
+  // ── Save Bank ──
+  const handleBankSave = () => {
+    // [JWT] POST /api/group/finecore/ledger-definitions
+    if (!bankForm.name.trim()) return toast.error('Ledger name is required');
+    const resolvedBankName = bankForm.bankName === 'Other' ? bankForm.bankNameOther.trim() : bankForm.bankName;
+    if (!resolvedBankName) return toast.error('Select a bank');
+    if (!bankForm.accountNumber) return toast.error('Account number is required');
+    if (!validateIFSC(bankForm.ifscCode)) return toast.error('Invalid IFSC code');
+    if (!bankForm.accountType) return toast.error('Select account type');
+
+    const all = loadAllDefinitions();
+
+    if (bankEditTarget) {
+      // [JWT] PUT /api/group/finecore/ledger-definitions/{id}
+      const updated: BankLedgerDefinition = {
+        ...bankEditTarget,
+        name: bankForm.name.trim(),
+        alias: bankForm.alias.trim(),
+        parentGroupCode: bankForm.parentGroupCode,
+        parentGroupName: bankForm.parentGroupName,
+        bankName: resolvedBankName,
+        accountNumber: bankForm.accountNumber,
+        ifscCode: bankForm.ifscCode.toUpperCase(),
+        accountType: bankForm.accountType as BankAccountType,
+        odLimit: bankForm.odLimit,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+    } else if (bankForm.scope === 'group') {
+      const code = genBankGroupCode(all);
+      const def: BankLedgerDefinition = {
+        id: crypto.randomUUID(), ledgerType: 'bank',
+        name: bankForm.name.trim(), code, alias: bankForm.alias.trim(),
+        parentGroupCode: bankForm.parentGroupCode,
+        parentGroupName: bankForm.parentGroupName,
+        entityId: null, entityShortCode: null, status: 'active',
+        bankName: resolvedBankName,
+        accountNumber: bankForm.accountNumber,
+        ifscCode: bankForm.ifscCode.toUpperCase(),
+        accountType: bankForm.accountType as BankAccountType,
+        odLimit: bankForm.odLimit,
+      };
+      saveDefinition(def);
+      autoCreateInstances(def, bankForm.openingBalance, bankForm.openingBalanceType);
+      toast.success(`${def.name} created. Opening balances set for ${MOCK_ENTITIES.length} entities.`);
+    } else {
+      const entity = MOCK_ENTITIES.find(e => e.id === bankForm.entityId);
+      if (!entity) return toast.error('Select an entity');
+      const code = genBankEntityCode(all, entity.shortCode);
+      const def: BankLedgerDefinition = {
+        id: crypto.randomUUID(), ledgerType: 'bank',
+        name: bankForm.name.trim(), code, alias: bankForm.alias.trim(),
+        parentGroupCode: bankForm.parentGroupCode,
+        parentGroupName: bankForm.parentGroupName,
+        entityId: entity.id, entityShortCode: entity.shortCode, status: 'active',
+        bankName: resolvedBankName, accountNumber: bankForm.accountNumber,
+        ifscCode: bankForm.ifscCode.toUpperCase(), accountType: bankForm.accountType as BankAccountType,
+        odLimit: bankForm.odLimit,
+      };
+      saveDefinition(def);
+      // [JWT] POST /api/entity/{id}/finecore/ledger-instances
+      saveInstance({
+        id: crypto.randomUUID(), ledgerDefinitionId: def.id,
+        entityId: entity.id, entityName: entity.name,
+        entityShortCode: entity.shortCode,
+        openingBalance: bankForm.openingBalance,
+        openingBalanceType: bankForm.openingBalanceType,
+        isActive: true, displayCode: def.code,
+      });
+      toast.success(`${code} created for ${entity.name}`);
+    }
+
+    setBankCreateOpen(false);
+    setBankEditTarget(null);
+    setBankForm(defaultBankForm);
+    setIfscValid(null);
+    setShowAccountPreview(false);
+    refreshAll();
   };
 
   // ── Deactivate ──
-  const handleDeactivate = (def: CashLedgerDefinition) => {
+  const handleDeactivate = (def: AnyLedgerDefinition) => {
     // [JWT] PATCH /api/group/finecore/ledger-definitions/{id}/status
     const updated = { ...def, status: def.status === 'active' ? 'inactive' as const : 'active' as const };
     saveDefinition(updated);
     toast.success(`${def.name} ${updated.status === 'active' ? 'activated' : 'deactivated'}`);
-    refreshDefs();
+    refreshAll();
   };
 
   // ── Save Opening Balances ──
@@ -296,18 +535,25 @@ export function LedgerMasterPanel() {
     toast.success('Opening balances saved');
   };
 
-  // ── FinFrame L4 groups for parent picker ──
-  const l4CashGroups = getFinFrameL4CashGroups();
+  // ── FinFrame L4 groups for parent pickers ──
+  const l4CashGroups = getFinFrameL4Groups(['CASH']);
+  const l4BankGroups = getFinFrameL4Groups(['BANK', 'STBOR']);
 
-  // Filter instances to only those with matching defs
-  const groupDefIds = new Set(defs.filter(d => !d.entityId).map(d => d.id));
-  const filteredInstances = instances.filter(i => groupDefIds.has(i.ledgerDefinitionId));
+  // Filter instances for Opening Balances tab
+  const allDefIds = new Set([...cashDefs, ...bankDefs].filter(d => !d.entityId).map(d => d.id));
+  const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
+
+  // Find parent def for an instance to determine its type
+  const getDefForInstance = (inst: EntityLedgerInstance): AnyLedgerDefinition | undefined =>
+    [...cashDefs, ...bankDefs].find(d => d.id === inst.ledgerDefinitionId);
 
   const rows: Record<string, typeof TYPE_BUTTONS> = {};
   TYPE_BUTTONS.forEach(b => {
     if (!rows[b.row]) rows[b.row] = [];
     rows[b.row].push(b);
   });
+
+  const suggestedParent = bankForm.accountType ? getSuggestedParent(bankForm.accountType as BankAccountType) : null;
 
   return (
     <div className="space-y-6">
@@ -317,6 +563,7 @@ export function LedgerMasterPanel() {
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl font-bold text-foreground">Ledger Master</h1>
             <Badge className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Cash</Badge>
+            <Badge className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Bank</Badge>
           </div>
           <p className="text-sm text-muted-foreground">Financial accounts for all entities</p>
         </div>
@@ -338,18 +585,38 @@ export function LedgerMasterPanel() {
       </div>
 
       {/* Quick Start Templates */}
-      <div className="flex gap-3">
-        <button
-          onClick={() => handleQuickStart('Main Cash')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600"
-        >
+      <div className="flex flex-wrap gap-3">
+        <button onClick={() => handleCashQuickStart('Main Cash')}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600">
           <Plus className="h-4 w-4" /> Main Cash
         </button>
-        <button
-          onClick={() => handleQuickStart('Petty Cash')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600"
-        >
+        <button onClick={() => handleCashQuickStart('Petty Cash')}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600">
           <Plus className="h-4 w-4" /> Petty Cash
+        </button>
+        <button onClick={() => handleBankQuickStart({
+          bankName: 'HDFC Bank', accountType: 'current', parentGroupCode: 'BANK',
+          parentGroupName: 'Bank Balances (Bank Accounts)', name: 'HDFC Bank — Current A/C',
+          openingBalanceType: 'Dr',
+        })}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
+          <Plus className="h-4 w-4" /> HDFC Current A/C
+        </button>
+        <button onClick={() => handleBankQuickStart({
+          bankName: 'State Bank of India (SBI)', accountType: 'savings', parentGroupCode: 'BANK',
+          parentGroupName: 'Bank Balances (Bank Accounts)', name: 'SBI — Savings A/C',
+          openingBalanceType: 'Dr',
+        })}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
+          <Plus className="h-4 w-4" /> SBI Savings A/C
+        </button>
+        <button onClick={() => handleBankQuickStart({
+          accountType: 'cash_credit', parentGroupCode: 'STBOR',
+          parentGroupName: 'Short-Term Borrowings (Bank OD A/c)', name: '',
+          openingBalanceType: 'Cr',
+        })}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-sm font-medium text-amber-600">
+          <Plus className="h-4 w-4" /> Cash Credit A/C
         </button>
       </div>
 
@@ -361,21 +628,22 @@ export function LedgerMasterPanel() {
             <div className="flex flex-wrap gap-2">
               {buttons.map(btn => {
                 const Icon = btn.icon;
-                return btn.active ? (
-                  <button
-                    key={btn.label}
-                    onClick={openCreate}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-teal-500/10 text-teal-600 border border-teal-500/20 hover:bg-teal-500/20 transition-colors"
-                  >
+                if (!btn.active) {
+                  return (
+                    <span key={btn.label}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium opacity-50 pointer-events-none bg-muted/50 text-muted-foreground border border-border">
+                      <Lock className="h-3 w-3" /> {btn.label}
+                    </span>
+                  );
+                }
+                const isCash = btn.label === 'Cash';
+                const color = isCash ? 'teal' : 'blue';
+                return (
+                  <button key={btn.label}
+                    onClick={() => { if (isCash) openCashCreate(); else openBankCreate(); }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-${color}-500/10 text-${color}-600 border border-${color}-500/20 hover:bg-${color}-500/20 transition-colors`}>
                     <Icon className="h-3.5 w-3.5" /> {btn.label}
                   </button>
-                ) : (
-                  <span
-                    key={btn.label}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium opacity-50 pointer-events-none bg-muted/50 text-muted-foreground border border-border"
-                  >
-                    <Lock className="h-3 w-3" /> {btn.label}
-                  </span>
                 );
               })}
             </div>
@@ -392,80 +660,145 @@ export function LedgerMasterPanel() {
 
         {/* Tab 1 — Definitions */}
         <TabsContent value="definitions">
-          {defs.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">
-              No cash ledgers yet. Click <span className="font-semibold text-teal-600">+ Cash</span> above or use a Quick Start template.
-            </div>
-          ) : (
-            <div className="rounded-xl border border-border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Parent Group</TableHead>
-                    <TableHead>Alias</TableHead>
-                    <TableHead>Scope</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {defs.map(def => (
-                    <TableRow key={def.id}>
-                      <TableCell className="font-medium">{def.name}</TableCell>
-                      <TableCell className="font-mono text-xs">{def.code}</TableCell>
-                      <TableCell className="text-xs">{def.parentGroupName}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{def.alias || '—'}</TableCell>
-                      <TableCell>
-                        {def.entityId ? (
-                          <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
-                            {MOCK_ENTITIES.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">
-                            Group
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                          {def.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(def)}>
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}>
-                            <Ban className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
+          {/* Sub-tabs for Cash / Bank */}
+          <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as any)} className="mb-4">
+            <TabsList className="h-9">
+              <TabsTrigger value="cash" className="text-xs gap-1.5">
+                <Wallet className="h-3.5 w-3.5" /> Cash ({cashDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="bank" className="text-xs gap-1.5">
+                <Landmark className="h-3.5 w-3.5" /> Bank ({bankDefs.length})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Cash List */}
+          {defSubTab === 'cash' && (
+            cashDefs.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground text-sm">
+                No cash ledgers yet. Click <span className="font-semibold text-teal-600">+ Cash</span> above or use a Quick Start template.
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Parent Group</TableHead>
+                      <TableHead>Alias</TableHead>
+                      <TableHead>Scope</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {cashDefs.map(def => (
+                      <TableRow key={def.id}>
+                        <TableCell className="font-medium">{def.name}</TableCell>
+                        <TableCell className="font-mono text-xs">{def.code}</TableCell>
+                        <TableCell className="text-xs">{def.parentGroupName}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{def.alias || '—'}</TableCell>
+                        <TableCell>
+                          {def.entityId ? (
+                            <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                              {MOCK_ENTITIES.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                            {def.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openCashEdit(def)}><Edit2 className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )
+          )}
+
+          {/* Bank List */}
+          {defSubTab === 'bank' && (
+            bankDefs.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground text-sm">
+                No bank ledgers yet. Click <span className="font-semibold text-blue-600">+ Bank</span> above or use a Quick Start template.
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Bank Name</TableHead>
+                      <TableHead>Account Type</TableHead>
+                      <TableHead>IFSC</TableHead>
+                      <TableHead>Scope</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {bankDefs.map(def => (
+                      <TableRow key={def.id}>
+                        <TableCell className="font-medium">{def.name}</TableCell>
+                        <TableCell className="font-mono text-xs">{def.code}</TableCell>
+                        <TableCell className="text-xs">{def.bankName}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[def.accountType]}`}>
+                            {ACCOUNT_TYPE_LABELS[def.accountType]}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">{def.ifscCode}</TableCell>
+                        <TableCell>
+                          {def.entityId ? (
+                            <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                              {MOCK_ENTITIES.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Group</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                            {def.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openBankEdit(def)}><Edit2 className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )
           )}
         </TabsContent>
 
         {/* Tab 2 — Opening Balances */}
         <TabsContent value="opening_balances">
           <div className="space-y-4">
-            {/* Entity Selector */}
             <div className="flex items-center gap-3">
               <Label className="text-sm font-medium whitespace-nowrap">Entity:</Label>
               <Select value={selEntityId} onValueChange={setSelEntityId}>
-                <SelectTrigger className="w-[320px]">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="w-[320px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {MOCK_ENTITIES.map(e => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.name} ({e.shortCode})
-                    </SelectItem>
+                    <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -484,12 +817,14 @@ export function LedgerMasterPanel() {
                         <TableHead>Ledger Name</TableHead>
                         <TableHead>Display Code</TableHead>
                         <TableHead>Opening Balance (₹)</TableHead>
+                        <TableHead>Dr/Cr</TableHead>
                         <TableHead>Active</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredInstances.map((inst, idx) => {
-                        const def = defs.find(d => d.id === inst.ledgerDefinitionId);
+                      {filteredInstances.map(inst => {
+                        const def = getDefForInstance(inst);
+                        const isCash = def?.ledgerType === 'cash';
                         const displayCode = `${inst.entityShortCode}/${inst.displayCode}`;
                         return (
                           <TableRow key={inst.id}>
@@ -498,26 +833,40 @@ export function LedgerMasterPanel() {
                             <TableCell>
                               <div className="flex items-center gap-1">
                                 <span className="text-muted-foreground text-sm">₹</span>
-                                <Input
-                                  type="number"
-                                  className="w-32 h-8 text-sm"
-                                  value={inst.openingBalance}
+                                <Input type="number" className="w-32 h-8 text-sm" value={inst.openingBalance}
                                   onChange={(e) => {
-                                    const updated = [...instances];
-                                    const realIdx = instances.findIndex(i => i.id === inst.id);
-                                    updated[realIdx] = { ...inst, openingBalance: parseFloat(e.target.value) || 0 };
+                                    const updated = instances.map(i =>
+                                      i.id === inst.id ? { ...i, openingBalance: parseFloat(e.target.value) || 0 } : i
+                                    );
                                     setInstances(updated);
                                   }}
                                 />
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Switch
-                                checked={inst.isActive}
+                              {isCash ? (
+                                <Badge variant="outline" className="text-[10px] bg-muted/50 text-muted-foreground border-border">Dr</Badge>
+                              ) : (
+                                <Select value={inst.openingBalanceType} onValueChange={(v: 'Dr' | 'Cr') => {
+                                  const updated = instances.map(i =>
+                                    i.id === inst.id ? { ...i, openingBalanceType: v } : i
+                                  );
+                                  setInstances(updated);
+                                }}>
+                                  <SelectTrigger className="h-7 w-16 text-xs"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Dr">Dr</SelectItem>
+                                    <SelectItem value="Cr">Cr</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Switch checked={inst.isActive}
                                 onCheckedChange={(checked) => {
-                                  const updated = [...instances];
-                                  const realIdx = instances.findIndex(i => i.id === inst.id);
-                                  updated[realIdx] = { ...inst, isActive: checked };
+                                  const updated = instances.map(i =>
+                                    i.id === inst.id ? { ...i, isActive: checked } : i
+                                  );
                                   setInstances(updated);
                                 }}
                               />
@@ -537,150 +886,273 @@ export function LedgerMasterPanel() {
         </TabsContent>
       </Tabs>
 
-      {/* Create / Edit Dialog */}
-      <Dialog open={createOpen} onOpenChange={(open) => { if (!open) { setCreateOpen(false); setEditTarget(null); } }}>
+      {/* ─── Cash Create / Edit Dialog ─── */}
+      <Dialog open={cashCreateOpen} onOpenChange={(open) => { if (!open) { setCashCreateOpen(false); setCashEditTarget(null); } }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editTarget ? 'Edit Cash Ledger' : 'Create Cash Ledger'}</DialogTitle>
+            <DialogTitle>{cashEditTarget ? 'Edit Cash Ledger' : 'Create Cash Ledger'}</DialogTitle>
             <DialogDescription>
-              {editTarget ? 'Update ledger definition details.' : 'Define a new cash ledger for your group or a specific entity.'}
+              {cashEditTarget ? 'Update ledger definition details.' : 'Define a new cash ledger for your group or a specific entity.'}
             </DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4">
             {/* Parent Group Picker */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Parent Group <span className="text-destructive">*</span></Label>
-              <Select
-                value={form.parentGroupCode}
-                onValueChange={(v) => {
-                  if (v === 'CASH') {
-                    setForm(f => ({ ...f, parentGroupCode: 'CASH', parentGroupName: 'Cash & Cash Equivalents (Cash-in-Hand)' }));
-                  } else {
-                    const l4 = l4CashGroups.find(g => g.code === v);
-                    setForm(f => ({ ...f, parentGroupCode: v, parentGroupName: l4?.name ?? v }));
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select parent group" />
-                </SelectTrigger>
+              <Select value={cashForm.parentGroupCode} onValueChange={(v) => {
+                if (v === 'CASH') setCashForm(f => ({ ...f, parentGroupCode: 'CASH', parentGroupName: 'Cash & Cash Equivalents (Cash-in-Hand)' }));
+                else { const l4 = l4CashGroups.find(g => g.code === v); setCashForm(f => ({ ...f, parentGroupCode: v, parentGroupName: l4?.name ?? v })); }
+              }}>
+                <SelectTrigger><SelectValue placeholder="Select parent group" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CASH">
-                    <span className="flex items-center gap-1.5">
-                      <Lock className="h-3 w-3 text-muted-foreground" />
-                      Cash & Cash Equivalents (Cash-in-Hand)
-                    </span>
-                  </SelectItem>
-                  {l4CashGroups.length > 0 && l4CashGroups.map(g => (
-                    <SelectItem key={g.code} value={g.code}>
-                      {g.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="CASH"><span className="flex items-center gap-1.5"><Lock className="h-3 w-3 text-muted-foreground" />Cash & Cash Equivalents (Cash-in-Hand)</span></SelectItem>
+                  {l4CashGroups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
                 </SelectContent>
               </Select>
               <p className="text-[10px] text-muted-foreground">System Groups (L3) are locked. Your FinFrame L4 groups appear below.</p>
             </div>
-
-            {/* Ledger Name */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
-              <Input
-                placeholder="e.g., Main Cash, Petty Cash — Delhi"
-                value={form.name}
-                onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-                disabled={!form.parentGroupCode}
-              />
+              <Input placeholder="e.g., Main Cash, Petty Cash — Delhi" value={cashForm.name}
+                onChange={(e) => setCashForm(f => ({ ...f, name: e.target.value }))} disabled={!cashForm.parentGroupCode} />
             </div>
-
-            {/* Opening Balance */}
-            {!editTarget && (
+            {!cashEditTarget && (
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Opening Balance</Label>
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground text-sm">₹</span>
-                  <Input
-                    type="number"
-                    value={form.openingBalance}
-                    onChange={(e) => setForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))}
-                    disabled={!form.parentGroupCode}
-                  />
+                  <Input type="number" value={cashForm.openingBalance}
+                    onChange={(e) => setCashForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} disabled={!cashForm.parentGroupCode} />
                 </div>
                 <p className="text-[10px] text-muted-foreground">Cash always Dr balance.</p>
               </div>
             )}
-
-            {/* Alias */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Alias</Label>
-              <Input
-                placeholder="e.g., MCash, PettyCash-DEL"
-                value={form.alias}
-                onChange={(e) => setForm(f => ({ ...f, alias: e.target.value }))}
-                disabled={!form.parentGroupCode}
-              />
+              <Input placeholder="e.g., MCash, PettyCash-DEL" value={cashForm.alias}
+                onChange={(e) => setCashForm(f => ({ ...f, alias: e.target.value }))} disabled={!cashForm.parentGroupCode} />
             </div>
-
-            {/* Entity Scope */}
-            {!editTarget && (
+            {!cashEditTarget && (
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Entity Scope</Label>
                 <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, scope: 'group', entityId: '' }))}
-                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                      form.scope === 'group'
-                        ? 'bg-teal-500/10 text-teal-600 border-teal-500/30'
-                        : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
-                    }`}
-                    disabled={!form.parentGroupCode}
-                  >
+                  <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'group', entityId: '' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
                     Group Level
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, scope: 'entity' }))}
-                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                      form.scope === 'entity'
-                        ? 'bg-amber-500/10 text-amber-600 border-amber-500/30'
-                        : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
-                    }`}
-                    disabled={!form.parentGroupCode}
-                  >
+                  <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'entity' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
                     Entity Specific
                   </button>
                 </div>
               </div>
             )}
-
-            {/* Entity Dropdown (conditional) */}
-            {!editTarget && form.scope === 'entity' && (
+            {!cashEditTarget && cashForm.scope === 'entity' && (
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
-                <Select value={form.entityId} onValueChange={(v) => setForm(f => ({ ...f, entityId: v }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select entity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MOCK_ENTITIES.map(e => (
-                      <SelectItem key={e.id} value={e.id}>
-                        {e.name} ({e.shortCode})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                <Select value={cashForm.entityId} onValueChange={(v) => setCashForm(f => ({ ...f, entityId: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
+                  <SelectContent>{MOCK_ENTITIES.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
                 </Select>
               </div>
             )}
           </div>
-
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setCreateOpen(false); setEditTarget(null); }}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave} disabled={!form.parentGroupCode}>
-              {editTarget ? 'Update' : 'Create'}
-            </Button>
+            <Button variant="outline" onClick={() => { setCashCreateOpen(false); setCashEditTarget(null); }}>Cancel</Button>
+            <Button onClick={handleCashSave} disabled={!cashForm.parentGroupCode}>{cashEditTarget ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Bank Create / Edit Dialog ─── */}
+      <Dialog open={bankCreateOpen} onOpenChange={(open) => { if (!open) { setBankCreateOpen(false); setBankEditTarget(null); setIfscValid(null); setShowAccountPreview(false); } }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{bankEditTarget ? 'Edit Bank Ledger' : 'Create Bank Ledger'}</DialogTitle>
+            <DialogDescription>
+              {bankEditTarget ? 'Update bank ledger definition details.' : 'Define a new bank account ledger for your group or a specific entity.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* 1. Parent Group Picker */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Parent Group <span className="text-destructive">*</span></Label>
+              <Select value={bankForm.parentGroupCode} onValueChange={(v) => {
+                if (v === 'BANK') setBankForm(f => ({ ...f, parentGroupCode: 'BANK', parentGroupName: 'Bank Balances (Bank Accounts)' }));
+                else if (v === 'STBOR') setBankForm(f => ({ ...f, parentGroupCode: 'STBOR', parentGroupName: 'Short-Term Borrowings (Bank OD A/c)' }));
+                else { const l4 = l4BankGroups.find(g => g.code === v); setBankForm(f => ({ ...f, parentGroupCode: v, parentGroupName: l4?.name ?? v })); }
+              }}>
+                <SelectTrigger><SelectValue placeholder="Select parent group" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BANK">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="h-3 w-3 text-muted-foreground" /> Bank Balances (Bank Accounts)
+                      {suggestedParent?.code === 'BANK' && <Badge className="text-[9px] ml-1 bg-blue-500/10 text-blue-600 border-blue-500/20">Suggested</Badge>}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="STBOR">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="h-3 w-3 text-muted-foreground" /> Short-Term Borrowings (Bank OD A/c)
+                      {suggestedParent?.code === 'STBOR' && <Badge className="text-[9px] ml-1 bg-amber-500/10 text-amber-600 border-amber-500/20">Suggested</Badge>}
+                    </span>
+                  </SelectItem>
+                  {l4BankGroups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <p className="text-[10px] text-muted-foreground">System Groups (L3) are locked. Your FinFrame L4 groups appear below.</p>
+            </div>
+
+            {/* 2. Ledger Name */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., HDFC Bank — Current A/C 001234" value={bankForm.name}
+                onChange={(e) => setBankForm(f => ({ ...f, name: e.target.value }))} disabled={!bankForm.parentGroupCode} />
+            </div>
+
+            {/* 3. Bank Name */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Bank Name <span className="text-destructive">*</span></Label>
+              <Select value={bankForm.bankName} onValueChange={(v) => setBankForm(f => ({ ...f, bankName: v, bankNameOther: v === 'Other' ? f.bankNameOther : '' }))}>
+                <SelectTrigger><SelectValue placeholder="Select bank" /></SelectTrigger>
+                <SelectContent>
+                  {INDIAN_BANKS.map(b => (<SelectItem key={b} value={b}>{b}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              {bankForm.bankName === 'Other' && (
+                <Input placeholder="Enter bank name" value={bankForm.bankNameOther}
+                  onChange={(e) => setBankForm(f => ({ ...f, bankNameOther: e.target.value }))} className="mt-1.5" />
+              )}
+            </div>
+
+            {/* 4. Account Number */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Account Number <span className="text-destructive">*</span></Label>
+              <Input placeholder="Enter account number" value={bankEditTarget ? maskAccountNo(bankForm.accountNumber) : bankForm.accountNumber}
+                onChange={(e) => {
+                  if (bankEditTarget) return;
+                  const v = e.target.value.replace(/\D/g, '');
+                  setBankForm(f => ({ ...f, accountNumber: v }));
+                  setShowAccountPreview(false);
+                }}
+                onBlur={() => { if (bankForm.accountNumber) setShowAccountPreview(true); }}
+                readOnly={!!bankEditTarget}
+              />
+              {showAccountPreview && bankForm.accountNumber && (
+                <p className="text-[10px] text-muted-foreground">Saved as: {maskAccountNo(bankForm.accountNumber)}</p>
+              )}
+              {bankEditTarget && <p className="text-[10px] text-muted-foreground">Click to reveal (masked for security)</p>}
+            </div>
+
+            {/* 5. IFSC Code */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">IFSC Code <span className="text-destructive">*</span></Label>
+              <div className="relative">
+                <Input placeholder="e.g., HDFC0001234" value={bankForm.ifscCode}
+                  className={ifscValid === false ? 'border-destructive' : ifscValid === true ? 'border-emerald-500' : ''}
+                  onChange={(e) => {
+                    const v = e.target.value.toUpperCase();
+                    setBankForm(f => ({ ...f, ifscCode: v }));
+                    setIfscValid(null);
+                  }}
+                  onBlur={() => { if (bankForm.ifscCode) setIfscValid(validateIFSC(bankForm.ifscCode)); }}
+                  maxLength={11}
+                />
+                {ifscValid === true && (
+                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
+                )}
+              </div>
+              {ifscValid === false && (
+                <p className="text-[10px] text-destructive">Invalid IFSC. Format: HDFC0001234 (4 letters + 0 + 6 alphanumeric)</p>
+              )}
+              <p className="text-[10px] text-muted-foreground">First 4 letters = bank code, then 0, then 6 alphanumeric</p>
+            </div>
+
+            {/* 6. Account Type */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Account Type <span className="text-destructive">*</span></Label>
+              <Select value={bankForm.accountType} onValueChange={(v: string) => {
+                const at = v as BankAccountType;
+                const nature = getDefaultNature(at);
+                const parent = getSuggestedParent(at);
+                setBankForm(f => ({ ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name }));
+              }}>
+                <SelectTrigger><SelectValue placeholder="Select account type" /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(ACCOUNT_TYPE_LABELS) as BankAccountType[]).map(k => (
+                    <SelectItem key={k} value={k}>{ACCOUNT_TYPE_LABELS[k]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* 7. OD / CC Limit (conditional) */}
+            {(bankForm.accountType === 'cash_credit' || bankForm.accountType === 'overdraft') && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">OD / CC Limit</Label>
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground text-sm">₹</span>
+                  <Input type="number" value={bankForm.odLimit}
+                    onChange={(e) => setBankForm(f => ({ ...f, odLimit: parseFloat(e.target.value) || 0 }))} />
+                </div>
+              </div>
+            )}
+
+            {/* 8. Opening Balance + Dr/Cr */}
+            {!bankEditTarget && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Opening Balance</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">₹</span>
+                  <Input type="number" className="flex-1" value={bankForm.openingBalance}
+                    onChange={(e) => setBankForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} />
+                  <div className="flex rounded-lg border border-border overflow-hidden">
+                    <button type="button" onClick={() => setBankForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
+                      className={`px-3 py-1.5 text-xs font-medium transition-colors ${bankForm.openingBalanceType === 'Dr' ? 'bg-blue-500/10 text-blue-600' : 'bg-muted/30 text-muted-foreground'}`}>Dr</button>
+                    <button type="button" onClick={() => setBankForm(f => ({ ...f, openingBalanceType: 'Cr' }))}
+                      className={`px-3 py-1.5 text-xs font-medium transition-colors ${bankForm.openingBalanceType === 'Cr' ? 'bg-amber-500/10 text-amber-600' : 'bg-muted/30 text-muted-foreground'}`}>Cr</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 9. Alias */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Alias</Label>
+              <Input placeholder="e.g., HDFC-CC, SBI-SAV" value={bankForm.alias}
+                onChange={(e) => setBankForm(f => ({ ...f, alias: e.target.value }))} />
+            </div>
+
+            {/* 10. Entity Scope */}
+            {!bankEditTarget && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Entity Scope</Label>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setBankForm(f => ({ ...f, scope: 'group', entityId: '' }))}
+                      className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${bankForm.scope === 'group' ? 'bg-blue-500/10 text-blue-600 border-blue-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>
+                      Group Level
+                    </button>
+                    <button type="button" onClick={() => setBankForm(f => ({ ...f, scope: 'entity' }))}
+                      className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${bankForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>
+                      Entity Specific
+                    </button>
+                  </div>
+                </div>
+                {bankForm.scope === 'entity' && (
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
+                    <Select value={bankForm.entityId} onValueChange={(v) => setBankForm(f => ({ ...f, entityId: v }))}>
+                      <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
+                      <SelectContent>{MOCK_ENTITIES.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setBankCreateOpen(false); setBankEditTarget(null); }}>Cancel</Button>
+            <Button onClick={handleBankSave} disabled={!bankForm.parentGroupCode}>{bankEditTarget ? 'Update' : 'Create'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
