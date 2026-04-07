@@ -209,7 +209,7 @@ const autoCreateInstances = (
 
 // ─── FinFrame L4 Groups Reader ────────────────────────────────────────
 
-const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; l3Code: string }[] => {
+const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; parentL3Code: string }[] => {
   const raw = localStorage.getItem('erp_group_finframe_l4_groups');
   if (!raw) return [];
   try {
