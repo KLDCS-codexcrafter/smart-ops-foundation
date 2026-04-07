@@ -207,6 +207,12 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
                   </SelectContent>
                 </Select>
               </FormField>
+              <FormField label="Business Activity" required hint="Determines which industry pack is loaded">
+                <Select value={form.businessActivity} onValueChange={v => upd('businessActivity', v)}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select activity" /></SelectTrigger>
+                  <SelectContent>{BUSINESS_ACTIVITIES.map(a => <SelectItem key={a} value={a}><span className="text-xs">{a}</span></SelectItem>)}</SelectContent>
+                </Select>
+              </FormField>
               <FormField label="Status">
                 <Select value={form.status} onValueChange={v => upd('status', v)}>
                   <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
