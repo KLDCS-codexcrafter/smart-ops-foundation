@@ -312,9 +312,6 @@ export function FinFramePanel() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handlePreviewPack}>
-            <Package className="h-4 w-4 mr-1" /> Load Industry Pack
-          </Button>
           <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
             <button
               onClick={() => setNamingMode('indas')}
@@ -333,7 +330,7 @@ export function FinFramePanel() {
         {[
           { label: 'L3 System Groups', value: L3_FINANCIAL_GROUPS.length, icon: TreePine },
           { label: 'Your Groups', value: userGroups.filter(g => g.status === 'active').length, icon: FolderTree },
-          { label: 'Industry Pack', value: packLoaded ? 'Yes' : 'No', icon: Package },
+          { label: 'L2 Parent Groups', value: L2_PARENT_GROUPS.length, icon: Package },
           { label: 'Total Groups', value: L3_FINANCIAL_GROUPS.length + userGroups.filter(g => g.status === 'active').length, icon: Layers },
         ].map(s => (
           <Card key={s.label} className="bg-card/60 backdrop-blur-xl border-border">
@@ -355,28 +352,10 @@ export function FinFramePanel() {
 
         {/* Tab 1 — Account Tree */}
         <TabsContent value="tree" className="space-y-4">
-          {/* Quick Setup Banner */}
           {userGroups.length === 0 && (
-            <Card className="border-indigo-500/30 bg-indigo-500/5">
-              <CardContent className="p-4 flex items-center justify-between flex-wrap gap-3">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Load a pre-built account pack to get started quickly</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Choose an industry to load groups tailored for your business type</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Select value={selectedIndustry} onValueChange={(v) => setSelectedIndustry(v as typeof selectedIndustry)}>
-                    <SelectTrigger className="w-[180px] h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="common">All Common</SelectItem>
-                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                      <SelectItem value="trading">Trading</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button size="sm" onClick={handlePreviewPack}>Preview Pack</Button>
-                </div>
+            <Card className="border-muted">
+              <CardContent className="p-4 text-center text-sm text-muted-foreground">
+                No account groups yet. Use the <strong>+ Add Group</strong> button next to any L3 group to create your first group.
               </CardContent>
             </Card>
           )}
