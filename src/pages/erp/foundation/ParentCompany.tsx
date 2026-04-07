@@ -1162,6 +1162,7 @@ export default function ParentCompany() {
 
   // ── Main render ────────────────────────────────────────────────────────────
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
     <div className="min-h-screen bg-background">
       <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
