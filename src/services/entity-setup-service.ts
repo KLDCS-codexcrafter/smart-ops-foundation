@@ -112,6 +112,18 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     { ledgerType: 'income', name: 'Sales Returns', code: 'SRET-000001', parentGroupCode: 'SRET', parentGroupName: l3Name('SRET'), alias: 'Sal Ret', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'expense', name: 'Purchase — Domestic', code: 'PURCD-000001', parentGroupCode: 'PURCH', parentGroupName: l3Name('PURCH'), alias: 'Purch Dom', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'expense', name: 'Purchase Returns', code: 'PRET-000001', parentGroupCode: 'PRET', parentGroupName: l3Name('PRET'), alias: 'Purch Ret', entityId: null, entityShortCode: null, status: 'active' },
+    // TCS Payable
+    { ledgerType: 'duties_taxes', name: 'TCS Payable', code: 'TCSP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'TCS Pay', entityId: null, entityShortCode: null, status: 'active' },
+    // Professional Tax Payable
+    { ledgerType: 'duties_taxes', name: 'Professional Tax Payable', code: 'PTP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'PT Pay', entityId: null, entityShortCode: null, status: 'active' },
+    // PF Payable
+    { ledgerType: 'liability', name: 'PF Payable', code: 'PFP-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), alias: 'PF Pay', entityId: null, entityShortCode: null, status: 'active' },
+    // ESI Payable
+    { ledgerType: 'liability', name: 'ESI Payable', code: 'ESIP-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), alias: 'ESI Pay', entityId: null, entityShortCode: null, status: 'active' },
+    // Retained Earnings
+    { ledgerType: 'equity', name: 'Retained Earnings', code: 'RETE-000001', parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'Ret Earn', entityId: null, entityShortCode: null, status: 'active' },
+    // Security Deposit Paid
+    { ledgerType: 'asset', name: 'Security Deposit Paid', code: 'SECDP-000001', parentGroupCode: 'STLA', parentGroupName: l3Name('STLA'), alias: 'Sec Dep', entityId: null, entityShortCode: null, status: 'active' },
   ];
 
   // Conditional: Service Revenue
@@ -222,7 +234,12 @@ const createBDLedgers = (opts: SetupOptions): number => {
 
   const toCreate: AnyLedgerDefinition[] = [];
 
-  opts.siblingEntities.forEach((sibling, i) => {
+  opts.siblingEntities.forEach((sibling) => {
+    // Count existing BD ledgers for this entity to avoid code collision
+    const existingBDCountForThis = existing.filter(
+      d => d.ledgerType === 'branch_division' && d.entityShortCode === opts.shortCode
+    ).length + toCreate.filter(d => d.entityShortCode === opts.shortCode).length;
+
     // In THIS entity's books: create a ledger for the sibling
     const nameInThis = `${sibling.name} A/c`;
     if (!existingNames.has(nameInThis.toLowerCase())) {
@@ -230,7 +247,7 @@ const createBDLedgers = (opts: SetupOptions): number => {
         id: crypto.randomUUID(),
         ledgerType: 'branch_division',
         name: nameInThis,
-        code: `${opts.shortCode}-BD-${String(i + 1).padStart(6, '0')}`,
+        code: `${opts.shortCode}-BD-${String(existingBDCountForThis + 1).padStart(6, '0')}`,
         parentGroupCode: 'BD',
         parentGroupName: 'Branch & Division Accounts',
         alias: sibling.shortCode,
