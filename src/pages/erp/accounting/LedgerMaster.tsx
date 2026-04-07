@@ -22,7 +22,7 @@ import {
   PiggyBank, HandCoins, Edit2, Ban, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { MOCK_ENTITIES } from '@/data/mock-entities';
+import { loadEntities } from '@/data/mock-entities';
 
 // ─── Types (Two-Table Architecture) ───────────────────────────────────
 
