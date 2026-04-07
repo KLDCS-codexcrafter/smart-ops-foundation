@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
   BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
+  MapPin, Users, Settings, Building2,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
@@ -19,12 +20,23 @@ const COMPLIANCE_CARDS = [
   { title: 'HSN / SAC Codes', desc: 'Harmonised System and Service Accounting codes with GST rates', icon: BookOpen, href: '/erp/accounting/hsn-sac' },
 ];
 
+const PAYROLL_CARDS = [
+  { title: 'Professional Tax', desc: 'State-wise professional tax slabs for all employees', icon: MapPin, href: '/erp/accounting/professional-tax' },
+  { title: 'EPF / ESI / LWF', desc: 'Provident fund, state insurance and welfare fund rates', icon: Users, href: '/erp/accounting/epf-esi-lwf' },
+  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, href: '/erp/accounting/statutory-registrations' },
+  { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, href: '/erp/accounting/gst-config' },
+  { title: 'Comply360 Configuration', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/comply360-config' },
+];
+
+const PAYROLL_COMING_SOON = [
+  { title: 'Capital Assets', desc: 'Asset register, depreciation, disposal and transfer', icon: Building2 },
+];
+
 const COMING_SOON_CARDS = [
   { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3 },
   { title: 'Ledger Master', desc: 'General and sub-ledger configuration', icon: Landmark },
   { title: 'Voucher Types', desc: 'Payment, receipt, journal, contra types', icon: FileSpreadsheet },
   { title: 'Cost Centres', desc: 'Departmental and project cost tracking', icon: Briefcase },
-  { title: 'Capital Assets', desc: 'Fixed asset register and depreciation', icon: Coins },
   { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];
 
@@ -90,6 +102,48 @@ export default function AccountingHub() {
                     <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
                   </div>
                 </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Payroll Statutory & Compliance */}
+          <div>
+            <h2 className="text-lg font-semibold text-foreground mb-3">Payroll Statutory & Compliance</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {PAYROLL_CARDS.map(c => (
+                <button
+                  key={c.title}
+                  onClick={() => navigate(c.href)}
+                  className="group flex flex-col gap-3 p-5 rounded-xl border bg-card hover:border-primary/40 hover:bg-accent/30 transition-all text-left"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <c.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
+                  </div>
+                </button>
+              ))}
+              {PAYROLL_COMING_SOON.map(c => (
+                <div
+                  key={c.title}
+                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                      <c.icon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
