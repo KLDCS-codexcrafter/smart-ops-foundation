@@ -408,9 +408,9 @@ export function LedgerMasterPanel() {
       };
       saveDefinition(def);
       autoCreateInstances(def, cashForm.openingBalance, 'Dr');
-      toast.success(`${cashForm.name} created. Opening balances set for ${MOCK_ENTITIES.length} entities.`);
+      toast.success(`${cashForm.name} created. Opening balances set for ${entities.length} entities.`);
     } else {
-      const entity = MOCK_ENTITIES.find(e => e.id === cashForm.entityId);
+      const entity = entities.find(e => e.id === cashForm.entityId);
       if (!entity) { toast.error('Select an entity'); return; }
       const code = genCashEntityCode(all, entity.shortCode);
       const def: CashLedgerDefinition = {
@@ -485,9 +485,9 @@ export function LedgerMasterPanel() {
       };
       saveDefinition(def);
       autoCreateInstances(def, bankForm.openingBalance, bankForm.openingBalanceType);
-      toast.success(`${def.name} created. Opening balances set for ${MOCK_ENTITIES.length} entities.`);
+      toast.success(`${def.name} created. Opening balances set for ${entities.length} entities.`);
     } else {
-      const entity = MOCK_ENTITIES.find(e => e.id === bankForm.entityId);
+      const entity = entities.find(e => e.id === bankForm.entityId);
       if (!entity) return toast.error('Select an entity');
       const code = genBankEntityCode(all, entity.shortCode);
       const def: BankLedgerDefinition = {
@@ -704,7 +704,7 @@ export function LedgerMasterPanel() {
                         <TableCell>
                           {def.entityId ? (
                             <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
-                              {MOCK_ENTITIES.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
+                              {entities.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge>
@@ -765,7 +765,7 @@ export function LedgerMasterPanel() {
                         <TableCell>
                           {def.entityId ? (
                             <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
-                              {MOCK_ENTITIES.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
+                              {entities.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Group</Badge>
@@ -799,7 +799,7 @@ export function LedgerMasterPanel() {
               <Select value={selEntityId} onValueChange={setSelEntityId}>
                 <SelectTrigger className="w-[320px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {MOCK_ENTITIES.map(e => (
+                  {entities.map(e => (
                     <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>
                   ))}
                 </SelectContent>
@@ -954,7 +954,7 @@ export function LedgerMasterPanel() {
                 <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
                 <Select value={cashForm.entityId} onValueChange={(v) => setCashForm(f => ({ ...f, entityId: v }))}>
                   <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
-                  <SelectContent>{MOCK_ENTITIES.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
+                  <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
                 </Select>
               </div>
             )}
@@ -1145,7 +1145,7 @@ export function LedgerMasterPanel() {
                     <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
                     <Select value={bankForm.entityId} onValueChange={(v) => setBankForm(f => ({ ...f, entityId: v }))}>
                       <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
-                      <SelectContent>{MOCK_ENTITIES.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
+                      <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
                     </Select>
                   </div>
                 )}
