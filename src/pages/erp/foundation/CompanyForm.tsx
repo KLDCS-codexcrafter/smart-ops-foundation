@@ -852,6 +852,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
   }
 
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
