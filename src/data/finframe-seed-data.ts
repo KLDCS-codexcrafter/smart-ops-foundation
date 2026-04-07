@@ -65,6 +65,7 @@ export const L2_PARENT_GROUPS: L2ParentGroup[] = [
   { code: 'E-OE',   name: 'Operating Expenses',               l1Code: 'E',  nature: 'Dr', order: 10 },
   { code: 'E-FC',   name: 'Finance Costs',                    l1Code: 'E',  nature: 'Dr', order: 11 },
   { code: 'E-DEP',  name: 'Depreciation & Amortisation',      l1Code: 'E',  nature: 'Dr', order: 12 },
+  { code: 'SR',    name: 'Suspense & Reconciliation',        l1Code: 'CE', nature: 'Dr', order: 13 },
 ];
 
 // ─── L3 Financial Groups — 63 records ───────────────────────────
@@ -162,6 +163,10 @@ export const L3_FINANCIAL_GROUPS: L3FinancialGroup[] = [
   { code: 'DTAN',   name: 'Depreciation on Tangible Assets',     tallyName: 'Depreciation',                 l2Code: 'E-DEP', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 1 },
   { code: 'AMINT',  name: 'Amortisation of Intangible Assets',   tallyName: 'Amortisation',                 l2Code: 'E-DEP', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 2 },
   { code: 'IMPAIR', name: 'Impairment Losses',                   tallyName: 'Impairment Loss',              l2Code: 'E-DEP', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 3 },
+
+  // Under Suspense & Reconciliation (SR) — 2 groups
+  { code: 'BD',     name: 'Branch & Division Accounts',          tallyName: 'Branch / Divisions',           l2Code: 'SR',    nature: 'Dr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 1 },
+  { code: 'SUS',    name: 'Suspense Account',                    tallyName: 'Suspense A/c',                 l2Code: 'SR',    nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 2 },
 ];
 
 // ─── L4 Industry Packs ──────────────────────────────────────────
