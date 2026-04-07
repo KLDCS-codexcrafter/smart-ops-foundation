@@ -1229,5 +1229,20 @@ export default function ParentCompany() {
       </div>
     </div>
     </SidebarProvider>
+    <EntitySetupDialog
+      open={setupOpen}
+      onOpenChange={setSetupOpen}
+      entityName={form.legalEntityName}
+      entityId={savedEntityId}
+      shortCode={form.shortCode}
+      entityType="parent"
+      businessEntity={form.businessEntity}
+      industry={form.industry}
+      businessActivity={form.businessActivity}
+      onComplete={(result) => {
+        toast.success(`${form.legalEntityName} is ready. ${result.ledgersCreated} ledgers created.`);
+      }}
+    />
+    </>
   );
 }
