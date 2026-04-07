@@ -36,7 +36,8 @@ export type CommandCenterModule =
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
-    if (['foundation', 'geography', 'console', 'finecore-hub',
+    if (hash === 'core' || hash === 'foundation') return 'foundation';
+    if (['geography', 'console', 'finecore-hub',
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-statutory-reg',
       'finecore-gst-config', 'finecore-comply360'].includes(hash)) {
