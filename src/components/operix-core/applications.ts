@@ -53,6 +53,15 @@ export const applications: AppDefinition[] = [
     status: 'wip',
   },
   {
+    id: 'accounting-masters',
+    name: 'Accounting Masters',
+    description: 'Tax rates, TDS/TCS sections, HSN/SAC codes and compliance setup',
+    category: 'Fin Hub',
+    route: '/erp/accounting',
+    icon: 'Landmark',
+    status: 'wip',
+  },
+  {
     id: 'procure360',
     name: 'Procure360',
     description: 'Full procurement cycle — PR, RFQ, PO, GRN, invoice and vendor payments',
