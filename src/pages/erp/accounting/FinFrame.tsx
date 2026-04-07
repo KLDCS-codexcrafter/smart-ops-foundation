@@ -115,7 +115,6 @@ export function FinFramePanel() {
   };
 
   // ─── (Quick Setup removed — industry packs loaded via Entity Auto-Setup) ──
-  };
 
   // ─── Create / Edit L4 ──────────────────────────────────────
   const openCreate = (l3Code?: string, parentGroupId?: string) => {
