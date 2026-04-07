@@ -132,6 +132,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
   ];
 
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
