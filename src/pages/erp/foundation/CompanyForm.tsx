@@ -35,7 +35,8 @@ import {
   formatPAN, formatShortCode, suggestShortCode, INDIAN_STATE_NAMES,
 } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
-
+import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
+import type { SetupResult } from '@/services/entity-setup-service';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 
@@ -175,6 +176,8 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
   const [gstRegs, setGstRegs] = useState<GSTReg[]>([]);
   const [lutBonds, setLutBonds] = useState<LUTBond[]>([]);
   const [addrTab, setAddrTab] = useState('hq');
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [savedEntityId] = useState(() => crypto.randomUUID());
   const [fyFromDate, setFyFromDate] = useState<Date>();
   const [fyToDate, setFyToDate] = useState<Date>();
   const [booksDate, setBooksDate] = useState<Date>();
@@ -290,7 +293,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
       toast.success(`${label} saved`, {
         description: '[JWT] Will persist to database.',
       });
-      navigate(listPath);
+      setSetupOpen(true);
     }, 800);
   }
 
@@ -849,6 +852,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
   }
 
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
@@ -913,5 +917,21 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
         </div>
       </div>
     </SidebarProvider>
+    <EntitySetupDialog
+      open={setupOpen}
+      onOpenChange={setSetupOpen}
+      entityName={f('legalEntityName')}
+      entityId={savedEntityId}
+      shortCode={f('shortCode')}
+      entityType={entityType === 'company' ? 'subsidiary' : 'subsidiary'}
+      businessEntity={f('businessEntity')}
+      industry={f('industry')}
+      businessActivity={f('businessActivity')}
+      onComplete={(result) => {
+        toast.success(`${f('legalEntityName')} is ready. ${result.ledgersCreated} ledgers created.`);
+        navigate(listPath);
+      }}
+    />
+    </>
   );
 }

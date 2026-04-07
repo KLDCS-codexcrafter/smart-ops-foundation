@@ -26,6 +26,7 @@ import { FormSection } from '@/components/company/FormSection';
 import { FormField } from '@/components/company/FormField';
 import { INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
+import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
@@ -98,6 +99,8 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
   const [form, setForm] = useState<BranchFormData>({ ...INITIAL });
   const [saving, setSaving] = useState(false);
   const [estDate, setEstDate] = useState<Date>();
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [savedEntityId] = useState(() => crypto.randomUUID());
 
   const upd = useCallback(<K extends keyof BranchFormData>(field: K, val: BranchFormData[K]) => {
     setForm(p => ({ ...p, [field]: val }));
@@ -116,7 +119,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
       toast.success('Branch Office saved', {
         description: '[JWT] Will persist to database.',
       });
-      navigate('/erp/foundation/branch-offices');
+      setSetupOpen(true);
     }, 800);
   }
 
@@ -129,6 +132,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
   ];
 
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
@@ -303,5 +307,21 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
         </div>
       </div>
     </SidebarProvider>
+    <EntitySetupDialog
+      open={setupOpen}
+      onOpenChange={setSetupOpen}
+      entityName={form.name}
+      entityId={savedEntityId}
+      shortCode={form.shortCode}
+      entityType="branch"
+      businessEntity="Branch Office"
+      industry={form.branchType ?? 'Others'}
+      businessActivity="Services"
+      onComplete={(result) => {
+        toast.success(`${form.name} is ready. ${result.ledgersCreated} ledgers created.`);
+        navigate('/erp/foundation/branch-offices');
+      }}
+    />
+    </>
   );
 }

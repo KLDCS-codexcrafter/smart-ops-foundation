@@ -31,6 +31,7 @@ import {
   suggestShortCode, INDIAN_STATE_NAMES,
 } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
+import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
@@ -171,6 +172,8 @@ export default function ParentCompany() {
   const [lutBonds, setLutBonds] = useState<LUTBond[]>([]);
   const [govTab, setGovTab] = useState('companyInfo');
   const [addrTab, setAddrTab] = useState('hq');
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [savedEntityId] = useState(() => crypto.randomUUID());
   const [fyFromDate, setFyFromDate] = useState<Date>();
   const [fyToDate, setFyToDate] = useState<Date>();
   const [booksDate, setBooksDate] = useState<Date>();
@@ -294,6 +297,7 @@ export default function ParentCompany() {
       toast.success('Parent Company saved', {
         description: 'Financial year and deployment mode applied to all modules.',
       });
+      setSetupOpen(true);
     }, 900);
   }
 
@@ -1158,6 +1162,7 @@ export default function ParentCompany() {
 
   // ── Main render ────────────────────────────────────────────────────────────
   return (
+    <>
     <SidebarProvider defaultOpen={false}>
     <div className="min-h-screen bg-background">
       <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
@@ -1225,5 +1230,20 @@ export default function ParentCompany() {
       </div>
     </div>
     </SidebarProvider>
+    <EntitySetupDialog
+      open={setupOpen}
+      onOpenChange={setSetupOpen}
+      entityName={form.legalEntityName}
+      entityId={savedEntityId}
+      shortCode={form.shortCode}
+      entityType="parent"
+      businessEntity={form.businessEntity}
+      industry={form.industry}
+      businessActivity={form.businessActivity}
+      onComplete={(result) => {
+        toast.success(`${form.legalEntityName} is ready. ${result.ledgersCreated} ledgers created.`);
+      }}
+    />
+    </>
   );
 }
