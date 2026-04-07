@@ -198,22 +198,25 @@ const loadIndustryPack = (businessActivity: string): number => {
     ...(packKey ? L4_INDUSTRY_PACKS[packKey] : []),
   ];
 
+  const l3Counters: Record<string, number> = {};
   const toCreate = packs
     .filter(g => !existingNames.has(g.name.toLowerCase()))
-    .map((g, i) => ({
-      id: crypto.randomUUID(),
-      name: g.name,
-      code: `${g.l3Code}-${String(
-        existing.filter((e: any) => e.parentL3Code === g.l3Code).length + i + 1
-      ).padStart(6, '0')}`,
-      parentL3Code: g.l3Code,
-      parentGroupId: null,
-      nature: g.nature,
-      gstApplicable: false,
-      tdsApplicable: false,
-      notes: '',
-      status: 'active' as const,
-    }));
+    .map(g => {
+      const existingCount = existing.filter((e: any) => e.parentL3Code === g.l3Code).length;
+      l3Counters[g.l3Code] = (l3Counters[g.l3Code] ?? 0) + 1;
+      return {
+        id: crypto.randomUUID(),
+        name: g.name,
+        code: `${g.l3Code}-${String(existingCount + l3Counters[g.l3Code]).padStart(6, '0')}`,
+        parentL3Code: g.l3Code,
+        parentGroupId: null,
+        nature: g.nature,
+        gstApplicable: false,
+        tdsApplicable: false,
+        notes: '',
+        status: 'active' as const,
+      };
+    });
 
   if (toCreate.length > 0) {
     localStorage.setItem('erp_group_finframe_l4_groups',
