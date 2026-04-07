@@ -14,3 +14,15 @@ export const MOCK_ENTITIES: MockEntity[] = [
 
 export const getPrimaryEntity = () =>
   MOCK_ENTITIES.find(e => e.type === 'parent') ?? MOCK_ENTITIES[0];
+
+// Dynamic entity loader — reads from localStorage, falls back to hardcoded mock
+export const loadEntities = (): MockEntity[] => {
+  try {
+    const raw = localStorage.getItem('erp_group_entities');
+    if (raw) {
+      const stored = JSON.parse(raw);
+      if (stored.length > 0) return stored;
+    }
+  } catch { /* ignore */ }
+  return MOCK_ENTITIES;
+};
