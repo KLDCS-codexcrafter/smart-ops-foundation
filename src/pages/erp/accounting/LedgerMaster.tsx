@@ -880,8 +880,8 @@ const TYPE_BUTTONS = [
   { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: false },
   { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: true },
   { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: true },
-  { label: 'Loan Given', icon: HandCoins, row: 'Balance Sheet', active: true },
-  { label: 'Loan Taken', icon: Banknote, row: 'Balance Sheet', active: true },
+  { label: 'Loan Receivable', icon: HandCoins, row: 'Balance Sheet', active: true },
+  { label: 'Borrowing', icon: Banknote, row: 'Balance Sheet', active: true },
   { label: 'Income', icon: TrendingUp, row: 'P&L', active: true },
   { label: 'Expense', icon: TrendingDown, row: 'P&L', active: true },
   { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: true },
@@ -2371,7 +2371,7 @@ export function LedgerMasterPanel() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold flex items-center gap-1.5"><ArrowUpRight className="h-4 w-4 text-emerald-600" /> Loan Receivable (Dr)</h3>
-                  <Button size="sm" onClick={() => setLoanRecOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Loan Given</Button>
+                  <Button size="sm" onClick={() => setLoanRecOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Loan Receivable</Button>
                 </div>
                 {renderDefTable(loanRecDefs, [
                   { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
