@@ -39,6 +39,13 @@ interface AnyLedgerDefinition {
   entityId: string | null;
   entityShortCode: string | null;
   status: 'active' | 'inactive';
+  // Cash-specific fields (optional for non-cash types)
+  numericCode?: string;
+  location?: string;
+  cashLimit?: number;
+  alertThreshold?: number;
+  isMainCash?: boolean;
+  voucherSeries?: string;
 }
 
 // ── 2.2 Entity Registry ─────────────────────────────────────────────────────
