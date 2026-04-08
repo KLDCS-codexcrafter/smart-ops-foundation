@@ -72,6 +72,7 @@ import IncomeTaxMaster from './pages/erp/accounting/IncomeTaxMaster';
 import ModeOfPaymentMaster from './pages/erp/masters/supporting/ModeOfPaymentMaster';
 import TermsOfPaymentMaster from './pages/erp/masters/supporting/TermsOfPaymentMaster';
 import TermsOfDeliveryMaster from './pages/erp/masters/supporting/TermsOfDeliveryMaster';
+import LogisticMaster from './pages/erp/masters/LogisticMaster';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -186,6 +187,7 @@ const App = () => (
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
+            <Route path="/erp/masters/logistic" element={<LogisticMaster />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

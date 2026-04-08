@@ -22,6 +22,7 @@ import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
+import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -43,6 +44,7 @@ export type CommandCenterModule =
   | 'masters-mode-payment'
   | 'masters-terms-payment'
   | 'masters-terms-delivery'
+  | 'masters-logistic'
   | 'console';
 
 export default function CommandCenterPage() {
