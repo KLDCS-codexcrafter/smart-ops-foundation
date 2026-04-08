@@ -460,6 +460,7 @@ const saveChequeRecord = (rec: ChequeRecord): void => {
   const idx = all.findIndex(r => r.id === rec.id);
   if (idx >= 0) all[idx] = rec; else all.push(rec);
   localStorage.setItem(key, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${rec.entityId}/finecore/cheque-records
 };
 
 // ── NACH Mandate helpers ──────────────────────────────────────────
@@ -475,6 +476,7 @@ const saveNachMandate = (m: NachMandate): void => {
   const idx = all.findIndex(n => n.id === m.id);
   if (idx >= 0) all[idx] = m; else all.push(m);
   localStorage.setItem(key, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${m.entityId}/finecore/nach-mandates
 };
 
 // ─── Code Generation ──────────────────────────────────────────────────
@@ -1094,6 +1096,7 @@ export function LedgerMasterPanel() {
       const updatedHistory = existing.map(h => h.toDate === null ? { ...h, toDate: now, handoverToName: custodianForm.name } : h);
       const key = `erp_entity_${inst.entityId}_custodian_history_${inst.ledgerDefinitionId}`;
       localStorage.setItem(key, JSON.stringify(updatedHistory));
+      // [JWT] PUT /api/entity/${inst.entityId}/finecore/custodian-history (close previous)
     }
     const newRecord: CustodianHistoryRecord = {
       id: crypto.randomUUID(), ledgerDefinitionId: inst.ledgerDefinitionId,
