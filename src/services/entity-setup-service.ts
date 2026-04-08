@@ -46,6 +46,18 @@ interface AnyLedgerDefinition {
   alertThreshold?: number;
   isMainCash?: boolean;
   voucherSeries?: string;
+  // Duties & Tax fields
+  taxType?: string;
+  gstSubType?: string | null;
+  calculationBasis?: string | null;
+  rate?: number;
+  // Payroll Statutory fields
+  payrollCategory?: string;
+  payrollComponent?: string;
+  statutoryRate?: number;
+  calculationBase?: string;
+  wageCeiling?: number | null;
+  maxAmount?: number | null;
 }
 
 // ── 2.2 Entity Registry ─────────────────────────────────────────────────────
@@ -94,12 +106,13 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     { ledgerType: 'cash', name: 'Cash', code: 'CASH-000001', numericCode: '1203-0001', parentGroupCode: 'CASH', parentGroupName: l3Name('CASH'), alias: 'Cash', entityId: null, entityShortCode: null, location: 'Main Office', cashLimit: 0, alertThreshold: 0, isMainCash: true, voucherSeries: 'CR', status: 'active' },
     // P&L (entity-specific)
     { ledgerType: 'equity', name: 'Profit & Loss A/c', code: `${opts.shortCode}-PL-000001`, parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'P&L', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' },
-    // GST
-    { ledgerType: 'duties_taxes', name: 'CGST', code: 'CGST-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'CGST', entityId: null, entityShortCode: null, status: 'active' },
-    { ledgerType: 'duties_taxes', name: 'SGST', code: 'SGST-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'SGST', entityId: null, entityShortCode: null, status: 'active' },
-    { ledgerType: 'duties_taxes', name: 'IGST', code: 'IGST-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'IGST', entityId: null, entityShortCode: null, status: 'active' },
+    // GST — duties_tax type
+    { ledgerType: 'duties_tax', name: 'CGST', code: 'CGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'cgst', calculationBasis: 'item_rate', rate: 0, alias: 'CGST', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'SGST', code: 'SGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'sgst', calculationBasis: 'item_rate', rate: 0, alias: 'SGST', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'IGST', code: 'IGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'igst', calculationBasis: 'item_rate', rate: 0, alias: 'IGST', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'GST Cess', code: 'CESS-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'cess', calculationBasis: 'item_rate', rate: 0, alias: 'Cess', entityId: null, entityShortCode: null, status: 'active' },
     // TDS
-    { ledgerType: 'duties_taxes', name: 'TDS Payable', code: 'TDSP-000001', parentGroupCode: 'TDSP', parentGroupName: l3Name('TDSP'), alias: 'TDS Pay', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'TDS Payable', code: 'TDSP-000001', parentGroupCode: 'TDSP', parentGroupName: l3Name('TDSP'), taxType: 'tds', gstSubType: null, calculationBasis: null, rate: 0, alias: 'TDS Pay', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'asset', name: 'TDS Receivable', code: 'TDSR-000001', parentGroupCode: 'ADTAX', parentGroupName: l3Name('ADTAX'), alias: 'TDS Rec', entityId: null, entityShortCode: null, status: 'active' },
     // Salary
     { ledgerType: 'liability', name: 'Salary Payable', code: 'SALP-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), alias: 'Sal Pay', entityId: null, entityShortCode: null, status: 'active' },
@@ -120,17 +133,25 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     { ledgerType: 'expense', name: 'Purchase — Domestic', code: 'PURCD-000001', parentGroupCode: 'PURCH', parentGroupName: l3Name('PURCH'), alias: 'Purch Dom', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'expense', name: 'Purchase Returns', code: 'PRET-000001', parentGroupCode: 'PRET', parentGroupName: l3Name('PRET'), alias: 'Purch Ret', entityId: null, entityShortCode: null, status: 'active' },
     // TCS Payable
-    { ledgerType: 'duties_taxes', name: 'TCS Payable', code: 'TCSP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'TCS Pay', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'TCS Payable', code: 'TCSP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), taxType: 'tcs', gstSubType: null, calculationBasis: null, rate: 0, alias: 'TCS Pay', entityId: null, entityShortCode: null, status: 'active' },
     // Professional Tax Payable
-    { ledgerType: 'duties_taxes', name: 'Professional Tax Payable', code: 'PTP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), alias: 'PT Pay', entityId: null, entityShortCode: null, status: 'active' },
-    // PF Payable
-    { ledgerType: 'liability', name: 'PF Payable', code: 'PFP-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), alias: 'PF Pay', entityId: null, entityShortCode: null, status: 'active' },
-    // ESI Payable
-    { ledgerType: 'liability', name: 'ESI Payable', code: 'ESIP-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), alias: 'ESI Pay', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'duties_tax', name: 'Professional Tax Payable', code: 'PTP-000001', parentGroupCode: 'DUTYP', parentGroupName: l3Name('DUTYP'), taxType: 'other', gstSubType: null, calculationBasis: null, rate: 0, alias: 'PT Pay', entityId: null, entityShortCode: null, status: 'active' },
     // Retained Earnings
     { ledgerType: 'equity', name: 'Retained Earnings', code: 'RETE-000001', parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'Ret Earn', entityId: null, entityShortCode: null, status: 'active' },
     // Security Deposit Paid
     { ledgerType: 'asset', name: 'Security Deposit Paid', code: 'SECDP-000001', parentGroupCode: 'STLA', parentGroupName: l3Name('STLA'), alias: 'Sec Dep', entityId: null, entityShortCode: null, status: 'active' },
+    // ── Payroll Statutory — Employees' Deductions ──
+    { ledgerType: 'payroll_statutory', name: 'PF Employee Deduction', code: 'PFE-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employee_deduction', payrollComponent: 'pf_employee', statutoryRate: 12, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null, alias: 'PF Emp', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'ESI Employee Deduction', code: 'ESIE-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employee_deduction', payrollComponent: 'esi_employee', statutoryRate: 0.75, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null, alias: 'ESI Emp', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'PT Employee Deduction', code: 'PTE-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employee_deduction', payrollComponent: 'pt_employee', statutoryRate: 0, calculationBase: 'state_slab', wageCeiling: null, maxAmount: null, alias: 'PT Emp', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'TDS on Salary', code: 'TDSS-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employee_deduction', payrollComponent: 'tds_salary', statutoryRate: 0, calculationBase: 'slab', wageCeiling: null, maxAmount: null, alias: 'TDS Sal', entityId: null, entityShortCode: null, status: 'active' },
+    // ── Payroll Statutory — Employer's Contributions ──
+    { ledgerType: 'payroll_statutory', name: 'PF Employer — EPF', code: 'PFEPF-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'pf_employer_epf', statutoryRate: 3.67, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null, alias: 'PF EPF', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'PF Employer — EPS', code: 'PFEPS-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'pf_employer_eps', statutoryRate: 8.33, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: 1250, alias: 'PF EPS', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'EDLI Contribution', code: 'EDLI-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'pf_edli', statutoryRate: 0.50, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null, alias: 'EDLI', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'ESI Employer Contribution', code: 'ESIER-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'esi_employer', statutoryRate: 3.25, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null, alias: 'ESI Emplr', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'LWF Employer Contribution', code: 'LWF-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'lwf_employer', statutoryRate: 0, calculationBase: 'state_specific', wageCeiling: null, maxAmount: null, alias: 'LWF', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'payroll_statutory', name: 'Gratuity Provision', code: 'GRAT-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'gratuity_provision', statutoryRate: 0, calculationBase: '15/26 x basic x years', wageCeiling: null, maxAmount: 2000000, alias: 'Gratuity', entityId: null, entityShortCode: null, status: 'active' },
   ];
 
   // Conditional: Service Revenue

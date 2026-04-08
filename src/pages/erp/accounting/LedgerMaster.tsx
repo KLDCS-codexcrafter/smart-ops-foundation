@@ -250,6 +250,63 @@ interface ExpenseLedgerDefinition {
   status: 'active' | 'inactive';
 }
 
+// ─── Duties & Tax + Payroll Statutory Types ───────────────────────────
+
+type TaxType = 'gst' | 'tds' | 'tcs' | 'other';
+type GstSubType = 'cgst' | 'sgst' | 'igst' | 'cess' | null;
+type CalcBasis = 'item_rate' | 'ledger_value' | null;
+
+interface DutiesTaxLedgerDefinition {
+  id: string;
+  ledgerType: 'duties_tax';
+  name: string;
+  mailingName: string;
+  numericCode: string;
+  code: string;
+  alias: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Dr' | 'Cr';
+  status: 'active' | 'inactive';
+  taxType: TaxType;
+  gstSubType: GstSubType;
+  calculationBasis: CalcBasis;
+  rate: number;
+}
+
+type PayrollCategory = 'employee_deduction' | 'employer_contribution';
+
+type PayrollComponent =
+  | 'pf_employee' | 'esi_employee' | 'pt_employee' | 'tds_salary'
+  | 'pf_employer_epf' | 'pf_employer_eps' | 'pf_edli'
+  | 'esi_employer' | 'lwf_employer' | 'gratuity_provision';
+
+interface PayrollStatutoryLedgerDefinition {
+  id: string;
+  ledgerType: 'payroll_statutory';
+  name: string;
+  mailingName: string;
+  numericCode: string;
+  code: string;
+  alias: string;
+  parentGroupCode: 'EMPL';
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Cr';
+  status: 'active' | 'inactive';
+  payrollCategory: PayrollCategory;
+  payrollComponent: PayrollComponent;
+  statutoryRate: number;
+  calculationBase: string;
+  wageCeiling: number | null;
+  maxAmount: number | null;
+}
+
 interface LoanRepaymentRecord {
   id: string;
   borrowingLedgerDefinitionId: string;
@@ -349,7 +406,9 @@ type AnyLedgerDefinition =
   | LoanReceivableLedgerDefinition
   | BorrowingLedgerDefinition
   | IncomeLedgerDefinition
-  | ExpenseLedgerDefinition;
+  | ExpenseLedgerDefinition
+  | DutiesTaxLedgerDefinition
+  | PayrollStatutoryLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -554,6 +613,18 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     lenderType: d.lenderType ?? 'bank', loanType: d.loanType ?? 'term_loan',
     firstEmiDate: d.firstEmiDate ?? '', loanAccountNo: d.loanAccountNo ?? '',
     collateralPledged: d.collateralPledged ?? '',
+    // Duties & Tax compat
+    taxType: d.taxType ?? 'other',
+    gstSubType: d.gstSubType ?? null,
+    calculationBasis: d.calculationBasis ?? null,
+    rate: d.rate ?? 0,
+    // Payroll Statutory compat
+    payrollCategory: d.payrollCategory ?? 'employee_deduction',
+    payrollComponent: d.payrollComponent ?? 'pf_employee',
+    statutoryRate: d.statutoryRate ?? 0,
+    calculationBase: d.calculationBase ?? '',
+    wageCeiling: d.wageCeiling ?? null,
+    maxAmount: d.maxAmount ?? null,
   }));
 };
 
@@ -752,6 +823,10 @@ const genIncomeCode = (all: AnyLedgerDefinition[]) =>
   'INC-' + String(all.filter(d => d.ledgerType === 'income').length + 1).padStart(6, '0');
 const genExpenseCode = (all: AnyLedgerDefinition[]) =>
   'EXP-' + String(all.filter(d => d.ledgerType === 'expense').length + 1).padStart(6, '0');
+const genDutiesTaxCode = (all: AnyLedgerDefinition[]) =>
+  'DTX-' + String(all.filter(d => d.ledgerType === 'duties_tax').length + 1).padStart(6, '0');
+const genPayrollStatCode = (all: AnyLedgerDefinition[]) =>
+  'PAY-' + String(all.filter(d => d.ledgerType === 'payroll_statutory').length + 1).padStart(6, '0');
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
@@ -809,7 +884,7 @@ const TYPE_BUTTONS = [
   { label: 'Loan Taken', icon: Banknote, row: 'Balance Sheet', active: true },
   { label: 'Income', icon: TrendingUp, row: 'P&L', active: true },
   { label: 'Expense', icon: TrendingDown, row: 'P&L', active: true },
-  { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: false },
+  { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: true },
   { label: 'Customer', icon: Users, row: 'Masters', active: false },
   { label: 'Vendor', icon: Users, row: 'Masters', active: false },
   { label: 'Logistic', icon: Truck, row: 'Masters', active: false },
@@ -940,7 +1015,7 @@ export function LedgerMasterPanel() {
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -1027,6 +1102,8 @@ export function LedgerMasterPanel() {
   const [borrowingOpen, setBorrowingOpen] = useState(false);
   const [incomeOpen, setIncomeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [dutiesTaxOpen, setDutiesTaxOpen] = useState(false);
+  const [payrollStatOpen, setPayrollStatOpen] = useState(false);
 
   // New ledger form states
   const [liabilityForm, setLiabilityForm] = useState({
@@ -1051,7 +1128,59 @@ export function LedgerMasterPanel() {
   const [incomeForm, setIncomeForm] = useState(defaultIncomeForm);
   const [expenseForm, setExpenseForm] = useState(defaultExpenseForm);
 
-  // Loan schedule
+  // Duties & Tax + Payroll Statutory
+  const [dutiesTaxDefs, setDutiesTaxDefs] = useState<DutiesTaxLedgerDefinition[]>(
+    () => loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]
+  );
+  const [payrollStatDefs, setPayrollStatDefs] = useState<PayrollStatutoryLedgerDefinition[]>(
+    () => loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]
+  );
+
+  const defaultDutiesTaxForm = {
+    taxType: '' as TaxType | '',
+    gstSubType: null as GstSubType,
+    name: '', mailingName: '', alias: '',
+    parentGroupCode: 'GSTP', parentGroupName: 'GST Payable',
+    calculationBasis: null as CalcBasis,
+    rate: 0,
+    openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
+    scope: 'group' as 'group'|'entity', entityId: '',
+  };
+  const [dutiesTaxForm, setDutiesTaxForm] = useState(defaultDutiesTaxForm);
+
+  const defaultPayrollForm = {
+    payrollCategory: '' as PayrollCategory | '',
+    payrollComponent: '' as PayrollComponent | '',
+    name: '', mailingName: '', alias: '',
+    openingBalance: 0,
+    scope: 'group' as 'group'|'entity', entityId: '',
+  };
+  const [payrollForm, setPayrollForm] = useState(defaultPayrollForm);
+
+  const PAYROLL_COMPONENT_DEFAULTS: Record<PayrollComponent, { name: string; category: PayrollCategory; statutoryRate: number; calculationBase: string; wageCeiling: number | null; maxAmount: number | null }> = {
+    pf_employee: { name: 'PF Employee Deduction', category: 'employee_deduction', statutoryRate: 12, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    esi_employee: { name: 'ESI Employee Deduction', category: 'employee_deduction', statutoryRate: 0.75, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
+    pt_employee: { name: 'PT Employee Deduction', category: 'employee_deduction', statutoryRate: 0, calculationBase: 'state_slab', wageCeiling: null, maxAmount: null },
+    tds_salary: { name: 'TDS on Salary', category: 'employee_deduction', statutoryRate: 0, calculationBase: 'slab', wageCeiling: null, maxAmount: null },
+    pf_employer_epf: { name: 'PF Employer — EPF', category: 'employer_contribution', statutoryRate: 3.67, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    pf_employer_eps: { name: 'PF Employer — EPS', category: 'employer_contribution', statutoryRate: 8.33, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: 1250 },
+    pf_edli: { name: 'EDLI Contribution', category: 'employer_contribution', statutoryRate: 0.50, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    esi_employer: { name: 'ESI Employer Contribution', category: 'employer_contribution', statutoryRate: 3.25, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
+    lwf_employer: { name: 'LWF Employer Contribution', category: 'employer_contribution', statutoryRate: 0, calculationBase: 'state_specific', wageCeiling: null, maxAmount: null },
+    gratuity_provision: { name: 'Gratuity Provision', category: 'employer_contribution', statutoryRate: 0, calculationBase: '15/26 x basic x years', wageCeiling: null, maxAmount: 2000000 },
+  };
+
+  const getDutiesTaxDefaults = (taxType: TaxType, gstSubType: GstSubType) => {
+    if (taxType === 'gst') {
+      const names: Record<string, string> = { cgst: 'CGST', sgst: 'SGST', igst: 'IGST', cess: 'GST Cess' };
+      return { name: names[gstSubType ?? ''] ?? 'CGST', parentGroupCode: 'GSTP', parentGroupName: 'GST Payable', openingBalanceType: 'Cr' as const };
+    }
+    if (taxType === 'tds') return { name: 'TDS Payable', parentGroupCode: 'TDSP', parentGroupName: 'TDS Payable', openingBalanceType: 'Cr' as const };
+    if (taxType === 'tcs') return { name: 'TCS Payable', parentGroupCode: 'DUTYP', parentGroupName: 'Duties & Taxes Payable', openingBalanceType: 'Cr' as const };
+    return { name: '', parentGroupCode: 'DUTYP', parentGroupName: 'Duties & Taxes Payable', openingBalanceType: 'Cr' as const };
+  };
+
+
   const [activeScheduleDefId, setActiveScheduleDefId] = useState<string | null>(null);
   const [loanSchedule, setLoanSchedule] = useState<LoanRepaymentRecord[]>([]);
   const [markPaidOpen, setMarkPaidOpen] = useState(false);
@@ -1075,6 +1204,8 @@ export function LedgerMasterPanel() {
     setBorrowingDefs(loadBorrowingDefs());
     setIncomeDefs(loadIncomeDefs());
     setExpenseDefs(loadExpenseDefs());
+    setDutiesTaxDefs(loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]);
+    setPayrollStatDefs(loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]);
     setInstances(loadInstances(selEntityId));
   };
 
@@ -1145,10 +1276,12 @@ export function LedgerMasterPanel() {
     if (borrowingOpen) handleBorrowingSave();
     if (incomeOpen) handleIncomeSave();
     if (expenseOpen) handleExpenseSave();
+    if (dutiesTaxOpen) handleDutiesTaxSave();
+    if (payrollStatOpen) handlePayrollStatSave();
   });
 
   // ── Stats ──
-  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs];
+  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
   const totalDefined = allDefs.length;
   const groupLevel = allDefs.filter(d => !d.entityId).length;
   const entitySpecific = allDefs.filter(d => d.entityId).length;
@@ -1308,6 +1441,7 @@ export function LedgerMasterPanel() {
     else if (label === 'Loan Taken') setBorrowingOpen(true);
     else if (label === 'Income') setIncomeOpen(true);
     else if (label === 'Expense') setExpenseOpen(true);
+    else if (label === 'Duties & Taxes') setDutiesTaxOpen(true);
   };
 
   // ── Save Cash ──
@@ -1672,6 +1806,72 @@ export function LedgerMasterPanel() {
     toast.success(`${def.name} created`);
     setExpenseOpen(false);
     setExpenseForm(defaultExpenseForm);
+    refreshAll();
+  };
+
+  // ── Save Duties & Tax ──
+  const handleDutiesTaxSave = () => {
+    if (!dutiesTaxForm.taxType) return toast.error('Select tax type');
+    if (dutiesTaxForm.taxType === 'gst' && !dutiesTaxForm.gstSubType)
+      return toast.error('Select GST type (CGST/SGST/IGST/Cess)');
+    if (!dutiesTaxForm.name.trim()) return toast.error('Ledger name is required');
+    const all = loadAllDefinitions();
+    const code = genDutiesTaxCode(all);
+    const numericCode = deriveLedgerNumericCode(dutiesTaxForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'duties_tax').length + 1);
+    const def: DutiesTaxLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'duties_tax',
+      name: dutiesTaxForm.name.trim(),
+      mailingName: dutiesTaxForm.mailingName.trim() || dutiesTaxForm.name.trim(),
+      numericCode, code, alias: dutiesTaxForm.alias.trim(),
+      parentGroupCode: dutiesTaxForm.parentGroupCode,
+      parentGroupName: dutiesTaxForm.parentGroupName,
+      entityId: null, entityShortCode: null,
+      openingBalance: 0, openingBalanceType: 'Cr', status: 'active',
+      taxType: dutiesTaxForm.taxType as TaxType,
+      gstSubType: dutiesTaxForm.gstSubType,
+      calculationBasis: dutiesTaxForm.calculationBasis,
+      rate: dutiesTaxForm.rate,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    toast.success(`${def.name} created`);
+    setDutiesTaxOpen(false);
+    setDutiesTaxForm(defaultDutiesTaxForm);
+    refreshAll();
+  };
+
+  // ── Save Payroll Statutory ──
+  const handlePayrollStatSave = () => {
+    if (!payrollForm.payrollComponent) return toast.error('Select a component');
+    if (!payrollForm.name.trim()) return toast.error('Ledger name is required');
+    const comp = payrollForm.payrollComponent as PayrollComponent;
+    const defaults = PAYROLL_COMPONENT_DEFAULTS[comp];
+    const all = loadAllDefinitions();
+    const code = genPayrollStatCode(all);
+    const numericCode = deriveLedgerNumericCode('EMPL',
+      all.filter(d => d.ledgerType === 'payroll_statutory').length + 1);
+    const def: PayrollStatutoryLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'payroll_statutory',
+      name: payrollForm.name.trim(),
+      mailingName: payrollForm.name.trim(),
+      numericCode, code, alias: payrollForm.alias?.trim() ?? '',
+      parentGroupCode: 'EMPL',
+      parentGroupName: 'Employee Liabilities',
+      entityId: null, entityShortCode: null,
+      openingBalance: 0, openingBalanceType: 'Cr', status: 'active',
+      payrollCategory: defaults.category,
+      payrollComponent: comp,
+      statutoryRate: defaults.statutoryRate,
+      calculationBase: defaults.calculationBase,
+      wageCeiling: defaults.wageCeiling,
+      maxAmount: defaults.maxAmount,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    toast.success(`${def.name} created`);
+    setPayrollStatOpen(false);
+    setPayrollForm(defaultPayrollForm);
     refreshAll();
   };
 
@@ -2118,6 +2318,12 @@ export function LedgerMasterPanel() {
               <TabsTrigger value="liabilities" className="text-xs gap-1.5">
                 <Shield className="h-3.5 w-3.5" /> Liabilities ({liabilityDefs.length})
               </TabsTrigger>
+              <TabsTrigger value="duties_tax" className="text-xs gap-1.5">
+                <Receipt className="h-3.5 w-3.5" /> Duties & Tax ({dutiesTaxDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="payroll" className="text-xs gap-1.5">
+                <Users className="h-3.5 w-3.5" /> Payroll Statutory ({payrollStatDefs.length})
+              </TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -2356,6 +2562,48 @@ export function LedgerMasterPanel() {
                 { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
                 { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
               ], 'No liability ledgers yet.')}
+            </div>
+          )}
+
+          {/* Duties & Tax List */}
+          {defSubTab === 'duties_tax' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setDutiesTaxOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Duties & Tax</Button>
+              </div>
+              {renderDefTable(dutiesTaxDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Tax Type', render: d => <Badge variant="outline" className="text-[10px] uppercase">{(d as DutiesTaxLedgerDefinition).taxType}</Badge> },
+                { label: 'GST Sub-type / Kind', render: d => {
+                  const dt = d as DutiesTaxLedgerDefinition;
+                  if (dt.taxType === 'gst') return <span className="text-xs uppercase">{dt.gstSubType} — {dt.calculationBasis === 'item_rate' ? 'On Item Rate' : dt.calculationBasis === 'ledger_value' ? `On Ledger Value (${dt.rate}%)` : '—'}</span>;
+                  return <span className="text-xs text-muted-foreground">—</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No duties & tax ledgers yet.')}
+            </div>
+          )}
+
+          {/* Payroll Statutory List */}
+          {defSubTab === 'payroll' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setPayrollStatOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Payroll Statutory</Button>
+              </div>
+              {renderDefTable(payrollStatDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{(d as PayrollStatutoryLedgerDefinition).payrollCategory.replace('_', ' ')}</Badge> },
+                { label: 'Rate', render: d => {
+                  const p = d as PayrollStatutoryLedgerDefinition;
+                  if (p.statutoryRate > 0) return <span className="text-xs">{p.statutoryRate}% of {p.calculationBase.replace('_',' ')}</span>;
+                  if (p.calculationBase === 'state_slab' || p.calculationBase === 'state_specific') return <span className="text-xs text-muted-foreground">State-specific</span>;
+                  if (p.calculationBase === 'slab') return <span className="text-xs text-muted-foreground">IT slab</span>;
+                  return <span className="text-xs text-muted-foreground">{p.calculationBase}</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No payroll statutory ledgers yet.')}
             </div>
           )}
         </TabsContent>
@@ -3051,6 +3299,213 @@ export function LedgerMasterPanel() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setMarkPaidOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleMarkPaid}>Confirm Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Duties & Tax Dialog ─── */}
+      <Dialog open={dutiesTaxOpen} onOpenChange={(open) => { if (!open) setDutiesTaxOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>New Duties & Tax Ledger</DialogTitle>
+            <DialogDescription>Create a GST, TDS, TCS, or other statutory tax ledger.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {/* Step 1 — Tax Type */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Tax Type <span className="text-destructive">*</span></Label>
+              <div className="flex gap-2">
+                {(['gst', 'tds', 'tcs', 'other'] as TaxType[]).map(tt => (
+                  <button key={tt} type="button" onClick={() => {
+                    const d = getDutiesTaxDefaults(tt, tt === 'gst' ? 'cgst' : null);
+                    setDutiesTaxForm(f => ({ ...f, taxType: tt, gstSubType: tt === 'gst' ? 'cgst' : null, ...d }));
+                  }} className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors capitalize ${
+                    dutiesTaxForm.taxType === tt ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>{tt.toUpperCase()}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2 — GST Sub-Type */}
+            {dutiesTaxForm.taxType === 'gst' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">GST Type <span className="text-destructive">*</span></Label>
+                <div className="flex gap-2">
+                  {(['cgst', 'sgst', 'igst', 'cess'] as const).map(st => (
+                    <button key={st} type="button" onClick={() => {
+                      const d = getDutiesTaxDefaults('gst', st);
+                      setDutiesTaxForm(f => ({ ...f, gstSubType: st, ...d }));
+                    }} className={`px-3 py-1.5 rounded-lg border text-xs font-medium uppercase transition-colors ${
+                      dutiesTaxForm.gstSubType === st ? 'bg-blue-500/15 text-blue-700 border-blue-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>{st}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Name + Mailing Name */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input value={dutiesTaxForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setDutiesTaxForm(f => ({ ...f, name: e.target.value, mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={dutiesTaxForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setDutiesTaxForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+
+            {/* Step 4 — Calculation Basis (GST only) */}
+            {dutiesTaxForm.taxType === 'gst' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Calculation Basis</Label>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, calculationBasis: 'item_rate' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                      dutiesTaxForm.calculationBasis === 'item_rate' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>
+                    <div>On Item Rate</div>
+                    <div className="text-[10px] text-muted-foreground">GST rate from HSN/item code</div>
+                  </button>
+                  <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, calculationBasis: 'ledger_value' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                      dutiesTaxForm.calculationBasis === 'ledger_value' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>
+                    <div>On Ledger Value</div>
+                    <div className="text-[10px] text-muted-foreground">Fixed % × voucher amount</div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5 — Rate (only when ledger_value) */}
+            {dutiesTaxForm.calculationBasis === 'ledger_value' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Tax Rate</Label>
+                <div className="flex items-center gap-1">
+                  <Input type="number" className="w-24" value={dutiesTaxForm.rate || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setDutiesTaxForm(f => ({ ...f, rate: parseFloat(e.target.value) || 0 }))} />
+                  <span className="text-muted-foreground text-sm">%</span>
+                </div>
+              </div>
+            )}
+
+            {/* Opening Balance */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Opening Balance</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground text-sm">₹</span>
+                <Input {...amountInputProps} value={dutiesTaxForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
+                  onChange={(e) => setDutiesTaxForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
+              </div>
+            </div>
+
+            {/* Advanced — Entity Scope */}
+            <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' } as any))}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+              <ChevronDown className="h-3 w-3" /> Advanced
+            </button>
+            {(dutiesTaxForm as any).scope === 'entity' && renderScopeSection(dutiesTaxForm as any, setDutiesTaxForm)}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDutiesTaxOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleDutiesTaxSave}>Create Ledger</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Payroll Statutory Dialog ─── */}
+      <Dialog open={payrollStatOpen} onOpenChange={(open) => { if (!open) setPayrollStatOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>New Payroll Statutory Ledger</DialogTitle>
+            <DialogDescription>Create a statutory deduction or contribution holding account.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {/* Step 1 — Category */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Category <span className="text-destructive">*</span></Label>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollCategory: 'employee_deduction', payrollComponent: '' }))}
+                  className={`p-3 rounded-xl border text-sm font-medium transition-colors flex-1 text-left ${
+                    payrollForm.payrollCategory === 'employee_deduction' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>
+                  <div>Employees' Statutory Deductions</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">PF · ESI · PT · TDS deducted from salary</div>
+                </button>
+                <button type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollCategory: 'employer_contribution', payrollComponent: '' }))}
+                  className={`p-3 rounded-xl border text-sm font-medium transition-colors flex-1 text-left ${
+                    payrollForm.payrollCategory === 'employer_contribution' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>
+                  <div>Employer's Statutory Contributions</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">PF · ESI · EDLI · LWF · Gratuity</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Step 2 — Component chips */}
+            {payrollForm.payrollCategory && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Component <span className="text-destructive">*</span></Label>
+                <div className="flex flex-wrap gap-2">
+                  {(payrollForm.payrollCategory === 'employee_deduction'
+                    ? (['pf_employee','esi_employee','pt_employee','tds_salary'] as PayrollComponent[])
+                    : (['pf_employer_epf','pf_employer_eps','pf_edli','esi_employer','lwf_employer','gratuity_provision'] as PayrollComponent[])
+                  ).map(comp => {
+                    const d = PAYROLL_COMPONENT_DEFAULTS[comp];
+                    return (
+                      <button key={comp} type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollComponent: comp, name: d.name, mailingName: d.name }))}
+                        className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                          payrollForm.payrollComponent === comp ? 'bg-blue-500/15 text-blue-700 border-blue-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                        }`}>{d.name}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Ledger Name */}
+            {payrollForm.payrollComponent && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+                <Input value={payrollForm.name} onKeyDown={onEnterNext}
+                  onChange={(e) => setPayrollForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+            )}
+
+            {/* Step 4 — Rate Info (READ ONLY) */}
+            {payrollForm.payrollComponent && (() => {
+              const d = PAYROLL_COMPONENT_DEFAULTS[payrollForm.payrollComponent as PayrollComponent];
+              return (
+                <div className="rounded-xl border border-teal-500/20 bg-teal-500/5 p-3 space-y-1.5">
+                  <p className="text-xs font-medium text-teal-700">Statutory Rate (not editable — set by law)</p>
+                  {d.statutoryRate > 0 && <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-700 border-teal-500/30">{d.statutoryRate}% of {d.calculationBase.replace('_',' ')}</Badge>}
+                  {d.calculationBase === 'state_slab' && <p className="text-[10px] text-muted-foreground">Rate varies by state · Managed in PT Master</p>}
+                  {d.calculationBase === 'state_specific' && <p className="text-[10px] text-muted-foreground">Amount varies by state · Managed in LWF Master</p>}
+                  {d.calculationBase === '15/26 x basic x years' && <p className="text-[10px] text-muted-foreground">15/26 × Basic × Years of Service</p>}
+                  {d.wageCeiling && <p className="text-[10px] text-muted-foreground">Wage ceiling: ₹{d.wageCeiling.toLocaleString('en-IN')}/month</p>}
+                  {d.maxAmount && <p className="text-[10px] text-muted-foreground">Maximum: ₹{d.maxAmount.toLocaleString('en-IN')}</p>}
+                </div>
+              );
+            })()}
+
+            {/* Opening Balance */}
+            {payrollForm.payrollComponent && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Opening Balance</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">₹</span>
+                  <Input {...amountInputProps} value={payrollForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
+                    onChange={(e) => setPayrollForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                  <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayrollStatOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handlePayrollStatSave}>Create Ledger</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
