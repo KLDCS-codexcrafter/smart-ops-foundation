@@ -766,9 +766,39 @@ export function LedgerMasterPanel() {
         micrCode: data.MICR ?? '',
         swiftCode: data.SWIFT ?? '',
         ifscAutoFilled: true,
+        mailingName: bankFromIfsc,
+        bankPhone: data.CONTACT ?? '',
+        neftEnabled: data.NEFT ?? true,
+        rtgsEnabled: data.RTGS ?? true,
+        impsEnabled: data.IMPS ?? true,
+        upiEnabled: data.UPI ?? true,
+        name: f.name.trim() === ''
+          ? suggestBankLedgerName(bankFromIfsc, f.accountType, f.accountNumber)
+          : f.name,
       }));
       setIfscValid(true);
       setBankShowBranch(true);
+      // Auto-suggest cheque format, GST, clearing days, cutoff from IFSC prefix
+      const prefix = ifsc.slice(0, 4).toUpperCase();
+      const fmtMap: Record<string, typeof bankForm.chequeFormat> = {
+        HDFC: 'HDFC_CTS', SBIN: 'SBI_CTS', ICIC: 'ICICI_CTS', UTIB: 'AXIS_CTS',
+      };
+      const suggestedFmt = fmtMap[prefix] ?? 'GENERIC_CTS';
+      const gstYes = ['HDFC','ICIC','UTIB','KKBK','INDB','IDFB','YESB','FDRL'];
+      const suggestedGst = gstYes.includes(prefix);
+      const privatePfx = ['HDFC','ICIC','UTIB','KKBK','INDB','IDFB','YESB','FDRL'];
+      const suggestedDays = privatePfx.includes(prefix) ? 2 : 3;
+      const cutoffMap: Record<string, string> = {
+        HDFC: '14:30', ICIC: '14:30', UTIB: '14:30', SBIN: '13:30', PUNB: '13:00', BARB: '13:00',
+      };
+      const suggestedCutoff = cutoffMap[prefix] ?? '14:30';
+      setBankForm(f => ({
+        ...f,
+        chequeFormat: f.chequeFormat === 'GENERIC_CTS' ? suggestedFmt : f.chequeFormat,
+        gstOnCharges: f.gstOnCharges === true ? suggestedGst : f.gstOnCharges,
+        clearingDays: f.clearingDays === 2 ? suggestedDays : f.clearingDays,
+        cutoffTime: f.cutoffTime === '14:30' ? suggestedCutoff : f.cutoffTime,
+      }));
       toast.success(`Branch details fetched: ${data.BRANCH}, ${data.CITY}`);
     } catch {
       setIfscFetchError('Branch details unavailable — please fill manually');
@@ -776,6 +806,16 @@ export function LedgerMasterPanel() {
     } finally {
       setIfscFetching(false);
     }
+  };
+
+  const suggestBankLedgerName = (bankName: string, acType: BankAccountType | '' = '', acNo: string): string => {
+    if (!bankName || !acType) return '';
+    const label: Record<string, string> = {
+      current: 'Current A/c', savings: 'Savings A/c', fixed_deposit: 'Fixed Deposit',
+      eefc: 'EEFC A/c', cash_credit: 'CC Limit', overdraft: 'OD A/c',
+    };
+    const last4 = acNo?.replace(/\D/g, '').slice(-4);
+    return `${bankName} — ${label[acType] ?? ''}${last4 ? ` (${last4})` : ''}`;
   };
 
   // ── Quick Starts ──
@@ -1877,7 +1917,19 @@ export function LedgerMasterPanel() {
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
               <Input placeholder="e.g., Main Cash, Petty Cash — Delhi" value={cashForm.name}
                 onKeyDown={onEnterNext}
-                onChange={(e) => setCashForm(f => ({ ...f, name: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+                onChange={(e) => setCashForm(f => ({
+                  ...f,
+                  name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} disabled={!cashForm.parentGroupCode} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input placeholder="e.g., 4DSmartOps Private Limited" value={cashForm.mailingName}
+                onKeyDown={onEnterNext}
+                onChange={(e) => setCashForm(f => ({ ...f, mailingName: e.target.value }))}
+                disabled={!cashForm.parentGroupCode} />
+              <p className="text-[10px] text-muted-foreground">Appears on cash receipts and payment documents. Auto-copied from Ledger Name.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Alias</Label>
@@ -2009,6 +2061,13 @@ export function LedgerMasterPanel() {
                 onKeyDown={onEnterNext}
                 onChange={(e) => setBankForm(f => ({ ...f, name: e.target.value }))} />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input placeholder="e.g., HDFC Bank Limited" value={bankForm.mailingName}
+                onKeyDown={onEnterNext}
+                onChange={(e) => setBankForm(f => ({ ...f, mailingName: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground">Printed on NEFT/RTGS letters, deposit slips and bank correspondence. Auto-filled from IFSC.</p>
+            </div>
 
             {/* ESSENTIAL — Field 3: Account Type */}
             <div className="space-y-1.5">
@@ -2017,7 +2076,11 @@ export function LedgerMasterPanel() {
                 const at = v as BankAccountType;
                 const nature = getDefaultNature(at);
                 const parent = getSuggestedParent(at);
-                setBankForm(f => ({ ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name }));
+                setBankForm(f => ({
+                  ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name,
+                  name: (!f.name || f.name === suggestBankLedgerName(f.bankName, f.accountType, f.accountNumber))
+                    ? suggestBankLedgerName(f.bankName, at, f.accountNumber) : f.name,
+                }));
               }}>
                 <SelectTrigger><SelectValue placeholder="Select account type" /></SelectTrigger>
                 <SelectContent>
