@@ -56,7 +56,7 @@ export default function CommandCenterPage() {
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'finecore-finframe', 'finecore-ledgers',
-      'masters-mode-payment', 'masters-terms-payment', 'masters-terms-delivery'].includes(hash)) {
+      'masters-mode-payment', 'masters-terms-payment', 'masters-terms-delivery', 'masters-logistic'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -92,6 +92,7 @@ export default function CommandCenterPage() {
       case 'masters-mode-payment': return <ModeOfPaymentMasterPanel />;
       case 'masters-terms-payment': return <TermsOfPaymentMasterPanel />;
       case 'masters-terms-delivery': return <TermsOfDeliveryMasterPanel />;
+      case 'masters-logistic': return <LogisticMasterPanel />;
       case 'console': return <SecurityModule />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
