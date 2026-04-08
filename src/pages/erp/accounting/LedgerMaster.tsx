@@ -1102,6 +1102,8 @@ export function LedgerMasterPanel() {
   const [borrowingOpen, setBorrowingOpen] = useState(false);
   const [incomeOpen, setIncomeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [dutiesTaxOpen, setDutiesTaxOpen] = useState(false);
+  const [payrollStatOpen, setPayrollStatOpen] = useState(false);
 
   // New ledger form states
   const [liabilityForm, setLiabilityForm] = useState({
@@ -1383,6 +1385,7 @@ export function LedgerMasterPanel() {
     else if (label === 'Loan Taken') setBorrowingOpen(true);
     else if (label === 'Income') setIncomeOpen(true);
     else if (label === 'Expense') setExpenseOpen(true);
+    else if (label === 'Duties & Taxes') setDutiesTaxOpen(true);
   };
 
   // ── Save Cash ──
