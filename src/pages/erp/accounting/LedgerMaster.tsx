@@ -27,6 +27,7 @@ import {
   L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
 } from '@/data/finframe-seed-data';
+import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -369,6 +370,7 @@ export function LedgerMasterPanel() {
     alertThreshold: 0,
     isMainCash: false,
     voucherSeries: 'CR',
+    openingBalanceType: 'Dr' as 'Dr' | 'Cr',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
@@ -398,6 +400,12 @@ export function LedgerMasterPanel() {
     setBankDefs(loadBankDefs());
     setInstances(loadInstances(selEntityId));
   };
+
+  // Ctrl+S saves the active form
+  useCtrlS(() => {
+    if (cashCreateOpen) handleCashSave();
+    if (bankCreateOpen) handleBankSave();
+  });
 
   // ── Stats ──
   const allDefs = [...cashDefs, ...bankDefs];
