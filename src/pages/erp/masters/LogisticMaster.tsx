@@ -1049,7 +1049,7 @@ export default function LogisticMaster() {
     <SidebarProvider>
       <div className="flex min-h-svh w-full">
         <div className="flex-1">
-          <ERPHeader title="Logistic Master" />
+          <ERPHeader breadcrumbs={[{ label: 'Masters' }, { label: 'Logistic Master' }]} />
           <div className="p-6 max-w-7xl mx-auto">
             <LogisticMasterPanel />
           </div>
