@@ -381,6 +381,10 @@ export function LedgerMasterPanel() {
   const [ifscValid, setIfscValid] = useState<boolean | null>(null);
   const [showAccountPreview, setShowAccountPreview] = useState(false);
 
+  // Cash dialog collapsed sections
+  const [cashShowMore, setCashShowMore] = useState(false);
+  const [cashShowAdvanced, setCashShowAdvanced] = useState(false);
+
   // Custodian dialog state
   const [custodianOpen, setCustodianOpen] = useState(false);
   const [custodianTargetInstanceId, setCustodianTargetInstanceId] = useState<string | null>(null);
