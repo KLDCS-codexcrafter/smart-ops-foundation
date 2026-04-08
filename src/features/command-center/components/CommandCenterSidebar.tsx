@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
-  TrendingUp, Users,
+  TrendingUp, Users, CreditCard,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -38,6 +38,12 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'Ledger Master', module: 'finecore-ledgers' },
 ];
 
+const SUPPORTING_MASTERS_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Mode of Payment', module: 'masters-mode-payment' },
+  { label: 'Terms of Payment', module: 'masters-terms-payment' },
+  { label: 'Terms of Delivery', module: 'masters-terms-delivery' },
+];
+
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
   { label: 'Inventory Masters', icon: Package },
@@ -50,15 +56,15 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     activeModule === 'foundation' || activeModule === 'geography'
   );
   const [finecoreOpen, setFinecoreOpen] = useState(
-    activeModule.startsWith('finecore')
+    activeModule.startsWith('finecore') || activeModule.startsWith('masters-')
   );
 
   useEffect(() => {
     if (activeModule === 'foundation' || activeModule === 'geography') setFoundationOpen(true);
-    if (activeModule.startsWith('finecore')) setFinecoreOpen(true);
+    if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
   }, [activeModule]);
 
-  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS].map(i => i.module);
+  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS, ...SUPPORTING_MASTERS_ITEMS].map(i => i.module);
 
   const renderSubSection = (label: string, items: { label: string; module: CommandCenterModule }[]) => (
     <>
@@ -146,7 +152,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      isActive={activeModule.startsWith('finecore')}
+                      isActive={activeModule.startsWith('finecore') || activeModule.startsWith('masters-')}
                       tooltip="FineCore Masters"
                     >
                       <Landmark className="h-4 w-4 text-indigo-400" />
@@ -159,6 +165,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                       {renderSubSection('Statutory Reference', STATUTORY_ITEMS)}
                       {renderSubSection('Entity Configuration', ENTITY_CONFIG_ITEMS)}
                       {renderSubSection('Account Structure', ACCOUNT_STRUCTURE_ITEMS)}
+                      {renderSubSection('Supporting Masters', SUPPORTING_MASTERS_ITEMS)}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
