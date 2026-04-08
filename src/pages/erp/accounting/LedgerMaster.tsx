@@ -21,6 +21,8 @@ import {
   TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch,
   PiggyBank, HandCoins, Edit2, Ban, CheckCircle2, Loader2,
   BookOpen, FileText, AlertTriangle, Shield,
+  Building, Scale, ArrowUpRight, ArrowDownLeft,
+  Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
@@ -28,6 +30,8 @@ import {
   L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
 } from '@/data/finframe-seed-data';
+import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
+import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
 import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 
@@ -126,6 +130,144 @@ interface NachMandate {
   notes: string;
 }
 
+// ─── 6 New Ledger Type Interfaces ─────────────────────────────────
+
+interface LiabilityLedgerDefinition {
+  id: string;
+  ledgerType: 'liability';
+  name: string;
+  mailingName: string;
+  numericCode: string;
+  code: string;
+  alias: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Dr' | 'Cr';
+  status: 'active' | 'inactive';
+}
+
+type CapitalType =
+  | 'share_capital_equity' | 'share_capital_preference'
+  | 'partners_capital' | 'proprietor_capital'
+  | 'general_reserve' | 'retained_earnings' | 'other_reserve';
+
+interface CapitalLedgerDefinition {
+  id: string;
+  ledgerType: 'capital';
+  name: string; mailingName: string; numericCode: string; code: string; alias: string;
+  parentGroupCode: string; parentGroupName: string;
+  entityId: string | null; entityShortCode: string | null;
+  openingBalance: number; openingBalanceType: 'Dr' | 'Cr';
+  capitalType: CapitalType;
+  authorisedCapital: number; issuedCapital: number; paidUpCapital: number;
+  faceValuePerShare: number; numberOfShares: number;
+  partnerName: string; partnerPAN: string;
+  profitSharingRatio: number; capitalContribution: number;
+  proprietorName: string; proprietorPAN: string;
+  status: 'active' | 'inactive';
+}
+
+interface LoanReceivableLedgerDefinition {
+  id: string;
+  ledgerType: 'loan_receivable';
+  name: string; mailingName: string; numericCode: string; code: string; alias: string;
+  parentGroupCode: string; parentGroupName: string;
+  entityId: string | null; entityShortCode: string | null;
+  openingBalance: number; openingBalanceType: 'Dr' | 'Cr';
+  borrowerName: string; borrowerPhone: string; borrowerEmail: string;
+  borrowerAddress: string; borrowerState: string; borrowerPincode: string;
+  borrowerPAN: string;
+  loanAmount: number; interestRate: number;
+  interestType: 'simple' | 'compound';
+  tenureMonths: number;
+  disbursementDate: string; firstRepaymentDate: string;
+  collateral: string; purpose: string;
+  isTdsApplicable: boolean;
+  tdsSection: string;
+  status: 'active' | 'inactive';
+}
+
+interface BorrowingLedgerDefinition {
+  id: string;
+  ledgerType: 'borrowing';
+  name: string; mailingName: string; numericCode: string; code: string; alias: string;
+  parentGroupCode: string; parentGroupName: string;
+  entityId: string | null; entityShortCode: string | null;
+  openingBalance: number; openingBalanceType: 'Dr' | 'Cr';
+  lenderName: string;
+  lenderType: 'bank' | 'nbfc' | 'director' | 'group_company' | 'individual' | 'other';
+  lenderPhone: string; lenderEmail: string; lenderAddress: string;
+  loanAmount: number; interestRate: number;
+  loanType: 'term_loan' | 'od' | 'cc' | 'demand_loan' | 'vehicle_loan';
+  tenureMonths: number; firstEmiDate: string;
+  loanAccountNo: string; collateralPledged: string;
+  emiAmount: number;
+  repaymentScheduleGenerated: boolean;
+  status: 'active' | 'inactive';
+}
+
+interface IncomeLedgerDefinition {
+  id: string;
+  ledgerType: 'income';
+  name: string; mailingName: string; numericCode: string; code: string; alias: string;
+  parentGroupCode: string; parentGroupName: string;
+  entityId: string | null; entityShortCode: string | null;
+  openingBalance: number; openingBalanceType: 'Dr' | 'Cr';
+  isGstApplicable: boolean;
+  hsnSacCode: string; hsnSacType: 'hsn' | 'sac' | '';
+  gstRate: number; cgstRate: number; sgstRate: number; igstRate: number; cessRate: number;
+  gstType: 'taxable' | 'exempt' | 'nil_rated' | 'non_gst' | 'zero_rated';
+  includeInGstTurnover: boolean;
+  isTdsApplicable: boolean;
+  tdsSection: string;
+  costCentreApplicable: boolean;
+  status: 'active' | 'inactive';
+}
+
+interface ExpenseLedgerDefinition {
+  id: string;
+  ledgerType: 'expense';
+  name: string; mailingName: string; numericCode: string; code: string; alias: string;
+  parentGroupCode: string; parentGroupName: string;
+  entityId: string | null; entityShortCode: string | null;
+  openingBalance: number; openingBalanceType: 'Dr' | 'Cr';
+  isGstApplicable: boolean;
+  hsnSacCode: string; hsnSacType: 'hsn' | 'sac' | '';
+  gstRate: number; cgstRate: number; sgstRate: number; igstRate: number; cessRate: number;
+  gstType: 'taxable' | 'exempt' | 'nil_rated' | 'non_gst' | 'zero_rated';
+  isItcEligible: boolean;
+  isRcmApplicable: boolean;
+  rcmSection: 'section_9_3' | 'section_9_4' | null;
+  isTdsApplicable: boolean;
+  tdsSection: string;
+  usePurchaseAdditionalExpense: boolean;
+  costCentreApplicable: boolean;
+  isBudgetHead: boolean;
+  expenseNature: 'revenue' | 'capital_expense';
+  status: 'active' | 'inactive';
+}
+
+interface LoanRepaymentRecord {
+  id: string;
+  borrowingLedgerDefinitionId: string;
+  entityId: string;
+  month: number;
+  openingBalance: number;
+  emiAmount: number;
+  principalComponent: number;
+  interestComponent: number;
+  closingBalance: number;
+  dueDate: string;
+  paidDate: string | null;
+  paidAmount: number;
+  status: 'pending' | 'paid' | 'overdue' | 'partially_paid' | 'skipped';
+  paymentReference: string;
+  narration: string;
+}
+
 // ─── Types (Two-Table Architecture) ───────────────────────────────────
 
 interface CashLedgerDefinition {
@@ -187,22 +329,27 @@ interface BankLedgerDefinition {
   clearingDays: number;
   cutoffTime: string;
   status: 'active' | 'inactive' | 'dormant' | 'closed';
-  // ── Mailing Name + Account Holder ──
   mailingName: string;
   acHolderName: string;
-  // ── From IFSC API (additional fields) ──
   bankPhone: string;
   neftEnabled: boolean;
   rtgsEnabled: boolean;
   impsEnabled: boolean;
   upiEnabled: boolean;
-  // ── Bank Relationship Manager ──
   bankManagerName: string;
   bankManagerPhone: string;
   bankManagerEmail: string;
 }
 
-type AnyLedgerDefinition = CashLedgerDefinition | BankLedgerDefinition;
+type AnyLedgerDefinition =
+  | CashLedgerDefinition
+  | BankLedgerDefinition
+  | LiabilityLedgerDefinition
+  | CapitalLedgerDefinition
+  | LoanReceivableLedgerDefinition
+  | BorrowingLedgerDefinition
+  | IncomeLedgerDefinition
+  | ExpenseLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -235,12 +382,8 @@ const INDIAN_BANKS = [
 ] as const;
 
 const ACCOUNT_TYPE_LABELS: Record<BankAccountType, string> = {
-  current: 'Current',
-  savings: 'Savings',
-  fixed_deposit: 'Fixed Deposit',
-  eefc: 'EEFC',
-  cash_credit: 'Cash Credit',
-  overdraft: 'Overdraft',
+  current: 'Current', savings: 'Savings', fixed_deposit: 'Fixed Deposit',
+  eefc: 'EEFC', cash_credit: 'Cash Credit', overdraft: 'Overdraft',
 };
 
 const ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
@@ -253,15 +396,9 @@ const ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
 };
 
 const CHEQUE_STATUS_LABELS: Record<ChequeStatus, string> = {
-  available: 'Available',
-  issued: 'Issued',
-  post_dated: 'Post-Dated',
-  presented: 'Presented',
-  cleared: 'Cleared',
-  bounced: 'Bounced',
-  stale: 'Stale',
-  stop_payment: 'Stop Payment',
-  cancelled: 'Cancelled',
+  available: 'Available', issued: 'Issued', post_dated: 'Post-Dated',
+  presented: 'Presented', cleared: 'Cleared', bounced: 'Bounced',
+  stale: 'Stale', stop_payment: 'Stop Payment', cancelled: 'Cancelled',
 };
 
 const CHEQUE_STATUS_COLORS: Record<ChequeStatus, string> = {
@@ -274,6 +411,26 @@ const CHEQUE_STATUS_COLORS: Record<ChequeStatus, string> = {
   stale: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   stop_payment: 'bg-red-500/10 text-red-500 border-red-500/20',
   cancelled: 'bg-muted/50 text-muted-foreground border-border',
+};
+
+const CAPITAL_TYPE_LABELS: Record<CapitalType, string> = {
+  share_capital_equity: 'Equity Share Capital',
+  share_capital_preference: 'Preference Share Capital',
+  partners_capital: "Partner's Capital",
+  proprietor_capital: "Proprietor's Capital",
+  general_reserve: 'General Reserve',
+  retained_earnings: 'Retained Earnings',
+  other_reserve: 'Other Reserve',
+};
+
+const LENDER_TYPE_LABELS: Record<BorrowingLedgerDefinition['lenderType'], string> = {
+  bank: 'Bank', nbfc: 'NBFC', director: 'Director',
+  group_company: 'Group Company', individual: 'Individual', other: 'Other',
+};
+
+const LOAN_TYPE_LABELS: Record<BorrowingLedgerDefinition['loanType'], string> = {
+  term_loan: 'Term Loan', od: 'Overdraft', cc: 'Cash Credit',
+  demand_loan: 'Demand Loan', vehicle_loan: 'Vehicle Loan',
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────
@@ -366,6 +523,37 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     bankManagerName: d.bankManagerName ?? '',
     bankManagerPhone: d.bankManagerPhone ?? '',
     bankManagerEmail: d.bankManagerEmail ?? '',
+    // New ledger type compat
+    hsnSacCode: d.hsnSacCode ?? '',
+    hsnSacType: d.hsnSacType ?? '',
+    gstRate: d.gstRate ?? 0, cgstRate: d.cgstRate ?? 0,
+    sgstRate: d.sgstRate ?? 0, igstRate: d.igstRate ?? 0, cessRate: d.cessRate ?? 0,
+    gstType: d.gstType ?? 'taxable',
+    isGstApplicable: d.isGstApplicable ?? false,
+    isItcEligible: d.isItcEligible ?? true,
+    isRcmApplicable: d.isRcmApplicable ?? false,
+    rcmSection: d.rcmSection ?? null,
+    isTdsApplicable: d.isTdsApplicable ?? false,
+    tdsSection: d.tdsSection ?? '',
+    capitalType: d.capitalType ?? 'general_reserve',
+    borrowerName: d.borrowerName ?? '', lenderName: d.lenderName ?? '',
+    loanAmount: d.loanAmount ?? 0, interestRate: d.interestRate ?? 0,
+    tenureMonths: d.tenureMonths ?? 0, emiAmount: d.emiAmount ?? 0,
+    repaymentScheduleGenerated: d.repaymentScheduleGenerated ?? false,
+    usePurchaseAdditionalExpense: d.usePurchaseAdditionalExpense ?? false,
+    isBudgetHead: d.isBudgetHead ?? false,
+    expenseNature: d.expenseNature ?? 'revenue',
+    authorisedCapital: d.authorisedCapital ?? 0, issuedCapital: d.issuedCapital ?? 0,
+    paidUpCapital: d.paidUpCapital ?? 0, faceValuePerShare: d.faceValuePerShare ?? 10,
+    numberOfShares: d.numberOfShares ?? 0,
+    partnerName: d.partnerName ?? '', partnerPAN: d.partnerPAN ?? '',
+    profitSharingRatio: d.profitSharingRatio ?? 0, capitalContribution: d.capitalContribution ?? 0,
+    proprietorName: d.proprietorName ?? '', proprietorPAN: d.proprietorPAN ?? '',
+    includeInGstTurnover: d.includeInGstTurnover ?? true,
+    costCentreApplicable: d.costCentreApplicable ?? false,
+    lenderType: d.lenderType ?? 'bank', loanType: d.loanType ?? 'term_loan',
+    firstEmiDate: d.firstEmiDate ?? '', loanAccountNo: d.loanAccountNo ?? '',
+    collateralPledged: d.collateralPledged ?? '',
   }));
 };
 
@@ -374,6 +562,19 @@ const loadCashDefs = (): CashLedgerDefinition[] =>
 
 const loadBankDefs = (): BankLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'bank') as BankLedgerDefinition[];
+
+const loadLiabilityDefs = (): LiabilityLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'liability') as LiabilityLedgerDefinition[];
+const loadCapitalDefs = (): CapitalLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'capital') as CapitalLedgerDefinition[];
+const loadLoanRecDefs = (): LoanReceivableLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'loan_receivable') as LoanReceivableLedgerDefinition[];
+const loadBorrowingDefs = (): BorrowingLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'borrowing') as BorrowingLedgerDefinition[];
+const loadIncomeDefs = (): IncomeLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'income') as IncomeLedgerDefinition[];
+const loadExpenseDefs = (): ExpenseLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'expense') as ExpenseLedgerDefinition[];
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
@@ -479,6 +680,21 @@ const saveNachMandate = (m: NachMandate): void => {
   // [JWT] POST/PUT /api/entity/${m.entityId}/finecore/nach-mandates
 };
 
+// ── Loan Schedule helpers ─────────────────────────────────────────
+const saveLoanSchedule = (records: LoanRepaymentRecord[]): void => {
+  if (!records.length) return;
+  const { borrowingLedgerDefinitionId: defId, entityId } = records[0];
+  const key = `erp_entity_${entityId}_loan_schedule_${defId}`;
+  localStorage.setItem(key, JSON.stringify(records));
+  // [JWT] POST /api/entity/${entityId}/finecore/loan-schedule
+};
+const loadLoanSchedule = (entityId: string, defId: string): LoanRepaymentRecord[] => {
+  try {
+    const r = localStorage.getItem(`erp_entity_${entityId}_loan_schedule_${defId}`);
+    return r ? JSON.parse(r) : [];
+  } catch { return []; }
+};
+
 // ─── Code Generation ──────────────────────────────────────────────────
 
 const genCashGroupCode = (all: AnyLedgerDefinition[]) =>
@@ -522,6 +738,20 @@ const genBankEntityNumericCode = (all: AnyLedgerDefinition[], parentGroupCode: s
   ).length + 1;
   return deriveLedgerNumericCode(parentGroupCode, seqCount);
 };
+
+// ── 6 new alpha code generators ──
+const genLiabilityCode = (all: AnyLedgerDefinition[]) =>
+  'LBL-' + String(all.filter(d => d.ledgerType === 'liability').length + 1).padStart(6, '0');
+const genCapitalCode = (all: AnyLedgerDefinition[]) =>
+  'CAP-' + String(all.filter(d => d.ledgerType === 'capital').length + 1).padStart(6, '0');
+const genLoanRecCode = (all: AnyLedgerDefinition[]) =>
+  'LRC-' + String(all.filter(d => d.ledgerType === 'loan_receivable').length + 1).padStart(6, '0');
+const genBorrowingCode = (all: AnyLedgerDefinition[]) =>
+  'BRW-' + String(all.filter(d => d.ledgerType === 'borrowing').length + 1).padStart(6, '0');
+const genIncomeCode = (all: AnyLedgerDefinition[]) =>
+  'INC-' + String(all.filter(d => d.ledgerType === 'income').length + 1).padStart(6, '0');
+const genExpenseCode = (all: AnyLedgerDefinition[]) =>
+  'EXP-' + String(all.filter(d => d.ledgerType === 'expense').length + 1).padStart(6, '0');
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
@@ -573,12 +803,12 @@ const TYPE_BUTTONS = [
   { label: 'Cash', icon: Wallet, row: 'Balance Sheet', active: true },
   { label: 'Bank', icon: Landmark, row: 'Balance Sheet', active: true },
   { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: false },
-  { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: false },
-  { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: false },
-  { label: 'Loan Given', icon: HandCoins, row: 'Balance Sheet', active: false },
-  { label: 'Loan Taken', icon: Banknote, row: 'Balance Sheet', active: false },
-  { label: 'Income', icon: TrendingUp, row: 'P&L', active: false },
-  { label: 'Expense', icon: TrendingDown, row: 'P&L', active: false },
+  { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: true },
+  { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: true },
+  { label: 'Loan Given', icon: HandCoins, row: 'Balance Sheet', active: true },
+  { label: 'Loan Taken', icon: Banknote, row: 'Balance Sheet', active: true },
+  { label: 'Income', icon: TrendingUp, row: 'P&L', active: true },
+  { label: 'Expense', icon: TrendingDown, row: 'P&L', active: true },
   { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: false },
   { label: 'Customer', icon: Users, row: 'Masters', active: false },
   { label: 'Vendor', icon: Users, row: 'Masters', active: false },
@@ -591,50 +821,111 @@ const TYPE_BUTTONS = [
 const defaultBankForm = {
   parentGroupCode: 'BANK',
   parentGroupName: 'Bank Balances',
-  name: '',
-  alias: '',
-  bankName: '',
-  bankNameOther: '',
-  accountNumber: '',
-  ifscCode: '',
+  name: '', alias: '', bankName: '', bankNameOther: '',
+  accountNumber: '', ifscCode: '',
   accountType: '' as BankAccountType | '',
   currency: 'INR' as 'INR'|'USD'|'EUR'|'GBP'|'AED',
-  odLimit: 0,
-  openingBalance: 0,
+  odLimit: 0, openingBalance: 0,
   openingBalanceType: 'Dr' as 'Dr' | 'Cr',
-  scope: 'group' as 'group' | 'entity',
-  entityId: '',
-  branchName: '',
-  branchAddress: '',
-  branchCity: '',
-  branchState: '',
-  branchPincode: '',
-  micrCode: '',
-  swiftCode: '',
-  ifscAutoFilled: false,
-  bankGstin: '',
-  bankStateCode: '',
-  gstOnCharges: true,
+  scope: 'group' as 'group' | 'entity', entityId: '',
+  branchName: '', branchAddress: '', branchCity: '', branchState: '', branchPincode: '',
+  micrCode: '', swiftCode: '', ifscAutoFilled: false,
+  bankGstin: '', bankStateCode: '', gstOnCharges: true,
   chequeFormat: 'GENERIC_CTS' as 'HDFC_CTS'|'SBI_CTS'|'ICICI_CTS'|'AXIS_CTS'|'GENERIC_CTS'|'CUSTOM',
   chequeSize: 'A4' as 'A4'|'LEAF',
   defaultCrossing: 'account_payee' as 'account_payee'|'not_negotiable'|'none',
-  brsEnabled: true,
-  clearingDays: 2,
-  cutoffTime: '14:30',
-  // Mailing Name + A/c Holder
-  mailingName: '',
-  acHolderName: '',
-  // IFSC additional
-  bankPhone: '',
-  neftEnabled: true,
-  rtgsEnabled: true,
-  impsEnabled: true,
-  upiEnabled: true,
-  // Bank Manager
-  bankManagerName: '',
-  bankManagerPhone: '',
-  bankManagerEmail: '',
+  brsEnabled: true, clearingDays: 2, cutoffTime: '14:30',
+  mailingName: '', acHolderName: '',
+  bankPhone: '', neftEnabled: true, rtgsEnabled: true, impsEnabled: true, upiEnabled: true,
+  bankManagerName: '', bankManagerPhone: '', bankManagerEmail: '',
 };
+
+const defaultLoanRecForm = {
+  parentGroupCode: 'LTLA', parentGroupName: 'Long-Term Loans & Advances',
+  name: '', mailingName: '', alias: '', borrowerName: '',
+  borrowerPhone: '', borrowerEmail: '', borrowerAddress: '',
+  borrowerState: '', borrowerPincode: '', borrowerPAN: '',
+  loanAmount: 0, interestRate: 0, interestType: 'simple' as 'simple'|'compound',
+  tenureMonths: 0, disbursementDate: '', firstRepaymentDate: '',
+  collateral: '', purpose: '', isTdsApplicable: false, tdsSection: '194A',
+  scope: 'group' as 'group'|'entity', entityId: '',
+};
+
+const defaultBorrowingForm = {
+  parentGroupCode: 'LTBOR', parentGroupName: 'Long-Term Borrowings',
+  name: '', mailingName: '', alias: '', lenderName: '',
+  lenderType: 'bank' as BorrowingLedgerDefinition['lenderType'],
+  lenderPhone: '', lenderEmail: '', lenderAddress: '',
+  loanAmount: 0, interestRate: 0,
+  loanType: 'term_loan' as BorrowingLedgerDefinition['loanType'],
+  tenureMonths: 0, firstEmiDate: '', loanAccountNo: '', collateralPledged: '',
+  scope: 'group' as 'group'|'entity', entityId: '',
+};
+
+const defaultIncomeForm = {
+  parentGroupCode: 'SERV', parentGroupName: 'Revenue from Services',
+  name: '', mailingName: '', alias: '',
+  isGstApplicable: false, hsnSacCode: '', hsnSacType: '' as 'hsn'|'sac'|'',
+  gstRate: 0, cgstRate: 0, sgstRate: 0, igstRate: 0, cessRate: 0,
+  gstType: 'taxable' as IncomeLedgerDefinition['gstType'],
+  includeInGstTurnover: true,
+  isTdsApplicable: false, tdsSection: '',
+  costCentreApplicable: false,
+  scope: 'group' as 'group'|'entity', entityId: '',
+};
+
+const defaultExpenseForm = {
+  parentGroupCode: 'ADMIN', parentGroupName: 'Administrative Expenses',
+  name: '', mailingName: '', alias: '',
+  isGstApplicable: false, hsnSacCode: '', hsnSacType: '' as 'hsn'|'sac'|'',
+  gstRate: 0, cgstRate: 0, sgstRate: 0, igstRate: 0, cessRate: 0,
+  gstType: 'taxable' as ExpenseLedgerDefinition['gstType'],
+  isItcEligible: true, isRcmApplicable: false, rcmSection: null as 'section_9_3'|'section_9_4'|null,
+  isTdsApplicable: false, tdsSection: '',
+  usePurchaseAdditionalExpense: false,
+  costCentreApplicable: false, isBudgetHead: false,
+  expenseNature: 'revenue' as 'revenue'|'capital_expense',
+  scope: 'group' as 'group'|'entity', entityId: '',
+};
+
+// ─── HSNSACCombobox (inline) ──────────────────────────────────────────
+
+function HSNSACCombobox({
+  value, onSelect, codeType = 'both', disabled = false
+}: {
+  value: string;
+  onSelect: (code: HSNSACCode) => void;
+  codeType?: 'hsn' | 'sac' | 'both';
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState('');
+  const allCodes = codeType === 'hsn' ? HSN_CODES
+    : codeType === 'sac' ? SAC_CODES
+    : [...HSN_CODES, ...SAC_CODES];
+  const filtered = allCodes.filter(c =>
+    `${c.code} ${c.description}`.toLowerCase().includes(q.toLowerCase())).slice(0, 50);
+  return (
+    <div className="relative">
+      <Input placeholder="Search HSN/SAC code..." value={q || value}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        className="pr-8" disabled={disabled}
+        onKeyDown={onEnterNext} />
+      {open && filtered.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 max-h-48 overflow-y-auto bg-popover border border-border rounded-lg shadow-lg">
+          {filtered.map(c => (
+            <button key={c.code} type="button" className="w-full text-left px-3 py-2 text-xs hover:bg-accent flex items-center justify-between"
+              onClick={() => { onSelect(c); setOpen(false); setQ(''); }}>
+              <span><span className="font-mono font-medium">{c.code}</span> <span className="text-muted-foreground ml-1">{c.description}</span></span>
+              <Badge variant="outline" className="text-[9px] ml-2">{c.igstRate}%</Badge>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────
 
@@ -642,8 +933,14 @@ export function LedgerMasterPanel() {
   const [entities] = useState(() => loadEntities());
   const [cashDefs, setCashDefs] = useState<CashLedgerDefinition[]>(() => loadCashDefs());
   const [bankDefs, setBankDefs] = useState<BankLedgerDefinition[]>(() => loadBankDefs());
+  const [liabilityDefs, setLiabilityDefs] = useState<LiabilityLedgerDefinition[]>(() => loadLiabilityDefs());
+  const [capitalDefs, setCapitalDefs] = useState<CapitalLedgerDefinition[]>(() => loadCapitalDefs());
+  const [loanRecDefs, setLoanRecDefs] = useState<LoanReceivableLedgerDefinition[]>(() => loadLoanRecDefs());
+  const [borrowingDefs, setBorrowingDefs] = useState<BorrowingLedgerDefinition[]>(() => loadBorrowingDefs());
+  const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
+  const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash' | 'bank'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -653,20 +950,11 @@ export function LedgerMasterPanel() {
   const [cashCreateOpen, setCashCreateOpen] = useState(false);
   const [cashEditTarget, setCashEditTarget] = useState<CashLedgerDefinition | null>(null);
   const defaultCashForm = {
-    parentGroupCode: 'CASH',
-    parentGroupName: 'Cash & Cash Equivalents',
-    name: '',
-    alias: '',
-    openingBalance: 0,
-    scope: 'group' as 'group' | 'entity',
-    entityId: '',
-    location: '',
-    cashLimit: 0,
-    alertThreshold: 0,
-    isMainCash: false,
-    voucherSeries: 'CR',
-    openingBalanceType: 'Dr' as 'Dr' | 'Cr',
-    mailingName: '',
+    parentGroupCode: 'CASH', parentGroupName: 'Cash & Cash Equivalents',
+    name: '', alias: '', openingBalance: 0,
+    scope: 'group' as 'group' | 'entity', entityId: '',
+    location: '', cashLimit: 0, alertThreshold: 0, isMainCash: false,
+    voucherSeries: 'CR', openingBalanceType: 'Dr' as 'Dr' | 'Cr', mailingName: '',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
@@ -697,9 +985,7 @@ export function LedgerMasterPanel() {
   // Cheque book management
   const [chequeBooks, setChequeBooks] = useState<ChequeBook[]>([]);
   const [chequeBookOpen, setChequeBookOpen] = useState(false);
-  const [chequeBookForm, setChequeBookForm] = useState({
-    bookReference: '', fromLeaf: 0, toLeaf: 0, issuedDate: '', entityId: '', defId: '',
-  });
+  const [chequeBookForm, setChequeBookForm] = useState({ bookReference: '', fromLeaf: 0, toLeaf: 0, issuedDate: '', entityId: '', defId: '' });
   const [chequeRecords, setChequeRecords] = useState<ChequeRecord[]>([]);
   const [selectedChequeBook, setSelectedChequeBook] = useState<ChequeBook | null>(null);
   const [chequeIssueOpen, setChequeIssueOpen] = useState(false);
@@ -731,9 +1017,49 @@ export function LedgerMasterPanel() {
   const [custodianTargetInstanceId, setCustodianTargetInstanceId] = useState<string | null>(null);
   const [custodianHistory, setCustodianHistory] = useState<CustodianHistoryRecord[]>([]);
   const [custodianForm, setCustodianForm] = useState({
-    name: '', designation: '', phone: '',
-    handoverBy: '', cashBalanceAtHandover: 0, notes: '',
+    name: '', designation: '', phone: '', handoverBy: '', cashBalanceAtHandover: 0, notes: '',
   });
+
+  // New ledger dialog states
+  const [liabilityOpen, setLiabilityOpen] = useState(false);
+  const [capitalOpen, setCapitalOpen] = useState(false);
+  const [loanRecOpen, setLoanRecOpen] = useState(false);
+  const [borrowingOpen, setBorrowingOpen] = useState(false);
+  const [incomeOpen, setIncomeOpen] = useState(false);
+  const [expenseOpen, setExpenseOpen] = useState(false);
+
+  // New ledger form states
+  const [liabilityForm, setLiabilityForm] = useState({
+    parentGroupCode: 'LTPROV', parentGroupName: 'Long-Term Provisions',
+    name: '', mailingName: '', alias: '',
+    openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
+    scope: 'group' as 'group'|'entity', entityId: '',
+  });
+  const [capitalForm, setCapitalForm] = useState({
+    parentGroupCode: 'RSRV', parentGroupName: 'Reserves & Surplus',
+    name: '', mailingName: '', alias: '',
+    openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
+    capitalType: 'general_reserve' as CapitalType,
+    authorisedCapital: 0, issuedCapital: 0, paidUpCapital: 0,
+    faceValuePerShare: 10, numberOfShares: 0,
+    partnerName: '', partnerPAN: '', profitSharingRatio: 0, capitalContribution: 0,
+    proprietorName: '', proprietorPAN: '',
+    scope: 'group' as 'group'|'entity', entityId: '',
+  });
+  const [loanRecForm, setLoanRecForm] = useState(defaultLoanRecForm);
+  const [borrowingForm, setBorrowingForm] = useState(defaultBorrowingForm);
+  const [incomeForm, setIncomeForm] = useState(defaultIncomeForm);
+  const [expenseForm, setExpenseForm] = useState(defaultExpenseForm);
+
+  // Loan schedule
+  const [activeScheduleDefId, setActiveScheduleDefId] = useState<string | null>(null);
+  const [loanSchedule, setLoanSchedule] = useState<LoanRepaymentRecord[]>([]);
+  const [markPaidOpen, setMarkPaidOpen] = useState(false);
+  const [markPaidTarget, setMarkPaidTarget] = useState<LoanRepaymentRecord | null>(null);
+  const [markPaidForm, setMarkPaidForm] = useState({ paidAmount: 0, paidDate: '', paymentReference: '', narration: '' });
+
+  // HSN search
+  const [hsnSearch, setHsnSearch] = useState('');
 
   // Reload instances when entity changes
   useEffect(() => {
@@ -743,17 +1069,86 @@ export function LedgerMasterPanel() {
   const refreshAll = () => {
     setCashDefs(loadCashDefs());
     setBankDefs(loadBankDefs());
+    setLiabilityDefs(loadLiabilityDefs());
+    setCapitalDefs(loadCapitalDefs());
+    setLoanRecDefs(loadLoanRecDefs());
+    setBorrowingDefs(loadBorrowingDefs());
+    setIncomeDefs(loadIncomeDefs());
+    setExpenseDefs(loadExpenseDefs());
     setInstances(loadInstances(selEntityId));
+  };
+
+  // EMI calculator
+  const calculateEMI = (principal: number, annualRate: number, months: number): number => {
+    if (months <= 0) return 0;
+    if (annualRate === 0) return Math.round((principal / months) * 100) / 100;
+    const r = annualRate / 100 / 12;
+    return Math.round(principal * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1) * 100) / 100;
+  };
+
+  // Loan schedule generator
+  const generateLoanSchedule = (
+    def: BorrowingLedgerDefinition, entityId: string
+  ): LoanRepaymentRecord[] => {
+    const emi = def.emiAmount || calculateEMI(def.loanAmount, def.interestRate, def.tenureMonths);
+    let balance = def.loanAmount;
+    const [y, m, d] = def.firstEmiDate.split('-').map(Number);
+    return Array.from({ length: def.tenureMonths }, (_, i) => {
+      const interest = Math.round(balance * (def.interestRate/100/12) * 100) / 100;
+      const isLast = i === def.tenureMonths - 1;
+      const principal = isLast ? balance : Math.round((emi - interest) * 100) / 100;
+      const closing = isLast ? 0 : Math.round((balance - principal) * 100) / 100;
+      const dm = m + i - 1; const dy = y + Math.floor(dm / 12);
+      const dueM = ((dm % 12) + 12) % 12 + 1;
+      const dueDate = `${dy}-${String(dueM).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec: LoanRepaymentRecord = {
+        id: crypto.randomUUID(), borrowingLedgerDefinitionId: def.id,
+        entityId, month: i+1, openingBalance: balance, emiAmount: emi,
+        principalComponent: principal, interestComponent: interest,
+        closingBalance: closing, dueDate, paidDate: null, paidAmount: 0,
+        status: 'pending', paymentReference: '', narration: '',
+      };
+      balance = closing;
+      return rec;
+    });
+  };
+
+  // HSN/SAC auto-fill helper
+  const applyHsnSac = (
+    code: HSNSACCode,
+    setter: React.Dispatch<React.SetStateAction<any>>
+  ) => {
+    setter((f: any) => ({
+      ...f,
+      hsnSacCode: code.code,
+      hsnSacType: code.codeType,
+      gstRate: code.igstRate,
+      cgstRate: code.cgstRate,
+      sgstRate: code.sgstRate,
+      igstRate: code.igstRate,
+      cessRate: code.cessRate ?? 0,
+      gstType: code.igstRate === 0
+        ? (code.exemptionApplicable ? 'exempt' : 'nil_rated')
+        : 'taxable',
+      isRcmApplicable: code.reverseCharge,
+      rcmSection: code.reverseCharge ? 'section_9_3' : null,
+    }));
   };
 
   // Ctrl+S saves the active form
   useCtrlS(() => {
     if (cashCreateOpen) handleCashSave();
     if (bankCreateOpen) handleBankSave();
+    if (liabilityOpen) handleLiabilitySave();
+    if (capitalOpen) handleCapitalSave();
+    if (loanRecOpen) handleLoanRecSave();
+    if (borrowingOpen) handleBorrowingSave();
+    if (incomeOpen) handleIncomeSave();
+    if (expenseOpen) handleExpenseSave();
   });
 
   // ── Stats ──
-  const allDefs = [...cashDefs, ...bankDefs];
+  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs];
   const totalDefined = allDefs.length;
   const groupLevel = allDefs.filter(d => !d.entityId).length;
   const entitySpecific = allDefs.filter(d => d.entityId).length;
@@ -772,27 +1167,20 @@ export function LedgerMasterPanel() {
       setBankForm(f => ({
         ...f,
         bankName: f.bankName || bankFromIfsc,
-        branchName: data.BRANCH ?? '',
-        branchAddress: data.ADDRESS ?? '',
-        branchCity: (data.CITY ?? data.DISTRICT ?? ''),
-        branchState: data.STATE ?? '',
-        branchPincode: String(data.PINCODE ?? ''),
-        micrCode: data.MICR ?? '',
-        swiftCode: data.SWIFT ?? '',
-        ifscAutoFilled: true,
+        branchName: data.BRANCH ?? '', branchAddress: data.ADDRESS ?? '',
+        branchCity: (data.CITY ?? data.DISTRICT ?? ''), branchState: data.STATE ?? '',
+        branchPincode: String(data.PINCODE ?? ''), micrCode: data.MICR ?? '',
+        swiftCode: data.SWIFT ?? '', ifscAutoFilled: true,
         mailingName: bankFromIfsc,
         bankPhone: data.CONTACT ?? '',
-        neftEnabled: data.NEFT ?? true,
-        rtgsEnabled: data.RTGS ?? true,
-        impsEnabled: data.IMPS ?? true,
-        upiEnabled: data.UPI ?? true,
+        neftEnabled: data.NEFT ?? true, rtgsEnabled: data.RTGS ?? true,
+        impsEnabled: data.IMPS ?? true, upiEnabled: data.UPI ?? true,
         name: f.name.trim() === ''
           ? suggestBankLedgerName(bankFromIfsc, f.accountType, f.accountNumber)
           : f.name,
       }));
       setIfscValid(true);
       setBankShowBranch(true);
-      // Auto-suggest cheque format, GST, clearing days, cutoff from IFSC prefix
       const prefix = ifsc.slice(0, 4).toUpperCase();
       const fmtMap: Record<string, typeof bankForm.chequeFormat> = {
         HDFC: 'HDFC_CTS', SBIN: 'SBI_CTS', ICIC: 'ICICI_CTS', UTIB: 'AXIS_CTS',
@@ -899,10 +1287,8 @@ export function LedgerMasterPanel() {
       mailingName: def.mailingName ?? '',
       acHolderName: def.acHolderName ?? '',
       bankPhone: def.bankPhone ?? '',
-      neftEnabled: def.neftEnabled ?? true,
-      rtgsEnabled: def.rtgsEnabled ?? true,
-      impsEnabled: def.impsEnabled ?? true,
-      upiEnabled: def.upiEnabled ?? true,
+      neftEnabled: def.neftEnabled ?? true, rtgsEnabled: def.rtgsEnabled ?? true,
+      impsEnabled: def.impsEnabled ?? true, upiEnabled: def.upiEnabled ?? true,
       bankManagerName: def.bankManagerName ?? '',
       bankManagerPhone: def.bankManagerPhone ?? '',
       bankManagerEmail: def.bankManagerEmail ?? '',
@@ -910,6 +1296,18 @@ export function LedgerMasterPanel() {
     setIfscValid(validateIFSC(def.ifscCode));
     setShowAccountPreview(true);
     setBankCreateOpen(true);
+  };
+
+  // ── Type button click handler ──
+  const handleTypeButtonClick = (label: string) => {
+    if (label === 'Cash') openCashCreate();
+    else if (label === 'Bank') openBankCreate();
+    else if (label === 'Liability') setLiabilityOpen(true);
+    else if (label === 'Capital/Equity') setCapitalOpen(true);
+    else if (label === 'Loan Given') setLoanRecOpen(true);
+    else if (label === 'Loan Taken') setBorrowingOpen(true);
+    else if (label === 'Income') setIncomeOpen(true);
+    else if (label === 'Expense') setExpenseOpen(true);
   };
 
   // ── Save Cash ──
@@ -981,48 +1379,34 @@ export function LedgerMasterPanel() {
     if (!resolvedBankName) return toast.error('Select a bank');
     if (!bankForm.accountType) return toast.error('Select account type');
     if (!validateIFSC(bankForm.ifscCode)) return toast.error('Invalid IFSC code');
-
     const all = loadAllDefinitions();
     const bankFields = {
-      bankName: resolvedBankName,
-      accountNumber: bankForm.accountNumber,
+      bankName: resolvedBankName, accountNumber: bankForm.accountNumber,
       ifscCode: bankForm.ifscCode.toUpperCase(),
       accountType: bankForm.accountType as BankAccountType,
-      odLimit: bankForm.odLimit,
-      currency: bankForm.currency,
-      branchName: bankForm.branchName,
-      branchAddress: bankForm.branchAddress,
-      branchCity: bankForm.branchCity,
-      branchState: bankForm.branchState,
+      odLimit: bankForm.odLimit, currency: bankForm.currency,
+      branchName: bankForm.branchName, branchAddress: bankForm.branchAddress,
+      branchCity: bankForm.branchCity, branchState: bankForm.branchState,
       branchPincode: bankForm.branchPincode,
-      micrCode: bankForm.micrCode,
-      swiftCode: bankForm.swiftCode,
+      micrCode: bankForm.micrCode, swiftCode: bankForm.swiftCode,
       ifscAutoFilled: bankForm.ifscAutoFilled,
-      bankGstin: bankForm.bankGstin,
-      bankStateCode: bankForm.bankStateCode,
-      gstOnCharges: bankForm.gstOnCharges,
-      chequeFormat: bankForm.chequeFormat,
-      chequeSize: bankForm.chequeSize,
-      defaultCrossing: bankForm.defaultCrossing,
-      brsEnabled: bankForm.brsEnabled,
-      clearingDays: bankForm.clearingDays,
+      bankGstin: bankForm.bankGstin, bankStateCode: bankForm.bankStateCode,
+      gstOnCharges: bankForm.gstOnCharges, chequeFormat: bankForm.chequeFormat,
+      chequeSize: bankForm.chequeSize, defaultCrossing: bankForm.defaultCrossing,
+      brsEnabled: bankForm.brsEnabled, clearingDays: bankForm.clearingDays,
       cutoffTime: bankForm.cutoffTime,
       mailingName: bankForm.mailingName.trim() || resolvedBankName,
       acHolderName: bankForm.acHolderName.trim(),
       bankPhone: bankForm.bankPhone,
-      neftEnabled: bankForm.neftEnabled,
-      rtgsEnabled: bankForm.rtgsEnabled,
-      impsEnabled: bankForm.impsEnabled,
-      upiEnabled: bankForm.upiEnabled,
+      neftEnabled: bankForm.neftEnabled, rtgsEnabled: bankForm.rtgsEnabled,
+      impsEnabled: bankForm.impsEnabled, upiEnabled: bankForm.upiEnabled,
       bankManagerName: bankForm.bankManagerName.trim(),
       bankManagerPhone: bankForm.bankManagerPhone.trim(),
       bankManagerEmail: bankForm.bankManagerEmail.trim(),
     };
-
     if (bankEditTarget) {
       const updated: BankLedgerDefinition = {
-        ...bankEditTarget,
-        name: bankForm.name.trim(), alias: bankForm.alias.trim(),
+        ...bankEditTarget, name: bankForm.name.trim(), alias: bankForm.alias.trim(),
         parentGroupCode: bankForm.parentGroupCode, parentGroupName: bankForm.parentGroupName,
         ...bankFields,
       };
@@ -1035,8 +1419,7 @@ export function LedgerMasterPanel() {
         id: crypto.randomUUID(), ledgerType: 'bank',
         name: bankForm.name.trim(), code, numericCode, alias: bankForm.alias.trim(),
         parentGroupCode: bankForm.parentGroupCode, parentGroupName: bankForm.parentGroupName,
-        entityId: null, entityShortCode: null, status: 'active',
-        ...bankFields,
+        entityId: null, entityShortCode: null, status: 'active', ...bankFields,
       };
       saveDefinition(def);
       autoCreateInstances(def, bankForm.openingBalance, bankForm.openingBalanceType);
@@ -1050,8 +1433,7 @@ export function LedgerMasterPanel() {
         id: crypto.randomUUID(), ledgerType: 'bank',
         name: bankForm.name.trim(), code, numericCode, alias: bankForm.alias.trim(),
         parentGroupCode: bankForm.parentGroupCode, parentGroupName: bankForm.parentGroupName,
-        entityId: entity.id, entityShortCode: entity.shortCode, status: 'active',
-        ...bankFields,
+        entityId: entity.id, entityShortCode: entity.shortCode, status: 'active', ...bankFields,
       };
       saveDefinition(def);
       saveInstance({
@@ -1066,6 +1448,231 @@ export function LedgerMasterPanel() {
     }
     setBankCreateOpen(false); setBankEditTarget(null); setBankForm(defaultBankForm);
     setIfscValid(null); setShowAccountPreview(false); refreshAll();
+  };
+
+  // ── 6 New Save Handlers ──
+
+  const handleLiabilitySave = () => {
+    if (!liabilityForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genLiabilityCode(all);
+    const numericCode = deriveLedgerNumericCode(liabilityForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'liability').length + 1);
+    const def: LiabilityLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'liability',
+      name: liabilityForm.name.trim(),
+      mailingName: liabilityForm.mailingName.trim() || liabilityForm.name.trim(),
+      numericCode, code, alias: liabilityForm.alias.trim(),
+      parentGroupCode: liabilityForm.parentGroupCode,
+      parentGroupName: liabilityForm.parentGroupName,
+      entityId: liabilityForm.scope === 'entity'
+        ? entities.find(e => e.id === liabilityForm.entityId)?.id ?? null : null,
+      entityShortCode: liabilityForm.scope === 'entity'
+        ? entities.find(e => e.id === liabilityForm.entityId)?.shortCode ?? null : null,
+      openingBalance: liabilityForm.openingBalance, openingBalanceType: liabilityForm.openingBalanceType,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, liabilityForm.openingBalance, liabilityForm.openingBalanceType);
+    toast.success(`${def.name} created`);
+    setLiabilityOpen(false);
+    setLiabilityForm({ parentGroupCode: 'LTPROV', parentGroupName: 'Long-Term Provisions',
+      name: '', mailingName: '', alias: '', openingBalance: 0, openingBalanceType: 'Cr',
+      scope: 'group', entityId: '' });
+    refreshAll();
+  };
+
+  const handleCapitalSave = () => {
+    if (!capitalForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genCapitalCode(all);
+    const numericCode = deriveLedgerNumericCode(capitalForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'capital').length + 1);
+    const def: CapitalLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'capital',
+      name: capitalForm.name.trim(),
+      mailingName: capitalForm.mailingName.trim() || capitalForm.name.trim(),
+      numericCode, code, alias: capitalForm.alias.trim(),
+      parentGroupCode: capitalForm.parentGroupCode, parentGroupName: capitalForm.parentGroupName,
+      entityId: capitalForm.scope === 'entity'
+        ? entities.find(e => e.id === capitalForm.entityId)?.id ?? null : null,
+      entityShortCode: capitalForm.scope === 'entity'
+        ? entities.find(e => e.id === capitalForm.entityId)?.shortCode ?? null : null,
+      openingBalance: capitalForm.openingBalance, openingBalanceType: 'Cr',
+      capitalType: capitalForm.capitalType,
+      authorisedCapital: capitalForm.authorisedCapital, issuedCapital: capitalForm.issuedCapital,
+      paidUpCapital: capitalForm.paidUpCapital, faceValuePerShare: capitalForm.faceValuePerShare,
+      numberOfShares: capitalForm.numberOfShares,
+      partnerName: capitalForm.partnerName, partnerPAN: capitalForm.partnerPAN,
+      profitSharingRatio: capitalForm.profitSharingRatio, capitalContribution: capitalForm.capitalContribution,
+      proprietorName: capitalForm.proprietorName, proprietorPAN: capitalForm.proprietorPAN,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, capitalForm.openingBalance, 'Cr');
+    toast.success(`${def.name} created`);
+    setCapitalOpen(false);
+    setCapitalForm({ parentGroupCode: 'RSRV', parentGroupName: 'Reserves & Surplus',
+      name: '', mailingName: '', alias: '', openingBalance: 0, openingBalanceType: 'Cr',
+      capitalType: 'general_reserve', authorisedCapital: 0, issuedCapital: 0, paidUpCapital: 0,
+      faceValuePerShare: 10, numberOfShares: 0, partnerName: '', partnerPAN: '',
+      profitSharingRatio: 0, capitalContribution: 0, proprietorName: '', proprietorPAN: '',
+      scope: 'group', entityId: '' });
+    refreshAll();
+  };
+
+  const handleLoanRecSave = () => {
+    if (!loanRecForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genLoanRecCode(all);
+    const numericCode = deriveLedgerNumericCode(loanRecForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'loan_receivable').length + 1);
+    const def: LoanReceivableLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'loan_receivable',
+      name: loanRecForm.name.trim(),
+      mailingName: loanRecForm.mailingName.trim() || loanRecForm.borrowerName.trim() || loanRecForm.name.trim(),
+      numericCode, code, alias: loanRecForm.alias.trim(),
+      parentGroupCode: loanRecForm.parentGroupCode, parentGroupName: loanRecForm.parentGroupName,
+      entityId: loanRecForm.scope === 'entity'
+        ? entities.find(e => e.id === loanRecForm.entityId)?.id ?? null : null,
+      entityShortCode: loanRecForm.scope === 'entity'
+        ? entities.find(e => e.id === loanRecForm.entityId)?.shortCode ?? null : null,
+      openingBalance: 0, openingBalanceType: 'Dr',
+      borrowerName: loanRecForm.borrowerName, borrowerPhone: loanRecForm.borrowerPhone,
+      borrowerEmail: loanRecForm.borrowerEmail, borrowerAddress: loanRecForm.borrowerAddress,
+      borrowerState: loanRecForm.borrowerState, borrowerPincode: loanRecForm.borrowerPincode,
+      borrowerPAN: loanRecForm.borrowerPAN,
+      loanAmount: loanRecForm.loanAmount, interestRate: loanRecForm.interestRate,
+      interestType: loanRecForm.interestType, tenureMonths: loanRecForm.tenureMonths,
+      disbursementDate: loanRecForm.disbursementDate, firstRepaymentDate: loanRecForm.firstRepaymentDate,
+      collateral: loanRecForm.collateral, purpose: loanRecForm.purpose,
+      isTdsApplicable: loanRecForm.isTdsApplicable, tdsSection: loanRecForm.tdsSection,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Dr');
+    toast.success(`${def.name} created`);
+    setLoanRecOpen(false);
+    setLoanRecForm(defaultLoanRecForm);
+    refreshAll();
+  };
+
+  const handleBorrowingSave = () => {
+    if (!borrowingForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genBorrowingCode(all);
+    const numericCode = deriveLedgerNumericCode(borrowingForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'borrowing').length + 1);
+    const emiAmount = calculateEMI(borrowingForm.loanAmount, borrowingForm.interestRate, borrowingForm.tenureMonths);
+    const def: BorrowingLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'borrowing',
+      name: borrowingForm.name.trim(),
+      mailingName: borrowingForm.mailingName.trim() || borrowingForm.lenderName.trim() || borrowingForm.name.trim(),
+      numericCode, code, alias: borrowingForm.alias.trim(),
+      parentGroupCode: borrowingForm.parentGroupCode, parentGroupName: borrowingForm.parentGroupName,
+      entityId: borrowingForm.scope === 'entity'
+        ? entities.find(e => e.id === borrowingForm.entityId)?.id ?? null : null,
+      entityShortCode: borrowingForm.scope === 'entity'
+        ? entities.find(e => e.id === borrowingForm.entityId)?.shortCode ?? null : null,
+      openingBalance: 0, openingBalanceType: 'Cr',
+      lenderName: borrowingForm.lenderName, lenderType: borrowingForm.lenderType,
+      lenderPhone: borrowingForm.lenderPhone, lenderEmail: borrowingForm.lenderEmail,
+      lenderAddress: borrowingForm.lenderAddress,
+      loanAmount: borrowingForm.loanAmount, interestRate: borrowingForm.interestRate,
+      loanType: borrowingForm.loanType, tenureMonths: borrowingForm.tenureMonths,
+      firstEmiDate: borrowingForm.firstEmiDate,
+      loanAccountNo: borrowingForm.loanAccountNo, collateralPledged: borrowingForm.collateralPledged,
+      emiAmount, repaymentScheduleGenerated: !!borrowingForm.firstEmiDate,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    // Generate schedule per entity
+    if (def.firstEmiDate && def.tenureMonths > 0) {
+      const allEntities = loadEntities();
+      allEntities.forEach(entity => {
+        const schedule = generateLoanSchedule(def, entity.id);
+        saveLoanSchedule(schedule);
+      });
+    }
+    toast.success(`${def.name} created`);
+    setBorrowingOpen(false);
+    setBorrowingForm(defaultBorrowingForm);
+    refreshAll();
+  };
+
+  const handleIncomeSave = () => {
+    if (!incomeForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genIncomeCode(all);
+    const numericCode = deriveLedgerNumericCode(incomeForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'income').length + 1);
+    const def: IncomeLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'income',
+      name: incomeForm.name.trim(),
+      mailingName: incomeForm.mailingName.trim() || incomeForm.name.trim(),
+      numericCode, code, alias: incomeForm.alias.trim(),
+      parentGroupCode: incomeForm.parentGroupCode, parentGroupName: incomeForm.parentGroupName,
+      entityId: incomeForm.scope === 'entity'
+        ? entities.find(e => e.id === incomeForm.entityId)?.id ?? null : null,
+      entityShortCode: incomeForm.scope === 'entity'
+        ? entities.find(e => e.id === incomeForm.entityId)?.shortCode ?? null : null,
+      openingBalance: 0, openingBalanceType: 'Cr',
+      isGstApplicable: incomeForm.isGstApplicable,
+      hsnSacCode: incomeForm.hsnSacCode, hsnSacType: incomeForm.hsnSacType,
+      gstRate: incomeForm.gstRate, cgstRate: incomeForm.cgstRate,
+      sgstRate: incomeForm.sgstRate, igstRate: incomeForm.igstRate, cessRate: incomeForm.cessRate,
+      gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
+      isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
+      costCentreApplicable: incomeForm.costCentreApplicable,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    toast.success(`${def.name} created`);
+    setIncomeOpen(false);
+    setIncomeForm(defaultIncomeForm);
+    refreshAll();
+  };
+
+  const handleExpenseSave = () => {
+    if (!expenseForm.name.trim()) return toast.error('Name is required');
+    const all = loadAllDefinitions();
+    const code = genExpenseCode(all);
+    const numericCode = deriveLedgerNumericCode(expenseForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'expense').length + 1);
+    const def: ExpenseLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'expense',
+      name: expenseForm.name.trim(),
+      mailingName: expenseForm.mailingName.trim() || expenseForm.name.trim(),
+      numericCode, code, alias: expenseForm.alias.trim(),
+      parentGroupCode: expenseForm.parentGroupCode, parentGroupName: expenseForm.parentGroupName,
+      entityId: expenseForm.scope === 'entity'
+        ? entities.find(e => e.id === expenseForm.entityId)?.id ?? null : null,
+      entityShortCode: expenseForm.scope === 'entity'
+        ? entities.find(e => e.id === expenseForm.entityId)?.shortCode ?? null : null,
+      openingBalance: 0, openingBalanceType: 'Dr',
+      isGstApplicable: expenseForm.isGstApplicable,
+      hsnSacCode: expenseForm.hsnSacCode, hsnSacType: expenseForm.hsnSacType,
+      gstRate: expenseForm.gstRate, cgstRate: expenseForm.cgstRate,
+      sgstRate: expenseForm.sgstRate, igstRate: expenseForm.igstRate, cessRate: expenseForm.cessRate,
+      gstType: expenseForm.gstType,
+      isItcEligible: expenseForm.isItcEligible,
+      isRcmApplicable: expenseForm.isRcmApplicable,
+      rcmSection: expenseForm.rcmSection,
+      isTdsApplicable: expenseForm.isTdsApplicable, tdsSection: expenseForm.tdsSection,
+      usePurchaseAdditionalExpense: expenseForm.usePurchaseAdditionalExpense,
+      costCentreApplicable: expenseForm.costCentreApplicable,
+      isBudgetHead: expenseForm.isBudgetHead,
+      expenseNature: expenseForm.expenseNature,
+      status: 'active',
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Dr');
+    toast.success(`${def.name} created`);
+    setExpenseOpen(false);
+    setExpenseForm(defaultExpenseForm);
+    refreshAll();
   };
 
   // ── Deactivate ──
@@ -1153,11 +1760,9 @@ export function LedgerMasterPanel() {
       bankLedgerDefinitionId: chequeBookForm.defId,
       entityId: chequeBookForm.entityId,
       bookReference: chequeBookForm.bookReference.trim(),
-      fromLeaf: chequeBookForm.fromLeaf,
-      toLeaf: chequeBookForm.toLeaf,
+      fromLeaf: chequeBookForm.fromLeaf, toLeaf: chequeBookForm.toLeaf,
       issuedDate: chequeBookForm.issuedDate || new Date().toISOString().split('T')[0],
-      currentLeaf: chequeBookForm.fromLeaf,
-      status: 'active',
+      currentLeaf: chequeBookForm.fromLeaf, status: 'active',
     };
     saveChequeBook(book);
     setChequeBooks(loadChequeBooks(book.entityId, book.bankLedgerDefinitionId));
@@ -1177,21 +1782,17 @@ export function LedgerMasterPanel() {
       chequeNumber: chequeIssueForm.chequeNumber,
       bankLedgerDefinitionId: selectedChequeBook.bankLedgerDefinitionId,
       entityId: selectedChequeBook.entityId,
-      payee: chequeIssueForm.payee.trim(),
-      amount: chequeIssueForm.amount,
+      payee: chequeIssueForm.payee.trim(), amount: chequeIssueForm.amount,
       date: chequeIssueForm.date || new Date().toISOString().split('T')[0],
       postDatedDate: chequeIssueForm.isPDC ? chequeIssueForm.postDatedDate : null,
-      isPDC: chequeIssueForm.isPDC,
-      crossingType: chequeIssueForm.crossingType,
-      narration: chequeIssueForm.narration,
-      voucherId: null,
+      isPDC: chequeIssueForm.isPDC, crossingType: chequeIssueForm.crossingType,
+      narration: chequeIssueForm.narration, voucherId: null,
       status: chequeIssueForm.isPDC ? 'post_dated' : 'issued',
       issuedDate: new Date().toISOString().split('T')[0],
       presentedDate: null, clearedDate: null, bounceDate: null,
       bounceReason: '', stopPaymentDate: null,
     };
     saveChequeRecord(rec);
-    // Advance currentLeaf
     const updatedBook = { ...selectedChequeBook, currentLeaf: chequeIssueForm.chequeNumber + 1 };
     if (updatedBook.currentLeaf > updatedBook.toLeaf) updatedBook.status = 'exhausted';
     saveChequeBook(updatedBook);
@@ -1208,15 +1809,12 @@ export function LedgerMasterPanel() {
     if (!nachForm.beneficiary.trim()) { toast.error('Beneficiary required'); return; }
     const m: NachMandate = {
       id: crypto.randomUUID(),
-      bankLedgerDefinitionId: nachForm.defId,
-      entityId: nachForm.entityId,
-      mandateRef: nachForm.mandateRef.trim(),
-      beneficiary: nachForm.beneficiary.trim(),
+      bankLedgerDefinitionId: nachForm.defId, entityId: nachForm.entityId,
+      mandateRef: nachForm.mandateRef.trim(), beneficiary: nachForm.beneficiary.trim(),
       amount: nachForm.amount, amountMin: nachForm.amountMin, amountMax: nachForm.amountMax,
       frequency: nachForm.frequency, debitDay: nachForm.debitDay,
       startDate: nachForm.startDate || new Date().toISOString().split('T')[0],
-      endDate: nachForm.endDate || null,
-      status: 'active', notes: nachForm.notes,
+      endDate: nachForm.endDate || null, status: 'active', notes: nachForm.notes,
     };
     saveNachMandate(m);
     setNachMandates(loadNachMandates(m.entityId, m.bankLedgerDefinitionId));
@@ -1246,23 +1844,58 @@ export function LedgerMasterPanel() {
     setChequeRecords([]);
   };
 
+  // ── Mark Loan Paid ──
+  const handleMarkPaid = () => {
+    if (!markPaidTarget) return;
+    const updated: LoanRepaymentRecord = {
+      ...markPaidTarget,
+      status: 'paid',
+      paidDate: markPaidForm.paidDate || new Date().toISOString().split('T')[0],
+      paidAmount: markPaidForm.paidAmount || markPaidTarget.emiAmount,
+      paymentReference: markPaidForm.paymentReference,
+      narration: markPaidForm.narration,
+    };
+    const key = `erp_entity_${updated.entityId}_loan_schedule_${updated.borrowingLedgerDefinitionId}`;
+    const existing = loadLoanSchedule(updated.entityId, updated.borrowingLedgerDefinitionId);
+    const updatedSchedule = existing.map(r => r.id === updated.id ? updated : r);
+    localStorage.setItem(key, JSON.stringify(updatedSchedule));
+    // [JWT] PUT /api/entity/${updated.entityId}/finecore/loan-schedule
+    setLoanSchedule(updatedSchedule);
+    setMarkPaidOpen(false);
+    setMarkPaidTarget(null);
+    toast.success(`EMI month ${updated.month} marked as paid`);
+  };
+
   // ── FinFrame L4 groups for parent pickers ──
   const l4CashGroups = getFinFrameL4Groups(['CASH']);
   const l4BankGroups = getFinFrameL4Groups(['BANK', 'STBOR']);
+  const l4LiabilityGroups = getFinFrameL4Groups(['LTPROV', 'ONCL', 'OPAY', 'EMPL', 'LEASE', 'BOND']);
+  const l4CapitalGroups = getFinFrameL4Groups(['EQSH', 'PRSH', 'RSRV', 'OCI', 'PCAP', 'BD', 'SUS']);
+  const l4LoanRecGroups = getFinFrameL4Groups(['LTLA', 'STLA']);
+  const l4BorrowingGroups = getFinFrameL4Groups(['LTBOR', 'STBOR', 'BOND']);
+  const l4IncomeGroups = getFinFrameL4Groups(['PCAP', 'SERV', 'EXINC', 'INTINC', 'DIVINC', 'RNTINC', 'GAIN', 'MISC']);
+  const l4ExpenseGroups = getFinFrameL4Groups(['PURCH', 'DEXP', 'EMPB', 'RENT', 'UTIL', 'TRAV', 'PRFEE', 'ADMIN', 'SELL', 'REPAIR', 'INTEXP', 'BKCHG']);
+
+  // L3 groups for parent pickers
+  const liabilityL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTPROV','ONCL','OPAY','EMPL','LEASE','BOND'].includes(g.code));
+  const capitalL3 = L3_FINANCIAL_GROUPS.filter(g => ['EQSH','PRSH','RSRV','OCI','PCAP','BD','SUS'].includes(g.code));
+  const loanRecL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTLA','STLA'].includes(g.code));
+  const borrowingL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTBOR','STBOR','BOND'].includes(g.code));
+  const incomeL3 = L3_FINANCIAL_GROUPS.filter(g => ['PCAP','SERV','EXINC','INTINC','DIVINC','RNTINC','GAIN','MISC'].includes(g.code));
+  const expenseL3 = L3_FINANCIAL_GROUPS.filter(g => ['PURCH','DEXP','EMPB','RENT','UTIL','TRAV','PRFEE','ADMIN','SELL','REPAIR','INTEXP','BKCHG'].includes(g.code));
 
   // Filter instances for Opening Balances tab
-  const allDefIds = new Set([...cashDefs, ...bankDefs].filter(d => !d.entityId).map(d => d.id));
+  const allDefIds = new Set(allDefs.filter(d => !d.entityId).map(d => d.id));
   const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
 
   const getDefForInstance = (inst: EntityLedgerInstance): AnyLedgerDefinition | undefined =>
-    [...cashDefs, ...bankDefs].find(d => d.id === inst.ledgerDefinitionId);
+    allDefs.find(d => d.id === inst.ledgerDefinitionId);
 
   const rows: Record<string, typeof TYPE_BUTTONS> = {};
   TYPE_BUTTONS.forEach(b => { if (!rows[b.row]) rows[b.row] = []; rows[b.row].push(b); });
 
   const suggestedParent = bankForm.accountType ? getSuggestedParent(bankForm.accountType as BankAccountType) : null;
 
-  // PDC helper: get all post-dated cheques across all cheque books for a bank def
   const getAllPDCRecords = (defId: string, entityId: string): ChequeRecord[] => {
     const books = loadChequeBooks(entityId, defId);
     const allRecs: ChequeRecord[] = [];
@@ -1279,6 +1912,88 @@ export function LedgerMasterPanel() {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
+  // ── Shared scope section renderer ──
+  const renderScopeSection = (form: { scope: string; entityId: string }, setForm: React.Dispatch<React.SetStateAction<any>>) => (
+    <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Entity Scope</Label>
+        <div className="flex gap-3">
+          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'group', entityId: '' }))}
+            className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${form.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Group Level</button>
+          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'entity' }))}
+            className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${form.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Entity Specific</button>
+        </div>
+      </div>
+      {form.scope === 'entity' && (
+        <div className="space-y-1.5">
+          <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
+          <Select value={form.entityId} onValueChange={(v) => setForm((f: any) => ({ ...f, entityId: v }))}>
+            <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
+            <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
+          </Select>
+        </div>
+      )}
+    </div>
+  );
+
+  // ── Shared parent group picker ──
+  const renderParentGroupPicker = (
+    value: string, l3Groups: typeof L3_FINANCIAL_GROUPS, l4Groups: typeof l4CashGroups,
+    onChange: (code: string, name: string) => void
+  ) => (
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium">Parent Group <span className="text-destructive">*</span></Label>
+      <Select value={value} onValueChange={(v) => {
+        const l3 = l3Groups.find(g => g.code === v);
+        const l4 = l4Groups.find(g => g.code === v);
+        onChange(v, l3?.name ?? l4?.name ?? v);
+      }}>
+        <SelectTrigger><SelectValue placeholder="Select parent group" /></SelectTrigger>
+        <SelectContent>
+          {l3Groups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
+          {l4Groups.map(g => (<SelectItem key={g.code} value={g.code}>↳ {g.name}</SelectItem>))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  // ── Shared definitions table ──
+  const renderDefTable = (
+    defs: AnyLedgerDefinition[],
+    columns: { label: string; render: (d: AnyLedgerDefinition) => React.ReactNode }[],
+    emptyMsg: string,
+  ) => defs.length === 0 ? (
+    <div className="text-center py-12 text-muted-foreground text-sm">{emptyMsg}</div>
+  ) : (
+    <div className="rounded-xl border border-border overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map(c => <TableHead key={c.label}>{c.label}</TableHead>)}
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {defs.map(def => (
+            <TableRow key={def.id}>
+              {columns.map(c => <TableCell key={c.label}>{c.render(def)}</TableCell>)}
+              <TableCell className="text-right">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
+  // ── EMI preview for borrowing form ──
+  const borrowingEMIPreview = borrowingForm.loanAmount > 0 && borrowingForm.interestRate > 0 && borrowingForm.tenureMonths > 0
+    ? calculateEMI(borrowingForm.loanAmount, borrowingForm.interestRate, borrowingForm.tenureMonths)
+    : 0;
+  const borrowingTotalPayment = borrowingEMIPreview * borrowingForm.tenureMonths;
+  const borrowingTotalInterest = borrowingTotalPayment - borrowingForm.loanAmount;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -1288,6 +2003,7 @@ export function LedgerMasterPanel() {
             <h1 className="text-2xl font-bold text-foreground">Ledger Master</h1>
             <Badge className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Cash</Badge>
             <Badge className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Bank</Badge>
+            <Badge className="text-[10px] bg-purple-500/10 text-purple-600 border-purple-500/20">+6 Types</Badge>
           </div>
           <p className="text-sm text-muted-foreground">Financial accounts for all entities</p>
         </div>
@@ -1320,24 +2036,21 @@ export function LedgerMasterPanel() {
         </button>
         <button onClick={() => handleBankQuickStart({
           bankName: 'HDFC Bank', accountType: 'current', parentGroupCode: 'BANK',
-          parentGroupName: 'Bank Balances', name: 'HDFC Bank — Current A/C',
-          openingBalanceType: 'Dr',
+          parentGroupName: 'Bank Balances', name: 'HDFC Bank — Current A/C', openingBalanceType: 'Dr',
         })}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
           <Plus className="h-4 w-4" /> HDFC Current A/C
         </button>
         <button onClick={() => handleBankQuickStart({
           bankName: 'State Bank of India (SBI)', accountType: 'savings', parentGroupCode: 'BANK',
-          parentGroupName: 'Bank Balances', name: 'SBI — Savings A/C',
-          openingBalanceType: 'Dr',
+          parentGroupName: 'Bank Balances', name: 'SBI — Savings A/C', openingBalanceType: 'Dr',
         })}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
           <Plus className="h-4 w-4" /> SBI Savings A/C
         </button>
         <button onClick={() => handleBankQuickStart({
           accountType: 'cash_credit', parentGroupCode: 'STBOR',
-          parentGroupName: 'Short-Term Borrowings', name: '',
-          openingBalanceType: 'Cr',
+          parentGroupName: 'Short-Term Borrowings', name: '', openingBalanceType: 'Cr',
         })}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-sm font-medium text-amber-600">
           <Plus className="h-4 w-4" /> Cash Credit A/C
@@ -1360,11 +2073,10 @@ export function LedgerMasterPanel() {
                     </span>
                   );
                 }
-                const isCash = btn.label === 'Cash';
                 return (
                   <button key={btn.label}
-                    onClick={() => { if (isCash) openCashCreate(); else openBankCreate(); }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${isCash ? 'bg-teal-500/10 text-teal-600 border border-teal-500/20 hover:bg-teal-500/20' : 'bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20'} transition-colors`}>
+                    onClick={() => handleTypeButtonClick(btn.label)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
                     <Icon className="h-3.5 w-3.5" /> {btn.label}
                   </button>
                 );
@@ -1384,419 +2096,279 @@ export function LedgerMasterPanel() {
         {/* Tab 1 — Definitions */}
         <TabsContent value="definitions">
           <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as any)} className="mb-4">
-            <TabsList className="h-9">
+            <TabsList className="h-9 flex-wrap">
               <TabsTrigger value="cash" className="text-xs gap-1.5">
                 <Wallet className="h-3.5 w-3.5" /> Cash ({cashDefs.length})
               </TabsTrigger>
               <TabsTrigger value="bank" className="text-xs gap-1.5">
                 <Landmark className="h-3.5 w-3.5" /> Bank ({bankDefs.length})
               </TabsTrigger>
+              <TabsTrigger value="capital" className="text-xs gap-1.5">
+                <Scale className="h-3.5 w-3.5" /> Capital ({capitalDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="loans" className="text-xs gap-1.5">
+                <ArrowUpRight className="h-3.5 w-3.5" /> Loans ({loanRecDefs.length + borrowingDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="income" className="text-xs gap-1.5">
+                <TrendingUp className="h-3.5 w-3.5" /> Income ({incomeDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="expenses" className="text-xs gap-1.5">
+                <Receipt className="h-3.5 w-3.5" /> Expenses ({expenseDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="liabilities" className="text-xs gap-1.5">
+                <Shield className="h-3.5 w-3.5" /> Liabilities ({liabilityDefs.length})
+              </TabsTrigger>
             </TabsList>
           </Tabs>
 
           {/* Cash List */}
-          {defSubTab === 'cash' && (
-            cashDefs.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground text-sm">
-                No cash ledgers yet. Click <span className="font-semibold text-teal-600">+ Cash</span> above or use a Quick Start template.
-              </div>
-            ) : (
-              <div className="rounded-xl border border-border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Numeric Code</TableHead>
-                      <TableHead>Parent Group</TableHead>
-                      <TableHead>Scope</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cashDefs.map(def => (
-                      <TableRow key={def.id}>
-                        <TableCell className="font-medium">{def.name}</TableCell>
-                        <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
-                        <TableCell className="text-xs">{def.parentGroupName}</TableCell>
-                        <TableCell>
-                          {def.entityId ? (
-                            <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
-                              {entities.find(e => e.id === def.entityId)?.name ?? def.entityShortCode}
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs">{def.location || '—'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                            {def.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openCashEdit(def)}><Edit2 className="h-3.5 w-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )
-          )}
+          {defSubTab === 'cash' && renderDefTable(cashDefs, [
+            { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+            { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
+            { label: 'Scope', render: d => d.entityId
+              ? <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">{entities.find(e => e.id === d.entityId)?.name ?? d.entityShortCode}</Badge>
+              : <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge> },
+            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+          ], 'No cash ledgers yet. Click + Cash above or use a Quick Start template.')}
 
           {/* Bank List */}
-          {defSubTab === 'bank' && (
-            bankDefs.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground text-sm">
-                No bank ledgers yet. Click <span className="font-semibold text-blue-600">+ Bank</span> above or use a Quick Start template.
+          {defSubTab === 'bank' && renderDefTable(bankDefs, [
+            { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+            { label: 'Bank', render: d => <span className="text-xs">{(d as BankLedgerDefinition).bankName}</span> },
+            { label: 'Account Type', render: d => {
+              const bd = d as BankLedgerDefinition;
+              return <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[bd.accountType]}`}>{ACCOUNT_TYPE_LABELS[bd.accountType]}</Badge>;
+            }},
+            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+          ], 'No bank ledgers yet. Click + Bank above or use a Quick Start template.')}
+
+          {/* Capital List */}
+          {defSubTab === 'capital' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setCapitalOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Capital</Button>
               </div>
-            ) : (
-              <div className="space-y-0">
-                <div className="rounded-xl border border-border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Mailing Name</TableHead>
-                        <TableHead>Numeric Code</TableHead>
-                        <TableHead>Bank · Branch</TableHead>
-                        <TableHead>Account Type</TableHead>
-                        <TableHead>Currency</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {bankDefs.map(def => (
-                        <>
-                          <TableRow key={def.id} className="cursor-pointer" onClick={() => {
-                            if (expandedBankId === def.id) { setExpandedBankId(null); }
-                            else {
-                              setExpandedBankId(def.id);
-                              setBankMgmtTab('definition');
-                              loadBankMgmtData(def, selEntityId || entities[0]?.id || '');
-                            }
-                          }}>
-                            <TableCell className="font-medium">{def.name}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground">{def.mailingName || '—'}</TableCell>
-                            <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="text-xs font-medium">{def.bankName}</p>
-                                {def.branchCity && <p className="text-[10px] text-muted-foreground">{def.branchCity}</p>}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[def.accountType]}`}>
-                                {ACCOUNT_TYPE_LABELS[def.accountType]}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-xs font-mono">{def.currency ?? 'INR'}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
-                                {def.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openBankEdit(def)}><Edit2 className="h-3.5 w-3.5" /></Button>
+              {renderDefTable(capitalDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Capital Type', render: d => <span className="text-xs">{CAPITAL_TYPE_LABELS[(d as CapitalLedgerDefinition).capitalType]}</span> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No capital ledgers yet.')}
+            </div>
+          )}
+
+          {/* Loans List */}
+          {defSubTab === 'loans' && (
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold flex items-center gap-1.5"><ArrowUpRight className="h-4 w-4 text-emerald-600" /> Loan Receivable (Dr)</h3>
+                  <Button size="sm" onClick={() => setLoanRecOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Loan Given</Button>
+                </div>
+                {renderDefTable(loanRecDefs, [
+                  { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                  { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                  { label: 'Borrower', render: d => <span className="text-xs">{(d as LoanReceivableLedgerDefinition).borrowerName || '—'}</span> },
+                  { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                ], 'No loan receivables yet.')}
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold flex items-center gap-1.5"><ArrowDownLeft className="h-4 w-4 text-red-500" /> Borrowings (Cr)</h3>
+                  <Button size="sm" onClick={() => setBorrowingOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Borrowing</Button>
+                </div>
+                {borrowingDefs.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground text-sm">No borrowings yet.</div>
+                ) : (
+                  <div className="rounded-xl border border-border overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Numeric Code</TableHead>
+                          <TableHead>Lender</TableHead>
+                          <TableHead>Loan Type</TableHead>
+                          <TableHead>EMI</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {borrowingDefs.map(def => (
+                          <>
+                            <TableRow key={def.id} className="cursor-pointer" onClick={() => {
+                              if (activeScheduleDefId === def.id) { setActiveScheduleDefId(null); }
+                              else {
+                                setActiveScheduleDefId(def.id);
+                                const eid = selEntityId || entities[0]?.id || '';
+                                setLoanSchedule(loadLoanSchedule(eid, def.id));
+                              }
+                            }}>
+                              <TableCell className="font-medium">{def.name}</TableCell>
+                              <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
+                              <TableCell className="text-xs">{def.lenderName}</TableCell>
+                              <TableCell className="text-xs">{LOAN_TYPE_LABELS[def.loanType]}</TableCell>
+                              <TableCell className="text-xs font-mono">{def.emiAmount ? `₹${def.emiAmount.toLocaleString('en-IN')}` : '—'}</TableCell>
+                              <TableCell><Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{def.status}</Badge></TableCell>
+                              <TableCell className="text-right" onClick={e => e.stopPropagation()}>
                                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                          {expandedBankId === def.id && (
-                            <TableRow key={`${def.id}-expand`}>
-                              <TableCell colSpan={8} className="p-0">
-                                <div className="bg-muted/20 border-t border-border p-4">
-                                  <Tabs value={bankMgmtTab} onValueChange={v => setBankMgmtTab(v as any)}>
-                                    <TabsList className="h-8 mb-3">
-                                      <TabsTrigger value="definition" className="text-xs gap-1"><FileText className="h-3 w-3" /> Definition</TabsTrigger>
-                                      <TabsTrigger value="cheques" className="text-xs gap-1"><BookOpen className="h-3 w-3" /> Cheque Books</TabsTrigger>
-                                      <TabsTrigger value="pdc" className="text-xs gap-1"><AlertTriangle className="h-3 w-3" /> PDC Register</TabsTrigger>
-                                      <TabsTrigger value="nach" className="text-xs gap-1"><Shield className="h-3 w-3" /> NACH Mandates</TabsTrigger>
-                                    </TabsList>
-
-                                    {/* Definition tab */}
-                                    <TabsContent value="definition">
-                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-                                        <div><span className="text-muted-foreground">Bank:</span> <span className="font-medium">{def.bankName}</span></div>
-                                        <div><span className="text-muted-foreground">IFSC:</span> <span className="font-mono">{def.ifscCode}</span></div>
-                                        <div><span className="text-muted-foreground">Account:</span> <span className="font-mono">{maskAccountNo(def.accountNumber)}</span></div>
-                                        <div><span className="text-muted-foreground">Branch:</span> {def.branchName || '—'}</div>
-                                        <div><span className="text-muted-foreground">City:</span> {def.branchCity || '—'}</div>
-                                        <div><span className="text-muted-foreground">State:</span> {def.branchState || '—'}</div>
-                                        {def.bankGstin && <div><span className="text-muted-foreground">Bank GSTIN:</span> <span className="font-mono">{def.bankGstin}</span></div>}
-                                        <div><span className="text-muted-foreground">BRS:</span> {def.brsEnabled ? `Enabled (${def.clearingDays} days)` : 'Disabled'}</div>
-                                        <div><span className="text-muted-foreground">Crossing:</span> {def.defaultCrossing?.replace(/_/g, ' ') ?? 'A/c Payee'}</div>
-                                      </div>
-                                      <Button variant="outline" size="sm" className="mt-3 text-xs" onClick={() => openBankEdit(def)}>Edit Details</Button>
-                                    </TabsContent>
-
-                                    {/* Cheque Books tab */}
-                                    <TabsContent value="cheques">
+                              </TableCell>
+                            </TableRow>
+                            {activeScheduleDefId === def.id && (
+                              <TableRow key={`${def.id}-schedule`}>
+                                <TableCell colSpan={7} className="p-0">
+                                  <div className="bg-muted/20 border-t border-border p-4">
+                                    {loanSchedule.length === 0 ? (
+                                      <p className="text-xs text-muted-foreground text-center py-4">No repayment schedule generated.</p>
+                                    ) : (
                                       <div className="space-y-3">
-                                        {chequeBooks.filter(b => b.status === 'active').map(b => {
-                                          const remaining = b.toLeaf - b.currentLeaf + 1;
-                                          return (
-                                            <div key={b.id}>
-                                              {remaining <= 5 && remaining > 0 && (
-                                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-700 text-xs mb-2">
-                                                  <AlertTriangle className="h-3.5 w-3.5" />
-                                                  Cheque book {b.bookReference} running low — only {remaining} leaves remaining.
-                                                </div>
-                                              )}
-                                            </div>
-                                          );
-                                        })}
-                                        {chequeBooks.length === 0 ? (
-                                          <p className="text-xs text-muted-foreground py-4 text-center">No cheque books. Add one to start issuing cheques.</p>
-                                        ) : (
-                                          <Table>
-                                            <TableHeader>
-                                              <TableRow>
-                                                <TableHead className="text-xs">Book Ref</TableHead>
-                                                <TableHead className="text-xs">Leaves</TableHead>
-                                                <TableHead className="text-xs">Current</TableHead>
-                                                <TableHead className="text-xs">Status</TableHead>
-                                                <TableHead className="text-xs text-right">Actions</TableHead>
-                                              </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                              {chequeBooks.map(b => (
-                                                <TableRow key={b.id}>
-                                                  <TableCell className="text-xs font-medium">{b.bookReference}</TableCell>
-                                                  <TableCell className="text-xs font-mono">{b.fromLeaf}–{b.toLeaf}</TableCell>
-                                                  <TableCell className="text-xs font-mono">{b.status === 'active' ? b.currentLeaf : '—'}</TableCell>
+                                        <div className="flex flex-wrap gap-4 text-xs">
+                                          <span>Total EMIs: <strong>{loanSchedule.length}</strong></span>
+                                          <span>Paid: <strong className="text-emerald-600">{loanSchedule.filter(r => r.status === 'paid').length}</strong></span>
+                                          <span>Outstanding: <strong>₹{loanSchedule.filter(r => r.status !== 'paid').reduce((s, r) => s + r.emiAmount, 0).toLocaleString('en-IN')}</strong></span>
+                                        </div>
+                                        <Table>
+                                          <TableHeader>
+                                            <TableRow>
+                                              <TableHead className="text-xs">Month</TableHead>
+                                              <TableHead className="text-xs">Due Date</TableHead>
+                                              <TableHead className="text-xs">Opening</TableHead>
+                                              <TableHead className="text-xs">EMI</TableHead>
+                                              <TableHead className="text-xs">Principal</TableHead>
+                                              <TableHead className="text-xs">Interest</TableHead>
+                                              <TableHead className="text-xs">Closing</TableHead>
+                                              <TableHead className="text-xs">Status</TableHead>
+                                              <TableHead className="text-xs text-right">Action</TableHead>
+                                            </TableRow>
+                                          </TableHeader>
+                                          <TableBody>
+                                            {loanSchedule.map(rec => {
+                                              const days = getDaysUntil(rec.dueDate);
+                                              const isOverdue = days < 0 && rec.status === 'pending';
+                                              const isDue = days <= 7 && days >= 0 && rec.status === 'pending';
+                                              return (
+                                                <TableRow key={rec.id} className={isOverdue ? 'bg-red-500/5' : isDue ? 'bg-amber-500/5' : ''}>
+                                                  <TableCell className="text-xs font-mono">{rec.month}</TableCell>
+                                                  <TableCell className="text-xs">{rec.dueDate}</TableCell>
+                                                  <TableCell className="text-xs font-mono">₹{rec.openingBalance.toLocaleString('en-IN')}</TableCell>
+                                                  <TableCell className="text-xs font-mono">₹{rec.emiAmount.toLocaleString('en-IN')}</TableCell>
+                                                  <TableCell className="text-xs font-mono">₹{rec.principalComponent.toLocaleString('en-IN')}</TableCell>
+                                                  <TableCell className="text-xs font-mono">₹{rec.interestComponent.toLocaleString('en-IN')}</TableCell>
+                                                  <TableCell className="text-xs font-mono">₹{rec.closingBalance.toLocaleString('en-IN')}</TableCell>
                                                   <TableCell>
-                                                    <Badge variant="outline" className={`text-[9px] ${b.status === 'active' ? 'bg-emerald-500/10 text-emerald-600' : b.status === 'exhausted' ? 'bg-red-500/10 text-red-500' : 'bg-muted/50 text-muted-foreground'}`}>
-                                                      {b.status}
-                                                    </Badge>
+                                                    <Badge variant="outline" className={`text-[9px] ${
+                                                      rec.status === 'paid' ? 'bg-emerald-500/10 text-emerald-600' :
+                                                      isOverdue ? 'bg-red-500/10 text-red-500' :
+                                                      isDue ? 'bg-amber-500/10 text-amber-600' :
+                                                      'bg-muted/50 text-muted-foreground'
+                                                    }`}>{rec.status === 'paid' ? '✅ Paid' : isOverdue ? 'Overdue' : isDue ? `Due in ${days}d` : 'Pending'}</Badge>
                                                   </TableCell>
                                                   <TableCell className="text-right">
-                                                    {b.status === 'active' && (
-                                                      <Button variant="ghost" size="sm" className="h-6 text-[10px]"
-                                                        onClick={() => {
-                                                          setSelectedChequeBook(b);
-                                                          setChequeRecords(loadChequeRecords(b.entityId, b.id));
-                                                        }}>View</Button>
+                                                    {(rec.status === 'pending' || isOverdue) && (
+                                                      <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={() => {
+                                                        setMarkPaidTarget(rec);
+                                                        setMarkPaidForm({ paidAmount: rec.emiAmount, paidDate: '', paymentReference: '', narration: '' });
+                                                        setMarkPaidOpen(true);
+                                                      }}>Mark Paid</Button>
                                                     )}
                                                   </TableCell>
                                                 </TableRow>
-                                              ))}
-                                            </TableBody>
-                                          </Table>
-                                        )}
-                                        <Button variant="outline" size="sm" className="text-xs" onClick={() => {
-                                          const eid = selEntityId || entities[0]?.id || '';
-                                          setChequeBookForm({ bookReference: '', fromLeaf: 0, toLeaf: 0, issuedDate: '', entityId: eid, defId: def.id });
-                                          setChequeBookOpen(true);
-                                        }}>
-                                          <Plus className="h-3 w-3 mr-1" /> Add Cheque Book
-                                        </Button>
-
-                                        {/* Selected cheque book's records */}
-                                        {selectedChequeBook && (
-                                          <div className="mt-4 border-t border-border pt-3">
-                                            <div className="flex items-center justify-between mb-2">
-                                              <p className="text-xs font-medium">Cheques in {selectedChequeBook.bookReference}</p>
-                                              <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => {
-                                                setChequeIssueForm({
-                                                  payee: '', amount: 0, date: '', isPDC: false, postDatedDate: '',
-                                                  crossingType: def.defaultCrossing ?? 'account_payee',
-                                                  narration: '', chequeNumber: selectedChequeBook.currentLeaf,
-                                                });
-                                                setChequeIssueOpen(true);
-                                              }}>
-                                                <Plus className="h-3 w-3 mr-1" /> Issue Cheque
-                                              </Button>
-                                            </div>
-                                            {chequeRecords.length === 0 ? (
-                                              <p className="text-[10px] text-muted-foreground text-center py-3">No cheques issued from this book yet.</p>
-                                            ) : (
-                                              <Table>
-                                                <TableHeader>
-                                                  <TableRow>
-                                                    <TableHead className="text-xs">Cheque #</TableHead>
-                                                    <TableHead className="text-xs">Payee</TableHead>
-                                                    <TableHead className="text-xs">Amount</TableHead>
-                                                    <TableHead className="text-xs">Date</TableHead>
-                                                    <TableHead className="text-xs">Status</TableHead>
-                                                    <TableHead className="text-xs text-right">Actions</TableHead>
-                                                  </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                  {chequeRecords.map(r => (
-                                                    <TableRow key={r.id}>
-                                                      <TableCell className="text-xs font-mono">{r.chequeNumber}</TableCell>
-                                                      <TableCell className="text-xs">{r.payee || '—'}</TableCell>
-                                                      <TableCell className="text-xs font-mono">{r.amount ? `₹${r.amount.toLocaleString('en-IN')}` : '—'}</TableCell>
-                                                      <TableCell className="text-xs">
-                                                        {r.date}{r.isPDC && r.postDatedDate && <span className="text-amber-600 ml-1">(PDC: {r.postDatedDate})</span>}
-                                                      </TableCell>
-                                                      <TableCell>
-                                                        <Badge variant="outline" className={`text-[9px] ${CHEQUE_STATUS_COLORS[r.status]}`}>
-                                                          {CHEQUE_STATUS_LABELS[r.status]}
-                                                        </Badge>
-                                                      </TableCell>
-                                                      <TableCell className="text-right">
-                                                        <div className="flex items-center justify-end gap-1">
-                                                          {(r.status === 'issued' || r.status === 'post_dated' || r.status === 'presented') && (
-                                                            <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => updateChequeStatus(r, 'cleared')}>Clear</Button>
-                                                          )}
-                                                          {(r.status === 'issued' || r.status === 'post_dated' || r.status === 'presented') && (
-                                                            <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5 text-red-500" onClick={() => updateChequeStatus(r, 'bounced')}>Bounce</Button>
-                                                          )}
-                                                          {(r.status === 'issued' || r.status === 'post_dated') && (
-                                                            <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => updateChequeStatus(r, 'stop_payment')}>Stop</Button>
-                                                          )}
-                                                          {(r.status === 'issued' || r.status === 'cleared') && (
-                                                            <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => setChequePrintPreview(r)}>Print</Button>
-                                                          )}
-                                                        </div>
-                                                      </TableCell>
-                                                    </TableRow>
-                                                  ))}
-                                                </TableBody>
-                                              </Table>
-                                            )}
-                                          </div>
-                                        )}
+                                              );
+                                            })}
+                                          </TableBody>
+                                        </Table>
                                       </div>
-                                    </TabsContent>
-
-                                    {/* PDC Register tab */}
-                                    <TabsContent value="pdc">
-                                      {(() => {
-                                        const eid = selEntityId || entities[0]?.id || '';
-                                        const pdcRecs = getAllPDCRecords(def.id, eid);
-                                        return pdcRecs.length === 0 ? (
-                                          <p className="text-xs text-muted-foreground py-4 text-center">No post-dated cheques.</p>
-                                        ) : (
-                                          <Table>
-                                            <TableHeader>
-                                              <TableRow>
-                                                <TableHead className="text-xs">Cheque #</TableHead>
-                                                <TableHead className="text-xs">Payee</TableHead>
-                                                <TableHead className="text-xs">Amount</TableHead>
-                                                <TableHead className="text-xs">Issued Date</TableHead>
-                                                <TableHead className="text-xs">Due Date</TableHead>
-                                                <TableHead className="text-xs">Status</TableHead>
-                                              </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                              {pdcRecs.map(r => {
-                                                const days = getDaysUntil(r.postDatedDate);
-                                                const isUrgent = days <= 7 && days >= 0;
-                                                const isOverdue = days < 0;
-                                                return (
-                                                  <TableRow key={r.id} className={isOverdue ? 'bg-red-500/5' : isUrgent ? 'bg-amber-500/5' : ''}>
-                                                    <TableCell className="text-xs font-mono">{r.chequeNumber}</TableCell>
-                                                    <TableCell className="text-xs">{r.payee}</TableCell>
-                                                    <TableCell className="text-xs font-mono">₹{r.amount.toLocaleString('en-IN')}</TableCell>
-                                                    <TableCell className="text-xs">{r.issuedDate}</TableCell>
-                                                    <TableCell className="text-xs font-medium">{r.postDatedDate}</TableCell>
-                                                    <TableCell>
-                                                      <Badge variant="outline" className={`text-[9px] ${isOverdue ? 'bg-red-500/10 text-red-500' : isUrgent ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'}`}>
-                                                        {isOverdue ? 'Overdue' : isUrgent ? `Due in ${days} day${days !== 1 ? 's' : ''}` : 'Pending'}
-                                                      </Badge>
-                                                    </TableCell>
-                                                  </TableRow>
-                                                );
-                                              })}
-                                            </TableBody>
-                                          </Table>
-                                        );
-                                      })()}
-                                    </TabsContent>
-
-                                    {/* NACH Mandates tab */}
-                                    <TabsContent value="nach">
-                                      <div className="space-y-3">
-                                        {nachMandates.filter(m => m.status === 'active').map(m => {
-                                          const today = new Date();
-                                          const nextDebit = new Date(today.getFullYear(), today.getMonth(), m.debitDay);
-                                          if (nextDebit < today) nextDebit.setMonth(nextDebit.getMonth() + 1);
-                                          const daysUntilDebit = Math.ceil((nextDebit.getTime() - today.getTime()) / (1000*60*60*24));
-                                          return daysUntilDebit <= 7 ? (
-                                            <div key={`alert-${m.id}`} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-700 text-xs">
-                                              <AlertTriangle className="h-3.5 w-3.5" />
-                                              {m.beneficiary} debit on {nextDebit.toLocaleDateString('en-IN')} ({daysUntilDebit} day{daysUntilDebit !== 1 ? 's' : ''})
-                                            </div>
-                                          ) : null;
-                                        })}
-                                        {nachMandates.length === 0 ? (
-                                          <p className="text-xs text-muted-foreground py-4 text-center">No NACH/ECS mandates.</p>
-                                        ) : (
-                                          <Table>
-                                            <TableHeader>
-                                              <TableRow>
-                                                <TableHead className="text-xs">Mandate Ref</TableHead>
-                                                <TableHead className="text-xs">Beneficiary</TableHead>
-                                                <TableHead className="text-xs">Amount</TableHead>
-                                                <TableHead className="text-xs">Frequency</TableHead>
-                                                <TableHead className="text-xs">Debit Day</TableHead>
-                                                <TableHead className="text-xs">Status</TableHead>
-                                              </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                              {nachMandates.map(m => (
-                                                <TableRow key={m.id}>
-                                                  <TableCell className="text-xs font-mono">{m.mandateRef}</TableCell>
-                                                  <TableCell className="text-xs">{m.beneficiary}</TableCell>
-                                                  <TableCell className="text-xs font-mono">{m.amount > 0 ? `₹${m.amount.toLocaleString('en-IN')}` : `₹${m.amountMin.toLocaleString('en-IN')}–${m.amountMax.toLocaleString('en-IN')}`}</TableCell>
-                                                  <TableCell className="text-xs capitalize">{m.frequency}</TableCell>
-                                                  <TableCell className="text-xs">{m.debitDay}</TableCell>
-                                                  <TableCell>
-                                                    <Badge variant="outline" className={`text-[9px] ${m.status === 'active' ? 'bg-emerald-500/10 text-emerald-600' : m.status === 'suspended' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-500'}`}>
-                                                      {m.status}
-                                                    </Badge>
-                                                  </TableCell>
-                                                </TableRow>
-                                              ))}
-                                            </TableBody>
-                                          </Table>
-                                        )}
-                                        <Button variant="outline" size="sm" className="text-xs" onClick={() => {
-                                          const eid = selEntityId || entities[0]?.id || '';
-                                          setNachForm({ mandateRef: '', beneficiary: '', amount: 0, amountMin: 0, amountMax: 0,
-                                            frequency: 'monthly', debitDay: 1, startDate: '', endDate: '', notes: '', entityId: eid, defId: def.id });
-                                          setNachOpen(true);
-                                        }}>
-                                          <Plus className="h-3 w-3 mr-1" /> Add Mandate
-                                        </Button>
-                                      </div>
-                                    </TabsContent>
-                                  </Tabs>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                                    )}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
-            )
+            </div>
+          )}
+
+          {/* Income List */}
+          {defSubTab === 'income' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setIncomeOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Income</Button>
+              </div>
+              {renderDefTable(incomeDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
+                { label: 'GST Rate', render: d => {
+                  const inc = d as IncomeLedgerDefinition;
+                  return inc.isGstApplicable ? <span className="text-xs font-mono">{inc.gstRate}%</span> : <span className="text-xs text-muted-foreground">N/A</span>;
+                }},
+                { label: 'TDS Section', render: d => {
+                  const inc = d as IncomeLedgerDefinition;
+                  return inc.isTdsApplicable ? <span className="text-xs font-mono">{inc.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No income ledgers yet.')}
+            </div>
+          )}
+
+          {/* Expenses List */}
+          {defSubTab === 'expenses' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setExpenseOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Expense</Button>
+              </div>
+              {renderDefTable(expenseDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
+                { label: 'GST Rate', render: d => {
+                  const exp = d as ExpenseLedgerDefinition;
+                  return exp.isGstApplicable ? <span className="text-xs font-mono">{exp.gstRate}%</span> : <span className="text-xs text-muted-foreground">N/A</span>;
+                }},
+                { label: 'RCM', render: d => (d as ExpenseLedgerDefinition).isRcmApplicable
+                  ? <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20">RCM</Badge>
+                  : <span className="text-xs text-muted-foreground">—</span> },
+                { label: 'TDS Section', render: d => {
+                  const exp = d as ExpenseLedgerDefinition;
+                  return exp.isTdsApplicable ? <span className="text-xs font-mono">{exp.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No expense ledgers yet.')}
+            </div>
+          )}
+
+          {/* Liabilities List */}
+          {defSubTab === 'liabilities' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setLiabilityOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Liability</Button>
+              </div>
+              {renderDefTable(liabilityDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No liability ledgers yet.')}
+            </div>
           )}
         </TabsContent>
 
         {/* Tab 2 — Opening Balances */}
         <TabsContent value="opening_balances">
-          <div className="space-y-4">
+          <div className="space-y-4" data-keyboard-form>
             <div className="flex items-center gap-3">
-              <Label className="text-sm font-medium whitespace-nowrap">Entity:</Label>
+              <Label className="text-sm font-medium">Entity:</Label>
               <Select value={selEntityId} onValueChange={setSelEntityId}>
-                <SelectTrigger className="w-[320px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {entities.map(e => (
-                    <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>
-                  ))}
+                  {entities.map(e => <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -1811,9 +2383,8 @@ export function LedgerMasterPanel() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Ledger Name</TableHead>
+                        <TableHead>Type</TableHead>
                         <TableHead>Display Code</TableHead>
-                        <TableHead>Custodian</TableHead>
-                        <TableHead>Signatories</TableHead>
                         <TableHead>Opening Balance (₹)</TableHead>
                         <TableHead>Dr/Cr</TableHead>
                         <TableHead>Active</TableHead>
@@ -1822,49 +2393,12 @@ export function LedgerMasterPanel() {
                     <TableBody>
                       {filteredInstances.map(inst => {
                         const def = getDefForInstance(inst);
-                        const isCash = def?.ledgerType === 'cash';
-                        const isBank = def?.ledgerType === 'bank';
                         const displayCode = `${inst.entityShortCode}/${inst.displayCode}`;
                         return (
                           <TableRow key={inst.id}>
                             <TableCell className="font-medium">{def?.name ?? '—'}</TableCell>
+                            <TableCell><Badge variant="outline" className="text-[9px]">{def?.ledgerType ?? '—'}</Badge></TableCell>
                             <TableCell className="font-mono text-xs">{displayCode}</TableCell>
-                            <TableCell>
-                              {inst.currentCustodian ? (
-                                <div className="space-y-0.5">
-                                  <p className="text-xs font-medium">{inst.currentCustodian.name}</p>
-                                  <p className="text-[10px] text-muted-foreground">{inst.currentCustodian.designation}</p>
-                                  {isCash && (
-                                    <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-teal-600"
-                                      onClick={() => {
-                                        setCustodianTargetInstanceId(inst.id);
-                                        setCustodianHistory(loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId));
-                                        setCustodianOpen(true);
-                                      }}>Transfer</Button>
-                                  )}
-                                </div>
-                              ) : (
-                                isCash ? (
-                                  <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-teal-600"
-                                    onClick={() => {
-                                      setCustodianTargetInstanceId(inst.id);
-                                      setCustodianHistory(loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId));
-                                      setCustodianOpen(true);
-                                    }}>Assign</Button>
-                                ) : <span className="text-xs text-muted-foreground">N/A</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {isBank ? (
-                                <div className="space-y-0.5">
-                                  <p className="text-xs">{inst.signatories?.length ?? 0} signator{(inst.signatories?.length ?? 0) !== 1 ? 'ies' : 'y'}</p>
-                                  <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-blue-600"
-                                    onClick={() => { setSignatoryTargetInstanceId(inst.id); setSignatoryOpen(true); }}>
-                                    Manage
-                                  </Button>
-                                </div>
-                              ) : <span className="text-xs text-muted-foreground">—</span>}
-                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1">
                                 <span className="text-muted-foreground text-sm">₹</span>
@@ -1877,16 +2411,12 @@ export function LedgerMasterPanel() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              {isCash ? (
-                                <Badge variant="outline" className="text-[10px] bg-muted/50 text-muted-foreground border-border">Dr</Badge>
-                              ) : (
-                                <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                                  <button type="button" onClick={() => setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, openingBalanceType: 'Dr' } : i))}
-                                    className={`px-2 py-1 transition-colors ${inst.openingBalanceType === 'Dr' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Dr</button>
-                                  <button type="button" onClick={() => setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, openingBalanceType: 'Cr' } : i))}
-                                    className={`px-2 py-1 transition-colors ${inst.openingBalanceType === 'Cr' ? 'bg-amber-500/15 text-amber-700' : 'text-muted-foreground'}`}>Cr</button>
-                                </div>
-                              )}
+                              <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
+                                <button type="button" onClick={() => setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, openingBalanceType: 'Dr' } : i))}
+                                  className={`px-2 py-1 transition-colors ${inst.openingBalanceType === 'Dr' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Dr</button>
+                                <button type="button" onClick={() => setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, openingBalanceType: 'Cr' } : i))}
+                                  className={`px-2 py-1 transition-colors ${inst.openingBalanceType === 'Cr' ? 'bg-amber-500/15 text-amber-700' : 'text-muted-foreground'}`}>Cr</button>
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Switch checked={inst.isActive}
@@ -1912,47 +2442,23 @@ export function LedgerMasterPanel() {
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{cashEditTarget ? 'Edit Cash Ledger' : 'Create Cash Ledger'}</DialogTitle>
-            <DialogDescription>
-              {cashEditTarget ? 'Update ledger definition details.' : 'Define a new cash ledger for your group or a specific entity.'}
-            </DialogDescription>
+            <DialogDescription>{cashEditTarget ? 'Update ledger definition details.' : 'Define a new cash ledger.'}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Parent Group <span className="text-destructive">*</span></Label>
-              <Select value={cashForm.parentGroupCode} onValueChange={(v) => {
-                if (v === 'CASH') setCashForm(f => ({ ...f, parentGroupCode: 'CASH', parentGroupName: 'Cash & Cash Equivalents' }));
-                else { const l4 = l4CashGroups.find(g => g.code === v); setCashForm(f => ({ ...f, parentGroupCode: v, parentGroupName: l4?.name ?? v })); }
-              }}>
-                <SelectTrigger><SelectValue placeholder="Select parent group" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CASH"><span className="flex items-center gap-1.5"><Lock className="h-3 w-3 text-muted-foreground" />Cash & Cash Equivalents</span></SelectItem>
-                  {l4CashGroups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
-                </SelectContent>
-              </Select>
-            </div>
+            {renderParentGroupPicker(cashForm.parentGroupCode, L3_FINANCIAL_GROUPS.filter(g => g.code === 'CASH'), l4CashGroups,
+              (code, name) => setCashForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
-              <Input placeholder="e.g., Main Cash, Petty Cash — Delhi" value={cashForm.name}
-                onKeyDown={onEnterNext}
+              <Input placeholder="e.g., Main Cash" value={cashForm.name} onKeyDown={onEnterNext}
                 onChange={(e) => setCashForm(f => ({
-                  ...f,
-                  name: e.target.value,
+                  ...f, name: e.target.value,
                   mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
-                }))} disabled={!cashForm.parentGroupCode} />
+                }))} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Mailing Name</Label>
-              <Input placeholder="e.g., 4DSmartOps Private Limited" value={cashForm.mailingName}
-                onKeyDown={onEnterNext}
-                onChange={(e) => setCashForm(f => ({ ...f, mailingName: e.target.value }))}
-                disabled={!cashForm.parentGroupCode} />
-              <p className="text-[10px] text-muted-foreground">Appears on cash receipts and payment documents. Auto-copied from Ledger Name.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Alias</Label>
-              <Input placeholder="e.g., MCash, PettyCash-DEL" value={cashForm.alias}
-                onKeyDown={onEnterNext}
-                onChange={(e) => setCashForm(f => ({ ...f, alias: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+              <Input value={cashForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setCashForm(f => ({ ...f, mailingName: e.target.value }))} />
             </div>
             {!cashEditTarget && (
               <div className="space-y-1.5">
@@ -1961,43 +2467,7 @@ export function LedgerMasterPanel() {
                   <span className="text-muted-foreground text-sm">₹</span>
                   <Input {...amountInputProps} className="flex-1" value={cashForm.openingBalance || ''} placeholder="0"
                     onChange={(e) => setCashForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))}
-                    onKeyDown={onEnterNext} disabled={!cashForm.parentGroupCode} />
-                  <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                    <button type="button" onClick={() => setCashForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
-                      className={`px-3 py-1.5 transition-colors ${cashForm.openingBalanceType === 'Dr' ? 'bg-teal-500/15 text-teal-700 border-r border-input' : 'text-muted-foreground hover:bg-muted/40 border-r border-input'}`}
-                      disabled={!cashForm.parentGroupCode}>Dr</button>
-                    <button type="button" onClick={() => setCashForm(f => ({ ...f, openingBalanceType: 'Cr' }))}
-                      className={`px-3 py-1.5 transition-colors ${cashForm.openingBalanceType === 'Cr' ? 'bg-amber-500/15 text-amber-700' : 'text-muted-foreground hover:bg-muted/40'}`}
-                      disabled={!cashForm.parentGroupCode}>Cr</button>
-                  </div>
-                </div>
-              </div>
-            )}
-            <button type="button" onClick={() => setCashShowMore(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{cashShowMore ? '−' : '+'}</span><span>{cashShowMore ? 'Hide details' : 'More Details'}</span>
-            </button>
-            {cashShowMore && (
-              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Location</Label>
-                  <Input placeholder="e.g., HO Cashbox" value={cashForm.location} onKeyDown={onEnterNext}
-                    onChange={(e) => setCashForm(f => ({ ...f, location: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Cash Limit (₹)</Label>
-                  <Input {...amountInputProps} value={cashForm.cashLimit || ''} placeholder="0" onKeyDown={onEnterNext}
-                    onChange={(e) => setCashForm(f => ({ ...f, cashLimit: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Cash Receipt Series</Label>
-                  <Input placeholder="CR" value={cashForm.voucherSeries} maxLength={4} onKeyDown={onEnterNext}
-                    onChange={(e) => setCashForm(f => ({ ...f, voucherSeries: e.target.value.toUpperCase().slice(0, 4) }))} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" checked={cashForm.isMainCash}
-                    onChange={(e) => setCashForm(f => ({ ...f, isMainCash: e.target.checked }))} className="h-4 w-4" />
-                  <Label className="text-sm">Set as primary cash account</Label>
+                    onKeyDown={onEnterNext} />
                 </div>
               </div>
             )}
@@ -2007,34 +2477,13 @@ export function LedgerMasterPanel() {
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                   ⚙ <span>{cashShowAdvanced ? 'Hide advanced' : 'Advanced options'}</span>
                 </button>
-                {cashShowAdvanced && (
-                  <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Entity Scope</Label>
-                      <div className="flex gap-3">
-                        <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'group', entityId: '' }))}
-                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Group Level</button>
-                        <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'entity' }))}
-                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Entity Specific</button>
-                      </div>
-                    </div>
-                    {cashForm.scope === 'entity' && (
-                      <div className="space-y-1.5">
-                        <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
-                        <Select value={cashForm.entityId} onValueChange={(v) => setCashForm(f => ({ ...f, entityId: v }))}>
-                          <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
-                          <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {cashShowAdvanced && renderScopeSection(cashForm, setCashForm)}
               </>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setCashCreateOpen(false); setCashEditTarget(null); }}>Cancel</Button>
-            <Button data-primary onClick={handleCashSave} disabled={!cashForm.parentGroupCode}>{cashEditTarget ? 'Update' : 'Create'}</Button>
+            <Button data-primary onClick={handleCashSave}>{cashEditTarget ? 'Update' : 'Create'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2044,17 +2493,13 @@ export function LedgerMasterPanel() {
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{bankEditTarget ? 'Edit Bank Ledger' : 'Create Bank Ledger'}</DialogTitle>
-            <DialogDescription>
-              {bankEditTarget ? 'Update bank ledger definition.' : 'Define a new bank account ledger.'}
-            </DialogDescription>
+            <DialogDescription>{bankEditTarget ? 'Update bank ledger definition.' : 'Define a new bank account ledger.'}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
-            {/* ESSENTIAL — Field 1: IFSC */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">IFSC Code <span className="text-destructive">*</span></Label>
               <div className="relative">
-                <Input placeholder="e.g., HDFC0001234" value={bankForm.ifscCode} maxLength={11}
-                  onKeyDown={onEnterNext}
+                <Input placeholder="e.g., HDFC0001234" value={bankForm.ifscCode} maxLength={11} onKeyDown={onEnterNext}
                   className={ifscValid === false ? 'border-destructive' : ifscValid === true ? 'border-emerald-500' : ''}
                   onChange={(e) => {
                     const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -2065,38 +2510,21 @@ export function LedgerMasterPanel() {
                 {ifscFetching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />}
                 {ifscValid === true && !ifscFetching && <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />}
               </div>
-              {bankForm.ifscAutoFilled && (
-                <p className="text-[10px] text-emerald-600">✓ {bankForm.branchName}, {bankForm.branchCity} — branch details auto-filled</p>
-              )}
-              {ifscFetchError && <p className="text-[10px] text-amber-600">{ifscFetchError}</p>}
             </div>
-
-            {/* ESSENTIAL — Field 2: Ledger Name */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
-              <Input placeholder="e.g., HDFC Bank — Current A/C" value={bankForm.name}
-                onKeyDown={onEnterNext}
+              <Input placeholder="e.g., HDFC Bank — Current A/c" value={bankForm.name} onKeyDown={onEnterNext}
                 onChange={(e) => setBankForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Mailing Name</Label>
-              <Input placeholder="e.g., HDFC Bank Limited" value={bankForm.mailingName}
-                onKeyDown={onEnterNext}
-                onChange={(e) => setBankForm(f => ({ ...f, mailingName: e.target.value }))} />
-              <p className="text-[10px] text-muted-foreground">Printed on NEFT/RTGS letters, deposit slips and bank correspondence. Auto-filled from IFSC.</p>
-            </div>
-
-            {/* ESSENTIAL — Field 3: Account Type */}
-            <div className="space-y-1.5">
               <Label className="text-sm font-medium">Account Type <span className="text-destructive">*</span></Label>
-              <Select value={bankForm.accountType} onValueChange={(v: string) => {
-                const at = v as BankAccountType;
-                const nature = getDefaultNature(at);
-                const parent = getSuggestedParent(at);
+              <Select value={bankForm.accountType} onValueChange={(v) => {
+                const acType = v as BankAccountType;
+                const suggested = getSuggestedParent(acType);
                 setBankForm(f => ({
-                  ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name,
-                  name: (!f.name || f.name === suggestBankLedgerName(f.bankName, f.accountType, f.accountNumber))
-                    ? suggestBankLedgerName(f.bankName, at, f.accountNumber) : f.name,
+                  ...f, accountType: acType,
+                  parentGroupCode: suggested.code, parentGroupName: suggested.name,
+                  openingBalanceType: getDefaultNature(acType),
                 }));
               }}>
                 <SelectTrigger><SelectValue placeholder="Select account type" /></SelectTrigger>
@@ -2107,15 +2535,12 @@ export function LedgerMasterPanel() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* ESSENTIAL — Field 4: Opening Balance */}
             {!bankEditTarget && (
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Opening Balance</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm">₹</span>
-                  <Input {...amountInputProps} className="flex-1" value={bankForm.openingBalance || ''} placeholder="0"
-                    onKeyDown={onEnterNext}
+                  <Input {...amountInputProps} className="flex-1" value={bankForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
                     onChange={(e) => setBankForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
                   <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
                     <button type="button" onClick={() => setBankForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
@@ -2126,270 +2551,506 @@ export function LedgerMasterPanel() {
                 </div>
               </div>
             )}
-
-            {/* + More Details */}
-            <button type="button" onClick={() => setBankShowMore(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{bankShowMore ? '−' : '+'}</span><span>{bankShowMore ? 'Hide details' : 'More Details'}</span>
-            </button>
-            {bankShowMore && (
-              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Account Number</Label>
-                  <Input placeholder="Enter account number" onKeyDown={onEnterNext}
-                    value={bankEditTarget ? maskAccountNo(bankForm.accountNumber) : bankForm.accountNumber}
-                    onChange={(e) => { if (bankEditTarget) return; setBankForm(f => ({ ...f, accountNumber: e.target.value.replace(/\D/g, '') })); }}
-                    readOnly={!!bankEditTarget} />
-                  {bankForm.accountNumber && !bankEditTarget && <p className="text-[10px] text-muted-foreground">Displayed as: {maskAccountNo(bankForm.accountNumber)}</p>}
-                </div>
-                {(bankForm.accountType === 'cash_credit' || bankForm.accountType === 'overdraft') && (
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium">OD / CC Limit</Label>
-                    <div className="flex items-center gap-1">
-                      <span className="text-muted-foreground text-sm">₹</span>
-                      <Input {...amountInputProps} value={bankForm.odLimit || ''} onKeyDown={onEnterNext}
-                        onChange={(e) => setBankForm(f => ({ ...f, odLimit: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
-                    </div>
-                  </div>
-                )}
-                {bankForm.accountType === 'eefc' && (
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium">Currency</Label>
-                    <Select value={bankForm.currency} onValueChange={(v: any) => setBankForm(f => ({ ...f, currency: v }))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {['INR','USD','EUR','GBP','AED'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Alias</Label>
-                  <Input placeholder="e.g., HDFC-CC" value={bankForm.alias} onKeyDown={onEnterNext}
-                    onChange={(e) => setBankForm(f => ({ ...f, alias: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Bank Name</Label>
-                  <Select value={bankForm.bankName} onValueChange={(v) => setBankForm(f => ({ ...f, bankName: v, bankNameOther: v === 'Other' ? f.bankNameOther : '' }))}>
-                    <SelectTrigger><SelectValue placeholder="Select bank" /></SelectTrigger>
-                    <SelectContent>{INDIAN_BANKS.map(b => (<SelectItem key={b} value={b}>{b}</SelectItem>))}</SelectContent>
-                  </Select>
-                  {bankForm.bankName === 'Other' && (
-                    <Input placeholder="Enter bank name" value={bankForm.bankNameOther} className="mt-1.5" onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, bankNameOther: e.target.value }))} />
-                  )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Parent Group</Label>
-                  <Select value={bankForm.parentGroupCode} onValueChange={(v) => {
-                    if (v === 'BANK') setBankForm(f => ({ ...f, parentGroupCode: 'BANK', parentGroupName: 'Bank Balances' }));
-                    else if (v === 'STBOR') setBankForm(f => ({ ...f, parentGroupCode: 'STBOR', parentGroupName: 'Short-Term Borrowings' }));
-                    else { const l4 = l4BankGroups.find(g => g.code === v); setBankForm(f => ({ ...f, parentGroupCode: v, parentGroupName: l4?.name ?? v })); }
-                  }}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BANK">Bank Balances {suggestedParent?.code === 'BANK' && '(Suggested)'}</SelectItem>
-                      <SelectItem value="STBOR">Short-Term Borrowings {suggestedParent?.code === 'STBOR' && '(Suggested)'}</SelectItem>
-                      {l4BankGroups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">A/c Holder's Name</Label>
-                  <Input placeholder="e.g., Acme India Pvt Ltd" value={bankForm.acHolderName} onKeyDown={onEnterNext}
-                    onChange={(e) => setBankForm(f => ({ ...f, acHolderName: e.target.value }))} />
-                  <p className="text-[10px] text-muted-foreground">Your company as registered with the bank. Appears on bank forms and cheques.</p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Bank Manager (Optional)</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input placeholder="Name" value={bankForm.bankManagerName} onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerName: e.target.value }))} />
-                    <Input placeholder="Phone" value={bankForm.bankManagerPhone} onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerPhone: e.target.value }))} />
-                  </div>
-                  <Input placeholder="Email" value={bankForm.bankManagerEmail} onKeyDown={onEnterNext}
-                    onChange={(e) => setBankForm(f => ({ ...f, bankManagerEmail: e.target.value }))} />
-                </div>
-              </div>
-            )}
-
-            {/* + Branch Details */}
-            <button type="button" onClick={() => setBankShowBranch(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{bankShowBranch ? '−' : '+'}</span><span>{bankShowBranch ? 'Hide branch details' : 'Branch Details'}</span>
-              {bankForm.ifscAutoFilled && <span className="text-emerald-600 text-[10px]">(auto-filled)</span>}
-            </button>
-            {bankShowBranch && (
-              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                {bankForm.ifscAutoFilled && (
-                  <p className="text-[10px] text-emerald-600 mb-1">✓ Auto-filled from IFSC lookup. Edit if needed.</p>
-                )}
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Branch Name</Label>
-                  <Input value={bankForm.branchName} onKeyDown={onEnterNext}
-                    onChange={(e) => setBankForm(f => ({ ...f, branchName: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Branch Address</Label>
-                  <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" rows={2}
-                    value={bankForm.branchAddress} onChange={(e) => setBankForm(f => ({ ...f, branchAddress: e.target.value }))} />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="space-y-1"><Label className="text-xs">City</Label>
-                    <Input value={bankForm.branchCity} className="h-8 text-xs" onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, branchCity: e.target.value }))} /></div>
-                  <div className="space-y-1"><Label className="text-xs">State</Label>
-                    <Input value={bankForm.branchState} className="h-8 text-xs" onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, branchState: e.target.value }))} /></div>
-                  <div className="space-y-1"><Label className="text-xs">Pincode</Label>
-                    <Input value={bankForm.branchPincode} className="h-8 text-xs" maxLength={6} onKeyDown={onEnterNext}
-                      onChange={(e) => setBankForm(f => ({ ...f, branchPincode: e.target.value.replace(/\D/g, '').slice(0, 6) }))} /></div>
-                </div>
-                {bankForm.bankPhone && (
-                  <div className="space-y-1">
-                    <Label className="text-xs">Branch Phone</Label>
-                    <p className="text-xs font-mono text-foreground">{bankForm.bankPhone}</p>
-                  </div>
-                )}
-                {bankForm.ifscAutoFilled && (
-                  <div className="space-y-1">
-                    <Label className="text-xs">Supports</Label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {bankForm.neftEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">NEFT</Badge>}
-                      {bankForm.rtgsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">RTGS</Badge>}
-                      {bankForm.impsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">IMPS</Badge>}
-                      {bankForm.upiEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">UPI</Badge>}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* + GST Details */}
-            <button type="button" onClick={() => setBankShowGst(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{bankShowGst ? '−' : '+'}</span><span>{bankShowGst ? 'Hide GST details' : 'GST Details'}</span>
-            </button>
-            {bankShowGst && (
-              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Bank GSTIN</Label>
-                  <Input placeholder="e.g., 33AAACH2222Q1Z5" value={bankForm.bankGstin} maxLength={15} onKeyDown={onEnterNext}
-                    onChange={(e) => {
-                      const v = e.target.value.toUpperCase();
-                      const stateCode = v.length >= 2 ? v.slice(0, 2) : '';
-                      setBankForm(f => ({ ...f, bankGstin: v, bankStateCode: stateCode }));
-                    }} />
-                  {bankForm.bankStateCode && (
-                    <p className="text-[10px] text-muted-foreground">State code: {bankForm.bankStateCode} (auto from GSTIN)</p>
-                  )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">GST on Bank Charges</Label>
-                  <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, gstOnCharges: true }))}
-                      className={`flex-1 px-3 py-1.5 transition-colors ${bankForm.gstOnCharges ? 'bg-emerald-500/15 text-emerald-700' : 'text-muted-foreground'}`}>Yes — ITC claimable</button>
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, gstOnCharges: false }))}
-                      className={`flex-1 px-3 py-1.5 transition-colors ${!bankForm.gstOnCharges ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}>No</button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* + Cheque & BRS Setup */}
-            <button type="button" onClick={() => setBankShowCheque(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <span>{bankShowCheque ? '−' : '+'}</span><span>{bankShowCheque ? 'Hide cheque & BRS' : 'Cheque & BRS Setup'}</span>
-            </button>
-            {bankShowCheque && (
-              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Cheque Format</Label>
-                  <Select value={bankForm.chequeFormat} onValueChange={(v: any) => setBankForm(f => ({ ...f, chequeFormat: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HDFC_CTS">HDFC CTS</SelectItem>
-                      <SelectItem value="SBI_CTS">SBI CTS</SelectItem>
-                      <SelectItem value="ICICI_CTS">ICICI CTS</SelectItem>
-                      <SelectItem value="AXIS_CTS">Axis CTS</SelectItem>
-                      <SelectItem value="GENERIC_CTS">Generic CTS</SelectItem>
-                      <SelectItem value="CUSTOM">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Cheque Print Size</Label>
-                  <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, chequeSize: 'A4' }))}
-                      className={`flex-1 px-3 py-1.5 transition-colors ${bankForm.chequeSize === 'A4' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>A4 (phantom)</button>
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, chequeSize: 'LEAF' }))}
-                      className={`flex-1 px-3 py-1.5 transition-colors ${bankForm.chequeSize === 'LEAF' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Actual Leaf</button>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Default Crossing</Label>
-                  <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, defaultCrossing: 'account_payee' }))}
-                      className={`flex-1 px-2 py-1.5 transition-colors ${bankForm.defaultCrossing === 'account_payee' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>A/c Payee</button>
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, defaultCrossing: 'not_negotiable' }))}
-                      className={`flex-1 px-2 py-1.5 transition-colors ${bankForm.defaultCrossing === 'not_negotiable' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Not Negotiable</button>
-                    <button type="button" onClick={() => setBankForm(f => ({ ...f, defaultCrossing: 'none' }))}
-                      className={`flex-1 px-2 py-1.5 transition-colors ${bankForm.defaultCrossing === 'none' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>None</button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">BRS Enabled</Label>
-                  <Switch checked={bankForm.brsEnabled} onCheckedChange={(v) => setBankForm(f => ({ ...f, brsEnabled: v }))} />
-                </div>
-                {bankForm.brsEnabled && (
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1"><Label className="text-xs">Clearing Days</Label>
-                      <Input {...amountInputProps} value={bankForm.clearingDays} className="h-8 text-xs" onKeyDown={onEnterNext}
-                        onChange={(e) => setBankForm(f => ({ ...f, clearingDays: parseInt(e.target.value) || 2 }))} /></div>
-                    <div className="space-y-1"><Label className="text-xs">NEFT Cutoff</Label>
-                      <Input placeholder="14:30" value={bankForm.cutoffTime} className="h-8 text-xs" onKeyDown={onEnterNext}
-                        onChange={(e) => setBankForm(f => ({ ...f, cutoffTime: e.target.value }))} /></div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ⚙ Advanced */}
             {!bankEditTarget && (
               <>
                 <button type="button" onClick={() => setBankShowAdvanced(v => !v)}
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                   ⚙ <span>{bankShowAdvanced ? 'Hide advanced' : 'Advanced options'}</span>
                 </button>
-                {bankShowAdvanced && (
-                  <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Entity Scope</Label>
-                      <div className="flex gap-3">
-                        <button type="button" onClick={() => setBankForm(f => ({ ...f, scope: 'group', entityId: '' }))}
-                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${bankForm.scope === 'group' ? 'bg-blue-500/10 text-blue-600 border-blue-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Group Level</button>
-                        <button type="button" onClick={() => setBankForm(f => ({ ...f, scope: 'entity' }))}
-                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${bankForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Entity Specific</button>
-                      </div>
-                    </div>
-                    {bankForm.scope === 'entity' && (
-                      <div className="space-y-1.5">
-                        <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
-                        <Select value={bankForm.entityId} onValueChange={(v) => setBankForm(f => ({ ...f, entityId: v }))}>
-                          <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
-                          <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {bankShowAdvanced && renderScopeSection(bankForm, setBankForm)}
               </>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setBankCreateOpen(false); setBankEditTarget(null); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setBankCreateOpen(false); setBankEditTarget(null); setIfscValid(null); setShowAccountPreview(false); }}>Cancel</Button>
             <Button data-primary onClick={handleBankSave}>{bankEditTarget ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Liability Dialog ─── */}
+      <Dialog open={liabilityOpen} onOpenChange={(open) => { if (!open) setLiabilityOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Liability Ledger</DialogTitle>
+            <DialogDescription>Define a liability account (Cr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(liabilityForm.parentGroupCode, liabilityL3, l4LiabilityGroups,
+              (code, name) => setLiabilityForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Audit Fee Payable" value={liabilityForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setLiabilityForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={liabilityForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setLiabilityForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Opening Balance</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground text-sm">₹</span>
+                <Input {...amountInputProps} className="flex-1" value={liabilityForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
+                  onChange={(e) => setLiabilityForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
+                  <button type="button" onClick={() => setLiabilityForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
+                    className={`px-3 py-1.5 transition-colors ${liabilityForm.openingBalanceType === 'Dr' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Dr</button>
+                  <button type="button" onClick={() => setLiabilityForm(f => ({ ...f, openingBalanceType: 'Cr' }))}
+                    className={`px-3 py-1.5 transition-colors ${liabilityForm.openingBalanceType === 'Cr' ? 'bg-amber-500/15 text-amber-700' : 'text-muted-foreground'}`}>Cr</button>
+                </div>
+              </div>
+            </div>
+            <button type="button" onClick={() => setLiabilityForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' }))}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              ⚙ Advanced
+            </button>
+            {liabilityForm.scope === 'entity' && renderScopeSection(liabilityForm, setLiabilityForm)}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLiabilityOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleLiabilitySave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Capital Dialog ─── */}
+      <Dialog open={capitalOpen} onOpenChange={(open) => { if (!open) setCapitalOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Capital / Equity Ledger</DialogTitle>
+            <DialogDescription>Define a capital account (Cr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(capitalForm.parentGroupCode, capitalL3, l4CapitalGroups,
+              (code, name) => setCapitalForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Capital Type</Label>
+              <Select value={capitalForm.capitalType} onValueChange={(v) => setCapitalForm(f => ({ ...f, capitalType: v as CapitalType }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.entries(CAPITAL_TYPE_LABELS)).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Equity Share Capital" value={capitalForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setCapitalForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={capitalForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setCapitalForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+            {(capitalForm.capitalType === 'share_capital_equity' || capitalForm.capitalType === 'share_capital_preference') && (
+              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                <p className="text-xs font-medium">Capital Details</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1"><Label className="text-xs">Authorised Capital</Label>
+                    <Input {...amountInputProps} value={capitalForm.authorisedCapital || ''} onKeyDown={onEnterNext}
+                      onChange={(e) => setCapitalForm(f => ({ ...f, authorisedCapital: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                  <div className="space-y-1"><Label className="text-xs">Issued Capital</Label>
+                    <Input {...amountInputProps} value={capitalForm.issuedCapital || ''} onKeyDown={onEnterNext}
+                      onChange={(e) => setCapitalForm(f => ({ ...f, issuedCapital: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                  <div className="space-y-1"><Label className="text-xs">Paid-Up Capital</Label>
+                    <Input {...amountInputProps} value={capitalForm.paidUpCapital || ''} onKeyDown={onEnterNext}
+                      onChange={(e) => setCapitalForm(f => ({ ...f, paidUpCapital: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                  <div className="space-y-1"><Label className="text-xs">Face Value/Share</Label>
+                    <Input {...amountInputProps} value={capitalForm.faceValuePerShare || ''} onKeyDown={onEnterNext}
+                      onChange={(e) => setCapitalForm(f => ({ ...f, faceValuePerShare: parseFloat(e.target.value.replace(/,/g, '')) || 10 }))} /></div>
+                </div>
+              </div>
+            )}
+            {capitalForm.capitalType === 'partners_capital' && (
+              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                <p className="text-xs font-medium">Partner Details</p>
+                <Input placeholder="Partner Name" value={capitalForm.partnerName} onKeyDown={onEnterNext}
+                  onChange={(e) => setCapitalForm(f => ({ ...f, partnerName: e.target.value, mailingName: e.target.value }))} />
+                <Input placeholder="Partner PAN" value={capitalForm.partnerPAN} maxLength={10} onKeyDown={onEnterNext}
+                  onChange={(e) => setCapitalForm(f => ({ ...f, partnerPAN: e.target.value.toUpperCase() }))} />
+                <Input {...amountInputProps} placeholder="Profit Sharing Ratio %" value={capitalForm.profitSharingRatio || ''} onKeyDown={onEnterNext}
+                  onChange={(e) => setCapitalForm(f => ({ ...f, profitSharingRatio: parseFloat(e.target.value) || 0 }))} />
+              </div>
+            )}
+            {capitalForm.capitalType === 'proprietor_capital' && (
+              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                <p className="text-xs font-medium">Proprietor Details</p>
+                <Input placeholder="Proprietor Name" value={capitalForm.proprietorName} onKeyDown={onEnterNext}
+                  onChange={(e) => setCapitalForm(f => ({ ...f, proprietorName: e.target.value, mailingName: e.target.value }))} />
+                <Input placeholder="Proprietor PAN" value={capitalForm.proprietorPAN} maxLength={10} onKeyDown={onEnterNext}
+                  onChange={(e) => setCapitalForm(f => ({ ...f, proprietorPAN: e.target.value.toUpperCase() }))} />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCapitalOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleCapitalSave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Loan Receivable Dialog ─── */}
+      <Dialog open={loanRecOpen} onOpenChange={(open) => { if (!open) setLoanRecOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Loan Receivable</DialogTitle>
+            <DialogDescription>Define a loan given (Dr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(loanRecForm.parentGroupCode, loanRecL3, l4LoanRecGroups,
+              (code, name) => setLoanRecForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Loan to ABC Ltd" value={loanRecForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setLoanRecForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Borrower Name</Label>
+              <Input value={loanRecForm.borrowerName} onKeyDown={onEnterNext}
+                onChange={(e) => setLoanRecForm(f => ({ ...f, borrowerName: e.target.value, mailingName: e.target.value }))} />
+            </div>
+            <button type="button" onClick={() => {}} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              + Loan Terms
+            </button>
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1"><Label className="text-xs">Loan Amount</Label>
+                  <Input {...amountInputProps} value={loanRecForm.loanAmount || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setLoanRecForm(f => ({ ...f, loanAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                <div className="space-y-1"><Label className="text-xs">Interest Rate %</Label>
+                  <Input {...amountInputProps} value={loanRecForm.interestRate || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setLoanRecForm(f => ({ ...f, interestRate: parseFloat(e.target.value) || 0 }))} /></div>
+                <div className="space-y-1"><Label className="text-xs">Tenure (months)</Label>
+                  <Input {...amountInputProps} value={loanRecForm.tenureMonths || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setLoanRecForm(f => ({ ...f, tenureMonths: parseInt(e.target.value) || 0 }))} /></div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={loanRecForm.isTdsApplicable}
+                  onCheckedChange={(v) => setLoanRecForm(f => ({ ...f, isTdsApplicable: v, tdsSection: v ? '194A' : '' }))} />
+                <Label className="text-sm">TDS on Interest (194A)</Label>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLoanRecOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleLoanRecSave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Borrowing Dialog ─── */}
+      <Dialog open={borrowingOpen} onOpenChange={(open) => { if (!open) setBorrowingOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Borrowing Ledger</DialogTitle>
+            <DialogDescription>Define a loan taken (Cr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(borrowingForm.parentGroupCode, borrowingL3, l4BorrowingGroups,
+              (code, name) => setBorrowingForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., HDFC Term Loan" value={borrowingForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setBorrowingForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Lender Name</Label>
+              <Input value={borrowingForm.lenderName} onKeyDown={onEnterNext}
+                onChange={(e) => setBorrowingForm(f => ({ ...f, lenderName: e.target.value, mailingName: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Lender Type</Label>
+              <Select value={borrowingForm.lenderType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, lenderType: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(LENDER_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <p className="text-xs font-medium">Loan Terms</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1"><Label className="text-xs">Loan Amount</Label>
+                  <Input {...amountInputProps} value={borrowingForm.loanAmount || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setBorrowingForm(f => ({ ...f, loanAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                <div className="space-y-1"><Label className="text-xs">Interest Rate %</Label>
+                  <Input {...amountInputProps} value={borrowingForm.interestRate || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setBorrowingForm(f => ({ ...f, interestRate: parseFloat(e.target.value) || 0 }))} /></div>
+                <div className="space-y-1"><Label className="text-xs">Loan Type</Label>
+                  <Select value={borrowingForm.loanType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, loanType: v }))}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(LOAN_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1"><Label className="text-xs">Tenure (months)</Label>
+                  <Input {...amountInputProps} value={borrowingForm.tenureMonths || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setBorrowingForm(f => ({ ...f, tenureMonths: parseInt(e.target.value) || 0 }))} /></div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">First EMI Date</Label>
+                <SmartDateInput value={borrowingForm.firstEmiDate} onChange={(v) => setBorrowingForm(f => ({ ...f, firstEmiDate: v }))} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Loan Account No.</Label>
+                <Input value={borrowingForm.loanAccountNo} onKeyDown={onEnterNext}
+                  onChange={(e) => setBorrowingForm(f => ({ ...f, loanAccountNo: e.target.value }))} />
+              </div>
+              {borrowingEMIPreview > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-teal-500/10 text-teal-600 border-teal-500/20 text-xs">
+                    EMI: ₹{borrowingEMIPreview.toLocaleString('en-IN')}/month
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px]">
+                    Total Interest: ₹{Math.round(borrowingTotalInterest).toLocaleString('en-IN')}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px]">
+                    Total Payment: ₹{Math.round(borrowingTotalPayment).toLocaleString('en-IN')}
+                  </Badge>
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBorrowingOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleBorrowingSave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Income Dialog ─── */}
+      <Dialog open={incomeOpen} onOpenChange={(open) => { if (!open) setIncomeOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Income Ledger</DialogTitle>
+            <DialogDescription>Define an income account (Cr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(incomeForm.parentGroupCode, incomeL3, l4IncomeGroups,
+              (code, name) => setIncomeForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Consulting Revenue" value={incomeForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setIncomeForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={incomeForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setIncomeForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">GST Applicable</Label>
+                <Switch checked={incomeForm.isGstApplicable}
+                  onCheckedChange={(v) => setIncomeForm(f => ({ ...f, isGstApplicable: v }))} />
+              </div>
+              {incomeForm.isGstApplicable && (
+                <div className="space-y-2">
+                  <HSNSACCombobox value={incomeForm.hsnSacCode} codeType="sac"
+                    onSelect={(code) => applyHsnSac(code, setIncomeForm)} />
+                  {incomeForm.hsnSacCode && (
+                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                      <Badge variant="outline">Rate {incomeForm.gstRate}%</Badge>
+                      <Badge variant="outline">CGST {incomeForm.cgstRate}%</Badge>
+                      <Badge variant="outline">SGST {incomeForm.sgstRate}%</Badge>
+                      <Badge variant="outline">IGST {incomeForm.igstRate}%</Badge>
+                      <Badge variant="outline">Cess {incomeForm.cessRate || 'Nil'}</Badge>
+                      <Badge variant="outline">Type: {incomeForm.gstType}</Badge>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Switch checked={incomeForm.includeInGstTurnover}
+                      onCheckedChange={(v) => setIncomeForm(f => ({ ...f, includeInGstTurnover: v }))} />
+                    <Label className="text-xs">Include in GST Turnover</Label>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">TDS Applicable</Label>
+                <Switch checked={incomeForm.isTdsApplicable}
+                  onCheckedChange={(v) => setIncomeForm(f => ({ ...f, isTdsApplicable: v }))} />
+              </div>
+              {incomeForm.isTdsApplicable && (
+                <Select value={incomeForm.tdsSection} onValueChange={(v) => setIncomeForm(f => ({ ...f, tdsSection: v }))}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select TDS section" /></SelectTrigger>
+                  <SelectContent>
+                    {TDS_SECTIONS.filter(s => s.status === 'active').map(s => (
+                      <SelectItem key={s.sectionCode} value={s.sectionCode}>
+                        {s.sectionCode} — {s.natureOfPayment}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIncomeOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleIncomeSave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Expense Dialog ─── */}
+      <Dialog open={expenseOpen} onOpenChange={(open) => { if (!open) setExpenseOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Expense Ledger</DialogTitle>
+            <DialogDescription>Define an expense account (Dr).</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {renderParentGroupPicker(expenseForm.parentGroupCode, expenseL3, l4ExpenseGroups,
+              (code, name) => setExpenseForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })))}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Rent Expense" value={expenseForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setExpenseForm(f => ({
+                  ...f, name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={expenseForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setExpenseForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">GST & ITC</Label>
+                <Switch checked={expenseForm.isGstApplicable}
+                  onCheckedChange={(v) => setExpenseForm(f => ({ ...f, isGstApplicable: v }))} />
+              </div>
+              {expenseForm.isGstApplicable && (
+                <div className="space-y-2">
+                  <HSNSACCombobox value={expenseForm.hsnSacCode} codeType="both"
+                    onSelect={(code) => applyHsnSac(code, setExpenseForm)} />
+                  {expenseForm.hsnSacCode && (
+                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                      <Badge variant="outline">Rate {expenseForm.gstRate}%</Badge>
+                      <Badge variant="outline">CGST {expenseForm.cgstRate}%</Badge>
+                      <Badge variant="outline">SGST {expenseForm.sgstRate}%</Badge>
+                      <Badge variant="outline">IGST {expenseForm.igstRate}%</Badge>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Switch checked={expenseForm.isItcEligible}
+                      onCheckedChange={(v) => setExpenseForm(f => ({ ...f, isItcEligible: v }))} />
+                    <Label className="text-xs">ITC Eligible</Label>
+                  </div>
+                  {!expenseForm.isItcEligible && (
+                    <p className="text-[10px] text-amber-600">⚠ Blocked under Section 17(5) — ITC not claimable</p>
+                  )}
+                </div>
+              )}
+            </div>
+            {expenseForm.isRcmApplicable && (
+              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">RCM Applicable</Label>
+                  <Switch checked={expenseForm.isRcmApplicable}
+                    onCheckedChange={(v) => setExpenseForm(f => ({ ...f, isRcmApplicable: v }))} />
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs cursor-pointer">
+                    <input type="radio" name="rcm" checked={expenseForm.rcmSection === 'section_9_3'}
+                      onChange={() => setExpenseForm(f => ({ ...f, rcmSection: 'section_9_3' }))} />
+                    Section 9(3) — Supplier is unregistered, you pay GST on their behalf
+                  </label>
+                  <label className="flex items-center gap-2 text-xs cursor-pointer">
+                    <input type="radio" name="rcm" checked={expenseForm.rcmSection === 'section_9_4'}
+                      onChange={() => setExpenseForm(f => ({ ...f, rcmSection: 'section_9_4' }))} />
+                    Section 9(4) — Specific notified services (e.g., legal, GTA, sponsorship)
+                  </label>
+                </div>
+              </div>
+            )}
+            <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">TDS Applicable</Label>
+                <Switch checked={expenseForm.isTdsApplicable}
+                  onCheckedChange={(v) => setExpenseForm(f => ({ ...f, isTdsApplicable: v }))} />
+              </div>
+              {expenseForm.isTdsApplicable && (
+                <Select value={expenseForm.tdsSection} onValueChange={(v) => setExpenseForm(f => ({ ...f, tdsSection: v }))}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select TDS section" /></SelectTrigger>
+                  <SelectContent>
+                    {TDS_SECTIONS.filter(s => s.status === 'active').map(s => (
+                      <SelectItem key={s.sectionCode} value={s.sectionCode}>
+                        {s.sectionCode} — {s.natureOfPayment}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Expense Nature</Label>
+              <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
+                <button type="button" onClick={() => setExpenseForm(f => ({ ...f, expenseNature: 'revenue' }))}
+                  className={`flex-1 px-3 py-1.5 transition-colors ${expenseForm.expenseNature === 'revenue' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Revenue</button>
+                <button type="button" onClick={() => setExpenseForm(f => ({ ...f, expenseNature: 'capital_expense' }))}
+                  className={`flex-1 px-3 py-1.5 transition-colors ${expenseForm.expenseNature === 'capital_expense' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Capital</button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExpenseOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleExpenseSave}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Mark Paid Dialog ─── */}
+      <Dialog open={markPaidOpen} onOpenChange={(open) => { if (!open) setMarkPaidOpen(false); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Mark EMI as Paid</DialogTitle>
+            <DialogDescription>Record payment for month {markPaidTarget?.month}.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Paid Amount</Label>
+              <Input {...amountInputProps} value={markPaidForm.paidAmount || ''} onKeyDown={onEnterNext}
+                onChange={(e) => setMarkPaidForm(f => ({ ...f, paidAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Paid Date</Label>
+              <SmartDateInput value={markPaidForm.paidDate} onChange={(v) => setMarkPaidForm(f => ({ ...f, paidDate: v }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Payment Reference</Label>
+              <Input placeholder="Cheque No. / UTR / NEFT Ref" value={markPaidForm.paymentReference} onKeyDown={onEnterNext}
+                onChange={(e) => setMarkPaidForm(f => ({ ...f, paymentReference: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Narration</Label>
+              <Input placeholder="Optional" value={markPaidForm.narration} onKeyDown={onEnterNext}
+                onChange={(e) => setMarkPaidForm(f => ({ ...f, narration: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMarkPaidOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleMarkPaid}>Confirm Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2427,11 +3088,6 @@ export function LedgerMasterPanel() {
               <Input {...amountInputProps} value={custodianForm.cashBalanceAtHandover || ''} placeholder="0" onKeyDown={onEnterNext}
                 onChange={(e) => setCustodianForm(f => ({ ...f, cashBalanceAtHandover: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Notes</Label>
-              <Input placeholder="Optional notes" value={custodianForm.notes} onKeyDown={onEnterNext}
-                onChange={(e) => setCustodianForm(f => ({ ...f, notes: e.target.value }))} />
-            </div>
             {custodianHistory.length > 0 && (
               <div className="border-t border-border pt-3">
                 <p className="text-xs font-medium mb-2">Custody History</p>
@@ -2461,67 +3117,18 @@ export function LedgerMasterPanel() {
             <DialogDescription>Manage authorised signatories for this bank account.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
-            {/* Signatory Type */}
-            {(() => {
-              const inst = instances.find(i => i.id === signatoryTargetInstanceId);
-              return inst ? (
-                <>
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium">Signatory Type</Label>
-                    <Select value={inst.signatoryType || ''} onValueChange={(v: any) => {
-                      const updated = { ...inst, signatoryType: v || null };
-                      saveInstance(updated);
-                      setInstances(prev => prev.map(i => i.id === inst.id ? updated : i));
-                    }}>
-                      <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="single">Single</SelectItem>
-                        <SelectItem value="any_one_of">Any One Of</SelectItem>
-                        <SelectItem value="joint_all">Joint — All Required</SelectItem>
-                        <SelectItem value="joint_any_two">Joint — Any Two</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {/* Existing signatories */}
-                  {(inst.signatories?.length ?? 0) > 0 && (
-                    <div className="border border-border rounded-lg p-3 space-y-2">
-                      <p className="text-xs font-medium">Current Signatories</p>
-                      {inst.signatories.map(s => (
-                        <div key={s.id} className="flex items-center justify-between text-xs">
-                          <div>
-                            <span className="font-medium">{s.name}</span>
-                            <span className="text-muted-foreground ml-2">{s.designation}</span>
-                            {s.signingLimit > 0 && <span className="text-muted-foreground ml-2">Limit: ₹{s.signingLimit.toLocaleString('en-IN')}</span>}
-                          </div>
-                          <Badge variant="outline" className={`text-[9px] ${s.isActive ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-500'}`}>
-                            {s.isActive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {/* Add signatory form */}
-                  <div className="border-t border-border pt-3 space-y-3">
-                    <p className="text-xs font-medium">Add Signatory</p>
-                    <Input placeholder="Name" value={signatoryForm.name} onKeyDown={onEnterNext}
-                      onChange={(e) => setSignatoryForm(f => ({ ...f, name: e.target.value }))} />
-                    <Input placeholder="Designation" value={signatoryForm.designation} onKeyDown={onEnterNext}
-                      onChange={(e) => setSignatoryForm(f => ({ ...f, designation: e.target.value }))} />
-                    <Input placeholder="Phone" value={signatoryForm.phone} onKeyDown={onEnterNext}
-                      onChange={(e) => setSignatoryForm(f => ({ ...f, phone: e.target.value }))} />
-                    <div className="space-y-1">
-                      <Label className="text-xs">Signing Limit (₹, 0 = unlimited)</Label>
-                      <Input {...amountInputProps} value={signatoryForm.signingLimit || ''} placeholder="0" onKeyDown={onEnterNext}
-                        onChange={(e) => setSignatoryForm(f => ({ ...f, signingLimit: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs">Valid From</Label>
-                      <SmartDateInput value={signatoryForm.validFrom} onChange={(v) => setSignatoryForm(f => ({ ...f, validFrom: v }))} />
-                    </div>
-                  </div>
-                </>
-              ) : null;
-            })()}
+            <div className="border-t border-border pt-3 space-y-3">
+              <p className="text-xs font-medium">Add Signatory</p>
+              <Input placeholder="Name" value={signatoryForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setSignatoryForm(f => ({ ...f, name: e.target.value }))} />
+              <Input placeholder="Designation" value={signatoryForm.designation} onKeyDown={onEnterNext}
+                onChange={(e) => setSignatoryForm(f => ({ ...f, designation: e.target.value }))} />
+              <div className="space-y-1">
+                <Label className="text-xs">Signing Limit (₹, 0 = unlimited)</Label>
+                <Input {...amountInputProps} value={signatoryForm.signingLimit || ''} placeholder="0" onKeyDown={onEnterNext}
+                  onChange={(e) => setSignatoryForm(f => ({ ...f, signingLimit: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSignatoryOpen(false)}>Close</Button>
@@ -2595,146 +3202,10 @@ export function LedgerMasterPanel() {
               <Label className="text-sm font-medium">Date</Label>
               <SmartDateInput value={chequeIssueForm.date} onChange={(v) => setChequeIssueForm(f => ({ ...f, date: v }))} />
             </div>
-            <div className="flex items-center gap-2">
-              <input type="checkbox" checked={chequeIssueForm.isPDC} className="h-4 w-4"
-                onChange={(e) => setChequeIssueForm(f => ({ ...f, isPDC: e.target.checked }))} />
-              <Label className="text-sm">Post-Dated Cheque (PDC)</Label>
-            </div>
-            {chequeIssueForm.isPDC && (
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium">Post-Dated Date</Label>
-                <SmartDateInput value={chequeIssueForm.postDatedDate} onChange={(v) => setChequeIssueForm(f => ({ ...f, postDatedDate: v }))} />
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Crossing</Label>
-              <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
-                <button type="button" onClick={() => setChequeIssueForm(f => ({ ...f, crossingType: 'account_payee' }))}
-                  className={`flex-1 px-2 py-1.5 transition-colors ${chequeIssueForm.crossingType === 'account_payee' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>A/c Payee</button>
-                <button type="button" onClick={() => setChequeIssueForm(f => ({ ...f, crossingType: 'not_negotiable' }))}
-                  className={`flex-1 px-2 py-1.5 transition-colors ${chequeIssueForm.crossingType === 'not_negotiable' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Not Negotiable</button>
-                <button type="button" onClick={() => setChequeIssueForm(f => ({ ...f, crossingType: 'none' }))}
-                  className={`flex-1 px-2 py-1.5 transition-colors ${chequeIssueForm.crossingType === 'none' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>None</button>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Narration</Label>
-              <Input placeholder="Optional narration" value={chequeIssueForm.narration} onKeyDown={onEnterNext}
-                onChange={(e) => setChequeIssueForm(f => ({ ...f, narration: e.target.value }))} />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setChequeIssueOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleChequeIssue}>Issue Cheque</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* ─── Cheque Print Preview Dialog ─── */}
-      <Dialog open={!!chequePrintPreview} onOpenChange={(open) => { if (!open) setChequePrintPreview(null); }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Cheque Print Preview</DialogTitle>
-            <DialogDescription>On-screen preview — PDF printing is Phase 2.</DialogDescription>
-          </DialogHeader>
-          {chequePrintPreview && (
-            <div className="border-2 border-dashed border-border rounded-lg p-6 space-y-4 font-mono text-sm bg-background">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Date:</span>
-                <span>{chequePrintPreview.date}</span>
-              </div>
-              <div className="border-b border-border pb-2">
-                <span className="text-muted-foreground">Pay: </span>
-                <span className="font-bold">{chequePrintPreview.payee}</span>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Amount: </span>
-                <span className="font-bold">₹{chequePrintPreview.amount.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="text-xs italic text-muted-foreground">
-                {amountToWords(chequePrintPreview.amount)}
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Cheque #{chequePrintPreview.chequeNumber}</span>
-                <span>{chequePrintPreview.crossingType.replace(/_/g, ' ').toUpperCase()}</span>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setChequePrintPreview(null)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* ─── NACH Mandate Dialog ─── */}
-      <Dialog open={nachOpen} onOpenChange={(open) => { if (!open) setNachOpen(false); }}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add NACH/ECS Mandate</DialogTitle>
-            <DialogDescription>Register a standing debit instruction.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4" data-keyboard-form>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Mandate Reference <span className="text-destructive">*</span></Label>
-              <Input placeholder="e.g., HDFC/NACH/2025/00123" value={nachForm.mandateRef} onKeyDown={onEnterNext}
-                onChange={(e) => setNachForm(f => ({ ...f, mandateRef: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Beneficiary <span className="text-destructive">*</span></Label>
-              <Input placeholder="e.g., HDFC Home Loans Ltd" value={nachForm.beneficiary} onKeyDown={onEnterNext}
-                onChange={(e) => setNachForm(f => ({ ...f, beneficiary: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Amount (₹, 0 = variable)</Label>
-              <Input {...amountInputProps} value={nachForm.amount || ''} placeholder="0" onKeyDown={onEnterNext}
-                onChange={(e) => setNachForm(f => ({ ...f, amount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
-            </div>
-            {nachForm.amount === 0 && (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1"><Label className="text-xs">Min Amount</Label>
-                  <Input {...amountInputProps} value={nachForm.amountMin || ''} className="h-8 text-xs" onKeyDown={onEnterNext}
-                    onChange={(e) => setNachForm(f => ({ ...f, amountMin: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
-                <div className="space-y-1"><Label className="text-xs">Max Amount</Label>
-                  <Input {...amountInputProps} value={nachForm.amountMax || ''} className="h-8 text-xs" onKeyDown={onEnterNext}
-                    onChange={(e) => setNachForm(f => ({ ...f, amountMax: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Frequency</Label>
-              <Select value={nachForm.frequency} onValueChange={(v: any) => setNachForm(f => ({ ...f, frequency: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="quarterly">Quarterly</SelectItem>
-                  <SelectItem value="annual">Annual</SelectItem>
-                  <SelectItem value="adhoc">Ad-hoc</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Debit Day (1–31)</Label>
-              <Input {...amountInputProps} value={nachForm.debitDay} onKeyDown={onEnterNext}
-                onChange={(e) => setNachForm(f => ({ ...f, debitDay: Math.min(31, Math.max(1, parseInt(e.target.value) || 1)) }))} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">Start Date</Label>
-                <SmartDateInput value={nachForm.startDate} onChange={(v) => setNachForm(f => ({ ...f, startDate: v }))} />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">End Date (optional)</Label>
-                <SmartDateInput value={nachForm.endDate} onChange={(v) => setNachForm(f => ({ ...f, endDate: v }))} />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Notes</Label>
-              <Input placeholder="Optional notes" value={nachForm.notes} onKeyDown={onEnterNext}
-                onChange={(e) => setNachForm(f => ({ ...f, notes: e.target.value }))} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setNachOpen(false)}>Cancel</Button>
-            <Button data-primary onClick={handleNachSave}>Add Mandate</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
