@@ -508,7 +508,7 @@ const autoCreateInstances = (
       openingBalanceType,
       isActive: true,
       displayCode: def.code,
-      displayNumericCode: `${entity.shortCode}/${'numericCode' in def ? (def as any).numericCode || def.code : def.code}`,
+      displayNumericCode: `${entity.shortCode}/${(def as any).numericCode || def.code}`,
       currentCustodian: null,
       signatoryType: null,
       signatories: [],
