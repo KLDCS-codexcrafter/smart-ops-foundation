@@ -250,6 +250,63 @@ interface ExpenseLedgerDefinition {
   status: 'active' | 'inactive';
 }
 
+// ─── Duties & Tax + Payroll Statutory Types ───────────────────────────
+
+type TaxType = 'gst' | 'tds' | 'tcs' | 'other';
+type GstSubType = 'cgst' | 'sgst' | 'igst' | 'cess' | null;
+type CalcBasis = 'item_rate' | 'ledger_value' | null;
+
+interface DutiesTaxLedgerDefinition {
+  id: string;
+  ledgerType: 'duties_tax';
+  name: string;
+  mailingName: string;
+  numericCode: string;
+  code: string;
+  alias: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Dr' | 'Cr';
+  status: 'active' | 'inactive';
+  taxType: TaxType;
+  gstSubType: GstSubType;
+  calculationBasis: CalcBasis;
+  rate: number;
+}
+
+type PayrollCategory = 'employee_deduction' | 'employer_contribution';
+
+type PayrollComponent =
+  | 'pf_employee' | 'esi_employee' | 'pt_employee' | 'tds_salary'
+  | 'pf_employer_epf' | 'pf_employer_eps' | 'pf_edli'
+  | 'esi_employer' | 'lwf_employer' | 'gratuity_provision';
+
+interface PayrollStatutoryLedgerDefinition {
+  id: string;
+  ledgerType: 'payroll_statutory';
+  name: string;
+  mailingName: string;
+  numericCode: string;
+  code: string;
+  alias: string;
+  parentGroupCode: 'EMPL';
+  parentGroupName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Cr';
+  status: 'active' | 'inactive';
+  payrollCategory: PayrollCategory;
+  payrollComponent: PayrollComponent;
+  statutoryRate: number;
+  calculationBase: string;
+  wageCeiling: number | null;
+  maxAmount: number | null;
+}
+
 interface LoanRepaymentRecord {
   id: string;
   borrowingLedgerDefinitionId: string;
@@ -349,7 +406,9 @@ type AnyLedgerDefinition =
   | LoanReceivableLedgerDefinition
   | BorrowingLedgerDefinition
   | IncomeLedgerDefinition
-  | ExpenseLedgerDefinition;
+  | ExpenseLedgerDefinition
+  | DutiesTaxLedgerDefinition
+  | PayrollStatutoryLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -554,6 +613,18 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     lenderType: d.lenderType ?? 'bank', loanType: d.loanType ?? 'term_loan',
     firstEmiDate: d.firstEmiDate ?? '', loanAccountNo: d.loanAccountNo ?? '',
     collateralPledged: d.collateralPledged ?? '',
+    // Duties & Tax compat
+    taxType: d.taxType ?? 'other',
+    gstSubType: d.gstSubType ?? null,
+    calculationBasis: d.calculationBasis ?? null,
+    rate: d.rate ?? 0,
+    // Payroll Statutory compat
+    payrollCategory: d.payrollCategory ?? 'employee_deduction',
+    payrollComponent: d.payrollComponent ?? 'pf_employee',
+    statutoryRate: d.statutoryRate ?? 0,
+    calculationBase: d.calculationBase ?? '',
+    wageCeiling: d.wageCeiling ?? null,
+    maxAmount: d.maxAmount ?? null,
   }));
 };
 
@@ -752,6 +823,10 @@ const genIncomeCode = (all: AnyLedgerDefinition[]) =>
   'INC-' + String(all.filter(d => d.ledgerType === 'income').length + 1).padStart(6, '0');
 const genExpenseCode = (all: AnyLedgerDefinition[]) =>
   'EXP-' + String(all.filter(d => d.ledgerType === 'expense').length + 1).padStart(6, '0');
+const genDutiesTaxCode = (all: AnyLedgerDefinition[]) =>
+  'DTX-' + String(all.filter(d => d.ledgerType === 'duties_tax').length + 1).padStart(6, '0');
+const genPayrollStatCode = (all: AnyLedgerDefinition[]) =>
+  'PAY-' + String(all.filter(d => d.ledgerType === 'payroll_statutory').length + 1).padStart(6, '0');
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
@@ -809,7 +884,7 @@ const TYPE_BUTTONS = [
   { label: 'Loan Taken', icon: Banknote, row: 'Balance Sheet', active: true },
   { label: 'Income', icon: TrendingUp, row: 'P&L', active: true },
   { label: 'Expense', icon: TrendingDown, row: 'P&L', active: true },
-  { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: false },
+  { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: true },
   { label: 'Customer', icon: Users, row: 'Masters', active: false },
   { label: 'Vendor', icon: Users, row: 'Masters', active: false },
   { label: 'Logistic', icon: Truck, row: 'Masters', active: false },
