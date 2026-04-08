@@ -135,6 +135,7 @@ interface CashLedgerDefinition {
   numericCode: string;
   code: string;
   alias: string;
+  mailingName: string;
   parentGroupCode: string;
   parentGroupName: string;
   entityId: string | null;
@@ -186,6 +187,19 @@ interface BankLedgerDefinition {
   clearingDays: number;
   cutoffTime: string;
   status: 'active' | 'inactive' | 'dormant' | 'closed';
+  // ── Mailing Name + Account Holder ──
+  mailingName: string;
+  acHolderName: string;
+  // ── From IFSC API (additional fields) ──
+  bankPhone: string;
+  neftEnabled: boolean;
+  rtgsEnabled: boolean;
+  impsEnabled: boolean;
+  upiEnabled: boolean;
+  // ── Bank Relationship Manager ──
+  bankManagerName: string;
+  bankManagerPhone: string;
+  bankManagerEmail: string;
 }
 
 type AnyLedgerDefinition = CashLedgerDefinition | BankLedgerDefinition;
@@ -319,6 +333,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     alertThreshold: d.alertThreshold ?? 0,
     isMainCash: d.isMainCash ?? false,
     voucherSeries: d.voucherSeries ?? 'CR',
+    mailingName: d.mailingName ?? '',
     // Bank backward compat
     branchName: d.branchName ?? '',
     branchAddress: d.branchAddress ?? '',
@@ -338,6 +353,15 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     clearingDays: d.clearingDays ?? 2,
     cutoffTime: d.cutoffTime ?? '14:30',
     currency: d.currency ?? 'INR',
+    acHolderName: d.acHolderName ?? '',
+    bankPhone: d.bankPhone ?? '',
+    neftEnabled: d.neftEnabled ?? true,
+    rtgsEnabled: d.rtgsEnabled ?? true,
+    impsEnabled: d.impsEnabled ?? true,
+    upiEnabled: d.upiEnabled ?? true,
+    bankManagerName: d.bankManagerName ?? '',
+    bankManagerPhone: d.bankManagerPhone ?? '',
+    bankManagerEmail: d.bankManagerEmail ?? '',
   }));
 };
 
@@ -583,6 +607,19 @@ const defaultBankForm = {
   brsEnabled: true,
   clearingDays: 2,
   cutoffTime: '14:30',
+  // Mailing Name + A/c Holder
+  mailingName: '',
+  acHolderName: '',
+  // IFSC additional
+  bankPhone: '',
+  neftEnabled: true,
+  rtgsEnabled: true,
+  impsEnabled: true,
+  upiEnabled: true,
+  // Bank Manager
+  bankManagerName: '',
+  bankManagerPhone: '',
+  bankManagerEmail: '',
 };
 
 // ─── Component ────────────────────────────────────────────────────────
@@ -615,6 +652,7 @@ export function LedgerMasterPanel() {
     isMainCash: false,
     voucherSeries: 'CR',
     openingBalanceType: 'Dr' as 'Dr' | 'Cr',
+    mailingName: '',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
