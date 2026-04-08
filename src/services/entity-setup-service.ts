@@ -46,6 +46,18 @@ interface AnyLedgerDefinition {
   alertThreshold?: number;
   isMainCash?: boolean;
   voucherSeries?: string;
+  // Duties & Tax fields
+  taxType?: string;
+  gstSubType?: string | null;
+  calculationBasis?: string | null;
+  rate?: number;
+  // Payroll Statutory fields
+  payrollCategory?: string;
+  payrollComponent?: string;
+  statutoryRate?: number;
+  calculationBase?: string;
+  wageCeiling?: number | null;
+  maxAmount?: number | null;
 }
 
 // ── 2.2 Entity Registry ─────────────────────────────────────────────────────
