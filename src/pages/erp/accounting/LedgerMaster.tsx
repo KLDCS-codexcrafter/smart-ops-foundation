@@ -1447,6 +1447,7 @@ export function LedgerMasterPanel() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
+                        <TableHead>Mailing Name</TableHead>
                         <TableHead>Numeric Code</TableHead>
                         <TableHead>Bank · Branch</TableHead>
                         <TableHead>Account Type</TableHead>
@@ -1467,6 +1468,7 @@ export function LedgerMasterPanel() {
                             }
                           }}>
                             <TableCell className="font-medium">{def.name}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{def.mailingName || '—'}</TableCell>
                             <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
                             <TableCell>
                               <div>
@@ -2177,6 +2179,23 @@ export function LedgerMasterPanel() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">A/c Holder's Name</Label>
+                  <Input placeholder="e.g., Acme India Pvt Ltd" value={bankForm.acHolderName} onKeyDown={onEnterNext}
+                    onChange={(e) => setBankForm(f => ({ ...f, acHolderName: e.target.value }))} />
+                  <p className="text-[10px] text-muted-foreground">Your company as registered with the bank. Appears on bank forms and cheques.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Bank Manager (Optional)</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input placeholder="Name" value={bankForm.bankManagerName} onKeyDown={onEnterNext}
+                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerName: e.target.value }))} />
+                    <Input placeholder="Phone" value={bankForm.bankManagerPhone} onKeyDown={onEnterNext}
+                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerPhone: e.target.value }))} />
+                  </div>
+                  <Input placeholder="Email" value={bankForm.bankManagerEmail} onKeyDown={onEnterNext}
+                    onChange={(e) => setBankForm(f => ({ ...f, bankManagerEmail: e.target.value }))} />
+                </div>
               </div>
             )}
 
@@ -2212,6 +2231,23 @@ export function LedgerMasterPanel() {
                     <Input value={bankForm.branchPincode} className="h-8 text-xs" maxLength={6} onKeyDown={onEnterNext}
                       onChange={(e) => setBankForm(f => ({ ...f, branchPincode: e.target.value.replace(/\D/g, '').slice(0, 6) }))} /></div>
                 </div>
+                {bankForm.bankPhone && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Branch Phone</Label>
+                    <p className="text-xs font-mono text-foreground">{bankForm.bankPhone}</p>
+                  </div>
+                )}
+                {bankForm.ifscAutoFilled && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Supports</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {bankForm.neftEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">NEFT</Badge>}
+                      {bankForm.rtgsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">RTGS</Badge>}
+                      {bankForm.impsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">IMPS</Badge>}
+                      {bankForm.upiEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">UPI</Badge>}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
