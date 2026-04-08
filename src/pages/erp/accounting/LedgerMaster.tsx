@@ -802,6 +802,7 @@ export function LedgerMasterPanel() {
       location: def.location ?? '', cashLimit: def.cashLimit ?? 0,
       alertThreshold: def.alertThreshold ?? 0, isMainCash: def.isMainCash ?? false,
       voucherSeries: def.voucherSeries ?? 'CR', openingBalanceType: 'Dr',
+      mailingName: def.mailingName ?? '',
     });
     setCashCreateOpen(true);
   };
@@ -841,6 +842,16 @@ export function LedgerMasterPanel() {
       brsEnabled: def.brsEnabled ?? true,
       clearingDays: def.clearingDays ?? 2,
       cutoffTime: def.cutoffTime ?? '14:30',
+      mailingName: def.mailingName ?? '',
+      acHolderName: def.acHolderName ?? '',
+      bankPhone: def.bankPhone ?? '',
+      neftEnabled: def.neftEnabled ?? true,
+      rtgsEnabled: def.rtgsEnabled ?? true,
+      impsEnabled: def.impsEnabled ?? true,
+      upiEnabled: def.upiEnabled ?? true,
+      bankManagerName: def.bankManagerName ?? '',
+      bankManagerPhone: def.bankManagerPhone ?? '',
+      bankManagerEmail: def.bankManagerEmail ?? '',
     });
     setIfscValid(validateIFSC(def.ifscCode));
     setShowAccountPreview(true);
@@ -860,6 +871,7 @@ export function LedgerMasterPanel() {
         location: cashForm.location, cashLimit: cashForm.cashLimit,
         alertThreshold: cashForm.alertThreshold, isMainCash: cashForm.isMainCash,
         voucherSeries: cashForm.voucherSeries || 'CR',
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -869,6 +881,7 @@ export function LedgerMasterPanel() {
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
         name: cashForm.name.trim(), code, numericCode, alias: cashForm.alias.trim(),
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
         parentGroupCode: cashForm.parentGroupCode, parentGroupName: cashForm.parentGroupName,
         entityId: null, entityShortCode: null,
         location: cashForm.location, cashLimit: cashForm.cashLimit,
@@ -886,6 +899,7 @@ export function LedgerMasterPanel() {
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
         name: cashForm.name.trim(), code, numericCode, alias: cashForm.alias.trim(),
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
         parentGroupCode: cashForm.parentGroupCode, parentGroupName: cashForm.parentGroupName,
         entityId: entity.id, entityShortCode: entity.shortCode,
         location: cashForm.location, cashLimit: cashForm.cashLimit,
@@ -939,6 +953,16 @@ export function LedgerMasterPanel() {
       brsEnabled: bankForm.brsEnabled,
       clearingDays: bankForm.clearingDays,
       cutoffTime: bankForm.cutoffTime,
+      mailingName: bankForm.mailingName.trim() || resolvedBankName,
+      acHolderName: bankForm.acHolderName.trim(),
+      bankPhone: bankForm.bankPhone,
+      neftEnabled: bankForm.neftEnabled,
+      rtgsEnabled: bankForm.rtgsEnabled,
+      impsEnabled: bankForm.impsEnabled,
+      upiEnabled: bankForm.upiEnabled,
+      bankManagerName: bankForm.bankManagerName.trim(),
+      bankManagerPhone: bankForm.bankManagerPhone.trim(),
+      bankManagerEmail: bankForm.bankManagerEmail.trim(),
     };
 
     if (bankEditTarget) {
