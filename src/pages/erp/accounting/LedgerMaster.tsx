@@ -1204,6 +1204,8 @@ export function LedgerMasterPanel() {
     setBorrowingDefs(loadBorrowingDefs());
     setIncomeDefs(loadIncomeDefs());
     setExpenseDefs(loadExpenseDefs());
+    setDutiesTaxDefs(loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]);
+    setPayrollStatDefs(loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]);
     setInstances(loadInstances(selEntityId));
   };
 
@@ -1274,10 +1276,12 @@ export function LedgerMasterPanel() {
     if (borrowingOpen) handleBorrowingSave();
     if (incomeOpen) handleIncomeSave();
     if (expenseOpen) handleExpenseSave();
+    if (dutiesTaxOpen) handleDutiesTaxSave();
+    if (payrollStatOpen) handlePayrollStatSave();
   });
 
   // ── Stats ──
-  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs];
+  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
   const totalDefined = allDefs.length;
   const groupLevel = allDefs.filter(d => !d.entityId).length;
   const entitySpecific = allDefs.filter(d => d.entityId).length;
