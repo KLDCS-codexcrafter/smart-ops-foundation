@@ -43,6 +43,7 @@ const SUPPORTING_MASTERS_ITEMS: { label: string; module: CommandCenterModule }[]
   { label: 'Terms of Payment', module: 'masters-terms-payment' },
   { label: 'Terms of Delivery', module: 'masters-terms-delivery' },
   { label: 'Logistic Master', module: 'masters-logistic' },
+  { label: 'Vendor Master', module: 'masters-vendor' },
 ];
 
 const COMING_SOON = [
