@@ -39,6 +39,13 @@ interface AnyLedgerDefinition {
   entityId: string | null;
   entityShortCode: string | null;
   status: 'active' | 'inactive';
+  // Cash-specific fields (optional for non-cash types)
+  numericCode?: string;
+  location?: string;
+  cashLimit?: number;
+  alertThreshold?: number;
+  isMainCash?: boolean;
+  voucherSeries?: string;
 }
 
 // ── 2.2 Entity Registry ─────────────────────────────────────────────────────
@@ -84,7 +91,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
 
   const ledgers: Omit<AnyLedgerDefinition, 'id'>[] = [
     // Cash
-    { ledgerType: 'cash', name: 'Cash', code: 'CASH-000001', parentGroupCode: 'CASH', parentGroupName: l3Name('CASH'), alias: 'Cash', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'cash', name: 'Cash', code: 'CASH-000001', numericCode: '1203-0001', parentGroupCode: 'CASH', parentGroupName: l3Name('CASH'), alias: 'Cash', entityId: null, entityShortCode: null, location: 'Main Office', cashLimit: 0, alertThreshold: 0, isMainCash: true, voucherSeries: 'CR', status: 'active' },
     // P&L (entity-specific)
     { ledgerType: 'equity', name: 'Profit & Loss A/c', code: `${opts.shortCode}-PL-000001`, parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'P&L', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' },
     // GST
@@ -170,9 +177,10 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
           openingBalanceType: 'Dr',
           isActive: true,
           displayCode: def.code,
+          displayNumericCode: `${entity.shortCode}/${def.numericCode ?? def.code}`,
+          currentCustodian: null,
         });
         localStorage.setItem(key, JSON.stringify(inst));
-        // [JWT] POST /api/entity/${entity.id}/finecore/ledger-instances
       }
     });
   });

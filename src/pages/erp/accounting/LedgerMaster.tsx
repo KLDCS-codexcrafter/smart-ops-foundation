@@ -23,19 +23,59 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
+import {
+  L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
+  deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
+} from '@/data/finframe-seed-data';
+
+// ─── Custodian Types ──────────────────────────────────────────────
+
+interface CashCustodian {
+  name: string;
+  designation: string;
+  phone: string;
+  assignedOn: string;
+  assignedBy: string;
+}
+
+interface CustodianHistoryRecord {
+  id: string;
+  ledgerDefinitionId: string;
+  entityId: string;
+  custodianName: string;
+  designation: string;
+  phone: string;
+  fromDate: string;
+  toDate: string | null;
+  handoverToName: string;
+  handoverBy: string;
+  cashBalanceAtHandover: number;
+  notes: string;
+  recordedAt: string;
+}
 
 // ─── Types (Two-Table Architecture) ───────────────────────────────────
 
 interface CashLedgerDefinition {
   id: string;
   ledgerType: 'cash';
+  // Identity
   name: string;
+  numericCode: string;
   code: string;
   alias: string;
+  // Parent
   parentGroupCode: string;
   parentGroupName: string;
+  // Scope
   entityId: string | null;
   entityShortCode: string | null;
+  // Cash controls
+  location: string;
+  cashLimit: number;
+  alertThreshold: number;
+  isMainCash: boolean;
+  voucherSeries: string;
   status: 'active' | 'inactive';
 }
 
@@ -71,8 +111,10 @@ interface EntityLedgerInstance {
   entityShortCode: string;
   openingBalance: number;
   openingBalanceType: 'Dr' | 'Cr';
-  isActive: boolean;
   displayCode: string;
+  displayNumericCode: string;
+  currentCustodian: CashCustodian | null;
+  isActive: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────
@@ -130,10 +172,16 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   if (!raw) return [];
   const all = JSON.parse(raw);
-  // Backward compat: add ledgerType:'cash' to old records missing it
   return all.map((d: any) => ({
     ...d,
     ledgerType: d.ledgerType ?? 'cash',
+    // Backward compat: cash control fields
+    numericCode: d.numericCode ?? '',
+    location: d.location ?? '',
+    cashLimit: d.cashLimit ?? 0,
+    alertThreshold: d.alertThreshold ?? 0,
+    isMainCash: d.isMainCash ?? false,
+    voucherSeries: d.voucherSeries ?? 'CR',
   }));
 };
 
@@ -144,7 +192,6 @@ const loadBankDefs = (): BankLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'bank') as BankLedgerDefinition[];
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
-  // [JWT] POST /api/group/finecore/ledger-definitions
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
   const idx = all.findIndex(d => d.id === def.id);
@@ -155,20 +202,38 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
-  // Backward compat: add openingBalanceType:'Dr' to old records missing it
   return JSON.parse(raw).map((i: any) => ({
     ...i,
     openingBalanceType: i.openingBalanceType ?? 'Dr',
+    displayNumericCode: i.displayNumericCode ?? '',
+    currentCustodian: i.currentCustodian ?? null,
   }));
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
-  // [JWT] PATCH /api/entity/{entityId}/finecore/ledger-instances
   const raw = localStorage.getItem(`erp_entity_${inst.entityId}_ledger_instances`);
-  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({ ...i, openingBalanceType: i.openingBalanceType ?? 'Dr' })) : [];
+  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({
+    ...i,
+    openingBalanceType: i.openingBalanceType ?? 'Dr',
+    displayNumericCode: i.displayNumericCode ?? '',
+    currentCustodian: i.currentCustodian ?? null,
+  })) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   localStorage.setItem(`erp_entity_${inst.entityId}_ledger_instances`, JSON.stringify(all));
+};
+
+// ── Custodian History ─────────────────────────────────────────────
+const loadCustodianHistory = (entityId: string, defId: string): CustodianHistoryRecord[] => {
+  const key = `erp_entity_${entityId}_custodian_history_${defId}`;
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
+  catch { return []; }
+};
+
+const appendCustodianHistory = (record: CustodianHistoryRecord) => {
+  const key = `erp_entity_${record.entityId}_custodian_history_${record.ledgerDefinitionId}`;
+  const existing = loadCustodianHistory(record.entityId, record.ledgerDefinitionId);
+  localStorage.setItem(key, JSON.stringify([...existing, record]));
 };
 
 // ─── Code Generation ──────────────────────────────────────────────────
@@ -178,6 +243,22 @@ const genCashGroupCode = (all: AnyLedgerDefinition[]) =>
 
 const genCashEntityCode = (all: AnyLedgerDefinition[], sc: string) =>
   `${sc}-CASH-${String(all.filter(d => d.ledgerType === 'cash' && d.entityShortCode === sc).length + 1).padStart(6, '0')}`;
+
+const genCashNumericCode = (all: AnyLedgerDefinition[], parentGroupCode: string): string => {
+  const seqCount = all.filter(d =>
+    d.ledgerType === 'cash' && !d.entityId &&
+    d.parentGroupCode === parentGroupCode
+  ).length + 1;
+  return deriveLedgerNumericCode(parentGroupCode, seqCount);
+};
+
+const genCashEntityNumericCode = (all: AnyLedgerDefinition[], parentGroupCode: string, sc: string): string => {
+  const seqCount = all.filter(d =>
+    d.ledgerType === 'cash' && d.entityShortCode === sc &&
+    d.parentGroupCode === parentGroupCode
+  ).length + 1;
+  return deriveLedgerNumericCode(parentGroupCode, seqCount);
+};
 
 const genBankGroupCode = (all: AnyLedgerDefinition[]) =>
   'BANK-' + String(all.filter(d => d.ledgerType === 'bank' && !d.entityId).length + 1).padStart(6, '0');
@@ -204,6 +285,8 @@ const autoCreateInstances = (
       openingBalanceType,
       isActive: true,
       displayCode: def.code,
+      displayNumericCode: `${entity.shortCode}/${'numericCode' in def ? (def as CashLedgerDefinition).numericCode || def.code : def.code}`,
+      currentCustodian: null,
     });
   });
 };
@@ -281,6 +364,11 @@ export function LedgerMasterPanel() {
     openingBalance: 0,
     scope: 'group' as 'group' | 'entity',
     entityId: '',
+    location: '',
+    cashLimit: 0,
+    alertThreshold: 0,
+    isMainCash: false,
+    voucherSeries: 'CR',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
@@ -290,6 +378,15 @@ export function LedgerMasterPanel() {
   const [bankForm, setBankForm] = useState(defaultBankForm);
   const [ifscValid, setIfscValid] = useState<boolean | null>(null);
   const [showAccountPreview, setShowAccountPreview] = useState(false);
+
+  // Custodian dialog state
+  const [custodianOpen, setCustodianOpen] = useState(false);
+  const [custodianTargetInstanceId, setCustodianTargetInstanceId] = useState<string | null>(null);
+  const [custodianHistory, setCustodianHistory] = useState<CustodianHistoryRecord[]>([]);
+  const [custodianForm, setCustodianForm] = useState({
+    name: '', designation: '', phone: '',
+    handoverBy: '', cashBalanceAtHandover: 0, notes: '',
+  });
 
   // Reload instances when entity changes
   useEffect(() => {
@@ -341,6 +438,11 @@ export function LedgerMasterPanel() {
       openingBalance: 0,
       scope: def.entityId ? 'entity' : 'group',
       entityId: def.entityId ?? '',
+      location: def.location ?? '',
+      cashLimit: def.cashLimit ?? 0,
+      alertThreshold: def.alertThreshold ?? 0,
+      isMainCash: def.isMainCash ?? false,
+      voucherSeries: def.voucherSeries ?? 'CR',
     });
     setCashCreateOpen(true);
   };
@@ -386,25 +488,36 @@ export function LedgerMasterPanel() {
     const all = loadAllDefinitions();
 
     if (cashEditTarget) {
-      // [JWT] PUT /api/group/finecore/ledger-definitions/{id}
       const updated: CashLedgerDefinition = {
         ...cashEditTarget,
         name: cashForm.name.trim(),
         alias: cashForm.alias.trim(),
         parentGroupCode: cashForm.parentGroupCode,
         parentGroupName: cashForm.parentGroupName,
+        location: cashForm.location,
+        cashLimit: cashForm.cashLimit,
+        alertThreshold: cashForm.alertThreshold,
+        isMainCash: cashForm.isMainCash,
+        voucherSeries: cashForm.voucherSeries || 'CR',
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
     } else if (cashForm.scope === 'group') {
       const code = genCashGroupCode(all);
+      const numericCode = genCashNumericCode(all, cashForm.parentGroupCode);
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
-        name: cashForm.name.trim(), code,
+        name: cashForm.name.trim(), code, numericCode,
         alias: cashForm.alias.trim(),
         parentGroupCode: cashForm.parentGroupCode,
         parentGroupName: cashForm.parentGroupName,
-        entityId: null, entityShortCode: null, status: 'active',
+        entityId: null, entityShortCode: null,
+        location: cashForm.location,
+        cashLimit: cashForm.cashLimit,
+        alertThreshold: cashForm.alertThreshold,
+        isMainCash: cashForm.isMainCash,
+        voucherSeries: cashForm.voucherSeries || 'CR',
+        status: 'active',
       };
       saveDefinition(def);
       autoCreateInstances(def, cashForm.openingBalance, 'Dr');
@@ -413,16 +526,22 @@ export function LedgerMasterPanel() {
       const entity = entities.find(e => e.id === cashForm.entityId);
       if (!entity) { toast.error('Select an entity'); return; }
       const code = genCashEntityCode(all, entity.shortCode);
+      const numericCode = genCashEntityNumericCode(all, cashForm.parentGroupCode, entity.shortCode);
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
-        name: cashForm.name.trim(), code,
+        name: cashForm.name.trim(), code, numericCode,
         alias: cashForm.alias.trim(),
         parentGroupCode: cashForm.parentGroupCode,
         parentGroupName: cashForm.parentGroupName,
-        entityId: entity.id, entityShortCode: entity.shortCode, status: 'active',
+        entityId: entity.id, entityShortCode: entity.shortCode,
+        location: cashForm.location,
+        cashLimit: cashForm.cashLimit,
+        alertThreshold: cashForm.alertThreshold,
+        isMainCash: cashForm.isMainCash,
+        voucherSeries: cashForm.voucherSeries || 'CR',
+        status: 'active',
       };
       saveDefinition(def);
-      // [JWT] POST /api/entity/{id}/finecore/ledger-instances
       saveInstance({
         id: crypto.randomUUID(),
         ledgerDefinitionId: def.id,
@@ -431,6 +550,8 @@ export function LedgerMasterPanel() {
         openingBalance: cashForm.openingBalance,
         openingBalanceType: 'Dr',
         isActive: true, displayCode: def.code,
+        displayNumericCode: `${entity.shortCode}/${numericCode}`,
+        currentCustodian: null,
       });
       toast.success(`${code} created for ${entity.name}`);
     }
@@ -443,7 +564,6 @@ export function LedgerMasterPanel() {
 
   // ── Save Bank ──
   const handleBankSave = () => {
-    // [JWT] POST /api/group/finecore/ledger-definitions
     if (!bankForm.name.trim()) return toast.error('Ledger name is required');
     const resolvedBankName = bankForm.bankName === 'Other' ? bankForm.bankNameOther.trim() : bankForm.bankName;
     if (!resolvedBankName) return toast.error('Select a bank');
@@ -454,7 +574,6 @@ export function LedgerMasterPanel() {
     const all = loadAllDefinitions();
 
     if (bankEditTarget) {
-      // [JWT] PUT /api/group/finecore/ledger-definitions/{id}
       const updated: BankLedgerDefinition = {
         ...bankEditTarget,
         name: bankForm.name.trim(),
@@ -501,7 +620,6 @@ export function LedgerMasterPanel() {
         odLimit: bankForm.odLimit,
       };
       saveDefinition(def);
-      // [JWT] POST /api/entity/{id}/finecore/ledger-instances
       saveInstance({
         id: crypto.randomUUID(), ledgerDefinitionId: def.id,
         entityId: entity.id, entityName: entity.name,
@@ -509,6 +627,8 @@ export function LedgerMasterPanel() {
         openingBalance: bankForm.openingBalance,
         openingBalanceType: bankForm.openingBalanceType,
         isActive: true, displayCode: def.code,
+        displayNumericCode: `${entity.shortCode}/${def.code}`,
+        currentCustodian: null,
       });
       toast.success(`${code} created for ${entity.name}`);
     }
@@ -523,7 +643,6 @@ export function LedgerMasterPanel() {
 
   // ── Deactivate ──
   const handleDeactivate = (def: AnyLedgerDefinition) => {
-    // [JWT] PATCH /api/group/finecore/ledger-definitions/{id}/status
     const updated = { ...def, status: def.status === 'active' ? 'inactive' as const : 'active' as const };
     saveDefinition(updated);
     toast.success(`${def.name} ${updated.status === 'active' ? 'activated' : 'deactivated'}`);
@@ -532,9 +651,70 @@ export function LedgerMasterPanel() {
 
   // ── Save Opening Balances ──
   const handleSaveBalances = () => {
-    // [JWT] PATCH /api/entity/{entityId}/finecore/ledger-instances/bulk
     instances.forEach(inst => saveInstance(inst));
     toast.success('Opening balances saved');
+  };
+
+  // ── Custodian Save ──
+  const handleCustodianSave = () => {
+    if (!custodianForm.name.trim()) { toast.error('Custodian name required'); return; }
+    if (!custodianForm.designation.trim()) { toast.error('Designation required'); return; }
+    if (!custodianForm.handoverBy.trim()) { toast.error('Authorised by is required'); return; }
+    if (!custodianTargetInstanceId) return;
+
+    const inst = instances.find(i => i.id === custodianTargetInstanceId);
+    if (!inst) return;
+
+    const now = new Date().toISOString();
+
+    // 1. Close previous custodian history record
+    if (inst.currentCustodian) {
+      const existing = loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId);
+      const updatedHistory = existing.map(h =>
+        h.toDate === null
+          ? { ...h, toDate: now, handoverToName: custodianForm.name }
+          : h
+      );
+      const key = `erp_entity_${inst.entityId}_custodian_history_${inst.ledgerDefinitionId}`;
+      localStorage.setItem(key, JSON.stringify(updatedHistory));
+    }
+
+    // 2. Append new custodian history record (IMMUTABLE)
+    const newRecord: CustodianHistoryRecord = {
+      id: crypto.randomUUID(),
+      ledgerDefinitionId: inst.ledgerDefinitionId,
+      entityId: inst.entityId,
+      custodianName: custodianForm.name,
+      designation: custodianForm.designation,
+      phone: custodianForm.phone,
+      fromDate: now,
+      toDate: null,
+      handoverToName: '',
+      handoverBy: custodianForm.handoverBy,
+      cashBalanceAtHandover: custodianForm.cashBalanceAtHandover,
+      notes: custodianForm.notes,
+      recordedAt: now,
+    };
+    appendCustodianHistory(newRecord);
+
+    // 3. Update instance with new current custodian
+    const updatedInst: EntityLedgerInstance = {
+      ...inst,
+      currentCustodian: {
+        name: custodianForm.name,
+        designation: custodianForm.designation,
+        phone: custodianForm.phone,
+        assignedOn: now,
+        assignedBy: custodianForm.handoverBy,
+      },
+    };
+    saveInstance(updatedInst);
+    setInstances(prev => prev.map(i => i.id === inst.id ? updatedInst : i));
+
+    // 4. Reload history and reset form
+    setCustodianHistory(loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId));
+    setCustodianForm({ name: '', designation: '', phone: '', handoverBy: '', cashBalanceAtHandover: 0, notes: '' });
+    toast.success(`Custody transferred to ${custodianForm.name}`);
   };
 
   // ── FinFrame L4 groups for parent pickers ──
@@ -662,7 +842,6 @@ export function LedgerMasterPanel() {
 
         {/* Tab 1 — Definitions */}
         <TabsContent value="definitions">
-          {/* Sub-tabs for Cash / Bank */}
           <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as any)} className="mb-4">
             <TabsList className="h-9">
               <TabsTrigger value="cash" className="text-xs gap-1.5">
@@ -687,9 +866,11 @@ export function LedgerMasterPanel() {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Code</TableHead>
+                      <TableHead>Numeric Code</TableHead>
                       <TableHead>Parent Group</TableHead>
                       <TableHead>Alias</TableHead>
                       <TableHead>Scope</TableHead>
+                      <TableHead>Location</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -699,6 +880,7 @@ export function LedgerMasterPanel() {
                       <TableRow key={def.id}>
                         <TableCell className="font-medium">{def.name}</TableCell>
                         <TableCell className="font-mono text-xs">{def.code}</TableCell>
+                        <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
                         <TableCell className="text-xs">{def.parentGroupName}</TableCell>
                         <TableCell className="text-xs text-muted-foreground">{def.alias || '—'}</TableCell>
                         <TableCell>
@@ -710,6 +892,7 @@ export function LedgerMasterPanel() {
                             <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge>
                           )}
                         </TableCell>
+                        <TableCell className="text-xs">{def.location || '—'}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
                             {def.status}
@@ -818,6 +1001,7 @@ export function LedgerMasterPanel() {
                       <TableRow>
                         <TableHead>Ledger Name</TableHead>
                         <TableHead>Display Code</TableHead>
+                        <TableHead>Custodian</TableHead>
                         <TableHead>Opening Balance (₹)</TableHead>
                         <TableHead>Dr/Cr</TableHead>
                         <TableHead>Active</TableHead>
@@ -832,6 +1016,35 @@ export function LedgerMasterPanel() {
                           <TableRow key={inst.id}>
                             <TableCell className="font-medium">{def?.name ?? '—'}</TableCell>
                             <TableCell className="font-mono text-xs">{displayCode}</TableCell>
+                            <TableCell>
+                              {inst.currentCustodian ? (
+                                <div className="space-y-0.5">
+                                  <p className="text-xs font-medium">{inst.currentCustodian.name}</p>
+                                  <p className="text-[10px] text-muted-foreground">{inst.currentCustodian.designation}</p>
+                                  {isCash && (
+                                    <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-teal-600"
+                                      onClick={() => {
+                                        setCustodianTargetInstanceId(inst.id);
+                                        setCustodianHistory(loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId));
+                                        setCustodianOpen(true);
+                                      }}>
+                                      Transfer
+                                    </Button>
+                                  )}
+                                </div>
+                              ) : (
+                                isCash ? (
+                                  <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 text-teal-600"
+                                    onClick={() => {
+                                      setCustodianTargetInstanceId(inst.id);
+                                      setCustodianHistory(loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId));
+                                      setCustodianOpen(true);
+                                    }}>
+                                    Assign
+                                  </Button>
+                                ) : <span className="text-xs text-muted-foreground">N/A</span>
+                              )}
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1">
                                 <span className="text-muted-foreground text-sm">₹</span>
@@ -890,7 +1103,7 @@ export function LedgerMasterPanel() {
 
       {/* ─── Cash Create / Edit Dialog ─── */}
       <Dialog open={cashCreateOpen} onOpenChange={(open) => { if (!open) { setCashCreateOpen(false); setCashEditTarget(null); } }}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{cashEditTarget ? 'Edit Cash Ledger' : 'Create Cash Ledger'}</DialogTitle>
             <DialogDescription>
@@ -934,6 +1147,37 @@ export function LedgerMasterPanel() {
               <Input placeholder="e.g., MCash, PettyCash-DEL" value={cashForm.alias}
                 onChange={(e) => setCashForm(f => ({ ...f, alias: e.target.value }))} disabled={!cashForm.parentGroupCode} />
             </div>
+
+            {/* Cash Controls */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Location</Label>
+              <Input placeholder="e.g., HO Cashbox, Delhi Reception" value={cashForm.location}
+                onChange={(e) => setCashForm(f => ({ ...f, location: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+              <p className="text-[10px] text-muted-foreground">Physical location of this cash box (for multi-location companies)</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Cash Limit (₹)</Label>
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground text-sm">₹</span>
+                <Input type="number" value={cashForm.cashLimit}
+                  onChange={(e) => setCashForm(f => ({ ...f, cashLimit: parseFloat(e.target.value) || 0 }))} disabled={!cashForm.parentGroupCode} />
+              </div>
+              <p className="text-[10px] text-muted-foreground">Maximum cash to hold. Alert shown when balance exceeds this.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Cash Receipt Series</Label>
+              <Input placeholder="e.g., CR" value={cashForm.voucherSeries} maxLength={4}
+                onChange={(e) => setCashForm(f => ({ ...f, voucherSeries: e.target.value.toUpperCase().slice(0, 4) }))} disabled={!cashForm.parentGroupCode} />
+              <p className="text-[10px] text-muted-foreground">Prefix for cash receipt numbers. Default: CR → CR-2526-0001</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="checkbox" checked={cashForm.isMainCash}
+                onChange={(e) => setCashForm(f => ({ ...f, isMainCash: e.target.checked }))}
+                disabled={!cashForm.parentGroupCode}
+                className="h-4 w-4" />
+              <Label className="text-sm">Set as primary cash account for this entity</Label>
+            </div>
+
             {!cashEditTarget && (
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Entity Scope</Label>
@@ -1155,6 +1399,94 @@ export function LedgerMasterPanel() {
           <DialogFooter>
             <Button variant="outline" onClick={() => { setBankCreateOpen(false); setBankEditTarget(null); }}>Cancel</Button>
             <Button onClick={handleBankSave} disabled={!bankForm.parentGroupCode}>{bankEditTarget ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Custodian Dialog ─── */}
+      <Dialog open={custodianOpen} onOpenChange={(open) => { if (!open) setCustodianOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Cash Custodian Management</DialogTitle>
+            <DialogDescription>
+              Assign or transfer custody of this cash account. Every change is recorded permanently.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">New Custodian Name <span className="text-destructive">*</span></Label>
+              <Input placeholder="Enter custodian name" value={custodianForm.name}
+                onChange={(e) => setCustodianForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Designation <span className="text-destructive">*</span></Label>
+              <Input placeholder="e.g., Cashier, Accountant" value={custodianForm.designation}
+                onChange={(e) => setCustodianForm(f => ({ ...f, designation: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Phone</Label>
+              <Input placeholder="Phone number" value={custodianForm.phone}
+                onChange={(e) => setCustodianForm(f => ({ ...f, phone: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Handover Authorised By <span className="text-destructive">*</span></Label>
+              <Input placeholder="Name of authorising person" value={custodianForm.handoverBy}
+                onChange={(e) => setCustodianForm(f => ({ ...f, handoverBy: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Cash Balance at Handover (₹)</Label>
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground text-sm">₹</span>
+                <Input type="number" value={custodianForm.cashBalanceAtHandover}
+                  onChange={(e) => setCustodianForm(f => ({ ...f, cashBalanceAtHandover: parseFloat(e.target.value) || 0 }))} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Notes</Label>
+              <Input placeholder="Transfer notes" value={custodianForm.notes}
+                onChange={(e) => setCustodianForm(f => ({ ...f, notes: e.target.value }))} />
+            </div>
+
+            {/* History */}
+            {custodianHistory.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custodian History</Label>
+                <div className="rounded-lg border border-border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs">Custodian</TableHead>
+                        <TableHead className="text-xs">From</TableHead>
+                        <TableHead className="text-xs">To</TableHead>
+                        <TableHead className="text-xs">Balance</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {custodianHistory.map(h => (
+                        <TableRow key={h.id}>
+                          <TableCell className="text-xs">
+                            <p className="font-medium">{h.custodianName}</p>
+                            <p className="text-muted-foreground">{h.designation}</p>
+                          </TableCell>
+                          <TableCell className="text-xs">{new Date(h.fromDate).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-xs">{h.toDate ? new Date(h.toDate).toLocaleDateString() : <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600">Current</Badge>}</TableCell>
+                          <TableCell className="text-xs font-mono">₹{h.cashBalanceAtHandover.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCustodianOpen(false)}>Close</Button>
+            <Button onClick={handleCustodianSave}>
+              {(() => {
+                const inst = instances.find(i => i.id === custodianTargetInstanceId);
+                return inst?.currentCustodian ? 'Transfer Custody' : 'Assign Custodian';
+              })()}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

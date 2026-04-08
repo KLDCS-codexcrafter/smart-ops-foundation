@@ -17,7 +17,8 @@ export interface L2ParentGroup {
   name: string;
   l1Code: string;
   nature: 'Dr' | 'Cr';
-  order: number;
+  order: number;       // global sequence (existing — keep)
+  localOrder: number;  // sequence within parent L1 (NEW)
 }
 
 export interface L3FinancialGroup {
@@ -53,19 +54,19 @@ export const L1_PRIMARIES: L1Primary[] = [
 
 // ─── L2 Parent Groups — 12 records ──────────────────────────────
 export const L2_PARENT_GROUPS: L2ParentGroup[] = [
-  { code: 'A-NCA',  name: 'Non-Current Assets',               l1Code: 'A',  nature: 'Dr', order: 1 },
-  { code: 'A-CA',   name: 'Current Assets',                   l1Code: 'A',  nature: 'Dr', order: 2 },
-  { code: 'L-NCL',  name: 'Non-Current Liabilities',          l1Code: 'L',  nature: 'Cr', order: 3 },
-  { code: 'L-CL',   name: 'Current Liabilities',              l1Code: 'L',  nature: 'Cr', order: 4 },
-  { code: 'CE-SF',  name: "Shareholders' Funds",              l1Code: 'CE', nature: 'Cr', order: 5 },
-  { code: 'CE-PP',  name: "Partners' & Proprietors' Funds",   l1Code: 'CE', nature: 'Cr', order: 6 },
-  { code: 'I-OR',   name: 'Operating Revenue',                l1Code: 'I',  nature: 'Cr', order: 7 },
-  { code: 'I-OI',   name: 'Other Income',                     l1Code: 'I',  nature: 'Cr', order: 8 },
-  { code: 'E-COG',  name: 'Cost of Goods Sold',               l1Code: 'E',  nature: 'Dr', order: 9 },
-  { code: 'E-OE',   name: 'Operating Expenses',               l1Code: 'E',  nature: 'Dr', order: 10 },
-  { code: 'E-FC',   name: 'Finance Costs',                    l1Code: 'E',  nature: 'Dr', order: 11 },
-  { code: 'E-DEP',  name: 'Depreciation & Amortisation',      l1Code: 'E',  nature: 'Dr', order: 12 },
-  { code: 'SR',    name: 'Suspense & Reconciliation',        l1Code: 'CE', nature: 'Dr', order: 13 },
+  { code: 'A-NCA',  name: 'Non-Current Assets',               l1Code: 'A',  nature: 'Dr', order: 1,  localOrder: 1 },
+  { code: 'A-CA',   name: 'Current Assets',                   l1Code: 'A',  nature: 'Dr', order: 2,  localOrder: 2 },
+  { code: 'L-NCL',  name: 'Non-Current Liabilities',          l1Code: 'L',  nature: 'Cr', order: 3,  localOrder: 1 },
+  { code: 'L-CL',   name: 'Current Liabilities',              l1Code: 'L',  nature: 'Cr', order: 4,  localOrder: 2 },
+  { code: 'CE-SF',  name: "Shareholders' Funds",              l1Code: 'CE', nature: 'Cr', order: 5,  localOrder: 1 },
+  { code: 'CE-PP',  name: "Partners' & Proprietors' Funds",   l1Code: 'CE', nature: 'Cr', order: 6,  localOrder: 2 },
+  { code: 'I-OR',   name: 'Operating Revenue',                l1Code: 'I',  nature: 'Cr', order: 7,  localOrder: 1 },
+  { code: 'I-OI',   name: 'Other Income',                     l1Code: 'I',  nature: 'Cr', order: 8,  localOrder: 2 },
+  { code: 'E-COG',  name: 'Cost of Goods Sold',               l1Code: 'E',  nature: 'Dr', order: 9,  localOrder: 1 },
+  { code: 'E-OE',   name: 'Operating Expenses',               l1Code: 'E',  nature: 'Dr', order: 10, localOrder: 2 },
+  { code: 'E-FC',   name: 'Finance Costs',                    l1Code: 'E',  nature: 'Dr', order: 11, localOrder: 3 },
+  { code: 'E-DEP',  name: 'Depreciation & Amortisation',      l1Code: 'E',  nature: 'Dr', order: 12, localOrder: 4 },
+  { code: 'SR',     name: 'Suspense & Reconciliation',        l1Code: 'CE', nature: 'Dr', order: 13, localOrder: 3 },
 ];
 
 // ─── L3 Financial Groups — 63 records ───────────────────────────
@@ -167,6 +168,11 @@ export const L3_FINANCIAL_GROUPS: L3FinancialGroup[] = [
   // Under Suspense & Reconciliation (SR) — 2 groups
   { code: 'BD',     name: 'Branch & Division Accounts',          tallyName: 'Branch / Divisions',           l2Code: 'SR',    nature: 'Dr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 1 },
   { code: 'SUS',    name: 'Suspense Account',                    tallyName: 'Suspense A/c',                 l2Code: 'SR',    nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 2 },
+
+  // Under Current Assets (A-CA) — PDC control account
+  { code: 'PDCR',   name: 'Post-Dated Cheques Receivable',      tallyName: 'Bills Receivable (PDC)',        l2Code: 'A-CA',  nature: 'Dr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 11 },
+  // Under Current Liabilities (L-CL) — PDC control account
+  { code: 'PDCP',   name: 'Post-Dated Cheques Payable',         tallyName: 'Bills Payable (PDC)',           l2Code: 'L-CL',  nature: 'Cr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 10 },
 ];
 
 // ─── L4 Industry Packs ──────────────────────────────────────────
@@ -285,4 +291,42 @@ export const L4_INDUSTRY_PACKS = {
   manufacturing: MANUFACTURING_PACK,
   trading: TRADING_PACK,
   services: SERVICES_PACK,
+};
+
+// ── Numeric Code Derivation — Single Source of Truth ──────────────
+// L1 numeric = L1.order (1-5)
+// L2 numeric = L1.order + L2.localOrder (e.g. A(1) + CA(2) = '12')
+// L3 numeric = L2_numeric + L3.order padded to 2 digits (e.g. '12'+'03' = '1203')
+// L4 numeric = L3_numeric + L4_local_seq padded to 2 digits (e.g. '120301')
+// Ledger numeric = parent_numeric + '-' + ledger_seq padded 4 digits (e.g. '1203-0001')
+
+export function deriveL3NumericCode(l3Code: string): string {
+  const l3 = L3_FINANCIAL_GROUPS.find(g => g.code === l3Code);
+  if (!l3) return '0000';
+  const l2 = L2_PARENT_GROUPS.find(g => g.code === l3.l2Code);
+  if (!l2) return '0000';
+  const l1 = L1_PRIMARIES.find(g => g.code === l2.l1Code);
+  if (!l1) return '0000';
+  const l2Numeric = `${l1.order}${l2.localOrder}`;
+  return `${l2Numeric}${String(l3.order).padStart(2, '0')}`;
+}
+
+export function deriveL4NumericCode(l3Code: string, l4LocalSeq: number): string {
+  return `${deriveL3NumericCode(l3Code)}${String(l4LocalSeq).padStart(2, '0')}`;
+}
+
+export function deriveLedgerNumericCode(parentGroupCode: string, ledgerSeq: number): string {
+  const l3Numeric = deriveL3NumericCode(parentGroupCode);
+  const prefix = l3Numeric !== '0000' ? l3Numeric : parentGroupCode;
+  return `${prefix}-${String(ledgerSeq).padStart(4, '0')}`;
+}
+
+// Reference table — L3 numeric codes (locked, never changes)
+export const L3_NUMERIC_MAP: Record<string, string> = {
+  CASH: '1203', BANK: '1204', TREC: '1202', TPAY: '2202',
+  STBOR: '2201', DUTYP: '2204', TDSP: '2207', GSTP: '2208',
+  EQSH: '3101', RSRV: '3103', PCAP: '3201', SALE: '4101',
+  SERV: '4104', PURCH: '5101', EMPB: '5201', BD: '3301',
+  SUS: '3302', PDCR: '1211', PDCP: '2210', EMPL: '2209',
+  ADVRC: '2205', STLA: '1206', ADTAX: '1210', BKCHG: '5302',
 };
