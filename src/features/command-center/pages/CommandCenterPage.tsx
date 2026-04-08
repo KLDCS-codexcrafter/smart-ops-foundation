@@ -19,6 +19,9 @@ import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
+import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
+import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
+import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -37,6 +40,9 @@ export type CommandCenterModule =
   | 'finecore-comply360'
   | 'finecore-finframe'
   | 'finecore-ledgers'
+  | 'masters-mode-payment'
+  | 'masters-terms-payment'
+  | 'masters-terms-delivery'
   | 'console';
 
 export default function CommandCenterPage() {
@@ -47,7 +53,8 @@ export default function CommandCenterPage() {
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
-      'finecore-finframe', 'finecore-ledgers'].includes(hash)) {
+      'finecore-finframe', 'finecore-ledgers',
+      'masters-mode-payment', 'masters-terms-payment', 'masters-terms-delivery'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -80,6 +87,9 @@ export default function CommandCenterPage() {
       case 'finecore-comply360': return <Comply360ConfigPanel />;
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
+      case 'masters-mode-payment': return <ModeOfPaymentMasterPanel />;
+      case 'masters-terms-payment': return <TermsOfPaymentMasterPanel />;
+      case 'masters-terms-delivery': return <TermsOfDeliveryMasterPanel />;
       case 'console': return <SecurityModule />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
