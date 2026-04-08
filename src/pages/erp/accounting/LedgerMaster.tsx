@@ -3303,6 +3303,213 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* ─── Duties & Tax Dialog ─── */}
+      <Dialog open={dutiesTaxOpen} onOpenChange={(open) => { if (!open) setDutiesTaxOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>New Duties & Tax Ledger</DialogTitle>
+            <DialogDescription>Create a GST, TDS, TCS, or other statutory tax ledger.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {/* Step 1 — Tax Type */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Tax Type <span className="text-destructive">*</span></Label>
+              <div className="flex gap-2">
+                {(['gst', 'tds', 'tcs', 'other'] as TaxType[]).map(tt => (
+                  <button key={tt} type="button" onClick={() => {
+                    const d = getDutiesTaxDefaults(tt, tt === 'gst' ? 'cgst' : null);
+                    setDutiesTaxForm(f => ({ ...f, taxType: tt, gstSubType: tt === 'gst' ? 'cgst' : null, ...d }));
+                  }} className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors capitalize ${
+                    dutiesTaxForm.taxType === tt ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>{tt.toUpperCase()}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2 — GST Sub-Type */}
+            {dutiesTaxForm.taxType === 'gst' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">GST Type <span className="text-destructive">*</span></Label>
+                <div className="flex gap-2">
+                  {(['cgst', 'sgst', 'igst', 'cess'] as const).map(st => (
+                    <button key={st} type="button" onClick={() => {
+                      const d = getDutiesTaxDefaults('gst', st);
+                      setDutiesTaxForm(f => ({ ...f, gstSubType: st, ...d }));
+                    }} className={`px-3 py-1.5 rounded-lg border text-xs font-medium uppercase transition-colors ${
+                      dutiesTaxForm.gstSubType === st ? 'bg-blue-500/15 text-blue-700 border-blue-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>{st}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Name + Mailing Name */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+              <Input value={dutiesTaxForm.name} onKeyDown={onEnterNext}
+                onChange={(e) => setDutiesTaxForm(f => ({ ...f, name: e.target.value, mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input value={dutiesTaxForm.mailingName} onKeyDown={onEnterNext}
+                onChange={(e) => setDutiesTaxForm(f => ({ ...f, mailingName: e.target.value }))} />
+            </div>
+
+            {/* Step 4 — Calculation Basis (GST only) */}
+            {dutiesTaxForm.taxType === 'gst' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Calculation Basis</Label>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, calculationBasis: 'item_rate' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                      dutiesTaxForm.calculationBasis === 'item_rate' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>
+                    <div>On Item Rate</div>
+                    <div className="text-[10px] text-muted-foreground">GST rate from HSN/item code</div>
+                  </button>
+                  <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, calculationBasis: 'ledger_value' }))}
+                    className={`flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                      dutiesTaxForm.calculationBasis === 'ledger_value' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                    }`}>
+                    <div>On Ledger Value</div>
+                    <div className="text-[10px] text-muted-foreground">Fixed % × voucher amount</div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5 — Rate (only when ledger_value) */}
+            {dutiesTaxForm.calculationBasis === 'ledger_value' && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Tax Rate</Label>
+                <div className="flex items-center gap-1">
+                  <Input type="number" className="w-24" value={dutiesTaxForm.rate || ''} onKeyDown={onEnterNext}
+                    onChange={(e) => setDutiesTaxForm(f => ({ ...f, rate: parseFloat(e.target.value) || 0 }))} />
+                  <span className="text-muted-foreground text-sm">%</span>
+                </div>
+              </div>
+            )}
+
+            {/* Opening Balance */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Opening Balance</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground text-sm">₹</span>
+                <Input {...amountInputProps} value={dutiesTaxForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
+                  onChange={(e) => setDutiesTaxForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
+              </div>
+            </div>
+
+            {/* Advanced — Entity Scope */}
+            <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' } as any))}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+              <ChevronDown className="h-3 w-3" /> Advanced
+            </button>
+            {(dutiesTaxForm as any).scope === 'entity' && renderScopeSection(dutiesTaxForm as any, setDutiesTaxForm)}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDutiesTaxOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handleDutiesTaxSave}>Create Ledger</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Payroll Statutory Dialog ─── */}
+      <Dialog open={payrollStatOpen} onOpenChange={(open) => { if (!open) setPayrollStatOpen(false); }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>New Payroll Statutory Ledger</DialogTitle>
+            <DialogDescription>Create a statutory deduction or contribution holding account.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            {/* Step 1 — Category */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Category <span className="text-destructive">*</span></Label>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollCategory: 'employee_deduction', payrollComponent: '' }))}
+                  className={`p-3 rounded-xl border text-sm font-medium transition-colors flex-1 text-left ${
+                    payrollForm.payrollCategory === 'employee_deduction' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>
+                  <div>Employees' Statutory Deductions</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">PF · ESI · PT · TDS deducted from salary</div>
+                </button>
+                <button type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollCategory: 'employer_contribution', payrollComponent: '' }))}
+                  className={`p-3 rounded-xl border text-sm font-medium transition-colors flex-1 text-left ${
+                    payrollForm.payrollCategory === 'employer_contribution' ? 'bg-teal-500/15 text-teal-700 border-teal-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                  }`}>
+                  <div>Employer's Statutory Contributions</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">PF · ESI · EDLI · LWF · Gratuity</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Step 2 — Component chips */}
+            {payrollForm.payrollCategory && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Component <span className="text-destructive">*</span></Label>
+                <div className="flex flex-wrap gap-2">
+                  {(payrollForm.payrollCategory === 'employee_deduction'
+                    ? (['pf_employee','esi_employee','pt_employee','tds_salary'] as PayrollComponent[])
+                    : (['pf_employer_epf','pf_employer_eps','pf_edli','esi_employer','lwf_employer','gratuity_provision'] as PayrollComponent[])
+                  ).map(comp => {
+                    const d = PAYROLL_COMPONENT_DEFAULTS[comp];
+                    return (
+                      <button key={comp} type="button" onClick={() => setPayrollForm(f => ({ ...f, payrollComponent: comp, name: d.name, mailingName: d.name }))}
+                        className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                          payrollForm.payrollComponent === comp ? 'bg-blue-500/15 text-blue-700 border-blue-500/40' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'
+                        }`}>{d.name}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Ledger Name */}
+            {payrollForm.payrollComponent && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
+                <Input value={payrollForm.name} onKeyDown={onEnterNext}
+                  onChange={(e) => setPayrollForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+            )}
+
+            {/* Step 4 — Rate Info (READ ONLY) */}
+            {payrollForm.payrollComponent && (() => {
+              const d = PAYROLL_COMPONENT_DEFAULTS[payrollForm.payrollComponent as PayrollComponent];
+              return (
+                <div className="rounded-xl border border-teal-500/20 bg-teal-500/5 p-3 space-y-1.5">
+                  <p className="text-xs font-medium text-teal-700">Statutory Rate (not editable — set by law)</p>
+                  {d.statutoryRate > 0 && <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-700 border-teal-500/30">{d.statutoryRate}% of {d.calculationBase.replace('_',' ')}</Badge>}
+                  {d.calculationBase === 'state_slab' && <p className="text-[10px] text-muted-foreground">Rate varies by state · Managed in PT Master</p>}
+                  {d.calculationBase === 'state_specific' && <p className="text-[10px] text-muted-foreground">Amount varies by state · Managed in LWF Master</p>}
+                  {d.calculationBase === '15/26 x basic x years' && <p className="text-[10px] text-muted-foreground">15/26 × Basic × Years of Service</p>}
+                  {d.wageCeiling && <p className="text-[10px] text-muted-foreground">Wage ceiling: ₹{d.wageCeiling.toLocaleString('en-IN')}/month</p>}
+                  {d.maxAmount && <p className="text-[10px] text-muted-foreground">Maximum: ₹{d.maxAmount.toLocaleString('en-IN')}</p>}
+                </div>
+              );
+            })()}
+
+            {/* Opening Balance */}
+            {payrollForm.payrollComponent && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Opening Balance</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">₹</span>
+                  <Input {...amountInputProps} value={payrollForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
+                    onChange={(e) => setPayrollForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                  <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayrollStatOpen(false)}>Cancel</Button>
+            <Button data-primary onClick={handlePayrollStatSave}>Create Ledger</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ─── Custodian Dialog ─── */}
       <Dialog open={custodianOpen} onOpenChange={(open) => { if (!open) setCustodianOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
