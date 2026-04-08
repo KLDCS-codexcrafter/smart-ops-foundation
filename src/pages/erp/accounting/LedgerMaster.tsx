@@ -135,6 +135,7 @@ interface CashLedgerDefinition {
   numericCode: string;
   code: string;
   alias: string;
+  mailingName: string;
   parentGroupCode: string;
   parentGroupName: string;
   entityId: string | null;
@@ -186,6 +187,19 @@ interface BankLedgerDefinition {
   clearingDays: number;
   cutoffTime: string;
   status: 'active' | 'inactive' | 'dormant' | 'closed';
+  // ── Mailing Name + Account Holder ──
+  mailingName: string;
+  acHolderName: string;
+  // ── From IFSC API (additional fields) ──
+  bankPhone: string;
+  neftEnabled: boolean;
+  rtgsEnabled: boolean;
+  impsEnabled: boolean;
+  upiEnabled: boolean;
+  // ── Bank Relationship Manager ──
+  bankManagerName: string;
+  bankManagerPhone: string;
+  bankManagerEmail: string;
 }
 
 type AnyLedgerDefinition = CashLedgerDefinition | BankLedgerDefinition;
@@ -319,6 +333,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     alertThreshold: d.alertThreshold ?? 0,
     isMainCash: d.isMainCash ?? false,
     voucherSeries: d.voucherSeries ?? 'CR',
+    mailingName: d.mailingName ?? '',
     // Bank backward compat
     branchName: d.branchName ?? '',
     branchAddress: d.branchAddress ?? '',
@@ -338,6 +353,15 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     clearingDays: d.clearingDays ?? 2,
     cutoffTime: d.cutoffTime ?? '14:30',
     currency: d.currency ?? 'INR',
+    acHolderName: d.acHolderName ?? '',
+    bankPhone: d.bankPhone ?? '',
+    neftEnabled: d.neftEnabled ?? true,
+    rtgsEnabled: d.rtgsEnabled ?? true,
+    impsEnabled: d.impsEnabled ?? true,
+    upiEnabled: d.upiEnabled ?? true,
+    bankManagerName: d.bankManagerName ?? '',
+    bankManagerPhone: d.bankManagerPhone ?? '',
+    bankManagerEmail: d.bankManagerEmail ?? '',
   }));
 };
 
@@ -583,6 +607,19 @@ const defaultBankForm = {
   brsEnabled: true,
   clearingDays: 2,
   cutoffTime: '14:30',
+  // Mailing Name + A/c Holder
+  mailingName: '',
+  acHolderName: '',
+  // IFSC additional
+  bankPhone: '',
+  neftEnabled: true,
+  rtgsEnabled: true,
+  impsEnabled: true,
+  upiEnabled: true,
+  // Bank Manager
+  bankManagerName: '',
+  bankManagerPhone: '',
+  bankManagerEmail: '',
 };
 
 // ─── Component ────────────────────────────────────────────────────────
@@ -615,6 +652,7 @@ export function LedgerMasterPanel() {
     isMainCash: false,
     voucherSeries: 'CR',
     openingBalanceType: 'Dr' as 'Dr' | 'Cr',
+    mailingName: '',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
@@ -728,9 +766,39 @@ export function LedgerMasterPanel() {
         micrCode: data.MICR ?? '',
         swiftCode: data.SWIFT ?? '',
         ifscAutoFilled: true,
+        mailingName: bankFromIfsc,
+        bankPhone: data.CONTACT ?? '',
+        neftEnabled: data.NEFT ?? true,
+        rtgsEnabled: data.RTGS ?? true,
+        impsEnabled: data.IMPS ?? true,
+        upiEnabled: data.UPI ?? true,
+        name: f.name.trim() === ''
+          ? suggestBankLedgerName(bankFromIfsc, f.accountType, f.accountNumber)
+          : f.name,
       }));
       setIfscValid(true);
       setBankShowBranch(true);
+      // Auto-suggest cheque format, GST, clearing days, cutoff from IFSC prefix
+      const prefix = ifsc.slice(0, 4).toUpperCase();
+      const fmtMap: Record<string, typeof bankForm.chequeFormat> = {
+        HDFC: 'HDFC_CTS', SBIN: 'SBI_CTS', ICIC: 'ICICI_CTS', UTIB: 'AXIS_CTS',
+      };
+      const suggestedFmt = fmtMap[prefix] ?? 'GENERIC_CTS';
+      const gstYes = ['HDFC','ICIC','UTIB','KKBK','INDB','IDFB','YESB','FDRL'];
+      const suggestedGst = gstYes.includes(prefix);
+      const privatePfx = ['HDFC','ICIC','UTIB','KKBK','INDB','IDFB','YESB','FDRL'];
+      const suggestedDays = privatePfx.includes(prefix) ? 2 : 3;
+      const cutoffMap: Record<string, string> = {
+        HDFC: '14:30', ICIC: '14:30', UTIB: '14:30', SBIN: '13:30', PUNB: '13:00', BARB: '13:00',
+      };
+      const suggestedCutoff = cutoffMap[prefix] ?? '14:30';
+      setBankForm(f => ({
+        ...f,
+        chequeFormat: f.chequeFormat === 'GENERIC_CTS' ? suggestedFmt : f.chequeFormat,
+        gstOnCharges: f.gstOnCharges === true ? suggestedGst : f.gstOnCharges,
+        clearingDays: f.clearingDays === 2 ? suggestedDays : f.clearingDays,
+        cutoffTime: f.cutoffTime === '14:30' ? suggestedCutoff : f.cutoffTime,
+      }));
       toast.success(`Branch details fetched: ${data.BRANCH}, ${data.CITY}`);
     } catch {
       setIfscFetchError('Branch details unavailable — please fill manually');
@@ -738,6 +806,16 @@ export function LedgerMasterPanel() {
     } finally {
       setIfscFetching(false);
     }
+  };
+
+  const suggestBankLedgerName = (bankName: string, acType: BankAccountType | '' = '', acNo: string): string => {
+    if (!bankName || !acType) return '';
+    const label: Record<string, string> = {
+      current: 'Current A/c', savings: 'Savings A/c', fixed_deposit: 'Fixed Deposit',
+      eefc: 'EEFC A/c', cash_credit: 'CC Limit', overdraft: 'OD A/c',
+    };
+    const last4 = acNo?.replace(/\D/g, '').slice(-4);
+    return `${bankName} — ${label[acType] ?? ''}${last4 ? ` (${last4})` : ''}`;
   };
 
   // ── Quick Starts ──
@@ -764,6 +842,7 @@ export function LedgerMasterPanel() {
       location: def.location ?? '', cashLimit: def.cashLimit ?? 0,
       alertThreshold: def.alertThreshold ?? 0, isMainCash: def.isMainCash ?? false,
       voucherSeries: def.voucherSeries ?? 'CR', openingBalanceType: 'Dr',
+      mailingName: def.mailingName ?? '',
     });
     setCashCreateOpen(true);
   };
@@ -803,6 +882,16 @@ export function LedgerMasterPanel() {
       brsEnabled: def.brsEnabled ?? true,
       clearingDays: def.clearingDays ?? 2,
       cutoffTime: def.cutoffTime ?? '14:30',
+      mailingName: def.mailingName ?? '',
+      acHolderName: def.acHolderName ?? '',
+      bankPhone: def.bankPhone ?? '',
+      neftEnabled: def.neftEnabled ?? true,
+      rtgsEnabled: def.rtgsEnabled ?? true,
+      impsEnabled: def.impsEnabled ?? true,
+      upiEnabled: def.upiEnabled ?? true,
+      bankManagerName: def.bankManagerName ?? '',
+      bankManagerPhone: def.bankManagerPhone ?? '',
+      bankManagerEmail: def.bankManagerEmail ?? '',
     });
     setIfscValid(validateIFSC(def.ifscCode));
     setShowAccountPreview(true);
@@ -822,6 +911,7 @@ export function LedgerMasterPanel() {
         location: cashForm.location, cashLimit: cashForm.cashLimit,
         alertThreshold: cashForm.alertThreshold, isMainCash: cashForm.isMainCash,
         voucherSeries: cashForm.voucherSeries || 'CR',
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -831,6 +921,7 @@ export function LedgerMasterPanel() {
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
         name: cashForm.name.trim(), code, numericCode, alias: cashForm.alias.trim(),
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
         parentGroupCode: cashForm.parentGroupCode, parentGroupName: cashForm.parentGroupName,
         entityId: null, entityShortCode: null,
         location: cashForm.location, cashLimit: cashForm.cashLimit,
@@ -848,6 +939,7 @@ export function LedgerMasterPanel() {
       const def: CashLedgerDefinition = {
         id: crypto.randomUUID(), ledgerType: 'cash',
         name: cashForm.name.trim(), code, numericCode, alias: cashForm.alias.trim(),
+        mailingName: cashForm.mailingName.trim() || cashForm.name.trim(),
         parentGroupCode: cashForm.parentGroupCode, parentGroupName: cashForm.parentGroupName,
         entityId: entity.id, entityShortCode: entity.shortCode,
         location: cashForm.location, cashLimit: cashForm.cashLimit,
@@ -901,6 +993,16 @@ export function LedgerMasterPanel() {
       brsEnabled: bankForm.brsEnabled,
       clearingDays: bankForm.clearingDays,
       cutoffTime: bankForm.cutoffTime,
+      mailingName: bankForm.mailingName.trim() || resolvedBankName,
+      acHolderName: bankForm.acHolderName.trim(),
+      bankPhone: bankForm.bankPhone,
+      neftEnabled: bankForm.neftEnabled,
+      rtgsEnabled: bankForm.rtgsEnabled,
+      impsEnabled: bankForm.impsEnabled,
+      upiEnabled: bankForm.upiEnabled,
+      bankManagerName: bankForm.bankManagerName.trim(),
+      bankManagerPhone: bankForm.bankManagerPhone.trim(),
+      bankManagerEmail: bankForm.bankManagerEmail.trim(),
     };
 
     if (bankEditTarget) {
@@ -1345,6 +1447,7 @@ export function LedgerMasterPanel() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
+                        <TableHead>Mailing Name</TableHead>
                         <TableHead>Numeric Code</TableHead>
                         <TableHead>Bank · Branch</TableHead>
                         <TableHead>Account Type</TableHead>
@@ -1365,6 +1468,7 @@ export function LedgerMasterPanel() {
                             }
                           }}>
                             <TableCell className="font-medium">{def.name}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{def.mailingName || '—'}</TableCell>
                             <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
                             <TableCell>
                               <div>
@@ -1392,7 +1496,7 @@ export function LedgerMasterPanel() {
                           </TableRow>
                           {expandedBankId === def.id && (
                             <TableRow key={`${def.id}-expand`}>
-                              <TableCell colSpan={7} className="p-0">
+                              <TableCell colSpan={8} className="p-0">
                                 <div className="bg-muted/20 border-t border-border p-4">
                                   <Tabs value={bankMgmtTab} onValueChange={v => setBankMgmtTab(v as any)}>
                                     <TabsList className="h-8 mb-3">
@@ -1815,7 +1919,19 @@ export function LedgerMasterPanel() {
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
               <Input placeholder="e.g., Main Cash, Petty Cash — Delhi" value={cashForm.name}
                 onKeyDown={onEnterNext}
-                onChange={(e) => setCashForm(f => ({ ...f, name: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+                onChange={(e) => setCashForm(f => ({
+                  ...f,
+                  name: e.target.value,
+                  mailingName: (!f.mailingName || f.mailingName === f.name) ? e.target.value : f.mailingName,
+                }))} disabled={!cashForm.parentGroupCode} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input placeholder="e.g., 4DSmartOps Private Limited" value={cashForm.mailingName}
+                onKeyDown={onEnterNext}
+                onChange={(e) => setCashForm(f => ({ ...f, mailingName: e.target.value }))}
+                disabled={!cashForm.parentGroupCode} />
+              <p className="text-[10px] text-muted-foreground">Appears on cash receipts and payment documents. Auto-copied from Ledger Name.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Alias</Label>
@@ -1947,6 +2063,13 @@ export function LedgerMasterPanel() {
                 onKeyDown={onEnterNext}
                 onChange={(e) => setBankForm(f => ({ ...f, name: e.target.value }))} />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Mailing Name</Label>
+              <Input placeholder="e.g., HDFC Bank Limited" value={bankForm.mailingName}
+                onKeyDown={onEnterNext}
+                onChange={(e) => setBankForm(f => ({ ...f, mailingName: e.target.value }))} />
+              <p className="text-[10px] text-muted-foreground">Printed on NEFT/RTGS letters, deposit slips and bank correspondence. Auto-filled from IFSC.</p>
+            </div>
 
             {/* ESSENTIAL — Field 3: Account Type */}
             <div className="space-y-1.5">
@@ -1955,7 +2078,11 @@ export function LedgerMasterPanel() {
                 const at = v as BankAccountType;
                 const nature = getDefaultNature(at);
                 const parent = getSuggestedParent(at);
-                setBankForm(f => ({ ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name }));
+                setBankForm(f => ({
+                  ...f, accountType: at, openingBalanceType: nature, parentGroupCode: parent.code, parentGroupName: parent.name,
+                  name: (!f.name || f.name === suggestBankLedgerName(f.bankName, f.accountType, f.accountNumber))
+                    ? suggestBankLedgerName(f.bankName, at, f.accountNumber) : f.name,
+                }));
               }}>
                 <SelectTrigger><SelectValue placeholder="Select account type" /></SelectTrigger>
                 <SelectContent>
@@ -2052,6 +2179,23 @@ export function LedgerMasterPanel() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">A/c Holder's Name</Label>
+                  <Input placeholder="e.g., Acme India Pvt Ltd" value={bankForm.acHolderName} onKeyDown={onEnterNext}
+                    onChange={(e) => setBankForm(f => ({ ...f, acHolderName: e.target.value }))} />
+                  <p className="text-[10px] text-muted-foreground">Your company as registered with the bank. Appears on bank forms and cheques.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Bank Manager (Optional)</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input placeholder="Name" value={bankForm.bankManagerName} onKeyDown={onEnterNext}
+                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerName: e.target.value }))} />
+                    <Input placeholder="Phone" value={bankForm.bankManagerPhone} onKeyDown={onEnterNext}
+                      onChange={(e) => setBankForm(f => ({ ...f, bankManagerPhone: e.target.value }))} />
+                  </div>
+                  <Input placeholder="Email" value={bankForm.bankManagerEmail} onKeyDown={onEnterNext}
+                    onChange={(e) => setBankForm(f => ({ ...f, bankManagerEmail: e.target.value }))} />
+                </div>
               </div>
             )}
 
@@ -2087,6 +2231,23 @@ export function LedgerMasterPanel() {
                     <Input value={bankForm.branchPincode} className="h-8 text-xs" maxLength={6} onKeyDown={onEnterNext}
                       onChange={(e) => setBankForm(f => ({ ...f, branchPincode: e.target.value.replace(/\D/g, '').slice(0, 6) }))} /></div>
                 </div>
+                {bankForm.bankPhone && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Branch Phone</Label>
+                    <p className="text-xs font-mono text-foreground">{bankForm.bankPhone}</p>
+                  </div>
+                )}
+                {bankForm.ifscAutoFilled && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Supports</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {bankForm.neftEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">NEFT</Badge>}
+                      {bankForm.rtgsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">RTGS</Badge>}
+                      {bankForm.impsEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">IMPS</Badge>}
+                      {bankForm.upiEnabled && <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">UPI</Badge>}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
