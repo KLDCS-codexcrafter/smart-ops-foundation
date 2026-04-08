@@ -177,9 +177,10 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
           openingBalanceType: 'Dr',
           isActive: true,
           displayCode: def.code,
+          displayNumericCode: `${entity.shortCode}/${def.numericCode ?? def.code}`,
+          currentCustodian: null,
         });
         localStorage.setItem(key, JSON.stringify(inst));
-        // [JWT] POST /api/entity/${entity.id}/finecore/ledger-instances
       }
     });
   });
