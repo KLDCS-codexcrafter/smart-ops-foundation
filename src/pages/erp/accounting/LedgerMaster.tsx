@@ -1015,7 +1015,7 @@ export function LedgerMasterPanel() {
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -2317,6 +2317,12 @@ export function LedgerMasterPanel() {
               </TabsTrigger>
               <TabsTrigger value="liabilities" className="text-xs gap-1.5">
                 <Shield className="h-3.5 w-3.5" /> Liabilities ({liabilityDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="duties_tax" className="text-xs gap-1.5">
+                <Receipt className="h-3.5 w-3.5" /> Duties & Tax ({dutiesTaxDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="payroll" className="text-xs gap-1.5">
+                <Users className="h-3.5 w-3.5" /> Payroll Statutory ({payrollStatDefs.length})
               </TabsTrigger>
             </TabsList>
           </Tabs>
