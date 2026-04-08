@@ -308,8 +308,12 @@ const amountToWords = (amount: number): string => {
     if (n < 100) return tens[Math.floor(n/10)] + ' ' + ones[n%10] + ' ';
     if (n < 1000) return ones[Math.floor(n/100)] + ' Hundred ' + toWords(n%100);
     if (n < 100000) return toWords(Math.floor(n/1000)) + 'Thousand ' + toWords(n%1000);
-    if (n < 10000000) return toWords(Math.floor(n/100000)) + 'Lakh ' + toWords(n%100000);
-    return toWords(Math.floor(n/10000000)) + 'Crore ' + toWords(n%10000000);
+    if (n < 10000000) {
+      const lakhs = Math.floor(n / 100000);
+      return toWords(lakhs) + (lakhs === 1 ? 'Lakh ' : 'Lakhs ') + toWords(n % 100000);
+    }
+    const crores = Math.floor(n / 10000000);
+    return toWords(crores) + (crores === 1 ? 'Crore ' : 'Crores ') + toWords(n % 10000000);
   };
   const [rupees, paiseStr] = amount.toFixed(2).split('.');
   const paise = parseInt(paiseStr);
@@ -377,6 +381,7 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
+  // [JWT] POST/PUT /api/group/finecore/ledger-definitions
 };
 
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
@@ -409,6 +414,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   localStorage.setItem(`erp_entity_${inst.entityId}_ledger_instances`, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${inst.entityId}/finecore/ledger-instances
 };
 
 // ── Custodian History ─────────────────────────────────────────────
@@ -422,6 +428,7 @@ const appendCustodianHistory = (record: CustodianHistoryRecord) => {
   const key = `erp_entity_${record.entityId}_custodian_history_${record.ledgerDefinitionId}`;
   const existing = loadCustodianHistory(record.entityId, record.ledgerDefinitionId);
   localStorage.setItem(key, JSON.stringify([...existing, record]));
+  // [JWT] POST /api/entity/${record.entityId}/finecore/custodian-history
 };
 
 // ── Cheque Book helpers ───────────────────────────────────────────
@@ -437,6 +444,7 @@ const saveChequeBook = (book: ChequeBook): void => {
   const idx = all.findIndex(b => b.id === book.id);
   if (idx >= 0) all[idx] = book; else all.push(book);
   localStorage.setItem(key, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${book.entityId}/finecore/cheque-books
 };
 
 // ── Cheque Record helpers ─────────────────────────────────────────
@@ -452,6 +460,7 @@ const saveChequeRecord = (rec: ChequeRecord): void => {
   const idx = all.findIndex(r => r.id === rec.id);
   if (idx >= 0) all[idx] = rec; else all.push(rec);
   localStorage.setItem(key, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${rec.entityId}/finecore/cheque-records
 };
 
 // ── NACH Mandate helpers ──────────────────────────────────────────
@@ -467,6 +476,7 @@ const saveNachMandate = (m: NachMandate): void => {
   const idx = all.findIndex(n => n.id === m.id);
   if (idx >= 0) all[idx] = m; else all.push(m);
   localStorage.setItem(key, JSON.stringify(all));
+  // [JWT] POST/PUT /api/entity/${m.entityId}/finecore/nach-mandates
 };
 
 // ─── Code Generation ──────────────────────────────────────────────────
@@ -522,6 +532,10 @@ const autoCreateInstances = (
 ) => {
   const allEntities = loadEntities();
   allEntities.forEach((entity, idx) => {
+    const existingInstances = JSON.parse(
+      localStorage.getItem(`erp_entity_${entity.id}_ledger_instances`) || '[]'
+    ) as { ledgerDefinitionId: string }[];
+    if (existingInstances.find(i => i.ledgerDefinitionId === def.id)) return;
     saveInstance({
       id: crypto.randomUUID(),
       ledgerDefinitionId: def.id,
@@ -1082,6 +1096,7 @@ export function LedgerMasterPanel() {
       const updatedHistory = existing.map(h => h.toDate === null ? { ...h, toDate: now, handoverToName: custodianForm.name } : h);
       const key = `erp_entity_${inst.entityId}_custodian_history_${inst.ledgerDefinitionId}`;
       localStorage.setItem(key, JSON.stringify(updatedHistory));
+      // [JWT] PUT /api/entity/${inst.entityId}/finecore/custodian-history (close previous)
     }
     const newRecord: CustodianHistoryRecord = {
       id: crypto.randomUUID(), ledgerDefinitionId: inst.ledgerDefinitionId,
