@@ -1496,7 +1496,7 @@ export function LedgerMasterPanel() {
                           </TableRow>
                           {expandedBankId === def.id && (
                             <TableRow key={`${def.id}-expand`}>
-                              <TableCell colSpan={7} className="p-0">
+                              <TableCell colSpan={8} className="p-0">
                                 <div className="bg-muted/20 border-t border-border p-4">
                                   <Tabs value={bankMgmtTab} onValueChange={v => setBankMgmtTab(v as any)}>
                                     <TabsList className="h-8 mb-3">
