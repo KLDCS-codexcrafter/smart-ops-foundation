@@ -22,6 +22,7 @@ import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
+import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -43,6 +44,7 @@ export type CommandCenterModule =
   | 'masters-mode-payment'
   | 'masters-terms-payment'
   | 'masters-terms-delivery'
+  | 'masters-logistic'
   | 'console';
 
 export default function CommandCenterPage() {
@@ -54,7 +56,7 @@ export default function CommandCenterPage() {
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'finecore-finframe', 'finecore-ledgers',
-      'masters-mode-payment', 'masters-terms-payment', 'masters-terms-delivery'].includes(hash)) {
+      'masters-mode-payment', 'masters-terms-payment', 'masters-terms-delivery', 'masters-logistic'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -90,6 +92,7 @@ export default function CommandCenterPage() {
       case 'masters-mode-payment': return <ModeOfPaymentMasterPanel />;
       case 'masters-terms-payment': return <TermsOfPaymentMasterPanel />;
       case 'masters-terms-delivery': return <TermsOfDeliveryMasterPanel />;
+      case 'masters-logistic': return <LogisticMasterPanel />;
       case 'console': return <SecurityModule />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
