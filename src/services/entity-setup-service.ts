@@ -6,6 +6,10 @@
  */
 import { MOCK_ENTITIES, type MockEntity } from '@/data/mock-entities';
 import { L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS } from '@/data/finframe-seed-data';
+import {
+  MODE_OF_PAYMENT_SEED, TERMS_OF_PAYMENT_SEED, TERMS_OF_DELIVERY_SEED,
+  type ModeOfPayment, type TermsOfPayment, type TermsOfDelivery,
+} from '@/data/masters-seed-data';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,6 +30,11 @@ export interface SetupResult {
   l4GroupsCreated: number;
   bdLedgersCreated: number;
   entityRegistered: boolean;
+  supportingMastersCreated: {
+    modeOfPayment: number;
+    termsOfPayment: number;
+    termsOfDelivery: number;
+  };
 }
 
 interface AnyLedgerDefinition {
@@ -342,5 +351,65 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   // 4. Create Branch/Division inter-entity ledgers
   const bdLedgersCreated = createBDLedgers(opts);
 
-  return { ledgersCreated, l4GroupsCreated, bdLedgersCreated, entityRegistered: true };
+  // 5. Create default supporting masters
+  const mopCreated = createDefaultModeOfPayment();
+  const topCreated = createDefaultTermsOfPayment();
+  const todCreated = createDefaultTermsOfDelivery();
+
+  return {
+    ledgersCreated,
+    l4GroupsCreated,
+    bdLedgersCreated,
+    entityRegistered: true,
+    supportingMastersCreated: {
+      modeOfPayment: mopCreated,
+      termsOfPayment: topCreated,
+      termsOfDelivery: todCreated,
+    },
+  };
+};
+
+// ── 2.8 createDefaultModeOfPayment ─────────────────────────────────────────
+const createDefaultModeOfPayment = (): number => {
+  const key = 'erp_group_mode_of_payment';
+  const existing: ModeOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
+  const existingCodes = new Set(existing.map(r => r.code));
+  const toCreate = MODE_OF_PAYMENT_SEED
+    .filter(r => !existingCodes.has(r.code))
+    .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
+  if (toCreate.length > 0) {
+    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    // [JWT] POST /api/group/masters/mode-of-payment/bulk
+  }
+  return toCreate.length;
+};
+
+// ── 2.9 createDefaultTermsOfPayment ────────────────────────────────────────
+const createDefaultTermsOfPayment = (): number => {
+  const key = 'erp_group_terms_of_payment';
+  const existing: TermsOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
+  const existingCodes = new Set(existing.map(r => r.code));
+  const toCreate = TERMS_OF_PAYMENT_SEED
+    .filter(r => !existingCodes.has(r.code))
+    .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
+  if (toCreate.length > 0) {
+    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    // [JWT] POST /api/group/masters/terms-of-payment/bulk
+  }
+  return toCreate.length;
+};
+
+// ── 2.10 createDefaultTermsOfDelivery ──────────────────────────────────────
+const createDefaultTermsOfDelivery = (): number => {
+  const key = 'erp_group_terms_of_delivery';
+  const existing: TermsOfDelivery[] = JSON.parse(localStorage.getItem(key) || '[]');
+  const existingCodes = new Set(existing.map(r => r.code));
+  const toCreate = TERMS_OF_DELIVERY_SEED
+    .filter(r => !existingCodes.has(r.code))
+    .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
+  if (toCreate.length > 0) {
+    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    // [JWT] POST /api/group/masters/terms-of-delivery/bulk
+  }
+  return toCreate.length;
 };
