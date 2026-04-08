@@ -451,6 +451,7 @@ export function LedgerMasterPanel() {
       alertThreshold: def.alertThreshold ?? 0,
       isMainCash: def.isMainCash ?? false,
       voucherSeries: def.voucherSeries ?? 'CR',
+      openingBalanceType: 'Dr',
     });
     setCashCreateOpen(true);
   };
