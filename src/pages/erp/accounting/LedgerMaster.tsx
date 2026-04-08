@@ -27,6 +27,7 @@ import {
   L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
 } from '@/data/finframe-seed-data';
+import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -369,6 +370,7 @@ export function LedgerMasterPanel() {
     alertThreshold: 0,
     isMainCash: false,
     voucherSeries: 'CR',
+    openingBalanceType: 'Dr' as 'Dr' | 'Cr',
   };
   const [cashForm, setCashForm] = useState(defaultCashForm);
 
@@ -378,6 +380,10 @@ export function LedgerMasterPanel() {
   const [bankForm, setBankForm] = useState(defaultBankForm);
   const [ifscValid, setIfscValid] = useState<boolean | null>(null);
   const [showAccountPreview, setShowAccountPreview] = useState(false);
+
+  // Cash dialog collapsed sections
+  const [cashShowMore, setCashShowMore] = useState(false);
+  const [cashShowAdvanced, setCashShowAdvanced] = useState(false);
 
   // Custodian dialog state
   const [custodianOpen, setCustodianOpen] = useState(false);
@@ -398,6 +404,12 @@ export function LedgerMasterPanel() {
     setBankDefs(loadBankDefs());
     setInstances(loadInstances(selEntityId));
   };
+
+  // Ctrl+S saves the active form
+  useCtrlS(() => {
+    if (cashCreateOpen) handleCashSave();
+    if (bankCreateOpen) handleBankSave();
+  });
 
   // ── Stats ──
   const allDefs = [...cashDefs, ...bankDefs];
@@ -443,6 +455,7 @@ export function LedgerMasterPanel() {
       alertThreshold: def.alertThreshold ?? 0,
       isMainCash: def.isMainCash ?? false,
       voucherSeries: def.voucherSeries ?? 'CR',
+      openingBalanceType: 'Dr',
     });
     setCashCreateOpen(true);
   };
@@ -1048,12 +1061,14 @@ export function LedgerMasterPanel() {
                             <TableCell>
                               <div className="flex items-center gap-1">
                                 <span className="text-muted-foreground text-sm">₹</span>
-                                <Input type="number" className="w-32 h-8 text-sm" value={inst.openingBalance}
+                                <Input
+                                  {...amountInputProps}
+                                  className="w-32 h-8 text-sm"
+                                  value={inst.openingBalance || ''}
+                                  placeholder="0"
                                   onChange={(e) => {
-                                    const updated = instances.map(i =>
-                                      i.id === inst.id ? { ...i, openingBalance: parseFloat(e.target.value) || 0 } : i
-                                    );
-                                    setInstances(updated);
+                                    const val = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                    setInstances(prev => prev.map(i => i.id === inst.id ? { ...i, openingBalance: val } : i));
                                   }}
                                 />
                               </div>
@@ -1110,7 +1125,7 @@ export function LedgerMasterPanel() {
               {cashEditTarget ? 'Update ledger definition details.' : 'Define a new cash ledger for your group or a specific entity.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4" data-keyboard-form>
             {/* Parent Group Picker */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Parent Group <span className="text-destructive">*</span></Label>
@@ -1120,7 +1135,7 @@ export function LedgerMasterPanel() {
               }}>
                 <SelectTrigger><SelectValue placeholder="Select parent group" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CASH"><span className="flex items-center gap-1.5"><Lock className="h-3 w-3 text-muted-foreground" />Cash & Cash Equivalents (Cash-in-Hand)</span></SelectItem>
+                  <SelectItem value="CASH"><span className="flex items-center gap-1.5"><Lock className="h-3 w-3 text-muted-foreground" />Cash & Cash Equivalents</span></SelectItem>
                   {l4CashGroups.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
                 </SelectContent>
               </Select>
@@ -1129,83 +1144,131 @@ export function LedgerMasterPanel() {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Ledger Name <span className="text-destructive">*</span></Label>
               <Input placeholder="e.g., Main Cash, Petty Cash — Delhi" value={cashForm.name}
+                onKeyDown={onEnterNext}
                 onChange={(e) => setCashForm(f => ({ ...f, name: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Alias</Label>
+              <Input placeholder="e.g., MCash, PettyCash-DEL" value={cashForm.alias}
+                onKeyDown={onEnterNext}
+                onChange={(e) => setCashForm(f => ({ ...f, alias: e.target.value }))} disabled={!cashForm.parentGroupCode} />
             </div>
             {!cashEditTarget && (
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Opening Balance</Label>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm">₹</span>
-                  <Input type="number" value={cashForm.openingBalance}
-                    onChange={(e) => setCashForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} disabled={!cashForm.parentGroupCode} />
+                  <Input
+                    {...amountInputProps}
+                    className="flex-1"
+                    value={cashForm.openingBalance || ''}
+                    onChange={(e) => setCashForm(f => ({
+                      ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0
+                    }))}
+                    onKeyDown={onEnterNext}
+                    disabled={!cashForm.parentGroupCode}
+                    placeholder="0"
+                  />
+                  {/* Dr / Cr segmented control */}
+                  <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
+                    <button type="button"
+                      onClick={() => setCashForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
+                      className={`px-3 py-1.5 transition-colors ${cashForm.openingBalanceType === 'Dr'
+                        ? 'bg-teal-500/15 text-teal-700 border-r border-input'
+                        : 'text-muted-foreground hover:bg-muted/40 border-r border-input'}`}
+                      disabled={!cashForm.parentGroupCode}>Dr</button>
+                    <button type="button"
+                      onClick={() => setCashForm(f => ({ ...f, openingBalanceType: 'Cr' }))}
+                      className={`px-3 py-1.5 transition-colors ${cashForm.openingBalanceType === 'Cr'
+                        ? 'bg-amber-500/15 text-amber-700'
+                        : 'text-muted-foreground hover:bg-muted/40'}`}
+                      disabled={!cashForm.parentGroupCode}>Cr</button>
+                  </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Cash always Dr balance.</p>
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Alias</Label>
-              <Input placeholder="e.g., MCash, PettyCash-DEL" value={cashForm.alias}
-                onChange={(e) => setCashForm(f => ({ ...f, alias: e.target.value }))} disabled={!cashForm.parentGroupCode} />
-            </div>
 
-            {/* Cash Controls */}
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Location</Label>
-              <Input placeholder="e.g., HO Cashbox, Delhi Reception" value={cashForm.location}
-                onChange={(e) => setCashForm(f => ({ ...f, location: e.target.value }))} disabled={!cashForm.parentGroupCode} />
-              <p className="text-[10px] text-muted-foreground">Physical location of this cash box (for multi-location companies)</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Cash Limit (₹)</Label>
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground text-sm">₹</span>
-                <Input type="number" value={cashForm.cashLimit}
-                  onChange={(e) => setCashForm(f => ({ ...f, cashLimit: parseFloat(e.target.value) || 0 }))} disabled={!cashForm.parentGroupCode} />
+            {/* ── Optional fields ── */}
+            <button type="button"
+              onClick={() => setCashShowMore(v => !v)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <span>{cashShowMore ? '−' : '+'}</span>
+              <span>{cashShowMore ? 'Hide details' : 'More Details'}</span>
+            </button>
+            {cashShowMore && (
+              <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">Location</Label>
+                  <Input placeholder="e.g., HO Cashbox, Delhi Reception" value={cashForm.location}
+                    onChange={(e) => setCashForm(f => ({ ...f, location: e.target.value }))} disabled={!cashForm.parentGroupCode} />
+                  <p className="text-[10px] text-muted-foreground">Physical location of this cash box (for multi-location companies)</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">Cash Limit (₹)</Label>
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground text-sm">₹</span>
+                    <Input {...amountInputProps} value={cashForm.cashLimit || ''}
+                      onChange={(e) => setCashForm(f => ({ ...f, cashLimit: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} disabled={!cashForm.parentGroupCode}
+                      placeholder="0" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Maximum cash to hold. Alert shown when balance exceeds this.</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">Cash Receipt Series</Label>
+                  <Input placeholder="e.g., CR" value={cashForm.voucherSeries} maxLength={4}
+                    onChange={(e) => setCashForm(f => ({ ...f, voucherSeries: e.target.value.toUpperCase().slice(0, 4) }))} disabled={!cashForm.parentGroupCode} />
+                  <p className="text-[10px] text-muted-foreground">Prefix for cash receipt numbers. Default: CR → CR-2526-0001</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" checked={cashForm.isMainCash}
+                    onChange={(e) => setCashForm(f => ({ ...f, isMainCash: e.target.checked }))}
+                    disabled={!cashForm.parentGroupCode}
+                    className="h-4 w-4" />
+                  <Label className="text-sm">Set as primary cash account for this entity</Label>
+                </div>
               </div>
-              <p className="text-[10px] text-muted-foreground">Maximum cash to hold. Alert shown when balance exceeds this.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Cash Receipt Series</Label>
-              <Input placeholder="e.g., CR" value={cashForm.voucherSeries} maxLength={4}
-                onChange={(e) => setCashForm(f => ({ ...f, voucherSeries: e.target.value.toUpperCase().slice(0, 4) }))} disabled={!cashForm.parentGroupCode} />
-              <p className="text-[10px] text-muted-foreground">Prefix for cash receipt numbers. Default: CR → CR-2526-0001</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <input type="checkbox" checked={cashForm.isMainCash}
-                onChange={(e) => setCashForm(f => ({ ...f, isMainCash: e.target.checked }))}
-                disabled={!cashForm.parentGroupCode}
-                className="h-4 w-4" />
-              <Label className="text-sm">Set as primary cash account for this entity</Label>
-            </div>
+            )}
 
             {!cashEditTarget && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Entity Scope</Label>
-                <div className="flex gap-3">
-                  <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'group', entityId: '' }))}
-                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
-                    Group Level
-                  </button>
-                  <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'entity' }))}
-                    className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
-                    Entity Specific
-                  </button>
-                </div>
-              </div>
-            )}
-            {!cashEditTarget && cashForm.scope === 'entity' && (
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
-                <Select value={cashForm.entityId} onValueChange={(v) => setCashForm(f => ({ ...f, entityId: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
-                  <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
-                </Select>
-              </div>
+              <>
+                <button type="button"
+                  onClick={() => setCashShowAdvanced(v => !v)}
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  ⚙
+                  <span>{cashShowAdvanced ? 'Hide advanced' : 'Advanced options'}</span>
+                </button>
+                {cashShowAdvanced && (
+                  <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Entity Scope</Label>
+                      <div className="flex gap-3">
+                        <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'group', entityId: '' }))}
+                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
+                          Group Level
+                        </button>
+                        <button type="button" onClick={() => setCashForm(f => ({ ...f, scope: 'entity' }))}
+                          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${cashForm.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`} disabled={!cashForm.parentGroupCode}>
+                          Entity Specific
+                        </button>
+                      </div>
+                    </div>
+                    {cashForm.scope === 'entity' && (
+                      <div className="space-y-1.5">
+                        <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
+                        <Select value={cashForm.entityId} onValueChange={(v) => setCashForm(f => ({ ...f, entityId: v }))}>
+                          <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
+                          <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setCashCreateOpen(false); setCashEditTarget(null); }}>Cancel</Button>
-            <Button onClick={handleCashSave} disabled={!cashForm.parentGroupCode}>{cashEditTarget ? 'Update' : 'Create'}</Button>
+            <Button data-primary onClick={handleCashSave} disabled={!cashForm.parentGroupCode}>{cashEditTarget ? 'Update' : 'Create'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
