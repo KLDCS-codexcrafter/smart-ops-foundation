@@ -2564,6 +2564,48 @@ export function LedgerMasterPanel() {
               ], 'No liability ledgers yet.')}
             </div>
           )}
+
+          {/* Duties & Tax List */}
+          {defSubTab === 'duties_tax' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setDutiesTaxOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Duties & Tax</Button>
+              </div>
+              {renderDefTable(dutiesTaxDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Tax Type', render: d => <Badge variant="outline" className="text-[10px] uppercase">{(d as DutiesTaxLedgerDefinition).taxType}</Badge> },
+                { label: 'GST Sub-type / Kind', render: d => {
+                  const dt = d as DutiesTaxLedgerDefinition;
+                  if (dt.taxType === 'gst') return <span className="text-xs uppercase">{dt.gstSubType} — {dt.calculationBasis === 'item_rate' ? 'On Item Rate' : dt.calculationBasis === 'ledger_value' ? `On Ledger Value (${dt.rate}%)` : '—'}</span>;
+                  return <span className="text-xs text-muted-foreground">—</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No duties & tax ledgers yet.')}
+            </div>
+          )}
+
+          {/* Payroll Statutory List */}
+          {defSubTab === 'payroll' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => setPayrollStatOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Payroll Statutory</Button>
+              </div>
+              {renderDefTable(payrollStatDefs, [
+                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{(d as PayrollStatutoryLedgerDefinition).payrollCategory.replace('_', ' ')}</Badge> },
+                { label: 'Rate', render: d => {
+                  const p = d as PayrollStatutoryLedgerDefinition;
+                  if (p.statutoryRate > 0) return <span className="text-xs">{p.statutoryRate}% of {p.calculationBase.replace('_',' ')}</span>;
+                  if (p.calculationBase === 'state_slab' || p.calculationBase === 'state_specific') return <span className="text-xs text-muted-foreground">State-specific</span>;
+                  if (p.calculationBase === 'slab') return <span className="text-xs text-muted-foreground">IT slab</span>;
+                  return <span className="text-xs text-muted-foreground">{p.calculationBase}</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+              ], 'No payroll statutory ledgers yet.')}
+            </div>
+          )}
         </TabsContent>
 
         {/* Tab 2 — Opening Balances */}
