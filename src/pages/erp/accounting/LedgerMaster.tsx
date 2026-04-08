@@ -1128,7 +1128,59 @@ export function LedgerMasterPanel() {
   const [incomeForm, setIncomeForm] = useState(defaultIncomeForm);
   const [expenseForm, setExpenseForm] = useState(defaultExpenseForm);
 
-  // Loan schedule
+  // Duties & Tax + Payroll Statutory
+  const [dutiesTaxDefs, setDutiesTaxDefs] = useState<DutiesTaxLedgerDefinition[]>(
+    () => loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]
+  );
+  const [payrollStatDefs, setPayrollStatDefs] = useState<PayrollStatutoryLedgerDefinition[]>(
+    () => loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]
+  );
+
+  const defaultDutiesTaxForm = {
+    taxType: '' as TaxType | '',
+    gstSubType: null as GstSubType,
+    name: '', mailingName: '', alias: '',
+    parentGroupCode: 'GSTP', parentGroupName: 'GST Payable',
+    calculationBasis: null as CalcBasis,
+    rate: 0,
+    openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
+    scope: 'group' as 'group'|'entity', entityId: '',
+  };
+  const [dutiesTaxForm, setDutiesTaxForm] = useState(defaultDutiesTaxForm);
+
+  const defaultPayrollForm = {
+    payrollCategory: '' as PayrollCategory | '',
+    payrollComponent: '' as PayrollComponent | '',
+    name: '', mailingName: '', alias: '',
+    openingBalance: 0,
+    scope: 'group' as 'group'|'entity', entityId: '',
+  };
+  const [payrollForm, setPayrollForm] = useState(defaultPayrollForm);
+
+  const PAYROLL_COMPONENT_DEFAULTS: Record<PayrollComponent, { name: string; category: PayrollCategory; statutoryRate: number; calculationBase: string; wageCeiling: number | null; maxAmount: number | null }> = {
+    pf_employee: { name: 'PF Employee Deduction', category: 'employee_deduction', statutoryRate: 12, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    esi_employee: { name: 'ESI Employee Deduction', category: 'employee_deduction', statutoryRate: 0.75, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
+    pt_employee: { name: 'PT Employee Deduction', category: 'employee_deduction', statutoryRate: 0, calculationBase: 'state_slab', wageCeiling: null, maxAmount: null },
+    tds_salary: { name: 'TDS on Salary', category: 'employee_deduction', statutoryRate: 0, calculationBase: 'slab', wageCeiling: null, maxAmount: null },
+    pf_employer_epf: { name: 'PF Employer — EPF', category: 'employer_contribution', statutoryRate: 3.67, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    pf_employer_eps: { name: 'PF Employer — EPS', category: 'employer_contribution', statutoryRate: 8.33, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: 1250 },
+    pf_edli: { name: 'EDLI Contribution', category: 'employer_contribution', statutoryRate: 0.50, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
+    esi_employer: { name: 'ESI Employer Contribution', category: 'employer_contribution', statutoryRate: 3.25, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
+    lwf_employer: { name: 'LWF Employer Contribution', category: 'employer_contribution', statutoryRate: 0, calculationBase: 'state_specific', wageCeiling: null, maxAmount: null },
+    gratuity_provision: { name: 'Gratuity Provision', category: 'employer_contribution', statutoryRate: 0, calculationBase: '15/26 x basic x years', wageCeiling: null, maxAmount: 2000000 },
+  };
+
+  const getDutiesTaxDefaults = (taxType: TaxType, gstSubType: GstSubType) => {
+    if (taxType === 'gst') {
+      const names: Record<string, string> = { cgst: 'CGST', sgst: 'SGST', igst: 'IGST', cess: 'GST Cess' };
+      return { name: names[gstSubType ?? ''] ?? 'CGST', parentGroupCode: 'GSTP', parentGroupName: 'GST Payable', openingBalanceType: 'Cr' as const };
+    }
+    if (taxType === 'tds') return { name: 'TDS Payable', parentGroupCode: 'TDSP', parentGroupName: 'TDS Payable', openingBalanceType: 'Cr' as const };
+    if (taxType === 'tcs') return { name: 'TCS Payable', parentGroupCode: 'DUTYP', parentGroupName: 'Duties & Taxes Payable', openingBalanceType: 'Cr' as const };
+    return { name: '', parentGroupCode: 'DUTYP', parentGroupName: 'Duties & Taxes Payable', openingBalanceType: 'Cr' as const };
+  };
+
+
   const [activeScheduleDefId, setActiveScheduleDefId] = useState<string | null>(null);
   const [loanSchedule, setLoanSchedule] = useState<LoanRepaymentRecord[]>([]);
   const [markPaidOpen, setMarkPaidOpen] = useState(false);
