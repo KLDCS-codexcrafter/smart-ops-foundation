@@ -1809,6 +1809,72 @@ export function LedgerMasterPanel() {
     refreshAll();
   };
 
+  // ── Save Duties & Tax ──
+  const handleDutiesTaxSave = () => {
+    if (!dutiesTaxForm.taxType) return toast.error('Select tax type');
+    if (dutiesTaxForm.taxType === 'gst' && !dutiesTaxForm.gstSubType)
+      return toast.error('Select GST type (CGST/SGST/IGST/Cess)');
+    if (!dutiesTaxForm.name.trim()) return toast.error('Ledger name is required');
+    const all = loadAllDefinitions();
+    const code = genDutiesTaxCode(all);
+    const numericCode = deriveLedgerNumericCode(dutiesTaxForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'duties_tax').length + 1);
+    const def: DutiesTaxLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'duties_tax',
+      name: dutiesTaxForm.name.trim(),
+      mailingName: dutiesTaxForm.mailingName.trim() || dutiesTaxForm.name.trim(),
+      numericCode, code, alias: dutiesTaxForm.alias.trim(),
+      parentGroupCode: dutiesTaxForm.parentGroupCode,
+      parentGroupName: dutiesTaxForm.parentGroupName,
+      entityId: null, entityShortCode: null,
+      openingBalance: 0, openingBalanceType: 'Cr', status: 'active',
+      taxType: dutiesTaxForm.taxType as TaxType,
+      gstSubType: dutiesTaxForm.gstSubType,
+      calculationBasis: dutiesTaxForm.calculationBasis,
+      rate: dutiesTaxForm.rate,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    toast.success(`${def.name} created`);
+    setDutiesTaxOpen(false);
+    setDutiesTaxForm(defaultDutiesTaxForm);
+    refreshAll();
+  };
+
+  // ── Save Payroll Statutory ──
+  const handlePayrollStatSave = () => {
+    if (!payrollForm.payrollComponent) return toast.error('Select a component');
+    if (!payrollForm.name.trim()) return toast.error('Ledger name is required');
+    const comp = payrollForm.payrollComponent as PayrollComponent;
+    const defaults = PAYROLL_COMPONENT_DEFAULTS[comp];
+    const all = loadAllDefinitions();
+    const code = genPayrollStatCode(all);
+    const numericCode = deriveLedgerNumericCode('EMPL',
+      all.filter(d => d.ledgerType === 'payroll_statutory').length + 1);
+    const def: PayrollStatutoryLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'payroll_statutory',
+      name: payrollForm.name.trim(),
+      mailingName: payrollForm.name.trim(),
+      numericCode, code, alias: payrollForm.alias?.trim() ?? '',
+      parentGroupCode: 'EMPL',
+      parentGroupName: 'Employee Liabilities',
+      entityId: null, entityShortCode: null,
+      openingBalance: 0, openingBalanceType: 'Cr', status: 'active',
+      payrollCategory: defaults.category,
+      payrollComponent: comp,
+      statutoryRate: defaults.statutoryRate,
+      calculationBase: defaults.calculationBase,
+      wageCeiling: defaults.wageCeiling,
+      maxAmount: defaults.maxAmount,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, 0, 'Cr');
+    toast.success(`${def.name} created`);
+    setPayrollStatOpen(false);
+    setPayrollForm(defaultPayrollForm);
+    refreshAll();
+  };
+
   // ── Deactivate ──
   const handleDeactivate = (def: AnyLedgerDefinition) => {
     const updated = { ...def, status: def.status === 'active' ? 'inactive' as const : 'active' as const };
