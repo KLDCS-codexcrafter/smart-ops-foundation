@@ -1995,6 +1995,7 @@ export function LedgerMasterPanel() {
     else if (label === 'Income') { setIncomeEditTarget(null); setIncomeOpen(true); }
     else if (label === 'Expense') { setExpenseEditTarget(null); setExpenseOpen(true); }
     else if (label === 'Duties & Taxes') { setDutiesTaxEditTarget(null); setDutiesTaxOpen(true); }
+    else if (label === 'Asset') openAssetCreate();
   };
 
   const handleTypeAlterSelect = (def: AnyLedgerDefinition) => {
@@ -2028,6 +2029,7 @@ export function LedgerMasterPanel() {
       : def.ledgerType === 'expense' ? expenseDefs
       : def.ledgerType === 'duties_tax' ? dutiesTaxDefs
       : def.ledgerType === 'payroll_statutory' ? payrollStatDefs
+      : def.ledgerType === 'asset' ? assetDefs
       : [];
     setDisplayNavDefs(navDefs);
     setDisplayTarget(def);
