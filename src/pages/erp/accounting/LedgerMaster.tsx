@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -35,7 +36,7 @@ import {
 } from '@/data/finframe-seed-data';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
 import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
-import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
+import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
 import { VendorMasterPanel } from '@/pages/erp/masters/VendorMaster';
@@ -1221,6 +1222,11 @@ export function LedgerMasterPanel() {
   const [pickerLabel, setPickerLabel] = useState('');
   const [alterSearchOpen, setAlterSearchOpen] = useState(false);
   const [alterSearchQuery, setAlterSearchQuery] = useState('');
+  const [displayOpen, setDisplayOpen] = useState(false);
+  const [displayTarget, setDisplayTarget] = useState<AnyLedgerDefinition | null>(null);
+  const [displayNavDefs, setDisplayNavDefs] = useState<AnyLedgerDefinition[]>([]);
+  const [displaySearchOpen, setDisplaySearchOpen] = useState(false);
+  const [displaySearchQuery, setDisplaySearchQuery] = useState('');
 
   // New ledger form states
   const [liabilityForm, setLiabilityForm] = useState({
