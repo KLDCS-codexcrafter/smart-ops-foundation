@@ -59,7 +59,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
   }, [activeModule]);
 
-  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS, ...SUPPORTING_MASTERS_ITEMS].map(i => i.module);
+  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS].map(i => i.module);
 
   const renderSubSection = (label: string, items: { label: string; module: CommandCenterModule }[]) => (
     <>
