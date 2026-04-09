@@ -2549,6 +2549,33 @@ export function LedgerMasterPanel() {
     refreshAll();
   };
 
+  // ── Delete flow ──
+  const openDeleteFlow = (def: AnyLedgerDefinition) => {
+    setDeleteTarget(def);
+    setPickerOpen(false);
+    setDeleteSearchOpen(false);
+    setConfirmDeleteInput('');
+    if (hasLedgerData(def.id)) {
+      setCannotDeleteOpen(true);
+    } else {
+      setConfirmDeleteOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (confirmDeleteInput.trim() !== deleteTarget.name.trim()) {
+      toast.error('Name does not match — please type the ledger name exactly');
+      return;
+    }
+    removeDefinition(deleteTarget.id);
+    toast.success(`${deleteTarget.name} permanently deleted`);
+    setConfirmDeleteOpen(false);
+    setDeleteTarget(null);
+    setConfirmDeleteInput('');
+    refreshAll();
+  };
+
   // ── Suspend / Reinstate ──
   const openSuspend = (def: AnyLedgerDefinition) => {
     setSuspendTarget(def);
@@ -4684,7 +4711,164 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
-      {/* ─── Display Panel (Sheet) ─── */}
+      {/* ─── Delete Search Dialog ─── */}
+      <Dialog open={deleteSearchOpen} onOpenChange={o => { if (!o) { setDeleteSearchOpen(false); setDeleteSearchQuery(''); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-destructive" />
+              Delete {pickerLabel} Ledger
+            </DialogTitle>
+            <DialogDescription>Select a ledger to delete</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input className="pl-9" placeholder={`Search ${pickerLabel} ledgers…`}
+                value={deleteSearchQuery} onChange={e => setDeleteSearchQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') { setDeleteSearchOpen(false); setDeleteSearchQuery(''); } }}
+                autoFocus />
+            </div>
+            {(() => {
+              const allForType: AnyLedgerDefinition[] = (
+                pickerLabel === 'Cash'            ? cashDefs
+                : pickerLabel === 'Bank'          ? bankDefs
+                : pickerLabel === 'Liability'     ? liabilityDefs
+                : pickerLabel === 'Capital/Equity'? capitalDefs
+                : pickerLabel === 'Loan Receivable'? loanRecDefs
+                : pickerLabel === 'Borrowing'     ? borrowingDefs
+                : pickerLabel === 'Income'        ? incomeDefs
+                : pickerLabel === 'Expense'       ? expenseDefs
+                : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : []
+              );
+              const filtered = allForType.filter(d =>
+                `${d.name} ${d.code} ${d.numericCode || ''}`.toLowerCase().includes(deleteSearchQuery.toLowerCase())
+              );
+              if (filtered.length === 0) return <div className="py-8 text-center text-sm text-muted-foreground">No ledgers found</div>;
+              return (
+                <div className="rounded-lg border overflow-hidden max-h-64 overflow-y-auto">
+                  {filtered.map(d => (
+                    <button key={d.id} type="button"
+                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-muted/50 transition-colors text-left border-b last:border-0"
+                      onClick={() => { setDeleteSearchOpen(false); setDeleteSearchQuery(''); openDeleteFlow(d); }}>
+                      <div>
+                        <p className="text-sm font-medium">{d.name}</p>
+                        <p className="text-xs text-muted-foreground font-mono">{d.numericCode || ''} {d.code}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {hasLedgerData(d.id) && (
+                          <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                            Has data
+                          </Badge>
+                        )}
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Cannot Delete Dialog ─── */}
+      <Dialog open={cannotDeleteOpen} onOpenChange={o => { if (!o) { setCannotDeleteOpen(false); setDeleteTarget(null); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Cannot Delete — {deleteTarget?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">This ledger has financial data</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Deleting a ledger with opening balances or transactions would break
+                your financial records and violate accounting principles.
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">You can Suspend it instead</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                A suspended ledger appears in all historical reports but cannot be
+                used in new transactions. It can be reinstated at any time.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCannotDeleteOpen(false); setDeleteTarget(null); }}>
+              Cancel
+            </Button>
+            <Button variant="secondary" onClick={() => {
+              const t = deleteTarget;
+              setCannotDeleteOpen(false);
+              setDeleteTarget(null);
+              if (t) openSuspend(t);
+            }}>
+              <PauseCircle className="h-3.5 w-3.5 mr-1.5" />
+              Suspend Instead
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Confirm Delete Dialog ─── */}
+      <Dialog open={confirmDeleteOpen} onOpenChange={o => {
+        if (!o) { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }
+      }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Delete {deleteTarget?.name}
+            </DialogTitle>
+            <DialogDescription>
+              This action is permanent and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-1.5">
+              <p>This ledger has no transactions. Deletion will:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Permanently remove the ledger definition</li>
+                <li>Remove all entity-level instances</li>
+                <li>This cannot be undone</li>
+              </ul>
+            </div>
+            <div>
+              <Label className="text-sm">
+                Type <span className="font-mono font-semibold">{deleteTarget?.name}</span> to confirm
+              </Label>
+              <Input className="mt-1.5" value={confirmDeleteInput}
+                onChange={e => setConfirmDeleteInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && confirmDeleteInput.trim() === deleteTarget?.name.trim()) handleConfirmDelete();
+                  if (e.key === 'Escape') { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }
+                }}
+                placeholder={deleteTarget?.name}
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }}>
+              Cancel
+            </Button>
+            <Button variant="destructive"
+              disabled={confirmDeleteInput.trim() !== deleteTarget?.name.trim()}
+              onClick={handleConfirmDelete}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              Delete Permanently
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <Sheet open={displayOpen} onOpenChange={setDisplayOpen}>
         <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
           {displayTarget && (() => {
