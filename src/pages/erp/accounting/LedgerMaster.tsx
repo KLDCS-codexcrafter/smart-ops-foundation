@@ -382,6 +382,44 @@ interface PayrollStatutoryLedgerDefinition {
   reinstatedReason: string | null;
 }
 
+// ─── Asset Ledger Types ───────────────────────────────────────────────
+
+type AssetCategory = 'ppe' | 'cwip' | 'intangible' | 'intangible_wip' | 'investment';
+type DepreciationMethod = 'slm' | 'wdv' | 'none';
+
+interface AssetLedgerDefinition {
+  id: string;
+  ledgerType: 'asset';
+  name: string;
+  code: string;
+  numericCode: string;
+  alias: string;
+  mailingName: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  assetCategory: AssetCategory;
+  purchaseDate: string;
+  grossBlock: number;
+  depreciationMethod: DepreciationMethod;
+  usefulLifeYears: number;
+  depreciationRate: number;
+  vendorId: string;
+  vendorName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Dr';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
+}
+
 interface LoanRepaymentRecord {
   id: string;
   borrowingLedgerDefinitionId: string;
