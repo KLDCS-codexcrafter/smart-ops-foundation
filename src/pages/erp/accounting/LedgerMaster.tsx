@@ -5657,6 +5657,19 @@ export function LedgerMasterPanel() {
                     </Section>;
                   })()}
 
+                  {def.ledgerType === 'asset' && (() => {
+                    const d = def as AssetLedgerDefinition;
+                    return <Section title="Asset Details">
+                      <Field label='Asset Category' value={ASSET_CATEGORY_LABELS[d.assetCategory]} />
+                      <Field label='Purchase Date' value={d.purchaseDate} />
+                      <Field label='Gross Block' value={d.grossBlock ? `₹${toIndianFormat(d.grossBlock)}` : '—'} />
+                      <Field label='Depreciation Method' value={DEPRECIATION_LABELS[d.depreciationMethod]} />
+                      {d.depreciationMethod === 'slm' && <Field label='Useful Life' value={`${d.usefulLifeYears} years`} />}
+                      {d.depreciationMethod === 'wdv' && <Field label='Depreciation Rate' value={`${d.depreciationRate}%`} />}
+                      <Field label='Vendor' value={d.vendorName} />
+                    </Section>;
+                  })()}
+
                   {(def.suspendedBy || def.reinstatedBy) && (
                     <Section title="Status History">
                       {def.reinstatedBy && <>
