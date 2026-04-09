@@ -759,8 +759,7 @@ const hasLedgerData = (defId: string): boolean => {
   const entities = loadEntities();
   for (const entity of entities) {
     const key = `erp_entity_${entity.id}_ledger_instances`;
-    const instances = JSON.parse(localStorage.getItem(key) || '[]')
-      as { ledgerDefinitionId: string; openingBalance: number }[];
+    const instances: { ledgerDefinitionId: string; openingBalance: number }[] = JSON.parse(localStorage.getItem(key) || '[]');
     const inst = instances.find(i => i.ledgerDefinitionId === defId);
     if (inst && inst.openingBalance !== 0) return true;
   }
@@ -781,8 +780,7 @@ const removeDefinition = (defId: string): void => {
   const entities = loadEntities();
   entities.forEach(entity => {
     const key = `erp_entity_${entity.id}_ledger_instances`;
-    const instances = JSON.parse(localStorage.getItem(key) || '[]')
-      as { ledgerDefinitionId: string }[];
+    const instances: { ledgerDefinitionId: string }[] = JSON.parse(localStorage.getItem(key) || '[]');
     const remaining = instances.filter(i => i.ledgerDefinitionId !== defId);
     localStorage.setItem(key, JSON.stringify(remaining));
   });
