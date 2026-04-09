@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import { Plus, Search, Lock, Pencil, Trash2, Shield, Info } from 'lucide-react';
+import { Plus, Search, Lock, Pencil, Trash2, Shield, Info, Truck, Check } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { TERMS_OF_DELIVERY_SEED, type TermsOfDelivery } from '@/data/masters-seed-data';
 
@@ -47,6 +47,7 @@ export function TermsOfDeliveryMasterPanel() {
   const [editTarget, setEditTarget] = useState<TermsOfDelivery | null>(null);
   const [form, setForm] = useState({ name: '', freightResponsibility: 'Seller' as string, description: '' });
   const [search, setSearch] = useState('');
+  const [justSaved, setJustSaved] = useState(false);
 
   const filtered = useMemo(() =>
     terms.filter(t => `${t.code} ${t.name} ${t.freightResponsibility} ${t.description}`.toLowerCase().includes(search.toLowerCase())),
@@ -65,7 +66,9 @@ export function TermsOfDeliveryMasterPanel() {
         } : t
       );
       saveTerms(updated); setTerms(updated);
-      toast.success('Updated');
+      toast.success(`${form.name} updated`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     } else {
       const newTerm: TermsOfDelivery = {
         id: crypto.randomUUID(),
@@ -79,6 +82,8 @@ export function TermsOfDeliveryMasterPanel() {
       const updated = [...allTerms, newTerm];
       saveTerms(updated); setTerms(updated);
       toast.success(`${newTerm.name} added`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     }
     setAddOpen(false); setEditTarget(null); setForm({ name: '', freightResponsibility: 'Seller', description: '' });
   };
@@ -89,7 +94,7 @@ export function TermsOfDeliveryMasterPanel() {
     if (!target || target.isSeeded) return;
     const updated = allTerms.filter(t => t.id !== id);
     saveTerms(updated); setTerms(updated);
-    toast.success('Deleted');
+    toast.success('Delivery term removed');
   };
 
   const handleToggleActive = (id: string) => {
@@ -116,7 +121,7 @@ export function TermsOfDeliveryMasterPanel() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Terms of Delivery</h2>
+        <h2 className="text-2xl font-bold tracking-tight font-display">Terms of Delivery</h2>
         <p className="text-sm text-muted-foreground">Supporting master — auto-created on company setup</p>
       </div>
 
@@ -140,19 +145,24 @@ export function TermsOfDeliveryMasterPanel() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No records found. Run company setup to auto-create defaults.</p>
+          <Truck className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p className="text-sm font-medium">No delivery terms yet</p>
+          <p className="text-xs mt-1">Run company setup to auto-create defaults, or add one manually.</p>
+          <Button size="sm" onClick={openAdd} className="gap-1.5 mt-4">
+            <Plus className="h-3.5 w-3.5" /> Add Terms of Delivery
+          </Button>
         </div>
       ) : (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[120px]">Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-[140px]">Freight</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="w-[120px]">Status</TableHead>
-                <TableHead className="w-[120px] text-right">Actions</TableHead>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground">Code</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</TableHead>
+                <TableHead className="w-[140px] text-xs font-semibold uppercase tracking-wider text-muted-foreground">Freight</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Description</TableHead>
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -269,7 +279,7 @@ export function TermsOfDeliveryMasterPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setAddOpen(false); setEditTarget(null); }}>Cancel</Button>
-            <Button onClick={handleSave} data-primary>Save</Button>
+            <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>{justSaved ? <><Check className="h-3.5 w-3.5" /> Saved</> : 'Save'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

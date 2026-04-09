@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import { Plus, Search, Lock, Pencil, Trash2, Shield, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Lock, Pencil, Trash2, Shield, AlertTriangle, Clock, Check } from 'lucide-react';
 import { onEnterNext, amountInputProps } from '@/lib/keyboard';
 import { TERMS_OF_PAYMENT_SEED, type TermsOfPayment } from '@/data/masters-seed-data';
 
@@ -40,6 +40,7 @@ export function TermsOfPaymentMasterPanel() {
   const [editTarget, setEditTarget] = useState<TermsOfPayment | null>(null);
   const [form, setForm] = useState({ name: '', creditDays: 0, advancePercent: 0, notes: '' });
   const [search, setSearch] = useState('');
+  const [justSaved, setJustSaved] = useState(false);
 
   const filtered = useMemo(() =>
     terms.filter(t => `${t.code} ${t.name} ${t.notes}`.toLowerCase().includes(search.toLowerCase())),
@@ -61,7 +62,9 @@ export function TermsOfPaymentMasterPanel() {
         } : t
       );
       saveTerms(updated); setTerms(updated);
-      toast.success('Updated');
+      toast.success(`${form.name} updated`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     } else {
       const newTerm: TermsOfPayment = {
         id: crypto.randomUUID(),
@@ -76,6 +79,8 @@ export function TermsOfPaymentMasterPanel() {
       const updated = [...allTerms, newTerm];
       saveTerms(updated); setTerms(updated);
       toast.success(`${newTerm.name} added`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     }
     setAddOpen(false); setEditTarget(null); setForm({ name: '', creditDays: 0, advancePercent: 0, notes: '' });
   };
@@ -86,7 +91,7 @@ export function TermsOfPaymentMasterPanel() {
     if (!target || target.isSeeded) return;
     const updated = allTerms.filter(t => t.id !== id);
     saveTerms(updated); setTerms(updated);
-    toast.success('Deleted');
+    toast.success('Payment term removed');
   };
 
   const handleToggleActive = (id: string) => {
@@ -113,7 +118,7 @@ export function TermsOfPaymentMasterPanel() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Terms of Payment</h2>
+        <h2 className="text-2xl font-bold tracking-tight font-display">Terms of Payment</h2>
         <p className="text-sm text-muted-foreground">Supporting master — auto-created on company setup</p>
       </div>
 
@@ -137,20 +142,25 @@ export function TermsOfPaymentMasterPanel() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No records found. Run company setup to auto-create defaults.</p>
+          <Clock className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p className="text-sm font-medium">No payment terms yet</p>
+          <p className="text-xs mt-1">Run company setup to auto-create defaults, or add one manually.</p>
+          <Button size="sm" onClick={openAdd} className="gap-1.5 mt-4">
+            <Plus className="h-3.5 w-3.5" /> Add Terms of Payment
+          </Button>
         </div>
       ) : (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[120px]">Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-[100px] text-right">Credit Days</TableHead>
-                <TableHead className="w-[100px] text-right">Advance %</TableHead>
-                <TableHead>Notes</TableHead>
-                <TableHead className="w-[120px]">Status</TableHead>
-                <TableHead className="w-[120px] text-right">Actions</TableHead>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground">Code</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</TableHead>
+                <TableHead className="w-[100px] text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Credit Days</TableHead>
+                <TableHead className="w-[100px] text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Advance %</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Notes</TableHead>
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                <TableHead className="w-[120px] text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -273,7 +283,7 @@ export function TermsOfPaymentMasterPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setAddOpen(false); setEditTarget(null); }}>Cancel</Button>
-            <Button onClick={handleSave} data-primary>Save</Button>
+            <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>{justSaved ? <><Check className="h-3.5 w-3.5" /> Saved</> : 'Save'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
