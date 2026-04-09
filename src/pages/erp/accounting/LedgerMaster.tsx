@@ -537,7 +537,8 @@ type AnyLedgerDefinition =
   | IncomeLedgerDefinition
   | ExpenseLedgerDefinition
   | DutiesTaxLedgerDefinition
-  | PayrollStatutoryLedgerDefinition;
+  | PayrollStatutoryLedgerDefinition
+  | AssetLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -1210,7 +1211,7 @@ export function LedgerMasterPanel() {
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
