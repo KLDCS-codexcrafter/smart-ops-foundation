@@ -754,6 +754,42 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [JWT] POST/PUT /api/group/finecore/ledger-definitions
 };
 
+const hasLedgerData = (defId: string): boolean => {
+  // Check 1: any entity instance has non-zero opening balance
+  const entities = loadEntities();
+  for (const entity of entities) {
+    const key = `erp_entity_${entity.id}_ledger_instances`;
+    const instances = JSON.parse(localStorage.getItem(key) || '[]')
+      as { ledgerDefinitionId: string; openingBalance: number }[];
+    const inst = instances.find(i => i.ledgerDefinitionId === defId);
+    if (inst && inst.openingBalance !== 0) return true;
+  }
+  // Check 2: future voucher check (uncomment when transactions are built)
+  // const vouchers = JSON.parse(localStorage.getItem('erp_group_vouchers') || '[]');
+  // if (vouchers.some((v: any) => v.entries?.some((e: any) => e.ledgerId === defId))) return true;
+  return false;
+};
+
+const removeDefinition = (defId: string): void => {
+  // Remove definition
+  const raw = localStorage.getItem('erp_group_ledger_definitions');
+  const all = raw ? JSON.parse(raw) : [];
+  const filtered = all.filter((d: any) => d.id !== defId);
+  localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
+  // [JWT] DELETE /api/group/finecore/ledger-definitions/:id
+  // Remove entity instances for this definition
+  const entities = loadEntities();
+  entities.forEach(entity => {
+    const key = `erp_entity_${entity.id}_ledger_instances`;
+    const instances = JSON.parse(localStorage.getItem(key) || '[]')
+      as { ledgerDefinitionId: string }[];
+    const remaining = instances.filter(i => i.ledgerDefinitionId !== defId);
+    localStorage.setItem(key, JSON.stringify(remaining));
+  });
+  // [JWT] DELETE /api/group/finecore/ledger-instances/by-definition/:id
+};
+
+
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
@@ -1351,6 +1387,14 @@ export function LedgerMasterPanel() {
   const [suspendTarget, setSuspendTarget] = useState<AnyLedgerDefinition | null>(null);
   const [suspendReason, setSuspendReason] = useState('');
   const [reinstateReason, setReinstateReason] = useState('');
+
+  // Delete flow states
+  const [deleteTarget, setDeleteTarget] = useState<AnyLedgerDefinition | null>(null);
+  const [deleteSearchOpen, setDeleteSearchOpen] = useState(false);
+  const [deleteSearchQuery, setDeleteSearchQuery] = useState('');
+  const [cannotDeleteOpen, setCannotDeleteOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmDeleteInput, setConfirmDeleteInput] = useState('');
 
   // EMI calculator
   const calculateEMI = (principal: number, annualRate: number, months: number): number => {
@@ -4512,11 +4556,11 @@ export function LedgerMasterPanel() {
               <span className="ml-auto text-xs text-muted-foreground">View details</span>
             </button>
             <button type="button"
-              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left opacity-60"
-              onClick={() => { setPickerOpen(false); toast.info('Delete coming soon'); }}>
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left"
+              onClick={() => { setDeleteSearchQuery(''); setDeleteSearchOpen(true); setPickerOpen(false); }}>
               <Trash2 className="h-4 w-4 text-red-500" />
               <span>Delete</span>
-              <span className="ml-auto text-xs text-muted-foreground">With transaction check — LM-4</span>
+              <span className="ml-auto text-xs text-muted-foreground">Checks for transactions</span>
             </button>
           </div>
         </DialogContent>
