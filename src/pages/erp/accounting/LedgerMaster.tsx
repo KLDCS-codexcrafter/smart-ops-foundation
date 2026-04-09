@@ -2092,6 +2092,7 @@ export function LedgerMasterPanel() {
       : label === 'Income'        ? incomeDefs
       : label === 'Expense'       ? expenseDefs
       : label === 'Duties & Taxes'? dutiesTaxDefs
+      : label === 'Asset'         ? assetDefs
       : []
     );
     if (defsForLabel.length === 0) {
