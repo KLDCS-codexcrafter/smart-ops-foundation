@@ -1734,7 +1734,56 @@ export function LedgerMasterPanel() {
     }
   };
 
-  // ── Type button click handler ──
+  const openDisplay = (def: AnyLedgerDefinition) => {
+    const navDefs: AnyLedgerDefinition[] =
+      def.ledgerType === 'cash' ? cashDefs
+      : def.ledgerType === 'bank' ? bankDefs
+      : def.ledgerType === 'liability' ? liabilityDefs
+      : def.ledgerType === 'capital' ? capitalDefs
+      : def.ledgerType === 'loan_receivable' ? loanRecDefs
+      : def.ledgerType === 'borrowing' ? borrowingDefs
+      : def.ledgerType === 'income' ? incomeDefs
+      : def.ledgerType === 'expense' ? expenseDefs
+      : def.ledgerType === 'duties_tax' ? dutiesTaxDefs
+      : def.ledgerType === 'payroll_statutory' ? payrollStatDefs
+      : [];
+    setDisplayNavDefs(navDefs);
+    setDisplayTarget(def);
+    setDisplayOpen(true);
+    setPickerOpen(false);
+    setAlterSearchOpen(false);
+    setDisplaySearchOpen(false);
+  };
+
+  const handleDisplayNav = useCallback((direction: 'prev' | 'next') => {
+    if (!displayTarget || displayNavDefs.length === 0) return;
+    const idx = displayNavDefs.findIndex(d => d.id === displayTarget.id);
+    if (idx < 0) return;
+    const nextIdx = direction === 'next'
+      ? (idx + 1) % displayNavDefs.length
+      : (idx - 1 + displayNavDefs.length) % displayNavDefs.length;
+    setDisplayTarget(displayNavDefs[nextIdx]);
+  }, [displayTarget, displayNavDefs]);
+
+  useEffect(() => {
+    if (!displayOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); handleDisplayNav('next'); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); handleDisplayNav('prev'); }
+      if (e.key === 'Escape') { setDisplayOpen(false); }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [displayOpen, handleDisplayNav]);
+
+  const handleTypeDisplaySelect = (def: AnyLedgerDefinition) => {
+    setDisplaySearchOpen(false);
+    setDisplaySearchQuery('');
+    setPickerOpen(false);
+    openDisplay(def);
+  };
+
+
   const handleTypeButtonClick = (label: string) => {
     const panelTypes = ['Customer','Vendor','Logistic','Branch & Division',
       'Mode of Payment','Terms of Payment','Terms of Delivery','Payroll Statutory'];
