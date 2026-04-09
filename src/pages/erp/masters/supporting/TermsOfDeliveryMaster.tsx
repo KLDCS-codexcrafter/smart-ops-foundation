@@ -159,7 +159,7 @@ export function TermsOfDeliveryMasterPanel() {
               {filtered.map(t => (
                 <TableRow
                   key={t.id}
-                  className={`${!t.isActive ? 'opacity-50' : ''} ${t.code === 'TOD-002' ? 'border-l-2 border-l-blue-500' : ''}`}
+                  className={`${!t.isActive ? 'opacity-50' : ''} ${t.code === 'TOD-002' ? 'border-l-2 border-l-blue-500' : ''} group`}
                 >
                   <TableCell className="font-mono text-xs text-teal-600 dark:text-teal-400">{t.code}</TableCell>
                   <TableCell className="font-medium">
@@ -193,6 +193,7 @@ export function TermsOfDeliveryMasterPanel() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Switch checked={t.isActive} onCheckedChange={() => handleToggleActive(t.id)} className="scale-75" />
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {t.isSeeded ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -212,6 +213,7 @@ export function TermsOfDeliveryMasterPanel() {
                           </Button>
                         </>
                       )}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>

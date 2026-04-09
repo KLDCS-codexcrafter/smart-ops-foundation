@@ -1169,7 +1169,7 @@ export function CustomerMasterPanel() {
             </TableHeader>
             <TableBody>
               {filtered.map(item => (
-                <TableRow key={item.id} className={item.status === 'inactive' ? 'opacity-50' : ''}>
+                <TableRow key={item.id} className={`${item.status === 'inactive' ? 'opacity-50' : ''} group`}>
                   <TableCell className="font-mono text-xs text-teal-600">{item.partyCode}</TableCell>
                   <TableCell className="text-xs font-medium">{item.partyName}</TableCell>
                   <TableCell>
@@ -1201,7 +1201,7 @@ export function CustomerMasterPanel() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex gap-1 justify-end">
+                    <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="sm" onClick={() => openEdit(item)} className="h-7 text-[10px] gap-1">
                         <Edit2 className="h-3 w-3" /> Edit
                       </Button>
