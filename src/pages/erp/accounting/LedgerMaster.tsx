@@ -4505,11 +4505,11 @@ export function LedgerMasterPanel() {
               <span className="ml-auto text-xs text-muted-foreground">Edit existing</span>
             </button>
             <button type="button"
-              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-purple-500/10 hover:text-purple-700 transition-colors text-left opacity-60"
-              onClick={() => { setPickerOpen(false); toast.info('Display panel coming soon'); }}>
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-purple-500/10 hover:text-purple-700 transition-colors text-left"
+              onClick={() => { setPickerOpen(false); setDisplaySearchQuery(''); setDisplaySearchOpen(true); }}>
               <BookOpen className="h-4 w-4 text-purple-500" />
               <span>Display</span>
-              <span className="ml-auto text-xs text-muted-foreground">Read only — LM-3</span>
+              <span className="ml-auto text-xs text-muted-foreground">View details</span>
             </button>
             <button type="button"
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left opacity-60"
@@ -4588,6 +4588,315 @@ export function LedgerMasterPanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ─── Display Search Dialog ─── */}
+      <Dialog open={displaySearchOpen} onOpenChange={o => { if (!o) { setDisplaySearchOpen(false); setDisplaySearchQuery(''); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle>Display {pickerLabel} Ledger</DialogTitle>
+            <DialogDescription>Select a ledger to view</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input className="pl-9" placeholder={`Search ${pickerLabel} ledgers…`}
+                value={displaySearchQuery} onChange={e => setDisplaySearchQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') { setDisplaySearchOpen(false); setDisplaySearchQuery(''); } }}
+                autoFocus />
+            </div>
+            {(() => {
+              const allForType: AnyLedgerDefinition[] = (
+                pickerLabel === 'Cash'            ? cashDefs
+                : pickerLabel === 'Bank'          ? bankDefs
+                : pickerLabel === 'Liability'     ? liabilityDefs
+                : pickerLabel === 'Capital/Equity'? capitalDefs
+                : pickerLabel === 'Loan Receivable'? loanRecDefs
+                : pickerLabel === 'Borrowing'     ? borrowingDefs
+                : pickerLabel === 'Income'        ? incomeDefs
+                : pickerLabel === 'Expense'       ? expenseDefs
+                : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : []
+              );
+              const filtered = allForType.filter(d =>
+                `${d.name} ${d.code} ${d.numericCode || ''}`.toLowerCase().includes(displaySearchQuery.toLowerCase())
+              );
+              if (filtered.length === 0) return <div className="py-8 text-center text-sm text-muted-foreground">No ledgers found</div>;
+              return (
+                <div className="rounded-lg border overflow-hidden max-h-64 overflow-y-auto">
+                  {filtered.map(d => (
+                    <button key={d.id} type="button"
+                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-muted/50 transition-colors text-left border-b last:border-0"
+                      onClick={() => handleTypeDisplaySelect(d)}>
+                      <div>
+                        <p className="text-sm font-medium">{d.name}</p>
+                        <p className="text-xs text-muted-foreground font-mono">{d.numericCode || d.code}</p>
+                      </div>
+                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground -rotate-90" />
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Display Panel (Sheet) ─── */}
+      <Sheet open={displayOpen} onOpenChange={setDisplayOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
+          {displayTarget && (() => {
+            const def = displayTarget;
+            const currentIdx = displayNavDefs.findIndex(d => d.id === def.id);
+            const total = displayNavDefs.length;
+
+            const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
+              <div className="flex items-start gap-3">
+                <span className="text-xs text-muted-foreground w-40 shrink-0 pt-0.5">{label}</span>
+                <span className="text-sm text-foreground font-medium flex-1">{value || '—'}</span>
+              </div>
+            );
+            const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+              <div className="space-y-2.5">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b pb-1.5">{title}</p>
+                <div className="space-y-2">{children}</div>
+              </div>
+            );
+
+            return (
+              <div className="flex flex-col h-full overflow-hidden">
+                {/* Sticky Header */}
+                <div className="shrink-0 border-b border-border bg-card">
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h2 className="text-lg font-bold font-display text-foreground truncate">{def.name}</h2>
+                          <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 shrink-0">
+                            {def.ledgerType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                          </Badge>
+                          <Badge variant="outline" className={`text-[10px] shrink-0 ${
+                            def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
+                            {def.status}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-mono mt-0.5">{def.numericCode || def.code}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {total > 1 && (
+                        <div className="flex items-center gap-1 border border-border rounded-lg px-1">
+                          <button type="button" onClick={() => handleDisplayNav('prev')}
+                            className="p-1.5 hover:bg-muted/50 rounded transition-colors" title="Previous (←)">
+                            <ChevronDown className="h-3.5 w-3.5 rotate-90" />
+                          </button>
+                          <span className="text-xs text-muted-foreground px-1 tabular-nums">{currentIdx + 1}/{total}</span>
+                          <button type="button" onClick={() => handleDisplayNav('next')}
+                            className="p-1.5 hover:bg-muted/50 rounded transition-colors" title="Next (→)">
+                            <ChevronDown className="h-3.5 w-3.5 -rotate-90" />
+                          </button>
+                        </div>
+                      )}
+                      <Button variant="outline" size="sm" className="gap-1.5 text-xs"
+                        onClick={() => { setDisplayOpen(false); switch(def.ledgerType) {
+                          case 'cash': openCashEdit(def as CashLedgerDefinition); break;
+                          case 'bank': openBankEdit(def as BankLedgerDefinition); break;
+                          case 'liability': openLiabilityEdit(def as LiabilityLedgerDefinition); break;
+                          case 'capital': openCapitalEdit(def as CapitalLedgerDefinition); break;
+                          case 'loan_receivable': openLoanRecEdit(def as LoanReceivableLedgerDefinition); break;
+                          case 'borrowing': openBorrowingEdit(def as BorrowingLedgerDefinition); break;
+                          case 'income': openIncomeEdit(def as IncomeLedgerDefinition); break;
+                          case 'expense': openExpenseEdit(def as ExpenseLedgerDefinition); break;
+                          case 'duties_tax': openDutiesTaxEdit(def as DutiesTaxLedgerDefinition); break;
+                          case 'payroll_statutory': openPayrollStatEdit(def as PayrollStatutoryLedgerDefinition); break;
+                        }}}>
+                        <Edit2 className="h-3.5 w-3.5" /> Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" className="gap-1.5 text-xs"
+                        onClick={() => window.print()}>
+                        <FileText className="h-3.5 w-3.5" /> Print
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable Body */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                  <Section title="Identity">
+                    <Field label="Ledger Name" value={def.name} />
+                    <Field label="Mailing Name" value={(def as any).mailingName} />
+                    <Field label="Alias" value={(def as any).alias} />
+                    <Field label="Numeric Code" value={<span className="font-mono text-teal-600">{def.numericCode}</span>} />
+                    <Field label="Ledger Code" value={<span className="font-mono text-xs">{def.code}</span>} />
+                    <Field label="Parent Group" value={def.parentGroupName} />
+                    <Field label="Scope" value={def.entityId
+                      ? `Entity: ${def.entityShortCode}`
+                      : 'Group (all entities)'} />
+                  </Section>
+
+                  {('openingBalance' in def) && (
+                    <Section title="Opening Balance">
+                      <Field label="Opening Balance"
+                        value={<span className={`font-mono font-semibold ${ (def as any).openingBalanceType === 'Dr' ? 'text-teal-600' : 'text-amber-600'}`}>
+                          {(def as any).openingBalanceType} ₹{toIndianFormat((def as any).openingBalance ?? 0)}
+                        </span>} />
+                    </Section>
+                  )}
+
+                  {(def.description || def.notes) && (
+                    <Section title="Notes & Description">
+                      {def.description && <Field label='Description' value={def.description} />}
+                      {def.notes && <Field label='Internal Notes' value={def.notes} />}
+                    </Section>
+                  )}
+
+                  {def.ledgerType === 'cash' && (() => {
+                    const d = def as CashLedgerDefinition;
+                    return <Section title="Cash Details">
+                      <Field label='Location' value={d.location} />
+                      <Field label='Cash Limit' value={d.cashLimit ? `₹${toIndianFormat(d.cashLimit)}` : '—'} />
+                      <Field label='Alert Threshold' value={d.alertThreshold ? `₹${toIndianFormat(d.alertThreshold)}` : '—'} />
+                      <Field label='Main Cash' value={d.isMainCash ? 'Yes' : 'No'} />
+                      <Field label='Voucher Series' value={d.voucherSeries} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'bank' && (() => {
+                    const d = def as BankLedgerDefinition;
+                    return <Section title="Bank Details">
+                      <Field label='Bank Name' value={d.bankName} />
+                      <Field label='Account No.' value={d.accountNumber} />
+                      <Field label='Account Type' value={d.accountType?.replace(/_/g,' ')} />
+                      <Field label='IFSC Code' value={<span className='font-mono'>{d.ifscCode}</span>} />
+                      <Field label='Branch' value={d.branchName} />
+                      <Field label='Branch City' value={d.branchCity} />
+                      <Field label='Currency' value={d.currency} />
+                      {d.odLimit > 0 && <Field label='OD Limit' value={`₹${toIndianFormat(d.odLimit)}`} />}
+                      <Field label='Bank Manager' value={d.bankManagerName} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'capital' && (() => {
+                    const d = def as CapitalLedgerDefinition;
+                    return <Section title="Capital Details">
+                      <Field label='Capital Type' value={d.capitalType?.replace(/_/g,' ')} />
+                      {(d.capitalType === 'share_capital_equity' || d.capitalType === 'share_capital_preference') && <>
+                        <Field label='Authorised Capital' value={`₹${toIndianFormat(d.authorisedCapital ?? 0)}`} />
+                        <Field label='Paid-Up Capital' value={`₹${toIndianFormat(d.paidUpCapital ?? 0)}`} />
+                        <Field label='Face Value/Share' value={`₹${d.faceValuePerShare}`} />
+                      </>}
+                      {d.capitalType === 'partners_capital' && <>
+                        <Field label='Partner Name' value={d.partnerName} />
+                        <Field label='Partner PAN' value={d.partnerPAN} />
+                        <Field label='Profit Ratio' value={`${d.profitSharingRatio}%`} />
+                      </>}
+                      {d.capitalType === 'proprietor_capital' && <>
+                        <Field label='Proprietor Name' value={d.proprietorName} />
+                        <Field label='Proprietor PAN' value={d.proprietorPAN} />
+                      </>}
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'loan_receivable' && (() => {
+                    const d = def as LoanReceivableLedgerDefinition;
+                    return <Section title="Loan Details">
+                      <Field label='Borrower' value={d.borrowerName} />
+                      <Field label='Loan Amount' value={`₹${toIndianFormat(d.loanAmount ?? 0)}`} />
+                      <Field label='Interest Rate' value={`${d.interestRate}% ${d.interestType}`} />
+                      <Field label='Tenure' value={`${d.tenureMonths} months`} />
+                      <Field label='Disbursed On' value={d.disbursementDate} />
+                      <Field label='Collateral' value={d.collateral} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'borrowing' && (() => {
+                    const d = def as BorrowingLedgerDefinition;
+                    return <Section title="Borrowing Details">
+                      <Field label='Lender' value={d.lenderName} />
+                      <Field label='Lender Type' value={d.lenderType} />
+                      <Field label='Loan Amount' value={`₹${toIndianFormat(d.loanAmount ?? 0)}`} />
+                      <Field label='Interest Rate' value={`${d.interestRate}%`} />
+                      <Field label='EMI Amount' value={d.emiAmount ? `₹${toIndianFormat(d.emiAmount)}` : '—'} />
+                      <Field label='Loan Account No.' value={d.loanAccountNo} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'income' && (() => {
+                    const d = def as IncomeLedgerDefinition;
+                    return <Section title="GST & Income Details">
+                      <Field label='GST Applicable' value={d.isGstApplicable ? 'Yes' : 'No'} />
+                      {d.isGstApplicable && <>
+                        <Field label='HSN / SAC Code' value={<span className='font-mono'>{d.hsnSacCode}</span>} />
+                        <Field label='GST Rate' value={`${d.gstRate}%`} />
+                        <Field label='GST Type' value={d.gstType?.replace(/_/g,' ')} />
+                      </>}
+                      <Field label='Include in Turnover' value={d.includeInGstTurnover ? 'Yes' : 'No'} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'expense' && (() => {
+                    const d = def as ExpenseLedgerDefinition;
+                    return <Section title="GST & Expense Details">
+                      <Field label='GST Applicable' value={d.isGstApplicable ? 'Yes' : 'No'} />
+                      {d.isGstApplicable && <>
+                        <Field label='HSN / SAC Code' value={<span className='font-mono'>{d.hsnSacCode}</span>} />
+                        <Field label='GST Rate' value={`${d.gstRate}%`} />
+                      </>}
+                      <Field label='ITC Eligible' value={d.isItcEligible ? 'Yes' : 'No'} />
+                      <Field label='RCM Applicable' value={d.isRcmApplicable ? `Yes — ${d.rcmSection ?? ''}` : 'No'} />
+                      <Field label='Expense Nature' value={d.expenseNature?.replace(/_/g,' ')} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'duties_tax' && (() => {
+                    const d = def as DutiesTaxLedgerDefinition;
+                    return <Section title="Tax Details">
+                      <Field label='Tax Type' value={d.taxType?.toUpperCase()} />
+                      <Field label='GST Sub-Type' value={d.gstSubType?.toUpperCase()} />
+                      <Field label='Calculation Basis' value={d.calculationBasis?.replace(/_/g,' ')} />
+                      <Field label='Rate' value={`${d.rate}%`} />
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'payroll_statutory' && (() => {
+                    const d = def as PayrollStatutoryLedgerDefinition;
+                    return <Section title="Payroll Statutory Details">
+                      <Field label='Payroll Category' value={d.payrollCategory?.replace(/_/g,' ')} />
+                      <Field label='Component' value={d.payrollComponent?.replace(/_/g,' ')} />
+                      <Field label='Statutory Rate' value={`${d.statutoryRate}%`} />
+                      <Field label='Calculation Base' value={d.calculationBase} />
+                      {d.wageCeiling && <Field label='Wage Ceiling' value={`₹${toIndianFormat(d.wageCeiling)}`} />}
+                      {d.maxAmount && <Field label='Max Amount' value={`₹${toIndianFormat(d.maxAmount)}`} />}
+                    </Section>;
+                  })()}
+
+                  {(def.suspendedBy || def.reinstatedBy) && (
+                    <Section title="Status History">
+                      {def.reinstatedBy && <>
+                        <Field label='Reinstated by' value={def.reinstatedBy} />
+                        <Field label='Reinstated on' value={formatAuditDateTime(def.reinstatedAt)} />
+                        <Field label='Reason' value={def.reinstatedReason} />
+                      </>}
+                      {def.suspendedBy && <>
+                        <Field label='Suspended by' value={def.suspendedBy} />
+                        <Field label='Suspended on' value={formatAuditDateTime(def.suspendedAt)} />
+                        <Field label='Reason' value={def.suspendedReason} />
+                      </>}
+                    </Section>
+                  )}
+
+                  {displayNavDefs.length > 1 && (
+                    <p className="text-xs text-muted-foreground text-center pt-2 pb-4">
+                      Use ← → arrow keys to navigate between {displayNavDefs.length} ledgers
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
 
     </div>
   );
