@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/collapsible';
 import {
   ShoppingCart, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
-  ChevronDown, ChevronUp, AlertTriangle, Info, User, MapPin,
+  ChevronDown, AlertTriangle, Info, Check, User, MapPin,
   CreditCard, Shield, Building, Landmark, Briefcase, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -200,6 +200,7 @@ export function VendorMasterPanel() {
   const [showLogistics, setShowLogistics] = useState(false);
 
   const [form, setForm] = useState(defaultForm);
+  const [justSaved, setJustSaved] = useState(false);
 
   // ─── Dropdown helpers ────────────────────────────────────────
   const loadModeOptions = () => {
@@ -300,6 +301,8 @@ export function VendorMasterPanel() {
       const updated = all.map(v => v.id === editTarget.id ? { ...v, ...form } : v);
       saveVendors(updated); setVendors(updated);
       toast.success(`${form.partyName} updated`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     } else {
       const def: VendorMasterDefinition = {
         ...form,
@@ -310,6 +313,8 @@ export function VendorMasterPanel() {
       const updated = [...all, def];
       saveVendors(updated); setVendors(updated);
       toast.success(`${def.partyName} created`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     }
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
@@ -490,10 +495,10 @@ export function VendorMasterPanel() {
       {/* Section 2 — Contacts */}
       <Collapsible open={showContacts} onOpenChange={setShowContacts}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <User className="h-4 w-4 text-muted-foreground" />
             Contacts ({form.contacts.length})
-            {showContacts ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -550,10 +555,10 @@ export function VendorMasterPanel() {
       {/* Section 3 — Address */}
       <Collapsible open={showAddress} onOpenChange={setShowAddress}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             Address
-            {showAddress ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -641,10 +646,10 @@ export function VendorMasterPanel() {
       {/* Section 4 — Financial Details */}
       <Collapsible open={showFinancial} onOpenChange={setShowFinancial}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <CreditCard className="h-4 w-4 text-muted-foreground" />
             Financial Details
-            {showFinancial ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -704,11 +709,11 @@ export function VendorMasterPanel() {
       {/* Section 5 — MSME Details */}
       <Collapsible open={showMsme} onOpenChange={setShowMsme}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Briefcase className="h-4 w-4 text-muted-foreground" />
             MSME Details
             {form.msmeRegistered && <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/30 text-[10px] ml-1">MSME</Badge>}
-            {showMsme ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -759,10 +764,10 @@ export function VendorMasterPanel() {
       {/* Section 6 — Bank Details */}
       <Collapsible open={showBank} onOpenChange={setShowBank}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Landmark className="h-4 w-4 text-muted-foreground" />
             Bank Details
-            {showBank ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -813,10 +818,10 @@ export function VendorMasterPanel() {
       {/* Section 7 — Taxation Details */}
       <Collapsible open={showTaxation} onOpenChange={setShowTaxation}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Shield className="h-4 w-4 text-muted-foreground" />
             Taxation Details
-            {showTaxation ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -920,10 +925,10 @@ export function VendorMasterPanel() {
       {/* Section 8 — Company Info & Logistics */}
       <Collapsible open={showCompanyInfo} onOpenChange={setShowCompanyInfo}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Building className="h-4 w-4 text-muted-foreground" />
             Company Info
-            {showCompanyInfo ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -1064,7 +1069,7 @@ export function VendorMasterPanel() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2">
+          <h2 className="text-xl font-bold flex items-center gap-2 font-display">
             <ShoppingCart className="h-5 w-5 text-teal-600" /> Vendor Master
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Sundry Creditor — Trade Payables (TPAY)</p>
@@ -1103,24 +1108,27 @@ export function VendorMasterPanel() {
       {/* Table */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <ShoppingCart className="h-10 w-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm font-medium">No vendors added</p>
-          <p className="text-xs mt-1">Add your first vendor or supplier.</p>
+          <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p className="text-sm font-medium">No vendors yet</p>
+          <p className="text-xs mt-1">Add your first vendor or supplier to get started.</p>
+          <Button size="sm" onClick={() => setAddOpen(true)} className="gap-1.5 mt-4">
+            <Plus className="h-3.5 w-3.5" /> Add Vendor
+          </Button>
         </div>
       ) : (
         <div className="border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead className="text-xs">Code</TableHead>
-                <TableHead className="text-xs">Name</TableHead>
-                <TableHead className="text-xs">Type</TableHead>
-                <TableHead className="text-xs">GSTIN</TableHead>
-                <TableHead className="text-xs">State</TableHead>
-                <TableHead className="text-xs">MSME</TableHead>
-                <TableHead className="text-xs">Credit Days</TableHead>
-                <TableHead className="text-xs">Status</TableHead>
-                <TableHead className="text-xs text-right">Actions</TableHead>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Code</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Type</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">GSTIN</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">State</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">MSME</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Credit Days</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -1185,8 +1193,8 @@ export function VendorMasterPanel() {
           {renderForm()}
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
-            <Button onClick={handleSave} data-primary>
-              {editTarget ? 'Update' : 'Create'}
+            <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
+              {justSaved ? <><Check className="h-3.5 w-3.5" /> Saved</> : editTarget ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/collapsible';
 import {
   Truck, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
-  ChevronDown, ChevronUp, AlertTriangle, User, MapPin,
+  ChevronDown, AlertTriangle, Check, User, MapPin,
   CreditCard, Shield, Building, Package, X, Globe,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -203,6 +203,7 @@ export function LogisticMasterPanel() {
   });
 
   const [form, setForm] = useState(defaultForm);
+  const [justSaved, setJustSaved] = useState(false);
 
   const loadModeOptions = () => {
     try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
@@ -271,6 +272,8 @@ export function LogisticMasterPanel() {
       const updated = all.map(l => l.id === editTarget.id ? { ...l, ...form } : l);
       saveLogistics(updated); setLogistics(updated);
       toast.success(`${form.partyName} updated`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     } else {
       const def: LogisticMasterDefinition = {
         ...form,
@@ -283,6 +286,8 @@ export function LogisticMasterPanel() {
       const updated = [...all, def];
       saveLogistics(updated); setLogistics(updated);
       toast.success(`${def.partyName} created`);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1500);
     }
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
@@ -468,10 +473,10 @@ export function LogisticMasterPanel() {
       {/* Section 2 — Contacts */}
       <Collapsible open={showContacts} onOpenChange={setShowContacts}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <User className="h-4 w-4 text-muted-foreground" />
             Contacts ({form.contacts.length})
-            {showContacts ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -528,10 +533,10 @@ export function LogisticMasterPanel() {
       {/* Section 3 — Address */}
       <Collapsible open={showAddress} onOpenChange={setShowAddress}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             Address
-            {showAddress ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -607,10 +612,10 @@ export function LogisticMasterPanel() {
       {/* Section 4 — Financial Details */}
       <Collapsible open={showFinancial} onOpenChange={setShowFinancial}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <CreditCard className="h-4 w-4 text-muted-foreground" />
             Financial Details
-            {showFinancial ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -648,10 +653,10 @@ export function LogisticMasterPanel() {
       {/* Section 5 — GST & Compliance */}
       <Collapsible open={showGst} onOpenChange={setShowGst}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Shield className="h-4 w-4 text-muted-foreground" />
             GST & Compliance
-            {showGst ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -728,10 +733,10 @@ export function LogisticMasterPanel() {
       {/* Section 6 — Company Info */}
       <Collapsible open={showCompanyInfo} onOpenChange={setShowCompanyInfo}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Building className="h-4 w-4 text-muted-foreground" />
             Company Info
-            {showCompanyInfo ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -790,10 +795,10 @@ export function LogisticMasterPanel() {
       {/* Section 7 — Freight Rate Card */}
       <Collapsible open={showFreightRates} onOpenChange={setShowFreightRates}>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex items-center gap-2 w-full text-left text-sm font-semibold py-2 border-b">
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
             <Package className="h-4 w-4 text-muted-foreground" />
             Freight Rate Card ({form.freightRates.length} routes)
-            {showFreightRates ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 pt-3">
@@ -926,7 +931,7 @@ export function LogisticMasterPanel() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2">
+          <h2 className="text-xl font-bold flex items-center gap-2 font-display">
             <Truck className="h-5 w-5 text-teal-600" /> Logistic Master
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Transporter & Courier — Sundry Creditor (TPAY)</p>
@@ -965,15 +970,18 @@ export function LogisticMasterPanel() {
       {/* Table */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <Truck className="h-10 w-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm font-medium">No logistic parties added</p>
+          <Truck className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p className="text-sm font-medium">No logistic parties yet</p>
           <p className="text-xs mt-1">Add a transporter or courier to start tracking freight.</p>
+          <Button size="sm" onClick={() => setAddOpen(true)} className="gap-1.5 mt-4">
+            <Plus className="h-3.5 w-3.5" /> Add Logistic Party
+          </Button>
         </div>
       ) : (
         <div className="border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30">
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
                 <TableHead className="text-xs">Code</TableHead>
                 <TableHead className="text-xs">Name</TableHead>
                 <TableHead className="text-xs">Type</TableHead>
@@ -1032,8 +1040,8 @@ export function LogisticMasterPanel() {
           {renderForm()}
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
-            <Button onClick={handleSave} data-primary>
-              {editTarget ? 'Update' : 'Create'}
+            <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
+              {justSaved ? <><Check className="h-3.5 w-3.5" /> Saved</> : editTarget ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>

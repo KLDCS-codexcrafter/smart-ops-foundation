@@ -293,7 +293,7 @@ export function ERPHeader({
               {isOnline ? 'Online' : 'Offline'}
             </span>
           </div>
-          <Badge variant='outline' className='text-[9px] text-muted-foreground/70 border-border/50 font-mono'>
+          <Badge variant='outline' className='text-[9px] text-muted-foreground/70 border-border/50 font-display font-semibold'>
             4DSmartOps
           </Badge>
           <Badge variant='outline' className={cn(
