@@ -754,6 +754,40 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [JWT] POST/PUT /api/group/finecore/ledger-definitions
 };
 
+const hasLedgerData = (defId: string): boolean => {
+  // Check 1: any entity instance has non-zero opening balance
+  const entities = loadEntities();
+  for (const entity of entities) {
+    const key = `erp_entity_${entity.id}_ledger_instances`;
+    const instances: { ledgerDefinitionId: string; openingBalance: number }[] = JSON.parse(localStorage.getItem(key) || '[]');
+    const inst = instances.find(i => i.ledgerDefinitionId === defId);
+    if (inst && inst.openingBalance !== 0) return true;
+  }
+  // Check 2: future voucher check (uncomment when transactions are built)
+  // const vouchers = JSON.parse(localStorage.getItem('erp_group_vouchers') || '[]');
+  // if (vouchers.some((v: any) => v.entries?.some((e: any) => e.ledgerId === defId))) return true;
+  return false;
+};
+
+const removeDefinition = (defId: string): void => {
+  // Remove definition
+  const raw = localStorage.getItem('erp_group_ledger_definitions');
+  const all = raw ? JSON.parse(raw) : [];
+  const filtered = all.filter((d: any) => d.id !== defId);
+  localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
+  // [JWT] DELETE /api/group/finecore/ledger-definitions/:id
+  // Remove entity instances for this definition
+  const entities = loadEntities();
+  entities.forEach(entity => {
+    const key = `erp_entity_${entity.id}_ledger_instances`;
+    const instances: { ledgerDefinitionId: string }[] = JSON.parse(localStorage.getItem(key) || '[]');
+    const remaining = instances.filter(i => i.ledgerDefinitionId !== defId);
+    localStorage.setItem(key, JSON.stringify(remaining));
+  });
+  // [JWT] DELETE /api/group/finecore/ledger-instances/by-definition/:id
+};
+
+
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
@@ -1351,6 +1385,14 @@ export function LedgerMasterPanel() {
   const [suspendTarget, setSuspendTarget] = useState<AnyLedgerDefinition | null>(null);
   const [suspendReason, setSuspendReason] = useState('');
   const [reinstateReason, setReinstateReason] = useState('');
+
+  // Delete flow states
+  const [deleteTarget, setDeleteTarget] = useState<AnyLedgerDefinition | null>(null);
+  const [deleteSearchOpen, setDeleteSearchOpen] = useState(false);
+  const [deleteSearchQuery, setDeleteSearchQuery] = useState('');
+  const [cannotDeleteOpen, setCannotDeleteOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmDeleteInput, setConfirmDeleteInput] = useState('');
 
   // EMI calculator
   const calculateEMI = (principal: number, annualRate: number, months: number): number => {
@@ -2504,6 +2546,33 @@ export function LedgerMasterPanel() {
     setPayrollStatOpen(false);
     setPayrollStatEditTarget(null);
     setPayrollForm(defaultPayrollForm);
+    refreshAll();
+  };
+
+  // ── Delete flow ──
+  const openDeleteFlow = (def: AnyLedgerDefinition) => {
+    setDeleteTarget(def);
+    setPickerOpen(false);
+    setDeleteSearchOpen(false);
+    setConfirmDeleteInput('');
+    if (hasLedgerData(def.id)) {
+      setCannotDeleteOpen(true);
+    } else {
+      setConfirmDeleteOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (confirmDeleteInput.trim() !== deleteTarget.name.trim()) {
+      toast.error('Name does not match — please type the ledger name exactly');
+      return;
+    }
+    removeDefinition(deleteTarget.id);
+    toast.success(`${deleteTarget.name} permanently deleted`);
+    setConfirmDeleteOpen(false);
+    setDeleteTarget(null);
+    setConfirmDeleteInput('');
     refreshAll();
   };
 
@@ -4512,11 +4581,11 @@ export function LedgerMasterPanel() {
               <span className="ml-auto text-xs text-muted-foreground">View details</span>
             </button>
             <button type="button"
-              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left opacity-60"
-              onClick={() => { setPickerOpen(false); toast.info('Delete coming soon'); }}>
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left"
+              onClick={() => { setDeleteSearchQuery(''); setDeleteSearchOpen(true); setPickerOpen(false); }}>
               <Trash2 className="h-4 w-4 text-red-500" />
               <span>Delete</span>
-              <span className="ml-auto text-xs text-muted-foreground">With transaction check — LM-4</span>
+              <span className="ml-auto text-xs text-muted-foreground">Checks for transactions</span>
             </button>
           </div>
         </DialogContent>
@@ -4642,7 +4711,164 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
-      {/* ─── Display Panel (Sheet) ─── */}
+      {/* ─── Delete Search Dialog ─── */}
+      <Dialog open={deleteSearchOpen} onOpenChange={o => { if (!o) { setDeleteSearchOpen(false); setDeleteSearchQuery(''); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-destructive" />
+              Delete {pickerLabel} Ledger
+            </DialogTitle>
+            <DialogDescription>Select a ledger to delete</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input className="pl-9" placeholder={`Search ${pickerLabel} ledgers…`}
+                value={deleteSearchQuery} onChange={e => setDeleteSearchQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') { setDeleteSearchOpen(false); setDeleteSearchQuery(''); } }}
+                autoFocus />
+            </div>
+            {(() => {
+              const allForType: AnyLedgerDefinition[] = (
+                pickerLabel === 'Cash'            ? cashDefs
+                : pickerLabel === 'Bank'          ? bankDefs
+                : pickerLabel === 'Liability'     ? liabilityDefs
+                : pickerLabel === 'Capital/Equity'? capitalDefs
+                : pickerLabel === 'Loan Receivable'? loanRecDefs
+                : pickerLabel === 'Borrowing'     ? borrowingDefs
+                : pickerLabel === 'Income'        ? incomeDefs
+                : pickerLabel === 'Expense'       ? expenseDefs
+                : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : []
+              );
+              const filtered = allForType.filter(d =>
+                `${d.name} ${d.code} ${d.numericCode || ''}`.toLowerCase().includes(deleteSearchQuery.toLowerCase())
+              );
+              if (filtered.length === 0) return <div className="py-8 text-center text-sm text-muted-foreground">No ledgers found</div>;
+              return (
+                <div className="rounded-lg border overflow-hidden max-h-64 overflow-y-auto">
+                  {filtered.map(d => (
+                    <button key={d.id} type="button"
+                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-muted/50 transition-colors text-left border-b last:border-0"
+                      onClick={() => { setDeleteSearchOpen(false); setDeleteSearchQuery(''); openDeleteFlow(d); }}>
+                      <div>
+                        <p className="text-sm font-medium">{d.name}</p>
+                        <p className="text-xs text-muted-foreground font-mono">{d.numericCode || ''} {d.code}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {hasLedgerData(d.id) && (
+                          <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                            Has data
+                          </Badge>
+                        )}
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Cannot Delete Dialog ─── */}
+      <Dialog open={cannotDeleteOpen} onOpenChange={o => { if (!o) { setCannotDeleteOpen(false); setDeleteTarget(null); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Cannot Delete — {deleteTarget?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">This ledger has financial data</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Deleting a ledger with opening balances or transactions would break
+                your financial records and violate accounting principles.
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">You can Suspend it instead</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                A suspended ledger appears in all historical reports but cannot be
+                used in new transactions. It can be reinstated at any time.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCannotDeleteOpen(false); setDeleteTarget(null); }}>
+              Cancel
+            </Button>
+            <Button variant="secondary" onClick={() => {
+              const t = deleteTarget;
+              setCannotDeleteOpen(false);
+              setDeleteTarget(null);
+              if (t) openSuspend(t);
+            }}>
+              <PauseCircle className="h-3.5 w-3.5 mr-1.5" />
+              Suspend Instead
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Confirm Delete Dialog ─── */}
+      <Dialog open={confirmDeleteOpen} onOpenChange={o => {
+        if (!o) { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }
+      }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Delete {deleteTarget?.name}
+            </DialogTitle>
+            <DialogDescription>
+              This action is permanent and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground space-y-1.5">
+              <p>This ledger has no transactions. Deletion will:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Permanently remove the ledger definition</li>
+                <li>Remove all entity-level instances</li>
+                <li>This cannot be undone</li>
+              </ul>
+            </div>
+            <div>
+              <Label className="text-sm">
+                Type <span className="font-mono font-semibold">{deleteTarget?.name}</span> to confirm
+              </Label>
+              <Input className="mt-1.5" value={confirmDeleteInput}
+                onChange={e => setConfirmDeleteInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && confirmDeleteInput.trim() === deleteTarget?.name.trim()) handleConfirmDelete();
+                  if (e.key === 'Escape') { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }
+                }}
+                placeholder={deleteTarget?.name}
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }}>
+              Cancel
+            </Button>
+            <Button variant="destructive"
+              disabled={confirmDeleteInput.trim() !== deleteTarget?.name.trim()}
+              onClick={handleConfirmDelete}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              Delete Permanently
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <Sheet open={displayOpen} onOpenChange={setDisplayOpen}>
         <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
           {displayTarget && (() => {
