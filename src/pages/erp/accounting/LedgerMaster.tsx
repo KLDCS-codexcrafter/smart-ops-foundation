@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
 import {
+  L1_PRIMARIES, L2_PARENT_GROUPS,
   L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
 } from '@/data/finframe-seed-data';
@@ -1170,7 +1171,7 @@ export function LedgerMasterPanel() {
   const [borrowingDefs, setBorrowingDefs] = useState<BorrowingLedgerDefinition[]>(() => loadBorrowingDefs());
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
-  const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
+  const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
   const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
@@ -1516,7 +1517,37 @@ export function LedgerMasterPanel() {
     } catch { return 0; }
   };
 
-  // ── IFSC Auto-Fill ──
+  // ── COA State ──
+  const [coaExpanded, setCoaExpanded] = useState<Set<string>>(() =>
+    new Set(['A', 'L', 'CE', 'I', 'E', 'A-NCA', 'A-CA', 'L-NCL', 'L-CL', 'I-OR', 'I-OI', 'E-OE', 'E-FC', 'CE-SF'])
+  );
+  const [coaSearch, setCoaSearch] = useState('');
+
+  // ── COA Helpers ──
+  const COA_VIRTUAL_L2 = [
+    ...L2_PARENT_GROUPS,
+    { code: 'CE-SF', name: 'Share Capital & Reserves', l1Code: 'CE', nature: 'Cr' as const, order: 1 },
+  ];
+
+  const toggleCoaNode = (code: string) => {
+    setCoaExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(code)) next.delete(code); else next.add(code);
+      return next;
+    });
+  };
+
+  const expandAllCoa = () => {
+    const all = new Set<string>();
+    L1_PRIMARIES.forEach(l1 => all.add(l1.code));
+    COA_VIRTUAL_L2.forEach(l2 => all.add(l2.code));
+    L3_FINANCIAL_GROUPS.forEach(l3 => all.add(l3.code));
+    setCoaExpanded(all);
+  };
+  const collapseAllCoa = () => setCoaExpanded(new Set());
+
+
+
   const fetchIfscDetails = async (ifsc: string) => {
     if (!validateIFSC(ifsc)) return;
     setIfscFetching(true);
@@ -2883,6 +2914,16 @@ export function LedgerMasterPanel() {
   const allDefIds = new Set(allDefs.filter(d => !d.entityId).map(d => d.id));
   const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
 
+  const getDefBalance = (def: AnyLedgerDefinition): { amount: number; type: 'Dr' | 'Cr' } => {
+    if (selEntityId) {
+      const inst = filteredInstances.find(i => i.ledgerDefinitionId === def.id);
+      if (inst) return { amount: inst.openingBalance, type: inst.openingBalanceType };
+    }
+    const ob = (def as any).openingBalance ?? 0;
+    const obt = (def as any).openingBalanceType ?? 'Dr';
+    return { amount: ob, type: obt };
+  };
+
   const getDefForInstance = (inst: EntityLedgerInstance): AnyLedgerDefinition | undefined =>
     allDefs.find(d => d.id === inst.ledgerDefinitionId);
 
@@ -3094,6 +3135,10 @@ export function LedgerMasterPanel() {
         <TabsList>
           <TabsTrigger value="definitions">Ledger Definitions</TabsTrigger>
           <TabsTrigger value="opening_balances">Opening Balances</TabsTrigger>
+          <TabsTrigger value="chart_of_accounts" className="gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" />
+            Chart of Accounts
+          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1 — Definitions */}
@@ -3521,6 +3566,142 @@ export function LedgerMasterPanel() {
                 </div>
               </>
             )}
+          </div>
+        </TabsContent>
+
+        {/* ─── Tab 3: Chart of Accounts ─── */}
+        <TabsContent value="chart_of_accounts">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="text-xs gap-1 h-7" onClick={expandAllCoa}>
+                <ChevronDown className="h-3 w-3" /> Expand All
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs gap-1 h-7" onClick={collapseAllCoa}>
+                <ChevronDown className="h-3 w-3 rotate-180" /> Collapse All
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input className="pl-8 h-7 text-xs w-48" placeholder="Search ledgers..."
+                  value={coaSearch} onChange={e => setCoaSearch(e.target.value)} />
+              </div>
+              <Select value={selEntityId} onValueChange={setSelEntityId}>
+                <SelectTrigger className="w-44 h-7 text-xs"><SelectValue placeholder="All entities" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All entities</SelectItem>
+                  {entities.map(e => <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border overflow-hidden">
+            <div className="grid grid-cols-[1fr_120px_120px] bg-muted/40 px-3 py-2 border-b border-border">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Account</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Dr Balance</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">Cr Balance</span>
+            </div>
+
+            <div className="divide-y divide-border/40">
+              {L1_PRIMARIES.sort((a, b) => a.order - b.order).map(l1 => {
+                const l1Open = coaExpanded.has(l1.code);
+                const l2sForL1 = COA_VIRTUAL_L2.filter(l2 => l2.l1Code === l1.code)
+                  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                return (
+                  <div key={l1.code}>
+                    {/* L1 */}
+                    <button type="button"
+                      className="grid grid-cols-[1fr_120px_120px] w-full items-center px-3 py-2.5 hover:bg-muted/30 transition-colors"
+                      onClick={() => toggleCoaNode(l1.code)}>
+                      <div className="flex items-center gap-2">
+                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-150 ${l1Open ? '' : '-rotate-90'}`} />
+                        <span className="text-sm font-bold text-foreground font-display">{l1.name}</span>
+                      </div>
+                      <span className="text-xs text-right text-muted-foreground tabular-nums">---</span>
+                      <span className="text-xs text-right text-muted-foreground tabular-nums">---</span>
+                    </button>
+
+                    {l1Open && l2sForL1.map(l2 => {
+                      const l2Open = coaExpanded.has(l2.code);
+                      const l3sForL2 = L3_FINANCIAL_GROUPS
+                        .filter(l3 => l3.l2Code === l2.code)
+                        .sort((a, b) => a.order - b.order);
+                      return (
+                        <div key={l2.code} className="bg-muted/10">
+                          <button type="button"
+                            className="grid grid-cols-[1fr_120px_120px] w-full items-center pl-6 pr-3 py-2 hover:bg-muted/30 transition-colors"
+                            onClick={() => toggleCoaNode(l2.code)}>
+                            <div className="flex items-center gap-2">
+                              <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${l2Open ? '' : '-rotate-90'}`} />
+                              <span className="text-xs font-semibold text-foreground">{l2.name}</span>
+                            </div>
+                            <span className="text-xs text-right text-muted-foreground">---</span>
+                            <span className="text-xs text-right text-muted-foreground">---</span>
+                          </button>
+
+                          {l2Open && l3sForL2.map(l3 => {
+                            const l3Open = coaExpanded.has(l3.code);
+                            const defsForL3 = loadAllDefinitions()
+                              .filter(d => d.parentGroupCode === l3.code)
+                              .filter(d => !coaSearch || d.name.toLowerCase().includes(coaSearch.toLowerCase())
+                                || d.numericCode?.toLowerCase().includes(coaSearch.toLowerCase()));
+                            const hiddenBySearch = coaSearch.length > 0 && defsForL3.length === 0;
+                            if (hiddenBySearch) return null;
+                            return (
+                              <div key={l3.code}>
+                                <button type="button"
+                                  className="grid grid-cols-[1fr_120px_120px] w-full items-center pl-10 pr-3 py-1.5 hover:bg-muted/30 transition-colors"
+                                  onClick={() => toggleCoaNode(l3.code)}>
+                                  <div className="flex items-center gap-1.5">
+                                    <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${l3Open ? '' : '-rotate-90'} ${defsForL3.length === 0 ? 'opacity-30' : ''}`} />
+                                    <span className={`text-xs font-medium ${defsForL3.length === 0 ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                      {l3.name}
+                                    </span>
+                                    {defsForL3.length === 0 && (
+                                      <span className="text-[10px] text-muted-foreground/60 ml-1">0 ledgers</span>
+                                    )}
+                                  </div>
+                                  <span className="text-xs text-right text-muted-foreground">---</span>
+                                  <span className="text-xs text-right text-muted-foreground">---</span>
+                                </button>
+
+                                {l3Open && defsForL3.map(def => {
+                                  const bal = getDefBalance(def);
+                                  const isActive = def.status === 'active';
+                                  return (
+                                    <div key={def.id}
+                                      className={`grid grid-cols-[1fr_120px_120px] items-center pl-14 pr-3 py-1.5 hover:bg-primary/5 transition-colors ${!isActive ? 'opacity-50' : ''}`}>
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <button type="button"
+                                          className="text-xs font-medium text-left hover:text-primary hover:underline truncate transition-colors"
+                                          onClick={() => openDisplay(def)}>
+                                          {def.name}
+                                        </button>
+                                        <span className="text-[10px] font-mono text-muted-foreground/60 shrink-0">{def.numericCode}</span>
+                                        {!isActive && (
+                                          <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20 shrink-0 h-4 px-1">suspended</Badge>
+                                        )}
+                                      </div>
+                                      <span className={`text-xs text-right font-mono tabular-nums ${bal.type === 'Dr' && bal.amount > 0 ? 'text-teal-600 font-semibold' : 'text-muted-foreground'}`}>
+                                        {bal.type === 'Dr' && bal.amount > 0 ? `₹${toIndianFormat(bal.amount)}` : '---'}
+                                      </span>
+                                      <span className={`text-xs text-right font-mono tabular-nums ${bal.type === 'Cr' && bal.amount > 0 ? 'text-amber-600 font-semibold' : 'text-muted-foreground'}`}>
+                                        {bal.type === 'Cr' && bal.amount > 0 ? `₹${toIndianFormat(bal.amount)}` : '---'}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </TabsContent>
       </Tabs>
