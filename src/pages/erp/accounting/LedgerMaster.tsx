@@ -1027,6 +1027,26 @@ const TYPE_BUTTONS = [
   { label: 'Terms of Delivery', icon: FileText, row: 'Transaction Defaults', active: true },
 ];
 
+const LABEL_TO_SUBTAB: Record<string, string> = {
+  'Cash': 'cash',
+  'Bank': 'bank',
+  'Liability': 'liabilities',
+  'Capital/Equity': 'capital',
+  'Loan Receivable': 'loans',
+  'Borrowing': 'loans',
+  'Income': 'income',
+  'Expense': 'expenses',
+  'Duties & Taxes': 'duties_tax',
+  'Payroll Statutory': 'payroll',
+  'Customer': 'customer',
+  'Vendor': 'vendor',
+  'Logistic': 'logistic',
+  'Branch & Division': 'branch_division',
+  'Mode of Payment': 'mode_payment',
+  'Terms of Payment': 'terms_payment',
+  'Terms of Delivery': 'terms_delivery',
+};
+
 // ─── Default Forms ────────────────────────────────────────────────────
 
 const defaultBankForm = {
@@ -1465,12 +1485,36 @@ export function LedgerMasterPanel() {
     if (payrollStatOpen) handlePayrollStatSave();
   });
 
-  // ── Stats ──
-  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
-  const totalDefined = allDefs.length;
-  const groupLevel = allDefs.filter(d => !d.entityId).length;
-  const entitySpecific = allDefs.filter(d => d.entityId).length;
-  const activeLedgers = allDefs.filter(d => d.status === 'active').length;
+  // ── getLabelCount ──
+  const getLabelCount = (label: string): number => {
+    try {
+      switch (label) {
+        case 'Cash': return cashDefs.length;
+        case 'Bank': return bankDefs.length;
+        case 'Liability': return liabilityDefs.length;
+        case 'Capital/Equity': return capitalDefs.length;
+        case 'Loan Receivable': return loanRecDefs.length;
+        case 'Borrowing': return borrowingDefs.length;
+        case 'Income': return incomeDefs.length;
+        case 'Expense': return expenseDefs.length;
+        case 'Duties & Taxes': return dutiesTaxDefs.length;
+        case 'Payroll Statutory': return payrollStatDefs.length;
+        case 'Customer':
+          return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]').length;
+        case 'Vendor':
+          return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]').length;
+        case 'Logistic':
+          return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]').length;
+        case 'Mode of Payment':
+          return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]').length;
+        case 'Terms of Payment':
+          return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]').length;
+        case 'Terms of Delivery':
+          return JSON.parse(localStorage.getItem('erp_group_terms_of_delivery') || '[]').length;
+        default: return 0;
+      }
+    } catch { return 0; }
+  };
 
   // ── IFSC Auto-Fill ──
   const fetchIfscDetails = async (ifsc: string) => {
@@ -2835,6 +2879,7 @@ export function LedgerMasterPanel() {
   const expenseL3 = L3_FINANCIAL_GROUPS.filter(g => ['PURCH','DEXP','EMPB','RENT','UTIL','TRAV','PRFEE','ADMIN','SELL','REPAIR','INTEXP','BKCHG'].includes(g.code));
 
   // Filter instances for Opening Balances tab
+  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
   const allDefIds = new Set(allDefs.filter(d => !d.entityId).map(d => d.id));
   const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
 
@@ -2959,85 +3004,47 @@ export function LedgerMasterPanel() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-foreground">Ledger Master</h1>
-            <Badge className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Cash</Badge>
-            <Badge className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Bank</Badge>
-            <Badge className="text-[10px] bg-purple-500/10 text-purple-600 border-purple-500/20">+6 Types</Badge>
-          </div>
+          <h1 className="text-2xl font-bold font-display text-foreground mb-1">Ledger Master</h1>
           <p className="text-sm text-muted-foreground">Financial accounts for all entities</p>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: 'Total Defined', value: totalDefined },
-          { label: 'Group Level', value: groupLevel },
-          { label: 'Entity Specific', value: entitySpecific },
-          { label: 'Active', value: activeLedgers },
-        ].map(s => (
-          <div key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
-            <p className="text-2xl font-bold text-foreground font-mono">{s.value}</p>
-            <p className="text-xs text-muted-foreground">{s.label}</p>
-          </div>
-        ))}
-      </div>
 
-      {/* Quick Start Templates */}
-      <div className="flex flex-wrap gap-3">
-        <button onClick={() => handleCashQuickStart('Main Cash')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600">
-          <Plus className="h-4 w-4" /> Main Cash
-        </button>
-        <button onClick={() => handleCashQuickStart('Petty Cash')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-sm font-medium text-teal-600">
-          <Plus className="h-4 w-4" /> Petty Cash
-        </button>
-        <button onClick={() => handleBankQuickStart({
-          bankName: 'HDFC Bank', accountType: 'current', parentGroupCode: 'BANK',
-          parentGroupName: 'Bank Balances', name: 'HDFC Bank — Current A/C', openingBalanceType: 'Dr',
-        })}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
-          <Plus className="h-4 w-4" /> HDFC Current A/C
-        </button>
-        <button onClick={() => handleBankQuickStart({
-          bankName: 'State Bank of India (SBI)', accountType: 'savings', parentGroupCode: 'BANK',
-          parentGroupName: 'Bank Balances', name: 'SBI — Savings A/C', openingBalanceType: 'Dr',
-        })}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-sm font-medium text-blue-600">
-          <Plus className="h-4 w-4" /> SBI Savings A/C
-        </button>
-        <button onClick={() => handleBankQuickStart({
-          accountType: 'cash_credit', parentGroupCode: 'STBOR',
-          parentGroupName: 'Short-Term Borrowings', name: '', openingBalanceType: 'Cr',
-        })}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-sm font-medium text-amber-600">
-          <Plus className="h-4 w-4" /> Cash Credit A/C
-        </button>
-      </div>
 
-      {/* Type Button Grid */}
-      <div className="space-y-2">
+      {/* Zone B — Type Navigator */}
+      <div className="space-y-3">
         {Object.entries(rows).map(([rowLabel, buttons]) => (
           <div key={rowLabel}>
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{rowLabel}</p>
             <div className="flex flex-wrap gap-2">
               {buttons.map(btn => {
                 const Icon = btn.icon;
+                const count = getLabelCount(btn.label);
+                const isActiveBtn = activeTab === 'definitions' && LABEL_TO_SUBTAB[btn.label] === defSubTab;
                 if (!btn.active) {
                   return (
                     <span key={btn.label}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium opacity-50 pointer-events-none bg-muted/50 text-muted-foreground border border-border">
-                      <Lock className="h-3 w-3" /> {btn.label}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium opacity-40 pointer-events-none bg-muted/30 text-muted-foreground border border-border/50">
+                      <Lock className="h-3 w-3" />
+                      <span>{btn.label}</span>
                     </span>
                   );
                 }
                 return (
                   <button key={btn.label}
                     onClick={() => handleTypeButtonClick(btn.label)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
-                    <Icon className="h-3.5 w-3.5" /> {btn.label}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      isActiveBtn
+                        ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                        : 'bg-primary/8 text-primary border-primary/20 hover:bg-primary/15 hover:border-primary/30'
+                    }`}>
+                    <Icon className="h-3.5 w-3.5" />
+                    <span>{btn.label}</span>
+                    {count > 0 && (
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums ${
+                        isActiveBtn ? 'bg-white/20 text-primary-foreground' : 'bg-primary/15 text-primary'
+                      }`}>{count}</span>
+                    )}
                   </button>
                 );
               })}
@@ -3045,6 +3052,42 @@ export function LedgerMasterPanel() {
           </div>
         ))}
       </div>
+
+      {/* Contextual Quick-Creates — shown for active type only */}
+      {activeTab === 'definitions' && defSubTab === 'cash' && (
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => handleCashQuickStart('Main Cash')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-teal-500/40 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-xs font-medium text-teal-600">
+            <Plus className="h-3.5 w-3.5" /> Main Cash
+          </button>
+          <button onClick={() => handleCashQuickStart('Petty Cash')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-teal-500/40 bg-teal-500/5 hover:bg-teal-500/10 transition-colors text-xs font-medium text-teal-600">
+            <Plus className="h-3.5 w-3.5" /> Petty Cash
+          </button>
+        </div>
+      )}
+      {activeTab === 'definitions' && defSubTab === 'bank' && (
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => handleBankQuickStart({ bankName: 'HDFC Bank', accountType: 'current',
+            parentGroupCode: 'BANK', parentGroupName: 'Bank Balances',
+            name: 'HDFC Bank — Current A/C', openingBalanceType: 'Dr' })}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-xs font-medium text-blue-600">
+            <Plus className="h-3.5 w-3.5" /> HDFC Current A/C
+          </button>
+          <button onClick={() => handleBankQuickStart({ bankName: 'State Bank of India (SBI)',
+            accountType: 'savings', parentGroupCode: 'BANK', parentGroupName: 'Bank Balances',
+            name: 'SBI — Savings A/C', openingBalanceType: 'Dr' })}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-xs font-medium text-blue-600">
+            <Plus className="h-3.5 w-3.5" /> SBI Savings A/C
+          </button>
+          <button onClick={() => handleBankQuickStart({ accountType: 'cash_credit',
+            parentGroupCode: 'STBOR', parentGroupName: 'Short-Term Borrowings',
+            name: '', openingBalanceType: 'Cr' })}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-xs font-medium text-amber-600">
+            <Plus className="h-3.5 w-3.5" /> Cash Credit A/C
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
