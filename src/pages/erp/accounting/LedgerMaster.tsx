@@ -24,6 +24,7 @@ import {
   Building, Scale, ArrowUpRight, ArrowDownLeft,
   Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag,
   Clock, History, PauseCircle, PlayCircle, MessageSquare,
+  Trash2, Search,
 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
