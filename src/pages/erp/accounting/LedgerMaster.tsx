@@ -2879,6 +2879,7 @@ export function LedgerMasterPanel() {
   const expenseL3 = L3_FINANCIAL_GROUPS.filter(g => ['PURCH','DEXP','EMPB','RENT','UTIL','TRAV','PRFEE','ADMIN','SELL','REPAIR','INTEXP','BKCHG'].includes(g.code));
 
   // Filter instances for Opening Balances tab
+  const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
   const allDefIds = new Set(allDefs.filter(d => !d.entityId).map(d => d.id));
   const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
 
