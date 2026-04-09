@@ -1226,6 +1226,7 @@ export function LedgerMasterPanel() {
   const [borrowingDefs, setBorrowingDefs] = useState<BorrowingLedgerDefinition[]>(() => loadBorrowingDefs());
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
+  const [assetDefs, setAssetDefs] = useState<AssetLedgerDefinition[]>(() => loadAssetDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
   const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
@@ -1439,6 +1440,7 @@ export function LedgerMasterPanel() {
     setExpenseDefs(loadExpenseDefs());
     setDutiesTaxDefs(loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]);
     setPayrollStatDefs(loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]);
+    setAssetDefs(loadAssetDefs());
     setInstances(loadInstances(selEntityId));
   };
 
@@ -2955,6 +2957,7 @@ export function LedgerMasterPanel() {
   const l4BorrowingGroups = getFinFrameL4Groups(['LTBOR', 'STBOR', 'BOND']);
   const l4IncomeGroups = getFinFrameL4Groups(['PCAP', 'SERV', 'EXINC', 'INTINC', 'DIVINC', 'RNTINC', 'GAIN', 'MISC']);
   const l4ExpenseGroups = getFinFrameL4Groups(['PURCH', 'DEXP', 'EMPB', 'RENT', 'UTIL', 'TRAV', 'PRFEE', 'ADMIN', 'SELL', 'REPAIR', 'INTEXP', 'BKCHG']);
+  const l4AssetGroups = getFinFrameL4Groups(['PPE', 'CWIP', 'INTAN', 'IAWIP', 'INVST']);
 
   // L3 groups for parent pickers
   const liabilityL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTPROV','ONCL','OPAY','EMPL','LEASE','BOND'].includes(g.code));
@@ -2963,6 +2966,7 @@ export function LedgerMasterPanel() {
   const borrowingL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTBOR','STBOR','BOND'].includes(g.code));
   const incomeL3 = L3_FINANCIAL_GROUPS.filter(g => ['PCAP','SERV','EXINC','INTINC','DIVINC','RNTINC','GAIN','MISC'].includes(g.code));
   const expenseL3 = L3_FINANCIAL_GROUPS.filter(g => ['PURCH','DEXP','EMPB','RENT','UTIL','TRAV','PRFEE','ADMIN','SELL','REPAIR','INTEXP','BKCHG'].includes(g.code));
+  const assetL3 = L3_FINANCIAL_GROUPS.filter(g => ['PPE','CWIP','INTAN','IAWIP','INVST'].includes(g.code));
 
   // Filter instances for Opening Balances tab
   const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
