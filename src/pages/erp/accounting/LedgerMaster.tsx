@@ -1393,6 +1393,38 @@ export function LedgerMasterPanel() {
   };
   const [payrollForm, setPayrollForm] = useState(defaultPayrollForm);
 
+  const ASSET_CATEGORY_LABELS: Record<AssetCategory, string> = {
+    ppe: 'Property, Plant & Equipment',
+    cwip: 'Capital Work in Progress',
+    intangible: 'Intangible Asset',
+    intangible_wip: 'Intangible Under Development',
+    investment: 'Investment',
+  };
+  const ASSET_PARENT_MAP: Record<AssetCategory, { code: string; name: string }> = {
+    ppe: { code: 'PPE', name: 'Property, Plant & Equipment' },
+    cwip: { code: 'CWIP', name: 'Capital Work in Progress' },
+    intangible: { code: 'INTAN', name: 'Intangible Assets' },
+    intangible_wip: { code: 'IAWIP', name: 'Intangible Under Development' },
+    investment: { code: 'INVST', name: 'Non-Current Investments' },
+  };
+  const DEPRECIATION_LABELS: Record<DepreciationMethod, string> = {
+    slm: 'Straight Line Method (SLM)',
+    wdv: 'Written Down Value (WDV)',
+    none: 'No Depreciation',
+  };
+  const defaultAssetForm = {
+    parentGroupCode: 'PPE', parentGroupName: 'Property, Plant & Equipment',
+    name: '', mailingName: '', alias: '',
+    assetCategory: 'ppe' as AssetCategory,
+    purchaseDate: '', grossBlock: 0,
+    depreciationMethod: 'slm' as DepreciationMethod,
+    usefulLifeYears: 10, depreciationRate: 10,
+    vendorId: '', vendorName: '',
+    openingBalance: 0, scope: 'group' as 'group'|'entity', entityId: '',
+    description: '', notes: '',
+  };
+  const [assetForm, setAssetForm] = useState(defaultAssetForm);
+
   const PAYROLL_COMPONENT_DEFAULTS: Record<PayrollComponent, { name: string; category: PayrollCategory; statutoryRate: number; calculationBase: string; wageCeiling: number | null; maxAmount: number | null }> = {
     pf_employee: { name: 'PF Employee Deduction', category: 'employee_deduction', statutoryRate: 12, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
     esi_employee: { name: 'ESI Employee Deduction', category: 'employee_deduction', statutoryRate: 0.75, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
