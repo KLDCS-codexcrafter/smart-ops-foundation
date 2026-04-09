@@ -3342,6 +3342,9 @@ export function LedgerMasterPanel() {
               <TabsTrigger value="payroll" className="text-xs gap-1.5">
                 <Users className="h-3.5 w-3.5" /> Payroll Statutory ({payrollStatDefs.length})
               </TabsTrigger>
+              <TabsTrigger value="asset" className="text-xs gap-1.5">
+                <Building2 className="h-3.5 w-3.5" /> Asset ({assetDefs.length})
+              </TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -5015,6 +5018,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Income'        ? incomeDefs
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
@@ -5079,6 +5083,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
                 : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
@@ -5135,6 +5140,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
                 : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
