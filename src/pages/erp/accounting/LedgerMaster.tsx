@@ -2924,7 +2924,7 @@ export function LedgerMasterPanel() {
     return { amount: ob, type: obt };
   };
 
-
+  const getDefForInstance = (inst: EntityLedgerInstance): AnyLedgerDefinition | undefined =>
     allDefs.find(d => d.id === inst.ledgerDefinitionId);
 
   const rows: Record<string, typeof TYPE_BUTTONS> = {};
