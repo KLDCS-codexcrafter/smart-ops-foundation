@@ -5496,6 +5496,7 @@ export function LedgerMasterPanel() {
                           case 'expense': openExpenseEdit(def as ExpenseLedgerDefinition); break;
                           case 'duties_tax': openDutiesTaxEdit(def as DutiesTaxLedgerDefinition); break;
                           case 'payroll_statutory': openPayrollStatEdit(def as PayrollStatutoryLedgerDefinition); break;
+                          case 'asset': openAssetEdit(def as AssetLedgerDefinition); break;
                         }}}>
                         <Edit2 className="h-3.5 w-3.5" /> Edit
                       </Button>
