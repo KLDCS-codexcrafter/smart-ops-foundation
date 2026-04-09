@@ -1975,6 +1975,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, liabilityForm.openingBalance, liabilityForm.openingBalanceType);
     toast.success(`${def.name} created`);
     setLiabilityOpen(false);
+    setLiabilityEditTarget(null);
     setLiabilityForm({ parentGroupCode: 'LTPROV', parentGroupName: 'Long-Term Provisions',
       name: '', mailingName: '', alias: '', openingBalance: 0, openingBalanceType: 'Cr',
       scope: 'group', entityId: '' });
@@ -1983,6 +1984,29 @@ export function LedgerMasterPanel() {
 
   const handleCapitalSave = () => {
     if (!capitalForm.name.trim()) return toast.error('Name is required');
+    if (capitalEditTarget) {
+      const updated: CapitalLedgerDefinition = {
+        ...capitalEditTarget,
+        name: capitalForm.name.trim(),
+        mailingName: capitalForm.mailingName.trim() || capitalForm.name.trim(),
+        alias: capitalForm.alias.trim(),
+        parentGroupCode: capitalForm.parentGroupCode,
+        parentGroupName: capitalForm.parentGroupName,
+        capitalType: capitalForm.capitalType,
+        authorisedCapital: capitalForm.authorisedCapital, issuedCapital: capitalForm.issuedCapital,
+        paidUpCapital: capitalForm.paidUpCapital, faceValuePerShare: capitalForm.faceValuePerShare,
+        numberOfShares: capitalForm.numberOfShares,
+        partnerName: capitalForm.partnerName, partnerPAN: capitalForm.partnerPAN,
+        profitSharingRatio: capitalForm.profitSharingRatio, capitalContribution: capitalForm.capitalContribution,
+        proprietorName: capitalForm.proprietorName, proprietorPAN: capitalForm.proprietorPAN,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setCapitalOpen(false);
+      setCapitalEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genCapitalCode(all);
     const numericCode = deriveLedgerNumericCode(capitalForm.parentGroupCode,
@@ -2019,6 +2043,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, capitalForm.openingBalance, 'Cr');
     toast.success(`${def.name} created`);
     setCapitalOpen(false);
+    setCapitalEditTarget(null);
     setCapitalForm({ parentGroupCode: 'RSRV', parentGroupName: 'Reserves & Surplus',
       name: '', mailingName: '', alias: '', openingBalance: 0, openingBalanceType: 'Cr',
       capitalType: 'general_reserve', authorisedCapital: 0, issuedCapital: 0, paidUpCapital: 0,
@@ -2030,6 +2055,30 @@ export function LedgerMasterPanel() {
 
   const handleLoanRecSave = () => {
     if (!loanRecForm.name.trim()) return toast.error('Name is required');
+    if (loanRecEditTarget) {
+      const updated: LoanReceivableLedgerDefinition = {
+        ...loanRecEditTarget,
+        name: loanRecForm.name.trim(),
+        mailingName: loanRecForm.mailingName.trim() || loanRecForm.borrowerName.trim() || loanRecForm.name.trim(),
+        alias: loanRecForm.alias.trim(),
+        parentGroupCode: loanRecForm.parentGroupCode, parentGroupName: loanRecForm.parentGroupName,
+        borrowerName: loanRecForm.borrowerName, borrowerPhone: loanRecForm.borrowerPhone,
+        borrowerEmail: loanRecForm.borrowerEmail, borrowerAddress: loanRecForm.borrowerAddress,
+        borrowerState: loanRecForm.borrowerState, borrowerPincode: loanRecForm.borrowerPincode,
+        borrowerPAN: loanRecForm.borrowerPAN,
+        loanAmount: loanRecForm.loanAmount, interestRate: loanRecForm.interestRate,
+        interestType: loanRecForm.interestType, tenureMonths: loanRecForm.tenureMonths,
+        disbursementDate: loanRecForm.disbursementDate, firstRepaymentDate: loanRecForm.firstRepaymentDate,
+        collateral: loanRecForm.collateral, purpose: loanRecForm.purpose,
+        isTdsApplicable: loanRecForm.isTdsApplicable, tdsSection: loanRecForm.tdsSection,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setLoanRecOpen(false);
+      setLoanRecEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genLoanRecCode(all);
     const numericCode = deriveLedgerNumericCode(loanRecForm.parentGroupCode,
@@ -2068,12 +2117,35 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, 0, 'Dr');
     toast.success(`${def.name} created`);
     setLoanRecOpen(false);
+    setLoanRecEditTarget(null);
     setLoanRecForm(defaultLoanRecForm);
     refreshAll();
   };
 
   const handleBorrowingSave = () => {
     if (!borrowingForm.name.trim()) return toast.error('Name is required');
+    if (borrowingEditTarget) {
+      const updated: BorrowingLedgerDefinition = {
+        ...borrowingEditTarget,
+        name: borrowingForm.name.trim(),
+        mailingName: borrowingForm.mailingName.trim() || borrowingForm.lenderName.trim() || borrowingForm.name.trim(),
+        alias: borrowingForm.alias.trim(),
+        parentGroupCode: borrowingForm.parentGroupCode, parentGroupName: borrowingForm.parentGroupName,
+        lenderName: borrowingForm.lenderName, lenderType: borrowingForm.lenderType,
+        lenderPhone: borrowingForm.lenderPhone, lenderEmail: borrowingForm.lenderEmail,
+        lenderAddress: borrowingForm.lenderAddress,
+        loanAmount: borrowingForm.loanAmount, interestRate: borrowingForm.interestRate,
+        loanType: borrowingForm.loanType, tenureMonths: borrowingForm.tenureMonths,
+        firstEmiDate: borrowingForm.firstEmiDate,
+        loanAccountNo: borrowingForm.loanAccountNo, collateralPledged: borrowingForm.collateralPledged,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setBorrowingOpen(false);
+      setBorrowingEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genBorrowingCode(all);
     const numericCode = deriveLedgerNumericCode(borrowingForm.parentGroupCode,
@@ -2120,12 +2192,35 @@ export function LedgerMasterPanel() {
     }
     toast.success(`${def.name} created`);
     setBorrowingOpen(false);
+    setBorrowingEditTarget(null);
     setBorrowingForm(defaultBorrowingForm);
     refreshAll();
   };
 
   const handleIncomeSave = () => {
     if (!incomeForm.name.trim()) return toast.error('Name is required');
+    if (incomeEditTarget) {
+      const updated: IncomeLedgerDefinition = {
+        ...incomeEditTarget,
+        name: incomeForm.name.trim(),
+        mailingName: incomeForm.mailingName.trim() || incomeForm.name.trim(),
+        alias: incomeForm.alias.trim(),
+        parentGroupCode: incomeForm.parentGroupCode, parentGroupName: incomeForm.parentGroupName,
+        isGstApplicable: incomeForm.isGstApplicable,
+        hsnSacCode: incomeForm.hsnSacCode, hsnSacType: incomeForm.hsnSacType,
+        gstRate: incomeForm.gstRate, cgstRate: incomeForm.cgstRate,
+        sgstRate: incomeForm.sgstRate, igstRate: incomeForm.igstRate, cessRate: incomeForm.cessRate,
+        gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
+        isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
+        costCentreApplicable: incomeForm.costCentreApplicable,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setIncomeOpen(false);
+      setIncomeEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genIncomeCode(all);
     const numericCode = deriveLedgerNumericCode(incomeForm.parentGroupCode,
@@ -2162,12 +2257,39 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, 0, 'Cr');
     toast.success(`${def.name} created`);
     setIncomeOpen(false);
+    setIncomeEditTarget(null);
     setIncomeForm(defaultIncomeForm);
     refreshAll();
   };
 
   const handleExpenseSave = () => {
     if (!expenseForm.name.trim()) return toast.error('Name is required');
+    if (expenseEditTarget) {
+      const updated: ExpenseLedgerDefinition = {
+        ...expenseEditTarget,
+        name: expenseForm.name.trim(),
+        mailingName: expenseForm.mailingName.trim() || expenseForm.name.trim(),
+        alias: expenseForm.alias.trim(),
+        parentGroupCode: expenseForm.parentGroupCode, parentGroupName: expenseForm.parentGroupName,
+        isGstApplicable: expenseForm.isGstApplicable,
+        hsnSacCode: expenseForm.hsnSacCode, hsnSacType: expenseForm.hsnSacType,
+        gstRate: expenseForm.gstRate, cgstRate: expenseForm.cgstRate,
+        sgstRate: expenseForm.sgstRate, igstRate: expenseForm.igstRate, cessRate: expenseForm.cessRate,
+        gstType: expenseForm.gstType,
+        isItcEligible: expenseForm.isItcEligible, isRcmApplicable: expenseForm.isRcmApplicable,
+        rcmSection: expenseForm.rcmSection,
+        isTdsApplicable: expenseForm.isTdsApplicable, tdsSection: expenseForm.tdsSection,
+        usePurchaseAdditionalExpense: expenseForm.usePurchaseAdditionalExpense,
+        costCentreApplicable: expenseForm.costCentreApplicable,
+        isBudgetHead: expenseForm.isBudgetHead, expenseNature: expenseForm.expenseNature,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setExpenseOpen(false);
+      setExpenseEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genExpenseCode(all);
     const numericCode = deriveLedgerNumericCode(expenseForm.parentGroupCode,
@@ -2210,6 +2332,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, 0, 'Dr');
     toast.success(`${def.name} created`);
     setExpenseOpen(false);
+    setExpenseEditTarget(null);
     setExpenseForm(defaultExpenseForm);
     refreshAll();
   };
@@ -2220,6 +2343,25 @@ export function LedgerMasterPanel() {
     if (dutiesTaxForm.taxType === 'gst' && !dutiesTaxForm.gstSubType)
       return toast.error('Select GST type (CGST/SGST/IGST/Cess)');
     if (!dutiesTaxForm.name.trim()) return toast.error('Ledger name is required');
+    if (dutiesTaxEditTarget) {
+      const updated: DutiesTaxLedgerDefinition = {
+        ...dutiesTaxEditTarget,
+        name: dutiesTaxForm.name.trim(),
+        mailingName: dutiesTaxForm.mailingName.trim() || dutiesTaxForm.name.trim(),
+        alias: dutiesTaxForm.alias.trim(),
+        parentGroupCode: dutiesTaxForm.parentGroupCode, parentGroupName: dutiesTaxForm.parentGroupName,
+        taxType: dutiesTaxForm.taxType as TaxType,
+        gstSubType: dutiesTaxForm.gstSubType,
+        calculationBasis: dutiesTaxForm.calculationBasis,
+        rate: dutiesTaxForm.rate,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setDutiesTaxOpen(false);
+      setDutiesTaxEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genDutiesTaxCode(all);
     const numericCode = deriveLedgerNumericCode(dutiesTaxForm.parentGroupCode,
@@ -2245,6 +2387,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, 0, 'Cr');
     toast.success(`${def.name} created`);
     setDutiesTaxOpen(false);
+    setDutiesTaxEditTarget(null);
     setDutiesTaxForm(defaultDutiesTaxForm);
     refreshAll();
   };
@@ -2253,6 +2396,28 @@ export function LedgerMasterPanel() {
   const handlePayrollStatSave = () => {
     if (!payrollForm.payrollComponent) return toast.error('Select a component');
     if (!payrollForm.name.trim()) return toast.error('Ledger name is required');
+    if (payrollStatEditTarget) {
+      const comp = payrollForm.payrollComponent as PayrollComponent;
+      const defaults = PAYROLL_COMPONENT_DEFAULTS[comp];
+      const updated: PayrollStatutoryLedgerDefinition = {
+        ...payrollStatEditTarget,
+        name: payrollForm.name.trim(),
+        mailingName: payrollForm.name.trim(),
+        alias: payrollForm.alias?.trim() ?? '',
+        payrollCategory: defaults.category,
+        payrollComponent: comp,
+        statutoryRate: defaults.statutoryRate,
+        calculationBase: defaults.calculationBase,
+        wageCeiling: defaults.wageCeiling,
+        maxAmount: defaults.maxAmount,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setPayrollStatOpen(false);
+      setPayrollStatEditTarget(null);
+      refreshAll();
+      return;
+    }
     const comp = payrollForm.payrollComponent as PayrollComponent;
     const defaults = PAYROLL_COMPONENT_DEFAULTS[comp];
     const all = loadAllDefinitions();
@@ -2282,6 +2447,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, 0, 'Cr');
     toast.success(`${def.name} created`);
     setPayrollStatOpen(false);
+    setPayrollStatEditTarget(null);
     setPayrollForm(defaultPayrollForm);
     refreshAll();
   };
@@ -3327,7 +3493,7 @@ export function LedgerMasterPanel() {
       <Dialog open={liabilityOpen} onOpenChange={(open) => { if (!open) setLiabilityOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Liability Ledger</DialogTitle>
+            <DialogTitle>{liabilityEditTarget ? 'Edit Liability Ledger' : 'Create Liability Ledger'}</DialogTitle>
             <DialogDescription>Define a liability account (Cr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3377,7 +3543,7 @@ export function LedgerMasterPanel() {
       <Dialog open={capitalOpen} onOpenChange={(open) => { if (!open) setCapitalOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Capital / Equity Ledger</DialogTitle>
+            <DialogTitle>{capitalEditTarget ? 'Edit Capital / Equity Ledger' : 'Create Capital / Equity Ledger'}</DialogTitle>
             <DialogDescription>Define a capital account (Cr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3456,7 +3622,7 @@ export function LedgerMasterPanel() {
       <Dialog open={loanRecOpen} onOpenChange={(open) => { if (!open) setLoanRecOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Loan Receivable</DialogTitle>
+            <DialogTitle>{loanRecEditTarget ? 'Edit Loan Receivable' : 'Create Loan Receivable'}</DialogTitle>
             <DialogDescription>Define a loan given (Dr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3508,7 +3674,7 @@ export function LedgerMasterPanel() {
       <Dialog open={borrowingOpen} onOpenChange={(open) => { if (!open) setBorrowingOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Borrowing Ledger</DialogTitle>
+            <DialogTitle>{borrowingEditTarget ? 'Edit Borrowing Ledger' : 'Create Borrowing Ledger'}</DialogTitle>
             <DialogDescription>Define a loan taken (Cr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3592,7 +3758,7 @@ export function LedgerMasterPanel() {
       <Dialog open={incomeOpen} onOpenChange={(open) => { if (!open) setIncomeOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Income Ledger</DialogTitle>
+            <DialogTitle>{incomeEditTarget ? 'Edit Income Ledger' : 'Create Income Ledger'}</DialogTitle>
             <DialogDescription>Define an income account (Cr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3670,7 +3836,7 @@ export function LedgerMasterPanel() {
       <Dialog open={expenseOpen} onOpenChange={(open) => { if (!open) setExpenseOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Expense Ledger</DialogTitle>
+            <DialogTitle>{expenseEditTarget ? 'Edit Expense Ledger' : 'Create Expense Ledger'}</DialogTitle>
             <DialogDescription>Define an expense account (Dr).</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3814,7 +3980,7 @@ export function LedgerMasterPanel() {
       <Dialog open={dutiesTaxOpen} onOpenChange={(open) => { if (!open) setDutiesTaxOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>New Duties & Tax Ledger</DialogTitle>
+            <DialogTitle>{dutiesTaxEditTarget ? 'Edit Duties & Tax Ledger' : 'New Duties & Tax Ledger'}</DialogTitle>
             <DialogDescription>Create a GST, TDS, TCS, or other statutory tax ledger.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -3917,7 +4083,7 @@ export function LedgerMasterPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDutiesTaxOpen(false)}>Cancel</Button>
-            <Button data-primary onClick={handleDutiesTaxSave}>Create Ledger</Button>
+            <Button data-primary onClick={handleDutiesTaxSave}>{dutiesTaxEditTarget ? "Update Ledger" : "Create Ledger"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -3926,7 +4092,7 @@ export function LedgerMasterPanel() {
       <Dialog open={payrollStatOpen} onOpenChange={(open) => { if (!open) setPayrollStatOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>New Payroll Statutory Ledger</DialogTitle>
+            <DialogTitle>{payrollStatEditTarget ? 'Edit Payroll Statutory Ledger' : 'New Payroll Statutory Ledger'}</DialogTitle>
             <DialogDescription>Create a statutory deduction or contribution holding account.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4" data-keyboard-form>
@@ -4012,7 +4178,7 @@ export function LedgerMasterPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPayrollStatOpen(false)}>Cancel</Button>
-            <Button data-primary onClick={handlePayrollStatSave}>Create Ledger</Button>
+            <Button data-primary onClick={handlePayrollStatSave}>{payrollStatEditTarget ? "Update Ledger" : "Create Ledger"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -4257,6 +4423,114 @@ export function LedgerMasterPanel() {
               <PlayCircle className="h-3.5 w-3.5" /> Reinstate Ledger
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Action Picker Dialog ─── */}
+      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="sm:max-w-xs p-0 gap-0 overflow-hidden">
+          <div className="px-4 py-3 border-b border-border">
+            <p className="text-sm font-semibold text-foreground">{pickerLabel}</p>
+            <p className="text-xs text-muted-foreground">Select an action</p>
+          </div>
+          <DialogDescription className="sr-only">Choose an action for {pickerLabel} ledger</DialogDescription>
+          <div className="p-2 flex flex-col gap-0.5">
+            <button type="button"
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-teal-500/10 hover:text-teal-700 transition-colors text-left"
+              onClick={() => { setPickerOpen(false); handleTypeCreate(pickerLabel); }}>
+              <Plus className="h-4 w-4 text-teal-500" />
+              <span>Create new</span>
+              <span className="ml-auto text-xs text-muted-foreground">Add a new ledger</span>
+            </button>
+            <button type="button"
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-700 transition-colors text-left"
+              onClick={() => { setPickerOpen(false); setAlterSearchQuery(''); setAlterSearchOpen(true); }}>
+              <Edit2 className="h-4 w-4 text-blue-500" />
+              <span>Alter</span>
+              <span className="ml-auto text-xs text-muted-foreground">Edit existing</span>
+            </button>
+            <button type="button"
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-purple-500/10 hover:text-purple-700 transition-colors text-left opacity-60"
+              onClick={() => { setPickerOpen(false); toast.info('Display panel coming soon'); }}>
+              <BookOpen className="h-4 w-4 text-purple-500" />
+              <span>Display</span>
+              <span className="ml-auto text-xs text-muted-foreground">Read only — LM-3</span>
+            </button>
+            <button type="button"
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/10 hover:text-red-700 transition-colors text-left opacity-60"
+              onClick={() => { setPickerOpen(false); toast.info('Delete coming soon'); }}>
+              <Trash2 className="h-4 w-4 text-red-500" />
+              <span>Delete</span>
+              <span className="ml-auto text-xs text-muted-foreground">With transaction check — LM-4</span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Alter Search Dialog ─── */}
+      <Dialog open={alterSearchOpen} onOpenChange={o => { if (!o) { setAlterSearchOpen(false); setAlterSearchQuery(''); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle>Alter {pickerLabel} Ledger</DialogTitle>
+            <DialogDescription>Select a ledger to edit</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                className="pl-9"
+                placeholder={`Search ${pickerLabel} ledgers\u2026`}
+                value={alterSearchQuery}
+                onChange={e => setAlterSearchQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') { setAlterSearchOpen(false); setAlterSearchQuery(''); } }}
+                autoFocus
+              />
+            </div>
+            {(() => {
+              const allForType: AnyLedgerDefinition[] = (
+                pickerLabel === 'Cash'            ? cashDefs
+                : pickerLabel === 'Bank'          ? bankDefs
+                : pickerLabel === 'Liability'     ? liabilityDefs
+                : pickerLabel === 'Capital/Equity'? capitalDefs
+                : pickerLabel === 'Loan Receivable'? loanRecDefs
+                : pickerLabel === 'Borrowing'     ? borrowingDefs
+                : pickerLabel === 'Income'        ? incomeDefs
+                : pickerLabel === 'Expense'       ? expenseDefs
+                : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : []
+              );
+              const filtered = allForType.filter(d =>
+                `${d.name} ${d.code} ${d.numericCode || ''}`.toLowerCase().includes(alterSearchQuery.toLowerCase())
+              );
+              if (filtered.length === 0) return (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  No {pickerLabel} ledgers found
+                </div>
+              );
+              return (
+                <div className="rounded-lg border border-border overflow-hidden max-h-64 overflow-y-auto">
+                  {filtered.map(d => (
+                    <button key={d.id} type="button"
+                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-muted/50 transition-colors text-left border-b border-border last:border-0"
+                      onClick={() => handleTypeAlterSelect(d)}>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{d.name}</p>
+                        <p className="text-xs text-muted-foreground font-mono">{d.numericCode || d.code}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={`text-[10px] ${
+                          d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                          : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
+                          {d.status}
+                        </Badge>
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground rotate-[-90deg]" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
         </DialogContent>
       </Dialog>
 
