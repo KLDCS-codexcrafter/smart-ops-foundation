@@ -2104,6 +2104,20 @@ export function LedgerMasterPanel() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [displayOpen, handleDisplayNav]);
 
+  // ── ⌘K Global Search ──
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setGlobalSearchOpen(o => !o);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
   const handleTypeDisplaySelect = (def: AnyLedgerDefinition) => {
     setDisplaySearchOpen(false);
     setDisplaySearchQuery('');
