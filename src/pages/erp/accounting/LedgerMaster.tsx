@@ -34,6 +34,12 @@ import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data'
 import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
 import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
+import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
+import { VendorMasterPanel } from '@/pages/erp/masters/VendorMaster';
+import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
+import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
+import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
+import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -885,10 +891,14 @@ const TYPE_BUTTONS = [
   { label: 'Income', icon: TrendingUp, row: 'P&L', active: true },
   { label: 'Expense', icon: TrendingDown, row: 'P&L', active: true },
   { label: 'Duties & Taxes', icon: Receipt, row: 'P&L', active: true },
-  { label: 'Customer', icon: Users, row: 'Masters', active: false },
-  { label: 'Vendor', icon: Users, row: 'Masters', active: false },
-  { label: 'Logistic', icon: Truck, row: 'Masters', active: false },
-  { label: 'Branch & Division', icon: GitBranch, row: 'Masters', active: false },
+  { label: 'Payroll Statutory', icon: Users, row: 'P&L', active: true },
+  { label: 'Customer', icon: Users, row: 'Party Masters', active: true },
+  { label: 'Vendor', icon: Users, row: 'Party Masters', active: true },
+  { label: 'Logistic', icon: Truck, row: 'Party Masters', active: true },
+  { label: 'Branch & Division', icon: GitBranch, row: 'Party Masters', active: false },
+  { label: 'Mode of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
+  { label: 'Terms of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
+  { label: 'Terms of Delivery', icon: FileText, row: 'Transaction Defaults', active: true },
 ];
 
 // ─── Default Forms ────────────────────────────────────────────────────
@@ -1015,7 +1025,7 @@ export function LedgerMasterPanel() {
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -1437,11 +1447,19 @@ export function LedgerMasterPanel() {
     else if (label === 'Bank') openBankCreate();
     else if (label === 'Liability') setLiabilityOpen(true);
     else if (label === 'Capital/Equity') setCapitalOpen(true);
-    else if (label === 'Loan Given') setLoanRecOpen(true);
-    else if (label === 'Loan Taken') setBorrowingOpen(true);
+    else if (label === 'Loan Receivable') setLoanRecOpen(true);
+    else if (label === 'Borrowing') setBorrowingOpen(true);
     else if (label === 'Income') setIncomeOpen(true);
     else if (label === 'Expense') setExpenseOpen(true);
     else if (label === 'Duties & Taxes') setDutiesTaxOpen(true);
+    else if (label === 'Payroll Statutory') { setActiveTab('definitions'); setDefSubTab('payroll'); }
+    else if (label === 'Customer') { setActiveTab('definitions'); setDefSubTab('customer'); }
+    else if (label === 'Vendor') { setActiveTab('definitions'); setDefSubTab('vendor'); }
+    else if (label === 'Logistic') { setActiveTab('definitions'); setDefSubTab('logistic'); }
+    else if (label === 'Branch & Division') { setActiveTab('definitions'); setDefSubTab('branch_division'); }
+    else if (label === 'Mode of Payment') { setActiveTab('definitions'); setDefSubTab('mode_payment'); }
+    else if (label === 'Terms of Payment') { setActiveTab('definitions'); setDefSubTab('terms_payment'); }
+    else if (label === 'Terms of Delivery') { setActiveTab('definitions'); setDefSubTab('terms_delivery'); }
   };
 
   // ── Save Cash ──
@@ -2606,6 +2624,33 @@ export function LedgerMasterPanel() {
               ], 'No payroll statutory ledgers yet.')}
             </div>
           )}
+
+          {/* Customer Master */}
+          {defSubTab === 'customer' && <CustomerMasterPanel />}
+
+          {/* Vendor Master */}
+          {defSubTab === 'vendor' && <VendorMasterPanel />}
+
+          {/* Logistic Master */}
+          {defSubTab === 'logistic' && <LogisticMasterPanel />}
+
+          {/* Branch & Division */}
+          {defSubTab === 'branch_division' && (
+            <div className="text-center py-12 text-muted-foreground text-sm border border-dashed border-border rounded-xl">
+              <GitBranch className="h-8 w-8 mx-auto mb-2 opacity-40" />
+              <p className="font-medium">Branch & Division Master</p>
+              <p className="text-xs mt-1">Coming soon in a future release.</p>
+            </div>
+          )}
+
+          {/* Mode of Payment */}
+          {defSubTab === 'mode_payment' && <ModeOfPaymentMasterPanel />}
+
+          {/* Terms of Payment */}
+          {defSubTab === 'terms_payment' && <TermsOfPaymentMasterPanel />}
+
+          {/* Terms of Delivery */}
+          {defSubTab === 'terms_delivery' && <TermsOfDeliveryMasterPanel />}
         </TabsContent>
 
         {/* Tab 2 — Opening Balances */}
