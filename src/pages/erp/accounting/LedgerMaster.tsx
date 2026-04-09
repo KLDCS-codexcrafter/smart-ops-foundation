@@ -793,6 +793,8 @@ const loadIncomeDefs = (): IncomeLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'income') as IncomeLedgerDefinition[];
 const loadExpenseDefs = (): ExpenseLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'expense') as ExpenseLedgerDefinition[];
+const loadAssetDefs = (): AssetLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'asset') as AssetLedgerDefinition[];
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
@@ -1008,6 +1010,10 @@ const genDutiesTaxCode = (all: AnyLedgerDefinition[]) =>
   'DTX-' + String(all.filter(d => d.ledgerType === 'duties_tax').length + 1).padStart(6, '0');
 const genPayrollStatCode = (all: AnyLedgerDefinition[]) =>
   'PAY-' + String(all.filter(d => d.ledgerType === 'payroll_statutory').length + 1).padStart(6, '0');
+const genAssetGroupCode = (all: AnyLedgerDefinition[]) =>
+  'ASSET-' + String(all.filter(d => d.ledgerType === 'asset' && !d.entityId).length + 1).padStart(6, '0');
+const genAssetEntityCode = (all: AnyLedgerDefinition[], sc: string) =>
+  `${sc}/A${String(all.filter(d => d.ledgerType === 'asset' && d.entityShortCode === sc).length + 1).padStart(3, '0')}`;
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
@@ -1058,7 +1064,7 @@ const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; p
 const TYPE_BUTTONS = [
   { label: 'Cash', icon: Wallet, row: 'Balance Sheet', active: true },
   { label: 'Bank', icon: Landmark, row: 'Balance Sheet', active: true },
-  { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: false },
+  { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: true },
   { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: true },
   { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: true },
   { label: 'Loan Receivable', icon: HandCoins, row: 'Balance Sheet', active: true },
