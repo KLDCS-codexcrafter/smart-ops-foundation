@@ -356,6 +356,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   const topCreated = createDefaultTermsOfPayment();
   const todCreated = createDefaultTermsOfDelivery();
 
+  // 6. Create default Business Unit (Head Office)
+  createDefaultBusinessUnit(opts.entityId, opts.entityName, opts.shortCode);
+
   return {
     ledgersCreated,
     l4GroupsCreated,
@@ -369,7 +372,39 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   };
 };
 
-// ── 2.8 createDefaultModeOfPayment ─────────────────────────────────────────
+// ── 2.8 createDefaultBusinessUnit ──────────────────────────────────────────
+export const createDefaultBusinessUnit = (entityId: string, entityName: string, entityShortCode: string): void => {
+  const BU_KEY = 'erp_group_business_unit_master';
+  const existing: any[] = JSON.parse(localStorage.getItem(BU_KEY) || '[]');
+  // Don't create if already exists for this entity
+  if (existing.some(u => u.parentEntityId === entityId && u.unitType === 'branch_office')) return;
+  const defaultUnit = {
+    id: crypto.randomUUID(),
+    partyCode: 'BU-' + String(existing.length + 1).padStart(6, '0'),
+    name: entityName + ' – Head Office',
+    shortCode: entityShortCode.slice(0, 4).toUpperCase(),
+    unitType: 'branch_office',
+    parentEntityId: entityId,
+    parentEntityName: entityName,
+    headName: '', headDesignation: '', headMobile: '', headEmail: '',
+    addressLine: '', stateCode: '', stateName: '', gstStateCode: '',
+    districtCode: '', districtName: '', cityCode: '', cityName: '', pinCode: '',
+    gstin: '', costCentreCode: entityShortCode + '-HO',
+    isProfitCentre: true,
+    openingDate: new Date().toISOString().split('T')[0],
+    closingDate: '',
+    status: 'active',
+    description: 'Auto-created on entity setup',
+    notes: '',
+    suspendedBy: null, suspendedAt: null, suspendedReason: null,
+    reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+  };
+  existing.push(defaultUnit);
+  localStorage.setItem(BU_KEY, JSON.stringify(existing));
+  // [JWT] POST /api/group/masters/business-units
+};
+
+// ── 2.9 createDefaultModeOfPayment ─────────────────────────────────────────
 const createDefaultModeOfPayment = (): number => {
   const key = 'erp_group_mode_of_payment';
   const existing: ModeOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
