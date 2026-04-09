@@ -3020,7 +3020,7 @@ export function LedgerMasterPanel() {
 
           {/* Cash List */}
           {defSubTab === 'cash' && renderDefTable(cashDefs, [
-            { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
             { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
             { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
             { label: 'Scope', render: d => d.entityId
@@ -3031,7 +3031,7 @@ export function LedgerMasterPanel() {
 
           {/* Bank List */}
           {defSubTab === 'bank' && renderDefTable(bankDefs, [
-            { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
             { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
             { label: 'Bank', render: d => <span className="text-xs">{(d as BankLedgerDefinition).bankName}</span> },
             { label: 'Account Type', render: d => {
@@ -3048,7 +3048,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setCapitalOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Capital</Button>
               </div>
               {renderDefTable(capitalDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Capital Type', render: d => <span className="text-xs">{CAPITAL_TYPE_LABELS[(d as CapitalLedgerDefinition).capitalType]}</span> },
                 { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
@@ -3065,7 +3065,7 @@ export function LedgerMasterPanel() {
                   <Button size="sm" onClick={() => setLoanRecOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Loan Receivable</Button>
                 </div>
                 {renderDefTable(loanRecDefs, [
-                  { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                  { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                   { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                   { label: 'Borrower', render: d => <span className="text-xs">{(d as LoanReceivableLedgerDefinition).borrowerName || '—'}</span> },
                   { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
@@ -3209,7 +3209,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setIncomeOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Income</Button>
               </div>
               {renderDefTable(incomeDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
                 { label: 'GST Rate', render: d => {
@@ -3232,7 +3232,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setExpenseOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Expense</Button>
               </div>
               {renderDefTable(expenseDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
                 { label: 'GST Rate', render: d => {
@@ -3258,7 +3258,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setLiabilityOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Liability</Button>
               </div>
               {renderDefTable(liabilityDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
                 { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
@@ -3273,7 +3273,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setDutiesTaxOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Duties & Tax</Button>
               </div>
               {renderDefTable(dutiesTaxDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Tax Type', render: d => <Badge variant="outline" className="text-[10px] uppercase">{(d as DutiesTaxLedgerDefinition).taxType}</Badge> },
                 { label: 'GST Sub-type / Kind', render: d => {
@@ -3293,7 +3293,7 @@ export function LedgerMasterPanel() {
                 <Button size="sm" onClick={() => setPayrollStatOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Payroll Statutory</Button>
               </div>
               {renderDefTable(payrollStatDefs, [
-                { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{(d as PayrollStatutoryLedgerDefinition).payrollCategory.replace('_', ' ')}</Badge> },
                 { label: 'Rate', render: d => {
