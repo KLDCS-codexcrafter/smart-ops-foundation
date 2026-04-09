@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
 import {
+  L1_PRIMARIES, L2_PARENT_GROUPS,
   L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
 } from '@/data/finframe-seed-data';
@@ -1170,7 +1171,7 @@ export function LedgerMasterPanel() {
   const [borrowingDefs, setBorrowingDefs] = useState<BorrowingLedgerDefinition[]>(() => loadBorrowingDefs());
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
-  const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances'>('definitions');
+  const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
   const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
@@ -3094,6 +3095,10 @@ export function LedgerMasterPanel() {
         <TabsList>
           <TabsTrigger value="definitions">Ledger Definitions</TabsTrigger>
           <TabsTrigger value="opening_balances">Opening Balances</TabsTrigger>
+          <TabsTrigger value="chart_of_accounts" className="gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" />
+            Chart of Accounts
+          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1 — Definitions */}
