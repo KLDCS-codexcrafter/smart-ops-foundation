@@ -2914,7 +2914,17 @@ export function LedgerMasterPanel() {
   const allDefIds = new Set(allDefs.filter(d => !d.entityId).map(d => d.id));
   const filteredInstances = instances.filter(i => allDefIds.has(i.ledgerDefinitionId));
 
-  const getDefForInstance = (inst: EntityLedgerInstance): AnyLedgerDefinition | undefined =>
+  const getDefBalance = (def: AnyLedgerDefinition): { amount: number; type: 'Dr' | 'Cr' } => {
+    if (selEntityId) {
+      const inst = filteredInstances.find(i => i.ledgerDefinitionId === def.id);
+      if (inst) return { amount: inst.openingBalance, type: inst.openingBalanceType };
+    }
+    const ob = (def as any).openingBalance ?? 0;
+    const obt = (def as any).openingBalanceType ?? 'Dr';
+    return { amount: ob, type: obt };
+  };
+
+
     allDefs.find(d => d.id === inst.ledgerDefinitionId);
 
   const rows: Record<string, typeof TYPE_BUTTONS> = {};
