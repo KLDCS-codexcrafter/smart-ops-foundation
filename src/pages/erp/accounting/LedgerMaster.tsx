@@ -1085,6 +1085,7 @@ const TYPE_BUTTONS = [
 const LABEL_TO_SUBTAB: Record<string, string> = {
   'Cash': 'cash',
   'Bank': 'bank',
+  'Asset': 'asset',
   'Liability': 'liabilities',
   'Capital/Equity': 'capital',
   'Loan Receivable': 'loans',
