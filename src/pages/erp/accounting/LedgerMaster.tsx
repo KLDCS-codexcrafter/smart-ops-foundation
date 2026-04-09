@@ -1568,25 +1568,199 @@ export function LedgerMasterPanel() {
     setBankCreateOpen(true);
   };
 
-  // ── Type button click handler ──
-  const handleTypeButtonClick = (label: string) => {
+  // ── 8 openEdit functions ──
+  const openLiabilityEdit = (def: LiabilityLedgerDefinition) => {
+    setLiabilityEditTarget(def);
+    setLiabilityForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      openingBalance: def.openingBalance ?? 0, openingBalanceType: def.openingBalanceType ?? 'Cr',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setLiabilityOpen(true);
+  };
+
+  const openCapitalEdit = (def: CapitalLedgerDefinition) => {
+    setCapitalEditTarget(def);
+    setCapitalForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      openingBalance: def.openingBalance ?? 0, openingBalanceType: def.openingBalanceType ?? 'Cr',
+      capitalType: def.capitalType,
+      authorisedCapital: def.authorisedCapital ?? 0, issuedCapital: def.issuedCapital ?? 0,
+      paidUpCapital: def.paidUpCapital ?? 0, faceValuePerShare: def.faceValuePerShare ?? 10,
+      numberOfShares: def.numberOfShares ?? 0,
+      partnerName: def.partnerName ?? '', partnerPAN: def.partnerPAN ?? '',
+      profitSharingRatio: def.profitSharingRatio ?? 0, capitalContribution: def.capitalContribution ?? 0,
+      proprietorName: def.proprietorName ?? '', proprietorPAN: def.proprietorPAN ?? '',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setCapitalOpen(true);
+  };
+
+  const openLoanRecEdit = (def: LoanReceivableLedgerDefinition) => {
+    setLoanRecEditTarget(def);
+    setLoanRecForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      borrowerName: def.borrowerName ?? '', borrowerPhone: def.borrowerPhone ?? '',
+      borrowerEmail: def.borrowerEmail ?? '', borrowerAddress: def.borrowerAddress ?? '',
+      borrowerState: def.borrowerState ?? '', borrowerPincode: def.borrowerPincode ?? '',
+      borrowerPAN: def.borrowerPAN ?? '',
+      loanAmount: def.loanAmount ?? 0, interestRate: def.interestRate ?? 0,
+      interestType: def.interestType ?? 'simple', tenureMonths: def.tenureMonths ?? 0,
+      disbursementDate: def.disbursementDate ?? '', firstRepaymentDate: def.firstRepaymentDate ?? '',
+      collateral: def.collateral ?? '', purpose: def.purpose ?? '',
+      isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setLoanRecOpen(true);
+  };
+
+  const openBorrowingEdit = (def: BorrowingLedgerDefinition) => {
+    setBorrowingEditTarget(def);
+    setBorrowingForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      lenderName: def.lenderName ?? '', lenderType: def.lenderType ?? 'bank',
+      lenderPhone: def.lenderPhone ?? '', lenderEmail: def.lenderEmail ?? '',
+      lenderAddress: def.lenderAddress ?? '',
+      loanAmount: def.loanAmount ?? 0, interestRate: def.interestRate ?? 0,
+      loanType: def.loanType ?? 'term_loan', tenureMonths: def.tenureMonths ?? 0,
+      firstEmiDate: def.firstEmiDate ?? '', loanAccountNo: def.loanAccountNo ?? '',
+      collateralPledged: def.collateralPledged ?? '',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setBorrowingOpen(true);
+  };
+
+  const openIncomeEdit = (def: IncomeLedgerDefinition) => {
+    setIncomeEditTarget(def);
+    setIncomeForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      isGstApplicable: def.isGstApplicable ?? false,
+      hsnSacCode: def.hsnSacCode ?? '', hsnSacType: def.hsnSacType ?? '',
+      gstRate: def.gstRate ?? 0, cgstRate: def.cgstRate ?? 0,
+      sgstRate: def.sgstRate ?? 0, igstRate: def.igstRate ?? 0, cessRate: def.cessRate ?? 0,
+      gstType: def.gstType ?? 'taxable', includeInGstTurnover: def.includeInGstTurnover ?? true,
+      isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
+      costCentreApplicable: def.costCentreApplicable ?? false,
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setIncomeOpen(true);
+  };
+
+  const openExpenseEdit = (def: ExpenseLedgerDefinition) => {
+    setExpenseEditTarget(def);
+    setExpenseForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      isGstApplicable: def.isGstApplicable ?? false,
+      hsnSacCode: def.hsnSacCode ?? '', hsnSacType: def.hsnSacType ?? '',
+      gstRate: def.gstRate ?? 0, cgstRate: def.cgstRate ?? 0,
+      sgstRate: def.sgstRate ?? 0, igstRate: def.igstRate ?? 0, cessRate: def.cessRate ?? 0,
+      gstType: def.gstType ?? 'taxable',
+      isItcEligible: def.isItcEligible ?? true, isRcmApplicable: def.isRcmApplicable ?? false,
+      rcmSection: def.rcmSection ?? null,
+      isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
+      usePurchaseAdditionalExpense: def.usePurchaseAdditionalExpense ?? false,
+      costCentreApplicable: def.costCentreApplicable ?? false,
+      isBudgetHead: def.isBudgetHead ?? false, expenseNature: def.expenseNature ?? 'revenue',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setExpenseOpen(true);
+  };
+
+  const openDutiesTaxEdit = (def: DutiesTaxLedgerDefinition) => {
+    setDutiesTaxEditTarget(def);
+    setDutiesTaxForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      taxType: def.taxType, gstSubType: def.gstSubType,
+      calculationBasis: def.calculationBasis, rate: def.rate ?? 0,
+      openingBalance: def.openingBalance ?? 0, openingBalanceType: def.openingBalanceType ?? 'Cr',
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setDutiesTaxOpen(true);
+  };
+
+  const openPayrollStatEdit = (def: PayrollStatutoryLedgerDefinition) => {
+    setPayrollStatEditTarget(def);
+    setPayrollForm({
+      payrollCategory: def.payrollCategory,
+      payrollComponent: def.payrollComponent,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      openingBalance: def.openingBalance ?? 0,
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+    });
+    setPayrollStatOpen(true);
+  };
+
+  // ── Type button helpers ──
+  const handleTypeCreate = (label: string) => {
     if (label === 'Cash') openCashCreate();
     else if (label === 'Bank') openBankCreate();
-    else if (label === 'Liability') setLiabilityOpen(true);
-    else if (label === 'Capital/Equity') setCapitalOpen(true);
-    else if (label === 'Loan Receivable') setLoanRecOpen(true);
-    else if (label === 'Borrowing') setBorrowingOpen(true);
-    else if (label === 'Income') setIncomeOpen(true);
-    else if (label === 'Expense') setExpenseOpen(true);
-    else if (label === 'Duties & Taxes') setDutiesTaxOpen(true);
-    else if (label === 'Payroll Statutory') { setActiveTab('definitions'); setDefSubTab('payroll'); }
-    else if (label === 'Customer') { setActiveTab('definitions'); setDefSubTab('customer'); }
-    else if (label === 'Vendor') { setActiveTab('definitions'); setDefSubTab('vendor'); }
-    else if (label === 'Logistic') { setActiveTab('definitions'); setDefSubTab('logistic'); }
-    else if (label === 'Branch & Division') { setActiveTab('definitions'); setDefSubTab('branch_division'); }
-    else if (label === 'Mode of Payment') { setActiveTab('definitions'); setDefSubTab('mode_payment'); }
-    else if (label === 'Terms of Payment') { setActiveTab('definitions'); setDefSubTab('terms_payment'); }
-    else if (label === 'Terms of Delivery') { setActiveTab('definitions'); setDefSubTab('terms_delivery'); }
+    else if (label === 'Liability') { setLiabilityEditTarget(null); setLiabilityOpen(true); }
+    else if (label === 'Capital/Equity') { setCapitalEditTarget(null); setCapitalOpen(true); }
+    else if (label === 'Loan Receivable') { setLoanRecEditTarget(null); setLoanRecOpen(true); }
+    else if (label === 'Borrowing') { setBorrowingEditTarget(null); setBorrowingOpen(true); }
+    else if (label === 'Income') { setIncomeEditTarget(null); setIncomeOpen(true); }
+    else if (label === 'Expense') { setExpenseEditTarget(null); setExpenseOpen(true); }
+    else if (label === 'Duties & Taxes') { setDutiesTaxEditTarget(null); setDutiesTaxOpen(true); }
+  };
+
+  const handleTypeAlterSelect = (def: AnyLedgerDefinition) => {
+    setAlterSearchOpen(false);
+    setAlterSearchQuery('');
+    setPickerOpen(false);
+    switch (def.ledgerType) {
+      case 'cash': openCashEdit(def as CashLedgerDefinition); break;
+      case 'bank': openBankEdit(def as BankLedgerDefinition); break;
+      case 'liability': openLiabilityEdit(def as LiabilityLedgerDefinition); break;
+      case 'capital': openCapitalEdit(def as CapitalLedgerDefinition); break;
+      case 'loan_receivable': openLoanRecEdit(def as LoanReceivableLedgerDefinition); break;
+      case 'borrowing': openBorrowingEdit(def as BorrowingLedgerDefinition); break;
+      case 'income': openIncomeEdit(def as IncomeLedgerDefinition); break;
+      case 'expense': openExpenseEdit(def as ExpenseLedgerDefinition); break;
+      case 'duties_tax': openDutiesTaxEdit(def as DutiesTaxLedgerDefinition); break;
+      case 'payroll_statutory': openPayrollStatEdit(def as PayrollStatutoryLedgerDefinition); break;
+    }
+  };
+
+  // ── Type button click handler ──
+  const handleTypeButtonClick = (label: string) => {
+    const panelTypes = ['Customer','Vendor','Logistic','Branch & Division',
+      'Mode of Payment','Terms of Payment','Terms of Delivery','Payroll Statutory'];
+    if (panelTypes.includes(label)) {
+      if (label === 'Payroll Statutory') { setActiveTab('definitions'); setDefSubTab('payroll'); }
+      else if (label === 'Customer') { setActiveTab('definitions'); setDefSubTab('customer'); }
+      else if (label === 'Vendor') { setActiveTab('definitions'); setDefSubTab('vendor'); }
+      else if (label === 'Logistic') { setActiveTab('definitions'); setDefSubTab('logistic'); }
+      else if (label === 'Branch & Division') { setActiveTab('definitions'); setDefSubTab('branch_division'); }
+      else if (label === 'Mode of Payment') { setActiveTab('definitions'); setDefSubTab('mode_payment'); }
+      else if (label === 'Terms of Payment') { setActiveTab('definitions'); setDefSubTab('terms_payment'); }
+      else if (label === 'Terms of Delivery') { setActiveTab('definitions'); setDefSubTab('terms_delivery'); }
+      return;
+    }
+    const defsForLabel: AnyLedgerDefinition[] = (
+      label === 'Cash'            ? cashDefs
+      : label === 'Bank'          ? bankDefs
+      : label === 'Liability'     ? liabilityDefs
+      : label === 'Capital/Equity'? capitalDefs
+      : label === 'Loan Receivable'? loanRecDefs
+      : label === 'Borrowing'     ? borrowingDefs
+      : label === 'Income'        ? incomeDefs
+      : label === 'Expense'       ? expenseDefs
+      : label === 'Duties & Taxes'? dutiesTaxDefs
+      : []
+    );
+    if (defsForLabel.length === 0) {
+      handleTypeCreate(label);
+      return;
+    }
+    setPickerLabel(label);
+    setPickerOpen(true);
   };
 
   // ── Save Cash ──
