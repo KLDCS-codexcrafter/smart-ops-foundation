@@ -143,7 +143,7 @@ export function ModeOfPaymentMasterPanel() {
             </TableHeader>
             <TableBody>
               {filtered.map(m => (
-                <TableRow key={m.id} className={!m.isActive ? 'opacity-50' : ''}>
+                <TableRow key={m.id} className={`${!m.isActive ? 'opacity-50' : ''} group`}>
                   <TableCell className="font-mono text-xs text-teal-600 dark:text-teal-400">{m.code}</TableCell>
                   <TableCell className="font-medium">{m.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{m.remarks}</TableCell>
@@ -163,6 +163,7 @@ export function ModeOfPaymentMasterPanel() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Switch checked={m.isActive} onCheckedChange={() => handleToggleActive(m.id)} className="scale-75" />
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {m.isSeeded ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -182,6 +183,7 @@ export function ModeOfPaymentMasterPanel() {
                           </Button>
                         </>
                       )}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
