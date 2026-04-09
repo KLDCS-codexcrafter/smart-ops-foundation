@@ -1929,6 +1929,22 @@ export function LedgerMasterPanel() {
 
   const handleLiabilitySave = () => {
     if (!liabilityForm.name.trim()) return toast.error('Name is required');
+    if (liabilityEditTarget) {
+      const updated: LiabilityLedgerDefinition = {
+        ...liabilityEditTarget,
+        name: liabilityForm.name.trim(),
+        mailingName: liabilityForm.mailingName.trim() || liabilityForm.name.trim(),
+        alias: liabilityForm.alias.trim(),
+        parentGroupCode: liabilityForm.parentGroupCode,
+        parentGroupName: liabilityForm.parentGroupName,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setLiabilityOpen(false);
+      setLiabilityEditTarget(null);
+      refreshAll();
+      return;
+    }
     const all = loadAllDefinitions();
     const code = genLiabilityCode(all);
     const numericCode = deriveLedgerNumericCode(liabilityForm.parentGroupCode,
