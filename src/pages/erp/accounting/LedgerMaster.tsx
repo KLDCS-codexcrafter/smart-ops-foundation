@@ -12,6 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command';
+import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
@@ -1610,6 +1618,41 @@ export function LedgerMasterPanel() {
     } catch { return 0; }
   };
 
+  const abbreviatedBalance = (amount: number): string => {
+    if (amount === 0) return '';
+    const abs = Math.abs(amount);
+    if (abs >= 1_00_00_000) return `₹${(abs / 1_00_00_000).toFixed(1).replace(/\.0$/, '')}Cr`;
+    if (abs >= 1_00_000) return `₹${(abs / 1_00_000).toFixed(1).replace(/\.0$/, '')}L`;
+    if (abs >= 1_000) return `₹${(abs / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+    return `₹${amount}`;
+  };
+
+  const getLabelBalance = (label: string): { text: string; nature: 'Dr' | 'Cr' } | null => {
+    const defs: AnyLedgerDefinition[] = (
+      label === 'Cash' ? cashDefs
+      : label === 'Bank' ? bankDefs
+      : label === 'Asset' ? assetDefs as unknown as AnyLedgerDefinition[]
+      : label === 'Liability' ? liabilityDefs
+      : label === 'Capital/Equity' ? capitalDefs
+      : label === 'Loan Receivable' ? loanRecDefs
+      : label === 'Borrowing' ? borrowingDefs
+      : label === 'Income' ? incomeDefs
+      : label === 'Expense' ? expenseDefs
+      : label === 'Duties & Taxes' ? dutiesTaxDefs
+      : label === 'Payroll Statutory' ? payrollStatDefs
+      : []
+    );
+    if (defs.length === 0) return null;
+    const total = defs.reduce((sum, d) => {
+      const ob = (d as any).openingBalance ?? 0;
+      const obt: 'Dr' | 'Cr' = (d as any).openingBalanceType ?? 'Dr';
+      return sum + (obt === 'Dr' ? ob : -ob);
+    }, 0);
+    if (total === 0) return null;
+    const nature: 'Dr' | 'Cr' = total >= 0 ? 'Dr' : 'Cr';
+    return { text: abbreviatedBalance(Math.abs(total)), nature };
+  };
+
   // ── COA State ──
   const [coaExpanded, setCoaExpanded] = useState<Set<string>>(() =>
     new Set(['A', 'L', 'CE', 'I', 'E', 'A-NCA', 'A-CA', 'L-NCL', 'L-CL', 'I-OR', 'I-OI', 'E-OE', 'E-FC', 'CE-SF'])
@@ -1982,6 +2025,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, assetForm.openingBalance, 'Dr');
     toast.success(`${def.name} created`);
     setAssetOpen(false); setAssetEditTarget(null); setAssetForm(defaultAssetForm); refreshAll();
+    // [JWT] POST /api/group/finecore/ledger-definitions
   };
 
   // ── Type button helpers ──
@@ -3218,6 +3262,14 @@ export function LedgerMasterPanel() {
           <h1 className="text-2xl font-bold font-display text-foreground mb-1">Ledger Master</h1>
           <p className="text-sm text-muted-foreground">Financial accounts for all entities</p>
         </div>
+        <Button variant="outline" size="sm" className="gap-2 text-muted-foreground text-xs"
+          onClick={() => setGlobalSearchOpen(true)}>
+          <Search className="h-3.5 w-3.5" />
+          Search all ledgers
+          <kbd className="ml-1 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
+            ⌘K
+          </kbd>
+        </Button>
       </div>
 
 
@@ -3241,6 +3293,7 @@ export function LedgerMasterPanel() {
                     </span>
                   );
                 }
+                const balBadge = getLabelBalance(btn.label);
                 return (
                   <button key={btn.label}
                     onClick={() => handleTypeButtonClick(btn.label)}
@@ -3255,6 +3308,16 @@ export function LedgerMasterPanel() {
                       <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums ${
                         isActiveBtn ? 'bg-white/20 text-primary-foreground' : 'bg-primary/15 text-primary'
                       }`}>{count}</span>
+                    )}
+                    {balBadge && (
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums ${
+                        isActiveBtn
+                          ? 'bg-white/15 text-primary-foreground'
+                          : balBadge.nature === 'Dr' ? 'bg-teal-500/15 text-teal-700'
+                          : 'bg-amber-500/15 text-amber-700'
+                      }`}>
+                        {balBadge.text} {balBadge.nature}
+                      </span>
                     )}
                   </button>
                 );
