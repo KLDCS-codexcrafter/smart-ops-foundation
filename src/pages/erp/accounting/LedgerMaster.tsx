@@ -1206,6 +1206,22 @@ export function LedgerMasterPanel() {
   const [dutiesTaxOpen, setDutiesTaxOpen] = useState(false);
   const [payrollStatOpen, setPayrollStatOpen] = useState(false);
 
+  // Edit targets for 8 types
+  const [liabilityEditTarget, setLiabilityEditTarget] = useState<LiabilityLedgerDefinition | null>(null);
+  const [capitalEditTarget, setCapitalEditTarget] = useState<CapitalLedgerDefinition | null>(null);
+  const [loanRecEditTarget, setLoanRecEditTarget] = useState<LoanReceivableLedgerDefinition | null>(null);
+  const [borrowingEditTarget, setBorrowingEditTarget] = useState<BorrowingLedgerDefinition | null>(null);
+  const [incomeEditTarget, setIncomeEditTarget] = useState<IncomeLedgerDefinition | null>(null);
+  const [expenseEditTarget, setExpenseEditTarget] = useState<ExpenseLedgerDefinition | null>(null);
+  const [dutiesTaxEditTarget, setDutiesTaxEditTarget] = useState<DutiesTaxLedgerDefinition | null>(null);
+  const [payrollStatEditTarget, setPayrollStatEditTarget] = useState<PayrollStatutoryLedgerDefinition | null>(null);
+
+  // Action picker state
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerLabel, setPickerLabel] = useState('');
+  const [alterSearchOpen, setAlterSearchOpen] = useState(false);
+  const [alterSearchQuery, setAlterSearchQuery] = useState('');
+
   // New ledger form states
   const [liabilityForm, setLiabilityForm] = useState({
     parentGroupCode: 'LTPROV', parentGroupName: 'Long-Term Provisions',
