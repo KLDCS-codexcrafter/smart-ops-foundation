@@ -326,11 +326,19 @@ interface DutiesTaxLedgerDefinition {
   entityShortCode: string | null;
   openingBalance: number;
   openingBalanceType: 'Dr' | 'Cr';
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
   taxType: TaxType;
   gstSubType: GstSubType;
   calculationBasis: CalcBasis;
   rate: number;
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 type PayrollCategory = 'employee_deduction' | 'employer_contribution';
@@ -354,13 +362,21 @@ interface PayrollStatutoryLedgerDefinition {
   entityShortCode: string | null;
   openingBalance: number;
   openingBalanceType: 'Cr';
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
   payrollCategory: PayrollCategory;
   payrollComponent: PayrollComponent;
   statutoryRate: number;
   calculationBase: string;
   wageCeiling: number | null;
   maxAmount: number | null;
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 interface LoanRepaymentRecord {
@@ -400,7 +416,15 @@ interface CashLedgerDefinition {
   alertThreshold: number;
   isMainCash: boolean;
   voucherSeries: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 type BankAccountType =
@@ -441,7 +465,7 @@ interface BankLedgerDefinition {
   brsEnabled: boolean;
   clearingDays: number;
   cutoffTime: string;
-  status: 'active' | 'inactive' | 'dormant' | 'closed';
+  status: 'active' | 'suspended' | 'dormant' | 'closed';
   mailingName: string;
   acHolderName: string;
   bankPhone: string;
@@ -452,6 +476,14 @@ interface BankLedgerDefinition {
   bankManagerName: string;
   bankManagerPhone: string;
   bankManagerEmail: string;
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 type AnyLedgerDefinition =
