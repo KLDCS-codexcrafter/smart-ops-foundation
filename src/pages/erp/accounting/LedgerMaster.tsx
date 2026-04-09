@@ -713,6 +713,14 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     calculationBase: d.calculationBase ?? '',
     wageCeiling: d.wageCeiling ?? null,
     maxAmount: d.maxAmount ?? null,
+    description: d.description ?? '',
+    notes: d.notes ?? '',
+    suspendedBy: d.suspendedBy ?? null,
+    suspendedAt: d.suspendedAt ?? null,
+    suspendedReason: d.suspendedReason ?? null,
+    reinstatedBy: d.reinstatedBy ?? null,
+    reinstatedAt: d.reinstatedAt ?? null,
+    reinstatedReason: d.reinstatedReason ?? null,
   }));
 };
 
@@ -1301,6 +1309,26 @@ export function LedgerMasterPanel() {
     setInstances(loadInstances(selEntityId));
   };
 
+  const getCurrentUser = (): string => {
+    try {
+      const u = JSON.parse(localStorage.getItem('erp_current_user') || '{}');
+      return u.name || u.email || 'System Administrator';
+    } catch { return 'System Administrator'; }
+  };
+  const formatAuditDateTime = (iso: string | null): string => {
+    if (!iso) return '\u2014';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+      + ', ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      + ' IST';
+  };
+
+  const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
+  const [reinstateDialogOpen, setReinstateDialogOpen] = useState(false);
+  const [suspendTarget, setSuspendTarget] = useState<AnyLedgerDefinition | null>(null);
+  const [suspendReason, setSuspendReason] = useState('');
+  const [reinstateReason, setReinstateReason] = useState('');
+
   // EMI calculator
   const calculateEMI = (principal: number, annualRate: number, months: number): number => {
     if (months <= 0) return 0;
@@ -1573,6 +1601,14 @@ export function LedgerMasterPanel() {
         location: cashForm.location, cashLimit: cashForm.cashLimit,
         alertThreshold: cashForm.alertThreshold, isMainCash: cashForm.isMainCash,
         voucherSeries: cashForm.voucherSeries || 'CR', status: 'active',
+      description: '',
+      notes: '',
+      suspendedBy: null,
+      suspendedAt: null,
+      suspendedReason: null,
+      reinstatedBy: null,
+      reinstatedAt: null,
+      reinstatedReason: null,
       };
       saveDefinition(def);
       autoCreateInstances(def, cashForm.openingBalance, 'Dr');
@@ -1591,6 +1627,14 @@ export function LedgerMasterPanel() {
         location: cashForm.location, cashLimit: cashForm.cashLimit,
         alertThreshold: cashForm.alertThreshold, isMainCash: cashForm.isMainCash,
         voucherSeries: cashForm.voucherSeries || 'CR', status: 'active',
+      description: '',
+      notes: '',
+      suspendedBy: null,
+      suspendedAt: null,
+      suspendedReason: null,
+      reinstatedBy: null,
+      reinstatedAt: null,
+      reinstatedReason: null,
       };
       saveDefinition(def);
       saveInstance({
@@ -1705,6 +1749,14 @@ export function LedgerMasterPanel() {
         ? entities.find(e => e.id === liabilityForm.entityId)?.shortCode ?? null : null,
       openingBalance: liabilityForm.openingBalance, openingBalanceType: liabilityForm.openingBalanceType,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, liabilityForm.openingBalance, liabilityForm.openingBalanceType);
@@ -1741,6 +1793,14 @@ export function LedgerMasterPanel() {
       profitSharingRatio: capitalForm.profitSharingRatio, capitalContribution: capitalForm.capitalContribution,
       proprietorName: capitalForm.proprietorName, proprietorPAN: capitalForm.proprietorPAN,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, capitalForm.openingBalance, 'Cr');
@@ -1782,6 +1842,14 @@ export function LedgerMasterPanel() {
       collateral: loanRecForm.collateral, purpose: loanRecForm.purpose,
       isTdsApplicable: loanRecForm.isTdsApplicable, tdsSection: loanRecForm.tdsSection,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Dr');
@@ -1818,6 +1886,14 @@ export function LedgerMasterPanel() {
       loanAccountNo: borrowingForm.loanAccountNo, collateralPledged: borrowingForm.collateralPledged,
       emiAmount, repaymentScheduleGenerated: !!borrowingForm.firstEmiDate,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Cr');
@@ -1860,6 +1936,14 @@ export function LedgerMasterPanel() {
       isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
       costCentreApplicable: incomeForm.costCentreApplicable,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Cr');
@@ -1900,6 +1984,14 @@ export function LedgerMasterPanel() {
       isBudgetHead: expenseForm.isBudgetHead,
       expenseNature: expenseForm.expenseNature,
       status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Dr');
@@ -1932,6 +2024,9 @@ export function LedgerMasterPanel() {
       gstSubType: dutiesTaxForm.gstSubType,
       calculationBasis: dutiesTaxForm.calculationBasis,
       rate: dutiesTaxForm.rate,
+      description: '', notes: '',
+      suspendedBy: null, suspendedAt: null, suspendedReason: null,
+      reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Cr');
@@ -1966,6 +2061,9 @@ export function LedgerMasterPanel() {
       calculationBase: defaults.calculationBase,
       wageCeiling: defaults.wageCeiling,
       maxAmount: defaults.maxAmount,
+      description: '', notes: '',
+      suspendedBy: null, suspendedAt: null, suspendedReason: null,
+      reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
     };
     saveDefinition(def);
     autoCreateInstances(def, 0, 'Cr');
@@ -1975,12 +2073,61 @@ export function LedgerMasterPanel() {
     refreshAll();
   };
 
-  // ── Deactivate ──
-  const handleDeactivate = (def: AnyLedgerDefinition) => {
-    const updated = { ...def, status: def.status === 'active' ? 'inactive' as const : 'active' as const };
+  // ── Suspend / Reinstate ──
+  const openSuspend = (def: AnyLedgerDefinition) => {
+    setSuspendTarget(def);
+    setSuspendReason('');
+    setSuspendDialogOpen(true);
+  };
+
+  const handleSuspend = () => {
+    if (!suspendTarget) return;
+    if (!suspendReason.trim()) {
+      toast.error('Reason for suspension is required');
+      return;
+    }
+    const updated = {
+      ...suspendTarget,
+      status: 'suspended' as const,
+      suspendedBy: getCurrentUser(),
+      suspendedAt: new Date().toISOString(),
+      suspendedReason: suspendReason.trim(),
+    };
     saveDefinition(updated);
-    toast.success(`${def.name} ${updated.status === 'active' ? 'activated' : 'deactivated'}`);
+    toast.success(`${suspendTarget.name} suspended`);
+    setSuspendDialogOpen(false);
+    setSuspendTarget(null);
+    setSuspendReason('');
     refreshAll();
+    // [JWT] POST /api/group/finecore/ledger-definitions/audit
+  };
+
+  const openReinstate = (def: AnyLedgerDefinition) => {
+    setSuspendTarget(def);
+    setReinstateReason('');
+    setReinstateDialogOpen(true);
+  };
+
+  const handleReinstate = () => {
+    if (!suspendTarget) return;
+    if (!reinstateReason.trim()) {
+      toast.error('Reason for reinstatement is required');
+      return;
+    }
+    const updated = {
+      ...suspendTarget,
+      status: 'active' as const,
+      reinstatedBy: getCurrentUser(),
+      reinstatedAt: new Date().toISOString(),
+      reinstatedReason: reinstateReason.trim(),
+    };
+    saveDefinition(updated);
+    toast.success(`${suspendTarget.name} reinstated`);
+    setReinstateDialogOpen(false);
+    setSuspendTarget(null);
+    setReinstateReason('');
+    refreshAll();
+    // [JWT] POST /api/group/finecore/ledger-definitions/audit
   };
 
   // ── Save Opening Balances ──
@@ -2063,6 +2210,14 @@ export function LedgerMasterPanel() {
       fromLeaf: chequeBookForm.fromLeaf, toLeaf: chequeBookForm.toLeaf,
       issuedDate: chequeBookForm.issuedDate || new Date().toISOString().split('T')[0],
       currentLeaf: chequeBookForm.fromLeaf, status: 'active',
+    description: '',
+    notes: '',
+    suspendedBy: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    reinstatedBy: null,
+    reinstatedAt: null,
+    reinstatedReason: null,
     };
     saveChequeBook(book);
     setChequeBooks(loadChequeBooks(book.entityId, book.bankLedgerDefinitionId));
@@ -2275,10 +2430,20 @@ export function LedgerMasterPanel() {
         </TableHeader>
         <TableBody>
           {defs.map(def => (
-            <TableRow key={def.id}>
+            <TableRow key={def.id} className="group">
               {columns.map(c => <TableCell key={c.label}>{c.render(def)}</TableCell>)}
               <TableCell className="text-right">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {def.status === 'active' ? (
+                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-amber-600" onClick={() => openSuspend(def)}>
+                      <PauseCircle className="h-3.5 w-3.5" /> Suspend
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-emerald-600" onClick={() => openReinstate(def)}>
+                      <PlayCircle className="h-3.5 w-3.5" /> Reinstate
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -2435,7 +2600,7 @@ export function LedgerMasterPanel() {
             { label: 'Scope', render: d => d.entityId
               ? <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">{entities.find(e => e.id === d.entityId)?.name ?? d.entityShortCode}</Badge>
               : <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge> },
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
           ], 'No cash ledgers yet. Click + Cash above or use a Quick Start template.')}
 
           {/* Bank List */}
@@ -2447,7 +2612,7 @@ export function LedgerMasterPanel() {
               const bd = d as BankLedgerDefinition;
               return <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[bd.accountType]}`}>{ACCOUNT_TYPE_LABELS[bd.accountType]}</Badge>;
             }},
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
           ], 'No bank ledgers yet. Click + Bank above or use a Quick Start template.')}
 
           {/* Capital List */}
@@ -2460,7 +2625,7 @@ export function LedgerMasterPanel() {
                 { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Capital Type', render: d => <span className="text-xs">{CAPITAL_TYPE_LABELS[(d as CapitalLedgerDefinition).capitalType]}</span> },
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No capital ledgers yet.')}
             </div>
           )}
@@ -2477,7 +2642,7 @@ export function LedgerMasterPanel() {
                   { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
                   { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                   { label: 'Borrower', render: d => <span className="text-xs">{(d as LoanReceivableLedgerDefinition).borrowerName || '—'}</span> },
-                  { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                  { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
                 ], 'No loan receivables yet.')}
               </div>
               <div>
@@ -2517,9 +2682,19 @@ export function LedgerMasterPanel() {
                               <TableCell className="text-xs">{def.lenderName}</TableCell>
                               <TableCell className="text-xs">{LOAN_TYPE_LABELS[def.loanType]}</TableCell>
                               <TableCell className="text-xs font-mono">{def.emiAmount ? `₹${def.emiAmount.toLocaleString('en-IN')}` : '—'}</TableCell>
-                              <TableCell><Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{def.status}</Badge></TableCell>
+                              <TableCell><Badge variant="outline" className={`text-[10px] ${def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : def.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{def.status}</Badge></TableCell>
                               <TableCell className="text-right" onClick={e => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeactivate(def)}><Ban className="h-3.5 w-3.5" /></Button>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                  {def.status === 'active' ? (
+                                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-amber-600" onClick={() => openSuspend(def)}>
+                                      <PauseCircle className="h-3.5 w-3.5" /> Suspend
+                                    </Button>
+                                  ) : (
+                                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-emerald-600" onClick={() => openReinstate(def)}>
+                                      <PlayCircle className="h-3.5 w-3.5" /> Reinstate
+                                    </Button>
+                                  )}
+                                </div>
                               </TableCell>
                             </TableRow>
                             {activeScheduleDefId === def.id && (
@@ -2619,7 +2794,7 @@ export function LedgerMasterPanel() {
                   const inc = d as IncomeLedgerDefinition;
                   return inc.isTdsApplicable ? <span className="text-xs font-mono">{inc.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
                 }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No income ledgers yet.')}
             </div>
           )}
@@ -2645,7 +2820,7 @@ export function LedgerMasterPanel() {
                   const exp = d as ExpenseLedgerDefinition;
                   return exp.isTdsApplicable ? <span className="text-xs font-mono">{exp.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
                 }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No expense ledgers yet.')}
             </div>
           )}
@@ -2660,7 +2835,7 @@ export function LedgerMasterPanel() {
                 { label: 'Name', render: d => <span className="font-medium">{d.name}</span> },
                 { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
                 { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No liability ledgers yet.')}
             </div>
           )}
@@ -2680,7 +2855,7 @@ export function LedgerMasterPanel() {
                   if (dt.taxType === 'gst') return <span className="text-xs uppercase">{dt.gstSubType} — {dt.calculationBasis === 'item_rate' ? 'On Item Rate' : dt.calculationBasis === 'ledger_value' ? `On Ledger Value (${dt.rate}%)` : '—'}</span>;
                   return <span className="text-xs text-muted-foreground">—</span>;
                 }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No duties & tax ledgers yet.')}
             </div>
           )}
@@ -2702,7 +2877,7 @@ export function LedgerMasterPanel() {
                   if (p.calculationBase === 'slab') return <span className="text-xs text-muted-foreground">IT slab</span>;
                   return <span className="text-xs text-muted-foreground">{p.calculationBase}</span>;
                 }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{d.status}</Badge> },
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No payroll statutory ledgers yet.')}
             </div>
           )}
@@ -3791,6 +3966,95 @@ export function LedgerMasterPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ─── Suspend Ledger Dialog ─── */}
+      <Dialog open={suspendDialogOpen} onOpenChange={(o) => { if (!o) { setSuspendDialogOpen(false); setSuspendTarget(null); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PauseCircle className="h-5 w-5 text-amber-500" />
+              Suspend Ledger
+            </DialogTitle>
+            <DialogDescription>
+              {suspendTarget ? `Suspending: ${suspendTarget.name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-3 text-xs text-amber-700 dark:text-amber-400 space-y-1">
+              <p className="font-medium">Suspended ledgers:</p>
+              <p>• Will appear in all historical reports</p>
+              <p>• Cannot be selected in new transactions</p>
+              <p>• Can be reinstated at any time</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Reason for Suspension *</Label>
+              <Textarea placeholder="Why is this ledger being suspended?" value={suspendReason} onChange={(e) => setSuspendReason(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-2.5 rounded-lg bg-muted/40">
+                <p className="text-muted-foreground mb-0.5">Suspended by</p>
+                <p className="font-medium text-foreground">{getCurrentUser()}</p>
+              </div>
+              <div className="p-2.5 rounded-lg bg-muted/40">
+                <p className="text-muted-foreground mb-0.5">Date & Time</p>
+                <p className="font-medium text-foreground">{formatAuditDateTime(new Date().toISOString())}</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setSuspendDialogOpen(false); setSuspendTarget(null); }}>Cancel</Button>
+            <Button className="bg-amber-500 hover:bg-amber-600 text-white gap-1.5" onClick={handleSuspend} data-primary>
+              <PauseCircle className="h-3.5 w-3.5" /> Suspend Ledger
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Reinstate Ledger Dialog ─── */}
+      <Dialog open={reinstateDialogOpen} onOpenChange={(o) => { if (!o) { setReinstateDialogOpen(false); setSuspendTarget(null); } }}>
+        <DialogContent className="sm:max-w-md" data-keyboard-form>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PlayCircle className="h-5 w-5 text-emerald-500" />
+              Reinstate Ledger
+            </DialogTitle>
+            <DialogDescription>
+              {suspendTarget ? `Reinstating: ${suspendTarget.name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {suspendTarget?.suspendedBy && (
+              <div className="rounded-lg bg-muted/40 border border-border p-3 text-xs space-y-1">
+                <p className="font-medium text-foreground">Suspension record</p>
+                <p className="text-muted-foreground">Suspended by: <span className="text-foreground">{suspendTarget.suspendedBy}</span></p>
+                <p className="text-muted-foreground">On: <span className="text-foreground">{formatAuditDateTime(suspendTarget.suspendedAt)}</span></p>
+                <p className="text-muted-foreground">Reason: <span className="text-foreground">{suspendTarget.suspendedReason}</span></p>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Reason for Reinstatement *</Label>
+              <Textarea placeholder="Why is this ledger being reinstated?" value={reinstateReason} onChange={(e) => setReinstateReason(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-2.5 rounded-lg bg-muted/40">
+                <p className="text-muted-foreground mb-0.5">Reinstated by</p>
+                <p className="font-medium text-foreground">{getCurrentUser()}</p>
+              </div>
+              <div className="p-2.5 rounded-lg bg-muted/40">
+                <p className="text-muted-foreground mb-0.5">Date & Time</p>
+                <p className="font-medium text-foreground">{formatAuditDateTime(new Date().toISOString())}</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setReinstateDialogOpen(false); setSuspendTarget(null); }}>Cancel</Button>
+            <Button className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5" onClick={handleReinstate} data-primary>
+              <PlayCircle className="h-3.5 w-3.5" /> Reinstate Ledger
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
