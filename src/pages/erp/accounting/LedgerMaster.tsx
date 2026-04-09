@@ -23,7 +23,9 @@ import {
   BookOpen, FileText, AlertTriangle, Shield,
   Building, Scale, ArrowUpRight, ArrowDownLeft,
   Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag,
+  Clock, History, PauseCircle, PlayCircle, MessageSquare,
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
 import {
@@ -152,7 +154,15 @@ interface LiabilityLedgerDefinition {
   entityShortCode: string | null;
   openingBalance: number;
   openingBalanceType: 'Dr' | 'Cr';
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 type CapitalType =
@@ -173,7 +183,15 @@ interface CapitalLedgerDefinition {
   partnerName: string; partnerPAN: string;
   profitSharingRatio: number; capitalContribution: number;
   proprietorName: string; proprietorPAN: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 interface LoanReceivableLedgerDefinition {
@@ -193,7 +211,15 @@ interface LoanReceivableLedgerDefinition {
   collateral: string; purpose: string;
   isTdsApplicable: boolean;
   tdsSection: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 interface BorrowingLedgerDefinition {
@@ -212,7 +238,15 @@ interface BorrowingLedgerDefinition {
   loanAccountNo: string; collateralPledged: string;
   emiAmount: number;
   repaymentScheduleGenerated: boolean;
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 interface IncomeLedgerDefinition {
@@ -230,7 +264,15 @@ interface IncomeLedgerDefinition {
   isTdsApplicable: boolean;
   tdsSection: string;
   costCentreApplicable: boolean;
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 interface ExpenseLedgerDefinition {
@@ -253,7 +295,15 @@ interface ExpenseLedgerDefinition {
   costCentreApplicable: boolean;
   isBudgetHead: boolean;
   expenseNature: 'revenue' | 'capital_expense';
-  status: 'active' | 'inactive';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
 }
 
 // ─── Duties & Tax + Payroll Statutory Types ───────────────────────────
