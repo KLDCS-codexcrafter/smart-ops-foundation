@@ -382,6 +382,44 @@ interface PayrollStatutoryLedgerDefinition {
   reinstatedReason: string | null;
 }
 
+// ─── Asset Ledger Types ───────────────────────────────────────────────
+
+type AssetCategory = 'ppe' | 'cwip' | 'intangible' | 'intangible_wip' | 'investment';
+type DepreciationMethod = 'slm' | 'wdv' | 'none';
+
+interface AssetLedgerDefinition {
+  id: string;
+  ledgerType: 'asset';
+  name: string;
+  code: string;
+  numericCode: string;
+  alias: string;
+  mailingName: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  assetCategory: AssetCategory;
+  purchaseDate: string;
+  grossBlock: number;
+  depreciationMethod: DepreciationMethod;
+  usefulLifeYears: number;
+  depreciationRate: number;
+  vendorId: string;
+  vendorName: string;
+  entityId: string | null;
+  entityShortCode: string | null;
+  openingBalance: number;
+  openingBalanceType: 'Dr';
+  status: 'active' | 'suspended';
+  description: string;
+  notes: string;
+  suspendedBy: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  reinstatedBy: string | null;
+  reinstatedAt: string | null;
+  reinstatedReason: string | null;
+}
+
 interface LoanRepaymentRecord {
   id: string;
   borrowingLedgerDefinitionId: string;
@@ -499,7 +537,8 @@ type AnyLedgerDefinition =
   | IncomeLedgerDefinition
   | ExpenseLedgerDefinition
   | DutiesTaxLedgerDefinition
-  | PayrollStatutoryLedgerDefinition;
+  | PayrollStatutoryLedgerDefinition
+  | AssetLedgerDefinition;
 
 interface EntityLedgerInstance {
   id: string;
@@ -716,6 +755,15 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     calculationBase: d.calculationBase ?? '',
     wageCeiling: d.wageCeiling ?? null,
     maxAmount: d.maxAmount ?? null,
+    // Asset backward compat
+    assetCategory: d.assetCategory ?? 'ppe',
+    purchaseDate: d.purchaseDate ?? '',
+    grossBlock: d.grossBlock ?? 0,
+    depreciationMethod: d.depreciationMethod ?? 'slm',
+    usefulLifeYears: d.usefulLifeYears ?? 10,
+    depreciationRate: d.depreciationRate ?? 10,
+    vendorId: d.vendorId ?? '',
+    vendorName: d.vendorName ?? '',
     description: d.description ?? '',
     notes: d.notes ?? '',
     suspendedBy: d.suspendedBy ?? null,
@@ -745,6 +793,8 @@ const loadIncomeDefs = (): IncomeLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'income') as IncomeLedgerDefinition[];
 const loadExpenseDefs = (): ExpenseLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'expense') as ExpenseLedgerDefinition[];
+const loadAssetDefs = (): AssetLedgerDefinition[] =>
+  loadAllDefinitions().filter(d => d.ledgerType === 'asset') as AssetLedgerDefinition[];
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
@@ -960,6 +1010,10 @@ const genDutiesTaxCode = (all: AnyLedgerDefinition[]) =>
   'DTX-' + String(all.filter(d => d.ledgerType === 'duties_tax').length + 1).padStart(6, '0');
 const genPayrollStatCode = (all: AnyLedgerDefinition[]) =>
   'PAY-' + String(all.filter(d => d.ledgerType === 'payroll_statutory').length + 1).padStart(6, '0');
+const genAssetGroupCode = (all: AnyLedgerDefinition[]) =>
+  'ASSET-' + String(all.filter(d => d.ledgerType === 'asset' && !d.entityId).length + 1).padStart(6, '0');
+const genAssetEntityCode = (all: AnyLedgerDefinition[], sc: string) =>
+  `${sc}/A${String(all.filter(d => d.ledgerType === 'asset' && d.entityShortCode === sc).length + 1).padStart(3, '0')}`;
 
 // ─── Auto-Create Instances (Group Level Save) ─────────────────────────
 
@@ -1010,7 +1064,7 @@ const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; p
 const TYPE_BUTTONS = [
   { label: 'Cash', icon: Wallet, row: 'Balance Sheet', active: true },
   { label: 'Bank', icon: Landmark, row: 'Balance Sheet', active: true },
-  { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: false },
+  { label: 'Asset', icon: Building2, row: 'Balance Sheet', active: true },
   { label: 'Liability', icon: CreditCard, row: 'Balance Sheet', active: true },
   { label: 'Capital/Equity', icon: PiggyBank, row: 'Balance Sheet', active: true },
   { label: 'Loan Receivable', icon: HandCoins, row: 'Balance Sheet', active: true },
@@ -1031,6 +1085,7 @@ const TYPE_BUTTONS = [
 const LABEL_TO_SUBTAB: Record<string, string> = {
   'Cash': 'cash',
   'Bank': 'bank',
+  'Asset': 'asset',
   'Liability': 'liabilities',
   'Capital/Equity': 'capital',
   'Loan Receivable': 'loans',
@@ -1171,8 +1226,9 @@ export function LedgerMasterPanel() {
   const [borrowingDefs, setBorrowingDefs] = useState<BorrowingLedgerDefinition[]>(() => loadBorrowingDefs());
   const [incomeDefs, setIncomeDefs] = useState<IncomeLedgerDefinition[]>(() => loadIncomeDefs());
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
+  const [assetDefs, setAssetDefs] = useState<AssetLedgerDefinition[]>(() => loadAssetDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -1261,6 +1317,7 @@ export function LedgerMasterPanel() {
   const [expenseOpen, setExpenseOpen] = useState(false);
   const [dutiesTaxOpen, setDutiesTaxOpen] = useState(false);
   const [payrollStatOpen, setPayrollStatOpen] = useState(false);
+  const [assetOpen, setAssetOpen] = useState(false);
 
   // Edit targets for 8 types
   const [liabilityEditTarget, setLiabilityEditTarget] = useState<LiabilityLedgerDefinition | null>(null);
@@ -1271,6 +1328,7 @@ export function LedgerMasterPanel() {
   const [expenseEditTarget, setExpenseEditTarget] = useState<ExpenseLedgerDefinition | null>(null);
   const [dutiesTaxEditTarget, setDutiesTaxEditTarget] = useState<DutiesTaxLedgerDefinition | null>(null);
   const [payrollStatEditTarget, setPayrollStatEditTarget] = useState<PayrollStatutoryLedgerDefinition | null>(null);
+  const [assetEditTarget, setAssetEditTarget] = useState<AssetLedgerDefinition | null>(null);
 
   // Action picker state
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -1335,6 +1393,38 @@ export function LedgerMasterPanel() {
   };
   const [payrollForm, setPayrollForm] = useState(defaultPayrollForm);
 
+  const ASSET_CATEGORY_LABELS: Record<AssetCategory, string> = {
+    ppe: 'Property, Plant & Equipment',
+    cwip: 'Capital Work in Progress',
+    intangible: 'Intangible Asset',
+    intangible_wip: 'Intangible Under Development',
+    investment: 'Investment',
+  };
+  const ASSET_PARENT_MAP: Record<AssetCategory, { code: string; name: string }> = {
+    ppe: { code: 'PPE', name: 'Property, Plant & Equipment' },
+    cwip: { code: 'CWIP', name: 'Capital Work in Progress' },
+    intangible: { code: 'INTAN', name: 'Intangible Assets' },
+    intangible_wip: { code: 'IAWIP', name: 'Intangible Under Development' },
+    investment: { code: 'INVST', name: 'Non-Current Investments' },
+  };
+  const DEPRECIATION_LABELS: Record<DepreciationMethod, string> = {
+    slm: 'Straight Line Method (SLM)',
+    wdv: 'Written Down Value (WDV)',
+    none: 'No Depreciation',
+  };
+  const defaultAssetForm = {
+    parentGroupCode: 'PPE', parentGroupName: 'Property, Plant & Equipment',
+    name: '', mailingName: '', alias: '',
+    assetCategory: 'ppe' as AssetCategory,
+    purchaseDate: '', grossBlock: 0,
+    depreciationMethod: 'slm' as DepreciationMethod,
+    usefulLifeYears: 10, depreciationRate: 10,
+    vendorId: '', vendorName: '',
+    openingBalance: 0, scope: 'group' as 'group'|'entity', entityId: '',
+    description: '', notes: '',
+  };
+  const [assetForm, setAssetForm] = useState(defaultAssetForm);
+
   const PAYROLL_COMPONENT_DEFAULTS: Record<PayrollComponent, { name: string; category: PayrollCategory; statutoryRate: number; calculationBase: string; wageCeiling: number | null; maxAmount: number | null }> = {
     pf_employee: { name: 'PF Employee Deduction', category: 'employee_deduction', statutoryRate: 12, calculationBase: 'basic_da', wageCeiling: 15000, maxAmount: null },
     esi_employee: { name: 'ESI Employee Deduction', category: 'employee_deduction', statutoryRate: 0.75, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null },
@@ -1384,6 +1474,7 @@ export function LedgerMasterPanel() {
     setExpenseDefs(loadExpenseDefs());
     setDutiesTaxDefs(loadAllDefinitions().filter(d => d.ledgerType === 'duties_tax') as DutiesTaxLedgerDefinition[]);
     setPayrollStatDefs(loadAllDefinitions().filter(d => d.ledgerType === 'payroll_statutory') as PayrollStatutoryLedgerDefinition[]);
+    setAssetDefs(loadAssetDefs());
     setInstances(loadInstances(selEntityId));
   };
 
@@ -1484,6 +1575,7 @@ export function LedgerMasterPanel() {
     if (expenseOpen) handleExpenseSave();
     if (dutiesTaxOpen) handleDutiesTaxSave();
     if (payrollStatOpen) handlePayrollStatSave();
+    if (assetOpen) handleAssetSave();
   });
 
   // ── getLabelCount ──
@@ -1492,6 +1584,7 @@ export function LedgerMasterPanel() {
       switch (label) {
         case 'Cash': return cashDefs.length;
         case 'Bank': return bankDefs.length;
+        case 'Asset': return assetDefs.length;
         case 'Liability': return liabilityDefs.length;
         case 'Capital/Equity': return capitalDefs.length;
         case 'Loan Receivable': return loanRecDefs.length;
@@ -1820,6 +1913,77 @@ export function LedgerMasterPanel() {
     setPayrollStatOpen(true);
   };
 
+  const openAssetCreate = () => { setAssetForm(defaultAssetForm); setAssetEditTarget(null); setAssetOpen(true); };
+
+  const openAssetEdit = (def: AssetLedgerDefinition) => {
+    setAssetEditTarget(def);
+    setAssetForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      assetCategory: def.assetCategory,
+      purchaseDate: def.purchaseDate ?? '', grossBlock: def.grossBlock ?? 0,
+      depreciationMethod: def.depreciationMethod ?? 'slm',
+      usefulLifeYears: def.usefulLifeYears ?? 10, depreciationRate: def.depreciationRate ?? 10,
+      vendorId: def.vendorId ?? '', vendorName: def.vendorName ?? '',
+      openingBalance: def.openingBalance ?? 0,
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+      description: def.description ?? '', notes: def.notes ?? '',
+    });
+    setAssetOpen(true);
+  };
+
+  const handleAssetSave = () => {
+    if (!assetForm.name.trim()) return toast.error('Asset name is required');
+    if (!assetForm.parentGroupCode) return toast.error('Select an asset group first');
+    const all = loadAllDefinitions();
+    if (assetEditTarget) {
+      const updated: AssetLedgerDefinition = {
+        ...assetEditTarget,
+        name: assetForm.name.trim(),
+        mailingName: assetForm.mailingName.trim() || assetForm.name.trim(),
+        alias: assetForm.alias.trim(),
+        parentGroupCode: assetForm.parentGroupCode, parentGroupName: assetForm.parentGroupName,
+        assetCategory: assetForm.assetCategory,
+        purchaseDate: assetForm.purchaseDate, grossBlock: assetForm.grossBlock,
+        depreciationMethod: assetForm.depreciationMethod,
+        usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
+        vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
+        description: assetForm.description, notes: assetForm.notes,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setAssetOpen(false); setAssetEditTarget(null); refreshAll(); return;
+    }
+    const code = assetForm.scope === 'group'
+      ? genAssetGroupCode(all)
+      : genAssetEntityCode(all, entities.find(e => e.id === assetForm.entityId)?.shortCode ?? 'GRP');
+    const numericCode = deriveLedgerNumericCode(assetForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'asset').length + 1);
+    const def: AssetLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'asset',
+      name: assetForm.name.trim(), code, numericCode, alias: assetForm.alias.trim(),
+      mailingName: assetForm.mailingName.trim() || assetForm.name.trim(),
+      parentGroupCode: assetForm.parentGroupCode, parentGroupName: assetForm.parentGroupName,
+      assetCategory: assetForm.assetCategory,
+      purchaseDate: assetForm.purchaseDate, grossBlock: assetForm.grossBlock,
+      depreciationMethod: assetForm.depreciationMethod,
+      usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
+      vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
+      entityId: assetForm.scope === 'entity'
+        ? entities.find(e => e.id === assetForm.entityId)?.id ?? null : null,
+      entityShortCode: assetForm.scope === 'entity'
+        ? entities.find(e => e.id === assetForm.entityId)?.shortCode ?? null : null,
+      openingBalance: assetForm.openingBalance, openingBalanceType: 'Dr',
+      status: 'active', description: assetForm.description, notes: assetForm.notes,
+      suspendedBy: null, suspendedAt: null, suspendedReason: null,
+      reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, assetForm.openingBalance, 'Dr');
+    toast.success(`${def.name} created`);
+    setAssetOpen(false); setAssetEditTarget(null); setAssetForm(defaultAssetForm); refreshAll();
+  };
+
   // ── Type button helpers ──
   const handleTypeCreate = (label: string) => {
     if (label === 'Cash') openCashCreate();
@@ -1831,6 +1995,7 @@ export function LedgerMasterPanel() {
     else if (label === 'Income') { setIncomeEditTarget(null); setIncomeOpen(true); }
     else if (label === 'Expense') { setExpenseEditTarget(null); setExpenseOpen(true); }
     else if (label === 'Duties & Taxes') { setDutiesTaxEditTarget(null); setDutiesTaxOpen(true); }
+    else if (label === 'Asset') openAssetCreate();
   };
 
   const handleTypeAlterSelect = (def: AnyLedgerDefinition) => {
@@ -1840,6 +2005,7 @@ export function LedgerMasterPanel() {
     switch (def.ledgerType) {
       case 'cash': openCashEdit(def as CashLedgerDefinition); break;
       case 'bank': openBankEdit(def as BankLedgerDefinition); break;
+      case 'asset': openAssetEdit(def as AssetLedgerDefinition); break;
       case 'liability': openLiabilityEdit(def as LiabilityLedgerDefinition); break;
       case 'capital': openCapitalEdit(def as CapitalLedgerDefinition); break;
       case 'loan_receivable': openLoanRecEdit(def as LoanReceivableLedgerDefinition); break;
@@ -1863,6 +2029,7 @@ export function LedgerMasterPanel() {
       : def.ledgerType === 'expense' ? expenseDefs
       : def.ledgerType === 'duties_tax' ? dutiesTaxDefs
       : def.ledgerType === 'payroll_statutory' ? payrollStatDefs
+      : def.ledgerType === 'asset' ? assetDefs
       : [];
     setDisplayNavDefs(navDefs);
     setDisplayTarget(def);
@@ -1925,6 +2092,7 @@ export function LedgerMasterPanel() {
       : label === 'Income'        ? incomeDefs
       : label === 'Expense'       ? expenseDefs
       : label === 'Duties & Taxes'? dutiesTaxDefs
+      : label === 'Asset'         ? assetDefs
       : []
     );
     if (defsForLabel.length === 0) {
@@ -2900,6 +3068,7 @@ export function LedgerMasterPanel() {
   const l4BorrowingGroups = getFinFrameL4Groups(['LTBOR', 'STBOR', 'BOND']);
   const l4IncomeGroups = getFinFrameL4Groups(['PCAP', 'SERV', 'EXINC', 'INTINC', 'DIVINC', 'RNTINC', 'GAIN', 'MISC']);
   const l4ExpenseGroups = getFinFrameL4Groups(['PURCH', 'DEXP', 'EMPB', 'RENT', 'UTIL', 'TRAV', 'PRFEE', 'ADMIN', 'SELL', 'REPAIR', 'INTEXP', 'BKCHG']);
+  const l4AssetGroups = getFinFrameL4Groups(['PPE', 'CWIP', 'INTAN', 'IAWIP', 'INVST']);
 
   // L3 groups for parent pickers
   const liabilityL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTPROV','ONCL','OPAY','EMPL','LEASE','BOND'].includes(g.code));
@@ -2908,6 +3077,7 @@ export function LedgerMasterPanel() {
   const borrowingL3 = L3_FINANCIAL_GROUPS.filter(g => ['LTBOR','STBOR','BOND'].includes(g.code));
   const incomeL3 = L3_FINANCIAL_GROUPS.filter(g => ['PCAP','SERV','EXINC','INTINC','DIVINC','RNTINC','GAIN','MISC'].includes(g.code));
   const expenseL3 = L3_FINANCIAL_GROUPS.filter(g => ['PURCH','DEXP','EMPB','RENT','UTIL','TRAV','PRFEE','ADMIN','SELL','REPAIR','INTEXP','BKCHG'].includes(g.code));
+  const assetL3 = L3_FINANCIAL_GROUPS.filter(g => ['PPE','CWIP','INTAN','IAWIP','INVST'].includes(g.code));
 
   // Filter instances for Opening Balances tab
   const allDefs = [...cashDefs, ...bankDefs, ...liabilityDefs, ...capitalDefs, ...loanRecDefs, ...borrowingDefs, ...incomeDefs, ...expenseDefs, ...dutiesTaxDefs, ...payrollStatDefs];
@@ -3171,6 +3341,9 @@ export function LedgerMasterPanel() {
               </TabsTrigger>
               <TabsTrigger value="payroll" className="text-xs gap-1.5">
                 <Users className="h-3.5 w-3.5" /> Payroll Statutory ({payrollStatDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="asset" className="text-xs gap-1.5">
+                <Building2 className="h-3.5 w-3.5" /> Asset ({assetDefs.length})
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -3462,6 +3635,25 @@ export function LedgerMasterPanel() {
                 }},
                 { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
               ], 'No payroll statutory ledgers yet.')}
+            </div>
+          )}
+
+          {/* Asset List */}
+          {defSubTab === 'asset' && (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button size="sm" onClick={openAssetCreate} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Asset</Button>
+              </div>
+              {renderDefTable(assetDefs, [
+                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
+                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
+                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{ASSET_CATEGORY_LABELS[(d as AssetLedgerDefinition).assetCategory]}</Badge> },
+                { label: 'Depreciation', render: d => {
+                  const a = d as AssetLedgerDefinition;
+                  return <span className="text-xs">{a.depreciationMethod === 'slm' ? `SLM ${a.usefulLifeYears}yr` : a.depreciationMethod === 'wdv' ? `WDV ${a.depreciationRate}%` : 'None'}</span>;
+                }},
+                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>{d.status}</Badge> },
+              ], 'No asset ledgers yet. Click + Add Asset above.')}
             </div>
           )}
 
@@ -4436,6 +4628,147 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* ─── Asset Create/Edit Dialog ─── */}
+      <Dialog open={assetOpen} onOpenChange={(open) => { if (!open) { setAssetOpen(false); setAssetEditTarget(null); } }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{assetEditTarget ? 'Edit Asset Ledger' : 'New Asset Ledger'}</DialogTitle>
+            <DialogDescription>Create a fixed asset ledger for financial reporting.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Asset Category</Label>
+              <Select value={assetForm.assetCategory} onValueChange={(v: AssetCategory) => {
+                const parent = ASSET_PARENT_MAP[v];
+                setAssetForm(f => ({ ...f, assetCategory: v, parentGroupCode: parent.code, parentGroupName: parent.name }));
+              }}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(ASSET_CATEGORY_LABELS) as AssetCategory[]).map(k => (
+                    <SelectItem key={k} value={k}>{ASSET_CATEGORY_LABELS[k]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Parent Group</Label>
+              {(() => {
+                const renderParentGroupPicker = (value: string, l3: typeof assetL3, l4: typeof l4AssetGroups, onChange: (code: string, name: string) => void) => (
+                  <Select value={value} onValueChange={v => {
+                    const l3g = l3.find(g => g.code === v);
+                    const l4g = l4.find(g => g.code === v);
+                    onChange(v, l3g?.name ?? l4g?.name ?? v);
+                  }}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {l3.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
+                      {l4.map(g => (<SelectItem key={g.code} value={g.code}>↳ {g.name}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                );
+                return renderParentGroupPicker(assetForm.parentGroupCode, assetL3, l4AssetGroups,
+                  (code, name) => setAssetForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })));
+              })()}
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Asset Name *</Label>
+              <Input value={assetForm.name} onChange={e => setAssetForm(f => ({ ...f, name: e.target.value }))} onKeyDown={onEnterNext} placeholder="e.g. Office Building — Main" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Mailing Name</Label>
+                <Input value={assetForm.mailingName} onChange={e => setAssetForm(f => ({ ...f, mailingName: e.target.value }))} onKeyDown={onEnterNext} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Alias</Label>
+                <Input value={assetForm.alias} onChange={e => setAssetForm(f => ({ ...f, alias: e.target.value }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Purchase Date</Label>
+                <SmartDateInput value={assetForm.purchaseDate} onChange={v => setAssetForm(f => ({ ...f, purchaseDate: v }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Gross Block (Original Cost)</Label>
+                <Input {...amountInputProps} value={assetForm.grossBlock || ''} onChange={e => setAssetForm(f => ({ ...f, grossBlock: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            {/* Depreciation */}
+            <div className="rounded-lg border border-border p-3 space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Depreciation</p>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Method</Label>
+                <Select value={assetForm.depreciationMethod} onValueChange={(v: DepreciationMethod) => setAssetForm(f => ({ ...f, depreciationMethod: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(DEPRECIATION_LABELS) as DepreciationMethod[]).map(k => (
+                      <SelectItem key={k} value={k}>{DEPRECIATION_LABELS[k]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {assetForm.depreciationMethod === 'slm' && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Useful Life (Years)</Label>
+                  <Input type="number" value={assetForm.usefulLifeYears} onChange={e => setAssetForm(f => ({ ...f, usefulLifeYears: parseInt(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              )}
+              {assetForm.depreciationMethod === 'wdv' && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Depreciation Rate (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.depreciationRate} onChange={e => setAssetForm(f => ({ ...f, depreciationRate: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              )}
+            </div>
+            {/* Vendor Link */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Vendor Name</Label>
+                <Input value={assetForm.vendorName} onChange={e => setAssetForm(f => ({ ...f, vendorName: e.target.value }))} onKeyDown={onEnterNext} placeholder="Link to Vendor Master" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Opening Balance (Net Book Value)</Label>
+                <Input {...amountInputProps} value={assetForm.openingBalance || ''} onChange={e => setAssetForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            {/* Scope */}
+            {!assetEditTarget && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Scope</Label>
+                <Select value={assetForm.scope} onValueChange={v => setAssetForm(f => ({ ...f, scope: v as 'group'|'entity' }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="group">Group (all entities)</SelectItem>
+                    <SelectItem value="entity">Specific Entity</SelectItem>
+                  </SelectContent>
+                </Select>
+                {assetForm.scope === 'entity' && (
+                  <Select value={assetForm.entityId} onValueChange={v => setAssetForm(f => ({ ...f, entityId: v }))}>
+                    <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select entity..." /></SelectTrigger>
+                    <SelectContent>
+                      {entities.map(e => <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Description</Label>
+              <Textarea value={assetForm.description} onChange={e => setAssetForm(f => ({ ...f, description: e.target.value }))} rows={2} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Internal Notes</Label>
+              <Textarea value={assetForm.notes} onChange={e => setAssetForm(f => ({ ...f, notes: e.target.value }))} rows={2} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setAssetOpen(false); setAssetEditTarget(null); }}>Cancel</Button>
+            <Button onClick={handleAssetSave} data-primary>{assetEditTarget ? 'Update Asset' : 'Create Asset'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ─── Payroll Statutory Dialog ─── */}
       <Dialog open={payrollStatOpen} onOpenChange={(open) => { if (!open) setPayrollStatOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -4845,6 +5178,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Income'        ? incomeDefs
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
@@ -4909,6 +5243,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
                 : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
@@ -4965,6 +5300,7 @@ export function LedgerMasterPanel() {
                 : pickerLabel === 'Expense'       ? expenseDefs
                 : pickerLabel === 'Duties & Taxes'? dutiesTaxDefs
                 : pickerLabel === 'Payroll Statutory'? payrollStatDefs
+                : pickerLabel === 'Asset'         ? assetDefs
                 : []
               );
               const filtered = allForType.filter(d =>
@@ -5160,6 +5496,7 @@ export function LedgerMasterPanel() {
                           case 'expense': openExpenseEdit(def as ExpenseLedgerDefinition); break;
                           case 'duties_tax': openDutiesTaxEdit(def as DutiesTaxLedgerDefinition); break;
                           case 'payroll_statutory': openPayrollStatEdit(def as PayrollStatutoryLedgerDefinition); break;
+                          case 'asset': openAssetEdit(def as AssetLedgerDefinition); break;
                         }}}>
                         <Edit2 className="h-3.5 w-3.5" /> Edit
                       </Button>
@@ -5318,6 +5655,19 @@ export function LedgerMasterPanel() {
                       <Field label='Calculation Base' value={d.calculationBase} />
                       {d.wageCeiling && <Field label='Wage Ceiling' value={`₹${toIndianFormat(d.wageCeiling)}`} />}
                       {d.maxAmount && <Field label='Max Amount' value={`₹${toIndianFormat(d.maxAmount)}`} />}
+                    </Section>;
+                  })()}
+
+                  {def.ledgerType === 'asset' && (() => {
+                    const d = def as AssetLedgerDefinition;
+                    return <Section title="Asset Details">
+                      <Field label='Asset Category' value={ASSET_CATEGORY_LABELS[d.assetCategory]} />
+                      <Field label='Purchase Date' value={d.purchaseDate} />
+                      <Field label='Gross Block' value={d.grossBlock ? `₹${toIndianFormat(d.grossBlock)}` : '—'} />
+                      <Field label='Depreciation Method' value={DEPRECIATION_LABELS[d.depreciationMethod]} />
+                      {d.depreciationMethod === 'slm' && <Field label='Useful Life' value={`${d.usefulLifeYears} years`} />}
+                      {d.depreciationMethod === 'wdv' && <Field label='Depreciation Rate' value={`${d.depreciationRate}%`} />}
+                      <Field label='Vendor' value={d.vendorName} />
                     </Section>;
                   })()}
 
