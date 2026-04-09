@@ -5453,6 +5453,61 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* ─── Global Ledger Search (⌘K) ─── */}
+      <CommandDialog open={globalSearchOpen} onOpenChange={setGlobalSearchOpen}>
+        <CommandInput placeholder="Search all ledgers by name, code, or group…" />
+        <CommandList>
+          <CommandEmpty>No ledgers found.</CommandEmpty>
+          {(() => {
+            const allSearchDefs = loadAllDefinitions();
+            const GROUPS: { label: string; type: string }[] = [
+              { label: 'Cash', type: 'cash' },
+              { label: 'Bank', type: 'bank' },
+              { label: 'Asset', type: 'asset' },
+              { label: 'Liability', type: 'liability' },
+              { label: 'Capital / Equity', type: 'capital' },
+              { label: 'Loan Receivable', type: 'loan_receivable' },
+              { label: 'Borrowing', type: 'borrowing' },
+              { label: 'Income', type: 'income' },
+              { label: 'Expense', type: 'expense' },
+              { label: 'Duties & Taxes', type: 'duties_tax' },
+              { label: 'Payroll Statutory', type: 'payroll_statutory' },
+            ];
+            return GROUPS.map(({ label, type }) => {
+              const defs = allSearchDefs.filter(d => d.ledgerType === type);
+              if (defs.length === 0) return null;
+              return (
+                <CommandGroup key={type} heading={label}>
+                  {defs.map(def => (
+                    <CommandItem
+                      key={def.id}
+                      value={`${def.name} ${def.numericCode} ${def.parentGroupName}`}
+                      onSelect={() => {
+                        setGlobalSearchOpen(false);
+                        openDisplay(def);
+                      }}
+                      className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm font-medium truncate">{def.name}</span>
+                        <span className="text-xs font-mono text-muted-foreground shrink-0">{def.numericCode}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs text-muted-foreground">{def.parentGroupName}</span>
+                        <Badge variant="outline" className={`text-[9px] h-4 px-1 ${
+                          def.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                          : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>
+                          {def.status}
+                        </Badge>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              );
+            });
+          })()}
+        </CommandList>
+      </CommandDialog>
+
       {/* ─── Confirm Delete Dialog ─── */}
       <Dialog open={confirmDeleteOpen} onOpenChange={o => {
         if (!o) { setConfirmDeleteOpen(false); setDeleteTarget(null); setConfirmDeleteInput(''); }
