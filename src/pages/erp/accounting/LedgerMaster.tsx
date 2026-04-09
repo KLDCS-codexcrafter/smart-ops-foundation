@@ -1575,6 +1575,7 @@ export function LedgerMasterPanel() {
     if (expenseOpen) handleExpenseSave();
     if (dutiesTaxOpen) handleDutiesTaxSave();
     if (payrollStatOpen) handlePayrollStatSave();
+    if (assetOpen) handleAssetSave();
   });
 
   // ── getLabelCount ──
@@ -1583,6 +1584,7 @@ export function LedgerMasterPanel() {
       switch (label) {
         case 'Cash': return cashDefs.length;
         case 'Bank': return bankDefs.length;
+        case 'Asset': return assetDefs.length;
         case 'Liability': return liabilityDefs.length;
         case 'Capital/Equity': return capitalDefs.length;
         case 'Loan Receivable': return loanRecDefs.length;
@@ -1911,6 +1913,77 @@ export function LedgerMasterPanel() {
     setPayrollStatOpen(true);
   };
 
+  const openAssetCreate = () => { setAssetForm(defaultAssetForm); setAssetEditTarget(null); setAssetOpen(true); };
+
+  const openAssetEdit = (def: AssetLedgerDefinition) => {
+    setAssetEditTarget(def);
+    setAssetForm({
+      parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
+      name: def.name, mailingName: def.mailingName ?? '', alias: def.alias ?? '',
+      assetCategory: def.assetCategory,
+      purchaseDate: def.purchaseDate ?? '', grossBlock: def.grossBlock ?? 0,
+      depreciationMethod: def.depreciationMethod ?? 'slm',
+      usefulLifeYears: def.usefulLifeYears ?? 10, depreciationRate: def.depreciationRate ?? 10,
+      vendorId: def.vendorId ?? '', vendorName: def.vendorName ?? '',
+      openingBalance: def.openingBalance ?? 0,
+      scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+      description: def.description ?? '', notes: def.notes ?? '',
+    });
+    setAssetOpen(true);
+  };
+
+  const handleAssetSave = () => {
+    if (!assetForm.name.trim()) return toast.error('Asset name is required');
+    if (!assetForm.parentGroupCode) return toast.error('Select an asset group first');
+    const all = loadAllDefinitions();
+    if (assetEditTarget) {
+      const updated: AssetLedgerDefinition = {
+        ...assetEditTarget,
+        name: assetForm.name.trim(),
+        mailingName: assetForm.mailingName.trim() || assetForm.name.trim(),
+        alias: assetForm.alias.trim(),
+        parentGroupCode: assetForm.parentGroupCode, parentGroupName: assetForm.parentGroupName,
+        assetCategory: assetForm.assetCategory,
+        purchaseDate: assetForm.purchaseDate, grossBlock: assetForm.grossBlock,
+        depreciationMethod: assetForm.depreciationMethod,
+        usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
+        vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
+        description: assetForm.description, notes: assetForm.notes,
+      };
+      saveDefinition(updated);
+      toast.success(`${updated.name} updated`);
+      setAssetOpen(false); setAssetEditTarget(null); refreshAll(); return;
+    }
+    const code = assetForm.scope === 'group'
+      ? genAssetGroupCode(all)
+      : genAssetEntityCode(all, entities.find(e => e.id === assetForm.entityId)?.shortCode ?? 'GRP');
+    const numericCode = deriveLedgerNumericCode(assetForm.parentGroupCode,
+      all.filter(d => d.ledgerType === 'asset').length + 1);
+    const def: AssetLedgerDefinition = {
+      id: crypto.randomUUID(), ledgerType: 'asset',
+      name: assetForm.name.trim(), code, numericCode, alias: assetForm.alias.trim(),
+      mailingName: assetForm.mailingName.trim() || assetForm.name.trim(),
+      parentGroupCode: assetForm.parentGroupCode, parentGroupName: assetForm.parentGroupName,
+      assetCategory: assetForm.assetCategory,
+      purchaseDate: assetForm.purchaseDate, grossBlock: assetForm.grossBlock,
+      depreciationMethod: assetForm.depreciationMethod,
+      usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
+      vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
+      entityId: assetForm.scope === 'entity'
+        ? entities.find(e => e.id === assetForm.entityId)?.id ?? null : null,
+      entityShortCode: assetForm.scope === 'entity'
+        ? entities.find(e => e.id === assetForm.entityId)?.shortCode ?? null : null,
+      openingBalance: assetForm.openingBalance, openingBalanceType: 'Dr',
+      status: 'active', description: assetForm.description, notes: assetForm.notes,
+      suspendedBy: null, suspendedAt: null, suspendedReason: null,
+      reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+    };
+    saveDefinition(def);
+    autoCreateInstances(def, assetForm.openingBalance, 'Dr');
+    toast.success(`${def.name} created`);
+    setAssetOpen(false); setAssetEditTarget(null); setAssetForm(defaultAssetForm); refreshAll();
+  };
+
   // ── Type button helpers ──
   const handleTypeCreate = (label: string) => {
     if (label === 'Cash') openCashCreate();
@@ -1931,6 +2004,7 @@ export function LedgerMasterPanel() {
     switch (def.ledgerType) {
       case 'cash': openCashEdit(def as CashLedgerDefinition); break;
       case 'bank': openBankEdit(def as BankLedgerDefinition); break;
+      case 'asset': openAssetEdit(def as AssetLedgerDefinition); break;
       case 'liability': openLiabilityEdit(def as LiabilityLedgerDefinition); break;
       case 'capital': openCapitalEdit(def as CapitalLedgerDefinition); break;
       case 'loan_receivable': openLoanRecEdit(def as LoanReceivableLedgerDefinition); break;
