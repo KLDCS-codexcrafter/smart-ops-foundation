@@ -1546,15 +1546,6 @@ export function LedgerMasterPanel() {
   };
   const collapseAllCoa = () => setCoaExpanded(new Set());
 
-  const getDefBalance = (def: AnyLedgerDefinition): { amount: number; type: 'Dr' | 'Cr' } => {
-    if (selEntityId) {
-      const inst = filteredInstances.find(i => i.ledgerDefinitionId === def.id);
-      if (inst) return { amount: inst.openingBalance, type: inst.openingBalanceType };
-    }
-    const ob = (def as any).openingBalance ?? 0;
-    const obt = (def as any).openingBalanceType ?? 'Dr';
-    return { amount: ob, type: obt };
-  };
 
 
   const fetchIfscDetails = async (ifsc: string) => {
