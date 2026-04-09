@@ -3103,7 +3103,7 @@ export function LedgerMasterPanel() {
                                 setLoanSchedule(loadLoanSchedule(eid, def.id));
                               }
                             }}>
-                              <TableCell className="font-medium">{def.name}</TableCell>
+                              <TableCell><button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={(e) => { e.stopPropagation(); openDisplay(def); }}>{def.name}</button></TableCell>
                               <TableCell className="font-mono text-xs text-teal-600">{def.numericCode || '—'}</TableCell>
                               <TableCell className="text-xs">{def.lenderName}</TableCell>
                               <TableCell className="text-xs">{LOAN_TYPE_LABELS[def.loanType]}</TableCell>
