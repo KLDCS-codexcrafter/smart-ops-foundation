@@ -53,6 +53,7 @@ import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
 import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
+import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -1084,7 +1085,7 @@ const TYPE_BUTTONS = [
   { label: 'Customer', icon: Users, row: 'Operational Parties', active: true },
   { label: 'Vendor', icon: Users, row: 'Operational Parties', active: true },
   { label: 'Logistic', icon: Truck, row: 'Operational Parties', active: true },
-  { label: 'Branch & Division', icon: GitBranch, row: 'Operational Parties', active: false },
+  { label: 'Branch & Division', icon: GitBranch, row: 'Operational Parties', active: true },
   { label: 'Mode of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
   { label: 'Terms of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
   { label: 'Terms of Delivery', icon: FileText, row: 'Transaction Defaults', active: true },
@@ -1607,6 +1608,8 @@ export function LedgerMasterPanel() {
           return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]').length;
         case 'Logistic':
           return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]').length;
+        case 'Branch & Division':
+          return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
         case 'Mode of Payment':
           return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]').length;
         case 'Terms of Payment':
@@ -3744,13 +3747,7 @@ export function LedgerMasterPanel() {
           {defSubTab === 'logistic' && <LogisticMasterPanel />}
 
           {/* Branch & Division */}
-          {defSubTab === 'branch_division' && (
-            <div className="text-center py-12 text-muted-foreground text-sm border border-dashed border-border rounded-xl">
-              <GitBranch className="h-8 w-8 mx-auto mb-2 opacity-40" />
-              <p className="font-medium">Branch & Division Master</p>
-              <p className="text-xs mt-1">Coming soon in a future release.</p>
-            </div>
-          )}
+          {defSubTab === 'branch_division' && <BusinessUnitMasterPanel />}
 
           {/* Mode of Payment */}
           {defSubTab === 'mode_payment' && <ModeOfPaymentMasterPanel />}
