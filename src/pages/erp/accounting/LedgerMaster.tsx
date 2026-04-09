@@ -1317,6 +1317,7 @@ export function LedgerMasterPanel() {
   const [expenseOpen, setExpenseOpen] = useState(false);
   const [dutiesTaxOpen, setDutiesTaxOpen] = useState(false);
   const [payrollStatOpen, setPayrollStatOpen] = useState(false);
+  const [assetOpen, setAssetOpen] = useState(false);
 
   // Edit targets for 8 types
   const [liabilityEditTarget, setLiabilityEditTarget] = useState<LiabilityLedgerDefinition | null>(null);
@@ -1327,6 +1328,7 @@ export function LedgerMasterPanel() {
   const [expenseEditTarget, setExpenseEditTarget] = useState<ExpenseLedgerDefinition | null>(null);
   const [dutiesTaxEditTarget, setDutiesTaxEditTarget] = useState<DutiesTaxLedgerDefinition | null>(null);
   const [payrollStatEditTarget, setPayrollStatEditTarget] = useState<PayrollStatutoryLedgerDefinition | null>(null);
+  const [assetEditTarget, setAssetEditTarget] = useState<AssetLedgerDefinition | null>(null);
 
   // Action picker state
   const [pickerOpen, setPickerOpen] = useState(false);
