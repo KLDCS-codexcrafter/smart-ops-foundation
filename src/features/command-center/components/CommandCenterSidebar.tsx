@@ -38,14 +38,6 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'Ledger Master', module: 'finecore-ledgers' },
 ];
 
-const SUPPORTING_MASTERS_ITEMS: { label: string; module: CommandCenterModule }[] = [
-  { label: 'Mode of Payment', module: 'masters-mode-payment' },
-  { label: 'Terms of Payment', module: 'masters-terms-payment' },
-  { label: 'Terms of Delivery', module: 'masters-terms-delivery' },
-  { label: 'Logistic Master', module: 'masters-logistic' },
-  { label: 'Vendor Master', module: 'masters-vendor' },
-  { label: 'Customer Master', module: 'masters-customer' },
-];
 
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
@@ -168,7 +160,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                       {renderSubSection('Statutory Reference', STATUTORY_ITEMS)}
                       {renderSubSection('Entity Configuration', ENTITY_CONFIG_ITEMS)}
                       {renderSubSection('Account Structure', ACCOUNT_STRUCTURE_ITEMS)}
-                      {renderSubSection('Supporting Masters', SUPPORTING_MASTERS_ITEMS)}
+                      
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>

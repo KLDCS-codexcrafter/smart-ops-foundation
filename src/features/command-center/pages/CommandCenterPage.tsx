@@ -19,12 +19,6 @@ import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
-import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
-import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
-import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
-import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
-import { VendorMasterPanel } from '@/pages/erp/masters/VendorMaster';
-import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -43,12 +37,6 @@ export type CommandCenterModule =
   | 'finecore-comply360'
   | 'finecore-finframe'
   | 'finecore-ledgers'
-  | 'masters-mode-payment'
-  | 'masters-terms-payment'
-  | 'masters-terms-delivery'
-  | 'masters-logistic'
-  | 'masters-vendor'
-  | 'masters-customer'
   | 'console';
 
 export default function CommandCenterPage() {
