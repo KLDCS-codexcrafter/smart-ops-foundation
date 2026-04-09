@@ -1699,6 +1699,9 @@ export function LedgerMasterPanel() {
         name: bankForm.name.trim(), code, numericCode, alias: bankForm.alias.trim(),
         parentGroupCode: bankForm.parentGroupCode, parentGroupName: bankForm.parentGroupName,
         entityId: null, entityShortCode: null, status: 'active', ...bankFields,
+        description: '', notes: '',
+        suspendedBy: null, suspendedAt: null, suspendedReason: null,
+        reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
       };
       saveDefinition(def);
       autoCreateInstances(def, bankForm.openingBalance, bankForm.openingBalanceType);
@@ -1713,6 +1716,9 @@ export function LedgerMasterPanel() {
         name: bankForm.name.trim(), code, numericCode, alias: bankForm.alias.trim(),
         parentGroupCode: bankForm.parentGroupCode, parentGroupName: bankForm.parentGroupName,
         entityId: entity.id, entityShortCode: entity.shortCode, status: 'active', ...bankFields,
+        description: '', notes: '',
+        suspendedBy: null, suspendedAt: null, suspendedReason: null,
+        reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
       };
       saveDefinition(def);
       saveInstance({
@@ -2211,14 +2217,6 @@ export function LedgerMasterPanel() {
       fromLeaf: chequeBookForm.fromLeaf, toLeaf: chequeBookForm.toLeaf,
       issuedDate: chequeBookForm.issuedDate || new Date().toISOString().split('T')[0],
       currentLeaf: chequeBookForm.fromLeaf, status: 'active',
-    description: '',
-    notes: '',
-    suspendedBy: null,
-    suspendedAt: null,
-    suspendedReason: null,
-    reinstatedBy: null,
-    reinstatedAt: null,
-    reinstatedReason: null,
     };
     saveChequeBook(book);
     setChequeBooks(loadChequeBooks(book.entityId, book.bankLedgerDefinitionId));
