@@ -4628,6 +4628,147 @@ export function LedgerMasterPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* ─── Asset Create/Edit Dialog ─── */}
+      <Dialog open={assetOpen} onOpenChange={(open) => { if (!open) { setAssetOpen(false); setAssetEditTarget(null); } }}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{assetEditTarget ? 'Edit Asset Ledger' : 'New Asset Ledger'}</DialogTitle>
+            <DialogDescription>Create a fixed asset ledger for financial reporting.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4" data-keyboard-form>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Asset Category</Label>
+              <Select value={assetForm.assetCategory} onValueChange={(v: AssetCategory) => {
+                const parent = ASSET_PARENT_MAP[v];
+                setAssetForm(f => ({ ...f, assetCategory: v, parentGroupCode: parent.code, parentGroupName: parent.name }));
+              }}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(ASSET_CATEGORY_LABELS) as AssetCategory[]).map(k => (
+                    <SelectItem key={k} value={k}>{ASSET_CATEGORY_LABELS[k]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Parent Group</Label>
+              {(() => {
+                const renderParentGroupPicker = (value: string, l3: typeof assetL3, l4: typeof l4AssetGroups, onChange: (code: string, name: string) => void) => (
+                  <Select value={value} onValueChange={v => {
+                    const l3g = l3.find(g => g.code === v);
+                    const l4g = l4.find(g => g.code === v);
+                    onChange(v, l3g?.name ?? l4g?.name ?? v);
+                  }}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {l3.map(g => (<SelectItem key={g.code} value={g.code}>{g.name}</SelectItem>))}
+                      {l4.map(g => (<SelectItem key={g.code} value={g.code}>↳ {g.name}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                );
+                return renderParentGroupPicker(assetForm.parentGroupCode, assetL3, l4AssetGroups,
+                  (code, name) => setAssetForm(f => ({ ...f, parentGroupCode: code, parentGroupName: name })));
+              })()}
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Asset Name *</Label>
+              <Input value={assetForm.name} onChange={e => setAssetForm(f => ({ ...f, name: e.target.value }))} onKeyDown={onEnterNext} placeholder="e.g. Office Building — Main" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Mailing Name</Label>
+                <Input value={assetForm.mailingName} onChange={e => setAssetForm(f => ({ ...f, mailingName: e.target.value }))} onKeyDown={onEnterNext} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Alias</Label>
+                <Input value={assetForm.alias} onChange={e => setAssetForm(f => ({ ...f, alias: e.target.value }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Purchase Date</Label>
+                <SmartDateInput value={assetForm.purchaseDate} onChange={v => setAssetForm(f => ({ ...f, purchaseDate: v }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Gross Block (Original Cost)</Label>
+                <Input {...amountInputProps} value={assetForm.grossBlock || ''} onChange={e => setAssetForm(f => ({ ...f, grossBlock: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            {/* Depreciation */}
+            <div className="rounded-lg border border-border p-3 space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Depreciation</p>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Method</Label>
+                <Select value={assetForm.depreciationMethod} onValueChange={(v: DepreciationMethod) => setAssetForm(f => ({ ...f, depreciationMethod: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(DEPRECIATION_LABELS) as DepreciationMethod[]).map(k => (
+                      <SelectItem key={k} value={k}>{DEPRECIATION_LABELS[k]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {assetForm.depreciationMethod === 'slm' && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Useful Life (Years)</Label>
+                  <Input type="number" value={assetForm.usefulLifeYears} onChange={e => setAssetForm(f => ({ ...f, usefulLifeYears: parseInt(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              )}
+              {assetForm.depreciationMethod === 'wdv' && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Depreciation Rate (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.depreciationRate} onChange={e => setAssetForm(f => ({ ...f, depreciationRate: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              )}
+            </div>
+            {/* Vendor Link */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Vendor Name</Label>
+                <Input value={assetForm.vendorName} onChange={e => setAssetForm(f => ({ ...f, vendorName: e.target.value }))} onKeyDown={onEnterNext} placeholder="Link to Vendor Master" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Opening Balance (Net Book Value)</Label>
+                <Input {...amountInputProps} value={assetForm.openingBalance || ''} onChange={e => setAssetForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+              </div>
+            </div>
+            {/* Scope */}
+            {!assetEditTarget && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Scope</Label>
+                <Select value={assetForm.scope} onValueChange={v => setAssetForm(f => ({ ...f, scope: v as 'group'|'entity' }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="group">Group (all entities)</SelectItem>
+                    <SelectItem value="entity">Specific Entity</SelectItem>
+                  </SelectContent>
+                </Select>
+                {assetForm.scope === 'entity' && (
+                  <Select value={assetForm.entityId} onValueChange={v => setAssetForm(f => ({ ...f, entityId: v }))}>
+                    <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select entity..." /></SelectTrigger>
+                    <SelectContent>
+                      {entities.map(e => <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Description</Label>
+              <Textarea value={assetForm.description} onChange={e => setAssetForm(f => ({ ...f, description: e.target.value }))} rows={2} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Internal Notes</Label>
+              <Textarea value={assetForm.notes} onChange={e => setAssetForm(f => ({ ...f, notes: e.target.value }))} rows={2} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setAssetOpen(false); setAssetEditTarget(null); }}>Cancel</Button>
+            <Button onClick={handleAssetSave} data-primary>{assetEditTarget ? 'Update Asset' : 'Create Asset'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ─── Payroll Statutory Dialog ─── */}
       <Dialog open={payrollStatOpen} onOpenChange={(open) => { if (!open) setPayrollStatOpen(false); }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
