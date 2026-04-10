@@ -77,6 +77,7 @@ import VendorMaster from './pages/erp/masters/VendorMaster';
 import CustomerMaster from './pages/erp/masters/CustomerMaster';
 import Parametric from "./pages/inventory/Parametric";
 import BatchGrid from "./pages/inventory/BatchGrid";
+import SerialGrid from "./pages/inventory/SerialGrid";
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -196,6 +197,7 @@ const App = () => (
             <Route path="/erp/masters/customer" element={<CustomerMaster />} />
             <Route path="/erp/inventory/parametric" element={<Parametric />} />
             <Route path="/erp/inventory/batch-grid" element={<BatchGrid />} />
+            <Route path="/erp/inventory/serial-grid" element={<SerialGrid />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
