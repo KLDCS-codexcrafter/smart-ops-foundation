@@ -93,6 +93,8 @@ import AssetTagManager from './pages/erp/inventory/AssetTagManager';
 import BinLocationLabels from './pages/erp/inventory/BinLocationLabels';
 import PrintQueue from './pages/erp/inventory/PrintQueue';
 import RFIDManager from './pages/erp/inventory/RFIDManager';
+import AddOnsPage from './pages/addons/AddOnsPage';
+import AddonsBarcode from './pages/addons/BarcodeAddon';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -136,11 +138,8 @@ const App = () => (
                 <p className="text-muted-foreground text-sm">Verticals & Modules — coming soon</p>
               </div>
             } />
-            <Route path="/add-ons" element={
-              <div className="min-h-screen bg-background flex items-center justify-center">
-                <p className="text-muted-foreground text-sm">Add-ons — coming soon</p>
-              </div>
-            } />
+            <Route path="/add-ons" element={<AddOnsPage />} />
+            <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
             <Route path="/prudent360" element={
               <div className="min-h-screen bg-background flex items-center justify-center">
                 <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
