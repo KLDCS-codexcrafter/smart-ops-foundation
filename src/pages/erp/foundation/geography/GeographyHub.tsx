@@ -2,7 +2,7 @@
  * GeographyHub.tsx — 6-tab hub + Quick Setup wizard (India/UAE/Custom)
  * [JWT] All mutations mock. Real wiring on Tuesday.
  */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -23,10 +23,7 @@ import { indianStates, indianDistricts, indianCities } from '@/data/india-geogra
 import { countries as worldCountries } from '@/data/world-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS, INDIA_REGIONS, UAE_REGIONS } from '@/data/geo-seed-data';
 
-// [JWT] Replace with API calls — GET /api/geography/stats
-const MOCK_COUNTS = {
-  countries: 0, states: 0, districts: 0, cities: 0, ports: 0, regions: 0,
-};
+const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
 
 type SetupTarget = 'india' | 'uae' | null;
 type StepStatus = 'pending' | 'running' | 'done' | 'error';
@@ -46,6 +43,18 @@ export default function GeographyHub() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedComplete, setSeedComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const liveCounts = useMemo(() => {
+    const lsLen = (k: string) => { try { return JSON.parse(localStorage.getItem(k)||'[]').length; } catch { return 0; } };
+    return {
+      countries: lsLen('erp_geo_countries'),
+      states: lsLen('erp_geo_states'),
+      districts: lsLen('erp_geo_districts'),
+      cities: lsLen('erp_geo_cities'),
+      ports: lsLen('erp_geo_ports'),
+      regions: lsLen('erp_geo_regions'),
+    };
+  }, [seedComplete, isSeeding]);
 
   function buildIndiaSteps(): SetupStep[] {
     return [
@@ -76,9 +85,99 @@ export default function GeographyHub() {
     for (let i = 0; i < stepList.length; i++) {
       setSteps(prev => prev.map(s => s.id === stepList[i].id ? {...s, status:'running'} : s));
       setProgress(Math.round((i / stepList.length) * 100));
+      await new Promise(res => setTimeout(res, 300 + Math.random() * 200));
 
-      // [JWT] Replace each setTimeout with real bulk INSERT
-      await new Promise(res => setTimeout(res, 600 + Math.random() * 400));
+      // ── Write real data per step ────────────────────────────────────
+      if (target === 'india') {
+        if (i === 0) {
+          const countries = ls<any>('erp_geo_countries');
+          if (!countries.find((c: any) => c.code === 'IN')) {
+            countries.push({ code:'IN', name:'India', flag:'🇮🇳', dialCode:'+91',
+                             currencyCode:'INR', currencySymbol:'₹', capital:'New Delhi',
+                             region:'Asia', timezone:'Asia/Kolkata', status:'active' });
+            localStorage.setItem('erp_geo_countries', JSON.stringify(countries));
+            /* [JWT] POST /api/geography/countries/seed */
+          }
+        }
+        if (i === 1) {
+          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'IN');
+          const indiaStates = indianStates.map(s => ({
+            code: s.code, name: s.name, countryCode: 'IN',
+            gstStateCode: s.gstStateCode, unionTerritory: s.unionTerritory,
+            region: '', status: 'active',
+          }));
+          localStorage.setItem('erp_geo_states', JSON.stringify([...existing, ...indiaStates]));
+          /* [JWT] POST /api/geography/states/seed */
+        }
+        if (i === 2) {
+          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'IN');
+          const dists = indianDistricts.map((d: any) => ({
+            code: d.code || d.name.slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: d.name, stateCode: d.stateCode || d.state_code || '',
+            countryCode: 'IN', headquarters: d.headquarters || '', status: 'active',
+          }));
+          localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
+          /* [JWT] POST /api/geography/districts/seed */
+        }
+        if (i === 3) {
+          const existing = ls<any>('erp_geo_cities').filter((c: any) => c.countryCode !== 'IN');
+          const cities = indianCities.map((c: any) => ({
+            code: c.code || c.name.slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: c.name, stateCode: c.stateCode || c.state_code || '',
+            districtCode: c.districtCode || '', countryCode: 'IN',
+            category: c.category || 'tier2', isMajor: ['metro','tier1'].includes(c.category || ''),
+            status: 'active',
+          }));
+          localStorage.setItem('erp_geo_cities', JSON.stringify([...existing, ...cities]));
+          /* [JWT] POST /api/geography/cities/seed */
+        }
+        if (i === 4) {
+          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'IN');
+          const regions = INDIA_REGIONS.map((r: any) => ({
+            code: r.code, name: r.name, countryCode: 'IN',
+            states: r.states || [], status: 'active',
+          }));
+          localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
+          /* [JWT] POST /api/geography/regions/seed */
+        }
+      }
+
+      if (target === 'uae') {
+        if (i === 0) {
+          const countries = ls<any>('erp_geo_countries');
+          if (!countries.find((c: any) => c.code === 'AE')) {
+            countries.push({ code:'AE', name:'United Arab Emirates', flag:'🇦🇪', dialCode:'+971',
+                             currencyCode:'AED', currencySymbol:'د.إ', capital:'Abu Dhabi',
+                             region:'Middle East', timezone:'Asia/Dubai', status:'active' });
+            localStorage.setItem('erp_geo_countries', JSON.stringify(countries));
+          }
+        }
+        if (i === 1) {
+          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'AE');
+          const emirates = UAE_EMIRATES.map((e: any) => ({
+            code: e.code, name: e.name, countryCode: 'AE',
+            gstStateCode: '', unionTerritory: false, region: 'Middle East', status: 'active',
+          }));
+          localStorage.setItem('erp_geo_states', JSON.stringify([...existing, ...emirates]));
+        }
+        if (i === 2) {
+          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'AE');
+          const dists = UAE_DISTRICTS.map((d: any) => ({
+            code: d.code || d.name.slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: d.name, stateCode: d.emirateCode || d.stateCode || '', countryCode: 'AE',
+            headquarters: '', status: 'active',
+          }));
+          localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
+        }
+        if (i === 3) {
+          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'AE');
+          const regions = UAE_REGIONS.map((r: any) => ({
+            code: r.code, name: r.name, countryCode: 'AE',
+            states: r.states || [], status: 'active',
+          }));
+          localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
+        }
+      }
 
       setSteps(prev => prev.map(s => s.id === stepList[i].id ? {...s, status:'done'} : s));
     }
@@ -159,7 +258,7 @@ export default function GeographyHub() {
           <div className="flex flex-wrap gap-2">
             {TAB_META.map((tab, idx) => {
               const Icon = tab.icon;
-              const count = (MOCK_COUNTS as Record<string, number>)[tab.key] ?? 0;
+              const count = (liveCounts as Record<string, number>)[tab.key] ?? 0;
               return (
                 <Badge key={tab.key} variant="outline" className={cn('text-xs gap-1 py-1 px-2', CHIP_STYLES[idx])}>
                   <Icon className="h-3 w-3" />
@@ -184,13 +283,13 @@ export default function GeographyHub() {
             <TabsContent value="countries" className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  {MOCK_COUNTS.countries} countries configured
+                  {liveCounts.countries} countries configured
                 </p>
                 <Button size="sm" onClick={() => navigate('/erp/foundation/geography/countries')}>
                   <ArrowRight className="h-4 w-4 mr-1" /> Manage Countries
                 </Button>
               </div>
-              {MOCK_COUNTS.countries === 0 ? (
+              {liveCounts.countries === 0 ? (
                 <div className="border rounded-lg p-8 text-center space-y-3">
                   <Globe className="h-10 w-10 text-muted-foreground mx-auto" />
                   <p className="text-sm text-muted-foreground">No countries configured</p>
@@ -212,7 +311,7 @@ export default function GeographyHub() {
               <TabsContent key={tab} value={tab} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    {(MOCK_COUNTS as Record<string,number>)[tab]} {tab} configured
+                    {(liveCounts as Record<string,number>)[tab]} {tab} configured
                   </p>
                   <Button size="sm" onClick={() => navigate(`/erp/foundation/geography/${tab}`)}>
                     <ArrowRight className="h-4 w-4 mr-1" /> Manage {tab.charAt(0).toUpperCase() + tab.slice(1)}
