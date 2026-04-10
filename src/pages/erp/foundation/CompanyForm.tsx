@@ -293,11 +293,11 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
       // Save MRP tax treatment to company settings
       const settingsKey = 'erp_company_settings';
       const existing: any[] = (() => { try { return JSON.parse(localStorage.getItem(settingsKey) || '[]'); } catch { return []; } })();
-      const entityId = entityId ?? crypto.randomUUID();
+      const currentEntityId = entityId ?? crypto.randomUUID();
       const mrpTreatment = f('mrp_tax_treatment') || 'inclusive';
       const settingsEntry = {
         id: crypto.randomUUID(),
-        entity_id: entityId,
+        entity_id: currentEntityId,
         mrp_tax_treatment: mrpTreatment,
         mrp_tax_treatment_label: mrpTreatment === 'inclusive' ? 'Tax Inclusive (MRP includes GST)' : 'Tax Exclusive (MRP before GST)',
         rate_change_requires_reason: true,
@@ -306,7 +306,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      const idx = existing.findIndex((s: any) => s.entity_id === entityId);
+      const idx = existing.findIndex((s: any) => s.entity_id === currentEntityId);
       if (idx >= 0) existing[idx] = settingsEntry; else existing.push(settingsEntry);
       localStorage.setItem(settingsKey, JSON.stringify(existing)); /* [JWT] POST /api/company/settings */
       // [JWT] Replace with: POST /api/foundation/companies or /api/foundation/subsidiaries
