@@ -4,6 +4,7 @@ import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
   TrendingUp, Users, CreditCard, Settings2, Grid3X3, Hash,
+  Boxes, Tags, Tag, Warehouse, Ruler,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -39,10 +40,18 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'Ledger Master', module: 'finecore-ledgers' },
 ];
 
-const INVENTORY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+const A1_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Parametric Hub', module: 'inventory-parametric', icon: Settings2 },
   { label: 'Batch Grid',     module: 'inventory-batch',      icon: Grid3X3 },
   { label: 'Serial Grid',    module: 'inventory-serial',     icon: Hash },
+];
+
+const A2_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Stock Matrix',    module: 'inventory-stock-matrix', icon: Boxes },
+  { label: 'Classifications', module: 'inventory-classify',     icon: Tags },
+  { label: 'Brand Matrix',    module: 'inventory-brands',       icon: Tag },
+  { label: 'Storage Matrix',  module: 'inventory-storage',      icon: Warehouse },
+  { label: 'Measure X',       module: 'inventory-uom',          icon: Ruler },
 ];
 
 const COMING_SOON = [
@@ -198,12 +207,29 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {INVENTORY_ITEMS.map(item => (
+                      {/* A.1 — Parameter & Tracking */}
+                      <SidebarMenuSubItem>
+                        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                          A.1 — Parameter & Tracking
+                        </p>
+                      </SidebarMenuSubItem>
+                      {A1_ITEMS.map(item => (
                         <SidebarMenuSubItem key={item.module}>
-                          <SidebarMenuSubButton
-                            isActive={activeModule === item.module}
-                            onClick={() => onModuleChange(item.module)}
-                          >
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <item.icon className="h-3.5 w-3.5 mr-1" />
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                      {/* A.2 — Classification & Storage */}
+                      <SidebarMenuSubItem>
+                        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                          A.2 — Classification & Storage
+                        </p>
+                      </SidebarMenuSubItem>
+                      {A2_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
                             <item.icon className="h-3.5 w-3.5 mr-1" />
                             <span>{item.label}</span>
                           </SidebarMenuSubButton>
