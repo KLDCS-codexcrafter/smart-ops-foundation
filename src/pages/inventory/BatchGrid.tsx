@@ -50,7 +50,7 @@ const BatchGrid: React.FC = () => {
   };
 
   return (
-    <AppLayout>
+    <AppLayout title="Batch Grid">
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
