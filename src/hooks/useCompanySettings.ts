@@ -17,7 +17,7 @@ export function useCompanySettings() {
     const found = settings.find(s => s.entity_id === entityId);
     if (found) return found;
     // Return default if none exists
-    return {
+    const defaultSetting: CompanySettings = {
       id: crypto.randomUUID(),
       entity_id: entityId,
       mrp_tax_treatment: 'inclusive',
@@ -29,6 +29,8 @@ export function useCompanySettings() {
       updated_at: new Date().toISOString(),
     };
     // [JWT] GET /api/company/settings?entity_id=
+    saveSettings(defaultSetting);   // save it silently
+    return defaultSetting;
   };
 
   const saveSettings = (s: CompanySettings) => {
