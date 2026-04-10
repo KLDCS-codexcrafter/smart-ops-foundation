@@ -84,6 +84,9 @@ import Classify from './pages/erp/inventory/Classify';
 import BrandMatrix from './pages/erp/inventory/BrandMatrix';
 import StorageMatrix from './pages/erp/inventory/StorageMatrix';
 import MeasureX from './pages/erp/inventory/MeasureX';
+import ItemCraft from './pages/erp/inventory/ItemCraft';
+import CodeMatrix from './pages/erp/inventory/CodeMatrix';
+import ItemTemplates from './pages/erp/inventory/ItemTemplates';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -210,6 +213,9 @@ const App = () => (
             <Route path="/erp/inventory-hub/brand-matrix" element={<BrandMatrix />} />
             <Route path="/erp/inventory-hub/storage-matrix" element={<StorageMatrix />} />
             <Route path="/erp/inventory-hub/measure-x" element={<MeasureX />} />
+            <Route path="/erp/inventory-hub/item-craft" element={<ItemCraft />} />
+            <Route path="/erp/inventory-hub/code-matrix" element={<CodeMatrix />} />
+            <Route path="/erp/inventory-hub/item-templates" element={<ItemTemplates />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
