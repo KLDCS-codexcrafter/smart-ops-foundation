@@ -30,6 +30,7 @@ export interface SetupResult {
   l4GroupsCreated: number;
   bdLedgersCreated: number;
   entityRegistered: boolean;
+  uomsCreated: number;
   supportingMastersCreated: {
     modeOfPayment: number;
     termsOfPayment: number;
@@ -359,11 +360,15 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   // 6. Create default Business Unit (Head Office)
   createDefaultBusinessUnit(opts.entityId, opts.entityName, opts.shortCode);
 
+  // 7. Create default UOMs
+  const uomsCreated = createDefaultUOMs();
+
   return {
     ledgersCreated,
     l4GroupsCreated,
     bdLedgersCreated,
     entityRegistered: true,
+    uomsCreated,
     supportingMastersCreated: {
       modeOfPayment: mopCreated,
       termsOfPayment: topCreated,
@@ -447,4 +452,73 @@ const createDefaultTermsOfDelivery = (): number => {
     // [JWT] POST /api/group/masters/terms-of-delivery/bulk
   }
   return toCreate.length;
+};
+
+// ── 2.11 UOM Seed Data ─────────────────────────────────────────────────────
+const UOM_SEED_DATA=[
+    // Weight (5)
+    {code:'MG',name:'Milligram',symbol:'mg',category:'weight',uom_type:'simple',decimal_precision:3,uqc_code:'MGS',is_system:true},
+    {code:'GM',name:'Gram',symbol:'g',category:'weight',uom_type:'simple',decimal_precision:3,uqc_code:'GMS',is_system:true},
+    {code:'KG',name:'Kilogram',symbol:'kg',category:'weight',uom_type:'simple',decimal_precision:3,uqc_code:'KGS',is_system:true},
+    {code:'QT',name:'Quintal',symbol:'qtl',category:'weight',uom_type:'compound',decimal_precision:2,uqc_code:'QTL',is_system:true},
+    {code:'MT',name:'Metric Tonne',symbol:'MT',category:'weight',uom_type:'compound',decimal_precision:3,uqc_code:'TON',is_system:true},
+    // Length (8)
+    {code:'MM',name:'Millimetre',symbol:'mm',category:'length',uom_type:'simple',decimal_precision:2,uqc_code:'CMS',is_system:true},
+    {code:'CM',name:'Centimetre',symbol:'cm',category:'length',uom_type:'simple',decimal_precision:2,uqc_code:'CMS',is_system:true},
+    {code:'MR',name:'Metre',symbol:'m',category:'length',uom_type:'simple',decimal_precision:3,uqc_code:'MTR',is_system:true},
+    {code:'KM',name:'Kilometre',symbol:'km',category:'length',uom_type:'compound',decimal_precision:3,uqc_code:'KME',is_system:true},
+    {code:'FT',name:'Foot',symbol:'ft',category:'length',uom_type:'simple',decimal_precision:2,uqc_code:'FT',is_system:true},
+    {code:'IN',name:'Inch',symbol:'in',category:'length',uom_type:'simple',decimal_precision:2,uqc_code:'INH',is_system:true},
+    {code:'RF',name:'Running Foot',symbol:'rft',category:'length',uom_type:'simple',decimal_precision:2,uqc_code:'RFT',is_system:true},
+    {code:'RM',name:'Running Metre',symbol:'rm',category:'length',uom_type:'simple',decimal_precision:3,uqc_code:'MTR',is_system:true},
+    // Volume (4)
+    {code:'ML',name:'Millilitre',symbol:'ml',category:'volume',uom_type:'simple',decimal_precision:2,uqc_code:'MLS',is_system:true},
+    {code:'LT',name:'Litre',symbol:'l',category:'volume',uom_type:'simple',decimal_precision:3,uqc_code:'LTR',is_system:true},
+    {code:'KL',name:'Kilolitre',symbol:'kl',category:'volume',uom_type:'compound',decimal_precision:3,uqc_code:'KLR',is_system:true},
+    {code:'CBM',name:'Cubic Metre',symbol:'m³',category:'volume',uom_type:'simple',decimal_precision:3,uqc_code:'CBM',is_system:true},
+    // Quantity (19)
+    {code:'PCS',name:'Pieces',symbol:'pcs',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'NOS',is_system:true},
+    {code:'NOS',name:'Numbers',symbol:'nos',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'NOS',is_system:true},
+    {code:'UNT',name:'Unit',symbol:'unit',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'UNT',is_system:true},
+    {code:'DOZ',name:'Dozen',symbol:'doz',category:'quantity',uom_type:'compound',decimal_precision:0,uqc_code:'DOZ',is_system:true},
+    {code:'GRS',name:'Gross',symbol:'grs',category:'quantity',uom_type:'compound',decimal_precision:0,uqc_code:'GRS',is_system:true},
+    {code:'PAC',name:'Pack',symbol:'pack',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'PAC',is_system:true},
+    {code:'SET',name:'Set',symbol:'set',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'SET',is_system:true},
+    {code:'PAR',name:'Pair',symbol:'pair',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'PAR',is_system:true},
+    {code:'SHT',name:'Sheet',symbol:'sht',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'SHT',is_system:true},
+    {code:'ROL',name:'Roll',symbol:'roll',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'ROL',is_system:true},
+    {code:'BAG',name:'Bag',symbol:'bag',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'BAG',is_system:true},
+    {code:'BOX',name:'Box',symbol:'box',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'BOX',is_system:true},
+    {code:'CTN',name:'Carton',symbol:'ctn',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'CTN',is_system:true},
+    {code:'BDL',name:'Bundle',symbol:'bdl',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'BDL',is_system:true},
+    {code:'DRM',name:'Drum',symbol:'drum',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'DRM',is_system:true},
+    {code:'BTL',name:'Bottle',symbol:'btl',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'BTL',is_system:true},
+    {code:'TUB',name:'Tube',symbol:'tube',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'TBS',is_system:true},
+    {code:'STR',name:'Strip',symbol:'strip',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'STR',is_system:true},
+    {code:'AMP',name:'Ampoule',symbol:'amp',category:'quantity',uom_type:'simple',decimal_precision:0,uqc_code:'NOS',is_system:true},
+    // Area (4)
+    {code:'SQF',name:'Square Foot',symbol:'sqft',category:'area',uom_type:'simple',decimal_precision:2,uqc_code:'SQF',is_system:true},
+    {code:'SQM',name:'Square Metre',symbol:'sqm',category:'area',uom_type:'simple',decimal_precision:2,uqc_code:'SQM',is_system:true},
+    {code:'SQY',name:'Square Yard',symbol:'sqyd',category:'area',uom_type:'simple',decimal_precision:2,uqc_code:'SQY',is_system:true},
+    {code:'ACR',name:'Acre',symbol:'acre',category:'area',uom_type:'simple',decimal_precision:3,uqc_code:'ACR',is_system:true},
+    // Time (4)
+    {code:'HR',name:'Hour',symbol:'hr',category:'time',uom_type:'simple',decimal_precision:2,uqc_code:'HRS',is_system:true},
+    {code:'DAY',name:'Day',symbol:'day',category:'time',uom_type:'simple',decimal_precision:0,uqc_code:'DAY',is_system:true},
+    {code:'MON',name:'Month',symbol:'mon',category:'time',uom_type:'simple',decimal_precision:0,uqc_code:'MON',is_system:true},
+    {code:'YR',name:'Year',symbol:'yr',category:'time',uom_type:'simple',decimal_precision:0,uqc_code:'YRS',is_system:true},
+];
+
+// ── 2.12 createDefaultUOMs ─────────────────────────────────────────────────
+const createDefaultUOMs=():number=>{
+    const key='erp_uom';
+    const existing:any[]=JSON.parse(localStorage.getItem(key)||'[]');
+    const existingSymbols=new Set(existing.map((u:any)=>u.symbol));
+    const toCreate=UOM_SEED_DATA.filter(u=>!existingSymbols.has(u.symbol))
+        .map(u=>({...u,id:crypto.randomUUID(),status:'active',is_active:true,
+            created_at:new Date().toISOString(),updated_at:new Date().toISOString()}));
+    if(toCreate.length>0){
+        localStorage.setItem(key,JSON.stringify([...existing,...toCreate]));
+        // [JWT] POST /api/inventory/uom/bulk-seed
+    }
+    return toCreate.length;
 };
