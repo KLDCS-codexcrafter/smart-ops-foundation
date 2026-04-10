@@ -5,6 +5,7 @@ import {
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
   TrendingUp, Users, CreditCard, Settings2, Grid3X3, Hash,
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
+  QrCode, ScanLine, MapPin, Printer, Wifi,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -58,6 +59,15 @@ const A3_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Item Craft',      module: 'inventory-item-craft',      icon: Package },
   { label: 'Code Matrix',     module: 'inventory-code-matrix',     icon: Hash },
   { label: 'Item Templates',  module: 'inventory-item-templates',  icon: LayoutTemplate },
+];
+
+const A5_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Label Templates',    module: 'inventory-label-templates', icon: Tag },
+  { label: 'Barcode Generator',  module: 'inventory-barcode-gen',     icon: QrCode },
+  { label: 'Asset Tag Manager',  module: 'inventory-asset-tags',      icon: ScanLine },
+  { label: 'Bin Location Labels',module: 'inventory-bin-labels',      icon: MapPin },
+  { label: 'Print Queue',        module: 'inventory-print-queue',     icon: Printer },
+  { label: 'RFID Manager',       module: 'inventory-rfid',            icon: Wifi },
 ];
 
 const COMING_SOON = [
@@ -248,6 +258,20 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                         </p>
                       </SidebarMenuSubItem>
                       {A3_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <item.icon className="h-3.5 w-3.5 mr-1" />
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                      {/* A.5 — Label & Identity */}
+                      <SidebarMenuSubItem>
+                        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                          A.5 — Label & Identity
+                        </p>
+                      </SidebarMenuSubItem>
+                      {A5_ITEMS.map(item => (
                         <SidebarMenuSubItem key={item.module}>
                           <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
                             <item.icon className="h-3.5 w-3.5 mr-1" />

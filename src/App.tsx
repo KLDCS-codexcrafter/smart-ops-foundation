@@ -87,6 +87,12 @@ import MeasureX from './pages/erp/inventory/MeasureX';
 import ItemCraft from './pages/erp/inventory/ItemCraft';
 import CodeMatrix from './pages/erp/inventory/CodeMatrix';
 import ItemTemplates from './pages/erp/inventory/ItemTemplates';
+import LabelTemplates from './pages/erp/inventory/LabelTemplates';
+import BarcodeGenerator from './pages/erp/inventory/BarcodeGenerator';
+import AssetTagManager from './pages/erp/inventory/AssetTagManager';
+import BinLocationLabels from './pages/erp/inventory/BinLocationLabels';
+import PrintQueue from './pages/erp/inventory/PrintQueue';
+import RFIDManager from './pages/erp/inventory/RFIDManager';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -226,6 +232,12 @@ const App = () => (
             <Route path="/erp/inventory-hub/item-craft" element={<ItemCraft />} />
             <Route path="/erp/inventory-hub/code-matrix" element={<CodeMatrix />} />
             <Route path="/erp/inventory-hub/item-templates" element={<ItemTemplates />} />
+            <Route path="/erp/inventory-hub/label-templates" element={<LabelTemplates />} />
+            <Route path="/erp/inventory-hub/barcode-generator" element={<BarcodeGenerator />} />
+            <Route path="/erp/inventory-hub/asset-tags" element={<AssetTagManager />} />
+            <Route path="/erp/inventory-hub/bin-labels" element={<BinLocationLabels />} />
+            <Route path="/erp/inventory-hub/print-queue" element={<PrintQueue />} />
+            <Route path="/erp/inventory-hub/rfid-manager" element={<RFIDManager />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

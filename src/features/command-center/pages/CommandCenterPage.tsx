@@ -30,6 +30,12 @@ import { MeasureXPanel } from '@/pages/erp/inventory/MeasureX';
 import { ItemCraftPanel } from '@/pages/erp/inventory/ItemCraft';
 import { CodeMatrixPanel } from '@/pages/erp/inventory/CodeMatrix';
 import { ItemTemplatesPanel } from '@/pages/erp/inventory/ItemTemplates';
+import { LabelTemplatesPanel } from '@/pages/erp/inventory/LabelTemplates';
+import { BarcodeGeneratorPanel } from '@/pages/erp/inventory/BarcodeGenerator';
+import { AssetTagManagerPanel } from '@/pages/erp/inventory/AssetTagManager';
+import { BinLocationLabelsPanel } from '@/pages/erp/inventory/BinLocationLabels';
+import { PrintQueuePanel } from '@/pages/erp/inventory/PrintQueue';
+import { RFIDManagerPanel } from '@/pages/erp/inventory/RFIDManager';
 
 export type CommandCenterModule =
   | 'overview'
@@ -59,7 +65,13 @@ export type CommandCenterModule =
   | 'inventory-uom'
   | 'inventory-item-craft'
   | 'inventory-code-matrix'
-  | 'inventory-item-templates';
+  | 'inventory-item-templates'
+  | 'inventory-label-templates'
+  | 'inventory-barcode-gen'
+  | 'inventory-asset-tags'
+  | 'inventory-bin-labels'
+  | 'inventory-print-queue'
+  | 'inventory-rfid';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -72,7 +84,9 @@ export default function CommandCenterPage() {
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
-      'inventory-item-craft', 'inventory-code-matrix', 'inventory-item-templates'].includes(hash)) {
+      'inventory-item-craft', 'inventory-code-matrix', 'inventory-item-templates',
+      'inventory-label-templates', 'inventory-barcode-gen', 'inventory-asset-tags',
+      'inventory-bin-labels', 'inventory-print-queue', 'inventory-rfid'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
