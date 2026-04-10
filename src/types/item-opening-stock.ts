@@ -1,6 +1,8 @@
 export interface ItemOpeningStockEntry {
   id: string;
   item_id: string;
+  item_code: string;
+  item_name: string;
   godown_id: string;
   godown_name?: string | null;
   batch_number?: string | null;
@@ -10,6 +12,9 @@ export interface ItemOpeningStockEntry {
   quantity: number;
   rate: number;
   value: number;
+  mrp?: number | null;
+  std_purchase_rate?: number | null;
+  status: 'draft' | 'posted';
   created_at: string;
   updated_at: string;
 }
