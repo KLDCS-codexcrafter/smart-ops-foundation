@@ -47,6 +47,7 @@ const COMING_SOON = [
 ];
 
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
+  const navigate = useNavigate();
   const [foundationOpen, setFoundationOpen] = useState(
     activeModule === 'foundation' || activeModule === 'geography'
   );
