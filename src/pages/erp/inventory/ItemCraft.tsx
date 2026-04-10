@@ -206,8 +206,8 @@ export function ItemCraftPanel() {
   const godowns = useState(() => ls<any>(GKEY))[0];
   const groupParams = useState(() => ls<any>('erp_parametric_templates'))[0];
 
-  const sv = (d: InventoryItem[]) => localStorage.setItem(IKEY, JSON.stringify(d));
-  const svR = (k: string, d: any[]) => localStorage.setItem(k, JSON.stringify(d));
+  const sv  = (d: InventoryItem[]) => { localStorage.setItem(IKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items */ };
+  const svR = <T,>(k: string, d: T[]) => { localStorage.setItem(k, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items/:id/related */ };
 
   const nextCode = () => `ITM-${String(items.length + 1).padStart(5, '0')}`;
 
