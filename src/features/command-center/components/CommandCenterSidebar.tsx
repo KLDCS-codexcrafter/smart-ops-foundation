@@ -6,6 +6,7 @@ import {
   TrendingUp, Users, CreditCard, Settings2, Grid3X3, Hash,
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
   QrCode, ScanLine, MapPin, Printer, Wifi,
+  PackageOpen, DollarSign, TrendingDown, AlertTriangle,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -59,6 +60,13 @@ const A3_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Item Craft',      module: 'inventory-item-craft',      icon: Package },
   { label: 'Code Matrix',     module: 'inventory-code-matrix',     icon: Hash },
   { label: 'Item Templates',  module: 'inventory-item-templates',  icon: LayoutTemplate },
+];
+
+const A4_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Opening Stock Entry', module: 'inventory-opening-stock', icon: PackageOpen },
+  { label: 'Rates & MRP',        module: 'inventory-item-rates',    icon: DollarSign },
+  { label: 'Price Lists',        module: 'inventory-price-lists',   icon: TrendingDown },
+  { label: 'Reorder & Min-Max',  module: 'inventory-reorder',       icon: AlertTriangle },
 ];
 
 const A5_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
@@ -258,6 +266,20 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                         </p>
                       </SidebarMenuSubItem>
                       {A3_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <item.icon className="h-3.5 w-3.5 mr-1" />
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                      {/* A.4 — Opening Stock & Pricing */}
+                      <SidebarMenuSubItem>
+                        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                          A.4 — Opening Stock & Pricing
+                        </p>
+                      </SidebarMenuSubItem>
+                      {A4_ITEMS.map(item => (
                         <SidebarMenuSubItem key={item.module}>
                           <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
                             <item.icon className="h-3.5 w-3.5 mr-1" />
