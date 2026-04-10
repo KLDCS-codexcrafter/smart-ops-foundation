@@ -63,7 +63,9 @@ export default function CommandCenterPage() {
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'finecore-finframe', 'finecore-ledgers',
-      'inventory-parametric', 'inventory-batch', 'inventory-serial'].includes(hash)) {
+      'inventory-parametric', 'inventory-batch', 'inventory-serial',
+      'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
+      'inventory-storage', 'inventory-uom'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
