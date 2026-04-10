@@ -73,11 +73,10 @@ export const applications: AppDefinition[] = [
   {
     id: 'inventory-hub',
     name: 'Inventory Hub',
-    description: 'Stock control, store operations, bin management and cycle count',
+    description: 'Stock control, batch tracking, serial numbers and parametric setup',
     category: 'Ops Hub',
     route: '/erp/inventory-hub',
     icon: 'Package',
-    status: 'coming_soon',
   },
   {
     id: 'qulicheak',

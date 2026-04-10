@@ -1,13 +1,9 @@
-import React from 'react';
+import { useSerialNumbers } from '@/hooks/useSerialNumbers';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Package, CheckCircle, Wrench, Shield } from 'lucide-react';
-import type { SerialNumber } from '@/types/serial-number';
+import { Shield } from 'lucide-react';
 
-interface Props {
-  serials: SerialNumber[];
-}
-
-const SerialStatsCards: React.FC<Props> = ({ serials }) => {
+export function SerialStatsCards() {
+  const { serials } = useSerialNumbers();
   const today = new Date();
   const available = serials.filter(s => s.status === 'available').length;
   const sold = serials.filter(s => s.status === 'sold').length;
@@ -15,31 +11,24 @@ const SerialStatsCards: React.FC<Props> = ({ serials }) => {
   const warrantyActive = serials.filter(s =>
     s.warranty_end_date && new Date(s.warranty_end_date) >= today
   ).length;
-
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription className="flex items-center gap-1.5">
-            <Package className="h-3.5 w-3.5" /> Total Units
-          </CardDescription>
+          <CardDescription>Total Serials</CardDescription>
           <CardTitle className="text-2xl">{serials.length}</CardTitle>
         </CardHeader>
       </Card>
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription className="flex items-center gap-1.5 text-emerald-600">
-            <CheckCircle className="h-3.5 w-3.5" /> Available
-          </CardDescription>
+          <CardDescription>Available</CardDescription>
           <CardTitle className="text-2xl text-emerald-600">{available}</CardTitle>
         </CardHeader>
       </Card>
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription className="flex items-center gap-1.5 text-amber-600">
-            <Wrench className="h-3.5 w-3.5" /> In Repair
-          </CardDescription>
-          <CardTitle className="text-2xl text-amber-600">{inRepair}</CardTitle>
+          <CardDescription>Sold / Deployed</CardDescription>
+          <CardTitle className="text-2xl">{sold}</CardTitle>
         </CardHeader>
       </Card>
       <Card>
@@ -52,6 +41,4 @@ const SerialStatsCards: React.FC<Props> = ({ serials }) => {
       </Card>
     </div>
   );
-};
-
-export default SerialStatsCards;
+}

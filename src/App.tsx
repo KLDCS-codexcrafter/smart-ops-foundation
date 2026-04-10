@@ -75,9 +75,10 @@ import TermsOfDeliveryMaster from './pages/erp/masters/supporting/TermsOfDeliver
 import LogisticMaster from './pages/erp/masters/LogisticMaster';
 import VendorMaster from './pages/erp/masters/VendorMaster';
 import CustomerMaster from './pages/erp/masters/CustomerMaster';
-import Parametric from "./pages/inventory/Parametric";
-import BatchGrid from "./pages/inventory/BatchGrid";
-import SerialGrid from "./pages/inventory/SerialGrid";
+import InventoryHub from './pages/erp/inventory/InventoryHub';
+import Parametric from './pages/erp/inventory/Parametric';
+import BatchGrid from './pages/erp/inventory/BatchGrid';
+import SerialGrid from './pages/erp/inventory/SerialGrid';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -195,9 +196,10 @@ const App = () => (
             <Route path="/erp/masters/logistic" element={<LogisticMaster />} />
             <Route path="/erp/masters/vendor" element={<VendorMaster />} />
             <Route path="/erp/masters/customer" element={<CustomerMaster />} />
-            <Route path="/erp/inventory/parametric" element={<Parametric />} />
-            <Route path="/erp/inventory/batch-grid" element={<BatchGrid />} />
-            <Route path="/erp/inventory/serial-grid" element={<SerialGrid />} />
+            <Route path="/erp/inventory-hub" element={<InventoryHub />} />
+            <Route path="/erp/inventory-hub/parametric" element={<Parametric />} />
+            <Route path="/erp/inventory-hub/batch-grid" element={<BatchGrid />} />
+            <Route path="/erp/inventory-hub/serial-grid" element={<SerialGrid />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

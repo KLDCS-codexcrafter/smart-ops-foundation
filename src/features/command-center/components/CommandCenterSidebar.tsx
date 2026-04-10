@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
@@ -41,12 +42,12 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
 
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
-  { label: 'Inventory Masters', icon: Package },
   { label: 'Sales Masters', icon: TrendingUp },
   { label: 'HR & Payroll Masters', icon: Users },
 ];
 
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
+  const navigate = useNavigate();
   const [foundationOpen, setFoundationOpen] = useState(
     activeModule === 'foundation' || activeModule === 'geography'
   );
@@ -169,7 +170,30 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* COMING SOON */}
+        {/* INVENTORY MASTERS */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Inventory Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[
+                { label: 'Parametric Hub', href: '/erp/inventory-hub/parametric' },
+                { label: 'Batch Grid', href: '/erp/inventory-hub/batch-grid' },
+                { label: 'Serial Grid', href: '/erp/inventory-hub/serial-grid' },
+              ].map(item => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    tooltip={item.label}
+                    onClick={() => navigate(item.href)}
+                  >
+                    <Package className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Coming Soon</SidebarGroupLabel>
           <SidebarGroupContent>

@@ -18,16 +18,16 @@ const SerialViewDialog: React.FC<Props> = ({ open, onOpenChange, serial }) => {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="font-mono">{serial.serial_number}</DialogTitle>
-          <DialogDescription>{serial.stock_item_name}</DialogDescription>
+          <DialogDescription>{serial.item_name ?? 'Serial Unit'}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
             <span className="text-muted-foreground">Status</span>
             <Badge variant="secondary" className="w-fit">{serial.status.replace('_', ' ')}</Badge>
+            <span className="text-muted-foreground">Condition</span>
+            <span>{serial.condition}</span>
             <span className="text-muted-foreground">Purchase Date</span>
             <span>{serial.purchase_date ?? '—'}</span>
-            <span className="text-muted-foreground">Warranty Start</span>
-            <span>{serial.warranty_start_date ?? '—'}</span>
             <span className="text-muted-foreground">Warranty End</span>
             <span>{serial.warranty_end_date ?? '—'}</span>
             {serial.notes && (
