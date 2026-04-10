@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertTriangle, Plus, Search, Edit2, Trash2, TrendingDown, MapPin,
   Layers, ShoppingCart, Tag, Grid3X3, Copy, Save,
@@ -38,7 +37,7 @@ const DEFAULT_DEPT_TAGS: DepartmentTag[] = [
 const initDeptTags = (): DepartmentTag[] => {
   const stored = ls<DepartmentTag>(DTKEY);
   if (stored.length > 0) return stored;
-  localStorage.setItem(DTKEY, JSON.stringify(DEFAULT_DEPT_TAGS));
+  localStorage.setItem(DTKEY, JSON.stringify(DEFAULT_DEPT_TAGS)); /* [JWT] POST /api/inventory/department-tags/seed */
   return DEFAULT_DEPT_TAGS;
 };
 
@@ -97,8 +96,8 @@ export function ReorderAlertsPanel() {
   const [itemSearch, setItemSearch] = useState('');
 
   const godowns: any[] = ls('erp_godowns');
-  const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(RRKEY, JSON.stringify(d)); };
-  const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(DTKEY, JSON.stringify(d)); };
+  const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(RRKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/reorder-rules */ };
+  const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(DTKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/department-tags */ };
 
   // Stock map
   const stockMap = useMemo(() => {
@@ -134,15 +133,14 @@ export function ReorderAlertsPanel() {
 
   const activeItems = useMemo(() => items.filter(i => i.status === 'active'), [items]);
 
-  const stockGroups = useMemo(() => {
-    const s = new Set<string>();
-    activeItems.forEach(i => { if (i.stock_group_id) s.add(i.stock_group_id); });
-    return Array.from(s).sort();
-  }, [activeItems]);
+  const stockGroups = useMemo(() =>
+    [...new Set(activeItems.map(i => i.stock_group_name).filter(Boolean))].sort() as string[],
+    [activeItems]
+  );
 
   const filteredMatrixItems = useMemo(() => {
     return activeItems.filter(i => {
-      if (matrixGroupFilter !== 'all' && i.stock_group_id !== matrixGroupFilter) return false;
+      if (matrixGroupFilter !== 'all' && i.stock_group_name !== matrixGroupFilter) return false;
       if (matrixSearch) {
         const q = matrixSearch.toLowerCase();
         if (!i.name.toLowerCase().includes(q) && !i.code.toLowerCase().includes(q)) return false;
