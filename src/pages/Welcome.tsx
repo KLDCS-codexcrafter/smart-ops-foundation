@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
-  Cpu, LayoutDashboard, GitMerge, BarChart3, Handshake,
+  Cpu, LayoutDashboard, GitMerge, BarChart3, Handshake, LayoutGrid, Puzzle,
   Users, Compass, ArrowRight, ArrowLeft, Home, HelpCircle,
   Settings, HeadphonesIcon, Server, AlertTriangle, CheckCircle,
   Clock, Search, Plus, Wifi, WifiOff, Activity,
