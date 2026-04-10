@@ -63,8 +63,7 @@ const GST_RATES = [0, 5, 12, 18, 28];
 function initTemplates(): ItemTemplateA3[] {
   const stored = ls<ItemTemplateA3>(KEY);
   if (stored.length > 0) return stored;
-  localStorage.setItem(KEY, JSON.stringify(SYSTEM_TEMPLATES));
-  /* [JWT] GET /api/inventory/item-templates */
+  localStorage.setItem(KEY, JSON.stringify(SYSTEM_TEMPLATES)); /* [JWT] SEED /api/inventory/item-templates */
   return SYSTEM_TEMPLATES;
 }
 
