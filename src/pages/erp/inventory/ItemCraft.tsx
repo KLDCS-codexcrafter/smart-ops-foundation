@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Package, Plus, Search, Edit2, Trash2, Network, ChevronRight, ChevronLeft,
-  CheckCircle2, Star, X, Tag, Ruler, Warehouse, ShieldCheck, ShoppingBag,
+  Star, X, Tag, Ruler, Warehouse, ShieldCheck, ShoppingBag,
   Upload, Info, Layers, BarChart3
 } from 'lucide-react';
 import { toast } from 'sonner';
