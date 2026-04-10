@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DollarSign, Search, Edit2, History, AlertTriangle, TrendingUp, Copy, Upload } from 'lucide-react';
+import { DollarSign, Search, Edit2, AlertTriangle, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
