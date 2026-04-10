@@ -714,6 +714,32 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
           </FormField>
         </div>
       </FormSection>
+
+      <FormSection title="Inventory & Pricing Settings" icon={<DollarSign className="h-4 w-4" />}>
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground">
+            MRP Tax Treatment *
+            <span className="text-xs text-muted-foreground ml-2">
+              How is MRP displayed on labels and invoices?
+            </span>
+          </p>
+          <Select value={f('mrp_tax_treatment')} onValueChange={v => upd('mrp_tax_treatment', v)}>
+            <SelectTrigger className="text-xs"><SelectValue placeholder="Select MRP treatment..." /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inclusive">
+                <span className="text-xs">Tax Inclusive — MRP includes GST (FMCG, Pharma, Consumer Goods)</span>
+              </SelectItem>
+              <SelectItem value="exclusive">
+                <span className="text-xs">Tax Exclusive — MRP is before GST (B2B, Industrial, Services)</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            As per Legal Metrology Act 2009, consumer goods must display MRP inclusive of all taxes.
+            This setting affects label printing (A.5) and invoice display.
+          </p>
+        </div>
+      </FormSection>
     );
   }
 
