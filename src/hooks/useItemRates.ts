@@ -14,7 +14,8 @@ export function useItemRates() {
     itemId: string, itemCode: string, itemName: string,
     rateType: RateType, oldRate: number | null, newRate: number,
     reason: string, category: ItemRateHistory['change_reason_category'],
-    effectiveFrom: string, bulkUpdateId?: string
+    effectiveFrom: string, bulkUpdateId?: string,
+    showToast: boolean = true
   ) => {
     const entry: ItemRateHistory = {
       id: crypto.randomUUID(),
@@ -33,7 +34,7 @@ export function useItemRates() {
     };
     const u = [entry, ...history];
     setHistory(u); save(u);
-    toast.success(`Rate change logged for ${itemName}`);
+    if (showToast) toast.success(`Rate change logged for ${itemName}`);
     // [JWT] POST /api/inventory/item-rates/history
     return entry;
   };
