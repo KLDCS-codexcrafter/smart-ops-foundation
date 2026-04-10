@@ -241,6 +241,20 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
+                      {/* A.3 — Item Core */}
+                      <SidebarMenuSubItem>
+                        <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                          A.3 — Item Core
+                        </p>
+                      </SidebarMenuSubItem>
+                      {A3_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <item.icon className="h-3.5 w-3.5 mr-1" />
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
