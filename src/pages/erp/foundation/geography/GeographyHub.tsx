@@ -150,6 +150,7 @@ export default function GeographyHub() {
                              currencyCode:'AED', currencySymbol:'د.إ', capital:'Abu Dhabi',
                              region:'Middle East', timezone:'Asia/Dubai', status:'active' });
             localStorage.setItem('erp_geo_countries', JSON.stringify(countries));
+            /* [JWT] POST /api/geography/countries/seed */
           }
         }
         if (i === 1) {
@@ -159,6 +160,7 @@ export default function GeographyHub() {
             gstStateCode: '', unionTerritory: false, region: 'Middle East', status: 'active',
           }));
           localStorage.setItem('erp_geo_states', JSON.stringify([...existing, ...emirates]));
+          /* [JWT] POST /api/geography/states/seed */
         }
         if (i === 2) {
           const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'AE');
@@ -168,6 +170,7 @@ export default function GeographyHub() {
             headquarters: '', status: 'active',
           }));
           localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
+          /* [JWT] POST /api/geography/districts/seed */
         }
         if (i === 3) {
           const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'AE');
@@ -176,6 +179,7 @@ export default function GeographyHub() {
             states: r.states || [], status: 'active',
           }));
           localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
+          /* [JWT] POST /api/geography/regions/seed */
         }
       }
 
