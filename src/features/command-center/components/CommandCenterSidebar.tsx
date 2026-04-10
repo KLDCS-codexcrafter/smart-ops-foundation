@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
   TrendingUp, Users, CreditCard, Settings2, Grid3X3, Hash,
-  Boxes, Tags, Tag, Warehouse, Ruler,
+  Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -52,6 +52,12 @@ const A2_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Brand Matrix',    module: 'inventory-brands',       icon: Tag },
   { label: 'Storage Matrix',  module: 'inventory-storage',      icon: Warehouse },
   { label: 'Measure X',       module: 'inventory-uom',          icon: Ruler },
+];
+
+const A3_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Item Craft',      module: 'inventory-item-craft',      icon: Package },
+  { label: 'Code Matrix',     module: 'inventory-code-matrix',     icon: Hash },
+  { label: 'Item Templates',  module: 'inventory-item-templates',  icon: LayoutTemplate },
 ];
 
 const COMING_SOON = [

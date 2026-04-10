@@ -27,6 +27,9 @@ import { ClassifyPanel } from '@/pages/erp/inventory/Classify';
 import { BrandMatrixPanel } from '@/pages/erp/inventory/BrandMatrix';
 import { StorageMatrixPanel } from '@/pages/erp/inventory/StorageMatrix';
 import { MeasureXPanel } from '@/pages/erp/inventory/MeasureX';
+import { ItemCraftPanel } from '@/pages/erp/inventory/ItemCraft';
+import { CodeMatrixPanel } from '@/pages/erp/inventory/CodeMatrix';
+import { ItemTemplatesPanel } from '@/pages/erp/inventory/ItemTemplates';
 
 export type CommandCenterModule =
   | 'overview'
@@ -53,7 +56,10 @@ export type CommandCenterModule =
   | 'inventory-classify'
   | 'inventory-brands'
   | 'inventory-storage'
-  | 'inventory-uom';
+  | 'inventory-uom'
+  | 'inventory-item-craft'
+  | 'inventory-code-matrix'
+  | 'inventory-item-templates';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -65,7 +71,8 @@ export default function CommandCenterPage() {
       'finecore-finframe', 'finecore-ledgers',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
-      'inventory-storage', 'inventory-uom'].includes(hash)) {
+      'inventory-storage', 'inventory-uom',
+      'inventory-item-craft', 'inventory-code-matrix', 'inventory-item-templates'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -107,6 +114,9 @@ export default function CommandCenterPage() {
       case 'inventory-brands': return <BrandMatrixPanel />;
       case 'inventory-storage': return <StorageMatrixPanel />;
       case 'inventory-uom': return <MeasureXPanel />;
+      case 'inventory-item-craft': return <ItemCraftPanel />;
+      case 'inventory-code-matrix': return <CodeMatrixPanel />;
+      case 'inventory-item-templates': return <ItemTemplatesPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
