@@ -559,7 +559,7 @@ export function ReorderAlertsPanel() {
                           <TableCell className="text-center text-sm px-2" title={status.label}>{status.icon}</TableCell>
                           <TableCell className="text-xs font-mono text-muted-foreground whitespace-nowrap">{item.code}</TableCell>
                           <TableCell className="text-sm font-medium max-w-[200px] truncate" title={item.name}>{item.name}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{item.primary_uom_symbol || item.primary_uom || 'Nos'}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{item.primary_uom_symbol || 'Nos'}</TableCell>
                           <TableCell className={`text-xs font-mono ${stockColor}`}>{currStock.toLocaleString('en-IN')}</TableCell>
 
                           {/* Editable threshold cells */}
