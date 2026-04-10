@@ -1,138 +1,125 @@
-import React from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { Search, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Pencil, Trash2, Package, Activity, ShieldAlert, Clock } from 'lucide-react';
-import type { Batch } from '@/types/batch';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useBatches } from '@/hooks/useBatches';
 
-interface BatchListProps {
-  batches: Batch[];
-  onEdit: (batch: Batch) => void;
-  onDelete: (id: string) => void;
-}
+export function BatchList() {
+  const { batches, deleteBatch } = useBatches();
+  const [search, setSearch] = useState('');
 
-const statusColors: Record<string, string> = {
-  active: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  expired: 'bg-red-500/15 text-red-700 dark:text-red-400',
-  consumed: 'bg-slate-500/15 text-slate-700 dark:text-slate-400',
-  quarantine: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-};
-
-const BatchList: React.FC<BatchListProps> = ({ batches, onEdit, onDelete }) => {
   const today = new Date();
-  const activeBatches = batches?.filter(b => b.status === 'active').length ?? 0;
-  const qcHoldBatches = batches?.filter(b => b.qc_hold).length ?? 0;
-  const expiringSoon = batches?.filter(b => {
+  const active = batches.filter(b => b.status === 'active').length;
+  const onHold = batches.filter(b => b.qc_hold).length;
+  const expiring = batches.filter(b => {
     if (!b.expiry_date) return false;
     const d = Math.ceil((new Date(b.expiry_date).getTime() - today.getTime()) / 86400000);
     return d >= 0 && d <= 30;
-  }).length ?? 0;
+  }).length;
+
+  const filtered = batches.filter(b =>
+    b.batch_number.toLowerCase().includes(search.toLowerCase()) ||
+    (b.item_name ?? '').toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Package className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="text-2xl font-bold">{batches.length}</p>
-              <p className="text-xs text-muted-foreground">Total Batches</p>
-            </div>
-          </CardContent>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Batches</CardDescription>
+            <CardTitle className="text-2xl">{batches.length}</CardTitle>
+          </CardHeader>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Activity className="h-5 w-5 text-emerald-500" />
-            <div>
-              <p className="text-2xl font-bold">{activeBatches}</p>
-              <p className="text-xs text-muted-foreground">Active</p>
-            </div>
-          </CardContent>
+          <CardHeader className="pb-2">
+            <CardDescription>Active</CardDescription>
+            <CardTitle className="text-2xl text-emerald-600">{active}</CardTitle>
+          </CardHeader>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <ShieldAlert className="h-5 w-5 text-amber-500" />
-            <div>
-              <p className="text-2xl font-bold">{qcHoldBatches}</p>
-              <p className="text-xs text-muted-foreground">
-                On QC Hold {qcHoldBatches > 0 && <Badge variant="outline" className="ml-1 text-[10px] border-amber-500/40 text-amber-600">Hold</Badge>}
-              </p>
-            </div>
-          </CardContent>
+          <CardHeader className="pb-2">
+            <CardDescription>On QC Hold</CardDescription>
+            <CardTitle className="text-2xl text-amber-600">{onHold}</CardTitle>
+          </CardHeader>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <Clock className="h-5 w-5 text-red-500" />
-            <div>
-              <p className="text-2xl font-bold">{expiringSoon}</p>
-              <p className="text-xs text-muted-foreground">
-                Expiring Soon {expiringSoon > 0 && <Badge variant="destructive" className="ml-1 text-[10px]">≤30d</Badge>}
-              </p>
-            </div>
-          </CardContent>
+          <CardHeader className="pb-2">
+            <CardDescription>Expiring ≤30d</CardDescription>
+            <CardTitle className="text-2xl text-red-600">{expiring}</CardTitle>
+          </CardHeader>
         </Card>
       </div>
 
       {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Batch #</TableHead>
-            <TableHead>Stock Item</TableHead>
-            <TableHead>Qty</TableHead>
-            <TableHead>Mfg Date</TableHead>
-            <TableHead>Expiry</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>QC Hold</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {batches.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                No batches found. Create your first batch.
-              </TableCell>
-            </TableRow>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle className="text-base">All Batches</CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input className="pl-8 h-9 w-56" placeholder="Search batches..."
+                  value={search} onChange={e => setSearch(e.target.value)} />
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <AlertTriangle className="h-10 w-10 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">
+                {search ? 'No batches match your search' : 'No batches yet'}
+              </p>
+            </div>
           ) : (
-            batches.map(batch => (
-              <TableRow key={batch.id}>
-                <TableCell className="font-mono text-xs">{batch.batch_number}</TableCell>
-                <TableCell className="font-medium">{batch.stock_item_name}</TableCell>
-                <TableCell>{batch.quantity} {batch.unit}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{batch.manufacturing_date ?? '-'}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{batch.expiry_date ?? '-'}</TableCell>
-                <TableCell>
-                  <Badge className={statusColors[batch.status] ?? ''} variant="secondary">
-                    {batch.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {batch.godown_name || '—'}
-                </TableCell>
-                <TableCell>
-                  {batch.qc_hold && (
-                    <Badge variant="destructive" className="text-xs">Hold</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(batch)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(batch.id)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Batch No</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Item</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Qty</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Expiry</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Location</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">QC Hold</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map(batch => (
+                  <TableRow key={batch.id} className="group">
+                    <TableCell className="font-mono text-xs font-medium">{batch.batch_number}</TableCell>
+                    <TableCell className="text-sm">{batch.item_name || '—'}</TableCell>
+                    <TableCell className="text-sm">{batch.quantity}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{batch.expiry_date || '—'}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{batch.godown_name || '—'}</TableCell>
+                    <TableCell>
+                      {batch.qc_hold && <Badge variant="destructive" className="text-xs">Hold</Badge>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={batch.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                        {batch.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100"
+                        onClick={() => deleteBatch(batch.id)}>
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-        </TableBody>
-      </Table>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default BatchList;
+}
