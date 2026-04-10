@@ -312,7 +312,7 @@ export function PriceListsPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label>Currency</Label>
-                <Select value={listForm.currency} onValueChange={v => setListForm(f => ({ ...f, currency: v }))}>
+                <Select value={listForm.currency} onValueChange={v => setListForm(f => ({ ...f, currency: v as PriceList['currency'] }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="INR">INR — Indian Rupee (₹)</SelectItem>
@@ -347,7 +347,7 @@ export function PriceListsPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Status</Label>
-              <Select value={listForm.status} onValueChange={v => setListForm(f => ({ ...f, status: v }))}>
+              <Select value={listForm.status} onValueChange={v => setListForm(f => ({ ...f, status: v as PriceList['status'] }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Draft</SelectItem>
