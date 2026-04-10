@@ -79,6 +79,11 @@ import InventoryHub from './pages/erp/inventory/InventoryHub';
 import Parametric from './pages/erp/inventory/Parametric';
 import BatchGrid from './pages/erp/inventory/BatchGrid';
 import SerialGrid from './pages/erp/inventory/SerialGrid';
+import StockMatrix from './pages/erp/inventory/StockMatrix';
+import Classify from './pages/erp/inventory/Classify';
+import BrandMatrix from './pages/erp/inventory/BrandMatrix';
+import StorageMatrix from './pages/erp/inventory/StorageMatrix';
+import MeasureX from './pages/erp/inventory/MeasureX';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -200,6 +205,11 @@ const App = () => (
             <Route path="/erp/inventory-hub/parametric" element={<Parametric />} />
             <Route path="/erp/inventory-hub/batch-grid" element={<BatchGrid />} />
             <Route path="/erp/inventory-hub/serial-grid" element={<SerialGrid />} />
+            <Route path="/erp/inventory-hub/stock-matrix" element={<StockMatrix />} />
+            <Route path="/erp/inventory-hub/classify" element={<Classify />} />
+            <Route path="/erp/inventory-hub/brand-matrix" element={<BrandMatrix />} />
+            <Route path="/erp/inventory-hub/storage-matrix" element={<StorageMatrix />} />
+            <Route path="/erp/inventory-hub/measure-x" element={<MeasureX />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />

@@ -22,6 +22,11 @@ import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
+import { StockMatrixPanel } from '@/pages/erp/inventory/StockMatrix';
+import { ClassifyPanel } from '@/pages/erp/inventory/Classify';
+import { BrandMatrixPanel } from '@/pages/erp/inventory/BrandMatrix';
+import { StorageMatrixPanel } from '@/pages/erp/inventory/StorageMatrix';
+import { MeasureXPanel } from '@/pages/erp/inventory/MeasureX';
 
 export type CommandCenterModule =
   | 'overview'
@@ -43,7 +48,12 @@ export type CommandCenterModule =
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
-  | 'inventory-serial';
+  | 'inventory-serial'
+  | 'inventory-stock-matrix'
+  | 'inventory-classify'
+  | 'inventory-brands'
+  | 'inventory-storage'
+  | 'inventory-uom';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -53,7 +63,9 @@ export default function CommandCenterPage() {
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'finecore-finframe', 'finecore-ledgers',
-      'inventory-parametric', 'inventory-batch', 'inventory-serial'].includes(hash)) {
+      'inventory-parametric', 'inventory-batch', 'inventory-serial',
+      'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
+      'inventory-storage', 'inventory-uom'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -90,6 +102,11 @@ export default function CommandCenterPage() {
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
       case 'inventory-serial':    return <SerialGridPanel />;
+      case 'inventory-stock-matrix': return <StockMatrixPanel />;
+      case 'inventory-classify': return <ClassifyPanel />;
+      case 'inventory-brands': return <BrandMatrixPanel />;
+      case 'inventory-storage': return <StorageMatrixPanel />;
+      case 'inventory-uom': return <MeasureXPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
