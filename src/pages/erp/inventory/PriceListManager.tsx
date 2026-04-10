@@ -43,8 +43,8 @@ export function PriceListsPanel() {
   const [editList, setEditList] = useState<PriceList | null>(null);
   const [listForm, setListForm] = useState({
     name: '', list_type: 'standard_selling' as PriceListType,
-    currency: 'INR', effective_from: '', effective_to: '',
-    is_default: false, copy_from_id: '', status: 'draft', notes: '',
+    currency: 'INR' as PriceList['currency'], effective_from: '', effective_to: '',
+    is_default: false, copy_from_id: '', status: 'draft' as PriceList['status'], notes: '',
   });
   const [activeList, setActiveList] = useState<PriceList | null>(null);
   const [itemSearch, setItemSearch] = useState('');
