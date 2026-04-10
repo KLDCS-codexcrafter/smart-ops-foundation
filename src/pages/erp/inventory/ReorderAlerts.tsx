@@ -136,13 +136,13 @@ export function ReorderAlertsPanel() {
 
   const stockGroups = useMemo(() => {
     const s = new Set<string>();
-    activeItems.forEach(i => { if (i.stock_group) s.add(i.stock_group); });
+    activeItems.forEach(i => { if (i.stock_group_id) s.add(i.stock_group_id); });
     return Array.from(s).sort();
   }, [activeItems]);
 
   const filteredMatrixItems = useMemo(() => {
     return activeItems.filter(i => {
-      if (matrixGroupFilter !== 'all' && i.stock_group !== matrixGroupFilter) return false;
+      if (matrixGroupFilter !== 'all' && i.stock_group_id !== matrixGroupFilter) return false;
       if (matrixSearch) {
         const q = matrixSearch.toLowerCase();
         if (!i.name.toLowerCase().includes(q) && !i.code.toLowerCase().includes(q)) return false;
@@ -160,7 +160,7 @@ export function ReorderAlertsPanel() {
         item_id: item.id,
         item_code: item.code,
         item_name: item.name,
-        uom: item.primary_uom_symbol || item.primary_uom || 'Nos',
+        uom: item.primary_uom_symbol || 'Nos',
         safety_stock: '',
         min_stock: '',
         max_stock: '',
@@ -195,7 +195,7 @@ export function ReorderAlertsPanel() {
         item_id: item.id,
         item_code: item.code,
         item_name: item.name,
-        uom: item.primary_uom_symbol || item.primary_uom || 'Nos',
+        uom: item.primary_uom_symbol || 'Nos',
         safety_stock: String(rule?.safety_stock || ''),
         min_stock: String(rule?.min_stock || ''),
         max_stock: String(rule?.max_stock || ''),
@@ -283,7 +283,7 @@ export function ReorderAlertsPanel() {
         item_id: r.item_id,
         item_code: r.item_code,
         item_name: r.item_name,
-        uom: items.find(i => i.id === r.item_id)?.primary_uom_symbol || 'Nos',
+        uom: items.find(it => it.id === r.item_id)?.primary_uom_symbol || 'Nos',
         safety_stock: String(r.safety_stock),
         min_stock: String(r.min_stock),
         max_stock: String(r.max_stock),
