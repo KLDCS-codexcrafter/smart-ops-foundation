@@ -41,7 +41,10 @@ const EMPTY: RegionRecord = {
 
 export default function RegionMaster() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<RegionRecord[]>([]);
+  const [records, setRecords] = useState<RegionRecord[]>(() => {
+    try { return JSON.parse(localStorage.getItem('erp_geo_regions') || '[]'); } catch { return []; }
+  });
+  const saveRecords = (d: RegionRecord[]) => { localStorage.setItem('erp_geo_regions', JSON.stringify(d)); /* [JWT] PATCH /api/geography/regions/bulk */ };
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<RegionRecord>({...EMPTY});
@@ -64,8 +67,8 @@ export default function RegionMaster() {
       code: r.code, name: r.name, countryCode: r.countryCode,
       states: r.states, status: 'active',
     }));
-    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
-    toast.success(`Seeded ${INDIA_REGIONS.length} India regions`);
+    const next = [...records, ...newRecs.filter(n => !records.some(p => p.code === n.code))];
+    setRecords(next); saveRecords(next);
   }
 
   function seedUAERegion() {
@@ -73,8 +76,8 @@ export default function RegionMaster() {
       code: r.code, name: r.name, countryCode: r.countryCode,
       states: r.states, status: 'active',
     }));
-    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
-    toast.success('Seeded UAE Operations region');
+    const next = [...records, ...newRecs.filter(n => !records.some(p => p.code === n.code))];
+    setRecords(next); saveRecords(next);
   }
 
   function openCreate() {
@@ -108,10 +111,12 @@ export default function RegionMaster() {
       return;
     }
     if (editIndex !== null) {
-      setRecords(prev => prev.map((r, i) => i === editIndex ? {...formData} : r));
+      const next = records.map((r, i) => i === editIndex ? {...formData} : r);
+      setRecords(next); saveRecords(next);
       toast.success(`Region ${formData.code} updated`);
     } else {
-      setRecords(prev => [...prev, {...formData}]);
+      const next = [...records, {...formData}];
+      setRecords(next); saveRecords(next);
       toast.success(`Region ${formData.code} created`);
     }
     setFormOpen(false);
@@ -120,7 +125,8 @@ export default function RegionMaster() {
   function handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
-    setRecords(prev => prev.filter((_, i) => i !== deleteIndex));
+    const next = records.filter((_, i) => i !== deleteIndex);
+    setRecords(next); saveRecords(next);
     toast.success(`Region ${r.code} deleted`);
     setDeleteIndex(null);
   }
@@ -205,8 +211,18 @@ export default function RegionMaster() {
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={cn(
+                          'cursor-pointer select-none',
                           r.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-muted text-muted-foreground',
-                        )}>
+                        )}
+                          title="Click to toggle status"
+                          onClick={() => {
+                            const next = records.map((item, j) =>
+                              j === realIdx ? { ...item, status: item.status === 'active' ? 'inactive' as const : 'active' as const } : item
+                            );
+                            setRecords(next); saveRecords(next);
+                            toast.success('Status updated');
+                          }}
+                        >
                           {r.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>

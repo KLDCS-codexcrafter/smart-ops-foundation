@@ -69,7 +69,10 @@ const PAGE_SIZE = 25;
 
 export default function CityMaster() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<CityRecord[]>([]);
+  const [records, setRecords] = useState<CityRecord[]>(() => {
+    try { return JSON.parse(localStorage.getItem('erp_geo_cities') || '[]'); } catch { return []; }
+  });
+  const saveRecords = (d: CityRecord[]) => { localStorage.setItem('erp_geo_cities', JSON.stringify(d)); /* [JWT] PATCH /api/geography/cities/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [stateFilter, setStateFilter] = useState<string>('all');
@@ -115,8 +118,8 @@ export default function CityMaster() {
       latitude: '', longitude: '', coverageRadius: 10, timezone: 'Asia/Kolkata',
       geoFence: false, status: 'active' as const,
     }));
-    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
-    toast.success(`Seeded ${newRecs.length} cities for ${districtFilter}`);
+    const next = [...records, ...newRecs.filter(n => !records.some(p => p.code === n.code))];
+    setRecords(next); saveRecords(next);
   }
 
   function seedByState() {
@@ -129,7 +132,8 @@ export default function CityMaster() {
       latitude: '', longitude: '', coverageRadius: 10, timezone: 'Asia/Kolkata',
       geoFence: false, status: 'active' as const,
     }));
-    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
+    const next = [...records, ...newRecs.filter(n => !records.some(p => p.code === n.code))];
+    setRecords(next); saveRecords(next);
     toast.success(`Seeded ${newRecs.length} major cities for ${stateFilter}`);
   }
 
@@ -163,7 +167,7 @@ export default function CityMaster() {
         });
       }
       setRecords(prev => [...prev, ...imported]);
-      toast.success(`Imported ${imported.length} cities from CSV`);
+      saveRecords([...records, ...imported]);
     };
     reader.readAsText(file);
     if (fileRef.current) fileRef.current.value = '';
@@ -192,10 +196,12 @@ export default function CityMaster() {
   function handleSave() {
     if (!formData.code || !formData.name) { toast.error('Code and Name are required'); return; }
     if (editIndex !== null) {
-      setRecords(prev => prev.map((r, i) => i === editIndex ? {...formData} : r));
+      const next = records.map((r, i) => i === editIndex ? {...formData} : r);
+      setRecords(next); saveRecords(next);
       toast.success(`City ${formData.name} updated`);
     } else {
-      setRecords(prev => [...prev, {...formData}]);
+      const next = [...records, {...formData}];
+      setRecords(next); saveRecords(next);
       toast.success(`City ${formData.name} created`);
     }
     setFormOpen(false);
@@ -204,7 +210,8 @@ export default function CityMaster() {
   function handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
-    setRecords(prev => prev.filter((_, i) => i !== deleteIndex));
+    const next = records.filter((_, i) => i !== deleteIndex);
+    setRecords(next); saveRecords(next);
     toast.success(`City ${r.name} deleted`);
     setDeleteIndex(null);
   }
@@ -344,8 +351,18 @@ export default function CityMaster() {
                       <TableCell>{r.geoFence ? '✓' : '—'}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={cn(
+                          'cursor-pointer select-none',
                           r.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-muted text-muted-foreground',
-                        )}>
+                        )}
+                          title="Click to toggle status"
+                          onClick={() => {
+                            const next = records.map((item, j) =>
+                              j === realIdx ? { ...item, status: item.status === 'active' ? 'inactive' as const : 'active' as const } : item
+                            );
+                            setRecords(next); saveRecords(next);
+                            toast.success('Status updated');
+                          }}
+                        >
                           {r.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>

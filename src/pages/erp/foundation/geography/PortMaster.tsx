@@ -63,7 +63,10 @@ const EMPTY: PortRecord = {
 
 export default function PortMaster() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<PortRecord[]>([]);
+  const [records, setRecords] = useState<PortRecord[]>(() => {
+    try { return JSON.parse(localStorage.getItem('erp_geo_ports') || '[]'); } catch { return []; }
+  });
+  const saveRecords = (d: PortRecord[]) => { localStorage.setItem('erp_geo_ports', JSON.stringify(d)); /* [JWT] PATCH /api/geography/ports/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -94,7 +97,8 @@ export default function PortMaster() {
 
   function seedPorts(target: 'india' | 'uae') {
     const src = target === 'india' ? INDIA_PORTS : UAE_PORTS;
-    setRecords(prev => [...prev, ...src.filter(n => !prev.some(p => p.portCode === n.portCode))]);
+    const next = [...records, ...src.filter(n => !records.some(p => p.portCode === n.portCode))];
+    setRecords(next); saveRecords(next);
     toast.success(`Seeded ${src.length} ${target === 'india' ? 'Indian' : 'UAE'} ports`);
     setPreviewOpen(false);
   }
@@ -114,10 +118,12 @@ export default function PortMaster() {
   function handleSave() {
     if (!formData.portCode || !formData.portName) { toast.error('Port Code and Name are required'); return; }
     if (editIndex !== null) {
-      setRecords(prev => prev.map((r, i) => i === editIndex ? {...formData} : r));
+      const next = records.map((r, i) => i === editIndex ? {...formData} : r);
+      setRecords(next); saveRecords(next);
       toast.success(`Port ${formData.portCode} updated`);
     } else {
-      setRecords(prev => [...prev, {...formData}]);
+      const next = [...records, {...formData}];
+      setRecords(next); saveRecords(next);
       toast.success(`Port ${formData.portCode} created`);
     }
     setFormOpen(false);
@@ -126,7 +132,8 @@ export default function PortMaster() {
   function handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
-    setRecords(prev => prev.filter((_, i) => i !== deleteIndex));
+    const next = records.filter((_, i) => i !== deleteIndex);
+    setRecords(next); saveRecords(next);
     toast.success(`Port ${r.portCode} deleted`);
     setDeleteIndex(null);
   }
@@ -241,8 +248,18 @@ export default function PortMaster() {
                       <TableCell className="text-xs">{CUSTOMS_ZONE_LABELS[r.customsZone]}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={cn(
+                          'cursor-pointer select-none',
                           r.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-muted text-muted-foreground',
-                        )}>
+                        )}
+                          title="Click to toggle status"
+                          onClick={() => {
+                            const next = records.map((item, j) =>
+                              j === realIdx ? { ...item, status: item.status === 'active' ? 'inactive' as const : 'active' as const } : item
+                            );
+                            setRecords(next); saveRecords(next);
+                            toast.success('Status updated');
+                          }}
+                        >
                           {r.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>
