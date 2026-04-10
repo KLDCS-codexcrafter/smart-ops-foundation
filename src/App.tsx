@@ -93,6 +93,10 @@ import AssetTagManager from './pages/erp/inventory/AssetTagManager';
 import BinLocationLabels from './pages/erp/inventory/BinLocationLabels';
 import PrintQueue from './pages/erp/inventory/PrintQueue';
 import RFIDManager from './pages/erp/inventory/RFIDManager';
+import OpeningStockEntry from './pages/erp/inventory/OpeningStockEntry';
+import ItemRatesMRP from './pages/erp/inventory/ItemRatesMRP';
+import PriceListManager from './pages/erp/inventory/PriceListManager';
+import ReorderAlerts from './pages/erp/inventory/ReorderAlerts';
 import AddOnsPage from './pages/addons/AddOnsPage';
 import AddonsBarcode from './pages/addons/BarcodeAddon';
 import PartnerDashboard from "./pages/partner/Dashboard";
@@ -237,6 +241,10 @@ const App = () => (
             <Route path="/erp/inventory-hub/bin-labels" element={<BinLocationLabels />} />
             <Route path="/erp/inventory-hub/print-queue" element={<PrintQueue />} />
             <Route path="/erp/inventory-hub/rfid-manager" element={<RFIDManager />} />
+            <Route path="/erp/inventory-hub/opening-stock" element={<OpeningStockEntry />} />
+            <Route path="/erp/inventory-hub/item-rates" element={<ItemRatesMRP />} />
+            <Route path="/erp/inventory-hub/price-lists" element={<PriceListManager />} />
+            <Route path="/erp/inventory-hub/reorder-alerts" element={<ReorderAlerts />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
