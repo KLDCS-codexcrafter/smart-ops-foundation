@@ -240,7 +240,7 @@ export function CodeMatrixPanel() {
                     <SelectItem value="-">Hyphen ( - )</SelectItem>
                     <SelectItem value="/">Slash ( / )</SelectItem>
                     <SelectItem value=".">Dot ( . )</SelectItem>
-                    <SelectItem value=" ">None</SelectItem>
+                    <SelectItem value="">None</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
