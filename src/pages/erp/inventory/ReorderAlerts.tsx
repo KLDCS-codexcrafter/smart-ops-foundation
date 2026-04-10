@@ -199,7 +199,7 @@ export function ReorderAlertsPanel() {
           <TabsTrigger value="location"><MapPin className="h-3.5 w-3.5 mr-1" />Location View</TabsTrigger>
           <TabsTrigger value="department"><Layers className="h-3.5 w-3.5 mr-1" />Department View</TabsTrigger>
           <TabsTrigger value="rate_alerts"><AlertTriangle className="h-3.5 w-3.5 mr-1" />Rate Alerts
-            ({rateAlerts.missingMRP.length + rateAlerts.missingStdSell.length + rateAlerts.belowCost.length})</TabsTrigger>
+            ({rateAlerts.missingMRP.length + rateAlerts.missingStdSell.length + rateAlerts.missingStdPurch.length + rateAlerts.belowCost.length})</TabsTrigger>
         </TabsList>
 
         {/* TAB: Item View */}
