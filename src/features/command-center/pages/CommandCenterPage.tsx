@@ -19,6 +19,9 @@ import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
+import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
+import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
+import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
 
 export type CommandCenterModule =
   | 'overview'
@@ -37,8 +40,10 @@ export type CommandCenterModule =
   | 'finecore-comply360'
   | 'finecore-finframe'
   | 'finecore-ledgers'
-  | 'console';
-
+  | 'console'
+  | 'inventory-parametric'
+  | 'inventory-batch'
+  | 'inventory-serial';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -47,7 +52,8 @@ export default function CommandCenterPage() {
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
-      'finecore-finframe', 'finecore-ledgers'].includes(hash)) {
+      'finecore-finframe', 'finecore-ledgers',
+      'inventory-parametric', 'inventory-batch', 'inventory-serial'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -81,6 +87,9 @@ export default function CommandCenterPage() {
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
       case 'console': return <SecurityModule />;
+      case 'inventory-parametric': return <ParametricPanel />;
+      case 'inventory-batch':     return <BatchGridPanel />;
+      case 'inventory-serial':    return <SerialGridPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
-  TrendingUp, Users, CreditCard,
+  TrendingUp, Users, CreditCard, Settings2, Grid3X3, Hash,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -39,6 +39,11 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'Ledger Master', module: 'finecore-ledgers' },
 ];
 
+const INVENTORY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Parametric Hub', module: 'inventory-parametric', icon: Settings2 },
+  { label: 'Batch Grid',     module: 'inventory-batch',      icon: Grid3X3 },
+  { label: 'Serial Grid',    module: 'inventory-serial',     icon: Hash },
+];
 
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
@@ -54,10 +59,14 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
   const [finecoreOpen, setFinecoreOpen] = useState(
     activeModule.startsWith('finecore') || activeModule.startsWith('masters-')
   );
+  const [inventoryOpen, setInventoryOpen] = useState(
+    activeModule.startsWith('inventory')
+  );
 
   useEffect(() => {
     if (activeModule === 'foundation' || activeModule === 'geography') setFoundationOpen(true);
     if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
+    if (activeModule.startsWith('inventory')) setInventoryOpen(true);
   }, [activeModule]);
 
   const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS].map(i => i.module);
@@ -175,21 +184,35 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
           <SidebarGroupLabel>Inventory Masters</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {[
-                { label: 'Parametric Hub', href: '/erp/inventory-hub/parametric' },
-                { label: 'Batch Grid', href: '/erp/inventory-hub/batch-grid' },
-                { label: 'Serial Grid', href: '/erp/inventory-hub/serial-grid' },
-              ].map(item => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    tooltip={item.label}
-                    onClick={() => navigate(item.href)}
-                  >
-                    <Package className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
+              <Collapsible open={inventoryOpen} onOpenChange={setInventoryOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      isActive={activeModule.startsWith('inventory')}
+                      tooltip="Inventory Masters"
+                    >
+                      <Package className="h-4 w-4" />
+                      <span>Inventory Masters</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${inventoryOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {INVENTORY_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton
+                            isActive={activeModule === item.module}
+                            onClick={() => onModuleChange(item.module)}
+                          >
+                            <item.icon className="h-3.5 w-3.5 mr-1" />
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
                 </SidebarMenuItem>
-              ))}
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
