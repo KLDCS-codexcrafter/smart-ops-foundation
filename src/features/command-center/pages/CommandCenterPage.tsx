@@ -131,6 +131,12 @@ export default function CommandCenterPage() {
       case 'inventory-item-craft': return <ItemCraftPanel />;
       case 'inventory-code-matrix': return <CodeMatrixPanel />;
       case 'inventory-item-templates': return <ItemTemplatesPanel />;
+      case 'inventory-label-templates': return <LabelTemplatesPanel />;
+      case 'inventory-barcode-gen': return <BarcodeGeneratorPanel />;
+      case 'inventory-asset-tags': return <AssetTagManagerPanel />;
+      case 'inventory-bin-labels': return <BinLocationLabelsPanel />;
+      case 'inventory-print-queue': return <PrintQueuePanel />;
+      case 'inventory-rfid': return <RFIDManagerPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
