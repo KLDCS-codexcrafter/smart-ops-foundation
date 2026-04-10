@@ -294,7 +294,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
     const sp = fb('addSpaceBetween') ? ' ' : '';
     const num = new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: dec, maximumFractionDigits: dec,
-    }).format(fb('showInMillions') ? 1 : 1000000);
+    }).format(1000000);
     return fb('suffixSymbol') ? `${num}${sp}${s}` : `${s}${sp}${num}`;
   }
 
