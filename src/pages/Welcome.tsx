@@ -57,6 +57,8 @@ const panelCards = [
   { title: "Operix Udyam Kendra Prism Nexus", icon: BarChart3, route: "/erp/dashboard", description: "Business Operations Hub — Full ERP · Modules · Small Projects", highlight: false },
   { title: "Partner Panel", icon: Handshake, route: "/partner/dashboard", description: "Partner dashboard & commission management", highlight: false },
   { title: "Customer Portal", icon: Users, route: "/customer/dashboard", description: "Self-service invoices, payments, orders and support for your B2B clients", highlight: false },
+  { title: "Verticals & Modules", icon: LayoutGrid, route: "/verticals-modules", description: "Industry verticals and ERP modules catalogue — browse, activate and manage what is available for your business", highlight: false },
+  { title: "Add-ons", icon: Puzzle, route: "/add-ons", description: "Optional bolt-on extensions — integrations, plugins, AI tools and hardware connectors beyond the core ERP", highlight: false },
   { title: "Prudent 360", icon: Compass, route: "/prudent360", description: "Tools, documentation & intelligence hub", highlight: true },
 ];
 
