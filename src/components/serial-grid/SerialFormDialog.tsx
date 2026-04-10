@@ -14,11 +14,14 @@ import type { SerialNumber, SerialFormData } from '@/types/serial-number';
 
 const formSchema = z.object({
   serial_number: z.string().min(1, 'Required'),
-  stock_item_name: z.string().min(1, 'Required'),
-  status: z.enum(['available', 'sold', 'in_repair', 'scrapped', 'returned']),
-  warranty_start_date: z.string().optional().nullable(),
+  item_name: z.string().optional().nullable(),
+  status: z.enum(['available', 'sold', 'reserved', 'in_repair', 'scrapped', 'returned']),
+  condition: z.enum(['new', 'good', 'fair', 'damaged', 'defective']),
   warranty_end_date: z.string().optional().nullable(),
+  warranty_months: z.coerce.number().optional().nullable(),
   purchase_date: z.string().optional().nullable(),
+  supplier_name: z.string().optional().nullable(),
+  current_location: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   imei_1: z.string().optional().nullable(),
   imei_2: z.string().optional().nullable(),
@@ -44,8 +47,9 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      serial_number: '', stock_item_name: '', status: 'available',
-      warranty_start_date: null, warranty_end_date: null, purchase_date: null, notes: null,
+      serial_number: '', item_name: null, status: 'available', condition: 'new',
+      warranty_end_date: null, warranty_months: null, purchase_date: null,
+      supplier_name: null, current_location: null, notes: null,
       imei_1: null, imei_2: null,
       custom_field_1_label: null, custom_field_1_value: null,
       custom_field_2_label: null, custom_field_2_value: null,
@@ -57,11 +61,14 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
     if (editSerial) {
       form.reset({
         serial_number: editSerial.serial_number,
-        stock_item_name: editSerial.stock_item_name,
+        item_name: editSerial.item_name ?? null,
         status: editSerial.status,
-        warranty_start_date: editSerial.warranty_start_date ?? null,
+        condition: editSerial.condition,
         warranty_end_date: editSerial.warranty_end_date ?? null,
+        warranty_months: editSerial.warranty_months ?? null,
         purchase_date: editSerial.purchase_date ?? null,
+        supplier_name: editSerial.supplier_name ?? null,
+        current_location: editSerial.current_location ?? null,
         notes: editSerial.notes ?? null,
         imei_1: editSerial.imei_1 ?? null,
         imei_2: editSerial.imei_2 ?? null,
@@ -76,8 +83,9 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
       if (editSerial.imei_1 || editSerial.custom_field_1_value) setShowExtended(true);
     } else {
       form.reset({
-        serial_number: '', stock_item_name: '', status: 'available',
-        warranty_start_date: null, warranty_end_date: null, purchase_date: null, notes: null,
+        serial_number: '', item_name: null, status: 'available', condition: 'new',
+        warranty_end_date: null, warranty_months: null, purchase_date: null,
+        supplier_name: null, current_location: null, notes: null,
         imei_1: null, imei_2: null,
         custom_field_1_label: null, custom_field_1_value: null,
         custom_field_2_label: null, custom_field_2_value: null,
@@ -88,10 +96,7 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
   }, [editSerial, open, form]);
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit({
-      ...values,
-      stock_item_id: editSerial?.stock_item_id ?? crypto.randomUUID(),
-    } as SerialFormData);
+    onSubmit(values as SerialFormData);
     onOpenChange(false);
   };
 
@@ -112,9 +117,9 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
                   <Input placeholder="SN-2026-00001" {...field} />
                 </FormControl></FormItem>
               )} />
-              <FormField control={form.control} name="stock_item_name" render={({ field }) => (
-                <FormItem><FormLabel>Stock Item</FormLabel><FormControl>
-                  <Input placeholder="Item name" {...field} />
+              <FormField control={form.control} name="item_name" render={({ field }) => (
+                <FormItem><FormLabel>Item Name</FormLabel><FormControl>
+                  <Input placeholder="Item name" {...field} value={field.value ?? ''} />
                 </FormControl></FormItem>
               )} />
             </div>
@@ -126,6 +131,7 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
                     <SelectContent>
                       <SelectItem value="available">Available</SelectItem>
                       <SelectItem value="sold">Sold</SelectItem>
+                      <SelectItem value="reserved">Reserved</SelectItem>
                       <SelectItem value="in_repair">In Repair</SelectItem>
                       <SelectItem value="scrapped">Scrapped</SelectItem>
                       <SelectItem value="returned">Returned</SelectItem>
@@ -133,15 +139,24 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
                   </Select>
                 </FormItem>
               )} />
-              <FormField control={form.control} name="purchase_date" render={({ field }) => (
-                <FormItem><FormLabel>Purchase Date</FormLabel><FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
-                </FormControl></FormItem>
+              <FormField control={form.control} name="condition" render={({ field }) => (
+                <FormItem><FormLabel>Condition</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="good">Good</SelectItem>
+                      <SelectItem value="fair">Fair</SelectItem>
+                      <SelectItem value="damaged">Damaged</SelectItem>
+                      <SelectItem value="defective">Defective</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
               )} />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="warranty_start_date" render={({ field }) => (
-                <FormItem><FormLabel>Warranty Start</FormLabel><FormControl>
+              <FormField control={form.control} name="purchase_date" render={({ field }) => (
+                <FormItem><FormLabel>Purchase Date</FormLabel><FormControl>
                   <Input type="date" {...field} value={field.value ?? ''} />
                 </FormControl></FormItem>
               )} />
@@ -172,42 +187,42 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="imei_1" render={({ field }) => (
                     <FormItem><FormLabel>IMEI 1 / Primary Serial</FormLabel><FormControl>
-                      <Input placeholder='15-digit IMEI' {...field} value={field.value ?? ''} />
+                      <Input placeholder="15-digit IMEI" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="imei_2" render={({ field }) => (
                     <FormItem><FormLabel>IMEI 2 / Secondary</FormLabel><FormControl>
-                      <Input placeholder='For dual-SIM devices' {...field} value={field.value ?? ''} />
+                      <Input placeholder="For dual-SIM devices" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="custom_field_1_label" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 1 — Label</FormLabel><FormControl>
-                      <Input placeholder='e.g. Engine No, Chassis No' {...field} value={field.value ?? ''} />
+                      <Input placeholder="e.g. Engine No, Chassis No" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="custom_field_1_value" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 1 — Value</FormLabel><FormControl>
-                      <Input placeholder='Value for this unit' {...field} value={field.value ?? ''} />
+                      <Input placeholder="Value for this unit" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="custom_field_2_label" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 2 — Label</FormLabel><FormControl>
-                      <Input placeholder='e.g. Body No, Battery No' {...field} value={field.value ?? ''} />
+                      <Input placeholder="e.g. Body No, Battery No" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="custom_field_2_value" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 2 — Value</FormLabel><FormControl>
-                      <Input placeholder='Value' {...field} value={field.value ?? ''} />
+                      <Input placeholder="Value" {...field} value={field.value ?? ''} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <FormField control={form.control} name="current_custodian" render={({ field }) => (
                   <FormItem><FormLabel>Current Custodian</FormLabel><FormControl>
-                    <Input placeholder='Person responsible' {...field} value={field.value ?? ''} />
+                    <Input placeholder="Person responsible" {...field} value={field.value ?? ''} />
                   </FormControl></FormItem>
                 )} />
                 <div className="grid grid-cols-2 gap-4">
