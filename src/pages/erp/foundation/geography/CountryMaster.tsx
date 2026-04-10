@@ -211,7 +211,6 @@ export default function CountryMaster() {
                         >
                           {c.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
-                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
