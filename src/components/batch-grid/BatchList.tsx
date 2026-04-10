@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { Search, Trash2, AlertTriangle } from 'lucide-react';
+import { Search, Trash2, AlertTriangle, Edit2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useBatches } from '@/hooks/useBatches';
+import BatchFormDialog from './BatchFormDialog';
+import type { Batch } from '@/types/batch';
 
 export function BatchList() {
-  const { batches, deleteBatch } = useBatches();
+  const { batches, deleteBatch, createBatch, updateBatch } = useBatches();
   const [search, setSearch] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editBatch, setEditBatch] = useState<Batch | null>(null);
 
   const today = new Date();
   const active = batches.filter(b => b.status === 'active').length;
@@ -60,6 +64,9 @@ export function BatchList() {
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <CardTitle className="text-base">All Batches</CardTitle>
+            <Button size="sm" className="gap-1.5" onClick={() => { setEditBatch(null); setDialogOpen(true); }}>
+              <Plus className="h-4 w-4" /> Add Batch
+            </Button>
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -108,10 +115,16 @@ export function BatchList() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100"
-                        onClick={() => deleteBatch(batch.id)}>
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-7 w-7"
+                          onClick={() => { setEditBatch(batch); setDialogOpen(true); }}>
+                          <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7"
+                          onClick={() => deleteBatch(batch.id)}>
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -120,6 +133,21 @@ export function BatchList() {
           )}
         </CardContent>
       </Card>
+
+      <BatchFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editBatch={editBatch}
+        onSubmit={data => {
+          if (editBatch) {
+            updateBatch(editBatch.id, data);
+          } else {
+            createBatch(data);
+          }
+          setDialogOpen(false);
+          setEditBatch(null);
+        }}
+      />
     </div>
   );
 }
