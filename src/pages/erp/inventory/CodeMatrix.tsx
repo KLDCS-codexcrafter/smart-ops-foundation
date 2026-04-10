@@ -60,10 +60,7 @@ export function CodeMatrixPanel() {
   const [edit, setEdit] = useState<CodeMatrixRule | null>(null);
   const [form, setForm] = useState<FormState>(BLANK);
 
-  const sv = (d: CodeMatrixRule[]) => {
-    localStorage.setItem(KEY, JSON.stringify(d));
-    // [JWT] CRUD /api/inventory/code-matrix
-  };
+  const sv = (d: CodeMatrixRule[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/code-matrix */ };
 
   const openC = () => { setForm(BLANK); setEdit(null); setOpen(true); };
   const openE = (r: CodeMatrixRule) => {
