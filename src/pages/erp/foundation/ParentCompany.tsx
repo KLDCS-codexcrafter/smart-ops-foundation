@@ -119,6 +119,7 @@ const COLOR_SWATCHES = ['#0D9488', '#1E3A5F', '#1E40AF', '#7C3AED', '#B91C1C',
 
 // ── Initial form ─────────────────────────────────────────────────────────────
 const INITIAL_FORM = {
+  hasCIN: false,
   legalEntityName: '', tradingBrandName: '', shortCode: '',
   businessEntity: '', industry: '', businessActivity: '',
   hqAddress: '', hqCountry: 'India', hqState: '', hqDistrict: '',
@@ -184,6 +185,22 @@ export default function ParentCompany() {
     setErrors(e => { const n = { ...e }; delete n[field]; return n; });
   }, []);
 
+  const lsObj = <T,>(k: string, def: T): T => {
+    try { const v = localStorage.getItem(k); return v ? {...def, ...JSON.parse(v)} : def; }
+    catch { return def; }
+  };
+
+  // Load saved data on mount
+  useEffect(() => {
+    const saved = lsObj('erp_parent_company', INITIAL_FORM);
+    if (saved && saved.legalEntityName) {
+      setForm(f => ({ ...f, ...saved }));
+      const full = lsObj<any>('erp_parent_company', {});
+      if (full.gstRegs) setGstRegs(full.gstRegs);
+      if (full.lutBonds) setLutBonds(full.lutBonds);
+    }
+  }, []); // eslint-disable-line
+
   // Auto-suggest short code
   useEffect(() => {
     if (form.legalEntityName && !form.shortCode) {
@@ -230,10 +247,10 @@ export default function ParentCompany() {
   const done = completedSteps();
   const isEditMode = localStorage.getItem('erp_parent_company_saved') === 'true';
 
-  // Confetti
-  useEffect(() => {
-    if (done.length === 6 && !showConfetti) setConfetti(true);
-  }, [done.length]); // eslint-disable-line
+  // Confetti — fires on save, not on step completion
+  // useEffect(() => {
+  //   if (done.length === 6 && !showConfetti) setConfetti(true);
+  // }, [done.length]);
 
   // Amount display preview
   function fmtAmountPreview() {
@@ -242,7 +259,7 @@ export default function ParentCompany() {
     const sp = form.addSpaceBetween ? ' ' : '';
     const num = new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: dec, maximumFractionDigits: dec,
-    }).format(form.showInMillions ? 1 : 1000000);
+    }).format(1000000);
     return form.suffixSymbol ? `${num}${sp}${s}` : `${s}${sp}${num}`;
   }
 
@@ -288,12 +305,22 @@ export default function ParentCompany() {
         january: '0', february: '1', march: '2', april: '3', may: '4', june: '5',
         july: '6', august: '7', september: '8', october: '9', november: '10', december: '11',
       };
+      // Write full form + GST/LUT arrays
+      localStorage.setItem('erp_parent_company', JSON.stringify({
+        ...form, gstRegs, lutBonds,
+        fyFromDate: fyFromDate?.toISOString(),
+        fyToDate: fyToDate?.toISOString(),
+        booksDate: booksDate?.toISOString(),
+        incorporationDate: incorporationDt?.toISOString(),
+      })); /* [JWT] POST /api/foundation/parent-company */
+      // Write ERP global settings (existing behaviour — keep)
       localStorage.setItem('erp_fy_start_month', monthMap[form.fyStartMonth] ?? '3');
       localStorage.setItem('erp_deployment_mode', form.deploymentMode);
       localStorage.setItem('erp_base_currency', form.baseCurrency);
       localStorage.setItem('erp_currency_symbol', form.currencySymbol);
       localStorage.setItem('erp_parent_company_saved', 'true');
       setSaving(false);
+      setConfetti(true);
       toast.success('Parent Company saved', {
         description: 'Financial year and deployment mode applied to all modules.',
       });
@@ -612,10 +639,16 @@ export default function ParentCompany() {
           <TabsContent value="companyInfo">
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-2">
-                <Switch checked={!!form.cin} onCheckedChange={v => { if (!v) { upd('cin', ''); upd('cinFormatted', ''); } }} />
+                <Switch
+                  checked={form.hasCIN as boolean}
+                  onCheckedChange={v => {
+                    upd('hasCIN', v);
+                    if (!v) { upd('cin', ''); upd('cinFormatted', ''); }
+                  }}
+                />
                 <span className="text-xs font-medium">Company Registration (CIN)</span>
               </div>
-              {form.cin !== undefined && (
+              {(form.hasCIN as boolean) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField label="CIN" error={validateCIN(form.cin).valid ? undefined : validateCIN(form.cin).message}>
                     <Input value={form.cin} onChange={e => upd('cin', formatCIN(e.target.value))} placeholder="U74999DL2020PTC123456" className="text-xs font-mono" />

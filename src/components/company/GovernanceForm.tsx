@@ -135,10 +135,16 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
         <TabsContent value="companyInfo">
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <Switch checked={!!f('cin')} onCheckedChange={v => { if (!v) { upd('cin', ''); upd('cinFormatted', ''); } }} />
+              <Switch
+                checked={!!formData['hasCIN']}
+                onCheckedChange={v => {
+                  upd('hasCIN', v);
+                  if (!v) { upd('cin', ''); upd('cinFormatted', ''); }
+                }}
+              />
               <span className="text-xs font-medium">Company Registration (CIN)</span>
             </div>
-            {f('cin') !== undefined && (
+            {!!formData['hasCIN'] && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField label="CIN" error={validateCIN(f('cin')).valid ? undefined : validateCIN(f('cin')).message}>
                   <Input value={f('cin')} onChange={e => upd('cin', formatCIN(e.target.value))} placeholder="U74999DL2020PTC123456" className="text-xs font-mono" />
