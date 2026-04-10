@@ -20,7 +20,7 @@ const COMPARE = [
   { feature: 'RFID', erp: 'RFID Manager with bulk scan', addon: 'Not included' },
   { feature: 'Bin Labels', erp: 'Full bin location labels', addon: 'Not included' },
   { feature: 'Compliance Labels', erp: 'MRP, FSSAI, Drug, EPR', addon: 'Not included' },
-  { feature: 'Requires ERP', erp: 'Yes — full ERP license', addon: 'No — standalone purchase' },
+  { feature: 'Requires ERP?', erp: 'Yes — full ERP subscription', addon: 'No — Tally only' },
 ];
 
 const STEPS = [
