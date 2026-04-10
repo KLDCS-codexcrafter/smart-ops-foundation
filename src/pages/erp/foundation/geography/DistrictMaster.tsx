@@ -40,7 +40,10 @@ const EMPTY: DistrictRecord = {
 
 export default function DistrictMaster() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<DistrictRecord[]>([]);
+  const [records, setRecords] = useState<DistrictRecord[]>(() => {
+    try { return JSON.parse(localStorage.getItem('erp_geo_districts') || '[]'); } catch { return []; }
+  });
+  const saveRecords = (d: DistrictRecord[]) => { localStorage.setItem('erp_geo_districts', JSON.stringify(d)); /* [JWT] PATCH /api/geography/districts/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [stateFilter, setStateFilter] = useState<string>('all');
@@ -94,7 +97,8 @@ export default function DistrictMaster() {
       code: d.code, name: d.name, stateCode: stateFilter,
       countryCode: country, headquarters: d.headquarters, status: 'active',
     }));
-    setRecords(prev => [...prev, ...newRecs.filter(n => !prev.some(p => p.code === n.code))]);
+    const next = [...records, ...newRecs.filter(n => !records.some(p => p.code === n.code))];
+    setRecords(next); saveRecords(next);
     toast.success(`Seeded ${newRecs.length} districts for ${previewData.name}`);
     setPreviewOpen(false);
   }
@@ -117,15 +121,16 @@ export default function DistrictMaster() {
       return;
     }
     if (editIndex !== null) {
-      setRecords(prev => prev.map((r, i) => i === editIndex ? {...formData} : r));
+      const next = records.map((r, i) => i === editIndex ? {...formData} : r);
+      setRecords(next); saveRecords(next);
       toast.success(`District ${formData.code} updated`);
     } else {
-      // Auto-generate code if empty
       const fd = {...formData};
       if (!fd.code && fd.stateCode && fd.name) {
         fd.code = `${fd.stateCode}-${fd.name.slice(0,3).toUpperCase()}`;
       }
-      setRecords(prev => [...prev, fd]);
+      const next = [...records, fd];
+      setRecords(next); saveRecords(next);
       toast.success(`District ${fd.code} created`);
     }
     setFormOpen(false);
@@ -134,7 +139,8 @@ export default function DistrictMaster() {
   function handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
-    setRecords(prev => prev.filter((_, i) => i !== deleteIndex));
+    const next = records.filter((_, i) => i !== deleteIndex);
+    setRecords(next); saveRecords(next);
     toast.success(`District ${r.code} deleted`);
     setDeleteIndex(null);
   }
@@ -229,10 +235,20 @@ export default function DistrictMaster() {
                       <TableCell>{r.headquarters || '—'}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={cn(
+                          'cursor-pointer select-none',
                           r.status === 'active'
                             ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
                             : 'bg-muted text-muted-foreground',
-                        )}>
+                        )}
+                          title="Click to toggle status"
+                          onClick={() => {
+                            const next = records.map((item, j) =>
+                              j === realIdx ? { ...item, status: item.status === 'active' ? 'inactive' as const : 'active' as const } : item
+                            );
+                            setRecords(next); saveRecords(next);
+                            toast.success('Status updated');
+                          }}
+                        >
                           {r.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>

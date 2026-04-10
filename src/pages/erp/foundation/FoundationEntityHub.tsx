@@ -4,7 +4,7 @@
  * Tab controlled by ?tab= URL param.
  * Create/edit routes unchanged.
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -26,30 +26,8 @@ import { toast } from 'sonner';
 
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 
-// ── Mock data ─────────────────────────────────────────────────────
-// [JWT] Replace with API calls
-const MOCK_COMPANIES = [
-  { id:'c1', code:'SHTR001', shortCode:'SHTR', name:'Sharma Traders Pvt Ltd',
-    parentCompany:'SmartOps Industries Pvt Ltd', status:'Active',
-    city:'Mumbai', state:'Maharashtra', createdAt:'01 Apr 2025' },
-  { id:'c2', code:'SMTN001', shortCode:'SMTN', name:'SmartOps North India Pvt Ltd',
-    parentCompany:'SmartOps Industries Pvt Ltd', status:'Active',
-    city:'New Delhi', state:'Delhi', createdAt:'15 Jun 2025' },
-  { id:'c3', code:'SMEP001', shortCode:'SMEP', name:'SmartOps East Projects Ltd',
-    parentCompany:'SmartOps Industries Pvt Ltd', status:'Under Formation',
-    city:'Kolkata', state:'West Bengal', createdAt:'01 Jan 2026' },
-];
-
-const MOCK_SUBSIDIARIES = [
-  { id:'s1', code:'SUB001', name:'SmartOps Tech Solutions Ltd',
-    parentCompany:'SmartOps Industries Pvt Ltd',
-    ownershipPct:'100%', relationship:'Wholly Owned Subsidiary',
-    status:'Active', city:'Bengaluru' },
-  { id:'s2', code:'SUB002', name:'SmartOps Finance Services Ltd',
-    parentCompany:'SmartOps Industries Pvt Ltd',
-    ownershipPct:'74%', relationship:'Majority Owned Subsidiary',
-    status:'Active', city:'Mumbai' },
-];
+// ── localStorage helpers ─────────────────────────────────────────
+const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
 
 const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Service Centre':       'bg-blue-500/10 text-blue-600 border-blue-500/20',
@@ -63,18 +41,6 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Support Office':       'bg-teal-500/10 text-teal-600 border-teal-500/20',
   'Delivery Point':       'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
 };
-
-const MOCK_BRANCHES = [
-  { id:'b1', code:'BR001', name:'Mumbai Service Centre',
-    branchType:'Service Centre', parentCompany:'SmartOps Industries Pvt Ltd',
-    branchHead:'Ravi Kumar', status:'Active', city:'Mumbai', state:'Maharashtra' },
-  { id:'b2', code:'BR002', name:'Delhi Sales Office',
-    branchType:'Sales Office', parentCompany:'SmartOps Industries Pvt Ltd',
-    branchHead:'Priya Sharma', status:'Active', city:'New Delhi', state:'Delhi' },
-  { id:'b3', code:'BR003', name:'Bengaluru Collection Centre',
-    branchType:'Collection Centre', parentCompany:'SmartOps North India Pvt Ltd',
-    branchHead:'Suresh Patel', status:'Inactive', city:'Bengaluru', state:'Karnataka' },
-];
 
 // ── Status badge colour ───────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
@@ -177,24 +143,65 @@ export default function FoundationEntityHub() {
   const activeTab = (searchParams.get('tab') as Tab) || 'companies';
   const setTab = (t: Tab) => setSearchParams({ tab: t }, { replace: true });
 
+  const [rawCompanies, setRawCompanies] = useState<any[]>(() => ls('erp_companies'));
+  const [rawSubsidiaries, setRawSubsidiaries] = useState<any[]>(() => ls('erp_subsidiaries'));
+  const [rawBranches, setRawBranches] = useState<any[]>(() => ls('erp_branch_offices'));
+
+  const allCompanies = useMemo(() => rawCompanies.map(c => ({
+    id: c.id,
+    code: c.shortCode ? `${c.shortCode}001` : '',
+    shortCode: c.shortCode || '',
+    name: c.legalEntityName || c.name || '',
+    parentCompany: c.parentCompanyName || '—',
+    status: c.status || 'Active',
+    city: c.hqCity || '',
+    state: c.hqState || '',
+    entityLevel: c.entity_type || 'company',
+    createdAt: c.created_at ? c.created_at.slice(0,10) : '',
+  })), [rawCompanies]);
+
+  const allSubsidiaries = useMemo(() => rawSubsidiaries.map(s => ({
+    id: s.id,
+    code: s.shortCode || '',
+    name: s.legalEntityName || s.name || '',
+    parentCompany: s.parentCompanyName || '—',
+    reportingTo: s.reportingToEntityId && s.reportingToEntityId !== 'same' ? s.reportingToEntityId : '—',
+    ownershipPct: s.ownershipPercentage ? s.ownershipPercentage + '%' : '—',
+    relationship: s.subsidiaryRelationship || '—',
+    status: s.status || 'Active',
+    city: s.hqCity || '',
+  })), [rawSubsidiaries]);
+
+  const allBranches = useMemo(() => rawBranches.map(b => ({
+    id: b.id,
+    code: b.code || '',
+    name: b.name || '',
+    branchType: b.branchType || '',
+    parentCompany: b.parentCompanyName || b.parentCompanyId || '—',
+    branchHead: b.branchHead || '—',
+    status: b.status || 'Active',
+    city: b.city || '',
+    state: b.state || '',
+  })), [rawBranches]);
+
   const [search, setSearch] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Filter data for active tab
   const companies = useMemo(() =>
-    MOCK_COMPANIES.filter(r =>
+    allCompanies.filter(r =>
       [r.name, r.code, r.shortCode, r.city].some(v => v.toLowerCase().includes(search.toLowerCase()))
-    ), [search]);
+    ), [search, allCompanies]);
 
   const subsidiaries = useMemo(() =>
-    MOCK_SUBSIDIARIES.filter(r =>
+    allSubsidiaries.filter(r =>
       [r.name, r.code, r.city].some(v => v.toLowerCase().includes(search.toLowerCase()))
-    ), [search]);
+    ), [search, allSubsidiaries]);
 
   const branches = useMemo(() =>
-    MOCK_BRANCHES.filter(r =>
+    allBranches.filter(r =>
       [r.name, r.code, r.city, r.branchType, r.branchHead].some(v => v.toLowerCase().includes(search.toLowerCase()))
-    ), [search]);
+    ), [search, allBranches]);
 
   // Reset search when tab changes
   function handleTabChange(t: string) {
@@ -250,16 +257,16 @@ export default function FoundationEntityHub() {
           <div className='flex items-center gap-3 flex-wrap'>
             <div className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20'>
               <Building2 className='h-3.5 w-3.5 text-emerald-600' />
-              <span className='text-xs font-medium text-emerald-700'>{MOCK_COMPANIES.length} Companies</span>
+              <span className='text-xs font-medium text-emerald-700'>{allCompanies.length} Companies</span>
             </div>
             <div className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20'>
               <Layers className='h-3.5 w-3.5 text-blue-600' />
-              <span className='text-xs font-medium text-blue-700'>{MOCK_SUBSIDIARIES.length} Subsidiaries</span>
+              <span className='text-xs font-medium text-blue-700'>{allSubsidiaries.length} Subsidiaries</span>
             </div>
             <div className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20'>
               <GitBranch className='h-3.5 w-3.5 text-indigo-600' />
               <span className='text-xs font-medium text-indigo-700'>
-                {MOCK_BRANCHES.filter(b => b.status === 'Active').length} / {MOCK_BRANCHES.length} Branch Offices
+                {allBranches.filter(b => b.status === 'Active').length} / {allBranches.length} Branch Offices
               </span>
             </div>
           </div>
@@ -382,7 +389,28 @@ export default function FoundationEntityHub() {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => { setDeleteId(null); toast.success('Record deleted (mock)'); }}
+                onClick={() => {
+                  if (!deleteId) return;
+                  const compIdx = rawCompanies.findIndex(r => r.id === deleteId);
+                  const subIdx = rawSubsidiaries.findIndex(r => r.id === deleteId);
+                  const brIdx = rawBranches.findIndex(r => r.id === deleteId);
+                  if (compIdx >= 0) {
+                    const next = rawCompanies.filter(r => r.id !== deleteId);
+                    setRawCompanies(next);
+                    localStorage.setItem('erp_companies', JSON.stringify(next));
+                  } else if (subIdx >= 0) {
+                    const next = rawSubsidiaries.filter(r => r.id !== deleteId);
+                    setRawSubsidiaries(next);
+                    localStorage.setItem('erp_subsidiaries', JSON.stringify(next));
+                  } else if (brIdx >= 0) {
+                    const next = rawBranches.filter(r => r.id !== deleteId);
+                    setRawBranches(next);
+                    localStorage.setItem('erp_branch_offices', JSON.stringify(next));
+                  }
+                  /* [JWT] DELETE /api/foundation/entities/:id */
+                  setDeleteId(null);
+                  toast.success('Record deleted');
+                }}
                 className='bg-destructive hover:bg-destructive/90'>
                 Delete
               </AlertDialogAction>

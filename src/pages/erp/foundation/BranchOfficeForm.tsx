@@ -3,7 +3,7 @@
  * Standalone page with ERPHeader. SidebarProvider wrapper.
  * [JWT] Replace mock data with real API queries.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -39,18 +39,7 @@ const BRANCH_STATUSES = [
   'Active', 'Inactive', 'Under Setup', 'Temporarily Closed', 'Permanently Closed',
 ];
 
-// [JWT] Mock parent companies for selector — from API
-const MOCK_COMPANIES_FOR_BRANCH = [
-  { id: 'parent-001', name: 'SmartOps Industries Pvt Ltd' },
-  { id: 'c1', name: 'Sharma Traders Pvt Ltd' },
-  { id: 'c2', name: 'SmartOps North India Pvt Ltd' },
-];
-
-// [JWT] Mock existing branches (for Parent Branch selector) — from API
-const MOCK_EXISTING_BRANCHES = [
-  { id: 'b1', name: 'Mumbai Service Centre', code: 'BR001' },
-  { id: 'b2', name: 'Delhi Sales Office', code: 'BR002' },
-];
+// Parent companies + branches loaded dynamically from localStorage (see useMemo below)
 
 const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Service Centre': 'bg-blue-500/10 text-blue-600 border-blue-500/20',
@@ -103,6 +92,7 @@ interface BranchOfficeFormProps {
 
 export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormProps) {
   const navigate = useNavigate();
+  const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
   const [form, setForm] = useState<BranchFormData>({ ...INITIAL });
   const [saving, setSaving] = useState(false);
   const [estDate, setEstDate] = useState<Date>();
@@ -113,6 +103,32 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
     setForm(p => ({ ...p, [field]: val }));
   }, []);
 
+  // Dynamic parent company picker
+  const parentCompanyOptions = useMemo(() => {
+    const parentRecord = (() => { try { const v = localStorage.getItem('erp_parent_company'); return v ? JSON.parse(v) : null; } catch { return null; } })();
+    const companies: any[] = ls('erp_companies');
+    const options: {id: string; name: string}[] = [];
+    if (parentRecord?.legalEntityName) options.push({ id: 'parent-root', name: parentRecord.legalEntityName });
+    companies.forEach(c => { if (c.id && c.legalEntityName) options.push({ id: c.id, name: c.legalEntityName }); });
+    if (options.length === 0) options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd' });
+    return options;
+  }, []);
+
+  // Dynamic existing branches
+  const existingBranches = useMemo(() =>
+    ls<any>('erp_branch_offices')
+      .filter((b: any) => b.id && b.name && b.id !== entityId)
+      .map((b: any) => ({ id: b.id, name: b.name, code: b.code || '' })),
+  []);
+
+  // Load data in edit mode
+  useEffect(() => {
+    if (mode !== 'edit' || !entityId) return;
+    const records: any[] = ls('erp_branch_offices');
+    const existing = records.find(r => r.id === entityId);
+    if (existing) setForm(prev => ({ ...prev, ...existing }));
+  }, []); // eslint-disable-line
+
   // Auto-suggest short code from name
   function suggestShort(name: string) {
     return name.split(/\s+/).map(w => w[0]?.toUpperCase() ?? '').join('').slice(0, 4);
@@ -122,10 +138,18 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
-      // [JWT] Replace with: POST /api/foundation/branch-offices
-      toast.success('Branch Office saved', {
-        description: '[JWT] Will persist to database.',
-      });
+      const existing: any[] = ls('erp_branch_offices');
+      const currentId = entityId ?? crypto.randomUUID();
+      const record = {
+        ...form, id: currentId, entity_type: 'branch',
+        updated_at: new Date().toISOString(),
+        created_at: existing.find(r => r.id === currentId)?.created_at ?? new Date().toISOString(),
+      };
+      const idx = existing.findIndex((r: any) => r.id === currentId);
+      if (idx >= 0) existing[idx] = record; else existing.push(record);
+      localStorage.setItem('erp_branch_offices', JSON.stringify(existing));
+      /* [JWT] POST or PATCH /api/foundation/branch-offices */
+      toast.success('Branch Office saved', { description: '[JWT] Will persist to database.' });
       setSetupOpen(true);
     }, 800);
   }
@@ -189,11 +213,11 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
               <FormField label="Parent Company" required>
                 <Select value={form.parentCompanyId} onValueChange={v => {
                   upd('parentCompanyId', v);
-                  const pc = MOCK_COMPANIES_FOR_BRANCH.find(c => c.id === v);
+                  const pc = parentCompanyOptions.find(c => c.id === v);
                   if (pc) upd('parentCompanyName', pc.name);
                 }}>
                   <SelectTrigger className="text-xs"><SelectValue placeholder="Select company" /></SelectTrigger>
-                  <SelectContent>{MOCK_COMPANIES_FOR_BRANCH.map(c => <SelectItem key={c.id} value={c.id}><span className="text-xs">{c.name}</span></SelectItem>)}</SelectContent>
+                  <SelectContent>{parentCompanyOptions.map(c => <SelectItem key={c.id} value={c.id}><span className="text-xs">{c.name}</span></SelectItem>)}</SelectContent>
                 </Select>
               </FormField>
               <FormField label="Parent Branch" hint="Optional. Use when this branch reports to another branch.">
@@ -201,7 +225,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
                   <SelectTrigger className="text-xs"><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none"><span className="text-xs">None</span></SelectItem>
-                    {MOCK_EXISTING_BRANCHES.map(b => (
+                    {existingBranches.map(b => (
                       <SelectItem key={b.id} value={b.id}><span className="text-xs">{b.name} ({b.code})</span></SelectItem>
                     ))}
                   </SelectContent>

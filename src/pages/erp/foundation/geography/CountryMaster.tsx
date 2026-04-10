@@ -43,7 +43,14 @@ const EMPTY: Country = {
 
 export default function CountryMaster() {
   const navigate = useNavigate();
-  const [localCountries, setLocalCountries] = useState<Country[]>([]);
+  const [localCountries, setLocalCountries] = useState<Country[]>(() => {
+    try { return JSON.parse(localStorage.getItem('erp_geo_countries') || '[]'); } catch { return []; }
+  });
+
+  const saveCountries = (d: Country[]) => {
+    localStorage.setItem('erp_geo_countries', JSON.stringify(d));
+    /* [JWT] PATCH /api/geography/countries/bulk */
+  };
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<Country>({...EMPTY});
@@ -94,10 +101,12 @@ export default function CountryMaster() {
     }
     // [JWT] Replace with real POST/PATCH
     if (editIndex !== null) {
-      setLocalCountries(prev => prev.map((c, i) => i === editIndex ? {...formData} : c));
+      const next = localCountries.map((c, i) => i === editIndex ? {...formData} : c);
+      setLocalCountries(next); saveCountries(next);
       toast.success(`Country ${formData.code} updated`);
     } else {
-      setLocalCountries(prev => [...prev, {...formData}]);
+      const next = [...localCountries, {...formData}];
+      setLocalCountries(next); saveCountries(next);
       toast.success(`Country ${formData.code} created`);
     }
     setFormOpen(false);
@@ -106,8 +115,8 @@ export default function CountryMaster() {
   function handleDelete() {
     if (deleteIndex === null) return;
     const c = localCountries[deleteIndex];
-    // [JWT] Replace with DELETE /api/geography/countries/:code
-    setLocalCountries(prev => prev.filter((_, i) => i !== deleteIndex));
+    const next = localCountries.filter((_, i) => i !== deleteIndex);
+    setLocalCountries(next); saveCountries(next);
     toast.success(`Country ${c.code} deleted`);
     setDeleteIndex(null);
   }
@@ -183,11 +192,23 @@ export default function CountryMaster() {
                       <TableCell>{c.currencyCode} ({c.currencySymbol})</TableCell>
                       <TableCell>{c.dialCode}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={cn(
-                          c.status === 'active'
-                            ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                            : 'bg-muted text-muted-foreground',
-                        )}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'cursor-pointer select-none',
+                            c.status === 'active'
+                              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                              : 'bg-muted text-muted-foreground',
+                          )}
+                          title="Click to toggle status"
+                          onClick={() => {
+                            const next = localCountries.map((item, j) =>
+                              j === realIdx ? { ...item, status: item.status === 'active' ? 'inactive' as const : 'active' as const } : item
+                            );
+                            setLocalCountries(next); saveCountries(next);
+                            toast.success('Status updated');
+                          }}
+                        >
                           {c.status === 'active' ? 'Active' : 'Inactive'}
                         </Badge>
                       </TableCell>

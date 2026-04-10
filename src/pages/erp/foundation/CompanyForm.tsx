@@ -3,7 +3,7 @@
  * entityType prop switches between the two. mode=create|edit.
  * [JWT] Replace mock data with real API queries.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -46,10 +46,7 @@ interface CompanyFormProps {
   entityId?: string;
 }
 
-// ── Mock parent companies — [JWT] replace with API call GET /api/foundation/companies
-const MOCK_PARENT_COMPANIES = [
-  { id: 'parent-001', name: 'SmartOps Industries Pvt Ltd', shortCode: 'SMRT' },
-];
+// Parent companies loaded dynamically from localStorage (see parentCompanies useMemo below)
 
 const SUBSIDIARY_RELATIONSHIPS = [
   'Wholly Owned Subsidiary', 'Majority Owned Subsidiary',
@@ -119,6 +116,7 @@ const INITIAL_FORM: Record<string, unknown> = {
   businessEntity: '', industry: '', businessActivity: '',
   parentCompanyId: '', parentCompanyName: '',
   // Subsidiary-specific
+  reportingToEntityId: '',
   subsidiaryRelationship: '', ownershipPercentage: '',
   acquisitionDate: '', investmentAmount: '',
   boardSeats: '', consolidatedReporting: false, consolidationMethod: '',
@@ -184,6 +182,12 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
   const [booksDate, setBooksDate] = useState<Date>();
   const [acqDate, setAcqDate] = useState<Date>();
 
+  const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
+  const lsObj = <T,>(k: string, def: T): T => {
+    try { const v = localStorage.getItem(k); return v ? {...def, ...JSON.parse(v)} : def; }
+    catch { return def; }
+  };
+
   const f = (key: string) => (form[key] ?? '') as string;
   const fb = (key: string) => !!form[key];
 
@@ -194,6 +198,45 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
 
   const label = entityType === 'company' ? 'Company' : 'Subsidiary';
   const listPath = entityType === 'company' ? '/erp/foundation/companies' : '/erp/foundation/subsidiaries';
+
+  // Dynamic parent company picker
+  const parentCompanies = useMemo(() => {
+    const parentRecord = lsObj<any>('erp_parent_company', {});
+    const companies: any[] = ls('erp_companies');
+    const subsidiaries: any[] = ls('erp_subsidiaries');
+    const options: {id: string; name: string; shortCode: string; entity_type: string}[] = [];
+    if (parentRecord?.legalEntityName) {
+      options.push({
+        id: 'parent-root',
+        name: parentRecord.legalEntityName,
+        shortCode: parentRecord.shortCode || 'ROOT',
+        entity_type: 'Parent Company',
+      });
+    }
+    companies.forEach(c => {
+      if (c.id) options.push({ id: c.id, name: c.legalEntityName || c.name || '', shortCode: c.shortCode || '', entity_type: 'Company' });
+    });
+    subsidiaries.forEach(s => {
+      if (s.id) options.push({ id: s.id, name: s.legalEntityName || s.name || '', shortCode: s.shortCode || '', entity_type: 'Subsidiary' });
+    });
+    if (options.length === 0) {
+      options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd', shortCode: 'SMRT', entity_type: 'Parent Company' });
+    }
+    return options;
+  }, []); // reads on mount
+
+  // Load existing data in edit mode
+  useEffect(() => {
+    if (mode !== 'edit' || !entityId) return;
+    const key = entityType === 'company' ? 'erp_companies' : 'erp_subsidiaries';
+    const records: any[] = ls(key);
+    const existing = records.find(r => r.id === entityId);
+    if (existing) {
+      setForm(prev => ({ ...prev, ...existing }));
+      if (existing.gstRegs) setGstRegs(existing.gstRegs);
+      if (existing.lutBonds) setLutBonds(existing.lutBonds);
+    }
+  }, []); // eslint-disable-line
 
   // Auto-suggest short code
   useEffect(() => {
@@ -290,29 +333,39 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
-      // Save MRP tax treatment to company settings
-      const settingsKey = 'erp_company_settings';
-      const existing: any[] = (() => { try { return JSON.parse(localStorage.getItem(settingsKey) || '[]'); } catch { return []; } })();
-      const currentEntityId = entityId ?? crypto.randomUUID();
-      const mrpTreatment = f('mrp_tax_treatment') || 'inclusive';
-      const settingsEntry = {
-        id: crypto.randomUUID(),
-        entity_id: currentEntityId,
-        mrp_tax_treatment: mrpTreatment,
-        mrp_tax_treatment_label: mrpTreatment === 'inclusive' ? 'Tax Inclusive (MRP includes GST)' : 'Tax Exclusive (MRP before GST)',
-        rate_change_requires_reason: true,
-        base_currency: 'INR',
-        default_costing_method: 'weighted_avg',
-        created_at: new Date().toISOString(),
+      const storageKey = entityType === 'company' ? 'erp_companies' : 'erp_subsidiaries';
+      const existing: any[] = ls(storageKey);
+      const currentId = entityId ?? crypto.randomUUID();
+      const record = {
+        ...form, id: currentId, entity_type: entityType,
+        gstRegs, lutBonds,
         updated_at: new Date().toISOString(),
+        created_at: existing.find(r => r.id === currentId)?.created_at ?? new Date().toISOString(),
       };
-      const idx = existing.findIndex((s: any) => s.entity_id === currentEntityId);
-      if (idx >= 0) existing[idx] = settingsEntry; else existing.push(settingsEntry);
-      localStorage.setItem(settingsKey, JSON.stringify(existing)); /* [JWT] POST /api/company/settings */
-      // [JWT] Replace with: POST /api/foundation/companies or /api/foundation/subsidiaries
-      toast.success(`${label} saved`, {
-        description: '[JWT] Will persist to database.',
-      });
+      const idx = existing.findIndex((r: any) => r.id === currentId);
+      if (idx >= 0) existing[idx] = record; else existing.push(record);
+      localStorage.setItem(storageKey, JSON.stringify(existing));
+      /* [JWT] POST or PATCH /api/foundation/companies or /api/foundation/subsidiaries */
+
+      // Also keep erp_company_settings write
+      const settingsKey = 'erp_company_settings';
+      const settings: any[] = ls(settingsKey);
+      const mrpTreatment = (form as any).mrp_tax_treatment || 'inclusive';
+      const settingsEntry = {
+        id: crypto.randomUUID(), entity_id: currentId,
+        mrp_tax_treatment: mrpTreatment,
+        mrp_tax_treatment_label: mrpTreatment === 'inclusive'
+          ? 'Tax Inclusive (MRP includes GST)' : 'Tax Exclusive (MRP before GST)',
+        rate_change_requires_reason: true, base_currency: 'INR',
+        default_costing_method: 'weighted_avg',
+        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      };
+      const sIdx = settings.findIndex((s: any) => s.entity_id === currentId);
+      if (sIdx >= 0) settings[sIdx] = settingsEntry; else settings.push(settingsEntry);
+      localStorage.setItem(settingsKey, JSON.stringify(settings));
+      /* [JWT] POST /api/company/settings */
+
+      toast.success(`${label} saved`, { description: '[JWT] Will persist to database.' });
       setSetupOpen(true);
     }, 800);
   }
@@ -377,15 +430,15 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
           <FormField label="Parent Company" required>
             <Select value={f('parentCompanyId')} onValueChange={v => {
               upd('parentCompanyId', v);
-              const pc = MOCK_PARENT_COMPANIES.find(p => p.id === v);
+              const pc = parentCompanies.find(p => p.id === v);
               if (pc) upd('parentCompanyName', pc.name);
             }}>
               <SelectTrigger className="text-xs"><SelectValue placeholder="Select parent company" /></SelectTrigger>
               <SelectContent>
-                {MOCK_PARENT_COMPANIES.map(p => (
+                {parentCompanies.map(p => (
                   <SelectItem key={p.id} value={p.id}>
                     <span className="text-xs">{p.name}</span>
-                    <Badge variant="outline" className="ml-2 text-[10px]">{p.shortCode}</Badge>
+                    <Badge variant="outline" className="ml-2 text-[10px]">{p.entity_type}</Badge>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -444,6 +497,21 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
                 </FormField>
                 <FormField label="Board Seats">
                   <Input type="number" value={f('boardSeats')} onChange={e => upd('boardSeats', e.target.value)} min={0} max={50} className="text-xs" />
+                </FormField>
+                <FormField label="Reporting To" hint="Operational reporting line — may differ from Parent Company">
+                  <Select value={f('reportingToEntityId')} onValueChange={v => upd('reportingToEntityId', v)}>
+                    <SelectTrigger className="text-xs"><SelectValue placeholder="Same as Parent Company" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="same"><span className="text-xs">— Same as Parent Company —</span></SelectItem>
+                      {parentCompanies.map(p => (
+                        <SelectItem key={p.id} value={p.id}>
+                          <span className="text-xs">{p.name}
+                            <Badge variant="outline" className="ml-2 text-[10px]">{p.entity_type}</Badge>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormField>
               </div>
 
