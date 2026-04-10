@@ -30,6 +30,7 @@ export function useCodeMatrix() {
 
   const deleteRule = (id: string) => {
     const u = rules.filter(x => x.id !== id); setRules(u); save(u);
+    toast.success('Rule deleted');
     // [JWT] DELETE /api/inventory/code-matrix/:id
   };
 
