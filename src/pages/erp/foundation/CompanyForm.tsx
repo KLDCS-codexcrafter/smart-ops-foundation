@@ -160,6 +160,7 @@ const INITIAL_FORM: Record<string, unknown> = {
   auditLogEnabled: true,
   // Settings
   timezone: 'Asia/Kolkata', language: 'en', status: 'Active',
+  mrp_tax_treatment: 'inclusive',
   // Branding
   logoRight: '', logoCenter: '', logoLeft: '', favicon: '',
   primaryColor: '#0D9488', secondaryColor: '#1E1B2E', themeMode: 'light',
