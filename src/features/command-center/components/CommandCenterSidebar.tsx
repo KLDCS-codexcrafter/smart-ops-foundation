@@ -170,7 +170,30 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* COMING SOON */}
+        {/* INVENTORY MASTERS */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Inventory Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[
+                { label: 'Parametric Hub', href: '/erp/inventory-hub/parametric' },
+                { label: 'Batch Grid', href: '/erp/inventory-hub/batch-grid' },
+                { label: 'Serial Grid', href: '/erp/inventory-hub/serial-grid' },
+              ].map(item => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    tooltip={item.label}
+                    onClick={() => navigate(item.href)}
+                  >
+                    <Package className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Coming Soon</SidebarGroupLabel>
           <SidebarGroupContent>
