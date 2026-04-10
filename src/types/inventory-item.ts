@@ -70,6 +70,18 @@ export interface InventoryItem {
   tds_applicable: boolean;
   supply_type: string;
   mrp?: number | null;
+  // Standard rates — base reference prices per item
+  std_purchase_rate?: number | null;   // reference rate for Purchase Orders
+  std_selling_rate?: number | null;    // base list price for all sales
+  std_cost_rate?: number | null;       // for items using standard_cost costing method
+  // Auto-maintained by transactions — DO NOT edit manually
+  last_purchase_rate?: number | null;  // updated on every GRN posted (A.6)
+  last_purchase_date?: string | null;
+  last_selling_rate?: number | null;   // updated on every Delivery Note posted (A.6)
+  last_selling_date?: string | null;
+  // MRP companions — mrp field already exists above
+  mrp_inclusive_tax?: boolean | null;  // true = GST embedded in MRP (FMCG/Pharma default)
+  mrp_uom?: string | null;             // per unit display: 'per kg', 'per pcs', 'per ltr'
   fssai_license?: string | null;
   drug_license?: string | null;
   epr_registration?: string | null;
