@@ -41,7 +41,6 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
 
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
-  { label: 'Inventory Masters', icon: Package },
   { label: 'Sales Masters', icon: TrendingUp },
   { label: 'HR & Payroll Masters', icon: Users },
 ];
