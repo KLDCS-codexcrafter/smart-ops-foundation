@@ -160,6 +160,7 @@ const INITIAL_FORM: Record<string, unknown> = {
   auditLogEnabled: true,
   // Settings
   timezone: 'Asia/Kolkata', language: 'en', status: 'Active',
+  mrp_tax_treatment: 'inclusive',
   // Branding
   logoRight: '', logoCenter: '', logoLeft: '', favicon: '',
   primaryColor: '#0D9488', secondaryColor: '#1E1B2E', themeMode: 'light',
@@ -289,6 +290,25 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
+      // Save MRP tax treatment to company settings
+      const settingsKey = 'erp_company_settings';
+      const existing: any[] = (() => { try { return JSON.parse(localStorage.getItem(settingsKey) || '[]'); } catch { return []; } })();
+      const currentEntityId = entityId ?? crypto.randomUUID();
+      const mrpTreatment = f('mrp_tax_treatment') || 'inclusive';
+      const settingsEntry = {
+        id: crypto.randomUUID(),
+        entity_id: currentEntityId,
+        mrp_tax_treatment: mrpTreatment,
+        mrp_tax_treatment_label: mrpTreatment === 'inclusive' ? 'Tax Inclusive (MRP includes GST)' : 'Tax Exclusive (MRP before GST)',
+        rate_change_requires_reason: true,
+        base_currency: 'INR',
+        default_costing_method: 'weighted_avg',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const idx = existing.findIndex((s: any) => s.entity_id === currentEntityId);
+      if (idx >= 0) existing[idx] = settingsEntry; else existing.push(settingsEntry);
+      localStorage.setItem(settingsKey, JSON.stringify(existing)); /* [JWT] POST /api/company/settings */
       // [JWT] Replace with: POST /api/foundation/companies or /api/foundation/subsidiaries
       toast.success(`${label} saved`, {
         description: '[JWT] Will persist to database.',
@@ -688,6 +708,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
 
   function renderStep5() {
     return (
+      <>
       <FormSection title="Settings" icon={<Settings2 className="h-4 w-4" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField label="Timezone">
@@ -713,6 +734,33 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
           </FormField>
         </div>
       </FormSection>
+
+      <FormSection title="Inventory & Pricing Settings" icon={<DollarSign className="h-4 w-4" />}>
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground">
+            MRP Tax Treatment *
+            <span className="text-xs text-muted-foreground ml-2">
+              How is MRP displayed on labels and invoices?
+            </span>
+          </p>
+          <Select value={f('mrp_tax_treatment')} onValueChange={v => upd('mrp_tax_treatment', v)}>
+            <SelectTrigger className="text-xs"><SelectValue placeholder="Select MRP treatment..." /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inclusive">
+                <span className="text-xs">Tax Inclusive — MRP includes GST (FMCG, Pharma, Consumer Goods)</span>
+              </SelectItem>
+              <SelectItem value="exclusive">
+                <span className="text-xs">Tax Exclusive — MRP is before GST (B2B, Industrial, Services)</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            As per Legal Metrology Act 2009, consumer goods must display MRP inclusive of all taxes.
+            This setting affects label printing (A.5) and invoice display.
+          </p>
+        </div>
+      </FormSection>
+      </>
     );
   }
 

@@ -36,6 +36,10 @@ import { AssetTagManagerPanel } from '@/pages/erp/inventory/AssetTagManager';
 import { BinLocationLabelsPanel } from '@/pages/erp/inventory/BinLocationLabels';
 import { PrintQueuePanel } from '@/pages/erp/inventory/PrintQueue';
 import { RFIDManagerPanel } from '@/pages/erp/inventory/RFIDManager';
+import { OpeningStockPanel } from '@/pages/erp/inventory/OpeningStockEntry';
+import { ItemRatesPanel } from '@/pages/erp/inventory/ItemRatesMRP';
+import { PriceListsPanel } from '@/pages/erp/inventory/PriceListManager';
+import { ReorderAlertsPanel } from '@/pages/erp/inventory/ReorderAlerts';
 
 export type CommandCenterModule =
   | 'overview'
@@ -71,7 +75,11 @@ export type CommandCenterModule =
   | 'inventory-asset-tags'
   | 'inventory-bin-labels'
   | 'inventory-print-queue'
-  | 'inventory-rfid';
+  | 'inventory-rfid'
+  | 'inventory-opening-stock'
+  | 'inventory-item-rates'
+  | 'inventory-price-lists'
+  | 'inventory-reorder';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -86,7 +94,8 @@ export default function CommandCenterPage() {
       'inventory-storage', 'inventory-uom',
       'inventory-item-craft', 'inventory-code-matrix', 'inventory-item-templates',
       'inventory-label-templates', 'inventory-barcode-gen', 'inventory-asset-tags',
-      'inventory-bin-labels', 'inventory-print-queue', 'inventory-rfid'].includes(hash)) {
+      'inventory-bin-labels', 'inventory-print-queue', 'inventory-rfid',
+      'inventory-opening-stock', 'inventory-item-rates', 'inventory-price-lists', 'inventory-reorder'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -137,6 +146,10 @@ export default function CommandCenterPage() {
       case 'inventory-bin-labels': return <BinLocationLabelsPanel />;
       case 'inventory-print-queue': return <PrintQueuePanel />;
       case 'inventory-rfid': return <RFIDManagerPanel />;
+      case 'inventory-opening-stock': return <OpeningStockPanel />;
+      case 'inventory-item-rates': return <ItemRatesPanel />;
+      case 'inventory-price-lists': return <PriceListsPanel />;
+      case 'inventory-reorder': return <ReorderAlertsPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
