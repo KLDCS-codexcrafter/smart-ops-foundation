@@ -34,7 +34,7 @@ const DEFAULT_DEPT_TAGS: DepartmentTag[] = [
 const initDeptTags = (): DepartmentTag[] => {
   const stored = ls<DepartmentTag>(DTKEY);
   if (stored.length > 0) return stored;
-  localStorage.setItem(DTKEY, JSON.stringify(DEFAULT_DEPT_TAGS));
+  localStorage.setItem(DTKEY, JSON.stringify(DEFAULT_DEPT_TAGS)); /* [JWT] POST /api/inventory/department-tags/seed */
   return DEFAULT_DEPT_TAGS;
 };
 
