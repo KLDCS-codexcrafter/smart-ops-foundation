@@ -98,7 +98,7 @@ export function PriceListsPanel() {
         const srcItems = listItems.filter(li => li.price_list_id === listForm.copy_from_id);
         const copiedItems = srcItems.map(li => ({
           ...li, id: `pli-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          price_list_id: nl.id, created_at: now,
+          price_list_id: nl.id, created_at: now, updated_at: now,
         }));
         const u = [...listItems, ...copiedItems]; setListItems(u); saveListItems(u);
       }
