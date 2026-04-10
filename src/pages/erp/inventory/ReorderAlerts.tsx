@@ -360,18 +360,18 @@ export function ReorderAlertsPanel() {
 
         {/* TAB: Rate Alerts */}
         <TabsContent value="rate_alerts" className="mt-4 space-y-4">
-          {[
-            { title: 'Missing MRP', desc: 'Finished Goods and Packaging items without MRP – Legal Metrology Act risk', items: rateAlerts.missingMRP, color: 'amber' },
-            { title: 'Missing Std Selling Rate', desc: 'Items with no standard selling price – staff must manually enter price on every invoice', items: rateAlerts.missingStdSell, color: 'amber' },
-            { title: 'Missing Std Purchase Rate', desc: 'Items with no standard purchase rate – staff must manually enter rate on every PO', items: rateAlerts.missingStdPurch, color: 'slate' },
-            { title: 'Selling Below Cost', desc: 'Std Selling Rate is below Std Cost Rate – margin warning', items: rateAlerts.belowCost, color: 'red' },
-          ].map(alert => (
-            <Card key={alert.title} className={alert.items.length > 0 ? 'border-amber-200 dark:border-amber-800' : ''}>
+          {([
+            { title: 'Missing MRP', desc: 'Finished Goods and Packaging items without MRP – Legal Metrology Act risk', items: rateAlerts.missingMRP, borderClass: 'border-amber-200 dark:border-amber-800', iconClass: 'text-amber-600', badgeClass: 'bg-amber-500/10 text-amber-700' },
+            { title: 'Missing Std Selling Rate', desc: 'Items with no standard selling price – staff must manually enter price on every invoice', items: rateAlerts.missingStdSell, borderClass: 'border-amber-200 dark:border-amber-800', iconClass: 'text-amber-600', badgeClass: 'bg-amber-500/10 text-amber-700' },
+            { title: 'Missing Std Purchase Rate', desc: 'Items with no standard purchase rate – staff must manually enter rate on every PO', items: rateAlerts.missingStdPurch, borderClass: 'border-slate-200 dark:border-slate-800', iconClass: 'text-slate-600', badgeClass: 'bg-slate-500/10 text-slate-700' },
+            { title: 'Selling Below Cost', desc: 'Std Selling Rate is below Std Cost Rate – margin warning', items: rateAlerts.belowCost, borderClass: 'border-red-200 dark:border-red-800', iconClass: 'text-red-600', badgeClass: 'bg-red-500/10 text-red-700' },
+          ] as const).map(alert => (
+            <Card key={alert.title} className={alert.items.length > 0 ? alert.borderClass : ''}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  {alert.items.length > 0 && <AlertTriangle className="h-4 w-4 text-amber-600" />}
+                  {alert.items.length > 0 && <AlertTriangle className={`h-4 w-4 ${alert.iconClass}`} />}
                   {alert.title}
-                  <Badge className={`text-xs ${alert.items.length > 0 ? 'bg-amber-500/10 text-amber-700' : 'bg-emerald-500/10 text-emerald-700'}`}>
+                  <Badge className={`text-xs ${alert.items.length > 0 ? alert.badgeClass : 'bg-emerald-500/10 text-emerald-700'}`}>
                     {alert.items.length > 0 ? `${alert.items.length} items` : 'All clear ✓'}
                   </Badge>
                 </CardTitle>
