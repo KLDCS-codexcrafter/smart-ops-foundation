@@ -227,7 +227,16 @@ export function ItemRatesPanel() {
         if (stdSelling) {
           const n = parseFloat(stdSelling);
           if (!isNaN(n)) {
+            const old = newItems[idx].std_selling_rate ?? null;
             newItems[idx] = { ...newItems[idx], std_selling_rate: n };
+            newHist.unshift({
+              id: `rh-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+              item_id: item.id, item_code: item.code, item_name: item.name,
+              rate_type: 'std_selling', old_rate: old, new_rate: n,
+              changed_by: 'Current User', change_reason: bulkReasonText,
+              change_reason_category: bulkReason as ItemRateHistory['change_reason_category'],
+              effective_from: bulkEffDate, bulk_update_id: batchId, created_at: now,
+            });
           }
         }
       });
