@@ -59,8 +59,8 @@ export function ClassifyPanel() {
   const openE = (c: Classification) => {
     setForm({
       name: c.name || '', code: c.code || '', short_name: c.short_name || '',
-      description: c.description || '', classification_type: c.classification_type,
-      category_level: c.category_level, parent_id: c.parent_id || null,
+      description: c.description || '', classification_type: c.classification_type as typeof BLK.classification_type,
+      category_level: c.category_level as typeof BLK.category_level, parent_id: c.parent_id || null,
       brand_id: c.brand_id || null, sub_brand_id: c.sub_brand_id || null,
       movement_indicator: c.movement_indicator, change_history_enabled: c.change_history_enabled,
       effective_from: c.effective_from || '', effective_to: c.effective_to || '',
