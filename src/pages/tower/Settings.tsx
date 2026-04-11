@@ -21,7 +21,7 @@ const TABS = [
   { key: "general", label: "General", icon: Globe },
   { key: "email", label: "Email & SMTP", icon: Mail },
   { key: "security", label: "Security Defaults", icon: Shield },
-  { key: "billing", label: "Billing Config", icon: IndianRupee },
+  { key: "billing", label: "Proforma Invoice Config", icon: IndianRupee },
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "maintenance", label: "Maintenance", icon: Wrench },
   { key: "system", label: "System Info", icon: Info },
@@ -285,7 +285,7 @@ const TowerSettings = () => {
   const BillingSection = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Billing Config</h2>
+        <h2 className="text-lg font-semibold text-foreground">Proforma Invoice Config</h2>
         <p className="text-xs text-muted-foreground mt-1">Invoice, tax and payment settings</p>
       </div>
 
@@ -342,8 +342,8 @@ const TowerSettings = () => {
         </Field>
       </PolicyGroup>
 
-      <Button onClick={() => handleSave("Billing Config")} disabled={saving} style={{ background: "var(--gradient-primary)" }}>
-        {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save Billing Config
+      <Button onClick={() => handleSave("Proforma Invoice Config")} disabled={saving} style={{ background: "var(--gradient-primary)" }}>
+        {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save Proforma Invoice Config
       </Button>
     </div>
   );
