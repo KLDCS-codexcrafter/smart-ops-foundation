@@ -157,10 +157,10 @@ const App = () => (
             } />
             <Route path="/tower" element={<TowerDashboard />} />
             <Route path="/tower/dashboard" element={<TowerDashboard />} />
-            <Route <Route path="/tower/customers" element={<Tenants />} /> element={<Tenants />} />
+            <Route path="/tower/customers" element={<Tenants />} />
             <Route path="/tower/users" element={<Users />} />
             <Route path="/tower/permissions" element={<Permissions />} />
-            <Route <Route path="/tower/proforma-invoice" element={<Billing />} /> element={<Billing />} />
+            <Route path="/tower/proforma-invoice" element={<Billing />} />
             <Route path="/tower/security" element={<Security />} />
             <Route path="/tower/notifications" element={<Notifications />} />
             <Route path="/tower/audit-logs" element={<AuditLogs />} />
