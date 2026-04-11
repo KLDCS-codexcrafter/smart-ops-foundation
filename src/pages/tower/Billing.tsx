@@ -84,16 +84,16 @@ function formatINR(paise: number): string {
 }
 
 const STATUS_CONFIG: Record<BillingStatus, { label: string; color: string }> = {
-  paid: { label: "Paid", color: "bg-success/10 text-success border-success/20" },
-  pending: { label: "Pending", color: "bg-warning/10 text-warning border-warning/20" },
-  overdue: { label: "Overdue", color: "bg-destructive/10 text-destructive border-destructive/20" },
-  failed: { label: "Failed", color: "bg-destructive/10 text-destructive border-destructive/20" },
+  paid: { label: "Paid", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+  pending: { label: "Pending", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+  overdue: { label: "Overdue", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+  failed: { label: "Failed", color: "bg-red-500/10 text-red-400 border-red-500/20" },
 };
 
 const PLAN_COLORS: Record<PlanType, string> = {
-  Starter: "bg-secondary text-muted-foreground",
-  Growth: "bg-primary/10 text-primary",
-  Enterprise: "bg-accent/10 text-accent",
+  Starter: "bg-slate-800/40 text-slate-400",
+  Growth: "bg-cyan-500/10 text-cyan-400",
+  Enterprise: "bg-purple-500/10 text-purple-400",
 };
 
 const CURRENT_PERIOD = "Jul 2026";
@@ -129,41 +129,41 @@ const Billing = () => {
   };
 
   return (
-    <TowerLayout title="Billing" subtitle="Revenue, subscriptions and payment management">
+    <TowerLayout title="Proforma Invoice" subtitle="Customer billing records and payment tracking">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon={IndianRupee} label="MRR (Current Month)" value={formatINR(paidMRR)} color="text-success" sub="+12% vs last month" />
-        <StatCard icon={CheckCircle2} label="Collected" value={String(paidCount)} color="text-success" sub={`${paidCount}/${currentMonth.length} invoices`} />
-        <StatCard icon={Clock} label="Pending" value={formatINR(pendingMRR)} color="text-warning" />
-        <StatCard icon={AlertCircle} label="Overdue + Failed" value={formatINR(atRiskMRR)} color="text-destructive" sub={`${atRisk.length} invoices at risk`} />
+        <StatCard icon={IndianRupee} label="MRR (Current Month)" value={formatINR(paidMRR)} color="text-emerald-400" sub="+12% vs last month" />
+        <StatCard icon={CheckCircle2} label="Collected" value={String(paidCount)} color="text-emerald-400" sub={`${paidCount}/${currentMonth.length} invoices`} />
+        <StatCard icon={Clock} label="Pending" value={formatINR(pendingMRR)} color="text-amber-400" />
+        <StatCard icon={AlertCircle} label="Overdue + Failed" value={formatINR(atRiskMRR)} color="text-red-400" sub={`${atRisk.length} invoices at risk`} />
       </div>
 
       {/* Revenue Trend */}
-      <div className="bg-card border border-border rounded-xl p-5 mb-6">
+      <div className="rounded-xl p-5 mb-6 border border-slate-700" style={{ background: "#1E3A5F" }}>
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-foreground">Revenue Trend</h3>
-          <p className="text-xs text-muted-foreground">Last 6 months</p>
+          <h3 className="text-sm font-semibold text-white">Revenue Trend</h3>
+          <p className="text-xs text-slate-400">Last 6 months</p>
         </div>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={REVENUE_TREND}>
-            <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+            <CartesianGrid vertical={false} stroke="#334155" strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 11, fill: "#94a3b8" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis hide />
             <Tooltip
               contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
+                background: "#0D1B2A",
+                border: "1px solid #334155",
                 borderRadius: "8px",
                 fontSize: "12px",
               }}
               formatter={(value: number) => [formatINR(value), "Revenue"]}
             />
-            <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={32} />
+            <Bar dataKey="revenue" fill="#22d3ee" radius={[4, 4, 0, 0]} barSize={32} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -171,16 +171,16 @@ const Billing = () => {
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Search tenant or invoice..."
+            placeholder="Search customer or invoice..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 bg-slate-800 border-slate-600 text-white">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -192,7 +192,7 @@ const Billing = () => {
           </SelectContent>
         </Select>
         <Select value={periodFilter} onValueChange={setPeriodFilter}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 bg-slate-800 border-slate-600 text-white">
             <SelectValue placeholder="All Periods" />
           </SelectTrigger>
           <SelectContent>
@@ -201,37 +201,37 @@ const Billing = () => {
             <SelectItem value="Jun 2026">Jun 2026</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline" className="ml-auto" onClick={() => toast("Report download coming soon")}>
+        <Button variant="outline" className="ml-auto border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Report download coming soon")}>
           <Download className="h-4 w-4 mr-2" />
           Download Report
         </Button>
       </div>
 
       {/* Results count */}
-      <p className="text-xs text-muted-foreground mb-3">
+      <p className="text-xs text-slate-400 mb-3">
         Showing {filtered.length} of {BILLING.length} records
       </p>
 
       {/* Table */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="rounded-xl overflow-hidden border border-slate-700" style={{ background: "#1E3A5F" }}>
         <Table>
           <TableHeader>
-            <TableRow className="border-border">
-              <TableHead>Invoice</TableHead>
-              <TableHead>Tenant</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Period</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+            <TableRow className="border-slate-700">
+              <TableHead className="text-slate-400">Invoice</TableHead>
+              <TableHead className="text-slate-400">Customer</TableHead>
+              <TableHead className="text-slate-400">Plan</TableHead>
+              <TableHead className="text-slate-400">Period</TableHead>
+              <TableHead className="text-slate-400">Amount</TableHead>
+              <TableHead className="text-slate-400">Status</TableHead>
+              <TableHead className="text-slate-400">Payment</TableHead>
+              <TableHead className="text-right text-slate-400">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-32">
-                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
                     <SearchX className="h-8 w-8" />
                     <span className="text-sm">No billing records found</span>
                   </div>
@@ -241,16 +241,16 @@ const Billing = () => {
               filtered.map((b) => (
                 <TableRow
                   key={b.id}
-                  className="hover:bg-muted/30 cursor-pointer transition-colors border-border"
+                  className="hover:bg-white/[0.03] cursor-pointer transition-colors border-slate-700"
                   onClick={() => openDetail(b)}
                 >
                   <TableCell>
-                    <div className="text-sm font-mono text-foreground">{b.invoiceNo}</div>
-                    <div className="text-xs font-mono text-muted-foreground/60">{b.id}</div>
+                    <div className="text-sm font-mono text-white">{b.invoiceNo}</div>
+                    <div className="text-xs font-mono text-slate-500">{b.id}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm font-medium text-foreground">{b.tenant}</div>
-                    <div className="text-xs font-mono text-muted-foreground">{b.tenantId}</div>
+                    <div className="text-sm font-medium text-white">{b.tenant}</div>
+                    <div className="text-xs font-mono text-slate-400">{b.tenantId}</div>
                   </TableCell>
                   <TableCell>
                     <span className={cn("text-xs px-2 py-0.5 rounded-md font-medium", PLAN_COLORS[b.plan])}>
@@ -258,10 +258,10 @@ const Billing = () => {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm font-mono text-muted-foreground">{b.period}</span>
+                    <span className="text-sm font-mono text-slate-400">{b.period}</span>
                   </TableCell>
                   <TableCell>
-                    <span className={cn("text-sm font-mono font-semibold", b.status === "paid" ? "text-success" : "text-foreground")}>
+                    <span className={cn("text-sm font-mono font-semibold", b.status === "paid" ? "text-emerald-400" : "text-white")}>
                       {formatINR(b.mrr)}
                     </span>
                   </TableCell>
@@ -272,21 +272,21 @@ const Billing = () => {
                   </TableCell>
                   <TableCell>
                     {b.status === "paid" && b.paymentMethod ? (
-                      <span className="text-xs font-mono text-muted-foreground">{b.paymentMethod}</span>
+                      <span className="text-xs font-mono text-slate-400">{b.paymentMethod}</span>
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-slate-400">—</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDetail(b)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-300 hover:text-white" onClick={() => openDetail(b)}>
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toast(`Downloading ${b.invoiceNo}...`)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-300 hover:text-white" onClick={() => toast(`Downloading ${b.invoiceNo}...`)}>
                         <Download className="h-3.5 w-3.5" />
                       </Button>
                       {(b.status === "overdue" || b.status === "failed") && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-warning" onClick={() => toast(`Retry payment for ${b.invoiceNo}...`)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-400" onClick={() => toast(`Retry payment for ${b.invoiceNo}...`)}>
                           <RefreshCw className="h-3.5 w-3.5" />
                         </Button>
                       )}
@@ -301,7 +301,7 @@ const Billing = () => {
 
       {/* Detail Sheet */}
       <Sheet open={showDetail} onOpenChange={setShowDetail}>
-        <SheetContent side="right" className="w-[460px]">
+        <SheetContent side="right" className="w-[460px] bg-[#0D1B2A] border-l border-slate-700">
           {selectedRecord && <InvoiceDetail record={selectedRecord} />}
         </SheetContent>
       </Sheet>
@@ -318,15 +318,15 @@ function StatCard({ icon: Icon, label, value, color, sub }: {
   sub?: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
+    <div className="rounded-xl p-4 border border-slate-700" style={{ background: "#1E3A5F" }}>
       <div className="flex items-center justify-between mb-2">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary/10">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-cyan-500/10">
           <Icon className={cn("h-5 w-5", color)} />
         </div>
       </div>
-      <div className="font-mono text-2xl font-bold text-foreground">{value}</div>
-      <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-      {sub && <div className="text-[10px] text-muted-foreground/60 mt-0.5">{sub}</div>}
+      <div className="font-mono text-2xl font-bold text-white">{value}</div>
+      <div className="text-xs text-slate-400 uppercase tracking-wider">{label}</div>
+      {sub && <div className="text-[10px] text-slate-500 mt-0.5">{sub}</div>}
     </div>
   );
 }
@@ -337,8 +337,8 @@ function InvoiceDetail({ record }: { record: BillingRecord }) {
 
   const rows: { label: string; value: React.ReactNode }[] = [
     { label: "Billing ID", value: <span className="font-mono text-xs">{record.id}</span> },
-    { label: "Tenant", value: record.tenant },
-    { label: "Tenant ID", value: <span className="font-mono">{record.tenantId}</span> },
+    { label: "Customer", value: record.tenant },
+    { label: "Customer ID", value: <span className="font-mono">{record.tenantId}</span> },
     {
       label: "Plan",
       value: (
@@ -360,7 +360,7 @@ function InvoiceDetail({ record }: { record: BillingRecord }) {
     <>
       <SheetHeader>
         <SheetTitle className="flex items-center gap-3">
-          <span className="text-lg font-semibold font-mono">{record.invoiceNo}</span>
+          <span className="text-lg font-semibold font-mono text-white">{record.invoiceNo}</span>
           <span className={cn("text-xs px-2 py-1 rounded-lg border", status.color)}>{status.label}</span>
         </SheetTitle>
       </SheetHeader>
@@ -368,61 +368,61 @@ function InvoiceDetail({ record }: { record: BillingRecord }) {
       <div className="mt-4 space-y-5">
         {/* Invoice Details */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3">Invoice Details</h4>
+          <h4 className="text-sm font-semibold text-white mb-3">Invoice Details</h4>
           <div className="space-y-2">
             {rows.map((r) => (
-              <div key={r.label} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted/20">
-                <span className="text-xs text-muted-foreground">{r.label}</span>
-                <span className="text-sm text-foreground">{r.value}</span>
+              <div key={r.label} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-800/40">
+                <span className="text-xs text-slate-400">{r.label}</span>
+                <span className="text-sm text-white">{r.value}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="h-px bg-border" />
+        <div className="h-px bg-slate-700" />
 
         {/* Amount */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-2">Amount</h4>
+          <h4 className="text-sm font-semibold text-white mb-2">Amount</h4>
           <div
             className={cn(
               "text-3xl font-bold font-mono",
-              record.status === "paid" ? "text-success" :
-              record.status === "pending" ? "text-warning" : "text-destructive"
+              record.status === "paid" ? "text-emerald-400" :
+              record.status === "pending" ? "text-amber-400" : "text-red-400"
             )}
           >
             {formatINR(record.mrr)}
           </div>
         </div>
 
-        <div className="h-px bg-border" />
+        <div className="h-px bg-slate-700" />
 
         {/* Actions */}
         <div className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => toast("Downloading invoice...")}>
+          <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Downloading invoice...")}>
             <Download className="h-4 w-4 mr-2" />
             Download Invoice PDF
           </Button>
           {record.status === "pending" && (
-            <Button variant="outline" className="w-full" onClick={() => toast("Reminder sent...")}>
+            <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Reminder sent...")}>
               Send Payment Reminder
             </Button>
           )}
           {(record.status === "overdue" || record.status === "failed") && (
-            <Button variant="outline" className="w-full" onClick={() => toast("Retrying...")}>
+            <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Retrying...")}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Retry Payment
             </Button>
           )}
           {record.status === "paid" && (
-            <Button variant="outline" className="w-full" onClick={() => toast("Downloading receipt...")}>
+            <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Downloading receipt...")}>
               <Download className="h-4 w-4 mr-2" />
               Download Receipt
             </Button>
           )}
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-slate-400">
           For billing queries contact support@4dsmartops.in
         </p>
       </div>

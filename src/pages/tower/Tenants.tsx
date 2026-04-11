@@ -120,7 +120,7 @@ export default function Tenants() {
 
   const handleProvision = () => {
     // [JWT] POST /api/tower/tenants
-    toast.success("Tenant provisioned successfully. Welcome email sent to admin.");
+    toast.success("Customer provisioned successfully. Welcome email sent to admin.");
     setProvisionOpen(false);
   };
 
@@ -128,7 +128,7 @@ export default function Tenants() {
     if (!suspendTarget) return;
     // [JWT] PATCH /api/tower/tenants/:id/suspend
     setTenants(prev => prev.map(t => t.id === suspendTarget.id ? { ...t, status: "Suspended" as TenantStatus } : t));
-    toast.success(`Tenant "${suspendTarget.name}" suspended successfully.`);
+    toast.success(`Customer "${suspendTarget.name}" suspended successfully.`);
     setSuspendTarget(null);
   };
 
@@ -136,7 +136,7 @@ export default function Tenants() {
     if (!reactivateTarget) return;
     // [JWT] PATCH /api/tower/tenants/:id/activate
     setTenants(prev => prev.map(t => t.id === reactivateTarget.id ? { ...t, status: "Active" as TenantStatus } : t));
-    toast.success(`Tenant "${reactivateTarget.name}" reactivated successfully.`);
+    toast.success(`Customer "${reactivateTarget.name}" reactivated successfully.`);
     setReactivateTarget(null);
   };
 
@@ -150,19 +150,19 @@ export default function Tenants() {
               <Building2 className="h-6 w-6 text-cyan-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Tenant Management</h1>
-              <p className="text-sm text-slate-400">Manage all platform tenants — provisioning, storage, plan and status</p>
+              <h1 className="text-2xl font-bold text-white">Customer Management</h1>
+              <p className="text-sm text-slate-400">Manage all platform customers — provisioning, storage, plan and status</p>
             </div>
           </div>
           <Button className="bg-cyan-600 hover:bg-cyan-700 text-white" onClick={() => setProvisionOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" />Provision New Tenant
+            <Plus className="h-4 w-4 mr-1.5" />Provision New Customer
           </Button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: "Total Tenants", value: tenants.length, icon: Building2, color: "text-white" },
+            { label: "Total Customers", value: tenants.length, icon: Building2, color: "text-white" },
             { label: "Active", value: activeCount, icon: CheckCircle, color: "text-emerald-400" },
             { label: "Suspended", value: suspendedCount, icon: PauseCircle, color: "text-amber-400" },
             { label: "Trial", value: trialCount, icon: Clock, color: "text-cyan-400" },
@@ -181,7 +181,7 @@ export default function Tenants() {
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-            <Input placeholder="Search tenants by name, GSTIN, owner..." className="pl-9 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" value={search} onChange={e => setSearch(e.target.value)} />
+            <Input placeholder="Search customers by name, GSTIN, owner..." className="pl-9 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-36 bg-slate-800 border-slate-600 text-white"><SelectValue /></SelectTrigger>
@@ -213,7 +213,7 @@ export default function Tenants() {
 
         {/* Tenant Grid */}
         {filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-500 text-sm">No tenants match your filters</div>
+          <div className="text-center py-16 text-slate-500 text-sm">No customers match your filters</div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filtered.map(t => {
@@ -287,7 +287,7 @@ export default function Tenants() {
         <SheetContent className="w-[480px] bg-[#0D1B2A] border-l border-slate-700 overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="text-lg text-white flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-cyan-400" />Provision New Tenant
+              <Building2 className="h-5 w-5 text-cyan-400" />Provision New Customer
             </SheetTitle>
           </SheetHeader>
           <div className="mt-6 space-y-6">
@@ -363,7 +363,7 @@ export default function Tenants() {
               </div>
             </div>
 
-            <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" onClick={handleProvision}>Provision Tenant</Button>
+            <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" onClick={handleProvision}>Provision Customer</Button>
           </div>
         </SheetContent>
       </Sheet>
@@ -373,9 +373,9 @@ export default function Tenants() {
         <DialogContent className="bg-[#0D1B2A] border-slate-700 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-400" />Suspend Tenant: {suspendTarget?.name}?
+              <AlertTriangle className="h-5 w-5 text-amber-400" />Suspend Customer: {suspendTarget?.name}?
             </DialogTitle>
-            <DialogDescription className="text-slate-400 text-sm mt-2">This will immediately log out all users of this tenant and prevent access. Data is preserved.</DialogDescription>
+            <DialogDescription className="text-slate-400 text-sm mt-2">This will immediately log out all users of this customer and prevent access. Data is preserved.</DialogDescription>
           </DialogHeader>
           <div className="mt-4">
             <label className="text-xs text-slate-400 mb-1.5 block">Reason</label>
@@ -386,7 +386,7 @@ export default function Tenants() {
           </div>
           <DialogFooter className="mt-4 flex gap-2">
             <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setSuspendTarget(null)}>Cancel</Button>
-            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSuspend}>Suspend Tenant</Button>
+            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSuspend}>Suspend Customer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -395,12 +395,12 @@ export default function Tenants() {
       <Dialog open={!!reactivateTarget} onOpenChange={(o) => !o && setReactivateTarget(null)}>
         <DialogContent className="bg-[#0D1B2A] border-slate-700 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Reactivate Tenant: {reactivateTarget?.name}?</DialogTitle>
-            <DialogDescription className="text-slate-400 text-sm mt-2">This will restore full access for all users of this tenant immediately.</DialogDescription>
+            <DialogTitle className="text-white">Reactivate Customer: {reactivateTarget?.name}?</DialogTitle>
+            <DialogDescription className="text-slate-400 text-sm mt-2">This will restore full access for all users of this customer immediately.</DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 flex gap-2">
             <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setReactivateTarget(null)}>Cancel</Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleReactivate}>Reactivate Tenant</Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleReactivate}>Reactivate Customer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
