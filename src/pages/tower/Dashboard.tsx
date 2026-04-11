@@ -33,8 +33,8 @@ const services = [
 ];
 
 const gauges = [
-  { label: "Total Tenants", value: 24, display: "24", max: 100, pct: 24, color: "#0EA5E9", subtitle: "+3 this month" },
-  { label: "Active Users", value: 187, display: "187", max: 500, pct: 37, color: "#8B5CF6", subtitle: "Across all tenants" },
+  { label: "Total Customers", value: 24, display: "24", max: 100, pct: 24, color: "#0EA5E9", subtitle: "+3 this month" },
+  { label: "Active Users", value: 187, display: "187", max: 500, pct: 37, color: "#8B5CF6", subtitle: "Across all customers" },
   { label: "Security Score", value: 91, display: "91", max: 100, pct: 91, color: "#10B981", subtitle: "CERT-In compliant" },
   { label: "Audit Events", value: 2847, display: "2.8K", max: 100, pct: 57, color: "#F59E0B", subtitle: "Last 30 days" },
 ];
@@ -42,15 +42,15 @@ const gauges = [
 const actions = [
   { icon: UserPlus, label: "Invite User", to: "/tower/users" },
   { icon: Shield, label: "Security Console", to: "/tower/security" },
-  { icon: Building2, label: "Manage Tenants", to: "/tower/tenants" },
+  { icon: Building2, label: "Manage Customers", to: "/tower/customers" },
   { icon: ScrollText, label: "Audit Log", to: "/tower/audit-logs" },
-  { icon: CreditCard, label: "Billing", to: "/tower/billing" },
+  { icon: CreditCard, label: "Proforma Invoice", to: "/tower/proforma-invoice" },
   { icon: Activity, label: "System Health", to: null },
 ];
 
 const activityTypeColors: Record<string, string> = {
   Security: "text-red-400 bg-red-400",
-  Tenant: "text-cyan-400 bg-cyan-400",
+  Customer: "text-cyan-400 bg-cyan-400",
   User: "text-purple-400 bg-purple-400",
   Billing: "text-amber-400 bg-amber-400",
   System: "text-emerald-400 bg-emerald-400",
@@ -60,12 +60,12 @@ const activityTypeColors: Record<string, string> = {
 // [JWT] Replace with real activity feed from API
 const recentActivity = [
   { type: "Security", desc: "MFA enabled for user admin@acmeindia.in", time: "2 min ago" },
-  { type: "Tenant", desc: "New tenant provisioned: Bharat Traders Pvt Ltd", time: "14 min ago" },
+  { type: "Customer", desc: "New customer provisioned: Bharat Traders Pvt Ltd", time: "14 min ago" },
   { type: "User", desc: "User invited: priya.sharma@acmeindia.in", time: "31 min ago" },
   { type: "Security", desc: "IP Whitelist updated: 3 IPs added", time: "1 hr ago" },
   { type: "Billing", desc: "Invoice #INV-2026-047 generated — ₹18,500", time: "2 hr ago" },
   { type: "Security", desc: "Failed login attempt: unknown@hacker.xyz (blocked)", time: "3 hr ago" },
-  { type: "Tenant", desc: "Tenant storage upgraded: Globe Exports (50GB → 100GB)", time: "4 hr ago" },
+  { type: "Customer", desc: "Customer storage upgraded: Globe Exports (50GB → 100GB)", time: "4 hr ago" },
   { type: "System", desc: "Bridge Agent v2.4.1 deployed to all agents", time: "6 hr ago" },
   { type: "Audit", desc: "Audit log exported by superadmin — 2,847 events", time: "8 hr ago" },
   { type: "Security", desc: "Geo-fencing rule updated: Blocked 4 countries", time: "12 hr ago" },
