@@ -12,6 +12,7 @@ import {
   Settings, HeadphonesIcon, Server, AlertTriangle, CheckCircle,
   Clock, Search, Plus, Wifi, WifiOff, Activity,
   HardDrive, Gauge, XCircle, AlertCircle,
+  Grid3X3, Bell, RefreshCw, Sparkles, Circle, Boxes, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -52,14 +53,76 @@ function getUserName(): string {
 
 // ── Panel & Quick Action data ─────────────────────────────────
 const panelCards = [
-  { title: "Control Tower", icon: LayoutDashboard, route: "/tower/dashboard", description: "Platform management & tenant administration", highlight: false },
-  { title: "Bridge Console", icon: GitMerge, route: "/bridge/dashboard", description: "Tally sync operations & exception management", highlight: false },
-  { title: "Operix Udyam Kendra Prism Nexus", icon: BarChart3, route: "/erp/dashboard", description: "Business Operations Hub — Full ERP · Modules · Small Projects", highlight: false },
-  { title: "Partner Panel", icon: Handshake, route: "/partner/dashboard", description: "Partner dashboard & commission management", highlight: false },
-  { title: "Customer Portal", icon: Users, route: "/customer/dashboard", description: "Self-service invoices, payments, orders and support for your B2B clients", highlight: false },
-  { title: "Verticals & Modules", icon: LayoutGrid, route: "/verticals-modules", description: "Industry verticals and ERP modules catalogue — browse, activate and manage what is available for your business", highlight: false },
-  { title: "Add-ons", icon: Puzzle, route: "/add-ons", description: "Optional bolt-on extensions — integrations, plugins, AI tools and hardware connectors beyond the core ERP", highlight: false },
-  { title: "Prudent 360", icon: Compass, route: "/prudent360", description: "Tools, documentation & intelligence hub", highlight: true },
+  {
+    title: "Control Tower",
+    icon: LayoutDashboard,
+    route: "/tower/dashboard",
+    description: "Platform management & customer administration — users, plans, billing, security.",
+    badge: null,
+  },
+  {
+    title: "Bridge Console",
+    icon: GitMerge,
+    route: "/bridge/dashboard",
+    description: "Tally sync operations & exception management — live bridge agent monitoring.",
+    badge: null,
+  },
+  {
+    title: "Operix Udyam Kendra Prism Nexus",
+    icon: BarChart3,
+    route: "/erp/dashboard",
+    description: "Business Operations Hub — Full ERP · Modules · Small Projects",
+    badge: "wip",
+  },
+  {
+    title: "Partner Panel",
+    icon: Handshake,
+    route: "/partner/dashboard",
+    description: "Partner dashboard & commission management.",
+    badge: "wip",
+  },
+  {
+    title: "Customer Portal",
+    icon: Users,
+    route: "/customer/dashboard",
+    description: "Self-service invoices, payments, orders and support for your B2B clients.",
+    badge: "wip",
+  },
+  {
+    title: "Vertical",
+    icon: LayoutGrid,
+    route: "/verticals",
+    description: "Industry-specific ERP systems built for other sectors. Current: Hospital Management, School & Education ERP. Planned: Hotel, Clinic & Pharmacy, Construction, Agriculture.",
+    badge: "wip",
+  },
+  {
+    title: "Modules",
+    icon: Boxes,
+    route: "/modules",
+    description: "Standalone modules that work independently or bolt-on to any vertical. Current: GateFlow (gate management). Planned: Document Management, Standalone HR, Service Desk, AMC Management.",
+    badge: "wip",
+  },
+  {
+    title: "Add-ons",
+    icon: Puzzle,
+    route: "/add-ons",
+    description: "Optional extensions beyond the core ERP. Current: Barcode (standalone label generation for Tally users). Planned: WhatsApp integration, AI price forecasting, hardware connectors.",
+    badge: null,
+  },
+  {
+    title: "Client Customized",
+    icon: Wrench,
+    route: "/client-customized",
+    description: "Products built specifically for individual clients per their unique requirements. These are bespoke builds — not available in the general catalogue. Each entry is a dedicated client project.",
+    badge: "wip",
+  },
+  {
+    title: "Prudent 360",
+    icon: Compass,
+    route: "/prudent360",
+    description: "Tools, documentation & intelligence hub.",
+    badge: "wip",
+  },
 ];
 
 const quickActions = [
@@ -160,18 +223,14 @@ function WorkspaceTab({ navigate }: { navigate: (path: string) => void }) {
             className="group relative overflow-hidden rounded-2xl p-6 sm:p-8 text-left w-full transition-all duration-500 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 animate-slide-up"
             style={{ animationDelay: `${0.1 + i * 0.08}s`, animationFillMode: "backwards" }}
           >
-            <div
-              className={`absolute inset-0 backdrop-blur-xl border rounded-2xl ${
-                card.highlight
-                  ? "bg-accent/10 border-accent/30"
-                  : "bg-card/60 border-border"
-              }`}
-            />
+            <div className="absolute inset-0 backdrop-blur-xl border rounded-2xl bg-card/60 border-border" />
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
 
-            <span className="absolute top-3 right-3 z-20 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-warning/20 text-warning border border-warning/30">
-              Work in Progress
-            </span>
+            {card.badge === "wip" && (
+              <span className="absolute top-3 right-3 z-20 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-warning/20 text-warning border border-warning/30">
+                Work in Progress
+              </span>
+            )}
 
             <div className="relative z-10 flex flex-col min-h-[160px]">
               <div className="w-12 h-12 rounded-xl bg-muted/50 group-hover:bg-muted/70 transition-colors flex items-center justify-center">
@@ -182,9 +241,7 @@ function WorkspaceTab({ navigate }: { navigate: (path: string) => void }) {
                   {card.title}
                   <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground/80 group-hover:translate-x-1 transition-all" />
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {card.description}
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">{card.description}</p>
               </div>
             </div>
           </button>
@@ -320,7 +377,7 @@ function SupportOpsTab() {
             <thead>
               <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase tracking-wider">
                 <th className="px-4 py-3">Ticket</th>
-                <th className="px-4 py-3">Tenant</th>
+                <th className="px-4 py-3">Customer</th>
                 <th className="px-4 py-3">Priority</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">SLA</th>
@@ -408,7 +465,7 @@ function ServerOpsTab() {
           <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-400">
-              Critical alerts on {criticalTenants.length} tenant{criticalTenants.length > 1 ? "s" : ""}:
+              Critical alerts on {criticalTenants.length} customer{criticalTenants.length > 1 ? "s" : ""}:
             </p>
             <p className="text-xs text-red-400/80">{criticalTenants.map(t => t.name).join(" · ")}</p>
           </div>
@@ -417,7 +474,7 @@ function ServerOpsTab() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Total Tenants", value: MOCK_TENANTS.length, icon: Server, color: "text-cyan-400" },
+          { label: "Total Customers", value: MOCK_TENANTS.length, icon: Server, color: "text-cyan-400" },
           { label: "Healthy", value: healthy, icon: CheckCircle, color: "text-emerald-400" },
           { label: "Degraded", value: degraded, icon: AlertCircle, color: "text-amber-400" },
           { label: "Critical", value: critical, icon: XCircle, color: "text-red-400" },
@@ -485,7 +542,7 @@ function ServerOpsTab() {
       </div>
 
       <div className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Error Rate by Tenant (%)</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Error Rate by Customer (%)</p>
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={ERROR_RATE_DATA}>
@@ -559,23 +616,53 @@ export default function Welcome() {
       {/* Header */}
       <header className="sticky top-0 z-30 glass border-b border-border/50 h-14 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            style={{ background: "var(--gradient-primary)" }}
+          >
             <Cpu className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-bold text-sm text-foreground">4DSmartOps</span>
-          <Separator orientation="vertical" className="h-5 bg-border/50" />
+          <span className="font-bold text-sm text-foreground hidden sm:inline">4DSmartOps</span>
+          <Separator orientation="vertical" className="h-5 bg-border/50 hidden sm:block" />
+          {/* Nav pill — Back / Forward / Home */}
           <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-0.5 gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.history.back()}>
               <ArrowLeft className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.history.forward()}>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate("/welcome")}>
               <Home className="h-3.5 w-3.5" />
             </Button>
           </div>
+          {/* Search */}
+          <div className="hidden md:block w-52">
+            <Input
+              placeholder="Search... (Ctrl+K)"
+              className="h-8 text-xs bg-muted/30 border-border/50"
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-0.5">
+          {/* App launcher */}
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/erp/dashboard")}>
+            <Grid3X3 className="h-4 w-4" />
+          </Button>
+          {/* Refresh */}
+          <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex" onClick={() => window.location.reload()}>
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          {/* Data freshness dot */}
+          <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex">
+            <Circle className="h-2.5 w-2.5 fill-emerald-500 text-emerald-500 animate-pulse" />
+          </Button>
+          {/* Bell */}
+          <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+            <Bell className="h-4 w-4" />
+          </Button>
           <ThemeToggle />
-          <UserProfileDropdown variant="dashboard" />
+          <UserProfileDropdown variant="app" />
         </div>
       </header>
 
