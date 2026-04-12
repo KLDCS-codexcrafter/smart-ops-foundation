@@ -99,6 +99,9 @@ import PriceListManager from './pages/erp/inventory/PriceListManager';
 import ReorderAlerts from './pages/erp/inventory/ReorderAlerts';
 import AddOnsPage from './pages/addons/AddOnsPage';
 import AddonsBarcode from './pages/addons/BarcodeAddon';
+import VerticalsPage from './pages/verticals/VerticalsPage';
+import ModulesPage from './pages/modules/ModulesPage';
+import ClientCustomizedPage from './pages/client-customized/ClientCustomizedPage';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import Invoices from "./pages/customer/Invoices";
@@ -142,6 +145,9 @@ const App = () => (
                 <p className="text-muted-foreground text-sm">Verticals & Modules — coming soon</p>
               </div>
             } />
+            <Route path="/verticals" element={<VerticalsPage />} />
+            <Route path="/modules" element={<ModulesPage />} />
+            <Route path="/client-customized" element={<ClientCustomizedPage />} />
             <Route path="/add-ons" element={<AddOnsPage />} />
             <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
             <Route path="/prudent360" element={
