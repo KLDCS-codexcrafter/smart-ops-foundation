@@ -47,7 +47,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
   const pageLabel = title ?? activeNav?.title ?? "";
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#0D1B2A" }}>
+    <div className="dark flex h-screen overflow-hidden" style={{ background: "#0D1B2A" }}>
       {/* Sidebar */}
       <aside
         className={cn(
@@ -171,7 +171,9 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                 3
               </span>
             </button>
-            <ThemeToggle />
+            <div className="text-white/60 hover:text-white/80">
+              <ThemeToggle />
+            </div>
             <div className="flex items-center gap-3 pl-4 border-l border-white/[0.08]">
               <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/[0.05]">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
