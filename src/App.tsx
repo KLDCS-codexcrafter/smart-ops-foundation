@@ -112,6 +112,7 @@ import Documents from "./pages/customer/Documents";
 import CustomerSupport from "./pages/customer/CustomerSupport";
 import CustomerProfile from "./pages/customer/Profile";
 import Profile from "./pages/Profile";
+import { DevNavPanel } from '@/components/dev/DevNavPanel';
 import Tenants from "./pages/tower/Tenants";
 import Users from "./pages/tower/Users";
 import Permissions from "./pages/tower/Permissions";
@@ -270,6 +271,7 @@ const App = () => (
             <Route path="*" element={<Navigate to="/auth/login" replace />} />
           </Routes>
           <ConditionalDishani />
+          <DevNavPanel />
         </BrowserRouter>
       </DishaniProvider>
     </TooltipProvider>

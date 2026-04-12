@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Activity, CheckCircle2, AlertTriangle,
   GitCompare, Radio, Building2, Settings2, GitBranch,
   Upload, Download, ScrollText, Settings,
-  ChevronLeft, ChevronRight, Zap, Bell,
+  ChevronLeft, ChevronRight, Zap, Bell, ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -126,15 +126,24 @@ export function BridgeLayout({ children, title, subtitle }: BridgeLayoutProps) {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-          <div>
+          <div className="flex items-center gap-2 text-sm">
+            <button
+              onClick={() => navigate("/welcome")}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+            >
+              <ArrowLeft className="h-3 w-3 group-hover:-translate-x-0.5 transition-transform" />
+              Back to App
+            </button>
+            <span className="text-muted-foreground/50">›</span>
+            <span className="text-muted-foreground font-medium">Bridge Console</span>
             {title && (
-              <h1 className="text-lg font-semibold text-foreground">{title}</h1>
-            )}
-            {subtitle && (
-              <p className="text-xs text-muted-foreground">{subtitle}</p>
+              <>
+                <span className="text-muted-foreground/50">›</span>
+                <span className="text-foreground font-medium">{title}</span>
+              </>
             )}
           </div>
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <button className="relative p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
