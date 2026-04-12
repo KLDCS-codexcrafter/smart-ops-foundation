@@ -78,6 +78,20 @@ export function FineCoreHubPanel() {
           ))}
         </div>
       </div>
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-3">Account Structure</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {ACCOUNT_STRUCTURE_CARDS.map(c => (
+            <button key={c.title} onClick={() => navigate(c.href)} className="group flex flex-col gap-3 p-5 rounded-xl border bg-card hover:border-primary/40 hover:bg-accent/30 transition-all text-left">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><c.icon className="h-5 w-5 text-primary" /></div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div><h3 className="text-sm font-semibold text-foreground">{c.title}</h3><p className="text-xs text-muted-foreground mt-1">{c.desc}</p></div>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

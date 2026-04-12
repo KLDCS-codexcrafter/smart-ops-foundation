@@ -12,6 +12,7 @@ const KEY = 'erp_voucher_types';
 
 const load = (): VoucherType[] => {
   try {
+    // [JWT] GET /api/accounting/voucher-types
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const stored = JSON.parse(raw) as VoucherType[];

@@ -385,7 +385,7 @@ function DeepPanel({
             <span className="text-[10px] text-muted-foreground">Active</span>
             <Switch
               checked={vt.is_active}
-              onCheckedChange={() => updateType(vt.id, { is_active: !vt.is_active })}
+              onCheckedChange={() => toggleActive(vt.id)}
               className="scale-75"
             />
           </div>
@@ -715,6 +715,7 @@ export function VoucherTypesMasterPanel() {
                   addRule={addRule}
                   removeRule={removeRule}
                   toggleRule={toggleRule}
+                  toggleActive={toggleActive}
                 />
               </div>
             )}
