@@ -6,6 +6,7 @@ import {
   Palette, ChevronLeft, ChevronRight, Zap, ArrowLeft,
 } from "lucide-react";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
@@ -147,7 +148,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
         <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] shrink-0 bg-[#0D1B2A]">
           <div className="flex items-center gap-2 text-sm">
             <button
-              onClick={() => navigate("/erp/dashboard")}
+              onClick={() => navigate("/welcome")}
               className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/80 transition-colors group"
             >
               <ArrowLeft className="h-3 w-3 group-hover:-translate-x-0.5 transition-transform" />
@@ -170,6 +171,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                 3
               </span>
             </button>
+            <ThemeToggle />
             <div className="flex items-center gap-3 pl-4 border-l border-white/[0.08]">
               <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/[0.05]">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
