@@ -112,7 +112,7 @@ const getMoodIndicator = () => {
 const getSeasonMessage = () => {
   const month = new Date().getMonth(); // 0 = Jan, 11 = Dec
 
-  if (month >= 1 && month <= 2) return { msg: "Spring is here!",  emoji: "🌸" };
+  if (month >= 1 && month <= 3) return { msg: "Spring is here!",  emoji: "🌸" };
   if (month >= 3 && month <= 5) return { msg: "Summer season",    emoji: "☀️" };
   if (month >= 6 && month <= 8) return { msg: "Monsoon time",     emoji: "🌧️" };
   if (month >= 9 && month <= 10) return { msg: "Autumn vibes",    emoji: "🍂" };
