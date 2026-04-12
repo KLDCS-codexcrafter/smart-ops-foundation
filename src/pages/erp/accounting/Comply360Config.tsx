@@ -5,7 +5,7 @@
  * Dependency chain: Auto RCM disabled until Advanced GST is on.
  * [JWT] Replace with GET/POST/PATCH /api/compliance/comply360-config
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -54,6 +54,13 @@ const DEFAULT_LEDGER: EntityLedgerMapping = {
   discountJournalVCH: '', discountLedger: '',
 };
 
+const loadVoucherTypes = (): { id: string; name: string; base_voucher_type: string; is_active: boolean }[] => {
+  try {
+    // [JWT] GET /api/accounting/voucher-types
+    return JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+  } catch { return []; }
+};
+
 
 export function Comply360ConfigPanel() {
   const [groupConfig, setGroupConfig] = useState<GroupConfig>({
@@ -99,17 +106,43 @@ export function Comply360ConfigPanel() {
     toast.success(`Ledger mappings saved for ${entityName}`);
   };
 
-  const LedgerField = ({ label, field, placeholder }: { label: string; field: keyof EntityLedgerMapping; placeholder: string }) => (
-    <div>
-      <Label className="text-xs">{label}</Label>
-      <Input
-        value={currentLedger?.[field] ?? ''}
-        onChange={e => updateLedger(field, e.target.value)}
-        placeholder={placeholder}
-        className="h-8 text-sm"
-      />
-    </div>
+  const journalVoucherTypes = useMemo(() =>
+    loadVoucherTypes().filter(vt => vt.base_voucher_type === 'Journal' && vt.is_active),
+    []
   );
+
+  const vchFields: (keyof EntityLedgerMapping)[] = ['tdsPayableJournalVCH', 'tdsReceivableJournalVCH', 'discountJournalVCH'];
+
+  const LedgerField = ({ label, field, placeholder }: { label: string; field: keyof EntityLedgerMapping; placeholder: string }) => {
+    if (vchFields.includes(field)) {
+      return (
+        <div>
+          <Label className="text-xs">{label}</Label>
+          <Select value={currentLedger?.[field] ?? ''} onValueChange={v => updateLedger(field, v)}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue placeholder="Select journal voucher type" />
+            </SelectTrigger>
+            <SelectContent>
+              {journalVoucherTypes.map(vt => (
+                <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      );
+    }
+    return (
+      <div>
+        <Label className="text-xs">{label}</Label>
+        <Input
+          value={currentLedger?.[field] ?? ''}
+          onChange={e => updateLedger(field, e.target.value)}
+          placeholder={placeholder}
+          className="h-8 text-sm"
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">

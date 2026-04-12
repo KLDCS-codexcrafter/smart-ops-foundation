@@ -4006,6 +4006,25 @@ export function LedgerMasterPanel() {
                 </div>
               </div>
             )}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Voucher Series</Label>
+              <Select value={cashForm.voucherSeries} onValueChange={v => setCashForm(f => ({ ...f, voucherSeries: v }))}>
+                <SelectTrigger className="h-9 text-sm">
+                  <SelectValue placeholder="Select receipt voucher type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(() => {
+                    // [JWT] GET /api/accounting/voucher-types
+                    try {
+                      const allVt = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]') as { id: string; name: string; base_voucher_type: string; is_active: boolean }[];
+                      return allVt.filter(vt => vt.base_voucher_type === 'Receipt' && vt.is_active).map(vt => (
+                        <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
+                      ));
+                    } catch { return null; }
+                  })()}
+                </SelectContent>
+              </Select>
+            </div>
             {!cashEditTarget && (
               <>
                 <button type="button" onClick={() => setCashShowAdvanced(v => !v)}
