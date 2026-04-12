@@ -90,7 +90,7 @@ export default function CommandCenterPage() {
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
-      'finecore-finframe', 'finecore-ledgers',
+      'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
