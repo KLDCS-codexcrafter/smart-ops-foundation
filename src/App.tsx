@@ -145,6 +145,9 @@ const App = () => (
                 <p className="text-muted-foreground text-sm">Verticals & Modules — coming soon</p>
               </div>
             } />
+            <Route path="/verticals" element={<VerticalsPage />} />
+            <Route path="/modules" element={<ModulesPage />} />
+            <Route path="/client-customized" element={<ClientCustomizedPage />} />
             <Route path="/add-ons" element={<AddOnsPage />} />
             <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
             <Route path="/prudent360" element={
