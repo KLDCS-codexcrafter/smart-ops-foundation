@@ -40,6 +40,7 @@ const ENTITY_CONFIG_ITEMS: { label: string; module: CommandCenterModule }[] = [
 const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] = [
   { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
   { label: 'Ledger Master', module: 'finecore-ledgers' },
+  { label: 'Voucher Types', module: 'finecore-voucher-types' },
 ];
 
 const A1_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
