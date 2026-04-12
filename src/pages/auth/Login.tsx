@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, MouseEvent as ReactMouseEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -205,19 +205,7 @@ function LiveClock() {
   );
 }
 
-// ── MoodIndicator Component ──
-function MoodIndicator() {
-  const { mood, emoji } = getMoodIndicator();
-  return (
-    <div className="flex items-center gap-2 text-white/70 text-sm">
-      <span className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-      </span>
-      <span>Feeling {mood} {emoji}</span>
-    </div>
-  );
-}
+// (MoodIndicator removed — pills used inline)
 
 // ── Feature Cards ──
 const featureCards = [
@@ -227,12 +215,6 @@ const featureCards = [
   { title: "Secure", subtitle: "Enterprise-grade security", icon: Shield, color: "bg-primary/20", iconColor: "text-primary" },
 ];
 
-const cardPositions = [
-  { top: "12%", deg: 3 },
-  { top: "28%", deg: -2 },
-  { top: "44%", deg: 1 },
-  { top: "60%", deg: -3 },
-];
 
 type AuthView = "login" | "forgot" | "forgot-sent" | "reset";
 type LoginTab = "email" | "nickname" | "mobile";
@@ -256,13 +238,13 @@ export default function Login() {
   const [lockoutTimer, setLockoutTimer] = useState(0);
   const [shakeForm, setShakeForm] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  
   const [forgotEmail, setForgotEmail] = useState("");
   const [typewriterText, setTypewriterText] = useState("");
   const [authInit, setAuthInit] = useState(true);
 
   const passwordRef = useRef<HTMLInputElement>(null);
-  const leftPanelRef = useRef<HTMLDivElement>(null);
+  
 
   // Typewriter
   useEffect(() => {
@@ -309,13 +291,6 @@ export default function Login() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleMouseMove = useCallback((e: ReactMouseEvent) => {
-    if (!leftPanelRef.current) return;
-    const rect = leftPanelRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMousePos({ x, y });
-  }, []);
 
   // ── Forms ──
   const emailForm = useForm({ resolver: zodResolver(emailSchema), defaultValues: { email: "", password: "" } });
@@ -397,7 +372,7 @@ export default function Login() {
   if (authInit) {
     return (
       <div className="flex min-h-screen">
-        <div className="hidden lg:flex lg:w-[480px] xl:w-[540px] p-10 flex-col justify-between" style={{ background: "var(--gradient-hero)" }}>
+        <div className="hidden lg:flex lg:w-[44%] xl:w-[44%] p-8 flex-col justify-between" style={{ background: "var(--gradient-hero)" }}>
           <div className="space-y-4">
             <div className="h-10 w-40 rounded-lg bg-white/10 animate-pulse" />
             <div className="h-6 w-32 rounded bg-white/10 animate-pulse" />
@@ -424,9 +399,7 @@ export default function Login() {
     <div className="flex min-h-screen">
       {/* ═══ LEFT PANEL ═══ */}
       <div
-        ref={leftPanelRef}
-        onMouseMove={handleMouseMove}
-        className="hidden lg:flex lg:w-[480px] xl:w-[540px] relative overflow-hidden flex-col justify-between p-10"
+        className="hidden lg:flex lg:w-[44%] xl:w-[44%] relative overflow-hidden flex-col justify-between p-8"
         style={{ background: "var(--gradient-hero)" }}
       >
         {/* Floating orbs */}
@@ -457,17 +430,17 @@ export default function Login() {
           </div>
 
           {/* Clock + Mood */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-3 mb-6">
             <LiveClock />
-            <MoodIndicator />
-            {(() => {
-              const season = getSeasonMessage();
-              return (
-                <p className="text-white/60 text-sm">
-                  {season.emoji} {season.msg}
-                </p>
-              );
-            })()}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 bg-white/10 border border-white/15 rounded-full px-3 py-1 text-xs text-white/85">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                <span>Feeling {getMoodIndicator().mood} {getMoodIndicator().emoji}</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-white/10 border border-white/15 rounded-full px-3 py-1 text-xs text-white/85">
+                <span>{getSeasonMessage().emoji} {getSeasonMessage().msg}</span>
+              </div>
+            </div>
           </div>
 
           {/* Greeting + Typewriter */}
@@ -480,49 +453,31 @@ export default function Login() {
             </h1>
             <p className="text-white/60 text-sm">Your Enterprise Operations Platform</p>
           </div>
-        </div>
 
-        {/* Feature Cards (right side, absolute) */}
-        <div className="absolute right-6 top-0 bottom-0 w-44 pointer-events-none">
-          {featureCards.map((card, i) => {
-            const pos = cardPositions[i];
-            const multiplier = [3, 5, 7, 9][i];
-            return (
+          {/* Feature Cards — 2×2 grid */}
+          <div className="grid grid-cols-2 gap-2 mt-5">
+            {featureCards.map((card, i) => (
               <div
                 key={card.title}
-                className="absolute right-0 w-40 glass-card-dark p-3 pointer-events-auto cursor-pointer animate-float-in"
-                style={{
-                  top: pos.top,
-                  animationDelay: `${0.2 + i * 0.2}s`,
-                  animationFillMode: "backwards",
-                  transform: `rotate(${pos.deg}deg) translate(${mousePos.x * multiplier}px, ${mousePos.y * multiplier}px)`,
-                }}
+                className="glass-card-dark p-2.5 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-white/15 transition-colors"
+                style={{ animationDelay: `${0.1 + i * 0.1}s` }}
                 onClick={() => setExpandedCard(expandedCard === i ? null : i)}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${card.color}`}>
-                    <card.icon className={`w-3.5 h-3.5 ${card.iconColor}`} />
-                  </div>
-                  <div>
-                    <p className="text-white text-xs font-medium">{card.title}</p>
-                    <p className="text-white/50 text-[10px]">{card.subtitle}</p>
-                  </div>
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${card.color}`}>
+                  <card.icon className={`w-3.5 h-3.5 ${card.iconColor}`} />
                 </div>
-                {expandedCard === i && (
-                  <p className="text-white/60 text-[10px] mt-2 animate-fade-in">
-                    {card.title === "Active Status" && "All microservices and APIs are running within expected parameters."}
-                    {card.title === "Analytics" && "Access dashboards with real-time KPIs, trends, and performance metrics."}
-                    {card.title === "Reports" && "Generate GST-compliant invoices, export CSV/PDF reports instantly."}
-                    {card.title === "Secure" && "End-to-end encryption, RBAC, and audit logging built-in."}
-                  </p>
-                )}
+                <div className="min-w-0">
+                  <p className="text-white text-[11px] font-semibold leading-tight">{card.title}</p>
+                  <p className="text-white/50 text-[9px] truncate">{card.subtitle}</p>
+                </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
+
         {/* Daily Quote (bottom) */}
-        <div className="relative z-10 glass-card-dark p-4 mt-auto">
+        <div className="relative z-10 glass-card-dark p-3 mt-4">
           <div className="flex items-start gap-3">
             <QuoteIcon className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <div>
@@ -534,8 +489,8 @@ export default function Login() {
       </div>
 
       {/* ═══ RIGHT PANEL ═══ */}
-      <div className="flex-1 flex items-center justify-center bg-background p-6">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex items-center justify-center p-6" style={{ background: "hsl(var(--muted)/0.3)" }}>
+        <div className="w-full max-w-[380px] bg-card rounded-2xl border border-border shadow-sm p-8">
           {/* Mobile logo */}
           <div className="lg:hidden mb-6 flex justify-center">
             <div className="flex items-center gap-2">
