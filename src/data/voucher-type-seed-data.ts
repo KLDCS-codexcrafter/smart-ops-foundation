@@ -139,7 +139,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
   }),
   // ── INVENTORY FAMILY (Inactive/On-use) ─────────────────────────────────────
   seed('vt-delivery-note', {
-    name: 'Delivery Note', abbreviation: 'DN', base_voucher_type: 'Delivery Note', family: 'Inventory',
+    name: 'Delivery Note', abbreviation: 'DLN', base_voucher_type: 'Delivery Note', family: 'Inventory',
     is_active: false, activation_type: 'on_use',
     accounting_impact: false, inventory_impact: true,
     allow_line_narration: false,

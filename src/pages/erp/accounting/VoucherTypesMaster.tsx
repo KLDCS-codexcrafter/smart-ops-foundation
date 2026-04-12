@@ -323,7 +323,7 @@ function Toggle({
 
 function DeepPanel({
   vt, onClose,
-  updateType, addRule, removeRule, toggleRule,
+  updateType, addRule, removeRule, toggleRule, toggleActive,
 }: {
   vt: VoucherType;
   onClose: () => void;
@@ -331,6 +331,7 @@ function DeepPanel({
   addRule: (id: string, rule: Omit<BehaviourRule, 'id'>) => void;
   removeRule: (id: string, ruleId: string) => void;
   toggleRule: (id: string, ruleId: string) => void;
+  toggleActive: (id: string) => void;
 }) {
   const fc = FAMILY_COLORS[vt.family];
   const isSalesOnly = SALES_ONLY_FIELDS.includes(vt.base_voucher_type);
@@ -385,7 +386,7 @@ function DeepPanel({
             <span className="text-[10px] text-muted-foreground">Active</span>
             <Switch
               checked={vt.is_active}
-              onCheckedChange={() => updateType(vt.id, { is_active: !vt.is_active })}
+              onCheckedChange={() => toggleActive(vt.id)}
               className="scale-75"
             />
           </div>
@@ -715,6 +716,7 @@ export function VoucherTypesMasterPanel() {
                   addRule={addRule}
                   removeRule={removeRule}
                   toggleRule={toggleRule}
+                  toggleActive={toggleActive}
                 />
               </div>
             )}
