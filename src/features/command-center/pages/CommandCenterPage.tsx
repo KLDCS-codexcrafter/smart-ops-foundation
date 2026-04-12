@@ -18,6 +18,7 @@ import { GSTEntityConfigPanel } from '@/pages/erp/accounting/GSTEntityConfig';
 import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
+import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
@@ -58,6 +59,7 @@ export type CommandCenterModule =
   | 'finecore-comply360'
   | 'finecore-finframe'
   | 'finecore-ledgers'
+  | 'finecore-voucher-types'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -88,7 +90,7 @@ export default function CommandCenterPage() {
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
-      'finecore-finframe', 'finecore-ledgers',
+      'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -128,6 +130,7 @@ export default function CommandCenterPage() {
       case 'finecore-comply360': return <Comply360ConfigPanel />;
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
+      case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
