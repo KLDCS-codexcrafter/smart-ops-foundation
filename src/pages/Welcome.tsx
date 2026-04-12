@@ -11,8 +11,8 @@ import {
   Users, Compass, ArrowRight, ArrowLeft, Home, HelpCircle,
   Settings, HeadphonesIcon, Server, AlertTriangle, CheckCircle,
   Clock, Search, Plus, Wifi, WifiOff, Activity,
-  HardDrive, Gauge, XCircle, AlertCircle,
-  Grid3X3, Bell, RefreshCw, Sparkles, Circle, Boxes, Wrench,
+  XCircle, AlertCircle,
+  Grid3X3, Bell, RefreshCw, Circle, Boxes, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

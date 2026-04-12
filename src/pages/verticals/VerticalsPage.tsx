@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Stethoscope, GraduationCap, Hotel, Building2, Wheat, FlaskConical } from 'lucide-react';
+import { ArrowLeft, Stethoscope, GraduationCap, Hotel, Building2, Wheat, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type VerticalPhase = 'live' | 'phase2' | 'planned';

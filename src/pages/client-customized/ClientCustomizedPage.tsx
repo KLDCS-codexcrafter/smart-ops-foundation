@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Wrench, Lock, Building2, Factory, ShoppingBag, Truck } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
 
 interface ClientProject {
   id: string;

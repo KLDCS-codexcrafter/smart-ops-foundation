@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, QrCode, Puzzle, MessageCircle, TrendingUp, Cpu, Wifi } from 'lucide-react';
+import { ArrowLeft, ArrowRight, QrCode, Puzzle, MessageCircle, TrendingUp, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AddonPhase = 'live' | 'phase2' | 'planned';
