@@ -130,6 +130,7 @@ export default function CommandCenterPage() {
       case 'finecore-comply360': return <Comply360ConfigPanel />;
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
+      case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
