@@ -100,12 +100,23 @@ const getMoodIndicator = () => {
   const now = new Date();
   const h = now.getHours();
   const day = now.getDay();
-  if (day === 0 || day === 6) return { mood: "Relaxed", emoji: "🧘" };
+  if (day === 0) return { mood: "Celebratory", emoji: "🎉" };
+  if (day === 6) return { mood: "Relaxed",     emoji: "🧘" };
   if (day === 1 && h >= 5 && h < 12) return { mood: "Determined", emoji: "⛰️" };
   if (h >= 22 || h < 5) return { mood: "Dedicated", emoji: "🔥" };
   if (h >= 5 && h < 12) return { mood: "Energized", emoji: "⚡" };
   if (h >= 12 && h < 17) return { mood: "Focused", emoji: "🎯" };
   return { mood: "Creative", emoji: "🎨" };
+};
+
+const getSeasonMessage = () => {
+  const month = new Date().getMonth(); // 0 = Jan, 11 = Dec
+
+  if (month >= 1 && month <= 2) return { msg: "Spring is here!",  emoji: "🌸" };
+  if (month >= 3 && month <= 5) return { msg: "Summer season",    emoji: "☀️" };
+  if (month >= 6 && month <= 8) return { msg: "Monsoon time",     emoji: "🌧️" };
+  if (month >= 9 && month <= 10) return { msg: "Autumn vibes",    emoji: "🍂" };
+  return { msg: "Winter is here", emoji: "❄️" };
 };
 
 const getClockRingColor = () => {
@@ -449,6 +460,14 @@ export default function Login() {
           <div className="space-y-3 mb-8">
             <LiveClock />
             <MoodIndicator />
+            {(() => {
+              const season = getSeasonMessage();
+              return (
+                <p className="text-white/60 text-sm">
+                  {season.emoji} {season.msg}
+                </p>
+              );
+            })()}
           </div>
 
           {/* Greeting + Typewriter */}
@@ -532,7 +551,7 @@ export default function Login() {
             <div className={`animate-fade-in ${shakeForm ? "animate-shake" : ""}`}>
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-xl font-semibold text-foreground">Sign In</h2>
-                <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">v0.1</span>
+                <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">v2.0.0</span>
               </div>
               <p className="text-sm text-muted-foreground mb-5">Welcome back to 4DSmartOps</p>
 
@@ -743,7 +762,9 @@ export default function Login() {
             </div>
           )}
 
-          <p className="text-center text-xs text-muted-foreground mt-6">Built for Indian SMEs</p>
+          <p className="text-center text-xs text-muted-foreground/50 mt-6">
+            © 2026 KCIPL · Powered by 4DSmartOPs · v2.0.0
+          </p>
         </div>
       </div>
     </div>

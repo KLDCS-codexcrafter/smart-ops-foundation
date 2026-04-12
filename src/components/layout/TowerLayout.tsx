@@ -171,7 +171,7 @@ export function TowerLayout({ children, title, subtitle }: TowerLayoutProps) {
                 3
               </span>
             </button>
-            <div className="text-white/60 hover:text-white/80">
+            <div className="[&_button]:text-white/50 [&_button]:hover:text-white/80 [&_button]:hover:bg-white/[0.06]">
               <ThemeToggle />
             </div>
             <div className="flex items-center gap-3 pl-4 border-l border-white/[0.08]">
