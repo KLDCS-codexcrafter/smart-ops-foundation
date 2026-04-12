@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { useVoucherTypes } from '@/hooks/useVoucherTypes';
 import type {
-  VoucherType, VoucherFamily, VoucherBaseType,
+  VoucherType, VoucherFamily, VoucherBaseType, ActivationType,
   BehaviourRule, BehaviourRuleType, NumberingMethod,
 } from '@/types/voucher-type';
 import {
