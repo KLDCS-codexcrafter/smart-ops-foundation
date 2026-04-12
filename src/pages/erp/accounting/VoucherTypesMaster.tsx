@@ -130,7 +130,7 @@ const TAX_APPLICABLE: VoucherBaseType[] = ['Sales','Purchase','Debit Note','Cred
 
 const BLANK = {
   name: '', abbreviation: '', base_voucher_type: '' as VoucherBaseType,
-  family: 'Accounting' as VoucherFamily, is_active: true, activation_type: 'active' as const,
+  family: 'Accounting' as VoucherFamily, is_active: true, activation_type: 'active' as ActivationType,
   accounting_impact: true, inventory_impact: false,
   is_optional_default: false, use_effective_date: false,
   allow_zero_value: false, allow_narration: true, allow_line_narration: true,
