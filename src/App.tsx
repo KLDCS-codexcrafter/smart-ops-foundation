@@ -69,6 +69,7 @@ import Comply360Config from './pages/erp/accounting/Comply360Config';
 import FinFrame from './pages/erp/accounting/FinFrame';
 import LedgerMaster from './pages/erp/accounting/LedgerMaster';
 import IncomeTaxMaster from './pages/erp/accounting/IncomeTaxMaster';
+import VoucherTypesMaster from './pages/erp/accounting/VoucherTypesMaster';
 import ModeOfPaymentMaster from './pages/erp/masters/supporting/ModeOfPaymentMaster';
 import TermsOfPaymentMaster from './pages/erp/masters/supporting/TermsOfPaymentMaster';
 import TermsOfDeliveryMaster from './pages/erp/masters/supporting/TermsOfDeliveryMaster';
@@ -224,6 +225,7 @@ const App = () => (
             <Route path="/erp/accounting/finframe" element={<FinFrame />} />
             <Route path="/erp/accounting/ledger-master" element={<LedgerMaster />} />
             <Route path="/erp/accounting/income-tax" element={<IncomeTaxMaster />} />
+            <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
