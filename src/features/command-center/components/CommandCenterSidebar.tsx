@@ -90,9 +90,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
   const [foundationOpen, setFoundationOpen] = useState(
     activeModule === 'foundation' || activeModule === 'geography'
   );
-  const [finecoreOpen, setFinecoreOpen] = useState(
-    activeModule.startsWith('finecore') || activeModule.startsWith('masters-')
-  );
+  const [finecoreOpen, setFinecoreOpen] = useState(true);
   const [inventoryOpen, setInventoryOpen] = useState(
     activeModule.startsWith('inventory')
   );
