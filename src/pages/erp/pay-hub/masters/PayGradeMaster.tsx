@@ -41,9 +41,9 @@ export function PayGradeMasterPanel() {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [validationError, setValidationError] = useState('');
 
-  // [JWT] GET /api/pay-hub/masters/salary-structures
   const salaryStructures: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
+      // [JWT] GET /api/pay-hub/masters/salary-structures
       const raw = localStorage.getItem('erp_salary_structures');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -61,6 +61,8 @@ export function PayGradeMasterPanel() {
   };
 
   const handleSave = useCallback(() => {
+    if (!sheetOpen) return;
+
     if (!form.name.trim()) return;
     if (form.maxCTC > 0 && form.maxCTC <= form.minCTC) {
       setValidationError('Max CTC must be greater than Min CTC');
@@ -70,7 +72,7 @@ export function PayGradeMasterPanel() {
     if (editId) updateGrade(editId, form);
     else createGrade(form);
     setSheetOpen(false);
-  }, [form, editId, updateGrade, createGrade]);
+  }, [form, editId, updateGrade, createGrade, sheetOpen]);
 
   useCtrlS(handleSave);
 

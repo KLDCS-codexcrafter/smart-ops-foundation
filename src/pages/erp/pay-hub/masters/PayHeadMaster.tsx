@@ -89,6 +89,8 @@ export function PayHeadMasterPanel() {
   };
 
   const handleSave = useCallback(() => {
+    if (!sheetOpen) return;
+
     if (!form.name.trim()) return;
     if (editId) {
       updatePayHead(editId, form);
@@ -96,7 +98,7 @@ export function PayHeadMasterPanel() {
       createPayHead(form);
     }
     setSheetOpen(false);
-  }, [form, editId, updatePayHead, createPayHead]);
+  }, [form, editId, updatePayHead, createPayHead, sheetOpen]);
 
   useCtrlS(handleSave);
 

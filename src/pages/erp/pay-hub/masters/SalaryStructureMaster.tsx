@@ -95,9 +95,9 @@ export function SalaryStructureMasterPanel() {
 
   const activePayHeads = useMemo(() => payHeads.filter(ph => ph.status === 'active'), [payHeads]);
 
-  // [JWT] GET /api/pay-hub/masters/pay-grades
   const grades: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
+      // [JWT] GET /api/pay-hub/masters/pay-grades
       const raw = localStorage.getItem('erp_pay_grades');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -113,11 +113,13 @@ export function SalaryStructureMasterPanel() {
   };
 
   const handleSave = useCallback(() => {
+    if (!sheetOpen) return;
+
     if (!form.name.trim()) return;
     if (editId) updateStructure(editId, form);
     else createStructure(form);
     setSheetOpen(false);
-  }, [form, editId, updateStructure, createStructure]);
+  }, [form, editId, updateStructure, createStructure, sheetOpen]);
 
   useCtrlS(handleSave);
 

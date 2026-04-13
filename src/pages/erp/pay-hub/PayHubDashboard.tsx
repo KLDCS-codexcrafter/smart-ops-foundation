@@ -107,9 +107,9 @@ export function PayHubDashboardPanel() {
     const jobReqCount = safeReadJson<{ status?: string }[]>('erp_job_requisitions', [])
       .filter(r => r.status === 'open').length;
 
-    // [JWT] GET /api/pay-hub/dashboard/company
     let companyName = 'Your Company';
     try {
+      // [JWT] GET /api/pay-hub/dashboard/company
       const pc = localStorage.getItem('erp_parent_company');
       if (pc) {
         const parsed = JSON.parse(pc);
@@ -117,9 +117,9 @@ export function PayHubDashboardPanel() {
       }
     } catch { /* ignore */ }
 
-    // [JWT] GET /api/pay-hub/dashboard/holidays
     const holidays: { date: string; name: string; type: string }[] = (() => {
       try {
+        // [JWT] GET /api/pay-hub/dashboard/holidays
         const raw = localStorage.getItem('erp_holiday_calendars');
         if (raw) {
           const parsed = JSON.parse(raw);
@@ -129,9 +129,9 @@ export function PayHubDashboardPanel() {
       return FALLBACK_HOLIDAYS;
     })();
 
-    // [JWT] GET /api/pay-hub/dashboard/payroll-status
     let lastPayrollStatus = 'Not Yet Started';
     try {
+      // [JWT] GET /api/pay-hub/dashboard/payroll-status
       const runs = localStorage.getItem('erp_payroll_runs');
       if (runs) {
         const parsed = JSON.parse(runs);
