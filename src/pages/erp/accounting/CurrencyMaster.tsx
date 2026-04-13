@@ -99,8 +99,9 @@ function RateSubScreen({
   const fetchEcbRate = async () => {
     setFetching(true);
     try {
-      // [JWT] GET /api/forex/live-rate — future; using ECB via Frankfurter for now
+      // [JWT] GET /api/foundation/parent-company/base-currency
       const base = localStorage.getItem('erp_base_currency') || 'INR';
+      // [JWT] GET /api/forex/live-rate — future; using ECB via Frankfurter for now
       const res = await fetch(
         `https://api.frankfurter.app/latest?from=${base}&to=${isoCode}`
       );
