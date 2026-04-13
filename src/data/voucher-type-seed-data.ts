@@ -39,14 +39,14 @@ const taxRule = (type: 'igst_only' | 'cgst_sgst' | 'auto_detect'): BehaviourRule
 
 const forexCaptureRule = (rateType: 'selling' | 'buying' | 'standard'): BehaviourRule => ({
   id: `rule-forex-${rateType}`, rule_type: 'forex_capture',
-  label: `Forex capture — ${rateType} rate`, is_active: true, sequence: 10,
+  label: `Forex — ${rateType} rate (dual-amount GL)`, is_active: true, sequence: 10,
   config: { default_rate_type: rateType, allow_rate_override: true, require_rate_if_foreign: true, store_dual_amounts: true },
 });
 
 const forexSettlementRule = (revaluation = false): BehaviourRule => ({
   id: revaluation ? 'rule-forex-reval' : 'rule-forex-settle',
   rule_type: 'forex_settlement',
-  label: revaluation ? 'Unrealized forex revaluation (AS-11)' : 'Realized forex gain/loss',
+  label: revaluation ? 'Unrealized forex revaluation (AS-11)' : 'Realized forex gain/loss on settlement',
   is_active: true, sequence: 11,
   config: { calculate_realized_gain_loss: true, gain_ledger_code: 'FXGAIN-SYS', loss_ledger_code: 'FXLOSS-SYS', auto_reversal_on_next_period: revaluation },
 });
@@ -101,9 +101,9 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     behaviour_rules: [
       validationRule(true),
       taxRule('auto_detect'),
+      forexCaptureRule('selling'),
       { id: 'rule-sales-settle', rule_type: 'settlement', label: 'Post to party receivable', is_active: true, sequence: 3,
         config: { auto_settle: false, settle_against: 'invoices', method: 'fifo', show_bill_by_bill: true } },
-      forexCaptureRule('selling'),
     ],
   }),
   seed('vt-purchase', {
@@ -114,9 +114,9 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     behaviour_rules: [
       validationRule(true),
       taxRule('auto_detect'),
+      forexCaptureRule('buying'),
       { id: 'rule-purch-settle', rule_type: 'settlement', label: 'Post to party payable', is_active: true, sequence: 3,
         config: { auto_settle: false, settle_against: 'bills', method: 'fifo', show_bill_by_bill: true } },
-      forexCaptureRule('buying'),
     ],
   }),
   seed('vt-debit-note', {

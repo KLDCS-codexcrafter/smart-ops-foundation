@@ -42,22 +42,8 @@ export type BehaviourRuleType =
   | 'approval_gate'
   | 'auto_reversal'
   | 'narration_template'
-  | 'forex_capture'
-  | 'forex_settlement';
-
-export interface ForexCaptureConfig {
-  default_rate_type: 'selling' | 'buying' | 'standard';
-  allow_rate_override: boolean;
-  require_rate_if_foreign: boolean;
-  store_dual_amounts: boolean;
-}
-
-export interface ForexSettlementConfig {
-  calculate_realized_gain_loss: boolean;
-  gain_ledger_code: string;
-  loss_ledger_code: string;
-  auto_reversal_on_next_period: boolean;
-}
+  | 'forex_capture'      // capture exchange rate + dual amounts at transaction time
+  | 'forex_settlement';  // calculate realized gain/loss at settlement
 
 export interface AutoPostConfig {
   debit_ledger_code: string;
@@ -108,6 +94,46 @@ export interface AutoReversalConfig {
 export interface NarrationTemplateConfig {
   template: string;
   variables: string[];
+}
+
+export interface ForexCaptureConfig {
+  /**
+   * Which rate type to auto-fill from Currency Master on the voucher date.
+   * selling = export (Sales Invoice, Receipt — you receive foreign currency)
+   * buying  = import (Purchase Invoice, Payment — you pay in foreign currency)
+   * standard = reference only (Journal, FXADJ)
+   */
+  default_rate_type: 'selling' | 'buying' | 'standard';
+  /** Allow accountant to override the pre-filled rate at transaction entry */
+  allow_rate_override: boolean;
+  /** Block save if currency ≠ base and no rate found for the transaction date */
+  require_rate_if_foreign: boolean;
+  /**
+   * Store dual amounts on every GL line for this voucher:
+   *   debit_base / credit_base  — in company base currency (e.g. ₹)
+   *   debit_foreign / credit_foreign — in transaction currency (e.g. $)
+   *   exchange_rate — the rate used at posting time
+   */
+  store_dual_amounts: boolean;
+}
+
+export interface ForexSettlementConfig {
+  /**
+   * When this voucher settles a prior transaction (Receipt vs Invoice, Payment vs Bill):
+   * calculate the difference between the booking rate and the settlement rate
+   * and auto-post to forex gain/loss ledgers.
+   */
+  calculate_realized_gain_loss: boolean;
+  /** Ledger code for realized forex gain (default: FXGAIN-SYS) */
+  gain_ledger_code: string;
+  /** Ledger code for realized forex loss (default: FXLOSS-SYS) */
+  loss_ledger_code: string;
+  /**
+   * For period-end revaluation (unrealized gain/loss — AS-11 / IAS-21):
+   * auto-create a reversal entry at the start of the next period.
+   * Used on FXADJ (Forex Adjustment Journal) only.
+   */
+  auto_reversal_on_next_period: boolean;
 }
 
 export interface BehaviourRule {
