@@ -155,6 +155,7 @@ const INITIAL_FORM: Record<string, unknown> = {
   npsCorporateRegNo: '', npsBranchOfficeNo: '',
   lwfRegNo: '', lwfState: '',
   complianceRegion: 'india', accountingTerminology: 'india-saarc',
+  jurisdiction: '',
   auditLogEnabled: true,
   // Settings
   timezone: 'Asia/Kolkata', language: 'en', status: 'Active',
