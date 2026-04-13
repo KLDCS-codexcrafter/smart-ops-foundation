@@ -37,7 +37,7 @@ export type PayHubModule =
   | 'ph-payslip-gen';
 
 const LIVE_MODULES: PayHubModule[] = [
-  'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades',
+  'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
 ];
 
 interface SidebarItem {

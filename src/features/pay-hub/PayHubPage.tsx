@@ -11,6 +11,7 @@ import { PayHubDashboardPanel } from '@/pages/erp/pay-hub/PayHubDashboard';
 import { PayHeadMasterPanel } from '@/pages/erp/pay-hub/masters/PayHeadMaster';
 import { SalaryStructureMasterPanel } from '@/pages/erp/pay-hub/masters/SalaryStructureMaster';
 import { PayGradeMasterPanel } from '@/pages/erp/pay-hub/masters/PayGradeMaster';
+import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -27,6 +28,7 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-pay-heads': return <PayHeadMasterPanel />;
     case 'ph-salary-structures': return <SalaryStructureMasterPanel />;
     case 'ph-pay-grades': return <PayGradeMasterPanel />;
+    case 'ph-employees': return <EmployeeMasterPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
