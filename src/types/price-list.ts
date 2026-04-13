@@ -6,7 +6,7 @@ export type PriceListType =
   | 'promotional'
   | 'customer_specific';
 
-export type PriceListCurrency = string;
+export type PriceListCurrency = string;  // ISO code — dynamic from erp_currencies
 
 export interface PriceList {
   id: string;

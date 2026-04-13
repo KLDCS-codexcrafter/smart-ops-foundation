@@ -108,8 +108,8 @@ interface VendorMasterDefinition {
   dispatchMode: 'road' | 'rail' | 'air' | 'sea' | 'courier' | 'hand' | '';
   defaultTransporterId: string;
   defaultCourierId: string;
-  default_currency: string;
   status: 'active' | 'inactive';
+  default_currency: string;  // ISO code — payment currency for this vendor
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -171,13 +171,13 @@ const defaultForm: Omit<VendorMasterDefinition, 'id' | 'partyCode'> = {
   gstFilingType: 'monthly', einvoiceApplicable: false,
   tdsApplicable: false, tdsSection: '',
   defaultBranch: '', businessMode: 'b2b',
+  default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   typeOfBusinessEntity: 'private_limited',
   natureOfBusiness: '', businessActivity: '',
   referredBy: '', associatedDealer: '', otherReference: '',
   businessHours: '', saleType: 'credit',
   termsOfDeliveryId: '', dispatchMode: '',
   defaultTransporterId: '', defaultCourierId: '',
-  default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   status: 'active',
 };
 
@@ -682,29 +682,6 @@ export function VendorMasterPanel() {
             </Select>
           </div>
           <div>
-            <Label className="text-xs">Default Currency</Label>
-            <Select value={form.default_currency} onValueChange={v => setForm(f => ({ ...f, default_currency: v }))}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select currency" /></SelectTrigger>
-              <SelectContent>
-                {(() => {
-                  try {
-                    // [JWT] GET /api/accounting/currencies
-                    const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]');
-                    const base = localStorage.getItem('erp_base_currency') || 'INR';
-                    const active = currencies.filter((c: any) => c.is_active);
-                    if (!active.length) return <SelectItem value={base}>{base} (Base)</SelectItem>;
-                    return active.map((c: any) => (
-                      <SelectItem key={c.id} value={c.iso_code}>
-                        {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
-                      </SelectItem>
-                    ));
-                  } catch { return <SelectItem value="INR">₹ INR (Base)</SelectItem>; }
-                })()}
-              </SelectContent>
-            </Select>
-            <p className="text-[10px] text-muted-foreground mt-1">Payments to this vendor default to this currency.</p>
-          </div>
-          <div>
             <Label className="text-xs">Terms of Payment</Label>
             <Select value={form.termsOfPaymentId} onValueChange={v => setForm(f => ({ ...f, termsOfPaymentId: v }))}>
               <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select terms" /></SelectTrigger>
@@ -714,6 +691,30 @@ export function VendorMasterPanel() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Default Currency</Label>
+            <Select value={form.default_currency} onValueChange={v => setForm(f => ({ ...f, default_currency: v }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(() => {
+                  try {
+                    // [JWT] GET /api/accounting/currencies
+                    const curs: { id: string; iso_code: string; name: string; symbol: string; is_active: boolean; is_base_currency: boolean }[] =
+                      JSON.parse(localStorage.getItem('erp_currencies') || '[]');
+                    const active = curs.filter(c => c.is_active);
+                    const base = localStorage.getItem('erp_base_currency') || 'INR';
+                    if (!active.length) return <SelectItem value={base}>{base} (Base)</SelectItem>;
+                    return active.map(c => (
+                      <SelectItem key={c.id} value={c.iso_code}>
+                        {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
+                      </SelectItem>
+                    ));
+                  } catch { return <SelectItem value="INR">₹ INR (Base)</SelectItem>; }
+                })()}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground mt-1">Purchase invoices from this vendor default to this currency.</p>
           </div>
           <div>
             <Label className="text-xs">Sale Type</Label>

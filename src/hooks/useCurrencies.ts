@@ -187,6 +187,24 @@ export function useCurrencies() {
     return r.standard_rate;
   };
 
+  const getCurrencyByCode = (isoCode: string): Currency | null =>
+    currencies.find(c => c.iso_code.toUpperCase() === isoCode.toUpperCase()) ?? null;
+
+  /**
+   * Format an amount in a given currency using stored symbol, decimals, and position settings.
+   * Falls back to 2dp if currency not found.
+   */
+  const formatAmount = (amount: number, isoCode: string): string => {
+    const c = getCurrencyByCode(isoCode);
+    if (!c) return amount.toFixed(2);
+    const formatted = parseFloat(amount.toFixed(c.decimal_places))
+      .toLocaleString('en-IN', { minimumFractionDigits: c.decimal_places, maximumFractionDigits: c.decimal_places });
+    const spaced = c.space_between ? ' ' : '';
+    return c.symbol_before_amount
+      ? `${c.symbol}${spaced}${formatted}`
+      : `${formatted}${spaced}${c.symbol}`;
+  };
+
   const baseCurrency = currencies.find(c => c.is_base_currency) ?? null;
   const activeForeign = currencies.filter(c => !c.is_base_currency && c.is_active);
 
@@ -197,18 +215,6 @@ export function useCurrencies() {
     withRates: currencies.filter(c =>
       !c.is_base_currency && rates.some(r => r.currency_id === c.id)
     ).length,
-  };
-
-  const getCurrencyByCode = (isoCode: string): Currency | null =>
-    currencies.find(c => c.iso_code.toUpperCase() === isoCode.toUpperCase()) ?? null;
-
-  const formatAmount = (amount: number, isoCode: string): string => {
-    const c = getCurrencyByCode(isoCode);
-    if (!c) return amount.toFixed(2);
-    const num = amount.toFixed(c.decimal_places);
-    const formatted = parseFloat(num).toLocaleString('en-IN', { minimumFractionDigits: c.decimal_places });
-    const spaced = c.space_between ? ' ' : '';
-    return c.symbol_before_amount ? `${c.symbol}${spaced}${formatted}` : `${formatted}${spaced}${c.symbol}`;
   };
 
   return {
