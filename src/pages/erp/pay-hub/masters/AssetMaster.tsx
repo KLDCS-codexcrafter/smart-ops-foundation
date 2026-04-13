@@ -2,7 +2,7 @@
  * AssetMaster.tsx — Pay Hub Asset Master · Sprint 4
  * Two-tab screen: Asset Directory + Barcode Labels
  */
-import { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -283,7 +283,7 @@ export function AssetMasterPanel() {
                 </TableCell></TableRow>
               )}
               {filtered.map(asset => (
-                <> 
+                <React.Fragment key={asset.id}>
                   <TableRow key={asset.id} className="group">
                     <TableCell className="font-mono text-xs text-violet-600">{asset.assetCode}</TableCell>
                     <TableCell className="font-medium">{asset.name}</TableCell>
@@ -387,7 +387,7 @@ export function AssetMasterPanel() {
                   onClick={() => togglePrintSelect(a.id)}>
                   <CardContent className="p-3 flex gap-3">
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${a.assetCode}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(a.assetCode)}`}
                       alt={`QR: ${a.assetCode}`} className="h-16 w-16 rounded"
                     />
                     <div className="flex-1 min-w-0">
@@ -416,7 +416,7 @@ export function AssetMasterPanel() {
             `}</style>
             {printAssets.map(a => (
               <div key={a.id} className="print-label">
-                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${a.assetCode}`} alt={a.assetCode} />
+                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(a.assetCode)}`} alt={a.assetCode} />
                 <div className="info">
                   <p className="code">{a.assetCode}</p>
                   <p>{a.name}</p>
@@ -439,7 +439,7 @@ export function AssetMasterPanel() {
             </SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4" data-keyboard-form>
             {/* Asset Code */}
             <div>
               <Label className="text-xs">Asset Code</Label>
@@ -659,7 +659,7 @@ export function AssetMasterPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setReturnOpen(false)}>Cancel</Button>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={handleReturn}>
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white" data-primary onClick={handleReturn}>
               Record Return
             </Button>
           </DialogFooter>
