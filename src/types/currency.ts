@@ -22,6 +22,10 @@ export interface Currency {
   entity_id: string | null;      // null = group-level (all entities)
   created_at: string;
   updated_at: string;
+  // GL linkage — optional until LedgerMaster has party ledgers
+  default_receivables_account?: string;  // AR ledger ID for this currency
+  default_payables_account?: string;     // AP ledger ID for this currency
+  default_gain_loss_account?: string;    // Overrides FXGAIN-SYS / FXLOSS-SYS
 }
 
 export interface ForexRate {
