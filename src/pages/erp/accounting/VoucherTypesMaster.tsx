@@ -134,7 +134,7 @@ const BLANK = {
   accounting_impact: true, inventory_impact: false,
   is_optional_default: false, use_effective_date: false,
   allow_zero_value: false, allow_narration: true, allow_line_narration: true,
-  numbering_method: 'automatic' as NumberingMethod, numbering_prefix: '', numbering_width: 4,
+  numbering_method: 'automatic' as NumberingMethod, use_custom_series: false, numbering_prefix: '', numbering_suffix: '', numbering_start: 1, numbering_width: 4, numbering_prefill_zeros: true, prevent_duplicate_manual: true, insertion_deletion_behaviour: 'retain_original' as 'retain_original' | 'renumber', show_unused_numbers: false,
   current_sequence: 1, behaviour_rules: [] as BehaviourRule[],
   print_after_save: false, use_for_pos: false, print_title: '',
   default_bank_ledger_id: null as string | null, default_jurisdiction: '', declaration_text: '',
@@ -280,7 +280,7 @@ function VoucherSheet({
           is_optional_default: editVt.is_optional_default, use_effective_date: editVt.use_effective_date,
           allow_zero_value: editVt.allow_zero_value, allow_narration: editVt.allow_narration,
           allow_line_narration: editVt.allow_line_narration, numbering_method: editVt.numbering_method,
-          numbering_prefix: editVt.numbering_prefix, numbering_width: editVt.numbering_width,
+          use_custom_series: editVt.use_custom_series ?? false, numbering_prefix: editVt.numbering_prefix, numbering_suffix: editVt.numbering_suffix ?? '', numbering_start: editVt.numbering_start ?? 1, numbering_width: editVt.numbering_width, numbering_prefill_zeros: editVt.numbering_prefill_zeros ?? true, prevent_duplicate_manual: editVt.prevent_duplicate_manual ?? true, insertion_deletion_behaviour: editVt.insertion_deletion_behaviour ?? 'retain_original', show_unused_numbers: editVt.show_unused_numbers ?? false,
           current_sequence: editVt.current_sequence, behaviour_rules: editVt.behaviour_rules,
           print_after_save: editVt.print_after_save, use_for_pos: editVt.use_for_pos,
           print_title: editVt.print_title, default_bank_ledger_id: editVt.default_bank_ledger_id,
@@ -294,9 +294,26 @@ function VoucherSheet({
 
   useEffect(() => {
     if (open) {
-      setForm(initForm());
+      const freshForm = initForm();
+      // Auto-fill jurisdiction from company governance on Create (not edit)
+      if (!editVt && !freshForm.default_jurisdiction) {
+        try {
+          // [JWT] GET /api/foundation/companies
+          const companies: any[] = JSON.parse(localStorage.getItem('erp_companies') || '[]');
+          const co = companies[0];
+          if (co) {
+            const parts = [co.hqCity, co.hqState].filter(Boolean);
+            if (parts.length > 0) {
+              freshForm.default_jurisdiction = `Subject to ${parts.join(', ')} jurisdiction`;
+            } else if (co.jurisdiction) {
+              freshForm.default_jurisdiction = co.jurisdiction;
+            }
+          }
+        } catch { /* ignore */ }
+      }
+      setForm(freshForm);
     }
-  }, [open, initForm]);
+  }, [open, initForm, editVt]);
 
   const handleBase = (base: VoucherBaseType) => {
     const fam = BASE_FAMILY[base];
@@ -310,8 +327,14 @@ function VoucherSheet({
     });
   };
 
-  const showSeries = form.numbering_method === 'automatic' || form.numbering_method === 'automatic_manual_override';
-  const nextPrev   = showSeries ? `${form.numbering_prefix}${String(form.current_sequence).padStart(form.numbering_width, '0')}` : '—';
+  const showAutoFields = form.numbering_method === 'automatic' || form.numbering_method === 'automatic_manual_override' || form.numbering_method === 'multi_user_auto';
+  const isManual     = form.numbering_method === 'manual';
+  const numStr       = String(form.numbering_start ?? 1).padStart(form.numbering_prefill_zeros ? form.numbering_width : 0, '0');
+  const nextPrev     = showAutoFields && form.use_custom_series
+    ? `${form.numbering_prefix || ''}${numStr}${form.numbering_suffix || ''}`
+    : showAutoFields
+    ? `${form.numbering_prefix || ''}${String(form.current_sequence).padStart(form.numbering_width, '0')}`
+    : '—';
   const lineOff    = NO_LINE_NARRATION_TYPES.includes(form.base_voucher_type);
   const alwaysOpt  = ALWAYS_OPTIONAL_TYPES.includes(form.base_voucher_type);
   const salesOnly  = SALES_ONLY_FIELDS.includes(form.base_voucher_type);
@@ -422,44 +445,154 @@ function VoucherSheet({
           {/* NUMBERING */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="flex items-center gap-2 w-full group py-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex-1 text-left">Numbering Series</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex-1 text-left">Numbering</span>
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50 transition-transform group-data-[state=closed]:-rotate-90" />
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-3 space-y-2">
+            <CollapsibleContent className="pt-3 space-y-3">
+
+              {/* Method */}
               <div>
                 <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Method</Label>
                 <Select value={form.numbering_method} onValueChange={v => upd({ numbering_method: v as NumberingMethod })}>
                   <SelectTrigger className="mt-1 h-8 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {(Object.entries(NUMBERING_LABELS) as [NumberingMethod, string][]).map(([k, v]) => (
-                      <SelectItem key={k} value={k} className="text-sm">{v}</SelectItem>
+                      <SelectItem key={k} value={k} className="text-sm pl-2">
+                        <div>
+                          <span>{v}</span>
+                          {k === 'automatic_manual_override' && (
+                            <span className="text-[10px] text-muted-foreground ml-1">— pre-fills last+1, user can override</span>
+                          )}
+                        </div>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              {showSeries && (
-                <div className="grid grid-cols-[1fr_80px] gap-2">
-                  <div>
-                    <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Prefix</Label>
-                    <Input value={form.numbering_prefix}
-                      onChange={e => upd({ numbering_prefix: e.target.value })}
-                      className="mt-1 h-8 text-sm font-mono" placeholder="SI-" />
-                  </div>
-                  <div>
-                    <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Width</Label>
-                    <Input type="number" min={2} max={8} value={form.numbering_width}
-                      onChange={e => upd({ numbering_width: Number(e.target.value) })}
-                      className="mt-1 h-8 text-sm font-mono" />
-                  </div>
+
+              {/* Manual: prevent duplicate toggle */}
+              {isManual && (
+                <div className="rounded-lg border border-border/50 bg-muted/20 p-3 space-y-2">
+                  <TRow
+                    label="Prevent duplicate voucher numbers"
+                    checked={form.prevent_duplicate_manual}
+                    onChange={v => upd({ prevent_duplicate_manual: v })}
+                    hint="Rejects a number already used by this voucher type during transaction entry"
+                  />
                 </div>
               )}
-              {showSeries && (
-                <div className="flex items-center gap-2 rounded-md bg-muted/40 px-3 py-2 border border-border/40 text-[11px]">
-                  <RefreshCw className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Next number preview:</span>
-                  <span className="font-mono font-semibold text-foreground">{nextPrev}</span>
+
+              {/* Auto methods: custom series toggle */}
+              {showAutoFields && (
+                <>
+                  <TRow
+                    label="Use custom number series"
+                    checked={form.use_custom_series}
+                    onChange={v => upd({ use_custom_series: v })}
+                    hint="OFF = auto series (e.g. SI-0001). ON = configure prefix, suffix, width."
+                  />
+
+                  {form.use_custom_series && (
+                    <div className="rounded-lg border border-border/50 bg-muted/10 p-3 space-y-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Prefix</Label>
+                          <Input value={form.numbering_prefix}
+                            onChange={e => upd({ numbering_prefix: e.target.value })}
+                            className="mt-1 h-8 text-sm font-mono" placeholder="SI/" />
+                        </div>
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Suffix</Label>
+                          <Input value={form.numbering_suffix}
+                            onChange={e => upd({ numbering_suffix: e.target.value })}
+                            className="mt-1 h-8 text-sm font-mono" placeholder="/MH" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_80px_80px] gap-2">
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Starting Number</Label>
+                          <Input type="number" min={1} value={form.numbering_start ?? 1}
+                            onChange={e => upd({ numbering_start: Number(e.target.value) })}
+                            className="mt-1 h-8 text-sm font-mono" />
+                        </div>
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Width</Label>
+                          <Input type="number" min={1} max={10} value={form.numbering_width}
+                            onChange={e => upd({ numbering_width: Number(e.target.value) })}
+                            className="mt-1 h-8 text-sm font-mono" />
+                        </div>
+                        <div className="flex flex-col">
+                          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1.5">Fill zeros</Label>
+                          <Switch checked={form.numbering_prefill_zeros} onCheckedChange={v => upd({ numbering_prefill_zeros: v })} className="scale-75 mt-1" />
+                        </div>
+                      </div>
+                      {/* Live preview */}
+                      <div className="flex items-center gap-2 rounded-md bg-muted/40 px-3 py-2 border border-border/40 text-[11px]">
+                        <RefreshCw className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">Preview:</span>
+                        <span className="font-mono font-semibold text-foreground">{nextPrev}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {!form.use_custom_series && showAutoFields && (
+                    <div className="flex items-center gap-2 rounded-md bg-muted/30 px-3 py-1.5 border border-border/30 text-[11px]">
+                      <RefreshCw className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-muted-foreground">Next:</span>
+                      <span className="font-mono font-semibold text-foreground">
+                        {form.numbering_prefix || form.abbreviation || 'XX'}-{String(form.current_sequence).padStart(4, '0')}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Insertion / Deletion behaviour — for all auto methods */}
+              {showAutoFields && (
+                <div className="space-y-2 pt-1">
+                  <Separator />
+                  <div>
+                    <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Numbering behaviour on insertion / deletion</Label>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5 mb-2">What happens to voucher numbers when an entry is inserted or deleted mid-sequence?</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(['retain_original', 'renumber'] as const).map(opt => (
+                        <button key={opt} type="button"
+                          onClick={() => upd({ insertion_deletion_behaviour: opt })}
+                          className={cn(
+                            'flex flex-col items-start gap-0.5 rounded-lg border p-2.5 text-left transition-all',
+                            form.insertion_deletion_behaviour === opt
+                              ? 'border-primary/60 bg-primary/5 ring-1 ring-primary/20'
+                              : 'border-border/50 hover:border-border bg-muted/10'
+                          )}>
+                          <span className="text-[12px] font-medium text-foreground">
+                            {opt === 'retain_original' ? 'Retain Original No.' : 'Renumber Vouchers'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground leading-tight">
+                            {opt === 'retain_original'
+                              ? 'Gaps allowed. Existing numbers never change. GST-safe.'
+                              : 'Subsequent vouchers renumbered in sequence.'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {form.insertion_deletion_behaviour === 'retain_original' && (
+                    <TRow
+                      label="Show unused numbers in transaction entry"
+                      checked={form.show_unused_numbers}
+                      onChange={v => upd({ show_unused_numbers: v })}
+                      hint="Transaction screen will surface gaps for reuse"
+                    />
+                  )}
+                  {form.insertion_deletion_behaviour === 'renumber' && (
+                    <div className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-400">
+                      <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                      Renumbering may affect previously issued invoice numbers. Not recommended for GST-registered entities.
+                    </div>
+                  )}
                 </div>
               )}
+
             </CollapsibleContent>
           </Collapsible>
 
@@ -472,9 +605,7 @@ function VoucherSheet({
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50 transition-transform group-data-[state=closed]:-rotate-90" />
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2">
-              <TRow label="Optional by default" checked={form.is_optional_default}
-                onChange={v => upd({ is_optional_default: v })} disabled={alwaysOpt}
-                hint={alwaysOpt ? 'Always optional for this base type' : 'Not posted until regularised'} />
+              {/* is_optional_default intentionally hidden — belongs to transaction module, not master setup */}
               <TRow label="Use effective date" checked={form.use_effective_date}
                 onChange={v => upd({ use_effective_date: v })}
                 hint="Ageing uses effective date instead of voucher date" />
@@ -577,6 +708,10 @@ function VoucherSheet({
                 <Input value={form.default_jurisdiction}
                   onChange={e => upd({ default_jurisdiction: e.target.value })}
                   className="mt-1 h-8 text-sm" placeholder="e.g. Subject to Maharashtra jurisdiction" />
+                <p className="text-[10px] text-muted-foreground/60 mt-1 flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  Auto-filled from company governance · set it once in Entity Management to apply everywhere
+                </p>
               </div>
             </CollapsibleContent>
           </Collapsible>

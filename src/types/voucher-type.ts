@@ -124,8 +124,15 @@ export interface VoucherType {
   allow_line_narration: boolean;
   // Numbering
   numbering_method: NumberingMethod;
+  use_custom_series: boolean;           // toggle — OFF=auto prefix from abbr, ON=custom form below
   numbering_prefix: string;
+  numbering_suffix: string;             // NEW — suffix text appended after number
+  numbering_start: number;              // starting number for series
   numbering_width: number;
+  numbering_prefill_zeros: boolean;     // pre-fill with zeros e.g. 0001 not 1
+  prevent_duplicate_manual: boolean;    // for Manual method only — reject duplicate numbers
+  insertion_deletion_behaviour: 'retain_original' | 'renumber'; // Tally: Retain vs Renumber
+  show_unused_numbers: boolean;         // show gaps in transaction entry (retain_original only)
   current_sequence: number;
   // Embedded behaviour rules
   behaviour_rules: BehaviourRule[];

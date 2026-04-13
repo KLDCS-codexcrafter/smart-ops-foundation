@@ -230,6 +230,16 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
               <Switch checked={fb('auditLogEnabled')} onCheckedChange={v => upd('auditLogEnabled', v)} />
               <span className="text-xs text-muted-foreground">Audit Log Enabled</span>
             </div>
+
+            <Separator />
+            <FormField label="Jurisdiction" hint="Legal jurisdiction clause for invoices and vouchers. Set once here — auto-copied everywhere it is needed.">
+              <Input
+                value={f('jurisdiction') ?? ''}
+                onChange={e => upd('jurisdiction', e.target.value)}
+                className="text-xs"
+                placeholder="e.g. Subject to Mumbai, Maharashtra jurisdiction"
+              />
+            </FormField>
           </div>
         </TabsContent>
 
