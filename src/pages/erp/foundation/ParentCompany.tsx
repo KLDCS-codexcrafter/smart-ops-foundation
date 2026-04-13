@@ -138,6 +138,7 @@ const INITIAL_FORM = {
   panNumber: '', panFormatted: '', iecCode: '',
   shopsEstablishmentNo: '', tradeLicenceNo: '', professionalTaxNo: '',
   jurisdiction: '',
+  enableMultiCurrency: false,
   msmeApplicable: false, msmeApplicableFrom: '', msmeEnterpriseType: '',
   msmeUdyamRegNo: '', msmeActivityType: '', msmeCreditPeriodDays: '45',
   msmeNoCreditPeriod: false,

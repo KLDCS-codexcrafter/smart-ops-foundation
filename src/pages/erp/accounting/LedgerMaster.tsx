@@ -496,7 +496,7 @@ interface BankLedgerDefinition {
   accountNumber: string;
   ifscCode: string;
   accountType: BankAccountType;
-  currency: 'INR' | 'USD' | 'EUR' | 'GBP' | 'AED';
+  currency: string;  // ISO code — dynamic from erp_currencies
   odLimit: number;
   branchName: string;
   branchAddress: string;
@@ -711,7 +711,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     brsEnabled: d.brsEnabled ?? true,
     clearingDays: d.clearingDays ?? 2,
     cutoffTime: d.cutoffTime ?? '14:30',
-    currency: d.currency ?? 'INR',
+    currency: d.currency ?? localStorage.getItem('erp_base_currency') ?? 'INR',
     acHolderName: d.acHolderName ?? '',
     bankPhone: d.bankPhone ?? '',
     neftEnabled: d.neftEnabled ?? true,
@@ -1120,7 +1120,7 @@ const defaultBankForm = {
   name: '', alias: '', bankName: '', bankNameOther: '',
   accountNumber: '', ifscCode: '',
   accountType: '' as BankAccountType | '',
-  currency: 'INR' as 'INR'|'USD'|'EUR'|'GBP'|'AED',
+  currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   odLimit: 0, openingBalance: 0,
   openingBalanceType: 'Dr' as 'Dr' | 'Cr',
   scope: 'group' as 'group' | 'entity', entityId: '',
@@ -4088,6 +4088,36 @@ export function LedgerMasterPanel() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Currency</Label>
+              <Select value={bankForm.currency} onValueChange={v => setBankForm(f => ({ ...f, currency: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select currency" /></SelectTrigger>
+                <SelectContent>
+                  {(() => {
+                    try {
+                      // [JWT] GET /api/accounting/currencies
+                      const currencies: { id: string; iso_code: string; name: string; symbol: string; is_active: boolean; is_base_currency: boolean }[] =
+                        JSON.parse(localStorage.getItem('erp_currencies') || '[]');
+                      const active = currencies.filter(c => c.is_active);
+                      if (active.length === 0) {
+                        const base = localStorage.getItem('erp_base_currency') || 'INR';
+                        return <SelectItem value={base}>{base}</SelectItem>;
+                      }
+                      return active.map(c => (
+                        <SelectItem key={c.id} value={c.iso_code}>
+                          {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
+                        </SelectItem>
+                      ));
+                    } catch {
+                      return <SelectItem value="INR">₹ INR — Indian Rupee (Base)</SelectItem>;
+                    }
+                  })()}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Foreign currency bank accounts (FCNR, Nostro) show balance in both currencies.
+              </p>
             </div>
             {!bankEditTarget && (
               <div className="space-y-1.5">

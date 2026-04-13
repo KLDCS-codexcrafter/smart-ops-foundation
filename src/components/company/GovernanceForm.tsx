@@ -231,6 +231,11 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
               <span className="text-xs text-muted-foreground">Audit Log Enabled</span>
             </div>
 
+            <div className="flex items-center gap-2">
+              <Switch checked={fb('enableMultiCurrency')} onCheckedChange={v => upd('enableMultiCurrency', v)} />
+              <span className="text-xs text-muted-foreground">Enable Multi-Currency</span>
+            </div>
+
             <Separator />
             <FormField label="Jurisdiction" hint="Legal jurisdiction clause for invoices and vouchers. Set once here — auto-copied everywhere it is needed.">
               <Input

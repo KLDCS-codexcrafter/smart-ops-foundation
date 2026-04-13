@@ -156,6 +156,7 @@ const INITIAL_FORM: Record<string, unknown> = {
   lwfRegNo: '', lwfState: '',
   complianceRegion: 'india', accountingTerminology: 'india-saarc',
   jurisdiction: '',
+  enableMultiCurrency: false,
   auditLogEnabled: true,
   // Settings
   timezone: 'Asia/Kolkata', language: 'en', status: 'Active',
