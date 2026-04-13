@@ -362,7 +362,12 @@ export default function ParentCompany() {
               numbering_width: 4, numbering_prefill_zeros: true,
               prevent_duplicate_manual: true,
               insertion_deletion_behaviour: 'retain_original', show_unused_numbers: false,
-              current_sequence: 1, behaviour_rules: [],
+              current_sequence: 1, behaviour_rules: [
+                { id: 'rule-forex-standard', rule_type: 'forex_capture', label: 'Forex capture — standard rate', is_active: true, sequence: 10,
+                  config: { default_rate_type: 'standard', allow_rate_override: true, require_rate_if_foreign: true, store_dual_amounts: true } },
+                { id: 'rule-forex-reval', rule_type: 'forex_settlement', label: 'Unrealized forex revaluation (AS-11)', is_active: true, sequence: 11,
+                  config: { calculate_realized_gain_loss: true, gain_ledger_code: 'FXGAIN-SYS', loss_ledger_code: 'FXLOSS-SYS', auto_reversal_on_next_period: true } },
+              ],
               print_after_save: false, use_for_pos: false, print_title: '',
               default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',
               entity_id: null, created_at: now, updated_at: now,
