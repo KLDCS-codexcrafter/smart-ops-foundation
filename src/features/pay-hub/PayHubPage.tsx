@@ -12,6 +12,14 @@ import { PayHeadMasterPanel } from '@/pages/erp/pay-hub/masters/PayHeadMaster';
 import { SalaryStructureMasterPanel } from '@/pages/erp/pay-hub/masters/SalaryStructureMaster';
 import { PayGradeMasterPanel } from '@/pages/erp/pay-hub/masters/PayGradeMaster';
 import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster';
+import { ShiftMasterPanel } from '@/pages/erp/pay-hub/masters/ShiftMaster';
+import { LeaveTypesMasterPanel } from '@/pages/erp/pay-hub/masters/LeaveTypesMaster';
+import { HolidayCalendarMasterPanel } from '@/pages/erp/pay-hub/masters/HolidayCalendarMaster';
+import { AttendanceTypesMasterPanel } from '@/pages/erp/pay-hub/masters/AttendanceTypesMaster';
+import { OvertimeRulesMasterPanel } from '@/pages/erp/pay-hub/masters/OvertimeRulesMaster';
+import { LoanTypesMasterPanel } from '@/pages/erp/pay-hub/masters/LoanTypesMaster';
+import { BonusConfigMasterPanel } from '@/pages/erp/pay-hub/masters/BonusConfigMaster';
+import { GratuityNPSPanel } from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -29,6 +37,14 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-salary-structures': return <SalaryStructureMasterPanel />;
     case 'ph-pay-grades': return <PayGradeMasterPanel />;
     case 'ph-employees': return <EmployeeMasterPanel />;
+    case 'ph-shifts': return <ShiftMasterPanel />;
+    case 'ph-leave-types': return <LeaveTypesMasterPanel />;
+    case 'ph-holiday-calendar': return <HolidayCalendarMasterPanel />;
+    case 'ph-attendance-types': return <AttendanceTypesMasterPanel />;
+    case 'ph-overtime-rules': return <OvertimeRulesMasterPanel />;
+    case 'ph-loan-types': return <LoanTypesMasterPanel />;
+    case 'ph-bonus-config': return <BonusConfigMasterPanel />;
+    case 'ph-gratuity-nps': return <GratuityNPSPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
