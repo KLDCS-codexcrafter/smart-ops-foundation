@@ -323,7 +323,6 @@ function VoucherSheet({
       accounting_impact: inh.gl, inventory_impact: inh.inv,
       numbering_prefix: base.slice(0, 4).toUpperCase().replace(/\s/g, '') + '-',
       allow_line_narration: !NO_LINE_NARRATION_TYPES.includes(base),
-      is_optional_default: ALWAYS_OPTIONAL_TYPES.includes(base),
     });
   };
 
@@ -821,7 +820,11 @@ export function VoucherTypesMasterPanel() {
       <td className="px-3 py-2.5 text-center"><GlIcon on={vt.inventory_impact} /></td>
       <td className="px-3 py-2.5">
         {vt.numbering_method !== 'none'
-          ? <span className="font-mono text-[11px] text-muted-foreground">{vt.numbering_prefix}{String(vt.current_sequence).padStart(vt.numbering_width, '0')}</span>
+          ? <span className="font-mono text-[11px] text-muted-foreground">
+              {vt.use_custom_series
+                ? `${vt.numbering_prefix || ''}${String(vt.current_sequence).padStart(vt.numbering_width, '0')}${vt.numbering_suffix || ''}`
+                : `${vt.numbering_prefix || ''}${String(vt.current_sequence).padStart(vt.numbering_width, '0')}`}
+            </span>
           : <span className="text-[11px] text-muted-foreground">Manual</span>}
       </td>
       <td className="px-3 py-2.5">
