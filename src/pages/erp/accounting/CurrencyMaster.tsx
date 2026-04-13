@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import {
   Lock, Plus, Trash2, Edit2, ChevronDown, Search,
   RefreshCw, Info, TrendingUp, X, DollarSign,
-  ArrowUpRight, ArrowDownLeft,
+  ArrowUpRight, ArrowDownLeft, Download, Loader2,
 } from 'lucide-react';
 import { useCurrencies } from '@/hooks/useCurrencies';
 import type { Currency, ForexRate } from '@/types/currency';
