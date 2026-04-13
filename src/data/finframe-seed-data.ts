@@ -130,13 +130,13 @@ export const L3_FINANCIAL_GROUPS: L3FinancialGroup[] = [
   { code: 'SERV',   name: 'Service Revenue',                     tallyName: 'Service Income',               l2Code: 'I-OR',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: true,  order: 4 },
   { code: 'EXINC',  name: 'Export Revenue',                      tallyName: 'Export Sales',                 l2Code: 'I-OR',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: false, order: 5 },
 
-  // Under Other Income (I-OI) — 6 groups
+  // Under Other Income (I-OI) — 5 groups
   { code: 'INTINC', name: 'Interest Income',                     tallyName: 'Interest Received',            l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: true,  order: 1 },
   { code: 'DIVINC', name: 'Dividend Income',                     tallyName: 'Dividend Received',            l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: true,  order: 2 },
   { code: 'RNTINC', name: 'Rental Income',                       tallyName: 'Rent Received',                l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: true,  order: 3 },
   { code: 'GAIN',   name: 'Gain on Sale of Assets',              tallyName: 'Profit on Sale of Assets',     l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 4 },
-  { code: 'FXGAIN', name: 'Foreign Exchange Gain',               tallyName: 'Exchange Rate Gain',           l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 5 },
-  { code: 'MISC',   name: 'Miscellaneous Income',                tallyName: 'Other Income',                 l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: false, order: 6 },
+  { code: 'MISC',   name: 'Miscellaneous Income',                tallyName: 'Other Income',                 l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: false, order: 5 },
+  { code: 'FXGAIN', name: 'Foreign Exchange Gain',               tallyName: 'Exchange Rate Gain',           l2Code: 'I-OI',  nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 6 },
 
   // Under Cost of Goods Sold (E-COG) — 5 groups
   { code: 'PURCH',  name: 'Purchases',                           tallyName: 'Purchase Accounts',            l2Code: 'E-COG', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: true,  order: 1 },

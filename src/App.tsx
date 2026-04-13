@@ -226,8 +226,8 @@ const App = () => (
             <Route path="/erp/accounting/finframe" element={<FinFrame />} />
             <Route path="/erp/accounting/ledger-master" element={<LedgerMaster />} />
             <Route path="/erp/accounting/income-tax" element={<IncomeTaxMaster />} />
-            <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/accounting/currency-master" element={<CurrencyMaster />} />
+            <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />

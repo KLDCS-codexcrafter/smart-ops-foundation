@@ -231,11 +231,6 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
               <span className="text-xs text-muted-foreground">Audit Log Enabled</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Switch checked={fb('enableMultiCurrency')} onCheckedChange={v => upd('enableMultiCurrency', v)} />
-              <span className="text-xs text-muted-foreground">Enable Multi-Currency</span>
-            </div>
-
             <Separator />
             <FormField label="Jurisdiction" hint="Legal jurisdiction clause for invoices and vouchers. Set once here — auto-copied everywhere it is needed.">
               <Input
@@ -245,6 +240,25 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
                 placeholder="e.g. Subject to Mumbai, Maharashtra jurisdiction"
               />
             </FormField>
+
+            <Separator />
+            <div className="flex items-start gap-3">
+              <Switch
+                checked={!!formData['enableMultiCurrency']}
+                onCheckedChange={v => {
+                  upd('enableMultiCurrency', v);
+                }}
+                className="mt-0.5"
+              />
+              <div>
+                <span className="text-xs font-medium">Enable multi-currency transactions</span>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Allows recording transactions in foreign currencies.
+                  On save, auto-creates Forex Gain A/c (under Other Income),
+                  Forex Loss A/c (under Finance Costs), and a Forex Adjustment journal voucher type.
+                </p>
+              </div>
+            </div>
           </div>
         </TabsContent>
 

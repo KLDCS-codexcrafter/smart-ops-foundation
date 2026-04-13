@@ -1,6 +1,6 @@
 import {
   Calculator, Shield, BookOpen, Users, Settings, ArrowRight,
-  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Globe,
+  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Coins,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -30,10 +30,10 @@ const MASTER_CARDS: MasterCard[] = [
   { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'finecore-gst-config', status: 'seeded', section: 'entity-config' },
   { title: 'Comply360 Config', desc: 'Feature flags and ledger mappings', icon: Shield, module: 'finecore-comply360', status: 'seeded', section: 'entity-config' },
   // Account Structure
+  { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'finecore-currency', status: 'live', section: 'account-structure' },
   { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', status: 'empty', section: 'account-structure' },
   { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', status: 'empty', section: 'account-structure' },
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', status: 'live', section: 'account-structure' },
-  { title: 'Currency Master', desc: 'Multi-currency configuration, exchange rates and formatting', icon: Globe, module: 'finecore-currencies', status: 'seeded', section: 'account-structure' },
 ];
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {

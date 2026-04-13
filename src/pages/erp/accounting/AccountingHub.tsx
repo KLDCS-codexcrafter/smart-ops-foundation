@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
   BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
-  MapPin, Users, Settings, Building2, Globe,
+  MapPin, Users, Settings, Building2,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
@@ -33,8 +33,8 @@ const PAYROLL_COMING_SOON = [
 ];
 
 const ACCOUNT_STRUCTURE_CARDS = [
-  { title: 'Voucher Types', desc: 'Behaviour matrix — 24 types with embedded rules', icon: FileSpreadsheet, href: '/erp/accounting/voucher-types' },
-  { title: 'Currency Master', desc: 'Multi-currency configuration, exchange rates and formatting', icon: Globe, href: '/erp/accounting/currency-master' },
+  { title: 'Currency Master', desc: 'Foreign currencies, rate of exchange — date-wise selling/buying/standard', icon: Coins, href: '/erp/accounting/currency-master' },
+  { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, href: '/erp/accounting/voucher-types' },
 ];
 
 const COMING_SOON_CARDS = [
