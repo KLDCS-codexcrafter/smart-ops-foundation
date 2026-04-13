@@ -181,6 +181,8 @@ const defaultForm: Omit<VendorMasterDefinition, 'id' | 'partyCode'> = {
   businessHours: '', saleType: 'credit',
   termsOfDeliveryId: '', dispatchMode: '',
   defaultTransporterId: '', defaultCourierId: '',
+  primary_division_id: '',
+  primary_department_id: '',
   status: 'active',
 };
 
