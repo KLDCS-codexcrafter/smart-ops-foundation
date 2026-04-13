@@ -113,11 +113,13 @@ export function SalaryStructureMasterPanel() {
   };
 
   const handleSave = useCallback(() => {
+    if (!sheetOpen) return;
+
     if (!form.name.trim()) return;
     if (editId) updateStructure(editId, form);
     else createStructure(form);
     setSheetOpen(false);
-  }, [form, editId, updateStructure, createStructure]);
+  }, [form, editId, updateStructure, createStructure, sheetOpen]);
 
   useCtrlS(handleSave);
 

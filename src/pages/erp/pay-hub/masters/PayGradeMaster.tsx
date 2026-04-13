@@ -61,6 +61,8 @@ export function PayGradeMasterPanel() {
   };
 
   const handleSave = useCallback(() => {
+    if (!sheetOpen) return;
+
     if (!form.name.trim()) return;
     if (form.maxCTC > 0 && form.maxCTC <= form.minCTC) {
       setValidationError('Max CTC must be greater than Min CTC');
@@ -70,7 +72,7 @@ export function PayGradeMasterPanel() {
     if (editId) updateGrade(editId, form);
     else createGrade(form);
     setSheetOpen(false);
-  }, [form, editId, updateGrade, createGrade]);
+  }, [form, editId, updateGrade, createGrade, sheetOpen]);
 
   useCtrlS(handleSave);
 
