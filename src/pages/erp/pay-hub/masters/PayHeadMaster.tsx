@@ -244,10 +244,10 @@ export function PayHeadMasterPanel() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        {ph.affectsNet && <DollarSign className="h-3 w-3 text-green-500" title="Affects Net" />}
-                        {ph.taxable && <FileText className="h-3 w-3 text-amber-500" title="Taxable" />}
-                        {ph.partOfCTC && <Percent className="h-3 w-3 text-blue-500" title="Part of CTC" />}
-                        {ph.proRataOnLOP && <ArrowDownUp className="h-3 w-3 text-purple-500" title="Pro-rata LOP" />}
+                        {ph.affectsNet && <span title="Affects Net"><DollarSign className="h-3 w-3 text-green-500" /></span>}
+                        {ph.taxable && <span title="Taxable"><FileText className="h-3 w-3 text-amber-500" /></span>}
+                        {ph.partOfCTC && <span title="Part of CTC"><Percent className="h-3 w-3 text-blue-500" /></span>}
+                        {ph.proRataOnLOP && <span title="Pro-rata LOP"><ArrowDownUp className="h-3 w-3 text-purple-500" /></span>}
                       </div>
                     </TableCell>
                     <TableCell>
