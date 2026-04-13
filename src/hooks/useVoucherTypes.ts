@@ -97,13 +97,23 @@ export function useVoucherTypes() {
     });
   };
 
-  const stats = {
-    total: types.length,
-    active: types.filter(t => t.is_active).length,
-    system: types.filter(t => t.is_system).length,
-    custom: types.filter(t => !t.is_system).length,
-    withRules: types.filter(t => t.behaviour_rules.length > 0).length,
+  const deleteType = (id: string) => {
+    const vt = types.find(t => t.id === id);
+    if (!vt) return;
+    if (vt.is_system) {
+      toast.error('Cannot delete a system voucher type');
+      return;
+    }
+    if (vt.current_sequence > 1) {
+      toast.error('Cannot delete — vouchers have been posted with this type');
+      return;
+    }
+    const updated = types.filter(t => t.id !== id);
+    setTypes(updated);
+    save(updated);
+    // [JWT] DELETE /api/accounting/voucher-types/:id
+    toast.success(`"${vt.name}" deleted`);
   };
 
-  return { types, stats, updateType, createCustomType, toggleActive, addRule, removeRule, toggleRule };
+  return { types, stats, updateType, createCustomType, toggleActive, addRule, removeRule, toggleRule, deleteType };
 }

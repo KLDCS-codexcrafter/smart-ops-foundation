@@ -8,7 +8,7 @@
  *   - Business & financial logic: inherited layer (from base) + custom rules per type
  *   - GL/Inv impact / report bucket all come from base type — immutable
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -292,10 +292,11 @@ function VoucherSheet({
   const [form, setForm] = useState<typeof BLANK>(initForm);
   const upd = (p: Partial<typeof BLANK>) => setForm(f => ({ ...f, ...p }));
 
-  // Re-init when sheet opens
-  const prevOpen = useState(false);
-  if (open && prevOpen[0] !== open) { setForm(initForm()); prevOpen[1](open); }
-  if (!open && prevOpen[0]) { prevOpen[1](false); }
+  useEffect(() => {
+    if (open) {
+      setForm(initForm());
+    }
+  }, [open]);
 
   const handleBase = (base: VoucherBaseType) => {
     const fam = BASE_FAMILY[base];
@@ -596,7 +597,7 @@ function VoucherSheet({
 // ── Main ───────────────────────────────────────────────────────────────────────
 
 export function VoucherTypesMasterPanel() {
-  const { types, stats, updateType, createCustomType, toggleActive, addRule, removeRule, toggleRule } = useVoucherTypes();
+  const { types, stats, updateType, createCustomType, toggleActive, addRule, removeRule, toggleRule, deleteType } = useVoucherTypes();
 
   const [search,       setSearch]       = useState('');
   const [familyFilter, setFamilyFilter] = useState<VoucherFamily | 'all'>('all');
@@ -618,16 +619,8 @@ export function VoucherTypesMasterPanel() {
 
   const confirmDelete = () => {
     if (!delTarget) return;
-    if (delTarget.current_sequence > 1) {
-      toast.error('Cannot delete — vouchers posted against this type');
-      setDelTarget(null); return;
-    }
-    // [JWT] DELETE /api/accounting/voucher-types/:id
-    const upd = types.filter(t => t.id !== delTarget.id);
-    localStorage.setItem('erp_voucher_types', JSON.stringify(upd));
-    toast.success(`"${delTarget.name}" deleted`);
+    deleteType(delTarget.id);
     setDelTarget(null);
-    window.location.reload(); // simple reset to avoid stale hook state
   };
 
   const filtered = useMemo(() =>
