@@ -1,6 +1,6 @@
 import {
   Calculator, Shield, BookOpen, Users, Settings, ArrowRight,
-  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet,
+  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Globe,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -33,6 +33,7 @@ const MASTER_CARDS: MasterCard[] = [
   { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', status: 'empty', section: 'account-structure' },
   { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', status: 'empty', section: 'account-structure' },
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', status: 'live', section: 'account-structure' },
+  { title: 'Currency Master', desc: 'Multi-currency configuration, exchange rates and formatting', icon: Globe, module: 'finecore-currencies', status: 'seeded', section: 'account-structure' },
 ];
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {
@@ -60,8 +61,8 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
         {[
           { label: 'Statutory Reference', value: 5 },
           { label: 'Entity Configuration', value: 3 },
-          { label: 'Account Structure', value: 3 },
-          { label: 'Total Masters', value: 11 },
+          { label: 'Account Structure', value: 4 },
+          { label: 'Total Masters', value: 12 },
         ].map(s => (
           <div key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
             <p className="text-2xl font-bold text-foreground font-mono">{s.value}</p>

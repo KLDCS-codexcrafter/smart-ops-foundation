@@ -41,6 +41,7 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
   { label: 'Ledger Master', module: 'finecore-ledgers' },
   { label: 'Voucher Types', module: 'finecore-voucher-types' },
+  { label: 'Currency Master', module: 'finecore-currencies' },
 ];
 
 const A1_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
