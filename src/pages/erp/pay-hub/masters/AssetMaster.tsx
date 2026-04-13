@@ -357,7 +357,7 @@ export function AssetMasterPanel() {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
