@@ -180,6 +180,7 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   gstFilingType: 'monthly', einvoiceApplicable: false,
   tdsApplicable: false, tdsSection: '194Q',
   defaultBranch: '', businessMode: 'b2b',
+  // [JWT] GET /api/foundation/parent-company/base-currency
   default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   typeOfBusinessEntity: 'private_limited',
   natureOfBusiness: '', businessActivity: '',
