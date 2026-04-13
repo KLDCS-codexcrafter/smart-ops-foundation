@@ -296,7 +296,7 @@ function VoucherSheet({
     if (open) {
       setForm(initForm());
     }
-  }, [open]);
+  }, [open, initForm]);
 
   const handleBase = (base: VoucherBaseType) => {
     const fam = BASE_FAMILY[base];
