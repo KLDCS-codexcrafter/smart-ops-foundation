@@ -42,6 +42,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-overtime-rules', 'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps',
   'ph-asset-master',
   'ph-attendance-entry',
+  'ph-leave-requests',
 ];
 
 interface SidebarItem {

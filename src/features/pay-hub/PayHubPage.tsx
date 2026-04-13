@@ -22,6 +22,7 @@ import { BonusConfigMasterPanel } from '@/pages/erp/pay-hub/masters/BonusConfigM
 import { GratuityNPSPanel } from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
 import { AssetMasterPanel } from '@/pages/erp/pay-hub/masters/AssetMaster';
 import { AttendanceEntryPanel } from '@/pages/erp/pay-hub/transactions/AttendanceEntry';
+import { LeaveRequestsPanel } from '@/pages/erp/pay-hub/transactions/LeaveRequests';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -49,6 +50,7 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-gratuity-nps': return <GratuityNPSPanel />;
     case 'ph-asset-master': return <AssetMasterPanel />;
     case 'ph-attendance-entry': return <AttendanceEntryPanel />;
+    case 'ph-leave-requests': return <LeaveRequestsPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
