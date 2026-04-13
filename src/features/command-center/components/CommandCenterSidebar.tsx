@@ -8,6 +8,7 @@ import {
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
   QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
+  Zap,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -45,6 +46,10 @@ const ACCOUNT_STRUCTURE_ITEMS: { label: string; module: CommandCenterModule }[] 
   { label: 'FinFrame — Account Groups', module: 'finecore-finframe' },
   { label: 'Ledger Master', module: 'finecore-ledgers' },
   { label: 'Voucher Types', module: 'finecore-voucher-types' },
+];
+
+const TRANSACTION_DEFAULTS_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Transaction Templates', module: 'finecore-transaction-templates' },
 ];
 
 const A1_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
@@ -105,7 +110,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     if (activeModule.startsWith('inventory')) setInventoryOpen(true);
   }, [activeModule]);
 
-  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS].map(i => i.module);
+  const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS, ...TRANSACTION_DEFAULTS_ITEMS].map(i => i.module);
 
   const renderSubSection = (label: string, items: { label: string; module: CommandCenterModule }[]) => (
     <>
@@ -212,6 +217,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                       {renderSubSection('Statutory Reference', STATUTORY_ITEMS)}
                       {renderSubSection('Entity Configuration', ENTITY_CONFIG_ITEMS)}
                       {renderSubSection('Account Structure', ACCOUNT_STRUCTURE_ITEMS)}
+                      {renderSubSection('Transaction Defaults', TRANSACTION_DEFAULTS_ITEMS)}
                       
                     </SidebarMenuSub>
                   </CollapsibleContent>

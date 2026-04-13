@@ -1,6 +1,6 @@
 import {
   Calculator, Shield, BookOpen, Users, Settings, ArrowRight,
-  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Coins,
+  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Coins, Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -15,7 +15,7 @@ interface MasterCard {
   icon: React.ElementType;
   module: CommandCenterModule;
   status: 'seeded' | 'empty' | 'live';
-  section: 'statutory' | 'entity-config' | 'account-structure';
+  section: 'statutory' | 'entity-config' | 'account-structure' | 'transaction-defaults';
 }
 
 const MASTER_CARDS: MasterCard[] = [
@@ -34,16 +34,19 @@ const MASTER_CARDS: MasterCard[] = [
   { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', status: 'empty', section: 'account-structure' },
   { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', status: 'empty', section: 'account-structure' },
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', status: 'live', section: 'account-structure' },
+  // Transaction Defaults
+  { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', status: 'seeded', section: 'transaction-defaults' },
 ];
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {
   'statutory': { label: 'Statutory Reference', badgeLabel: 'Platform', badgeCls: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
   'entity-config': { label: 'Entity Configuration', badgeLabel: 'Configure', badgeCls: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
   'account-structure': { label: 'Account Structure', badgeLabel: '', badgeCls: '' },
+  'transaction-defaults': { label: 'Transaction Defaults', badgeLabel: '', badgeCls: '' },
 };
 
 export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps) {
-  const sections = ['statutory', 'entity-config', 'account-structure'] as const;
+  const sections = ['statutory', 'entity-config', 'account-structure', 'transaction-defaults'] as const;
 
   return (
     <div className="space-y-6 relative">

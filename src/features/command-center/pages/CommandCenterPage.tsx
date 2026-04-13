@@ -21,6 +21,7 @@ import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMaster';
 import { CurrencyMasterPanel } from '@/pages/erp/accounting/CurrencyMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
+import { TransactionTemplatesPanel } from '@/pages/erp/accounting/TransactionTemplates';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
@@ -65,6 +66,7 @@ export type CommandCenterModule =
   | 'finecore-ledgers'
   | 'finecore-voucher-types'
   | 'finecore-currency'
+  | 'finecore-transaction-templates'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -96,7 +98,7 @@ export default function CommandCenterPage() {
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'org-structure',
-      'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency',
+      'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -139,6 +141,7 @@ export default function CommandCenterPage() {
       case 'finecore-ledgers': return <LedgerMasterPanel />;
       case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
       case 'finecore-currency': return <CurrencyMasterPanel />;
+      case 'finecore-transaction-templates': return <TransactionTemplatesPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;

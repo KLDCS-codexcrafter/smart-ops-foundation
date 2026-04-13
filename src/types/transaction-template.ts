@@ -70,7 +70,7 @@ export function applyVariables(
   vars: Record<string, string>
 ): string {
   return Object.entries(vars).reduce(
-    (text, [key, value]) => text.replaceAll(`{${key}}`, value),
+    (text, [key, value]) => text.split(`{${key}}`).join(value),
     content
   );
 }
