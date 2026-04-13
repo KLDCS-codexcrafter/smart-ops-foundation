@@ -93,6 +93,30 @@ function RateSubScreen({
   const [newRate, setNewRate] = useState({ ...BLANK_RATE });
   const [addDate, setAddDate] = useState<Date>(new Date());
   const [editId, setEditId] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [ecbMeta, setEcbMeta] = useState<{ date: string } | null>(null);
+
+  const fetchEcbRate = async () => {
+    setFetching(true);
+    try {
+      // [JWT] GET /api/forex/live-rate — future; using ECB via Frankfurter for now
+      const base = localStorage.getItem('erp_base_currency') || 'INR';
+      const res = await fetch(
+        `https://api.frankfurter.app/latest?from=${base}&to=${isoCode}`
+      );
+      const data = await res.json();
+      const foreignPerBase = data.rates[isoCode];
+      if (!foreignPerBase) { toast.error('Currency not available from ECB'); return; }
+      const basePerForeign = parseFloat((1 / foreignPerBase).toFixed(4));
+      setNewRate(r => ({ ...r, standard_rate: basePerForeign }));
+      setEcbMeta({ date: data.date });
+      toast.success(`ECB rate fetched: ${basePerForeign}`);
+    } catch {
+      toast.error('Could not fetch rate — enter manually');
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const handleAdd = () => {
     if (!newRate.selling_rate && !newRate.buying_rate && !newRate.standard_rate) {
