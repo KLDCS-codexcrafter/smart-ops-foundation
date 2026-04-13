@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import {
   Lock, Plus, Trash2, Edit2, ChevronDown, Search,
   RefreshCw, Info, TrendingUp, X, DollarSign,
-  ArrowUpRight, ArrowDownLeft,
+  ArrowUpRight, ArrowDownLeft, Download, Loader2,
 } from 'lucide-react';
 import { useCurrencies } from '@/hooks/useCurrencies';
 import type { Currency, ForexRate } from '@/types/currency';
@@ -93,6 +93,30 @@ function RateSubScreen({
   const [newRate, setNewRate] = useState({ ...BLANK_RATE });
   const [addDate, setAddDate] = useState<Date>(new Date());
   const [editId, setEditId] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [ecbMeta, setEcbMeta] = useState<{ date: string } | null>(null);
+
+  const fetchEcbRate = async () => {
+    setFetching(true);
+    try {
+      // [JWT] GET /api/forex/live-rate — future; using ECB via Frankfurter for now
+      const base = localStorage.getItem('erp_base_currency') || 'INR';
+      const res = await fetch(
+        `https://api.frankfurter.app/latest?from=${base}&to=${isoCode}`
+      );
+      const data = await res.json();
+      const foreignPerBase = data.rates[isoCode];
+      if (!foreignPerBase) { toast.error('Currency not available from ECB'); return; }
+      const basePerForeign = parseFloat((1 / foreignPerBase).toFixed(4));
+      setNewRate(r => ({ ...r, standard_rate: basePerForeign }));
+      setEcbMeta({ date: data.date });
+      toast.success(`ECB rate fetched: ${basePerForeign}`);
+    } catch {
+      toast.error('Could not fetch rate — enter manually');
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const handleAdd = () => {
     if (!newRate.selling_rate && !newRate.buying_rate && !newRate.standard_rate) {
@@ -134,20 +158,34 @@ function RateSubScreen({
       {/* Add new rate row */}
       <div className="rounded-lg border border-border/50 bg-muted/10 p-3 space-y-3">
         <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Add rate for date</p>
-        <div>
-          <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Applicable From</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="mt-1 h-8 w-full text-sm justify-start font-normal">
-                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                {format(addDate, 'dd MMM yyyy')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={addDate} onSelect={d => d && setAddDate(d)} initialFocus />
-            </PopoverContent>
-          </Popover>
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Applicable From</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="mt-1 h-8 w-full text-sm justify-start font-normal">
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {format(addDate, 'dd MMM yyyy')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={addDate} onSelect={d => d && setAddDate(d)} initialFocus />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <Button
+            variant="outline" size="sm" className="h-8 text-[11px] gap-1.5 shrink-0"
+            onClick={fetchEcbRate} disabled={fetching}
+          >
+            {fetching ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+            ECB Rate
+          </Button>
         </div>
+        {ecbMeta && (
+          <p className="text-[10px] text-muted-foreground/60">
+            ECB reference date: {ecbMeta.date} — pre-filled standard rate only
+          </p>
+        )}
         <div className="grid grid-cols-3 gap-2">
           <RateInput
             label={`Selling (${baseCurrencySymbol})`}
