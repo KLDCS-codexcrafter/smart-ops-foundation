@@ -139,8 +139,12 @@ export function BonusConfigMasterPanel() {
             </div>
             <div><Label className="text-xs">{form.calculationType==='fixed'?'Amount (₹)':'Value (%)'}</Label><Input type="number" step="0.01" className="text-xs mt-1" value={form.value} onChange={e=>setF('value',+e.target.value)} onKeyDown={onEnterNext}/></div>
 
-            {form.bonusType === 'statutory' && (
+{form.bonusType === 'statutory' && (
               <>
+                <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700 leading-relaxed">
+                  <p className="font-semibold mb-1">Payment of Bonus Act, 1965</p>
+                  <p>Applicable to establishments with 20 or more employees. Statutory bonus rate: minimum 8.33%, maximum 20% of annual wages. Eligible wage ceiling: ₹21,000/month. Minimum 30 working days in the accounting year required for eligibility.</p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><Label className="text-xs">Min %</Label><Input type="number" step="0.01" className="text-xs mt-1" value={form.minPercent} onChange={e=>setF('minPercent',+e.target.value)} onKeyDown={onEnterNext}/></div>
                   <div><Label className="text-xs">Max %</Label><Input type="number" step="0.01" className="text-xs mt-1" value={form.maxPercent} onChange={e=>setF('maxPercent',+e.target.value)} onKeyDown={onEnterNext}/></div>
