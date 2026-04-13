@@ -984,7 +984,7 @@ export function VendorMasterPanel() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">Division (MIS)</Label>
+              <Label className="text-xs">Primary Division</Label>
               <Select value={form.primary_division_id} onValueChange={v => setForm(f => ({ ...f, primary_division_id: v === '__none__' ? '' : v, primary_department_id: '' }))}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— No Division" /></SelectTrigger>
                 <SelectContent>
@@ -1002,7 +1002,7 @@ export function VendorMasterPanel() {
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Department (MIS)</Label>
+              <Label className="text-xs">Primary Department</Label>
               <Select value={form.primary_department_id} onValueChange={v => setForm(f => ({ ...f, primary_department_id: v === '__none__' ? '' : v }))}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— No Department" /></SelectTrigger>
                 <SelectContent>

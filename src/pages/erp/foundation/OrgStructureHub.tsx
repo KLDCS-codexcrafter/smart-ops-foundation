@@ -224,7 +224,8 @@ export function OrgStructurePanel() {
 
   const filteredDepartments = useMemo(() =>
     departments.filter(d => {
-      if (deptDivFilter !== 'all' && d.division_id !== deptDivFilter) return false;
+      if (deptDivFilter === '__none__' && d.division_id !== null) return false;
+      if (deptDivFilter !== 'all' && deptDivFilter !== '__none__' && d.division_id !== deptDivFilter) return false;
       if (deptSearch && !d.name.toLowerCase().includes(deptSearch.toLowerCase()) && !d.code.toLowerCase().includes(deptSearch.toLowerCase())) return false;
       return true;
     }),
