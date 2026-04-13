@@ -123,7 +123,17 @@ export function PayHubDashboardPanel() {
         const raw = localStorage.getItem('erp_holiday_calendars');
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            // HolidayCalendar[] format — flatten nested holidays arrays
+            if (parsed[0] && Array.isArray(parsed[0].holidays)) {
+              const flat = parsed.flatMap((cal: { holidays?: { date: string; name: string; type: string }[] }) =>
+                (cal.holidays ?? []).map(h => ({ date: h.date, name: h.name, type: h.type }))
+              );
+              if (flat.length > 0) return flat;
+            }
+            // Legacy flat format fallback
+            return parsed;
+          }
         }
       } catch { /* ignore */ }
       return FALLBACK_HOLIDAYS;

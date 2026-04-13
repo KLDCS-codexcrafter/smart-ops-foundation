@@ -38,6 +38,8 @@ export type PayHubModule =
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
+  'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
+  'ph-overtime-rules', 'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps',
 ];
 
 interface SidebarItem {
