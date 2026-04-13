@@ -49,6 +49,7 @@ import BranchOfficeList from './pages/erp/foundation/BranchOfficeList';
 import BranchOfficeCreate from './pages/erp/foundation/BranchOfficeCreate';
 import BranchOfficeEdit from './pages/erp/foundation/BranchOfficeEdit';
 import FoundationEntityHub from './pages/erp/foundation/FoundationEntityHub';
+import OrgStructureHub from './pages/erp/foundation/OrgStructureHub';
 import GeographyHub from './pages/erp/foundation/geography/GeographyHub';
 import CountryMaster from './pages/erp/foundation/geography/CountryMaster';
 import StateMaster from './pages/erp/foundation/geography/StateMaster';
@@ -206,6 +207,7 @@ const App = () => (
             <Route path="/erp/foundation/subsidiaries/:id/edit" element={<SubsidiaryEdit />} />
             <Route path="/erp/foundation/branch-offices/create" element={<BranchOfficeCreate />} />
             <Route path="/erp/foundation/branch-offices/:id/edit" element={<BranchOfficeEdit />} />
+            <Route path="/erp/foundation/org-structure" element={<OrgStructureHub />} />
             <Route path="/erp/foundation/geography" element={<GeographyHub />} />
             <Route path="/erp/foundation/geography/countries" element={<CountryMaster />} />
             <Route path="/erp/foundation/geography/states" element={<StateMaster />} />
