@@ -4089,6 +4089,36 @@ export function LedgerMasterPanel() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Currency</Label>
+              <Select value={bankForm.currency} onValueChange={v => setBankForm(f => ({ ...f, currency: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select currency" /></SelectTrigger>
+                <SelectContent>
+                  {(() => {
+                    try {
+                      // [JWT] GET /api/accounting/currencies
+                      const currencies: { id: string; iso_code: string; name: string; symbol: string; is_active: boolean; is_base_currency: boolean }[] =
+                        JSON.parse(localStorage.getItem('erp_currencies') || '[]');
+                      const active = currencies.filter(c => c.is_active);
+                      if (active.length === 0) {
+                        const base = localStorage.getItem('erp_base_currency') || 'INR';
+                        return <SelectItem value={base}>{base}</SelectItem>;
+                      }
+                      return active.map(c => (
+                        <SelectItem key={c.id} value={c.iso_code}>
+                          {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
+                        </SelectItem>
+                      ));
+                    } catch {
+                      return <SelectItem value="INR">₹ INR — Indian Rupee (Base)</SelectItem>;
+                    }
+                  })()}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Foreign currency bank accounts (FCNR, Nostro) show balance in both currencies.
+              </p>
+            </div>
             {!bankEditTarget && (
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Opening Balance</Label>
