@@ -137,6 +137,7 @@ const INITIAL_FORM = {
   cin: '', cinFormatted: '', incorporationDate: '',
   panNumber: '', panFormatted: '', iecCode: '',
   shopsEstablishmentNo: '', tradeLicenceNo: '', professionalTaxNo: '',
+  jurisdiction: '',
   msmeApplicable: false, msmeApplicableFrom: '', msmeEnterpriseType: '',
   msmeUdyamRegNo: '', msmeActivityType: '', msmeCreditPeriodDays: '45',
   msmeNoCreditPeriod: false,
@@ -714,6 +715,16 @@ export default function ParentCompany() {
                   <Input value={form.professionalTaxNo} onChange={e => upd('professionalTaxNo', e.target.value)} className="text-xs" />
                 </FormField>
               </div>
+
+              <Separator />
+              <FormField label="Jurisdiction" hint="Legal jurisdiction clause for invoices and vouchers. Set once here — auto-copied to all voucher types.">
+                <Input
+                  value={form.jurisdiction ?? ''}
+                  onChange={e => upd('jurisdiction', e.target.value)}
+                  placeholder="e.g. Subject to Mumbai, Maharashtra jurisdiction"
+                  className="text-xs"
+                />
+              </FormField>
 
               <Separator />
               <p className="text-xs font-semibold mb-2">Compliance</p>

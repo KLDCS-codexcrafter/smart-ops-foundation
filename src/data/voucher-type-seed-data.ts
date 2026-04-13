@@ -14,7 +14,7 @@ const seed = (id: string, overrides: Partial<VoucherType>): VoucherType => ({
   accounting_impact: false, inventory_impact: false,
   is_optional_default: false, use_effective_date: false,
   allow_zero_value: false, allow_narration: true, allow_line_narration: true,
-  numbering_method: 'automatic', numbering_prefix: '', numbering_width: 4, current_sequence: 1,
+  numbering_method: 'automatic', use_custom_series: false, numbering_prefix: '', numbering_suffix: '', numbering_start: 1, numbering_width: 4, numbering_prefill_zeros: true, prevent_duplicate_manual: true, insertion_deletion_behaviour: 'retain_original' as const, show_unused_numbers: false, current_sequence: 1,
   behaviour_rules: [],
   print_after_save: false, use_for_pos: false, print_title: 'Sales Invoice',
   default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',

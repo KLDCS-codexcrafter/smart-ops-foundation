@@ -70,6 +70,7 @@ interface BranchFormData {
   employeeCapacity: string; operatingLicenseNo: string; branchRegistrationNo: string;
   notes: string;
   businessActivity: string;
+  jurisdiction: string;
 }
 
 const INITIAL: BranchFormData = {
@@ -83,6 +84,7 @@ const INITIAL: BranchFormData = {
   employeeCapacity: '', operatingLicenseNo: '', branchRegistrationNo: '',
   notes: '',
   businessActivity: 'Services',
+  jurisdiction: '',
 };
 
 interface BranchOfficeFormProps {
@@ -271,6 +273,14 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
                   <Input value={form.operatingHours} onChange={e => upd('operatingHours', e.target.value)} placeholder="Mon–Fri 9AM–6PM" className="text-xs" />
                 </FormField>
               </div>
+              <FormField label="Jurisdiction" hint="Legal jurisdiction for this branch's documents. Auto-populates from parent company if left blank.">
+                <Input
+                  value={form.jurisdiction}
+                  onChange={e => upd('jurisdiction', e.target.value)}
+                  placeholder="e.g. Subject to Pune, Maharashtra jurisdiction"
+                  className="text-xs"
+                />
+              </FormField>
               <Separator />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField label="Contact Person">
