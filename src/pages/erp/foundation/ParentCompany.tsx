@@ -315,6 +315,63 @@ export default function ParentCompany() {
         booksDate: booksDate?.toISOString(),
         incorporationDate: incorporationDt?.toISOString(),
       })); /* [JWT] POST /api/foundation/parent-company */
+
+      // Auto-create forex ledgers + voucher type when multi-currency is enabled
+      if (form.enableMultiCurrency) {
+        try {
+          // [JWT] POST /api/group/finecore/ledger-definitions (forex system ledgers)
+          const ledgerDefs: any[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+          const now = new Date().toISOString();
+          const fxGainCode = 'FXGAIN-SYS';
+          const fxLossCode = 'FXLOSS-SYS';
+          if (!ledgerDefs.find(l => l.code === fxGainCode)) {
+            ledgerDefs.push({
+              id: `ldg-${fxGainCode}`, code: fxGainCode,
+              name: 'Forex Gain A/c', mailingName: 'Forex Gain A/c',
+              l3GroupCode: 'FXGAIN', l3GroupName: 'Foreign Exchange Gain',
+              nature: 'Cr', is_system: true, is_active: true,
+              openingBalance: 0, openingBalanceType: 'Cr',
+              scope: 'group', entity_id: null,
+              created_at: now, updated_at: now,
+            });
+          }
+          if (!ledgerDefs.find(l => l.code === fxLossCode)) {
+            ledgerDefs.push({
+              id: `ldg-${fxLossCode}`, code: fxLossCode,
+              name: 'Forex Loss A/c', mailingName: 'Forex Loss A/c',
+              l3GroupCode: 'FXLOSS', l3GroupName: 'Foreign Exchange Loss',
+              nature: 'Dr', is_system: true, is_active: true,
+              openingBalance: 0, openingBalanceType: 'Dr',
+              scope: 'group', entity_id: null,
+              created_at: now, updated_at: now,
+            });
+          }
+          localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
+          // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
+          const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+          if (!vtypes.find(v => v.abbreviation === 'FXADJ')) {
+            vtypes.push({
+              id: `vt-fxadj-${Date.now()}`, name: 'Forex Adjustment',
+              abbreviation: 'FXADJ', base_voucher_type: 'Journal', family: 'Accounting',
+              is_active: true, is_system: true, activation_type: 'active',
+              accounting_impact: true, inventory_impact: false,
+              is_optional_default: false, use_effective_date: false,
+              allow_zero_value: false, allow_narration: true, allow_line_narration: true,
+              numbering_method: 'automatic', use_custom_series: false,
+              numbering_prefix: 'FXADJ-', numbering_suffix: '', numbering_start: 1,
+              numbering_width: 4, numbering_prefill_zeros: true,
+              prevent_duplicate_manual: true,
+              insertion_deletion_behaviour: 'retain_original', show_unused_numbers: false,
+              current_sequence: 1, behaviour_rules: [],
+              print_after_save: false, use_for_pos: false, print_title: '',
+              default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',
+              entity_id: null, created_at: now, updated_at: now,
+            });
+            localStorage.setItem('erp_voucher_types', JSON.stringify(vtypes));
+          }
+        } catch { /* non-fatal — forex setup can be retried */ }
+      }
+
       // Write ERP global settings (existing behaviour — keep)
       localStorage.setItem('erp_fy_start_month', monthMap[form.fyStartMonth] ?? '3');
       localStorage.setItem('erp_deployment_mode', form.deploymentMode);

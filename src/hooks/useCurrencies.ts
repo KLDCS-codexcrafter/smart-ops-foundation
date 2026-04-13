@@ -22,7 +22,9 @@ const loadCurrencies = (): Currency[] => {
 
   // First load — seed the base currency from parent company
   try {
+    // [JWT] GET /api/foundation/parent-company/base-currency
     const baseCurrencyCode = localStorage.getItem('erp_base_currency') || 'INR';
+    // [JWT] GET /api/foundation/parent-company
     const parentRaw = localStorage.getItem('erp_parent_company');
     const parent = parentRaw ? JSON.parse(parentRaw) : {};
     const now = new Date().toISOString();
@@ -113,6 +115,7 @@ export function useCurrencies() {
     }
     // Guard: check if used in any ledger
     try {
+      // [JWT] GET /api/group/finecore/ledger-definitions
       const ledgers = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
       const inUse = ledgers.some((l: any) => l.currency === c.iso_code || l.currency_id === c.id);
       if (inUse) {
