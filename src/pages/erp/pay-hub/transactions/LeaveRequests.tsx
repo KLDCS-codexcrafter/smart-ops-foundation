@@ -782,7 +782,7 @@ export function LeaveRequestsPanel() {
             {reqForm.halfDay && (
               <div>
                 <Label className="text-xs">Session</Label>
-                <Select value={reqForm.halfDaySession} onValueChange={v => ruf('halfDaySession', v as 'morning' | 'afternoon')}>
+                <Select value={reqForm.halfDaySession} onValueChange={v => ruf('halfDaySession', v as 'morning' | 'afternoon' | '')}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Select session" />
                   </SelectTrigger>
