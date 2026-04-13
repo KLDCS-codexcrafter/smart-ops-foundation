@@ -326,7 +326,7 @@ export function AttendanceEntryPanel() {
 
   // ── RENDER ─────────────────────────────────────────────────────
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -611,8 +611,8 @@ export function AttendanceEntryPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {bioPunches.map((s, i) => (
-                    <TableRow key={i}>
+                  {bioPunches.map((s) => (
+                    <TableRow key={`${s.employeeCode}-${s.date}`}>
                       <TableCell className="font-mono text-xs">{s.employeeCode}</TableCell>
                       <TableCell className="text-xs">{s.employeeName}</TableCell>
                       <TableCell className="text-xs">{s.date}</TableCell>
