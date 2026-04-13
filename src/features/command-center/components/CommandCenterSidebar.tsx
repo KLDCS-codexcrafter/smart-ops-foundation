@@ -26,10 +26,12 @@ interface CommandCenterSidebarProps {
 const STATUTORY_ITEMS: { label: string; module: CommandCenterModule }[] = [
   { label: 'Hub Overview', module: 'finecore-hub' },
   { label: 'GST Rate Reference', module: 'finecore-tax-rates' },
-  { label: 'TDS / TCS Sections', module: 'finecore-tds' },
+  { label: 'TDS Sections', module: 'finecore-tds' },
+  { label: 'TCS Sections', module: 'finecore-tcs' },
   { label: 'HSN / SAC Directory', module: 'finecore-hsn-sac' },
   { label: 'Payroll Statutory', module: 'finecore-epf-esi-lwf' },
   { label: 'Income Tax Reference', module: 'finecore-income-tax' },
+  { label: 'Professional Tax', module: 'finecore-professional-tax' },
 ];
 
 const ENTITY_CONFIG_ITEMS: { label: string; module: CommandCenterModule }[] = [
@@ -171,7 +173,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton isActive={activeModule === 'org-structure'} onClick={() => onModuleChange('org-structure')}>
                           <Network className="h-3 w-3" />
-                          <span>Organisation Structure</span>
+                          <span>Business Units</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
