@@ -1,12 +1,15 @@
 import type { Division, Department, DivisionCategory } from '@/types/org-structure';
 
+type PresetDivision = Omit<Division, "id"|"code"|"created_at"|"updated_at"|"entity_id">;
+type PresetDepartment = Omit<Department, "id"|"code"|"created_at"|"updated_at"|"entity_id"> & { division_name?: string | null };
+
 export interface OrgPresetPackage {
   id: string;
   name: string;
   description: string;
-  icon: string;              // emoji icon for the card
-  divisions: Omit<Division, "id"|"code"|"created_at"|"updated_at"|"entity_id">[];
-  departments: Omit<Department, "id"|"code"|"created_at"|"updated_at"|"entity_id"> & { division_name?: string | null }[];
+  icon: string;
+  divisions: PresetDivision[];
+  departments: PresetDepartment[];
 }
 
 // Helper — department linked to division by division name (resolved at import time)
