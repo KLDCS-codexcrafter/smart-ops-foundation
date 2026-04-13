@@ -41,9 +41,9 @@ export function PayGradeMasterPanel() {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [validationError, setValidationError] = useState('');
 
-  // [JWT] GET /api/pay-hub/masters/salary-structures
   const salaryStructures: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
+      // [JWT] GET /api/pay-hub/masters/salary-structures
       const raw = localStorage.getItem('erp_salary_structures');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
