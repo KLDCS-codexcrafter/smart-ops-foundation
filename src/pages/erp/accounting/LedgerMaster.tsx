@@ -496,7 +496,7 @@ interface BankLedgerDefinition {
   accountNumber: string;
   ifscCode: string;
   accountType: BankAccountType;
-  currency: 'INR' | 'USD' | 'EUR' | 'GBP' | 'AED';
+  currency: string;  // ISO code — dynamic from erp_currencies
   odLimit: number;
   branchName: string;
   branchAddress: string;
@@ -711,7 +711,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     brsEnabled: d.brsEnabled ?? true,
     clearingDays: d.clearingDays ?? 2,
     cutoffTime: d.cutoffTime ?? '14:30',
-    currency: d.currency ?? 'INR',
+    currency: d.currency ?? localStorage.getItem('erp_base_currency') ?? 'INR',
     acHolderName: d.acHolderName ?? '',
     bankPhone: d.bankPhone ?? '',
     neftEnabled: d.neftEnabled ?? true,
@@ -1120,7 +1120,7 @@ const defaultBankForm = {
   name: '', alias: '', bankName: '', bankNameOther: '',
   accountNumber: '', ifscCode: '',
   accountType: '' as BankAccountType | '',
-  currency: 'INR' as 'INR'|'USD'|'EUR'|'GBP'|'AED',
+  currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   odLimit: 0, openingBalance: 0,
   openingBalanceType: 'Dr' as 'Dr' | 'Cr',
   scope: 'group' as 'group' | 'entity', entityId: '',
