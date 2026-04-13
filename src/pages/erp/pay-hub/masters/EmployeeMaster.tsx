@@ -77,6 +77,7 @@ export function EmployeeMasterPanel() {
   const [deptFilter, setDeptFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("active");
+  const [revisionReason, setRevisionReason] = useState('');
 
   const { employees, stats, createEmployee, updateEmployee, toggleStatus, search: searchFn, yearsOfService } = useEmployees();
 
@@ -148,7 +149,7 @@ export function EmployeeMasterPanel() {
           pctChange: activeEmployee.annualCTC > 0
             ? Math.round(((form.annualCTC - activeEmployee.annualCTC) / activeEmployee.annualCTC) * 100 * 100) / 100
             : 0,
-          reason: '',
+          reason: revisionReason,
           revisedBy: 'Admin',
         };
         uf('salaryRevisions', [...form.salaryRevisions, rev]);
@@ -164,7 +165,7 @@ export function EmployeeMasterPanel() {
         // duplicate code error already toasted
       }
     }
-  }, [view, form, activeEmployee, customCode, createEmployee, updateEmployee]);
+  }, [view, form, activeEmployee, customCode, createEmployee, updateEmployee, revisionReason]);
 
   useCtrlS(handleSave);
 
@@ -179,6 +180,7 @@ export function EmployeeMasterPanel() {
   const openEdit = (emp: Employee) => {
     const { id, empCode, created_at, updated_at, ...rest } = emp;
     setForm(rest);
+    setRevisionReason('');
     setCustomCode(empCode);
     setActiveEmployee(emp);
     setActiveTab("identity");
@@ -641,6 +643,9 @@ export function EmployeeMasterPanel() {
   const permCities = getCitiesByDistrict(form.permanentDistrictCode);
 
   const pfTotal = form.familyMembers.reduce((s, m) => s + m.pfNomineePct, 0);
+  const gratuityTotal = form.familyMembers.reduce(
+    (s, m) => s + m.gratuityNomineePct, 0
+  );
 
   // Sub-table helpers
   const addFamilyMember = () => uf('familyMembers', [...form.familyMembers, {
@@ -1202,6 +1207,16 @@ export function EmployeeMasterPanel() {
                   {activeEmployee.annualCTC > 0 && ` (${Math.round(((form.annualCTC - activeEmployee.annualCTC) / activeEmployee.annualCTC) * 100)}%)`}
                 </p>
                 <p className="text-[10px] text-muted-foreground">A salary revision entry will be auto-created on save.</p>
+                <div className="mt-2">
+                  <Label className="text-xs">Reason for revision</Label>
+                  <Input
+                    className="text-xs mt-1"
+                    placeholder="e.g. Annual increment, Promotion, Market correction"
+                    value={revisionReason}
+                    onChange={e => setRevisionReason(e.target.value)}
+                    onKeyDown={onEnterNext}
+                  />
+                </div>
               </CardContent>
             </Card>
           )}
@@ -1273,6 +1288,11 @@ export function EmployeeMasterPanel() {
           )}
           {form.familyMembers.length > 0 && pfTotal !== 100 && pfTotal > 0 && (
             <p className="text-xs text-amber-600">⚠ PF nominee total is {pfTotal}% — should be 100%</p>
+          )}
+          {form.familyMembers.length > 0 && gratuityTotal !== 100 && gratuityTotal > 0 && (
+            <p className="text-xs text-amber-600">
+              ⚠ Gratuity nominee total is {gratuityTotal}% — should be 100%
+            </p>
           )}
         </TabsContent>
 
