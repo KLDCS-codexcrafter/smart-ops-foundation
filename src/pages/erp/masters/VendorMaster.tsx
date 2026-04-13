@@ -108,6 +108,8 @@ interface VendorMasterDefinition {
   dispatchMode: 'road' | 'rail' | 'air' | 'sea' | 'courier' | 'hand' | '';
   defaultTransporterId: string;
   defaultCourierId: string;
+  primary_division_id: string;    // MIS — org structure division
+  primary_department_id: string;  // MIS — org structure department
   status: 'active' | 'inactive';
   default_currency: string;  // ISO code — payment currency for this vendor
 }
