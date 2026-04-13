@@ -368,6 +368,7 @@ export function OrgStructurePanel() {
               <SelectTrigger className="w-52 h-9 text-xs"><SelectValue placeholder="All divisions" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Divisions</SelectItem>
+                <SelectItem value="__none__">— No Division (standalone)</SelectItem>
                 {divisions.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>
