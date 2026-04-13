@@ -41,7 +41,23 @@ export type BehaviourRuleType =
   | 'tax_trigger'
   | 'approval_gate'
   | 'auto_reversal'
-  | 'narration_template';
+  | 'narration_template'
+  | 'forex_capture'
+  | 'forex_settlement';
+
+export interface ForexCaptureConfig {
+  default_rate_type: 'selling' | 'buying' | 'standard';
+  allow_rate_override: boolean;
+  require_rate_if_foreign: boolean;
+  store_dual_amounts: boolean;
+}
+
+export interface ForexSettlementConfig {
+  calculate_realized_gain_loss: boolean;
+  gain_ledger_code: string;
+  loss_ledger_code: string;
+  auto_reversal_on_next_period: boolean;
+}
 
 export interface AutoPostConfig {
   debit_ledger_code: string;
@@ -100,7 +116,7 @@ export interface BehaviourRule {
   label: string;
   is_active: boolean;
   sequence: number;
-  config: AutoPostConfig | ValidationConfig | SettlementConfig | TaxTriggerConfig | ApprovalGateConfig | AutoReversalConfig | NarrationTemplateConfig;
+  config: AutoPostConfig | ValidationConfig | SettlementConfig | TaxTriggerConfig | ApprovalGateConfig | AutoReversalConfig | NarrationTemplateConfig | ForexCaptureConfig | ForexSettlementConfig;
 }
 
 export interface VoucherType {

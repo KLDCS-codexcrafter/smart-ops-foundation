@@ -31,6 +31,8 @@ import {
 } from 'lucide-react';
 import { useCurrencies } from '@/hooks/useCurrencies';
 import type { Currency, ForexRate } from '@/types/currency';
+import { searchWorldCurrencies, getWorldCurrency } from '@/data/world-currencies';
+import type { WorldCurrencyEntry } from '@/data/world-currencies';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -269,7 +271,23 @@ function CurrencySheet({
   [editCurrency]);
 
   const [form, setForm] = useState(initForm);
+  const [isoQuery, setIsoQuery] = useState('');
+  const [isoOpen, setIsoOpen] = useState(false);
   const upd = (p: Partial<typeof BLANK_CURRENCY>) => setForm(f => ({ ...f, ...p }));
+
+  const applyWorldCurrency = (entry: WorldCurrencyEntry) => {
+    upd({
+      iso_code: entry.iso_code,
+      name: entry.name,
+      formal_name: entry.name,
+      symbol: entry.symbol,
+      decimal_places: entry.decimal_places,
+      symbol_before_amount: entry.symbol_before_amount,
+      space_between: entry.space_between,
+    });
+    setIsoQuery('');
+    setIsoOpen(false);
+  };
 
   useEffect(() => {
     if (open) setForm(initForm());
@@ -327,18 +345,35 @@ function CurrencySheet({
                       <Lock className="h-3 w-3" /> {form.iso_code}
                     </div>
                   ) : (
-                    <Input
-                      value={form.iso_code}
-                      onChange={e => {
-                        const code = e.target.value.toUpperCase().slice(0, 3);
-                        upd({ iso_code: code });
-                        if (!form.formal_name || form.formal_name === form.name) upd({ formal_name: form.name });
-                      }}
-                      maxLength={3}
-                      placeholder="USD"
-                      className="mt-1 h-8 text-sm font-mono"
-                    />
+                    <div className="relative mt-1">
+                      <Input
+                        value={isoQuery || form.iso_code}
+                        onChange={e => { setIsoQuery(e.target.value.toUpperCase().slice(0, 10)); setIsoOpen(true); }}
+                        onFocus={() => setIsoOpen(true)}
+                        placeholder="Search: USD, Dollar, United States..."
+                        className="h-8 text-sm font-mono"
+                      />
+                      {isoOpen && (
+                        <div className="absolute z-50 mt-1 w-[320px] max-h-[240px] overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
+                          {searchWorldCurrencies(isoQuery, 20).map(entry => (
+                            <button key={entry.iso_code} className="flex items-center gap-2 w-full px-3 py-1.5 text-left text-sm hover:bg-muted/50 transition-colors"
+                              onMouseDown={e => { e.preventDefault(); applyWorldCurrency(entry); }}>
+                              <span className="text-base">{entry.flag}</span>
+                              <span className="font-mono font-semibold text-foreground w-10">{entry.iso_code}</span>
+                              <span className="text-muted-foreground truncate flex-1">{entry.name}</span>
+                              <span className="text-muted-foreground/60 text-xs">{entry.symbol}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {isoOpen && <div className="fixed inset-0 z-40" onClick={() => setIsoOpen(false)} />}
+                    </div>
                   )}
+                  {/* Country hint */}
+                  {form.iso_code && !isBase && (() => {
+                    const w = getWorldCurrency(form.iso_code);
+                    return w ? <p className="text-[10px] text-muted-foreground/60 mt-1">Used in: {w.countries.slice(0, 3).join(', ')}{w.countries.length > 3 ? ` +${w.countries.length - 3} more` : ''}</p> : null;
+                  })()}
                 </div>
                 <div>
                   <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">Symbol <span className="text-destructive">*</span></Label>

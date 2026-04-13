@@ -199,9 +199,22 @@ export function useCurrencies() {
     ).length,
   };
 
+  const getCurrencyByCode = (isoCode: string): Currency | null =>
+    currencies.find(c => c.iso_code.toUpperCase() === isoCode.toUpperCase()) ?? null;
+
+  const formatAmount = (amount: number, isoCode: string): string => {
+    const c = getCurrencyByCode(isoCode);
+    if (!c) return amount.toFixed(2);
+    const num = amount.toFixed(c.decimal_places);
+    const formatted = parseFloat(num).toLocaleString('en-IN', { minimumFractionDigits: c.decimal_places });
+    const spaced = c.space_between ? ' ' : '';
+    return c.symbol_before_amount ? `${c.symbol}${spaced}${formatted}` : `${formatted}${spaced}${c.symbol}`;
+  };
+
   return {
     currencies, rates, stats, baseCurrency, activeForeign,
     createCurrency, updateCurrency, deleteCurrency, toggleActive,
     addRate, updateRate, deleteRate, getRatesForCurrency, getApplicableRate,
+    getCurrencyByCode, formatAmount,
   };
 }

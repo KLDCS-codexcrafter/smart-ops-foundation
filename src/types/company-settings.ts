@@ -7,7 +7,7 @@ export interface CompanySettings {
   // Rate change settings
   rate_change_requires_reason: boolean; // always true — enforced in UI
   // Currency
-  base_currency: 'INR' | 'USD' | 'EUR';
+  base_currency: string;
   // Stock valuation
   default_costing_method: string;
   created_at: string;

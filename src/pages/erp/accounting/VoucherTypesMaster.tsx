@@ -115,6 +115,8 @@ const RULE_META: Record<BehaviourRuleType, { icon: React.ElementType; label: str
   approval_gate:      { icon: CheckCircle2,   label: 'Approval Gate',      color: 'text-green-500' },
   auto_reversal:      { icon: RotateCcw,      label: 'Auto-Reversal',      color: 'text-rose-500'  },
   narration_template: { icon: MessageSquare,  label: 'Narration Template', color: 'text-slate-500' },
+  forex_capture:      { icon: Zap,            label: 'Forex Capture',      color: 'text-cyan-500'  },
+  forex_settlement:   { icon: ArrowLeftRight, label: 'Forex Settlement',   color: 'text-orange-500'},
 };
 
 const ALL_BASE_TYPES: VoucherBaseType[] = [
@@ -357,6 +359,8 @@ function VoucherSheet({
       approval_gate:      { requires_approval:true, threshold_amount:100000, approver_role:'Manager' },
       auto_reversal:      { reversal_on:'period_start', reversal_narration:'Auto-reversal of {original_voucher_no}' },
       narration_template: { template:'Being {type} of {party} against {ref}', variables:['type','party','ref'] },
+      forex_capture:      { default_rate_type:'selling', allow_rate_override:true, require_rate_if_foreign:true, store_dual_amounts:true },
+      forex_settlement:   { calculate_realized_gain_loss:true, gain_ledger_code:'FXGAIN-SYS', loss_ledger_code:'FXLOSS-SYS', auto_reversal_on_next_period:false },
     };
     addRule(editVt.id, { rule_type:rt, label:RULE_META[rt].label, is_active:true, sequence:editVt.behaviour_rules.length+1, config:cfgs[rt] });
   };
