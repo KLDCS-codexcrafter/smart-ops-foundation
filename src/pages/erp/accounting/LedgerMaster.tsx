@@ -4115,9 +4115,7 @@ export function LedgerMasterPanel() {
                   })()}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Foreign currency bank accounts (FCNR, Nostro) show balance in both currencies.
-              </p>
+              <p className="text-xs text-muted-foreground">Foreign currency bank accounts show balance in both currencies.</p>
             </div>
             {!bankEditTarget && (
               <div className="space-y-1.5">
