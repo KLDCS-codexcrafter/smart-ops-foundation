@@ -19,6 +19,7 @@ import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMaster';
+import { CurrencyMasterPanel } from '@/pages/erp/accounting/CurrencyMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
@@ -60,6 +61,7 @@ export type CommandCenterModule =
   | 'finecore-finframe'
   | 'finecore-ledgers'
   | 'finecore-voucher-types'
+  | 'finecore-currencies'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -131,6 +133,7 @@ export default function CommandCenterPage() {
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
       case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
+      case 'finecore-currencies': return <CurrencyMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
