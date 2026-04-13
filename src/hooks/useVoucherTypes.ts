@@ -97,6 +97,14 @@ export function useVoucherTypes() {
     });
   };
 
+  const stats = {
+    total: types.length,
+    active: types.filter(t => t.is_active).length,
+    system: types.filter(t => t.is_system).length,
+    custom: types.filter(t => !t.is_system).length,
+    withRules: types.filter(t => t.behaviour_rules.length > 0).length,
+  };
+
   const deleteType = (id: string) => {
     const vt = types.find(t => t.id === id);
     if (!vt) return;
