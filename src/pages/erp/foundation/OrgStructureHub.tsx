@@ -224,7 +224,8 @@ export function OrgStructurePanel() {
 
   const filteredDepartments = useMemo(() =>
     departments.filter(d => {
-      if (deptDivFilter !== 'all' && d.division_id !== deptDivFilter) return false;
+      if (deptDivFilter === '__none__' && d.division_id !== null) return false;
+      if (deptDivFilter !== 'all' && deptDivFilter !== '__none__' && d.division_id !== deptDivFilter) return false;
       if (deptSearch && !d.name.toLowerCase().includes(deptSearch.toLowerCase()) && !d.code.toLowerCase().includes(deptSearch.toLowerCase())) return false;
       return true;
     }),
@@ -367,6 +368,7 @@ export function OrgStructurePanel() {
               <SelectTrigger className="w-52 h-9 text-xs"><SelectValue placeholder="All divisions" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Divisions</SelectItem>
+                <SelectItem value="__none__">— No Division (standalone)</SelectItem>
                 {divisions.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>

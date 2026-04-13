@@ -122,8 +122,21 @@ export function useOrgStructure() {
   const importPreset = (preset: OrgPresetPackage) => {
     const now = new Date().toISOString();
     const { divisions: newDivs, departments: newDepts } = resolvePreset(preset, now);
-    const updatedDivs = [...divisions, ...newDivs];
-    const updatedDepts = [...departments, ...newDepts];
+
+    // Re-stamp codes using current counts to avoid duplicates
+    const existingDivCount = divisions.length;
+    const existingDeptCount = departments.length;
+    const stampedDivs = newDivs.map((d, i) => ({
+      ...d,
+      code: 'DIV-' + String(existingDivCount + i + 1).padStart(4, '0'),
+    }));
+    const stampedDepts = newDepts.map((d, i) => ({
+      ...d,
+      code: 'DEPT-' + String(existingDeptCount + i + 1).padStart(4, '0'),
+    }));
+
+    const updatedDivs = [...divisions, ...stampedDivs];
+    const updatedDepts = [...departments, ...stampedDepts];
     setDivisions(updatedDivs); saveDivisions(updatedDivs);
     setDepartments(updatedDepts); saveDepartments(updatedDepts);
     // [JWT] POST /api/foundation/org-structure/import-preset
