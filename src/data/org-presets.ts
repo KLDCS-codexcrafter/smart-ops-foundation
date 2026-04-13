@@ -30,7 +30,7 @@ const mkDiv = (
 
 const mkDept = (
   name: string, divisionName: string | null, description: string
-): any => ({
+): PresetDepartment => ({
   name, division_id: null, division_name: divisionName,
   parent_department_id: null, head_name: '', head_email: '',
   location: '', budget: null, status: 'active', description,
