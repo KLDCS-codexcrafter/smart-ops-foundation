@@ -146,9 +146,9 @@ export const applications: AppDefinition[] = [
     name: 'PeoplePay',
     description: 'Full HR and payroll — attendance, leaves, payroll and compliance',
     category: 'Pay Hub',
-    route: '/erp/peoplepay',
+    route: '/erp/pay-hub',
     icon: 'Users',
-    status: 'coming_soon',
+    status: 'wip',
   },
   {
     id: 'backoffice',

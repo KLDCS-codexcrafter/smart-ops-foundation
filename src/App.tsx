@@ -38,6 +38,7 @@ import AuditExplorer from "./pages/bridge/AuditExplorer";
 import BridgeSettings from "./pages/bridge/BridgeSettings";
 import ErpDashboard from "./pages/erp/Dashboard";
 import CommandCenterPage from "./features/command-center/pages/CommandCenterPage";
+import PayHubPage from './features/pay-hub/PayHubPage';
 import ParentCompany from './pages/erp/foundation/ParentCompany';
 import CompanyList from './pages/erp/foundation/CompanyList';
 import CompanyCreate from './pages/erp/foundation/CompanyCreate';
@@ -261,6 +262,7 @@ const App = () => (
             <Route path="/erp/inventory-hub/price-lists" element={<PriceListManager />} />
             <Route path="/erp/inventory-hub/reorder-alerts" element={<ReorderAlerts />} />
             <Route path="/erp/command-center" element={<CommandCenterPage />} />
+            <Route path="/erp/pay-hub" element={<PayHubPage />} />
             <Route path="/erp" element={<ErpDashboard />} />
             <Route path="/erp/dashboard" element={<ErpDashboard />} />
             <Route path="/partner" element={<PartnerDashboard />} />
