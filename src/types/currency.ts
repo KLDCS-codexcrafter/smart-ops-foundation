@@ -1,35 +1,67 @@
 /**
- * currency.ts — CUR-1 Currency Master types
- * [JWT] All CRUD via /api/accounting/currencies
+ * currency.ts — Currency & Rate of Exchange data model
+ * CUR-1 · SSOT: erp_currencies + erp_forex_rates
+ * Base currency is set in Parent Company (erp_base_currency) — not here
  */
 
 export interface Currency {
   id: string;
-  iso_code: string;           // ISO 4217 — e.g. INR, USD
-  name: string;               // Indian Rupee
-  symbol: string;             // ₹
-  decimal_places: number;     // 2
-  decimal_symbol: '.' | ',';
-  thousand_separator: ',' | '.' | ' ' | '';
-  symbol_position: 'before' | 'after';
-  is_base_currency: boolean;  // only one true per tenant
+  // Identity
+  iso_code: string;              // USD, EUR, GBP, AED, JPY, INR
+  name: string;                  // US Dollar
+  formal_name: string;           // US Dollar — used in transactions/reports
+  symbol: string;                // $
+  decimal_places: number;        // 2 (JPY=0, KWD=3)
+  symbol_before_amount: boolean; // true=$100, false=100$
+  space_between: boolean;        // true=$ 100, false=$100
+  show_in_millions: boolean;
+  // Status
+  is_base_currency: boolean;     // true for the company's home currency only
   is_active: boolean;
-  exchange_rate: number;      // 1 for base; e.g. 83.25 for USD→INR
-  rate_date: string;          // ISO date of last rate update
-  notes: string;
+  // Metadata
+  entity_id: string | null;      // null = group-level (all entities)
   created_at: string;
   updated_at: string;
 }
 
-export const SEED_CURRENCIES: Omit<Currency, 'id' | 'created_at' | 'updated_at'>[] = [
-  { iso_code: 'INR', name: 'Indian Rupee',         symbol: '₹',  decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: true,  is_active: true,  exchange_rate: 1,     rate_date: new Date().toISOString().slice(0, 10), notes: 'Base currency' },
-  { iso_code: 'USD', name: 'US Dollar',             symbol: '$',  decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: true,  exchange_rate: 83.25, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'EUR', name: 'Euro',                  symbol: '€',  decimal_places: 2, decimal_symbol: ',', thousand_separator: '.', symbol_position: 'before', is_base_currency: false, is_active: true,  exchange_rate: 91.50, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'GBP', name: 'British Pound Sterling',symbol: '£',  decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: true,  exchange_rate: 105.80,rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'AED', name: 'UAE Dirham',            symbol: 'د.إ', decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: true,  exchange_rate: 22.67, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'JPY', name: 'Japanese Yen',          symbol: '¥',  decimal_places: 0, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: false, exchange_rate: 0.56,  rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'SGD', name: 'Singapore Dollar',      symbol: 'S$', decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: false, exchange_rate: 62.10, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'CHF', name: 'Swiss Franc',           symbol: 'CHF',decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: false, exchange_rate: 94.20, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'AUD', name: 'Australian Dollar',     symbol: 'A$', decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: false, exchange_rate: 54.80, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-  { iso_code: 'CAD', name: 'Canadian Dollar',       symbol: 'C$', decimal_places: 2, decimal_symbol: '.', thousand_separator: ',', symbol_position: 'before', is_base_currency: false, is_active: false, exchange_rate: 61.40, rate_date: new Date().toISOString().slice(0, 10), notes: '' },
-];
+export interface ForexRate {
+  id: string;
+  currency_id: string;           // FK → erp_currencies
+  applicable_from: string;       // ISO date "2025-04-01"
+  /**
+   * selling_rate: Rate you GET when RECEIVING foreign currency.
+   * Used in: Receipt Voucher (export — customer pays you in foreign currency)
+   * e.g. customer pays $1000, you receive ₹84,500 → selling_rate = 84.50
+   */
+  selling_rate: number | null;
+  /**
+   * buying_rate: Rate you PAY when SENDING foreign currency.
+   * Used in: Payment Voucher (import — you pay supplier in foreign currency)
+   * e.g. you pay €1000, costs you ₹90,000 → buying_rate = 90.00
+   */
+  buying_rate: number | null;
+  /**
+   * standard_rate: Reference/benchmark rate (RBI rate or internal benchmark).
+   * Optional. Used ONLY for variance calculation vs. actual transaction rate.
+   * NOT used as the transaction rate itself.
+   */
+  standard_rate: number | null;
+  /**
+   * last_voucher_rate: Auto-set by the system when a transaction is posted.
+   * Read-only. Priority: if set, overrides standard_rate on that date.
+   */
+  last_voucher_rate: number | null;
+  created_at: string;
+}
+
+/**
+ * Rate priority on any given transaction date:
+ * 1. last_voucher_rate (if set) — system auto-populated
+ * 2. selling_rate / buying_rate — from most recent applicable_from ≤ transaction date
+ * 3. standard_rate — fallback reference only
+ *
+ * For transaction conversion:
+ * - EXPORT (receiving money): use selling_rate
+ * - IMPORT (paying money): use buying_rate
+ */
+export type RateType = 'selling' | 'buying' | 'standard';
