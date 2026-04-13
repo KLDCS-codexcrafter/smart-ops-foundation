@@ -41,6 +41,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
   'ph-overtime-rules', 'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps',
   'ph-asset-master',
+  'ph-attendance-entry',
 ];
 
 interface SidebarItem {
