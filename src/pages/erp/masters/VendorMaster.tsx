@@ -982,8 +982,47 @@ export function VendorMasterPanel() {
               </SelectContent>
             </Select>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Division (MIS)</Label>
+              <Select value={form.primary_division_id} onValueChange={v => setForm(f => ({ ...f, primary_division_id: v === '__none__' ? '' : v, primary_department_id: '' }))}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— No Division" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— No Division</SelectItem>
+                  {(() => {
+                    try {
+                      // [JWT] GET /api/foundation/divisions
+                      const divs: { id: string; name: string; status: string }[] = JSON.parse(localStorage.getItem('erp_divisions') || '[]');
+                      return divs.filter(d => d.status === 'active').map(d => (
+                        <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                      ));
+                    } catch { return null; }
+                  })()}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Department (MIS)</Label>
+              <Select value={form.primary_department_id} onValueChange={v => setForm(f => ({ ...f, primary_department_id: v === '__none__' ? '' : v }))}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— No Department" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— No Department</SelectItem>
+                  {(() => {
+                    try {
+                      // [JWT] GET /api/foundation/departments
+                      const depts: { id: string; name: string; division_id: string | null; status: string }[] = JSON.parse(localStorage.getItem('erp_departments') || '[]');
+                      return depts
+                        .filter(d => d.status === 'active' && (!form.primary_division_id || d.division_id === form.primary_division_id))
+                        .map(d => (
+                          <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                        ));
+                    } catch { return null; }
+                  })()}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div>
-            <Label className="text-xs">Type of Business Entity</Label>
             <Select value={form.typeOfBusinessEntity} onValueChange={v => setForm(f => ({ ...f, typeOfBusinessEntity: v as typeof f.typeOfBusinessEntity }))}>
               <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>
