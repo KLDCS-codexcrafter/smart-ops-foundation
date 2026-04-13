@@ -37,6 +37,20 @@ const taxRule = (type: 'igst_only' | 'cgst_sgst' | 'auto_detect'): BehaviourRule
   config: { apply_gst: true, tax_type: type, tds_applicable: false, tcs_applicable: false },
 });
 
+const forexCaptureRule = (rateType: 'selling' | 'buying' | 'standard'): BehaviourRule => ({
+  id: `rule-forex-${rateType}`, rule_type: 'forex_capture',
+  label: `Forex capture — ${rateType} rate`, is_active: true, sequence: 10,
+  config: { default_rate_type: rateType, allow_rate_override: true, require_rate_if_foreign: true, store_dual_amounts: true },
+});
+
+const forexSettlementRule = (revaluation = false): BehaviourRule => ({
+  id: revaluation ? 'rule-forex-reval' : 'rule-forex-settle',
+  rule_type: 'forex_settlement',
+  label: revaluation ? 'Unrealized forex revaluation (AS-11)' : 'Realized forex gain/loss',
+  is_active: true, sequence: 11,
+  config: { calculate_realized_gain_loss: true, gain_ledger_code: 'FXGAIN-SYS', loss_ledger_code: 'FXLOSS-SYS', auto_reversal_on_next_period: revaluation },
+});
+
 const validationRule = (requireParty: boolean, minAmount = 0): BehaviourRule => ({
   id: 'rule-valid', rule_type: 'validation', label: 'Transaction validation', is_active: true, sequence: 1,
   config: { require_party: requireParty, require_narration: false, min_amount: minAmount, block_future_date: false, require_cost_centre: false },
@@ -61,7 +75,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
     numbering_prefix: 'PY-', numbering_width: 4, current_sequence: 1,
-    behaviour_rules: [validationRule(true), settlementRule()],
+    behaviour_rules: [validationRule(true), settlementRule(), forexCaptureRule('buying'), forexSettlementRule(false)],
   }),
   seed('vt-receipt', {
     name: 'Receipt', abbreviation: 'RC', base_voucher_type: 'Receipt', family: 'Accounting',
@@ -69,7 +83,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     accounting_impact: true, inventory_impact: false,
     numbering_prefix: 'RC-', numbering_width: 4, current_sequence: 1,
     print_after_save: true,
-    behaviour_rules: [validationRule(true), settlementRule()],
+    behaviour_rules: [validationRule(true), settlementRule(), forexCaptureRule('selling'), forexSettlementRule(false)],
   }),
   seed('vt-journal', {
     name: 'Journal', abbreviation: 'JNL', base_voucher_type: 'Journal', family: 'Accounting',
@@ -89,6 +103,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
       taxRule('auto_detect'),
       { id: 'rule-sales-settle', rule_type: 'settlement', label: 'Post to party receivable', is_active: true, sequence: 3,
         config: { auto_settle: false, settle_against: 'invoices', method: 'fifo', show_bill_by_bill: true } },
+      forexCaptureRule('selling'),
     ],
   }),
   seed('vt-purchase', {
@@ -101,6 +116,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
       taxRule('auto_detect'),
       { id: 'rule-purch-settle', rule_type: 'settlement', label: 'Post to party payable', is_active: true, sequence: 3,
         config: { auto_settle: false, settle_against: 'bills', method: 'fifo', show_bill_by_bill: true } },
+      forexCaptureRule('buying'),
     ],
   }),
   seed('vt-debit-note', {
