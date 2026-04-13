@@ -102,12 +102,12 @@ export function parseBiometricFile(content: string): BiometricPunch[] {
 
       if (!dateStr || !timeStr || !empCode) {
         return { rawLine, employeeCode: empCode, date: '', time: '', parseOk: false,
-          parseError: 'Could not parse date or time' };
+          parseError: 'Could not parse date or time' } as BiometricPunch;
       }
 
-      return { rawLine, employeeCode: empCode, date: dateStr, time: timeStr, parseOk: true };
+      return { rawLine, employeeCode: empCode, date: dateStr, time: timeStr, parseOk: true } as BiometricPunch;
     } catch {
-      return { rawLine, employeeCode: '', date: '', time: '', parseOk: false, parseError: 'Parse error' };
+      return { rawLine, employeeCode: '', date: '', time: '', parseOk: false, parseError: 'Parse error' } as BiometricPunch;
     }
   }).filter((p): p is BiometricPunch => p !== null);
 }
