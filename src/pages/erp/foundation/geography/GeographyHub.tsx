@@ -36,7 +36,7 @@ interface SetupStep {
   count?: number;
 }
 
-export default function GeographyHub() {
+export function GeographyHubPanel() {
   const navigate = useNavigate();
   const [setupTarget, setSetupTarget] = useState<SetupTarget>(null);
   const [steps, setSteps] = useState<SetupStep[]>([]);
@@ -218,19 +218,7 @@ export default function GeographyHub() {
   ];
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography Masters' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-
-        <main className="p-6 space-y-6">
+    <div className="space-y-6">
           {/* Header row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -399,6 +387,25 @@ export default function GeographyHub() {
               )}
             </DialogContent>
           </Dialog>
+    </div>
+  );
+}
+
+export default function GeographyHub() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader
+          breadcrumbs={[
+            { label:'Operix Core', href:'/erp/dashboard' },
+            { label:'Command Center', href:'/erp/command-center' },
+            { label:'Foundation' },
+            { label:'Geography Masters' },
+          ]}
+          showDatePicker={false} showCompany={false}
+        />
+        <main className="p-6">
+          <GeographyHubPanel />
         </main>
       </div>
     </SidebarProvider>

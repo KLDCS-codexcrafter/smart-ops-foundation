@@ -4,6 +4,7 @@ import type { CommandCenterModule } from '../pages/CommandCenterPage';
 const MODULE_OPTIONS = [
   { value: 'overview', label: 'Overview' },
   { value: 'foundation', label: 'Foundation & Core' },
+  { value: 'org-structure', label: 'Organisation Structure' },
   { value: 'geography', label: 'Geography Masters' },
   { value: 'finecore-hub', label: 'FineCore Masters' },
   { value: 'finecore-tax-rates', label: 'GST Rate Reference' },
