@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
   BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
-  MapPin, Users, Settings, Building2,
+  MapPin, Users, Settings, Building2, FolderTree,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
@@ -33,13 +33,14 @@ const PAYROLL_COMING_SOON = [
 ];
 
 const ACCOUNT_STRUCTURE_CARDS = [
+  { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — configure L4 user-defined groups', icon: FolderTree, href: '/erp/accounting/finframe' },
+  { title: 'Ledger Master', desc: 'Cash, bank and all financial accounts per entity', icon: Landmark, href: '/erp/accounting/ledger-master' },
   { title: 'Currency Master', desc: 'Foreign currencies, rate of exchange — date-wise selling/buying/standard', icon: Coins, href: '/erp/accounting/currency-master' },
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, href: '/erp/accounting/voucher-types' },
 ];
 
 const COMING_SOON_CARDS = [
   { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3 },
-  { title: 'Ledger Master', desc: 'General and sub-ledger configuration', icon: Landmark },
   { title: 'Cost Centres', desc: 'Departmental and project cost tracking', icon: Briefcase },
   { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];

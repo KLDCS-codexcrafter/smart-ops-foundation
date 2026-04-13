@@ -4,7 +4,7 @@
  * [JWT] Replace MOCK object with real API queries.
  */
 import { useNavigate } from 'react-router-dom';
-import { Building, Building2, GitBranch, Layers, MapPin, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -112,6 +112,21 @@ export function FoundationModule() {
           status={stats.branchOfficesTotal > 0 ? 'ok' : 'empty'}
           href="/erp/foundation/entities?tab=branch-offices"
           description="Operational locations: service centres, stores, offices."
+        />
+        <StatCard
+          icon={<Network className="h-5 w-5" />}
+          title="Business Units"
+          value={(() => { try {
+            const divs = JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
+            const depts = JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
+            return divs > 0 || depts > 0 ? `${divs} divisions · ${depts} departments` : 'Not configured';
+          } catch { return 'Not configured'; } })()}
+          status={(() => { try {
+            const divs = JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
+            return divs > 0 ? 'ok' : 'empty';
+          } catch { return 'empty'; } })()}
+          href='/erp/foundation/org-structure'
+          description='Divisions and departments — used for MIS reporting across all modules.'
         />
         <StatCard
           icon={<MapPin className="h-5 w-5" />}
