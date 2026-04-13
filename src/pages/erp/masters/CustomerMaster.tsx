@@ -109,6 +109,7 @@ interface CustomerMasterDefinition {
   businessHours: string;
   termsOfDeliveryId: string;
   dispatchMode: 'road' | 'rail' | 'air' | 'sea' | 'courier' | 'hand' | '';
+  default_currency: string;
   status: 'active' | 'inactive';
 }
 
@@ -183,6 +184,7 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   natureOfBusiness: '', businessActivity: '',
   referredBy: '', associatedDealer: '', otherReference: '',
   businessHours: '', termsOfDeliveryId: '', dispatchMode: '',
+  default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   status: 'active',
 };
 
@@ -770,6 +772,29 @@ export function CustomerMasterPanel() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label className="text-xs">Default Currency</Label>
+            <Select value={form.default_currency} onValueChange={v => setForm(f => ({ ...f, default_currency: v }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select currency" /></SelectTrigger>
+              <SelectContent>
+                {(() => {
+                  try {
+                    // [JWT] GET /api/accounting/currencies
+                    const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]');
+                    const base = localStorage.getItem('erp_base_currency') || 'INR';
+                    const active = currencies.filter((c: any) => c.is_active);
+                    if (!active.length) return <SelectItem value={base}>{base} (Base)</SelectItem>;
+                    return active.map((c: any) => (
+                      <SelectItem key={c.id} value={c.iso_code}>
+                        {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
+                      </SelectItem>
+                    ));
+                  } catch { return <SelectItem value="INR">₹ INR (Base)</SelectItem>; }
+                })()}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground mt-1">Invoices to this customer default to this currency.</p>
           </div>
           <div>
             <Label className="text-xs">Terms of Payment</Label>

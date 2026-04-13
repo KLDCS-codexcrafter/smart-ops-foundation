@@ -615,9 +615,24 @@ export function PriceListsPanel() {
                 <Select value={listForm.currency} onValueChange={v => setListForm(f => ({ ...f, currency: v as PriceList['currency'] }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="INR">INR — Indian Rupee (₹)</SelectItem>
-                    <SelectItem value="USD">USD — US Dollar ($)</SelectItem>
-                    <SelectItem value="EUR">EUR — Euro (€)</SelectItem>
+                    {(() => {
+                      try {
+                        // [JWT] GET /api/accounting/currencies
+                        const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]');
+                        const active = currencies.filter((c: any) => c.is_active);
+                        if (!active.length) {
+                          const base = localStorage.getItem('erp_base_currency') || 'INR';
+                          return <SelectItem value={base}>{base} (Base)</SelectItem>;
+                        }
+                        return active.map((c: any) => (
+                          <SelectItem key={c.id} value={c.iso_code}>
+                            {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
+                          </SelectItem>
+                        ));
+                      } catch {
+                        return <SelectItem value="INR">₹ INR — Indian Rupee (Base)</SelectItem>;
+                      }
+                    })()}
                   </SelectContent>
                 </Select>
               </div>
