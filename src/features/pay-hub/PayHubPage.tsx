@@ -20,6 +20,7 @@ import { OvertimeRulesMasterPanel } from '@/pages/erp/pay-hub/masters/OvertimeRu
 import { LoanTypesMasterPanel } from '@/pages/erp/pay-hub/masters/LoanTypesMaster';
 import { BonusConfigMasterPanel } from '@/pages/erp/pay-hub/masters/BonusConfigMaster';
 import { GratuityNPSPanel } from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
+import { AssetMasterPanel } from '@/pages/erp/pay-hub/masters/AssetMaster';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -45,6 +46,7 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-loan-types': return <LoanTypesMasterPanel />;
     case 'ph-bonus-config': return <BonusConfigMasterPanel />;
     case 'ph-gratuity-nps': return <GratuityNPSPanel />;
+    case 'ph-asset-master': return <AssetMasterPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
