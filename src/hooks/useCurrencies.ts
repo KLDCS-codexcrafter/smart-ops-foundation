@@ -1,164 +1,204 @@
 /**
- * useCurrencies.ts — CUR-1 Currency & Forex Rate hook
- * localStorage keys: erp_currencies, erp_forex_rates, erp_base_currency
- * [JWT] All CRUD via /api/accounting/currencies + /api/accounting/forex-rates
+ * useCurrencies.ts — Currency master CRUD hook
+ * Pattern: identical to all 27 other ERP hooks (localStorage + [JWT] comments)
+ * [JWT] Replace with GET/POST/PUT/DELETE /api/accounting/currencies
  */
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import type { Currency, ForexRate } from '@/types/currency';
 
-const LS_CUR = 'erp_currencies';
-const LS_RATE = 'erp_forex_rates';
+const KEY = 'erp_currencies';
+const RATES_KEY = 'erp_forex_rates';
 
-const ls = <T,>(k: string): T[] => {
-  try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; }
-};
-
-function seedBase(): Currency[] {
-  const now = new Date().toISOString();
-  // [JWT] GET /api/accounting/base-currency
-  const baseCode = localStorage.getItem('erp_base_currency') || 'INR';
-  const base: Currency = {
-    id: 'cur-base',
-    iso_code: baseCode,
-    name: baseCode === 'INR' ? 'Indian Rupee' : baseCode,
-    formal_name: baseCode === 'INR' ? 'Indian Rupee' : baseCode,
-    symbol: baseCode === 'INR' ? '₹' : baseCode,
-    decimal_places: 2,
-    symbol_before_amount: true,
-    space_between: false,
-    show_in_millions: false,
-    is_base_currency: true,
-    is_active: true,
-    entity_id: null,
-    created_at: now,
-    updated_at: now,
-  };
-  return [base];
-}
-
-function init(): { currencies: Currency[]; rates: ForexRate[] } {
-  // [JWT] GET /api/accounting/currencies
-  let currencies = ls<Currency>(LS_CUR);
-  if (currencies.length === 0) {
-    currencies = seedBase();
-    // [JWT] SEED /api/accounting/currencies
-    localStorage.setItem(LS_CUR, JSON.stringify(currencies));
-  }
-  // [JWT] GET /api/accounting/forex-rates
-  const rates = ls<ForexRate>(LS_RATE);
-  return { currencies, rates };
-}
-
-export function useCurrencies() {
-  const [data, setData] = useState(init);
-
-  const saveCurrencies = useCallback((next: Currency[]) => {
-    // [JWT] PUT /api/accounting/currencies
-    localStorage.setItem(LS_CUR, JSON.stringify(next));
-    const base = next.find(c => c.is_base_currency);
-    if (base) {
-      // [JWT] PUT /api/accounting/base-currency
-      localStorage.setItem('erp_base_currency', base.iso_code);
+const loadCurrencies = (): Currency[] => {
+  try {
+    // [JWT] GET /api/accounting/currencies
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const stored = JSON.parse(raw) as Currency[];
+      if (stored.length > 0) return stored;
     }
-    setData(d => ({ ...d, currencies: next }));
-  }, []);
+  } catch { /* ignore */ }
 
-  const saveRates = useCallback((next: ForexRate[]) => {
-    // [JWT] PUT /api/accounting/forex-rates
-    localStorage.setItem(LS_RATE, JSON.stringify(next));
-    setData(d => ({ ...d, rates: next }));
-  }, []);
-
-  const createCurrency = useCallback((form: Omit<Currency, 'id' | 'created_at' | 'updated_at'>) => {
+  // First load — seed the base currency from parent company
+  try {
+    const baseCurrencyCode = localStorage.getItem('erp_base_currency') || 'INR';
+    const parentRaw = localStorage.getItem('erp_parent_company');
+    const parent = parentRaw ? JSON.parse(parentRaw) : {};
     const now = new Date().toISOString();
-    const cur: Currency = {
-      ...form,
-      iso_code: form.iso_code.toUpperCase(),
-      id: `cur-${Date.now()}`,
+    const baseCurrency: Currency = {
+      id: `cur-base-${Date.now()}`,
+      iso_code: baseCurrencyCode,
+      name: parent.currencyFormalName || (baseCurrencyCode === 'INR' ? 'Indian Rupee' : baseCurrencyCode),
+      formal_name: parent.currencyFormalName || (baseCurrencyCode === 'INR' ? 'Indian Rupee' : baseCurrencyCode),
+      symbol: parent.currencySymbol || (baseCurrencyCode === 'INR' ? '₹' : baseCurrencyCode),
+      decimal_places: 2,
+      symbol_before_amount: true,
+      space_between: false,
+      show_in_millions: false,
+      is_base_currency: true,
+      is_active: true,
+      entity_id: null,
       created_at: now,
       updated_at: now,
     };
-    // Duplicate check
-    if (data.currencies.some(c => c.iso_code === cur.iso_code)) {
+    const seeds = [baseCurrency];
+    localStorage.setItem(KEY, JSON.stringify(seeds));
+    // [JWT] POST /api/accounting/currencies/init
+    return seeds;
+  } catch { return []; }
+};
+
+const loadRates = (): ForexRate[] => {
+  try {
+    // [JWT] GET /api/accounting/forex-rates
+    const raw = localStorage.getItem(RATES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+};
+
+export function useCurrencies() {
+  const [currencies, setCurrencies] = useState<Currency[]>(loadCurrencies);
+  const [rates, setRates] = useState<ForexRate[]>(loadRates);
+
+  const saveCurrencies = (data: Currency[]) => {
+    localStorage.setItem(KEY, JSON.stringify(data));
+    // [JWT] Replace with API calls
+  };
+  const saveRates = (data: ForexRate[]) => {
+    localStorage.setItem(RATES_KEY, JSON.stringify(data));
+    // [JWT] Replace with API calls
+  };
+
+  const createCurrency = (form: Omit<Currency, 'id' | 'created_at' | 'updated_at'>) => {
+    const now = new Date().toISOString();
+    // Validate: ISO code must be unique
+    if (currencies.some(c => c.iso_code.toUpperCase() === form.iso_code.toUpperCase())) {
+      toast.error(`Currency ${form.iso_code} already exists`);
       return null;
     }
-    saveCurrencies([...data.currencies, cur]);
-    return cur;
-  }, [data.currencies, saveCurrencies]);
+    const c: Currency = { ...form, id: `cur-${Date.now()}`, created_at: now, updated_at: now };
+    const updated = [...currencies, c];
+    setCurrencies(updated);
+    saveCurrencies(updated);
+    toast.success(`${c.name} (${c.iso_code}) created`);
+    // [JWT] POST /api/accounting/currencies
+    return c;
+  };
 
-  const updateCurrency = useCallback((id: string, patch: Partial<Currency>) => {
-    saveCurrencies(data.currencies.map(c =>
-      c.id === id ? { ...c, ...patch, updated_at: new Date().toISOString() } : c
-    ));
-  }, [data.currencies, saveCurrencies]);
+  const updateCurrency = (id: string, patch: Partial<Currency>) => {
+    const c = currencies.find(x => x.id === id);
+    if (!c) return;
+    if (patch.iso_code && patch.iso_code !== c.iso_code) {
+      if (currencies.some(x => x.id !== id && x.iso_code.toUpperCase() === patch.iso_code!.toUpperCase())) {
+        toast.error(`Currency code ${patch.iso_code} already exists`);
+        return;
+      }
+    }
+    const updated = currencies.map(x =>
+      x.id === id ? { ...x, ...patch, updated_at: new Date().toISOString() } : x
+    );
+    setCurrencies(updated);
+    saveCurrencies(updated);
+    toast.success(`${c.name} updated`);
+    // [JWT] PUT /api/accounting/currencies/:id
+  };
 
-  const deleteCurrency = useCallback((id: string) => {
-    const target = data.currencies.find(c => c.id === id);
-    if (!target || target.is_base_currency) return false;
-    saveCurrencies(data.currencies.filter(c => c.id !== id));
-    // Also delete associated rates
-    saveRates(data.rates.filter(r => r.currency_id !== id));
-    return true;
-  }, [data.currencies, data.rates, saveCurrencies, saveRates]);
+  const deleteCurrency = (id: string) => {
+    const c = currencies.find(x => x.id === id);
+    if (!c) return;
+    if (c.is_base_currency) {
+      toast.error('Cannot delete the base currency');
+      return;
+    }
+    // Guard: check if used in any ledger
+    try {
+      const ledgers = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+      const inUse = ledgers.some((l: any) => l.currency === c.iso_code || l.currency_id === c.id);
+      if (inUse) {
+        toast.error(`${c.iso_code} is assigned to a ledger — cannot delete`);
+        return;
+      }
+    } catch { /* ignore */ }
+    const updated = currencies.filter(x => x.id !== id);
+    const updatedRates = rates.filter(r => r.currency_id !== id);
+    setCurrencies(updated);
+    saveCurrencies(updated);
+    setRates(updatedRates);
+    saveRates(updatedRates);
+    toast.success(`${c.name} deleted`);
+    // [JWT] DELETE /api/accounting/currencies/:id
+  };
 
-  const toggleActive = useCallback((id: string) => {
-    const target = data.currencies.find(c => c.id === id);
-    if (!target || target.is_base_currency) return;
-    saveCurrencies(data.currencies.map(c =>
-      c.id === id ? { ...c, is_active: !c.is_active, updated_at: new Date().toISOString() } : c
-    ));
-  }, [data.currencies, saveCurrencies]);
+  const toggleActive = (id: string) => {
+    const c = currencies.find(x => x.id === id);
+    if (!c) return;
+    if (c.is_base_currency) { toast.error('Base currency cannot be deactivated'); return; }
+    updateCurrency(id, { is_active: !c.is_active });
+  };
 
-  // ── Forex Rates ────────────────────────────────────────────────────────────
+  // ── Rates ──────────────────────────────────────────────────────────────────
 
-  const addRate = useCallback((rate: Omit<ForexRate, 'id' | 'created_at'>) => {
+  const addRate = (rate: Omit<ForexRate, 'id' | 'created_at'>) => {
     const now = new Date().toISOString();
-    const newRate: ForexRate = {
-      ...rate,
-      id: `fxr-${Date.now()}`,
-      created_at: now,
-    };
-    saveRates([...data.rates, newRate]);
-    return newRate;
-  }, [data.rates, saveRates]);
+    const r: ForexRate = { ...rate, id: `fxr-${Date.now()}`, created_at: now };
+    const updated = [...rates, r];
+    setRates(updated);
+    saveRates(updated);
+    // [JWT] POST /api/accounting/forex-rates
+  };
 
-  const updateRate = useCallback((id: string, patch: Partial<ForexRate>) => {
-    saveRates(data.rates.map(r => r.id === id ? { ...r, ...patch } : r));
-  }, [data.rates, saveRates]);
+  const updateRate = (id: string, patch: Partial<ForexRate>) => {
+    const updated = rates.map(r => r.id === id ? { ...r, ...patch } : r);
+    setRates(updated);
+    saveRates(updated);
+    // [JWT] PUT /api/accounting/forex-rates/:id
+  };
 
-  const deleteRate = useCallback((id: string) => {
-    saveRates(data.rates.filter(r => r.id !== id));
-  }, [data.rates, saveRates]);
+  const deleteRate = (id: string) => {
+    const updated = rates.filter(r => r.id !== id);
+    setRates(updated);
+    saveRates(updated);
+    // [JWT] DELETE /api/accounting/forex-rates/:id
+  };
 
-  const getRatesForCurrency = useCallback((currencyId: string): ForexRate[] => {
-    return data.rates
+  const getRatesForCurrency = (currencyId: string): ForexRate[] =>
+    rates
       .filter(r => r.currency_id === currencyId)
       .sort((a, b) => new Date(b.applicable_from).getTime() - new Date(a.applicable_from).getTime());
-  }, [data.rates]);
 
-  // ── Stats ──────────────────────────────────────────────────────────────────
+  /**
+   * Get the applicable rate for a currency on a given date.
+   * Returns the most recent rate entry whose applicable_from <= targetDate.
+   * Priority: last_voucher_rate > selling/buying rate.
+   */
+  const getApplicableRate = (currencyId: string, targetDate: string, type: 'selling' | 'buying' | 'standard' = 'selling'): number | null => {
+    const sorted = rates
+      .filter(r => r.currency_id === currencyId && r.applicable_from <= targetDate)
+      .sort((a, b) => new Date(b.applicable_from).getTime() - new Date(a.applicable_from).getTime());
+    if (!sorted.length) return null;
+    const r = sorted[0];
+    if (r.last_voucher_rate !== null) return r.last_voucher_rate;
+    if (type === 'selling') return r.selling_rate;
+    if (type === 'buying') return r.buying_rate;
+    return r.standard_rate;
+  };
 
-  const baseCurrency = useMemo(() => data.currencies.find(c => c.is_base_currency) ?? null, [data.currencies]);
+  const baseCurrency = currencies.find(c => c.is_base_currency) ?? null;
+  const activeForeign = currencies.filter(c => !c.is_base_currency && c.is_active);
 
-  const stats = useMemo(() => ({
-    total: data.currencies.length,
-    foreign: data.currencies.filter(c => !c.is_base_currency).length,
-    active: data.currencies.filter(c => c.is_active).length,
-    withRates: data.currencies.filter(c => !c.is_base_currency && data.rates.some(r => r.currency_id === c.id)).length,
-  }), [data.currencies, data.rates]);
+  const stats = {
+    total: currencies.length,
+    active: currencies.filter(c => c.is_active).length,
+    foreign: currencies.filter(c => !c.is_base_currency).length,
+    withRates: currencies.filter(c =>
+      !c.is_base_currency && rates.some(r => r.currency_id === c.id)
+    ).length,
+  };
 
   return {
-    currencies: data.currencies,
-    rates: data.rates,
-    stats,
-    baseCurrency,
-    createCurrency,
-    updateCurrency,
-    deleteCurrency,
-    toggleActive,
-    addRate,
-    updateRate,
-    deleteRate,
-    getRatesForCurrency,
+    currencies, rates, stats, baseCurrency, activeForeign,
+    createCurrency, updateCurrency, deleteCurrency, toggleActive,
+    addRate, updateRate, deleteRate, getRatesForCurrency, getApplicableRate,
   };
 }
