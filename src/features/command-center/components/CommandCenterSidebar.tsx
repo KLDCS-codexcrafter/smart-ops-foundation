@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Network } from 'lucide-react';
 import {
   LayoutDashboard, Building2, Terminal, Cpu, Globe,
   Landmark, ChevronRight, Lock, ShoppingCart, Package,
@@ -89,7 +90,7 @@ const COMING_SOON = [
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
   const navigate = useNavigate();
   const [foundationOpen, setFoundationOpen] = useState(
-    activeModule === 'foundation' || activeModule === 'geography'
+    activeModule === 'foundation' || activeModule === 'geography' || activeModule === 'org-structure'
   );
   const [finecoreOpen, setFinecoreOpen] = useState(true);
   const [inventoryOpen, setInventoryOpen] = useState(
@@ -97,7 +98,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
   );
 
   useEffect(() => {
-    if (activeModule === 'foundation' || activeModule === 'geography') setFoundationOpen(true);
+    if (activeModule === 'foundation' || activeModule === 'geography' || activeModule === 'org-structure') setFoundationOpen(true);
     if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
     if (activeModule.startsWith('inventory')) setInventoryOpen(true);
   }, [activeModule]);
@@ -151,7 +152,7 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      isActive={activeModule === 'foundation' || activeModule === 'geography'}
+                      isActive={activeModule === 'foundation' || activeModule === 'geography' || activeModule === 'org-structure'}
                       tooltip="Foundation & Core"
                     >
                       <Building2 className="h-4 w-4" />
@@ -165,6 +166,12 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                         <SidebarMenuSubButton isActive={activeModule === 'foundation'} onClick={() => onModuleChange('foundation')}>
                           <Building2 className="h-3 w-3" />
                           <span>Entity Management</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton isActive={activeModule === 'org-structure'} onClick={() => onModuleChange('org-structure')}>
+                          <Network className="h-3 w-3" />
+                          <span>Organisation Structure</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>

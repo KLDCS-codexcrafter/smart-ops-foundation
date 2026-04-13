@@ -42,11 +42,14 @@ import { OpeningStockPanel } from '@/pages/erp/inventory/OpeningStockEntry';
 import { ItemRatesPanel } from '@/pages/erp/inventory/ItemRatesMRP';
 import { PriceListsPanel } from '@/pages/erp/inventory/PriceListManager';
 import { ReorderAlertsPanel } from '@/pages/erp/inventory/ReorderAlerts';
+import { GeographyHubPanel } from '@/pages/erp/foundation/geography/GeographyHub';
+import { OrgStructurePanel } from '@/pages/erp/foundation/OrgStructureHub';
 
 export type CommandCenterModule =
   | 'overview'
   | 'foundation'
   | 'geography'
+  | 'org-structure'
   | 'finecore-hub'
   | 'finecore-tax-rates'
   | 'finecore-tds'
@@ -92,6 +95,7 @@ export default function CommandCenterPage() {
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
+      'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
@@ -118,7 +122,8 @@ export default function CommandCenterPage() {
     switch (activeModule) {
       case 'overview': return <OverviewModule onNavigate={handleNavigate} />;
       case 'foundation': return <FoundationModule />;
-      case 'geography': return <FoundationModule />;
+      case 'geography': return <GeographyHubPanel />;
+      case 'org-structure': return <OrgStructurePanel />;
       case 'finecore-hub': return <FineCoreMastersModule onNavigate={handleNavigate} />;
       case 'finecore-tax-rates': return <TaxRateMasterPanel />;
       case 'finecore-tds': return <TDSSectionMasterPanel />;
