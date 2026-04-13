@@ -78,7 +78,7 @@ export function LeaveRequestsPanel() {
   const BLANK_REQ = {
     employeeId: '', employeeCode: '', employeeName: '', departmentName: '',
     leaveTypeId: '', leaveTypeCode: '', leaveTypeName: '',
-    fromDate: '', toDate: '', halfDay: false, halfDaySession: '' as const,
+    fromDate: '', toDate: '', halfDay: false, halfDaySession: '' as '' | 'morning' | 'afternoon',
     totalDays: 0, reason: '', documentRef: '',
     status: 'pending' as const, approverId: '', approverName: '',
     approvedAt: '', approverRemarks: '', cancelledAt: '', cancelReason: '',
