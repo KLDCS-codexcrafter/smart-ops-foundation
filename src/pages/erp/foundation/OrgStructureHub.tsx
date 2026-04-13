@@ -27,16 +27,24 @@ import { onEnterNext } from '@/lib/keyboard';
 
 // ── Blanks ───────────────────────────────────────────────────────────
 
-const BLANK_DIVISION = {
-  name: '', category: 'operations' as DivisionCategory, parent_division_id: null as string | null,
-  head_name: '', head_email: '', location: '', status: 'active' as const,
-  description: '', entity_id: null as string | null,
+const BLANK_DIVISION: {
+  name: string; category: DivisionCategory; parent_division_id: string | null;
+  head_name: string; head_email: string; location: string; status: 'active' | 'inactive';
+  description: string; entity_id: string | null;
+} = {
+  name: '', category: 'operations', parent_division_id: null,
+  head_name: '', head_email: '', location: '', status: 'active',
+  description: '', entity_id: null,
 };
 
-const BLANK_DEPARTMENT = {
-  name: '', division_id: null as string | null, parent_department_id: null as string | null,
-  head_name: '', head_email: '', location: '', budget: null as number | null,
-  status: 'active' as const, description: '', entity_id: null as string | null,
+const BLANK_DEPARTMENT: {
+  name: string; division_id: string | null; parent_department_id: string | null;
+  head_name: string; head_email: string; location: string; budget: number | null;
+  status: 'active' | 'inactive'; description: string; entity_id: string | null;
+} = {
+  name: '', division_id: null, parent_department_id: null,
+  head_name: '', head_email: '', location: '', budget: null,
+  status: 'active', description: '', entity_id: null,
 };
 
 // ── Preset Dialog ────────────────────────────────────────────────────
