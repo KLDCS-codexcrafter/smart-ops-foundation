@@ -134,14 +134,13 @@ export function TransactionTemplatesPanel() {
     }, 0);
   };
 
-  // [JWT] GET /api/foundation/departments
-  const orgDepts: { id: string; name: string }[] = (() => {
+  const orgDepts: { id: string; name: string }[] = useMemo(() => {
     try {
       // [JWT] GET /api/foundation/departments
       const raw = localStorage.getItem('erp_departments');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  })();
+  }, []);
 
   const renderTable = () => (
     <Table>
