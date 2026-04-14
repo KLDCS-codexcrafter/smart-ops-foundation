@@ -27,6 +27,15 @@ const MODULES: StandaloneModule[] = [
     phase: 'phase2',
   },
   {
+    id: 'vetan-nidhi',
+    title: 'Vetan Nidhi — वेतन निधि',
+    icon: Users,
+    description: 'Standalone payroll SaaS for Indian SMEs — full statutory compliance without the full ERP.',
+    details: 'Handles PF ECR, ESI, PT, TDS, Form 24Q, Form 16. Works standalone (CSV import) or integrates with Tally via Bridge to auto-book salary journals. 4 SaaS tiers from ₹499/month to Enterprise bureau pricing.',
+    route: '/modules/vetan-nidhi',
+    phase: 'phase2',
+  },
+  {
     id: 'dms',
     title: 'Document Management',
     icon: FileText,

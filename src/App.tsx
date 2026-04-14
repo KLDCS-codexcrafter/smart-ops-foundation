@@ -106,6 +106,7 @@ import AddOnsPage from './pages/addons/AddOnsPage';
 import AddonsBarcode from './pages/addons/BarcodeAddon';
 import VerticalsPage from './pages/verticals/VerticalsPage';
 import ModulesPage from './pages/modules/ModulesPage';
+import VetanNidhi from './pages/modules/VetanNidhi';
 import ClientCustomizedPage from './pages/client-customized/ClientCustomizedPage';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
@@ -153,6 +154,7 @@ const App = () => (
             } />
             <Route path="/verticals" element={<VerticalsPage />} />
             <Route path="/modules" element={<ModulesPage />} />
+            <Route path="/modules/vetan-nidhi" element={<VetanNidhi />} />
             <Route path="/client-customized" element={<ClientCustomizedPage />} />
             <Route path="/add-ons" element={<AddOnsPage />} />
             <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
