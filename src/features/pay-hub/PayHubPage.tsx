@@ -30,6 +30,7 @@ import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeF
 import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
 import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
 import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
+import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/PerformanceAndTalent';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -74,6 +75,10 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-documents':       return <DocumentsAndPoliciesPanel />;
     case 'ph-policies':        return <DocumentsAndPoliciesPanel />;
     case 'ph-onboarding':      return <OnboardingPanel />;
+    case 'ph-performance':     return <PerformanceAndTalentPanel defaultTab="reviews" />;
+    case 'ph-9box':            return <PerformanceAndTalentPanel defaultTab="9box" />;
+    case 'ph-succession':      return <PerformanceAndTalentPanel defaultTab="succession" />;
+    case 'ph-compensation':    return <PerformanceAndTalentPanel defaultTab="compensation" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -111,6 +116,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-documents': 'Document Vault',
   'ph-policies': 'Policy Library',
   'ph-onboarding': 'Onboarding',
+  'ph-performance': 'Performance Reviews',
+  'ph-9box': '9-Box Grid',
+  'ph-succession': 'Succession Planning',
+  'ph-compensation': 'Compensation Actions',
 };
 
 export default function PayHubPage() {
