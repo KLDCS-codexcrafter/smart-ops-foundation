@@ -847,11 +847,11 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs">Resignation Date *</Label>
-                <SmartDateInput value={exitForm.resignationDate} onChange={v => euf('resignationDate', v)} onEnter={onEnterNext} />
+                <SmartDateInput value={exitForm.resignationDate} onChange={v => euf('resignationDate', v)} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Last Working Date *</Label>
-                <SmartDateInput value={exitForm.lastWorkingDate} onChange={v => euf('lastWorkingDate', v)} onEnter={onEnterNext} />
+                <SmartDateInput value={exitForm.lastWorkingDate} onChange={v => euf('lastWorkingDate', v)} />
               </div>
             </div>
             <div className="space-y-1.5">
