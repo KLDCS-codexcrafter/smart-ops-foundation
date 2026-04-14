@@ -136,11 +136,17 @@ export function useHolidayCalendars() {
 
   // ── Compute inherited holidays for a calendar ──────────────────
   // Walks the parent chain and collects all holidays from ancestors.
-  const resolveInherited = (cal: HolidayCalendar, all: HolidayCalendar[]): Holiday[] => {
+  const resolveInherited = (
+    cal: HolidayCalendar,
+    all: HolidayCalendar[],
+    visited: Set<string> = new Set()
+  ): Holiday[] => {
     if (!cal.parentCalendarId) return [];
+    if (visited.has(cal.id)) return []; // circular ref guard
+    visited.add(cal.id);
     const parent = all.find(c => c.id === cal.parentCalendarId);
     if (!parent) return [];
-    const grandparentInherited = resolveInherited(parent, all);
+    const grandparentInherited = resolveInherited(parent, all, visited);
     return [...grandparentInherited, ...parent.holidays];
   };
 
