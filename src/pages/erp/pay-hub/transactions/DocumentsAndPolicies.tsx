@@ -64,6 +64,7 @@ export function DocumentsAndPoliciesPanel() {
   // ── Search ───────────────────────────────────────────────────
   const [docSearch, setDocSearch] = useState('');
   const [polSearch, setPolSearch] = useState('');
+  const [expandedPolId, setExpandedPolId] = useState<string | null>(null);
 
   // ── Document Sheet ───────────────────────────────────────────
   const [docSheetOpen, setDocSheetOpen] = useState(false);
@@ -273,28 +274,65 @@ export function DocumentsAndPoliciesPanel() {
                 <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No policies found</TableCell></TableRow>
               )}
               {filteredPols.map(p => (
-                <TableRow key={p.id}>
-                  <TableCell className="text-xs font-mono">{p.policyCode}</TableCell>
-                  <TableCell className="text-xs font-medium">{p.title}</TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px]">{POLICY_CATEGORY_LABELS[p.category]}</Badge></TableCell>
-                  <TableCell className="text-xs">{p.version}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`text-[10px] ${POL_STATUS_COLORS[p.status] || ''}`}>{p.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-xs">{p.effectiveDate ? format(parseISO(p.effectiveDate), 'dd MMM yyyy') : '—'}</TableCell>
-                  <TableCell>
-                    <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => {
-                      setPolEditId(p.id);
-                      setPolForm({
-                        policyCode: p.policyCode, title: p.title, category: p.category,
-                        version: p.version, effectiveDate: p.effectiveDate, reviewDate: p.reviewDate,
-                        owner: p.owner, content: p.content, acknowledgementRequired: p.acknowledgementRequired,
-                        status: p.status,
-                      });
-                      setPolSheetOpen(true);
-                    }}>Edit</Button>
-                  </TableCell>
-                </TableRow>
+                <React.Fragment key={p.id}>
+                  <TableRow key={p.id} className="cursor-pointer hover:bg-muted/40"
+                    onClick={() => setExpandedPolId(expandedPolId === p.id ? null : p.id)}>
+                    <TableCell className="text-xs font-mono">{p.policyCode}</TableCell>
+                    <TableCell className="text-xs font-medium">{p.title}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-[10px]">{POLICY_CATEGORY_LABELS[p.category]}</Badge></TableCell>
+                    <TableCell className="text-xs">{p.version}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`text-[10px] ${POL_STATUS_COLORS[p.status] || ''}`}>{p.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">{p.effectiveDate ? format(parseISO(p.effectiveDate), 'dd MMM yyyy') : '—'}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="ghost" className="h-7 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPolEditId(p.id);
+                            setPolForm({
+                              policyCode: p.policyCode, title: p.title, category: p.category,
+                              version: p.version, effectiveDate: p.effectiveDate, reviewDate: p.reviewDate,
+                              owner: p.owner, content: p.content, acknowledgementRequired: p.acknowledgementRequired,
+                              status: p.status,
+                            });
+                            setPolSheetOpen(true);
+                          }}>Edit</Button>
+                        {p.status === 'draft' && (
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-green-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              savePolicies(policies.map(x => x.id !== p.id ? x : {...x, status:'active', updated_at: new Date().toISOString()}));
+                            }}>
+                            Activate
+                          </Button>
+                        )}
+                        {p.status === 'active' && (
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-slate-500"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              savePolicies(policies.map(x => x.id !== p.id ? x : {...x, status:'archived', updated_at: new Date().toISOString()}));
+                            }}>
+                            Archive
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  {expandedPolId === p.id && (
+                    <TableRow key={`content-${p.id}`}>
+                      <TableCell colSpan={7} className="bg-muted/20 px-4 py-3">
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">
+                          Policy Content — {p.title} ({p.version})
+                        </p>
+                        <pre className="text-xs whitespace-pre-wrap font-sans text-slate-700">
+                          {p.content || 'No content added yet.'}
+                        </pre>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
