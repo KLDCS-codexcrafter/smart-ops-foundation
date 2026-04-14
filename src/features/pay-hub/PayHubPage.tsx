@@ -26,6 +26,7 @@ import { LeaveRequestsPanel } from '@/pages/erp/pay-hub/transactions/LeaveReques
 import { PayrollProcessingPanel } from '@/pages/erp/pay-hub/transactions/PayrollProcessing';
 import { PayslipGenerationPanel } from '@/pages/erp/pay-hub/transactions/PayslipGeneration';
 import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/StatutoryReturns';
+import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeFinance';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -62,6 +63,10 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-tds-24q':             return <StatutoryReturnsPanel defaultTab="tds-24q" />;
     case 'ph-form16':              return <StatutoryReturnsPanel defaultTab="form16" />;
     case 'ph-statutory-calendar':  return <StatutoryReturnsPanel defaultTab="calendar" />;
+    case 'ph-loans':           return <EmployeeFinancePanel defaultTab="loans" />;
+    case 'ph-salary-advance':  return <EmployeeFinancePanel defaultTab="salary-advance" />;
+    case 'ph-expense-claims':  return <EmployeeFinancePanel defaultTab="expenses" />;
+    case 'ph-flexi-benefits':  return <EmployeeFinancePanel defaultTab="flexi" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -91,6 +96,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-tds-24q':            'Form 24Q',
   'ph-form16':             'Form 16',
   'ph-statutory-calendar': 'Statutory Calendar',
+  'ph-loans':          'Loans & Advances',
+  'ph-salary-advance': 'Salary Advance',
+  'ph-expense-claims': 'Expense Claims',
+  'ph-flexi-benefits': 'Flexi Benefits',
 };
 
 export default function PayHubPage() {
