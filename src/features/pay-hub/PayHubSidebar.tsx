@@ -69,7 +69,9 @@ export type PayHubModule =
   | 'ph-email-templates'
   | 'ph-activity'
   | 'ph-exit'
-  | 'ph-fnf';
+  | 'ph-fnf'
+  | 'ph-doc-vault'
+  | 'ph-doc-templates';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -89,6 +91,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-directory', 'ph-inbox', 'ph-collaboration', 'ph-total-rewards',
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
   'ph-exit', 'ph-fnf',
+  'ph-doc-vault', 'ph-doc-templates',
 ];
 
 interface SidebarItem {
@@ -140,6 +143,8 @@ const RECRUITMENT_ITEMS: SidebarItem[] = [
   { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
   { id: 'ph-documents',    label: 'Document Vault',  icon: FolderOpen },
   { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
+  { id: 'ph-doc-vault',    label: 'Document Vault',   icon: FolderOpen },
+  { id: 'ph-doc-templates', label: 'Template Library', icon: FileText },
   { id: 'ph-onboarding',   label: 'Onboarding',      icon: Rocket },
 ];
 
