@@ -566,6 +566,62 @@ export function usePayrollEngine() {
       : [...allRuns, run];
     setRuns(updated); saveRuns(updated);
 
+    // Post-payroll: update loan balances + advance statuses
+    // [JWT] PATCH /api/pay-hub/finance/loan-applications/bulk-update
+    const loanRaw = localStorage.getItem(LOAN_APPLICATIONS_KEY);
+    if (loanRaw) {
+      try {
+        const allLoans = JSON.parse(loanRaw);
+        let loansChanged = false;
+        const updatedLoans = allLoans.map((loan: any) => {
+          const ps = payslips.find(p => p.employeeId === loan.employeeId);
+          if (!ps) return loan;
+          const emiLine = ps.lines.find(
+            l => l.headCode === 'LOAN_EMI' && l.id === `loan-${loan.id}`
+          );
+          if (!emiLine) return loan;
+          loansChanged = true;
+          const newBalance = Math.max(0, loan.remainingBalance - emiLine.monthly);
+          return {
+            ...loan,
+            remainingBalance: newBalance,
+            status: newBalance <= 0 ? 'closed' : loan.status,
+            updated_at: new Date().toISOString(),
+          };
+        });
+        if (loansChanged) {
+          localStorage.setItem(LOAN_APPLICATIONS_KEY, JSON.stringify(updatedLoans));
+        }
+      } catch { /* ignore */ }
+    }
+
+    // [JWT] PATCH /api/pay-hub/finance/salary-advances/bulk-update
+    const advRaw = localStorage.getItem(SALARY_ADVANCES_KEY);
+    if (advRaw) {
+      try {
+        const allAdvances = JSON.parse(advRaw);
+        let advChanged = false;
+        const updatedAdv = allAdvances.map((adv: any) => {
+          const ps = payslips.find(p => p.employeeId === adv.employeeId);
+          if (!ps) return adv;
+          const recLine = ps.lines.find(
+            l => l.headCode === 'ADV_RECOVERY' && l.id === `adv-${adv.id}-${payPeriod}`
+          );
+          if (!recLine) return adv;
+          advChanged = true;
+          return {
+            ...adv,
+            status: 'recovered' as const,
+            recoveredDate: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+        });
+        if (advChanged) {
+          localStorage.setItem(SALARY_ADVANCES_KEY, JSON.stringify(updatedAdv));
+        }
+      } catch { /* ignore */ }
+    }
+
     // [JWT] POST /api/pay-hub/payroll/runs/:period/calculate
 
     toast.success(`Payroll ${run.payPeriod} calculated — ${payslips.length} employee(s) processed`);

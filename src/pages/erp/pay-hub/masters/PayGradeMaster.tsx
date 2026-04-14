@@ -84,7 +84,7 @@ export function PayGradeMasterPanel() {
       setLastSavedId(newGrade?.id || '');
     }
     setSheetOpen(false);
-    setPropagateOpen(true);
+    if (!editId) setPropagateOpen(true);
   }, [form, editId, updateGrade, createGrade, sheetOpen]);
 
   useCtrlS(handleSave);
