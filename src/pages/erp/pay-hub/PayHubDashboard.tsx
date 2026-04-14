@@ -381,6 +381,8 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
       if (branch?.name) return branch.name;
       return 'Your Company';
     })();
+
+    const payHeadCount = safeReadCount('erp_pay_heads');
     const ssCount      = safeReadCount('erp_salary_structures');
     const gradeCount   = safeReadCount('erp_pay_grades');
     const hasPayroll   = safeReadCount('erp_payroll_runs') > 0;
