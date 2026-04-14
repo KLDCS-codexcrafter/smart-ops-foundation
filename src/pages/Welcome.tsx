@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
   Cpu, LayoutDashboard, GitMerge, BarChart3, Handshake, LayoutGrid, Puzzle,
-  Users, Compass, ArrowRight, ArrowLeft, Home, HelpCircle,
+  Users, Compass, ArrowRight, ArrowLeft, Home, HelpCircle, Smartphone,
   Settings, HeadphonesIcon, Server, AlertTriangle, CheckCircle,
   Clock, Search, Plus, Wifi, WifiOff, Activity,
   XCircle, AlertCircle,
@@ -108,6 +108,13 @@ const panelCards = [
     route: "/add-ons",
     description: "Optional extensions beyond the core ERP. Current: Barcode (standalone label generation for Tally users). Planned: WhatsApp integration, AI price forecasting, hardware connectors.",
     badge: null,
+  },
+  {
+    title: "Operix Go Sahayak",
+    icon: Smartphone,
+    route: "/operix-go",
+    description: "Mobile apps for employees and managers — सहायक. Leave approvals, payslips, attendance, and HR self-service on any phone. No app install required.",
+    badge: "wip",
   },
   {
     title: "Client Customized",
