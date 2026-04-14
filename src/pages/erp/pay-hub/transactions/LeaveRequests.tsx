@@ -853,8 +853,8 @@ export function LeaveRequestsPanel() {
             {/* Warnings */}
             {reqValidation.length > 0 && (
               <div className="space-y-1">
-                {reqValidation.map((w, i) => (
-                  <div key={i} className="rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-[11px] text-amber-700 flex items-start gap-1.5">
+                {reqValidation.map((w) => (
+                  <div key={w} className="rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-[11px] text-amber-700 flex items-start gap-1.5">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                     {w}
                   </div>
