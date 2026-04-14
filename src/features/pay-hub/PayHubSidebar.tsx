@@ -6,7 +6,7 @@ import { useState } from 'react';
 import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
-  ClipboardList, FileText, BarChart3, ChevronRight, Shield,
+  ClipboardList, FileText, BarChart3, ChevronRight, Shield, HardHat,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
   UserCog, Mail, Monitor, LogOut,
@@ -92,6 +92,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
   'ph-exit', 'ph-fnf',
   'ph-doc-vault', 'ph-doc-templates',
+  'ph-contract-workers', 'ph-contract-orders', 'ph-contract-compliance',
 ];
 
 interface SidebarItem {

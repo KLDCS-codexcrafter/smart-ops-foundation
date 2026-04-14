@@ -36,6 +36,7 @@ import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/Le
 import { EmployeeExperiencePanel } from '@/pages/erp/pay-hub/transactions/EmployeeExperience';
 import { AdminAndMonitoringPanel } from '@/pages/erp/pay-hub/transactions/AdminAndMonitoring';
 import { ExitAndFnFPanel } from '@/pages/erp/pay-hub/transactions/ExitAndFnF';
+import { ContractManpowerPanel } from '@/pages/erp/pay-hub/transactions/ContractManpower';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -100,6 +101,9 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-activity':         return <AdminAndMonitoringPanel defaultTab="activity" />;
     case 'ph-exit': return <ExitAndFnFPanel defaultTab="exit" />;
     case 'ph-fnf':  return <ExitAndFnFPanel defaultTab="fnf" />;
+    case 'ph-contract-workers':    return <ContractManpowerPanel defaultTab="workers" />;
+    case 'ph-contract-orders':     return <ContractManpowerPanel defaultTab="orders" />;
+    case 'ph-contract-compliance': return <ContractManpowerPanel defaultTab="compliance" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -157,6 +161,9 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-activity':        'Activity Monitoring',
   'ph-exit': 'Exit Management',
   'ph-fnf':  'F&F Settlement',
+  'ph-contract-workers':    'Contract Workers',
+  'ph-contract-orders':     'Work Orders',
+  'ph-contract-compliance': 'Compliance Register',
 };
 
 export default function PayHubPage() {
