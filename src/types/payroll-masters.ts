@@ -46,24 +46,43 @@ export interface LeaveType {
 // ── HOLIDAY & HOLIDAY CALENDAR ────────────────────────────────────────
 export interface Holiday {
   id: string;
-  date: string;             // 'YYYY-MM-DD'
+  date: string;             // YYYY-MM-DD
   name: string;
+  localName: string;        // from Nager API — local language name
   type: 'national' | 'state' | 'company' | 'optional' | 'restricted';
-  stateCode: string;
+  stateCode: string;        // 2-letter e.g. "MH", "KA", "DL" — empty = all states
   stateName: string;
+  counties: string[];       // Nager API counties e.g. ["IN-MH"] — empty = all India
   isOptional: boolean;
+  isFixed: boolean;         // from Nager API — true = same date every year
+  source: 'manual' | 'api' | 'inherited'; // how this holiday was added
   description: string;
 }
 
+export type CalendarLevel = 'national' | 'company' | 'branch';
+
 export interface HolidayCalendar {
   id: string;
-  year: number;
   name: string;
-  location: string;         // 'All Locations' or branch name
+  calendarLevel: CalendarLevel;
+  // Hierarchy linkage
+  parentCalendarId: string;  // empty for national; company points to national; branch points to company
+  entityId: string;          // erp_parent_company id / erp_companies id / erp_branch_offices id
+  entityType: string;        // "parent_company" | "company" | "branch"
+  // Date range (replaces year: number)
+  fromDate: string;          // YYYY-MM-DD — required
+  toDate: string;            // YYYY-MM-DD — required
+  // Location / state context
+  stateCode: string;         // 2-letter state code — drives API fetch and inheritance
+  stateName: string;
+  location: string;          // display label e.g. "Head Office — Mumbai"
   description: string;
   holidays: Holiday[];
+  // Computed / resolved holidays from parents — stored for offline use
+  inheritedHolidays: Holiday[];
   status: 'active' | 'inactive';
-  created_at: string; updated_at: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // ── ATTENDANCE TYPE ───────────────────────────────────────────────────
