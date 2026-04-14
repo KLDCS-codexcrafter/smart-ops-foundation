@@ -264,6 +264,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('RECRUITMENT', RECRUITMENT_ITEMS, recruitmentOpen, setRecruitmentOpen)}
         {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
+        {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {/* Reports placeholder */}
         <div className="px-4 py-2">
           <div className="flex items-center gap-1">
