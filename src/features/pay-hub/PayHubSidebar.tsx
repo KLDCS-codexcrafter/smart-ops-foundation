@@ -45,7 +45,10 @@ export type PayHubModule =
   | 'ph-loans'
   | 'ph-salary-advance'
   | 'ph-expense-claims'
-  | 'ph-flexi-benefits';
+  | 'ph-flexi-benefits'
+  | 'ph-recruitment'
+  | 'ph-documents'
+  | 'ph-policies';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -59,6 +62,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
+  'ph-recruitment', 'ph-documents', 'ph-policies',
 ];
 
 interface SidebarItem {
