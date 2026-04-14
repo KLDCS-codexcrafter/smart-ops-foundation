@@ -42,6 +42,7 @@ const INDIA_STATES: { code: string; name: string; nagerCode: string }[] = [
   { code: 'HR', name: 'Haryana',           nagerCode: 'IN-HR' },
   { code: 'HP', name: 'Himachal Pradesh',  nagerCode: 'IN-HP' },
   { code: 'JH', name: 'Jharkhand',         nagerCode: 'IN-JH' },
+  { code: 'JK', name: 'Jammu & Kashmir',   nagerCode: 'IN-JK' },
   { code: 'KA', name: 'Karnataka',         nagerCode: 'IN-KA' },
   { code: 'KL', name: 'Kerala',            nagerCode: 'IN-KL' },
   { code: 'MP', name: 'Madhya Pradesh',    nagerCode: 'IN-MP' },
