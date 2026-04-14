@@ -108,7 +108,9 @@ function getStatutoryDueDates() {
 
 // ── Panel export ────────────────────────────────────────────────────────
 
-export function PayHubDashboardPanel() {
+interface PayHubDashboardPanelProps { selectedEntityId?: string; }
+
+export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHubDashboardPanelProps) {
   const [navigateTo] = useState(() => (module: string) => {
     window.dispatchEvent(new CustomEvent('ph-navigate', { detail: module }));
   });
