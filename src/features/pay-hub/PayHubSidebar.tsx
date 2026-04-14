@@ -185,6 +185,12 @@ const EXIT_ITEMS: SidebarItem[] = [
   { id: 'ph-fnf',  label: 'F&F Settlement',  icon: Receipt },
 ];
 
+const CONTRACT_ITEMS: SidebarItem[] = [
+  { id: 'ph-contract-workers',    label: 'Contract Workers',    icon: HardHat },
+  { id: 'ph-contract-orders',     label: 'Work Orders',         icon: FileText },
+  { id: 'ph-contract-compliance', label: 'Compliance Register', icon: Shield },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -201,6 +207,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [experienceOpen, setExperienceOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -298,6 +305,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
         {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
+        {renderSection('CONTRACT MANPOWER', CONTRACT_ITEMS, contractOpen, setContractOpen)}
       </SidebarContent>
     </Sidebar>
   );
