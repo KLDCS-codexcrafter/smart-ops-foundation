@@ -7,7 +7,7 @@ import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
-  CreditCard, Wallet, Receipt,
+  CreditCard, Wallet, Receipt, Briefcase, BookOpen,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -45,7 +45,10 @@ export type PayHubModule =
   | 'ph-loans'
   | 'ph-salary-advance'
   | 'ph-expense-claims'
-  | 'ph-flexi-benefits';
+  | 'ph-flexi-benefits'
+  | 'ph-recruitment'
+  | 'ph-documents'
+  | 'ph-policies';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -59,6 +62,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
+  'ph-recruitment', 'ph-documents', 'ph-policies',
 ];
 
 interface SidebarItem {
@@ -106,6 +110,12 @@ const FINANCE_ITEMS: SidebarItem[] = [
   { id: 'ph-flexi-benefits',  label: 'Flexi Benefits',    icon: Gift },
 ];
 
+const RECRUITMENT_ITEMS: SidebarItem[] = [
+  { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
+  { id: 'ph-documents',    label: 'Document Vault',  icon: FileText },
+  { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -116,6 +126,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [txnOpen, setTxnOpen] = useState(false);
   const [statutoryOpen, setStatutoryOpen] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
+  const [recruitmentOpen, setRecruitmentOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -207,6 +218,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('STATUTORY & COMPLIANCE', STATUTORY_ITEMS, statutoryOpen, setStatutoryOpen)}
         {renderSection('EMPLOYEE FINANCE', FINANCE_ITEMS, financeOpen, setFinanceOpen)}
 
+        {renderSection('RECRUITMENT', RECRUITMENT_ITEMS, recruitmentOpen, setRecruitmentOpen)}
         {/* Reports placeholder */}
         <div className="px-4 py-2">
           <div className="flex items-center gap-1">

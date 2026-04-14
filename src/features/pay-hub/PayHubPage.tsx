@@ -27,6 +27,8 @@ import { PayrollProcessingPanel } from '@/pages/erp/pay-hub/transactions/Payroll
 import { PayslipGenerationPanel } from '@/pages/erp/pay-hub/transactions/PayslipGeneration';
 import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/StatutoryReturns';
 import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeFinance';
+import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
+import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -67,6 +69,9 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-salary-advance':  return <EmployeeFinancePanel defaultTab="salary-advance" />;
     case 'ph-expense-claims':  return <EmployeeFinancePanel defaultTab="expenses" />;
     case 'ph-flexi-benefits':  return <EmployeeFinancePanel defaultTab="flexi" />;
+    case 'ph-recruitment':     return <RecruitmentPanel />;
+    case 'ph-documents':       return <DocumentsAndPoliciesPanel />;
+    case 'ph-policies':        return <DocumentsAndPoliciesPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -100,6 +105,9 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-salary-advance': 'Salary Advance',
   'ph-expense-claims': 'Expense Claims',
   'ph-flexi-benefits': 'Flexi Benefits',
+  'ph-recruitment': 'Recruitment',
+  'ph-documents': 'Document Vault',
+  'ph-policies': 'Policy Library',
 };
 
 export default function PayHubPage() {
