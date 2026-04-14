@@ -289,9 +289,9 @@ export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitori
       const prefix = format(new Date(), 'yyyy-MM');
       const recs = (JSON.parse(raw) as AttendanceRecord[])
         .filter(r => r.employeeId === essEmpId && r.date.startsWith(prefix));
-      const present = recs.filter(r => r.status === 'present').length;
-      const absent = recs.filter(r => r.status === 'absent').length;
-      const late = recs.filter(r => r.status === 'late').length;
+      const present = recs.filter(r => r.attendanceTypeCode === 'P').length;
+      const absent = recs.filter(r => r.attendanceTypeCode === 'A').length;
+      const late = recs.filter(r => r.isLate).length;
       return { present, absent, late, total: recs.length };
     } catch { return null; }
   }, [essEmpId]);
@@ -492,7 +492,7 @@ export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitori
                           <div className="space-y-1">
                             {essLeaves.map(l => (
                               <div key={l.id} className="flex items-center gap-2 text-[10px]">
-                                <Badge variant="outline" className="text-[8px]">{l.leaveType}</Badge>
+                                <Badge variant="outline" className="text-[8px]">{l.leaveTypeName}</Badge>
                                 <span>{l.fromDate} → {l.toDate}</span>
                                 <Badge variant="outline" className="text-[8px]">{l.status}</Badge>
                               </div>
