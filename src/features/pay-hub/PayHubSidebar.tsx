@@ -8,7 +8,7 @@ import {
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
-  Star, Grid3X3, TrendingUp, Target, GraduationCap,
+  Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
