@@ -29,6 +29,7 @@ import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/Statutor
 import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeFinance';
 import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
 import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
+import { DocumentManagementPanel } from '@/pages/erp/pay-hub/transactions/DocumentManagement';
 import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
 import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/PerformanceAndTalent';
 import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/LearningAndDevelopment';
@@ -78,6 +79,8 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-recruitment':     return <RecruitmentPanel />;
     case 'ph-documents':       return <DocumentsAndPoliciesPanel />;
     case 'ph-policies':        return <DocumentsAndPoliciesPanel />;
+    case 'ph-doc-vault':       return <DocumentManagementPanel defaultTab="vault" />;
+    case 'ph-doc-templates':   return <DocumentManagementPanel defaultTab="templates" />;
     case 'ph-onboarding':      return <OnboardingPanel />;
     case 'ph-performance':     return <PerformanceAndTalentPanel defaultTab="reviews" />;
     case 'ph-9box':            return <PerformanceAndTalentPanel defaultTab="9box" />;
@@ -133,6 +136,8 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-recruitment': 'Recruitment',
   'ph-documents': 'Document Vault',
   'ph-policies': 'Policy Library',
+  'ph-doc-vault': 'Document Vault',
+  'ph-doc-templates': 'Template Library',
   'ph-onboarding': 'Onboarding',
   'ph-performance': 'Performance Reviews',
   'ph-9box': '9-Box Grid',
