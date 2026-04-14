@@ -15,11 +15,13 @@ function useFoundationStats() {
   const parentSaved = localStorage.getItem('erp_parent_company_saved') === 'true';
 
   const safeCount = (key: string): number => {
+    // [JWT] GET /api/foundation/stats/:key
     try { return JSON.parse(localStorage.getItem(key) || '[]').length; }
     catch { return 0; }
   };
 
   const branches: any[] = (() => {
+    // [JWT] GET /api/foundation/branch-offices
     try { return JSON.parse(localStorage.getItem('erp_branch_offices') || '[]'); }
     catch { return []; }
   })();
@@ -131,7 +133,9 @@ export function FoundationModule() {
           icon={<Network className="h-5 w-5" />}
           title="Business Units"
           value={(() => { try {
+            // [JWT] GET /api/foundation/org-structure/divisions
             const divs = JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
+            // [JWT] GET /api/foundation/org-structure/departments
             const depts = JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
             return divs > 0 || depts > 0 ? `${divs} divisions · ${depts} departments` : 'Not configured';
           } catch { return 'Not configured'; } })()}

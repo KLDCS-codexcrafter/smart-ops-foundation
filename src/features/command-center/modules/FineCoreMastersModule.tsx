@@ -107,7 +107,7 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {cards.map((card, i) => {
                 const Icon = card.icon;
-                const status = getMasterStatus(card.storageKey);
+                const status = card.section === 'statutory' ? 'seeded' : getMasterStatus(card.storageKey);
                 return (
                   <button
                     key={card.title}
