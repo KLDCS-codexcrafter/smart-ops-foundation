@@ -56,6 +56,32 @@ interface StatutoryReturnsPanelProps {
   defaultTab?: StatutoryTab;
 }
 
+interface ChallanBadgeProps {
+  challan: { status: string; challanNo?: string } | null | undefined;
+  onEdit?: () => void;
+}
+
+function ChallanBadge({ challan, onEdit }: ChallanBadgeProps) {
+  if (challan) {
+    return (
+      <Badge variant="outline"
+        className={CHALLAN_STATUS_COLORS[challan.status as keyof typeof CHALLAN_STATUS_COLORS] + ' cursor-pointer'}
+        onClick={onEdit}>
+        {challan.status === 'paid'
+          ? <CheckCircle className="h-3 w-3 mr-1" />
+          : <Clock className="h-3 w-3 mr-1" />}
+        {challan.status.toUpperCase()}
+        {challan.challanNo ? ` — ${challan.challanNo}` : ''}
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
+      <AlertTriangle className="h-3 w-3 mr-1" /> Not paid
+    </Badge>
+  );
+}
+
 export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryReturnsPanelProps) {
   // ── Cross-module reads ───────────────────────────────────────
   const payrollRuns = useMemo<PayrollRun[]>(() => {
