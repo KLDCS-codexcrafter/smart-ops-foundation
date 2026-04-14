@@ -435,7 +435,7 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
                     <div><Label className="text-muted-foreground text-xs">Shift</Label><p>{selectedEmp.shiftCode || '—'}</p></div>
                     <div><Label className="text-muted-foreground text-xs">Weekly Off</Label><p>{selectedEmp.weeklyOff || '—'}</p></div>
                     <div><Label className="text-muted-foreground text-xs">UAN</Label><p>{selectedEmp.uan || '—'}</p></div>
-                    <div><Label className="text-muted-foreground text-xs">ESI IP</Label><p>{selectedEmp.<div><Label className="text-muted-foreground text-xs">ESI IP</Label><p>{selectedEmp.esiIpNumber || '—'}</p></div> || '—'}</p></div>
+                    <div><Label className="text-muted-foreground text-xs">ESI IP</Label><p>{selectedEmp.esiIpNumber || '—'}</p></div>
                     <div><Label className="text-muted-foreground text-xs">Reporting Manager</Label>
                       <p>{selectedEmp.reportingManagerId ? managerName(selectedEmp.reportingManagerId) : '—'}</p></div>
                   </div>
