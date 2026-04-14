@@ -115,6 +115,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
   const [statutoryOpen, setStatutoryOpen] = useState(false);
+  const [financeOpen, setFinanceOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -204,6 +205,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('Masters', MASTERS_ITEMS, mastersOpen, setMastersOpen)}
         {renderSection('Transactions', TRANSACTIONS_ITEMS, txnOpen, setTxnOpen)}
         {renderSection('STATUTORY & COMPLIANCE', STATUTORY_ITEMS, statutoryOpen, setStatutoryOpen)}
+        {renderSection('EMPLOYEE FINANCE', FINANCE_ITEMS, financeOpen, setFinanceOpen)}
 
         {/* Reports placeholder */}
         <div className="px-4 py-2">
