@@ -67,6 +67,9 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-salary-advance':  return <EmployeeFinancePanel defaultTab="salary-advance" />;
     case 'ph-expense-claims':  return <EmployeeFinancePanel defaultTab="expenses" />;
     case 'ph-flexi-benefits':  return <EmployeeFinancePanel defaultTab="flexi" />;
+    case 'ph-recruitment':     return <RecruitmentPanel />;
+    case 'ph-documents':       return <DocumentsAndPoliciesPanel />;
+    case 'ph-policies':        return <DocumentsAndPoliciesPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -100,6 +103,9 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-salary-advance': 'Salary Advance',
   'ph-expense-claims': 'Expense Claims',
   'ph-flexi-benefits': 'Flexi Benefits',
+  'ph-recruitment': 'Recruitment',
+  'ph-documents': 'Document Vault',
+  'ph-policies': 'Policy Library',
 };
 
 export default function PayHubPage() {
