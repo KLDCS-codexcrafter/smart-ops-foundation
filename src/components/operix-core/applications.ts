@@ -59,7 +59,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/accounting',
     icon: 'Landmark',
-    status: 'wip',
+    status: 'coming_soon',
   },
   {
     id: 'procure360',
@@ -138,7 +138,7 @@ export const applications: AppDefinition[] = [
     description: 'Financial operations — bank reconciliation, payables and receivables',
     category: 'Fin Hub',
     route: '/erp/finecore',
-    icon: 'Landmark',
+    icon: 'Calculator',
     status: 'coming_soon',
   },
   {

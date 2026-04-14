@@ -406,6 +406,7 @@ export function usePayrollEngine() {
       payslips,
       approvedBy: '', approvedAt: '',
       postedAt: '', lockedAt: '', lockedBy: '', unlockReason: '',
+      entityId: 'parent-root',
       notes: '',
       created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     };
