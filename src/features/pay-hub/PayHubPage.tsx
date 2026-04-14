@@ -24,6 +24,7 @@ import { AssetMasterPanel } from '@/pages/erp/pay-hub/masters/AssetMaster';
 import { AttendanceEntryPanel } from '@/pages/erp/pay-hub/transactions/AttendanceEntry';
 import { LeaveRequestsPanel } from '@/pages/erp/pay-hub/transactions/LeaveRequests';
 import { PayrollProcessingPanel } from '@/pages/erp/pay-hub/transactions/PayrollProcessing';
+import { PayslipGenerationPanel } from '@/pages/erp/pay-hub/transactions/PayslipGeneration';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -53,6 +54,7 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-attendance-entry': return <AttendanceEntryPanel />;
     case 'ph-leave-requests': return <LeaveRequestsPanel />;
     case 'ph-payroll-processing': return <PayrollProcessingPanel />;
+    case 'ph-payslip-gen': return <PayslipGenerationPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }

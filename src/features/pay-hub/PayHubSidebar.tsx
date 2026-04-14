@@ -44,6 +44,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-attendance-entry',
   'ph-leave-requests',
   'ph-payroll-processing',
+  'ph-payslip-gen',
 ];
 
 interface SidebarItem {
