@@ -40,7 +40,11 @@ export type PayHubModule =
   | 'ph-pt-returns'
   | 'ph-tds-24q'
   | 'ph-form16'
-  | 'ph-statutory-calendar';
+  | 'ph-statutory-calendar'
+  | 'ph-loans'
+  | 'ph-salary-advance'
+  | 'ph-expense-claims'
+  | 'ph-flexi-benefits';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -53,6 +57,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-payslip-gen',
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
+  'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
 ];
 
 interface SidebarItem {
@@ -91,6 +96,13 @@ const STATUTORY_ITEMS: SidebarItem[] = [
   { id: 'ph-tds-24q',            label: 'Form 24Q',           icon: FileText },
   { id: 'ph-form16',             label: 'Form 16',            icon: FileText },
   { id: 'ph-statutory-calendar', label: 'Statutory Calendar',  icon: Calendar },
+];
+
+const FINANCE_ITEMS: SidebarItem[] = [
+  { id: 'ph-loans',           label: 'Loans & Advances',  icon: CreditCard },
+  { id: 'ph-salary-advance',  label: 'Salary Advance',    icon: Wallet },
+  { id: 'ph-expense-claims',  label: 'Expense Claims',    icon: Receipt },
+  { id: 'ph-flexi-benefits',  label: 'Flexi Benefits',    icon: Gift },
 ];
 
 interface PayHubSidebarProps {
