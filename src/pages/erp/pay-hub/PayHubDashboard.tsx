@@ -116,8 +116,18 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
   });
 
   // ── MASTER DATA READS ────────────────────────────────────────
-  const employees   = useMemo(() => safeReadJson<Employee[]>(EMPLOYEES_KEY, []), []);
-  const payrollRuns = useMemo(() => safeReadJson<PayrollRun[]>(PAYROLL_RUNS_KEY, []), []);
+  const employees = useMemo(() => {
+    const all = safeReadJson<Employee[]>(EMPLOYEES_KEY, []);
+    return all.filter(e =>
+      (e.entityId ?? 'parent-root') === selectedEntityId
+    );
+  }, [selectedEntityId]);
+  const payrollRuns = useMemo(() => {
+    const all = safeReadJson<PayrollRun[]>(PAYROLL_RUNS_KEY, []);
+    return all.filter(r =>
+      ((r as any).entityId ?? 'parent-root') === selectedEntityId
+    );
+  }, [selectedEntityId]);
 
   // ── 1. HEADCOUNT ANALYTICS ───────────────────────────────────
   const headcount = useMemo(() => {
@@ -351,11 +361,26 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
 
   // ── 8. COMPANY + SETUP ────────────────────────────────────────
   const setup = useMemo(() => {
-    // [JWT] GET /api/pay-hub/dashboard/company
-    const pc = safeReadJson<{name?:string;legalName?:string}>('erp_parent_company', {});
-    const companyName = pc.legalName ?? pc.name ?? 'Your Company';
-
-    const payHeadCount = safeReadCount('erp_pay_heads');
+    // [JWT] GET /api/foundation/entity/:id
+    const companyName = (() => {
+      if (selectedEntityId === 'parent-root') {
+        const pc = safeReadJson<{name?:string;legalName?:string}>('erp_parent_company', {});
+        return pc.legalName ?? pc.name ?? 'Your Company';
+      }
+      // [JWT] GET /api/foundation/companies
+      const companies = safeReadJson<any[]>('erp_companies', []);
+      const found = companies.find(c => c.id === selectedEntityId);
+      if (found?.legalEntityName) return found.legalEntityName;
+      // [JWT] GET /api/foundation/subsidiaries
+      const subs = safeReadJson<any[]>('erp_subsidiaries', []);
+      const sub = subs.find(s => s.id === selectedEntityId);
+      if (sub?.legalEntityName) return sub.legalEntityName;
+      // [JWT] GET /api/foundation/branch-offices
+      const branches = safeReadJson<any[]>('erp_branch_offices', []);
+      const branch = branches.find(b => b.id === selectedEntityId);
+      if (branch?.name) return branch.name;
+      return 'Your Company';
+    })();
     const ssCount      = safeReadCount('erp_salary_structures');
     const gradeCount   = safeReadCount('erp_pay_grades');
     const hasPayroll   = safeReadCount('erp_payroll_runs') > 0;
