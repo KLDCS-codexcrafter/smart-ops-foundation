@@ -805,11 +805,11 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                 const lt = loanTypes.find(l => l.id === v);
                 if (lt) {
                   luf('loanTypeId', v); luf('loanTypeName', lt.name);
-                  luf('interestRatePct', lt.interestRate); luf('interestType', lt.interestType as any);
+                  luf('interestRatePct', lt.interestRatePct); luf('interestType', lt.interestType as any);
                 }
               }}>
                 <SelectTrigger><SelectValue placeholder="Select loan type" /></SelectTrigger>
-                <SelectContent>{loanTypes.map(lt => <SelectItem key={lt.id} value={lt.id}>{lt.code} — {lt.name} ({lt.interestRate}%)</SelectItem>)}</SelectContent>
+                <SelectContent>{loanTypes.map(lt => <SelectItem key={lt.id} value={lt.id}>{lt.code} — {lt.name} ({lt.interestRatePct}%)</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
