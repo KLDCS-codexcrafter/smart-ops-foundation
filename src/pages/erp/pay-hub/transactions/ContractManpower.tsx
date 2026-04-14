@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { format, parseISO, getDaysInMonth } from 'date-fns';
+import { format, parseISO, getDaysInMonth, differenceInDays } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -182,6 +182,14 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
   const orf = <K extends keyof typeof BLANK_ORDER>(k: K, v: (typeof BLANK_ORDER)[K]) =>
     setOrderForm(prev => ({ ...prev, [k]: v }));
 
+  const computedOrderValue = useMemo(() => {
+    if (!orderForm.fromDate || !orderForm.toDate || orderForm.ratePerDay <= 0) return 0;
+    const days = Math.max(0, differenceInDays(
+      parseISO(orderForm.toDate), parseISO(orderForm.fromDate)
+    ));
+    return Math.round(orderForm.ratePerDay * orderForm.approvedHeadcount * days);
+  }, [orderForm.ratePerDay, orderForm.approvedHeadcount, orderForm.fromDate, orderForm.toDate]);
+
   const handleOrderSave = useCallback(() => {
     if (!orderSheetOpen) return;
     if (!orderForm.agencyId) return toast.error('Select an agency');
@@ -189,10 +197,10 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     if (!orderForm.description.trim()) return toast.error('Description required');
     const now = new Date().toISOString();
     if (orderEditId) {
-      saveOrders(orders.map(o => o.id !== orderEditId ? o : { ...o, ...orderForm, updated_at: now }));
+      saveOrders(orders.map(o => o.id !== orderEditId ? o : { ...o, ...orderForm, totalOrderValue: computedOrderValue, updated_at: now }));
     } else {
       const code = `WO-${String(orders.length + 1).padStart(6, '0')}`;
-      saveOrders([...orders, { ...orderForm, id: `wo-${Date.now()}`,
+      saveOrders([...orders, { ...orderForm, totalOrderValue: computedOrderValue, id: `wo-${Date.now()}`,
         orderCode: code, created_at: now, updated_at: now } as WorkOrder]);
     }
     toast.success('Work order saved');
@@ -923,7 +931,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div><Label className="text-xs">Rate per Day (₹) *</Label><Input value={orderForm.ratePerDay || ''} onChange={e => orf('ratePerDay', Number(e.target.value))} onKeyDown={onEnterNext} {...amountInputProps} /></div>
-              <div><Label className="text-xs">Total Order Value</Label><Input value={toIndianFormat(orderForm.totalOrderValue)} disabled className="bg-muted" /></div>
+              <div><Label className="text-xs">Total Order Value</Label><Input value={toIndianFormat(computedOrderValue)} disabled className="bg-muted" /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div><Label className="text-xs">Approved By</Label><Input value={orderForm.approvedBy} onChange={e => orf('approvedBy', e.target.value)} onKeyDown={onEnterNext} /></div>

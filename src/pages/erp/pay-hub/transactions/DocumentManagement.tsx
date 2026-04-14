@@ -17,7 +17,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
 import {
   FolderOpen, FileText, Camera, Upload, Eye, Download, Trash2,
-  Plus, Search, Filter, Printer, RefreshCw, AlertTriangle, X,
+  Plus, Search, Printer, X,
   CheckCircle2, Edit,
 } from 'lucide-react';
 import { toast } from 'sonner';
