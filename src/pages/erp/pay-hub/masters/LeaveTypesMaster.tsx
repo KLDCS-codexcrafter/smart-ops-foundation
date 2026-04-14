@@ -69,7 +69,7 @@ export function LeaveTypesMasterPanel() {
     setLastSavedName(form.name);
     setLastSavedId(generatedId);
     setSheetOpen(false);
-    setPropagateOpen(true);
+    if (!editId) setPropagateOpen(true);
   }, [form, editId, sheetOpen, create, update]);
 
   useCtrlS(handleSave);

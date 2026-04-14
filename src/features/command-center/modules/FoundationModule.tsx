@@ -72,6 +72,17 @@ function StatCard({ icon, title, value, status, href, description }: StatCardPro
 
 export function FoundationModule() {
   const stats = useFoundationStats();
+
+  // [JWT] GET /api/foundation/org-structure/divisions
+  const divCount = (() => { try {
+    return JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
+  } catch { return 0; } })();
+
+  // [JWT] GET /api/foundation/org-structure/departments
+  const deptCount = (() => { try {
+    return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
+  } catch { return 0; } })();
+
   return (
     <div className="space-y-6">
       <div>
@@ -132,17 +143,8 @@ export function FoundationModule() {
         <StatCard
           icon={<Network className="h-5 w-5" />}
           title="Business Units"
-          value={(() => { try {
-            // [JWT] GET /api/foundation/org-structure/divisions
-            const divs = JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
-            // [JWT] GET /api/foundation/org-structure/departments
-            const depts = JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
-            return divs > 0 || depts > 0 ? `${divs} divisions · ${depts} departments` : 'Not configured';
-          } catch { return 'Not configured'; } })()}
-          status={(() => { try {
-            const divs = JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
-            return divs > 0 ? 'ok' : 'empty';
-          } catch { return 'empty'; } })()}
+          value={divCount > 0 || deptCount > 0 ? `${divCount} divisions · ${deptCount} departments` : 'Not configured'}
+          status={divCount > 0 ? 'ok' : 'empty'}
           href='/erp/foundation/org-structure'
           description='Divisions and departments — used for MIS reporting across all modules.'
         />
