@@ -58,7 +58,11 @@ export type PayHubModule =
   | 'ph-training-catalog'
   | 'ph-training-enroll'
   | 'ph-skill-matrix'
-  | 'ph-certifications';
+  | 'ph-certifications'
+  | 'ph-directory'
+  | 'ph-inbox'
+  | 'ph-collaboration'
+  | 'ph-total-rewards';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -76,6 +80,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-onboarding',
   'ph-performance', 'ph-9box', 'ph-succession', 'ph-compensation',
   'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
+  'ph-directory', 'ph-inbox', 'ph-collaboration', 'ph-total-rewards',
 ];
 
 interface SidebarItem {
