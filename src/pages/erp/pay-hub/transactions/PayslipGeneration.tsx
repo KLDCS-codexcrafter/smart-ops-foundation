@@ -205,6 +205,7 @@ export function PayslipGenerationPanel() {
   // ── Company name read ────────────────────────────────────────
   const companyName = useMemo(() => {
     try {
+      // [JWT] GET /api/foundation/parent-company
       const raw = localStorage.getItem('erp_parent_company');
       if (raw) {
         const p = JSON.parse(raw);
