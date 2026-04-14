@@ -22,6 +22,8 @@ import { usePayGrades } from '@/hooks/usePayGrades';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { PayGrade } from '@/types/pay-hub';
+import { PAY_GRADES_KEY } from '@/types/pay-hub';
+import { MasterPropagationDialog } from '@/components/pay-hub/MasterPropagationDialog';
 
 const EMPTY_FORM: Omit<PayGrade, 'id' | 'code' | 'created_at' | 'updated_at'> = {
   name: '', level: 1, minCTC: 0, maxCTC: 0,
@@ -40,6 +42,9 @@ export function PayGradeMasterPanel() {
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [validationError, setValidationError] = useState('');
+  const [propagateOpen, setPropagateOpen] = useState(false);
+  const [lastSavedName, setLastSavedName] = useState('');
+  const [lastSavedId, setLastSavedId] = useState('');
 
   const salaryStructures: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
@@ -69,9 +74,17 @@ export function PayGradeMasterPanel() {
       return;
     }
     setValidationError('');
-    if (editId) updateGrade(editId, form);
-    else createGrade(form);
+    if (editId) {
+      updateGrade(editId, form);
+      setLastSavedName(form.name);
+      setLastSavedId(editId);
+    } else {
+      const newGrade = createGrade(form);
+      setLastSavedName(form.name);
+      setLastSavedId(newGrade?.id || '');
+    }
     setSheetOpen(false);
+    setPropagateOpen(true);
   }, [form, editId, updateGrade, createGrade, sheetOpen]);
 
   useCtrlS(handleSave);

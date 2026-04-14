@@ -228,7 +228,7 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
     const totalDays = getDaysInMonth(lwd);
     const daysWorked = lwd.getDate();
     const proRata = computeProRataSalary(monthlyGross, daysWorked, totalDays);
-    const gratuity = computeGratuity(monthlyBasic, emp.doj, exit.lastWorkingDate);
+    const gratuity = computeGratuity(monthlyBasic, emp.doj, exit.lastWorkingDate, loadGratuityConfig().maxGratuityAmount);
     const elType = leaveTypes.find(l => l.code === 'EL');
     const elBalance = emp.elOpeningBalance || 0;
     const encashment = elType ? computeLeaveEncashment(elBalance, monthlyBasic, elType.maxEncashmentDays) : 0;
@@ -268,7 +268,7 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
     const totalDays = getDaysInMonth(lwd);
     const daysWorked = lwd.getDate();
     const proRata = computeProRataSalary(monthlyGross, daysWorked, totalDays);
-    const gratuity = computeGratuity(monthlyBasic, emp.doj, exit.lastWorkingDate);
+    const gratuity = computeGratuity(monthlyBasic, emp.doj, exit.lastWorkingDate, loadGratuityConfig().maxGratuityAmount);
     const elType = leaveTypes.find(l => l.code === 'EL');
     const elBalance = emp.elOpeningBalance || 0;
     const encashment = elType
