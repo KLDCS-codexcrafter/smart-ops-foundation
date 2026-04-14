@@ -508,7 +508,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total payable: ₹{toIndianFormat(pfTotals.empPF + pfTotals.erEPF + pfTotals.erEPS + pfTotals.erEDLI)} · Due: 15th of next month
               </p>
             </div>
-            <ChallanBadge type="EPF" />
+            <ChallanBadge challan={getChallan('EPF')} onEdit={() => { const c = getChallan('EPF'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -589,7 +589,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total ESI payable: ₹{toIndianFormat(esiTotals.empESI + esiTotals.erESI)} · Due: 21st of next month
               </p>
             </div>
-            <ChallanBadge type="ESI" />
+            <ChallanBadge challan={getChallan('ESI')} onEdit={() => { const c = getChallan('ESI'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -667,7 +667,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total PT payable: ₹{toIndianFormat(ptTotal)} · Due: 28th of current month
               </p>
             </div>
-            <ChallanBadge type="PT" />
+            <ChallanBadge challan={getChallan('PT')} onEdit={() => { const c = getChallan('PT'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -748,7 +748,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 TDS payable for period · Due: 7th of next month
               </p>
             </div>
-            <ChallanBadge type="TDS" />
+            <ChallanBadge challan={getChallan('TDS')} onEdit={() => { const c = getChallan('TDS'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
