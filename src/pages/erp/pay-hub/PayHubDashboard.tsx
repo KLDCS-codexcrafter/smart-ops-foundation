@@ -8,7 +8,7 @@ import { format, differenceInMonths, differenceInDays,
 import {
   Users, IndianRupee, TrendingDown, Clock, Briefcase,
   UserPlus, UserMinus, Calendar, Shield, CheckCircle2, Circle,
-  Cake, PartyPopper, Star, AlertTriangle,
+  Cake, PartyPopper, Star,
   GraduationCap, Activity, Target, Award,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -535,7 +535,7 @@ export function PayHubDashboardPanel() {
                       <div key={d.dept} className="flex items-center justify-between gap-2">
                         <span className="text-[10px] text-muted-foreground truncate flex-1">{d.dept}</span>
                         <div className="h-1 w-16 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-500 rounded-full" style={{ width: `${Math.round((d.cost / payrollCost.latestErCost) * 100)}%` }} />
+                          <div className="h-full bg-amber-500 rounded-full" style={{ width: `${Math.round((d.cost / (payrollCost.latestErCost || 1)) * 100)}%` }} />
                         </div>
                         <span className="text-[10px] text-foreground shrink-0">₹{toIndianFormat(d.cost)}</span>
                       </div>
