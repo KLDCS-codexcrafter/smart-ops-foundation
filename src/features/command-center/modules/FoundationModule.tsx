@@ -10,14 +10,28 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
-function useMockStats() {
+function useFoundationStats() {
+  // [JWT] GET /api/foundation/stats
   const parentSaved = localStorage.getItem('erp_parent_company_saved') === 'true';
+
+  const safeCount = (key: string): number => {
+    try { return JSON.parse(localStorage.getItem(key) || '[]').length; }
+    catch { return 0; }
+  };
+
+  const branches: any[] = (() => {
+    try { return JSON.parse(localStorage.getItem('erp_branch_offices') || '[]'); }
+    catch { return []; }
+  })();
+
   return {
     parentSaved,
-    companiesCount: 0,
-    subsidiariesCount: 0,
-    branchOfficesActive: 0,
-    branchOfficesTotal: 0,
+    companiesCount:      safeCount('erp_companies'),
+    subsidiariesCount:   safeCount('erp_subsidiaries'),
+    branchOfficesTotal:  branches.length,
+    branchOfficesActive: branches.filter((b: any) =>
+      b.status === 'Active' || b.status === 'active'
+    ).length,
   };
 }
 
@@ -55,7 +69,7 @@ function StatCard({ icon, title, value, status, href, description }: StatCardPro
 }
 
 export function FoundationModule() {
-  const stats = useMockStats();
+  const stats = useFoundationStats();
   return (
     <div className="space-y-6">
       <div>
