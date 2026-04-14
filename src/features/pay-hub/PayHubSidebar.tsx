@@ -288,6 +288,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
+        {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
       </SidebarContent>
     </Sidebar>
   );
