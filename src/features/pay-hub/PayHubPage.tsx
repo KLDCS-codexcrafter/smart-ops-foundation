@@ -27,6 +27,8 @@ import { PayrollProcessingPanel } from '@/pages/erp/pay-hub/transactions/Payroll
 import { PayslipGenerationPanel } from '@/pages/erp/pay-hub/transactions/PayslipGeneration';
 import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/StatutoryReturns';
 import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeFinance';
+import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
+import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
