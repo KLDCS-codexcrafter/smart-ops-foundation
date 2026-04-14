@@ -84,6 +84,13 @@ interface BranchFormData {
   notes: string;
   businessActivity: string;
   jurisdiction: string;
+  // Statutory registrations (branch-level)
+  gstinNo: string;
+  tanNo: string;
+  pfEstablishmentCode: string;
+  esicSubCode: string;
+  ptRegNo: string;
+  lwfRegNo: string;
 }
 
 const INITIAL: BranchFormData = {
@@ -98,6 +105,8 @@ const INITIAL: BranchFormData = {
   notes: '',
   businessActivity: 'Services',
   jurisdiction: '',
+  gstinNo: '', tanNo: '', pfEstablishmentCode: '', esicSubCode: '',
+  ptRegNo: '', lwfRegNo: '',
 };
 
 interface BranchOfficeFormProps {
