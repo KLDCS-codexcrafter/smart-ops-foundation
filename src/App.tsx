@@ -108,8 +108,7 @@ import VerticalsPage from './pages/verticals/VerticalsPage';
 import ModulesPage from './pages/modules/ModulesPage';
 import VetanNidhi from './pages/modules/VetanNidhi';
 import OperixGoPage from './pages/mobile/OperixGoPage';
-import EmployeeApp from './pages/mobile/EmployeeApp';
-import ManagerApp from './pages/mobile/ManagerApp';
+import VetanNidhiMobile from './pages/mobile/VetanNidhiMobile';
 import ClientCustomizedPage from './pages/client-customized/ClientCustomizedPage';
 import PartnerDashboard from "./pages/partner/Dashboard";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
@@ -162,8 +161,7 @@ const App = () => (
             <Route path="/add-ons" element={<AddOnsPage />} />
             <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
             <Route path="/operix-go" element={<OperixGoPage />} />
-            <Route path="/operix-go/employee" element={<EmployeeApp />} />
-            <Route path="/operix-go/manager" element={<ManagerApp />} />
+            <Route path="/operix-go/vetan-nidhi" element={<VetanNidhiMobile />} />
             <Route path="/prudent360" element={
               <div className="min-h-screen bg-background flex items-center justify-center">
                 <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>

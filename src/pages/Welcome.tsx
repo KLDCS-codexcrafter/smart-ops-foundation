@@ -113,7 +113,7 @@ const panelCards = [
     title: "Operix Go Sahayak",
     icon: Smartphone,
     route: "/operix-go",
-    description: "Mobile apps for employees and managers — सहायक. Leave approvals, payslips, attendance, and HR self-service on any phone. No app install required.",
+    description: "Mobile apps for Operix products — सहायक. Employee ESS (payslips, leave, attendance) and Manager approvals (inbox, team view, sign-off). PWA — no install. Capacitor for Play Store / App Store.",
     badge: "wip",
   },
   {
