@@ -73,13 +73,13 @@ function StatCard({ icon, title, value, status, href, description }: StatCardPro
 export function FoundationModule() {
   const stats = useFoundationStats();
 
-  // [JWT] GET /api/foundation/org-structure/divisions
   const divCount = (() => { try {
+    // [JWT] GET /api/foundation/org-structure/divisions
     return JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
   } catch { return 0; } })();
 
-  // [JWT] GET /api/foundation/org-structure/departments
   const deptCount = (() => { try {
+    // [JWT] GET /api/foundation/org-structure/departments
     return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
   } catch { return 0; } })();
 
