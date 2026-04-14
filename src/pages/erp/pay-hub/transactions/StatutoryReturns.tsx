@@ -938,7 +938,14 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
               <div className="space-y-1">
                 <Label className="text-xs">Period</Label>
                 <Input className="h-8 text-xs" value={challanForm.period}
-                  onChange={e => cf('period', e.target.value)} onKeyDown={onEnterNext}
+                  onChange={e => {
+                    const v = e.target.value;
+                    cf('period', v);
+                    // Auto-populate periodLabel from payroll runs or format
+                    const run = payrollRuns.find(r => r.payPeriod === v);
+                    cf('periodLabel', run?.periodLabel || v);
+                  }}
+                  onKeyDown={onEnterNext}
                   placeholder="YYYY-MM" />
               </div>
             </div>
