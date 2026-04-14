@@ -48,7 +48,8 @@ export type PayHubModule =
   | 'ph-flexi-benefits'
   | 'ph-recruitment'
   | 'ph-documents'
-  | 'ph-policies';
+  | 'ph-policies'
+  | 'ph-onboarding';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -63,6 +64,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
   'ph-recruitment', 'ph-documents', 'ph-policies',
+  'ph-onboarding',
 ];
 
 interface SidebarItem {
@@ -114,6 +116,7 @@ const RECRUITMENT_ITEMS: SidebarItem[] = [
   { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
   { id: 'ph-documents',    label: 'Document Vault',  icon: FolderOpen },
   { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
+  { id: 'ph-onboarding',   label: 'Onboarding',      icon: Rocket },
 ];
 
 interface PayHubSidebarProps {
