@@ -21,7 +21,7 @@ import {
   CheckCircle2, Edit,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { EmployeeDocument, DocTemplate, DocMgmtTab, EmpDocCategory, TemplateCategory } from '@/types/doc-management';
+import type { EmployeeDocument, DocTemplate, DocMgmtTab, DocAttachType, EmpDocCategory, TemplateCategory } from '@/types/doc-management';
 import {
   EMPLOYEE_DOCS_KEY, DOC_TEMPLATES_KEY,
   EMP_DOC_CATEGORY_LABELS, TEMPLATE_CATEGORY_LABELS,
