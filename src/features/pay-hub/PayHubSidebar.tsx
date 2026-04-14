@@ -7,7 +7,7 @@ import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
-  CreditCard, Wallet, Receipt, Briefcase, BookOpen,
+  CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -112,7 +112,7 @@ const FINANCE_ITEMS: SidebarItem[] = [
 
 const RECRUITMENT_ITEMS: SidebarItem[] = [
   { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
-  { id: 'ph-documents',    label: 'Document Vault',  icon: FileText },
+  { id: 'ph-documents',    label: 'Document Vault',  icon: FolderOpen },
   { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
 ];
 
