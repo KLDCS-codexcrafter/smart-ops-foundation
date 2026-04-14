@@ -352,7 +352,42 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
             </div>
           </FormSection>
 
-          {/* Section 4 — Notes */}
+          {/* Section 4 — Statutory Registrations */}
+          <FormSection title="Statutory Registrations" icon={<Shield className="h-4 w-4" />}>
+            <p className="text-xs text-muted-foreground mb-3">
+              Branch-level statutory registrations. Each branch / factory maintains its own
+              PF establishment code and ESIC sub-code even under the same company.
+              Leave blank if shared with parent company.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="GSTIN" hint="Only if this branch has its own GST registration">
+                <Input value={form.gstinNo} onChange={e => upd('gstinNo', e.target.value.toUpperCase())}
+                  placeholder="e.g. 27AAAAA0000A1Z5" maxLength={15} className="text-xs font-mono" />
+              </FormField>
+              <FormField label="TAN" hint="Branch TAN if separate from company TAN">
+                <Input value={form.tanNo} onChange={e => upd('tanNo', e.target.value.toUpperCase())}
+                  placeholder="e.g. MUMR12345A" maxLength={10} className="text-xs font-mono" />
+              </FormField>
+              <FormField label="PF Establishment Code" hint="EPFO code assigned to this branch or factory">
+                <Input value={form.pfEstablishmentCode} onChange={e => upd('pfEstablishmentCode', e.target.value)}
+                  placeholder="e.g. MH/MUM/12345" className="text-xs font-mono" />
+              </FormField>
+              <FormField label="ESIC Sub-Code" hint="ESIC sub-code assigned to this branch">
+                <Input value={form.esicSubCode} onChange={e => upd('esicSubCode', e.target.value)}
+                  placeholder="e.g. 51-000-12345-000" className="text-xs font-mono" />
+              </FormField>
+              <FormField label="Professional Tax Reg No" hint="State PT registration for employees at this location">
+                <Input value={form.ptRegNo} onChange={e => upd('ptRegNo', e.target.value)}
+                  className="text-xs font-mono" />
+              </FormField>
+              <FormField label="LWF Registration No" hint="Labour Welfare Fund — state-specific">
+                <Input value={form.lwfRegNo} onChange={e => upd('lwfRegNo', e.target.value)}
+                  className="text-xs font-mono" />
+              </FormField>
+            </div>
+          </FormSection>
+
+          {/* Section 5 — Notes */}
           <FormSection title="Notes" icon={<FileText className="h-4 w-4" />}>
             <Textarea
               value={form.notes}
