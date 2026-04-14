@@ -9,6 +9,7 @@ import {
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
+  UserCog, Mail, Monitor,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -62,8 +63,11 @@ export type PayHubModule =
   | 'ph-directory'
   | 'ph-inbox'
   | 'ph-collaboration'
-  | 'ph-total-rewards';
-
+  | 'ph-total-rewards'
+  | 'ph-ess'
+  | 'ph-access-control'
+  | 'ph-email-templates'
+  | 'ph-activity';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -81,6 +85,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-performance', 'ph-9box', 'ph-succession', 'ph-compensation',
   'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
   'ph-directory', 'ph-inbox', 'ph-collaboration', 'ph-total-rewards',
+  'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
 ];
 
 interface SidebarItem {
@@ -156,6 +161,13 @@ const EXPERIENCE_ITEMS: SidebarItem[] = [
   { id: 'ph-total-rewards', label: 'Total Rewards',      icon: Gift },
 ];
 
+const ADMIN_ITEMS: SidebarItem[] = [
+  { id: 'ph-ess',             label: 'ESS Portal',          icon: UserCog },
+  { id: 'ph-access-control',  label: 'Access Control',      icon: Shield },
+  { id: 'ph-email-templates', label: 'Email Templates',     icon: Mail },
+  { id: 'ph-activity',        label: 'Activity Monitoring', icon: Monitor },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -170,6 +182,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [performanceOpen, setPerformanceOpen] = useState(false);
   const [learningOpen, setLearningOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -265,16 +278,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
-        {/* Reports placeholder */}
-        <div className="px-4 py-2">
-          <div className="flex items-center gap-1">
-            <BarChart3 className="h-3 w-3 text-muted-foreground/40" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">
-              Reports & ESS
-            </span>
-          </div>
-          <p className="text-[9px] text-muted-foreground/40 ml-4 mt-1">Sprint 9+</p>
-        </div>
+        {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
       </SidebarContent>
     </Sidebar>
   );
