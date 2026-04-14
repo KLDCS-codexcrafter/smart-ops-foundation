@@ -197,7 +197,7 @@ export default function PayHubPage() {
         />
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-7xl mx-auto">
-            {renderModule(activeModule)}
+            {renderModule(activeModule, selectedEntityId)}
           </div>
         </ScrollArea>
       </SidebarInset>
