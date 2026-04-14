@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
-  Building2, MapPin, Settings2, FileText, CalendarIcon, Loader2, Save,
+  Building2, MapPin, Settings2, FileText, CalendarIcon, Loader2, Save, Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,9 +30,14 @@ import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
-  'Service Centre', 'Retail Store', 'Sales Office', 'Collection Centre',
-  'Branch Office', 'Liaison Office', 'Project Site Office',
-  'Support Office', 'Regional Office', 'Delivery Point',
+  // Commercial
+  'Branch Office', 'Regional Office', 'Sales Office', 'Collection Centre',
+  'Retail Store', 'Service Centre', 'Delivery Point',
+  // Industrial
+  'Factory', 'Manufacturing Plant', 'Warehouse', 'Depot',
+  'Distribution Centre', 'Processing Unit', 'Data Centre', 'R&D Centre',
+  // Administrative
+  'Liaison Office', 'Project Site Office', 'Support Office',
 ];
 
 const BRANCH_STATUSES = [
@@ -52,6 +57,14 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Project Site Office': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   'Support Office': 'bg-teal-500/10 text-teal-600 border-teal-500/20',
   'Delivery Point': 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
+  'Factory': 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  'Manufacturing Plant': 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  'Warehouse': 'bg-stone-500/10 text-stone-700 border-stone-500/20',
+  'Depot': 'bg-stone-500/10 text-stone-700 border-stone-500/20',
+  'Distribution Centre': 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+  'Processing Unit': 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+  'Data Centre': 'bg-blue-500/10 text-blue-700 border-blue-500/20',
+  'R&D Centre': 'bg-violet-500/10 text-violet-700 border-violet-500/20',
 };
 
 const BUSINESS_ACTIVITIES = [
