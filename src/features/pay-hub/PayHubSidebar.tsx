@@ -171,6 +171,11 @@ const ADMIN_ITEMS: SidebarItem[] = [
   { id: 'ph-activity',        label: 'Activity Monitoring', icon: Monitor },
 ];
 
+const EXIT_ITEMS: SidebarItem[] = [
+  { id: 'ph-exit', label: 'Exit Management', icon: LogOut },
+  { id: 'ph-fnf',  label: 'F&F Settlement',  icon: Receipt },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -186,6 +191,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [learningOpen, setLearningOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [exitOpen, setExitOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
