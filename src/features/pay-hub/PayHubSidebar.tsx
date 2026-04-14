@@ -71,7 +71,10 @@ export type PayHubModule =
   | 'ph-exit'
   | 'ph-fnf'
   | 'ph-doc-vault'
-  | 'ph-doc-templates';
+  | 'ph-doc-templates'
+  | 'ph-contract-workers'
+  | 'ph-contract-orders'
+  | 'ph-contract-compliance';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
