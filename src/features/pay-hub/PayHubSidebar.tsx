@@ -6,7 +6,7 @@ import { useState } from 'react';
 import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
-  ClipboardList, FileText, BarChart3, ChevronRight,
+  ClipboardList, FileText, BarChart3, ChevronRight, Shield,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
