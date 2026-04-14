@@ -590,6 +590,7 @@ export function usePayrollEngine() {
           };
         });
         if (loansChanged) {
+          // [JWT] PATCH /api/pay-hub/finance/loan-applications/bulk-update
           localStorage.setItem(LOAN_APPLICATIONS_KEY, JSON.stringify(updatedLoans));
         }
       } catch { /* ignore */ }
@@ -617,6 +618,7 @@ export function usePayrollEngine() {
           };
         });
         if (advChanged) {
+          // [JWT] PATCH /api/pay-hub/finance/salary-advances/bulk-update
           localStorage.setItem(SALARY_ADVANCES_KEY, JSON.stringify(updatedAdv));
         }
       } catch { /* ignore */ }
