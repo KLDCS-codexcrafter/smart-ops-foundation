@@ -34,6 +34,7 @@ import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/Perf
 import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/LearningAndDevelopment';
 import { EmployeeExperiencePanel } from '@/pages/erp/pay-hub/transactions/EmployeeExperience';
 import { AdminAndMonitoringPanel } from '@/pages/erp/pay-hub/transactions/AdminAndMonitoring';
+import { ExitAndFnFPanel } from '@/pages/erp/pay-hub/transactions/ExitAndFnF';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -94,6 +95,8 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-access-control':   return <AdminAndMonitoringPanel defaultTab="access" />;
     case 'ph-email-templates':  return <AdminAndMonitoringPanel defaultTab="templates" />;
     case 'ph-activity':         return <AdminAndMonitoringPanel defaultTab="activity" />;
+    case 'ph-exit': return <ExitAndFnFPanel defaultTab="exit" />;
+    case 'ph-fnf':  return <ExitAndFnFPanel defaultTab="fnf" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -147,6 +150,8 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-access-control':  'Access Control',
   'ph-email-templates': 'Email Templates',
   'ph-activity':        'Activity Monitoring',
+  'ph-exit': 'Exit Management',
+  'ph-fnf':  'F&F Settlement',
 };
 
 export default function PayHubPage() {

@@ -9,7 +9,7 @@ import {
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
-  UserCog, Mail, Monitor,
+  UserCog, Mail, Monitor, LogOut,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -67,7 +67,9 @@ export type PayHubModule =
   | 'ph-ess'
   | 'ph-access-control'
   | 'ph-email-templates'
-  | 'ph-activity';
+  | 'ph-activity'
+  | 'ph-exit'
+  | 'ph-fnf';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -86,6 +88,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
   'ph-directory', 'ph-inbox', 'ph-collaboration', 'ph-total-rewards',
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
+  'ph-exit', 'ph-fnf',
 ];
 
 interface SidebarItem {
@@ -168,6 +171,11 @@ const ADMIN_ITEMS: SidebarItem[] = [
   { id: 'ph-activity',        label: 'Activity Monitoring', icon: Monitor },
 ];
 
+const EXIT_ITEMS: SidebarItem[] = [
+  { id: 'ph-exit', label: 'Exit Management', icon: LogOut },
+  { id: 'ph-fnf',  label: 'F&F Settlement',  icon: Receipt },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -183,6 +191,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [learningOpen, setLearningOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [exitOpen, setExitOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -279,6 +288,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
+        {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
       </SidebarContent>
     </Sidebar>
   );
