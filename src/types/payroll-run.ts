@@ -84,6 +84,9 @@ export interface PayrollRun {
   lockedAt: string;
   lockedBy: string;
   unlockReason: string;
+  entityId: string;  // entity this payroll run belongs to
+  // "parent-root" | company.id | branch.id
+  // Reads as undefined on old records — treat as "parent-root".
   notes: string;
   created_at: string;
   updated_at: string;

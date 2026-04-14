@@ -3,6 +3,7 @@
  * Mirrors CommandCenterPage — SidebarProvider + own sidebar + content area.
  */
 import { useState, useEffect } from 'react';
+import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { PayHubSidebar, type PayHubModule } from './PayHubSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
