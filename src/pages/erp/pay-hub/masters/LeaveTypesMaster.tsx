@@ -45,6 +45,9 @@ export function LeaveTypesMasterPanel() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
   const [form, setForm] = useState<LTForm>({...BLANK});
+  const [propagateOpen, setPropagateOpen] = useState(false);
+  const [lastSavedName, setLastSavedName] = useState('');
+  const [lastSavedId, setLastSavedId] = useState('');
 
   const filtered = leaveTypes
     .filter(TAB_FILTERS[tab] || TAB_FILTERS.all)
@@ -61,8 +64,12 @@ export function LeaveTypesMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
+    const generatedId = editId || `lt-${Date.now()}`;
     if (editId) update(editId, form); else create(form);
+    setLastSavedName(form.name);
+    setLastSavedId(generatedId);
     setSheetOpen(false);
+    setPropagateOpen(true);
   }, [form, editId, sheetOpen, create, update]);
 
   useCtrlS(handleSave);
@@ -194,6 +201,16 @@ export function LeaveTypesMasterPanel() {
         </SheetContent>
       </Sheet>
     </div>
+
+    <MasterPropagationDialog
+      open={propagateOpen}
+      onOpenChange={setPropagateOpen}
+      masterType="Leave Type"
+      masterName={lastSavedName}
+      storageKey={LEAVE_TYPES_KEY}
+      recordId={lastSavedId}
+    />
+    </>
   );
 }
 
