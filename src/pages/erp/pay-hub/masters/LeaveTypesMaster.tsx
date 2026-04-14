@@ -18,6 +18,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useLeaveTypes } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { LeaveType } from '@/types/payroll-masters';
+import { LEAVE_TYPES_KEY } from '@/types/payroll-masters';
+import { MasterPropagationDialog } from '@/components/pay-hub/MasterPropagationDialog';
 
 type LTForm = Omit<LeaveType, 'id' | 'created_at' | 'updated_at'>;
 const BLANK: LTForm = {
