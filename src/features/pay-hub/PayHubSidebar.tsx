@@ -278,16 +278,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
-        {/* Reports placeholder */}
-        <div className="px-4 py-2">
-          <div className="flex items-center gap-1">
-            <BarChart3 className="h-3 w-3 text-muted-foreground/40" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">
-              Reports & ESS
-            </span>
-          </div>
-          <p className="text-[9px] text-muted-foreground/40 ml-4 mt-1">Sprint 9+</p>
-        </div>
+        {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
       </SidebarContent>
     </Sidebar>
   );
