@@ -76,6 +76,7 @@ export function LeaveTypesMasterPanel() {
   const setF = <K extends keyof LTForm>(k: K, v: LTForm[K]) => setForm(p => ({...p,[k]:v}));
 
   return (
+    <>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
