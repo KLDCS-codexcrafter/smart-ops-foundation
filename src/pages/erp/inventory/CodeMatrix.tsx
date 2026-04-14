@@ -234,13 +234,13 @@ export function CodeMatrixPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label>Separator</Label>
-                <Select value={form.separator} onValueChange={v => setForm(f => ({ ...f, separator: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="-">Hyphen ( - )</SelectItem>
-                    <SelectItem value="/">Slash ( / )</SelectItem>
-                    <SelectItem value=".">Dot ( . )</SelectItem>
-                    <SelectItem value="">None</SelectItem>
+                 <Select value={form.separator || '_none'} onValueChange={v => setForm(f => ({ ...f, separator: v === '_none' ? '' : v }))}>
+                   <SelectTrigger><SelectValue /></SelectTrigger>
+                   <SelectContent>
+                     <SelectItem value="-">Hyphen ( - )</SelectItem>
+                     <SelectItem value="/">Slash ( / )</SelectItem>
+                     <SelectItem value=".">Dot ( . )</SelectItem>
+                     <SelectItem value="_none">None</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

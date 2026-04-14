@@ -3852,10 +3852,10 @@ export function LedgerMasterPanel() {
                 <Input className="pl-8 h-7 text-xs w-48" placeholder="Search ledgers..."
                   value={coaSearch} onChange={e => setCoaSearch(e.target.value)} />
               </div>
-              <Select value={selEntityId} onValueChange={setSelEntityId}>
-                <SelectTrigger className="w-44 h-7 text-xs"><SelectValue placeholder="All entities" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All entities</SelectItem>
+               <Select value={selEntityId || '_all'} onValueChange={v => setSelEntityId(v === '_all' ? '' : v)}>
+                 <SelectTrigger className="w-44 h-7 text-xs"><SelectValue placeholder="All entities" /></SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="_all">All entities</SelectItem>
                   {entities.map(e => <SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>)}
                 </SelectContent>
               </Select>
