@@ -196,9 +196,7 @@ export function PayHeadMasterPanel() {
           </Select>
         </div>
 
-        <TabsContent value={activeTab} className="mt-0">
-          {/* fallthrough — same table for all tabs */}
-        </TabsContent>
+        {/* Table rendered outside TabsContent — filtering handled by activeTab state */}
       </Tabs>
 
       {/* Table */}
@@ -278,7 +276,7 @@ export function PayHeadMasterPanel() {
 
       {/* Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="sm:max-w-lg overflow-y-auto" data-keyboard-form>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>{editId ? 'Edit Pay Head' : 'New Pay Head'}</SheetTitle>
             <SheetDescription>
@@ -286,7 +284,7 @@ export function PayHeadMasterPanel() {
             </SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4" data-keyboard-form>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Name *</Label>
