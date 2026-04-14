@@ -87,7 +87,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
-  'ph-recruitment', 'ph-documents', 'ph-policies',
+  'ph-recruitment',
   'ph-onboarding',
   'ph-performance', 'ph-9box', 'ph-succession', 'ph-compensation',
   'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
@@ -144,12 +144,10 @@ const FINANCE_ITEMS: SidebarItem[] = [
 ];
 
 const RECRUITMENT_ITEMS: SidebarItem[] = [
-  { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
-  { id: 'ph-documents',    label: 'Document Vault',  icon: FolderOpen },
-  { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
-  { id: 'ph-doc-vault',    label: 'Document Vault',   icon: FolderOpen },
+  { id: 'ph-recruitment',   label: 'Recruitment',     icon: Briefcase },
+  { id: 'ph-doc-vault',     label: 'Document Vault',  icon: FolderOpen },
   { id: 'ph-doc-templates', label: 'Template Library', icon: FileText },
-  { id: 'ph-onboarding',   label: 'Onboarding',      icon: Rocket },
+  { id: 'ph-onboarding',    label: 'Onboarding',      icon: Rocket },
 ];
 
 const PERFORMANCE_ITEMS: SidebarItem[] = [
@@ -246,10 +244,10 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
     <Collapsible open={open} onOpenChange={setOpen} className="px-2">
       <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
         <ChevronRight className={cn(
-          'h-3 w-3 text-muted-foreground/60 transition-transform',
+          'h-3 w-3 text-muted-foreground/90 transition-transform',
           open && 'rotate-90',
         )} />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
           {title}
         </span>
       </CollapsibleTrigger>
@@ -299,13 +297,13 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('STATUTORY & COMPLIANCE', STATUTORY_ITEMS, statutoryOpen, setStatutoryOpen)}
         {renderSection('EMPLOYEE FINANCE', FINANCE_ITEMS, financeOpen, setFinanceOpen)}
 
+        {renderSection('CONTRACT MANPOWER', CONTRACT_ITEMS, contractOpen, setContractOpen)}
         {renderSection('RECRUITMENT', RECRUITMENT_ITEMS, recruitmentOpen, setRecruitmentOpen)}
         {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
         {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
         {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
-        {renderSection('CONTRACT MANPOWER', CONTRACT_ITEMS, contractOpen, setContractOpen)}
       </SidebarContent>
     </Sidebar>
   );
