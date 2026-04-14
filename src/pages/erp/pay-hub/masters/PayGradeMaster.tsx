@@ -343,6 +343,15 @@ export function PayGradeMasterPanel() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      <MasterPropagationDialog
+        open={propagateOpen}
+        onOpenChange={setPropagateOpen}
+        masterType="Pay Grade"
+        masterName={lastSavedName}
+        storageKey={PAY_GRADES_KEY}
+        recordId={lastSavedId}
+      />
     </div>
   );
 }
