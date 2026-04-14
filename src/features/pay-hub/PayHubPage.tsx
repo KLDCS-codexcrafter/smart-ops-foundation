@@ -33,6 +33,7 @@ import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
 import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/PerformanceAndTalent';
 import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/LearningAndDevelopment';
 import { EmployeeExperiencePanel } from '@/pages/erp/pay-hub/transactions/EmployeeExperience';
+import { AdminAndMonitoringPanel } from '@/pages/erp/pay-hub/transactions/AdminAndMonitoring';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -89,6 +90,10 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-inbox':         return <EmployeeExperiencePanel defaultTab="inbox" />;
     case 'ph-collaboration': return <EmployeeExperiencePanel defaultTab="collaboration" />;
     case 'ph-total-rewards': return <EmployeeExperiencePanel defaultTab="total-rewards" />;
+    case 'ph-ess':              return <AdminAndMonitoringPanel defaultTab="ess" />;
+    case 'ph-access-control':   return <AdminAndMonitoringPanel defaultTab="access" />;
+    case 'ph-email-templates':  return <AdminAndMonitoringPanel defaultTab="templates" />;
+    case 'ph-activity':         return <AdminAndMonitoringPanel defaultTab="activity" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -138,6 +143,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-inbox':         'Inbox',
   'ph-collaboration': 'Collaboration',
   'ph-total-rewards': 'Total Rewards',
+  'ph-ess':             'ESS Portal',
+  'ph-access-control':  'Access Control',
+  'ph-email-templates': 'Email Templates',
+  'ph-activity':        'Activity Monitoring',
 };
 
 export default function PayHubPage() {
