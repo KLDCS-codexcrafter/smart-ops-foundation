@@ -150,7 +150,7 @@ export function DocumentManagementPanel({ defaultTab = 'vault' }: DocumentManage
     category: 'identity' as EmpDocCategory, title: '',
     issueDate: '', expiryDate: '', isExpired: false,
     fileName: '', fileType: '', fileSizeBytes: 0, fileData: '',
-    attachType: 'upload' as const, tags: [] as string[], notes: '',
+    attachType: 'upload' as DocAttachType, tags: [] as string[], notes: '',
     uploadedBy: 'HR Admin',
   };
   const [docForm, setDocForm] = useState(BLANK_DOC);
