@@ -161,6 +161,13 @@ const EXPERIENCE_ITEMS: SidebarItem[] = [
   { id: 'ph-total-rewards', label: 'Total Rewards',      icon: Gift },
 ];
 
+const ADMIN_ITEMS: SidebarItem[] = [
+  { id: 'ph-ess',             label: 'ESS Portal',          icon: UserCog },
+  { id: 'ph-access-control',  label: 'Access Control',      icon: Shield },
+  { id: 'ph-email-templates', label: 'Email Templates',     icon: Mail },
+  { id: 'ph-activity',        label: 'Activity Monitoring', icon: Monitor },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -175,6 +182,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [performanceOpen, setPerformanceOpen] = useState(false);
   const [learningOpen, setLearningOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
