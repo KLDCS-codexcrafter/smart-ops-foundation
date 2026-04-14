@@ -48,7 +48,7 @@ function ComingSoonPanel({ module }: { module: PayHubModule }) {
   );
 }
 
-function renderModule(mod: PayHubModule): React.ReactElement {
+function renderModule(mod: PayHubModule, selectedEntityId?: string): React.ReactElement {
   switch (mod) {
     case 'ph-dashboard': return <PayHubDashboardPanel selectedEntityId={selectedEntityId} />;
     case 'ph-pay-heads': return <PayHeadMasterPanel />;
