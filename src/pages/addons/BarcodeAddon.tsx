@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { QrCode, ArrowLeft, CheckCircle2, Download, Printer, Palette } from 'lucide-react';
+import { QrCode, ArrowLeft, CheckCircle2, Download, Printer, Palette, IndianRupee } from 'lucide-react';
 
 const FEATURES = [
   { icon: Download, title: 'Pull from Tally', desc: 'Import item masters directly from Tally ERP via the Bridge sync engine. No manual data entry — items flow automatically with code, name, HSN, and UOM.' },
@@ -29,6 +29,56 @@ const STEPS = [
   { step: 3, title: 'Barcode Generation Engine', desc: 'Reuse barcode type definitions from ERP but limit to 4 types. Build simplified job creation flow.' },
   { step: 4, title: 'Template Selector', desc: 'Offer 4 pre-built templates. No custom template builder — keep it simple for Tally-only users.' },
   { step: 5, title: 'Print & Export', desc: 'Direct print to thermal/A4 printers. PDF export option. Basic print history (no reprint tracking).' },
+];
+
+const SAAS_TIERS = [
+  {
+    name: 'Starter',
+    price: '₹299 – ₹499 / month',
+    skus: 'Up to 500 SKUs',
+    color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    conditions: [
+      'Tally item master import via Bridge — single Tally company',
+      '4 barcode types — EAN-13, QR Code, Code 128, ITF-14',
+      '4 pre-built label templates — Product, Price, Shelf, Carton',
+      'Batch generation up to 100 labels per job',
+      'Print to thermal and A4 printers · PDF export',
+      'Basic print history — last 30 days only',
+      'No custom template builder · No compliance labels · No RFID',
+    ],
+  },
+  {
+    name: 'Growth',
+    price: '₹999 – ₹1,499 / month',
+    skus: 'Up to 5,000 SKUs',
+    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+    conditions: [
+      'Everything in Starter',
+      'Multiple Tally companies OR CSV / Excel item import',
+      '6 barcode types — adds GS1-128 and PDF417',
+      'Custom template builder — drag-and-drop field placement',
+      'Batch generation up to 1,000 labels per job',
+      'Full print queue with reprint tracking and job history',
+      'Bulk barcode export as ZIP of image files',
+      'No compliance labels (MRP, FSSAI, Drug, EPR)',
+    ],
+  },
+  {
+    name: 'Professional',
+    price: '₹2,499 – ₹3,999 / month',
+    skus: 'Unlimited SKUs',
+    color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+    conditions: [
+      'Everything in Growth',
+      'All 8 barcode types — adds DataMatrix, GS1-DataBar, Aztec',
+      'Compliance labels — MRP, FSSAI, Drug Schedule, EPR mandate',
+      'Asset tags with custody transfer and scan-in / scan-out tracking',
+      'Bin location labels for warehouse rack and shelf layout',
+      'RFID Manager — tag encoding, bulk scan, read verification',
+      'Unlimited batch size per job',
+      'API access for programmatic label generation',
+    ],
+  },
 ];
 
 export default function BarcodeAddon() {
