@@ -34,7 +34,13 @@ export type PayHubModule =
   | 'ph-attendance-entry'
   | 'ph-leave-requests'
   | 'ph-payroll-processing'
-  | 'ph-payslip-gen';
+  | 'ph-payslip-gen'
+  | 'ph-pf-ecr'
+  | 'ph-esi-returns'
+  | 'ph-pt-returns'
+  | 'ph-tds-24q'
+  | 'ph-form16'
+  | 'ph-statutory-calendar';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -45,6 +51,8 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-leave-requests',
   'ph-payroll-processing',
   'ph-payslip-gen',
+  'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
+  'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
 ];
 
 interface SidebarItem {
@@ -76,6 +84,15 @@ const TRANSACTIONS_ITEMS: SidebarItem[] = [
   { id: 'ph-payslip-gen', label: 'Payslip Generation', icon: FileText },
 ];
 
+const STATUTORY_ITEMS: SidebarItem[] = [
+  { id: 'ph-pf-ecr',             label: 'PF ECR',             icon: Shield },
+  { id: 'ph-esi-returns',        label: 'ESI Returns',        icon: Shield },
+  { id: 'ph-pt-returns',         label: 'PT Returns',         icon: IndianRupee },
+  { id: 'ph-tds-24q',            label: 'Form 24Q',           icon: FileText },
+  { id: 'ph-form16',             label: 'Form 16',            icon: FileText },
+  { id: 'ph-statutory-calendar', label: 'Statutory Calendar',  icon: Calendar },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -84,6 +101,7 @@ interface PayHubSidebarProps {
 export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarProps) {
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
+  const [statutoryOpen, setStatutoryOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -172,6 +190,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
 
         {renderSection('Masters', MASTERS_ITEMS, mastersOpen, setMastersOpen)}
         {renderSection('Transactions', TRANSACTIONS_ITEMS, txnOpen, setTxnOpen)}
+        {renderSection('STATUTORY & COMPLIANCE', STATUTORY_ITEMS, statutoryOpen, setStatutoryOpen)}
 
         {/* Reports placeholder */}
         <div className="px-4 py-2">
