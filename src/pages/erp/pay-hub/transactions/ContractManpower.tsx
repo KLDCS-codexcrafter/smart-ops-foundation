@@ -140,7 +140,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     designation: '', deployedDepartment: '', deployedLocation: '',
     dailyWage: 0, pfApplicable: true, esicApplicable: true,
     deploymentStartDate: '', deploymentEndDate: '',
-    status: 'active' as const, notes: '',
+    status: 'active' as ContractWorker['status'], notes: '',
   };
   const [workerForm, setWorkerForm] = useState(BLANK_WORKER);
   const wuf = <K extends keyof typeof BLANK_WORKER>(k: K, v: (typeof BLANK_WORKER)[K]) =>
