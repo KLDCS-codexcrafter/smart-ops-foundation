@@ -7,7 +7,7 @@ import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
-  CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen,
+  CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
