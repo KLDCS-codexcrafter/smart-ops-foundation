@@ -158,6 +158,37 @@ export default function BarcodeAddon() {
           </div>
         </div>
 
+        {/* SaaS Tiers */}
+        <div>
+          <h2 className="text-lg font-semibold mb-1">SaaS Tiers</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Three tiers gated by SKU count, barcode types, template
+            flexibility, print features, compliance label types,
+            and data source.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {SAAS_TIERS.map(tier => (
+              <div key={tier.name} className="rounded-xl border bg-card/60 p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Badge className={tier.color}>{tier.name}</Badge>
+                </div>
+                <div>
+                  <p className="text-base font-bold">{tier.price}</p>
+                  <p className="text-xs text-muted-foreground">{tier.skus}</p>
+                </div>
+                <ul className="space-y-1.5">
+                  {tier.conditions.map(c => (
+                    <li key={c} className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="h-3 w-3 text-green-500 mt-0.5 shrink-0" />
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Developer guide */}
         <div>
           <h2 className="text-lg font-semibold mb-3">Developer Build Guide</h2>
