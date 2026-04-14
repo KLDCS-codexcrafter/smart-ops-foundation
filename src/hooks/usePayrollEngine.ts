@@ -10,6 +10,10 @@ import { PAYROLL_RUNS_KEY, SALARY_HOLDS_KEY } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
 import type { SalaryStructure, PayHead } from '@/types/pay-hub';
 import type { AttendanceRecord } from '@/types/attendance-entry';
+import type { LoanApplication, SalaryAdvance } from '@/types/employee-finance';
+import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY } from '@/types/employee-finance';
+import type { AttendanceType } from '@/types/payroll-masters';
+import { ATTENDANCE_TYPES_KEY } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
@@ -42,8 +46,6 @@ const saveHolds = (items: SalaryHold[]) => {
 };
 
 // ── computeCTCBreakdown ──────────────────────────────────────────
-// Extended from SalaryStructureMaster.computeBreakdown.
-// Returns monthly amounts for all components in the structure.
 export function computeCTCBreakdown(
   annualCTC: number,
   structure: SalaryStructure,
@@ -53,7 +55,6 @@ export function computeCTCBreakdown(
   const monthlyCTC = annualCTC / 12;
   let basic = 0, gross = 0;
 
-  // Pass 1: compute BASIC
   const basicComp = structure.components.find(c => c.payHeadCode === 'BASIC');
   if (basicComp) {
     if (basicComp.calculationType === 'percentage_ctc')
@@ -65,13 +66,12 @@ export function computeCTCBreakdown(
     basic = monthlyCTC * 0.4;
   }
 
-  // Pass 2: compute all components sequentially
   const lines: PayslipLine[] = [];
   let totalEarnings = 0;
   const sorted = [...structure.components].sort((a, b) => a.sortOrder - b.sortOrder);
 
   sorted.forEach(comp => {
-    if (comp.calculationType === 'balancing') return; // filled in pass 3
+    if (comp.calculationType === 'balancing') return;
     const ph = payHeads.find(h => h.id === comp.payHeadId);
     if (!ph || ph.status !== 'active') return;
 
@@ -85,11 +85,9 @@ export function computeCTCBreakdown(
     else if (comp.calculationType === 'fixed')
       val = comp.calculationValue;
     else if (comp.calculationType === 'slab' || comp.calculationType === 'computed')
-      val = 0; // PT and TDS resolved later
+      val = 0;
 
-    // Apply ceiling
     if (comp.maxValueMonthly > 0 && val > comp.maxValueMonthly) val = comp.maxValueMonthly;
-    // Apply ESI conditional ceiling
     if (ph.conditionalMaxWage > 0 && gross > ph.conditionalMaxWage) val = 0;
 
     val = Math.round(val);
@@ -103,7 +101,6 @@ export function computeCTCBreakdown(
     });
   });
 
-  // Pass 3: fill balancing component (SPCL)
   const balComp = sorted.find(c => c.calculationType === 'balancing');
   if (balComp) {
     const ph = payHeads.find(h => h.id === balComp.payHeadId);
@@ -122,24 +119,127 @@ export function computeCTCBreakdown(
   return lines;
 }
 
+// ── computeLoanDeductions ─────────────────────────────────────────
+// Reads approved/disbursed loans for an employee and returns EMI lines.
+// Business rule: deduct EMI from net pay if loan is disbursed and not closed.
+// Multiple active loans each generate their own deduction line.
+function computeLoanDeductions(
+  employeeId: string,
+  _payPeriod: string,
+  loans: LoanApplication[]
+): PayslipLine[] {
+  const activeLoans = loans.filter(l =>
+    l.employeeId === employeeId &&
+    (l.status === 'disbursed') &&
+    l.emiAmount > 0 &&
+    l.remainingBalance > 0
+  );
+  return activeLoans.map(loan => ({
+    id: `loan-${loan.id}`,
+    headCode: 'LOAN_EMI',
+    headName: `Loan EMI — ${loan.loanTypeName || 'Loan'}`,
+    type: 'deduction' as const,
+    monthly: Math.min(loan.emiAmount, loan.remainingBalance),
+    annual: loan.emiAmount * 12,
+    isTaxable: false,
+    calculationType: 'fixed' as const,
+    calculationValue: loan.emiAmount,
+    payHeadId: 'system-loan-emi',
+  }));
+}
+
+// ── computeAdvanceRecoveries ──────────────────────────────────────
+// Reads approved advances for the employee and returns recovery lines.
+// Business rule:
+//   same_month   → recover in current period
+//   next_month   → recover in next period (compare payPeriod to requestDate period+1)
+//   split_2_months → recover half now, half next month
+function computeAdvanceRecoveries(
+  employeeId: string,
+  payPeriod: string,
+  advances: SalaryAdvance[]
+): PayslipLine[] {
+  const lines: PayslipLine[] = [];
+  const [, ] = payPeriod.split('-').map(Number);
+
+  advances
+    .filter(a => a.employeeId === employeeId && a.status === 'approved')
+    .forEach(adv => {
+      const reqPeriod = adv.requestDate?.slice(0, 7) ?? payPeriod;
+      const [ry, rm] = reqPeriod.split('-').map(Number);
+      const nextPeriod = rm === 12 ? `${ry+1}-01` : `${ry}-${String(rm+1).padStart(2,'0')}`;
+
+      const recoverNow = adv.recoveryPeriod === 'same_month'
+        ? payPeriod === reqPeriod
+        : adv.recoveryPeriod === 'next_month'
+          ? payPeriod === nextPeriod
+          : adv.recoveryPeriod === 'split_2_months'
+            ? (payPeriod === reqPeriod || payPeriod === nextPeriod)
+            : false;
+
+      if (!recoverNow) return;
+
+      const amount = adv.recoveryPeriod === 'split_2_months'
+        ? Math.ceil(adv.amount / 2)
+        : adv.amount;
+
+      lines.push({
+        id: `adv-${adv.id}-${payPeriod}`,
+        headCode: 'ADV_RECOVERY',
+        headName: 'Salary Advance Recovery',
+        type: 'deduction' as const,
+        monthly: amount,
+        annual: amount * 12,
+        isTaxable: false,
+        calculationType: 'fixed' as const,
+        calculationValue: amount,
+        payHeadId: 'system-advance-recovery',
+      });
+    });
+
+  return lines;
+}
+
 // ── computeLOPDays ───────────────────────────────────────────────
 // LOP = Absent days + (0.5 × half-day unpaid days)
+// FIX 4: Now respects AttendanceType.paidStatus from the master
 export function computeLOPDays(
   employeeId: string,
   payPeriod: string,    // "YYYY-MM"
-  attendanceRecords: AttendanceRecord[]
+  attendanceRecords: AttendanceRecord[],
+  attendanceTypes?: AttendanceType[]
 ): number {
-  const prefix = payPeriod; // records have date: 'YYYY-MM-DD'
+  // Build a lookup: code → paidStatus
+  const paidStatusMap = new Map<string, string>();
+  if (attendanceTypes && attendanceTypes.length > 0) {
+    attendanceTypes.forEach(at => {
+      paidStatusMap.set(at.code.toUpperCase(), at.paidStatus);
+    });
+  }
+
+  const prefix = payPeriod;
   const empRecords = attendanceRecords.filter(
     r => r.employeeId === employeeId && r.date.startsWith(prefix)
   );
   let lop = 0;
   empRecords.forEach(r => {
     const code = r.attendanceTypeCode.toUpperCase();
-    if (code === 'A') lop += 1;           // Absent = 1 day LOP
-    else if (code === 'HD') lop += 0.5;  // Half Day = 0.5 day LOP
+    const paidStatus = paidStatusMap.get(code);
+
+    if (paidStatus === 'full_paid') {
+      // No LOP — full paid even if marked half day or other
+      return;
+    } else if (paidStatus === 'unpaid') {
+      lop += 1;
+    } else if (paidStatus === 'half_paid') {
+      lop += 0.5;
+    } else {
+      // Fallback to code-based logic when no master data
+      if (code === 'A') lop += 1;
+      else if (code === 'HD') lop += 0.5;
+    }
   });
-  return Math.round(lop * 2) / 2; // round to nearest 0.5
+  return Math.round(lop * 2) / 2;
 }
 
 // ── applyLOP — reduce earnings proportionally ────────────────────
@@ -158,7 +258,6 @@ export function applyLOP(
 }
 
 // ── computePT ────────────────────────────────────────────────────
-// Looks up state slab from PROFESSIONAL_TAX_SLABS, returns monthly PT
 export function computePT(grossMonthly: number, stateCode: string): number {
   if (!stateCode) return 0;
   const stateSlabs = PROFESSIONAL_TAX_SLABS.filter(s => s.stateCode === stateCode);
@@ -172,11 +271,10 @@ export function computePT(grossMonthly: number, stateCode: string): number {
 }
 
 // ── computeMonthlyTDS ─────────────────────────────────────────────
-// Full IT computation per approved plan — Tally Prime 7 level.
 export function computeMonthlyTDS(
   annualGrossSalary: number,
   regime: 'old' | 'new',
-  payPeriod: string,        // "YYYY-MM"
+  payPeriod: string,
   previousTDSThisYear: number
 ): ITComputation {
   const month = parseInt(payPeriod.split('-')[1], 10);
@@ -238,7 +336,10 @@ export function computeEmployeePayslip(
   structures: SalaryStructure[],
   payHeads: PayHead[],
   attendanceRecords: AttendanceRecord[],
-  holds: SalaryHold[]
+  holds: SalaryHold[],
+  loanApplications: LoanApplication[] = [],
+  salaryAdvances: SalaryAdvance[] = [],
+  attendanceTypesData: AttendanceType[] = []
 ): EmployeePayslip {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -266,7 +367,8 @@ export function computeEmployeePayslip(
       departmentName: employee.departmentName, payPeriod,
       salaryStructureCode: '', annualCTC: employee.annualCTC,
       workingDays: 0, presentDays: 0, lopDays: 0,
-      lines: [], grossEarnings: 0, totalDeductions: 0, netPay: 0,
+      lines: [], loanDeductions: [], advanceRecoveries: [],
+      grossEarnings: 0, totalDeductions: 0, netPay: 0,
       totalEmployerCost: 0, pfWage: 0, esiWage: 0,
       empPF: 0, empESI: 0, pt: 0, tds: 0, itComputation: null,
       bankAccountNo: employee.bankAccountNo, bankIfsc: employee.bankIfsc, bankName: employee.bankName,
@@ -277,10 +379,10 @@ export function computeEmployeePayslip(
   // 1. CTC breakdown
   let lines = computeCTCBreakdown(employee.annualCTC, structure, payHeads);
 
-  // 2. Working days and LOP
+  // 2. Working days and LOP (FIX 4: pass attendanceTypesData)
   const [year, monthStr] = payPeriod.split('-');
   const workingDays = getDaysInMonth(new Date(parseInt(year), parseInt(monthStr) - 1));
-  const lopDays = computeLOPDays(employee.id, payPeriod, attendanceRecords);
+  const lopDays = computeLOPDays(employee.id, payPeriod, attendanceRecords, attendanceTypesData);
   const presentDays = Math.max(0, workingDays - lopDays);
   if (lopDays > 0) lines = applyLOP(lines, lopDays, workingDays);
 
@@ -331,10 +433,18 @@ export function computeEmployeePayslip(
     return l;
   });
 
-  // 8. Totals
+  // 8. Loan EMI deductions (auto-deducted from net pay)
+  const loanLines = computeLoanDeductions(employee.id, payPeriod, loanApplications);
+  lines = [...lines, ...loanLines];
+
+  // 9. Salary advance recoveries
+  const advanceLines = computeAdvanceRecoveries(employee.id, payPeriod, salaryAdvances);
+  lines = [...lines, ...advanceLines];
+
+  // 10. Recompute totals including new deduction lines
   const totalDeductions = lines.filter(l => l.type === 'deduction').reduce((s, l) => s + l.monthly, 0);
   const erContribs = lines.filter(l => l.type === 'employer_contribution').reduce((s, l) => s + l.monthly, 0);
-  const netPay = grossEarnings - totalDeductions;
+  const netPay = Math.max(0, grossEarnings - totalDeductions);
   const totalEmployerCost = grossEarnings + erContribs;
 
   return {
@@ -344,7 +454,19 @@ export function computeEmployeePayslip(
     salaryStructureCode: structure.code,
     annualCTC: employee.annualCTC,
     workingDays, presentDays, lopDays,
-    lines, grossEarnings, totalDeductions, netPay, totalEmployerCost,
+    lines,
+    loanDeductions: loanLines.map(l => ({
+      loanId: l.id || '',
+      loanTypeName: l.headName,
+      emiAmount: l.monthly,
+      remainingBalance: l.calculationValue || 0,
+    })),
+    advanceRecoveries: advanceLines.map(l => ({
+      advanceId: l.id || '',
+      amount: l.monthly,
+      recoveryPeriod: payPeriod,
+    })),
+    grossEarnings, totalDeductions, netPay, totalEmployerCost,
     pfWage, esiWage, empPF, empESI, pt: ptAmt, tds: tdsAmt, itComputation: itComp,
     bankAccountNo: employee.bankAccountNo, bankIfsc: employee.bankIfsc, bankName: employee.bankName,
     errors, warnings,
@@ -387,8 +509,34 @@ export function usePayrollEngine() {
     })();
     const currentHolds = loadHolds();
 
+    // FIX 1+2: Load loans and salary advances
+    const loanApplications: LoanApplication[] = (() => {
+      try {
+        // [JWT] GET /api/pay-hub/finance/loan-applications
+        const raw = localStorage.getItem(LOAN_APPLICATIONS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    })();
+    const salaryAdvances: SalaryAdvance[] = (() => {
+      try {
+        // [JWT] GET /api/pay-hub/finance/salary-advances
+        const raw = localStorage.getItem(SALARY_ADVANCES_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    })();
+
+    // FIX 4: Load attendance types for paidStatus lookup
+    const attendanceTypes: AttendanceType[] = (() => {
+      try {
+        // [JWT] GET /api/pay-hub/masters/attendance-types
+        const raw = localStorage.getItem(ATTENDANCE_TYPES_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    })();
+
     const payslips = employees.map(emp =>
-      computeEmployeePayslip(emp, payPeriod, structures, payHeadsData, attendanceRecords, currentHolds)
+      computeEmployeePayslip(emp, payPeriod, structures, payHeadsData,
+        attendanceRecords, currentHolds, loanApplications, salaryAdvances, attendanceTypes)
     );
 
     const [year, monthStr] = payPeriod.split('-');

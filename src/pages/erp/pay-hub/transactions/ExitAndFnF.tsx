@@ -29,10 +29,28 @@ import type { LeaveType } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { LEAVE_TYPES_KEY } from '@/types/payroll-masters';
 import { LOAN_APPLICATIONS_KEY } from '@/types/employee-finance';
+import { GRATUITY_NPS_KEY, DEFAULT_GRATUITY_NPS } from '@/types/payroll-masters';
+import type { GratuityNPSSettings } from '@/types/payroll-masters';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 
+// ── loadGratuityConfig ───────────────────────────────────────────
+function loadGratuityConfig(): GratuityNPSSettings['gratuity'] {
+  try {
+    // [JWT] GET /api/pay-hub/masters/gratuity-nps-config
+    const raw = localStorage.getItem(GRATUITY_NPS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.gratuity) return parsed.gratuity;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_GRATUITY_NPS.gratuity;
+}
+
 // ── computeGratuity ──────────────────────────────────────────────
-function computeGratuity(monthlyBasic: number, dojStr: string, lwdStr: string): number {
+function computeGratuity(
+  monthlyBasic: number, dojStr: string, lwdStr: string,
+  maxGratuity?: number
+): number {
   if (!dojStr || !lwdStr || monthlyBasic <= 0) return 0;
   try {
     const doj = new Date(dojStr);
@@ -40,7 +58,8 @@ function computeGratuity(monthlyBasic: number, dojStr: string, lwdStr: string): 
     const years = (lwd.getTime() - doj.getTime()) / (365.25 * 24 * 3600 * 1000);
     if (years < 5) return 0;
     const gratuity = (monthlyBasic * 15 * Math.floor(years)) / 26;
-    return Math.min(Math.round(gratuity), 2000000);
+    const cap = maxGratuity ?? loadGratuityConfig().maxGratuityAmount ?? 2000000;
+    return Math.min(Math.round(gratuity), cap);
   } catch { return 0; }
 }
 
