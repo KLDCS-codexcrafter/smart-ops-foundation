@@ -56,6 +56,32 @@ interface StatutoryReturnsPanelProps {
   defaultTab?: StatutoryTab;
 }
 
+interface ChallanBadgeProps {
+  challan: { status: string; challanNo?: string } | null | undefined;
+  onEdit?: () => void;
+}
+
+function ChallanBadge({ challan, onEdit }: ChallanBadgeProps) {
+  if (challan) {
+    return (
+      <Badge variant="outline"
+        className={CHALLAN_STATUS_COLORS[challan.status as keyof typeof CHALLAN_STATUS_COLORS] + ' cursor-pointer'}
+        onClick={onEdit}>
+        {challan.status === 'paid'
+          ? <CheckCircle className="h-3 w-3 mr-1" />
+          : <Clock className="h-3 w-3 mr-1" />}
+        {challan.status.toUpperCase()}
+        {challan.challanNo ? ` — ${challan.challanNo}` : ''}
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
+      <AlertTriangle className="h-3 w-3 mr-1" /> Not paid
+    </Badge>
+  );
+}
+
 export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryReturnsPanelProps) {
   // ── Cross-module reads ───────────────────────────────────────
   const payrollRuns = useMemo<PayrollRun[]>(() => {
@@ -333,24 +359,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
   const getChallan = (type: ChallanRecord['challanType']) =>
     periodChallans.find(c => c.challanType === type);
 
-  // ── Challan badge ─────────────────────────────────────────────
-  const ChallanBadge = ({ type }: { type: ChallanRecord['challanType'] }) => {
-    const ch = getChallan(type);
-    if (ch) {
-      return (
-        <Badge variant="outline" className={CHALLAN_STATUS_COLORS[ch.status] + ' cursor-pointer'}
-          onClick={() => openEditChallan(ch)}>
-          {ch.status === 'paid' ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-          {ch.status.toUpperCase()} {ch.challanNo ? `— ${ch.challanNo}` : ''}
-        </Badge>
-      );
-    }
-    return (
-      <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
-        <AlertTriangle className="h-3 w-3 mr-1" /> Not paid
-      </Badge>
-    );
-  };
+  // ChallanBadge is defined at module level (above) — see ChallanBadgeComponent
 
   // ── State grouping for PT ─────────────────────────────────────
   const ptByState = useMemo(() => {
@@ -499,7 +508,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total payable: ₹{toIndianFormat(pfTotals.empPF + pfTotals.erEPF + pfTotals.erEPS + pfTotals.erEDLI)} · Due: 15th of next month
               </p>
             </div>
-            <ChallanBadge type="EPF" />
+            <ChallanBadge challan={getChallan('EPF')} onEdit={() => { const c = getChallan('EPF'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -580,7 +589,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total ESI payable: ₹{toIndianFormat(esiTotals.empESI + esiTotals.erESI)} · Due: 21st of next month
               </p>
             </div>
-            <ChallanBadge type="ESI" />
+            <ChallanBadge challan={getChallan('ESI')} onEdit={() => { const c = getChallan('ESI'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -658,7 +667,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 Total PT payable: ₹{toIndianFormat(ptTotal)} · Due: 28th of current month
               </p>
             </div>
-            <ChallanBadge type="PT" />
+            <ChallanBadge challan={getChallan('PT')} onEdit={() => { const c = getChallan('PT'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
@@ -739,7 +748,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                 TDS payable for period · Due: 7th of next month
               </p>
             </div>
-            <ChallanBadge type="TDS" />
+            <ChallanBadge challan={getChallan('TDS')} onEdit={() => { const c = getChallan('TDS'); if (c) openEditChallan(c); }} />
           </div>
         </TabsContent>
 
