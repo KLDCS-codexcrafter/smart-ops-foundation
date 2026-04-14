@@ -6,7 +6,7 @@ import { useState } from 'react';
 import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
-  ClipboardList, FileText, BarChart3, ChevronRight, Shield,
+  ClipboardList, FileText, BarChart3, ChevronRight, Shield, HardHat,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
   UserCog, Mail, Monitor, LogOut,
@@ -71,7 +71,10 @@ export type PayHubModule =
   | 'ph-exit'
   | 'ph-fnf'
   | 'ph-doc-vault'
-  | 'ph-doc-templates';
+  | 'ph-doc-templates'
+  | 'ph-contract-workers'
+  | 'ph-contract-orders'
+  | 'ph-contract-compliance';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -92,6 +95,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
   'ph-exit', 'ph-fnf',
   'ph-doc-vault', 'ph-doc-templates',
+  'ph-contract-workers', 'ph-contract-orders', 'ph-contract-compliance',
 ];
 
 interface SidebarItem {
@@ -181,6 +185,12 @@ const EXIT_ITEMS: SidebarItem[] = [
   { id: 'ph-fnf',  label: 'F&F Settlement',  icon: Receipt },
 ];
 
+const CONTRACT_ITEMS: SidebarItem[] = [
+  { id: 'ph-contract-workers',    label: 'Contract Workers',    icon: HardHat },
+  { id: 'ph-contract-orders',     label: 'Work Orders',         icon: FileText },
+  { id: 'ph-contract-compliance', label: 'Compliance Register', icon: Shield },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -197,6 +207,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [experienceOpen, setExperienceOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -294,6 +305,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('EMPLOYEE EXPERIENCE', EXPERIENCE_ITEMS, experienceOpen, setExperienceOpen)}
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
         {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
+        {renderSection('CONTRACT MANPOWER', CONTRACT_ITEMS, contractOpen, setContractOpen)}
       </SidebarContent>
     </Sidebar>
   );
