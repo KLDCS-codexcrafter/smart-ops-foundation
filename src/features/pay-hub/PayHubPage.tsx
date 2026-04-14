@@ -2,7 +2,7 @@
  * PayHubPage.tsx — Main Pay Hub container
  * Mirrors CommandCenterPage — SidebarProvider + own sidebar + content area.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { PayHubSidebar, type PayHubModule } from './PayHubSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -29,6 +29,7 @@ import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/Statutor
 import { EmployeeFinancePanel } from '@/pages/erp/pay-hub/transactions/EmployeeFinance';
 import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
 import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
+import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -72,6 +73,7 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-recruitment':     return <RecruitmentPanel />;
     case 'ph-documents':       return <DocumentsAndPoliciesPanel />;
     case 'ph-policies':        return <DocumentsAndPoliciesPanel />;
+    case 'ph-onboarding':      return <OnboardingPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -108,10 +110,20 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-recruitment': 'Recruitment',
   'ph-documents': 'Document Vault',
   'ph-policies': 'Policy Library',
+  'ph-onboarding': 'Onboarding',
 };
 
 export default function PayHubPage() {
   const [activeModule, setActiveModule] = useState<PayHubModule>('ph-dashboard');
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const target = (e as CustomEvent<PayHubModule>).detail;
+      if (target) setActiveModule(target);
+    };
+    window.addEventListener('ph-navigate', handler);
+    return () => window.removeEventListener('ph-navigate', handler);
+  }, []);
 
   return (
     <SidebarProvider defaultOpen>
