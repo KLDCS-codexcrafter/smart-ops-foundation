@@ -32,6 +32,7 @@ import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/Docu
 import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
 import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/PerformanceAndTalent';
 import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/LearningAndDevelopment';
+import { EmployeeExperiencePanel } from '@/pages/erp/pay-hub/transactions/EmployeeExperience';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -84,6 +85,10 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-training-enroll':  return <LearningAndDevelopmentPanel defaultTab="enrollments" />;
     case 'ph-skill-matrix':     return <LearningAndDevelopmentPanel defaultTab="skills" />;
     case 'ph-certifications':   return <LearningAndDevelopmentPanel defaultTab="certifications" />;
+    case 'ph-directory':     return <EmployeeExperiencePanel defaultTab="directory" />;
+    case 'ph-inbox':         return <EmployeeExperiencePanel defaultTab="inbox" />;
+    case 'ph-collaboration': return <EmployeeExperiencePanel defaultTab="collaboration" />;
+    case 'ph-total-rewards': return <EmployeeExperiencePanel defaultTab="total-rewards" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -129,6 +134,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-training-enroll':  'Enrollments',
   'ph-skill-matrix':     'Skill Matrix',
   'ph-certifications':   'Certifications',
+  'ph-directory':     'Employee Directory',
+  'ph-inbox':         'Inbox',
+  'ph-collaboration': 'Collaboration',
+  'ph-total-rewards': 'Total Rewards',
 };
 
 export default function PayHubPage() {
