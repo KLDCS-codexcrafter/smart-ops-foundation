@@ -14,28 +14,41 @@ interface MasterCard {
   desc: string;
   icon: React.ElementType;
   module: CommandCenterModule;
-  status: 'seeded' | 'empty' | 'live';
+  storageKey: string; // localStorage key for live status check
   section: 'statutory' | 'entity-config' | 'account-structure' | 'transaction-defaults';
+}
+
+function getMasterStatus(key: string): 'seeded' | 'empty' | 'live' {
+  try {
+    // [JWT] GET /api/finecore/master-status/:key
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return 'live';
+      if (typeof parsed === 'object' && parsed !== null && Object.keys(parsed).length > 0) return 'live';
+    }
+  } catch { /* ignore */ }
+  return 'empty';
 }
 
 const MASTER_CARDS: MasterCard[] = [
   // Statutory Reference
-  { title: 'GST Rate Reference', desc: '24 GST rates + international — maintained by 4DSmartOps', icon: Calculator, module: 'finecore-tax-rates', status: 'seeded', section: 'statutory' },
-  { title: 'TDS / TCS Sections', desc: 'Tax deducted and collected at source — all sections', icon: Shield, module: 'finecore-tds', status: 'seeded', section: 'statutory' },
-  { title: 'HSN / SAC Directory', desc: '100+ codes with GST rates — searchable reference', icon: BookOpen, module: 'finecore-hsn-sac', status: 'seeded', section: 'statutory' },
-  { title: 'Payroll Statutory', desc: 'EPF, ESI, LWF, Professional Tax — contribution rates', icon: Users, module: 'finecore-epf-esi-lwf', status: 'seeded', section: 'statutory' },
-  { title: 'Income Tax Reference', desc: 'IT slabs, deductions, gratuity — FY 2024-25', icon: Receipt, module: 'finecore-income-tax', status: 'seeded', section: 'statutory' },
+  { title: 'GST Rate Reference', desc: '24 GST rates + international — maintained by 4DSmartOps', icon: Calculator, module: 'finecore-tax-rates', storageKey: 'erp_tax_rates', section: 'statutory' },
+  { title: 'TDS / TCS Sections', desc: 'Tax deducted and collected at source — all sections', icon: Shield, module: 'finecore-tds', storageKey: 'erp_tds_sections', section: 'statutory' },
+  { title: 'HSN / SAC Directory', desc: '100+ codes with GST rates — searchable reference', icon: BookOpen, module: 'finecore-hsn-sac', storageKey: 'erp_hsn_sac_codes', section: 'statutory' },
+  { title: 'Payroll Statutory', desc: 'EPF, ESI, LWF, Professional Tax — contribution rates', icon: Users, module: 'finecore-epf-esi-lwf', storageKey: 'erp_epf_esi_lwf', section: 'statutory' },
+  { title: 'Income Tax Reference', desc: 'IT slabs, deductions, gratuity — FY 2024-25', icon: Receipt, module: 'finecore-income-tax', storageKey: 'erp_income_tax', section: 'statutory' },
   // Entity Configuration
-  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'finecore-statutory-reg', status: 'seeded', section: 'entity-config' },
-  { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'finecore-gst-config', status: 'seeded', section: 'entity-config' },
-  { title: 'Comply360 Config', desc: 'Feature flags and ledger mappings', icon: Shield, module: 'finecore-comply360', status: 'seeded', section: 'entity-config' },
+  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'finecore-statutory-reg', storageKey: 'erp_statutory_registrations', section: 'entity-config' },
+  { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'finecore-gst-config', storageKey: 'erp_gst_entity_config', section: 'entity-config' },
+  { title: 'Comply360 Config', desc: 'Feature flags and ledger mappings', icon: Shield, module: 'finecore-comply360', storageKey: 'erp_comply360_config', section: 'entity-config' },
   // Account Structure
-  { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'finecore-currency', status: 'live', section: 'account-structure' },
-  { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', status: 'empty', section: 'account-structure' },
-  { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', status: 'empty', section: 'account-structure' },
-  { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', status: 'live', section: 'account-structure' },
+  { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'finecore-currency', storageKey: 'erp_currencies', section: 'account-structure' },
+  { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', storageKey: 'erp_finframe_groups', section: 'account-structure' },
+  { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', storageKey: 'erp_ledgers', section: 'account-structure' },
+  { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', storageKey: 'erp_voucher_types', section: 'account-structure' },
   // Transaction Defaults
-  { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', status: 'seeded', section: 'transaction-defaults' },
+  { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', storageKey: 'erp_transaction_templates', section: 'transaction-defaults' },
 ];
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {
@@ -47,6 +60,11 @@ const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls
 
 export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps) {
   const sections = ['statutory', 'entity-config', 'account-structure', 'transaction-defaults'] as const;
+
+  const statutoryCount = MASTER_CARDS.filter(c => c.section === 'statutory').length;
+  const entityCount = MASTER_CARDS.filter(c => c.section === 'entity-config').length;
+  const accountCount = MASTER_CARDS.filter(c => c.section === 'account-structure').length;
+  const liveCount = MASTER_CARDS.filter(c => getMasterStatus(c.storageKey) === 'live').length;
 
   return (
     <div className="space-y-6 relative">
@@ -60,12 +78,13 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { label: 'Statutory Reference', value: 5 },
-          { label: 'Entity Configuration', value: 3 },
-          { label: 'Account Structure', value: 4 },
-          { label: 'Total Masters', value: 12 },
+          { label: 'Statutory Reference', value: statutoryCount },
+          { label: 'Entity Configuration', value: entityCount },
+          { label: 'Account Structure', value: accountCount },
+          { label: 'Total Masters', value: MASTER_CARDS.length },
+          { label: 'Live / Configured', value: liveCount },
         ].map(s => (
           <div key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
             <p className="text-2xl font-bold text-foreground font-mono">{s.value}</p>
@@ -88,6 +107,7 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {cards.map((card, i) => {
                 const Icon = card.icon;
+                const status = getMasterStatus(card.storageKey);
                 return (
                   <button
                     key={card.title}
@@ -110,8 +130,10 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
                             <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20">Configure</Badge>
                           )}
                           <Badge variant="outline" className={`text-[10px] ${
-                            card.status === 'seeded' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-muted text-muted-foreground'
-                          }`}>{card.status === 'seeded' ? 'Seeded' : 'Empty'}</Badge>
+                            status === 'live' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                            status === 'seeded' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                            'bg-muted text-muted-foreground'
+                          }`}>{status === 'live' ? 'Live' : status === 'seeded' ? 'Seeded' : 'Empty'}</Badge>
                           <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground/80 group-hover:translate-x-1 transition-all" />
                         </div>
                       </div>

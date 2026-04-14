@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {
-  Building2, MapPin, Settings2, FileText, CalendarIcon, Loader2, Save,
+  Building2, MapPin, Settings2, FileText, CalendarIcon, Loader2, Save, Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,9 +30,14 @@ import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
-  'Service Centre', 'Retail Store', 'Sales Office', 'Collection Centre',
-  'Branch Office', 'Liaison Office', 'Project Site Office',
-  'Support Office', 'Regional Office', 'Delivery Point',
+  // Commercial
+  'Branch Office', 'Regional Office', 'Sales Office', 'Collection Centre',
+  'Retail Store', 'Service Centre', 'Delivery Point',
+  // Industrial
+  'Factory', 'Manufacturing Plant', 'Warehouse', 'Depot',
+  'Distribution Centre', 'Processing Unit', 'Data Centre', 'R&D Centre',
+  // Administrative
+  'Liaison Office', 'Project Site Office', 'Support Office',
 ];
 
 const BRANCH_STATUSES = [
@@ -52,6 +57,14 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'Project Site Office': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
   'Support Office': 'bg-teal-500/10 text-teal-600 border-teal-500/20',
   'Delivery Point': 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
+  'Factory': 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  'Manufacturing Plant': 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  'Warehouse': 'bg-stone-500/10 text-stone-700 border-stone-500/20',
+  'Depot': 'bg-stone-500/10 text-stone-700 border-stone-500/20',
+  'Distribution Centre': 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+  'Processing Unit': 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+  'Data Centre': 'bg-blue-500/10 text-blue-700 border-blue-500/20',
+  'R&D Centre': 'bg-violet-500/10 text-violet-700 border-violet-500/20',
 };
 
 const BUSINESS_ACTIVITIES = [
@@ -71,6 +84,13 @@ interface BranchFormData {
   notes: string;
   businessActivity: string;
   jurisdiction: string;
+  // Statutory registrations (branch-level)
+  gstinNo: string;
+  tanNo: string;
+  pfEstablishmentCode: string;
+  esicSubCode: string;
+  ptRegNo: string;
+  lwfRegNo: string;
 }
 
 const INITIAL: BranchFormData = {
@@ -85,6 +105,8 @@ const INITIAL: BranchFormData = {
   notes: '',
   businessActivity: 'Services',
   jurisdiction: '',
+  gstinNo: '', tanNo: '', pfEstablishmentCode: '', esicSubCode: '',
+  ptRegNo: '', lwfRegNo: '',
 };
 
 interface BranchOfficeFormProps {
@@ -330,7 +352,42 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
             </div>
           </FormSection>
 
-          {/* Section 4 — Notes */}
+          {/* Section 4 — Statutory Registrations */}
+          <FormSection title="Statutory Registrations" icon={<Shield className="h-4 w-4" />}>
+            <p className="text-xs text-muted-foreground mb-3">
+              Branch-level statutory registrations. Each branch / factory maintains its own
+              PF establishment code and ESIC sub-code even under the same company.
+              Leave blank if shared with parent company.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="GSTIN" hint="Only if this branch has its own GST registration">
+                <Input value={form.gstinNo} onChange={e => upd('gstinNo', e.target.value.toUpperCase())}
+                  placeholder="e.g. 27AAAAA0000A1Z5" maxLength={15} className="text-xs font-mono" />
+              </FormField>
+              <FormField label="TAN" hint="Branch TAN if separate from company TAN">
+                <Input value={form.tanNo} onChange={e => upd('tanNo', e.target.value.toUpperCase())}
+                  placeholder="e.g. MUMR12345A" maxLength={10} className="text-xs font-mono" />
+              </FormField>
+              <FormField label="PF Establishment Code" hint="EPFO code assigned to this branch or factory">
+                <Input value={form.pfEstablishmentCode} onChange={e => upd('pfEstablishmentCode', e.target.value)}
+                  placeholder="e.g. MH/MUM/12345" className="text-xs font-mono" />
+              </FormField>
+              <FormField label="ESIC Sub-Code" hint="ESIC sub-code assigned to this branch">
+                <Input value={form.esicSubCode} onChange={e => upd('esicSubCode', e.target.value)}
+                  placeholder="e.g. 51-000-12345-000" className="text-xs font-mono" />
+              </FormField>
+              <FormField label="Professional Tax Reg No" hint="State PT registration for employees at this location">
+                <Input value={form.ptRegNo} onChange={e => upd('ptRegNo', e.target.value)}
+                  className="text-xs font-mono" />
+              </FormField>
+              <FormField label="LWF Registration No" hint="Labour Welfare Fund — state-specific">
+                <Input value={form.lwfRegNo} onChange={e => upd('lwfRegNo', e.target.value)}
+                  className="text-xs font-mono" />
+              </FormField>
+            </div>
+          </FormSection>
+
+          {/* Section 5 — Notes */}
           <FormSection title="Notes" icon={<FileText className="h-4 w-4" />}>
             <Textarea
               value={form.notes}
