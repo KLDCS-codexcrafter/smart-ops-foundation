@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { toast } from 'sonner';
-import type { Shift, LeaveType, HolidayCalendar, AttendanceType,
+import type { Shift, LeaveType, HolidayCalendar, Holiday, AttendanceType,
   OvertimeRule, LoanType, BonusConfig, GratuityNPSSettings } from '@/types/payroll-masters';
 import {
   SHIFTS_KEY, LEAVE_TYPES_KEY, HOLIDAY_CALENDARS_KEY, ATTENDANCE_TYPES_KEY,
@@ -89,36 +89,118 @@ export function useLeaveTypes() {
 
 // ── useHolidayCalendars ──────────────────────────────────────────────
 export function useHolidayCalendars() {
+
+  // ── Migration-safe load ─────────────────────────────────────────
   const load = (): HolidayCalendar[] => {
     try {
       // [JWT] GET /api/pay-hub/masters/holiday-calendars
       const raw = localStorage.getItem(HOLIDAY_CALENDARS_KEY);
-      if (raw) return JSON.parse(raw);
+      if (!raw) return [];
+      const parsed: HolidayCalendar[] = JSON.parse(raw);
+      // Migrate old records that have year but no fromDate
+      return parsed.map(c => {
+        if (c.fromDate) return c; // already new shape
+        const yr = (c as unknown as {year?:number}).year ?? new Date().getFullYear();
+        return {
+          ...c,
+          calendarLevel: c.calendarLevel ?? 'national',
+          parentCalendarId: c.parentCalendarId ?? '',
+          entityId: c.entityId ?? '',
+          entityType: c.entityType ?? 'parent_company',
+          fromDate: `${yr}-01-01`,
+          toDate: `${yr}-12-31`,
+          stateCode: c.stateCode ?? '',
+          stateName: c.stateName ?? '',
+          location: c.location ?? 'All Locations',
+          inheritedHolidays: c.inheritedHolidays ?? [],
+          holidays: (c.holidays ?? []).map(h => ({
+            ...h,
+            localName: (h as any).localName ?? '',
+            counties: (h as any).counties ?? [],
+            isFixed: (h as any).isFixed ?? false,
+            source: (h as any).source ?? 'manual',
+          })),
+        };
+      });
     } catch { /* ignore */ }
     return [];
   };
+
   const [calendars, setCalendars] = useState<HolidayCalendar[]>(load);
+
   const save = (items: HolidayCalendar[]) => {
     // [JWT] PUT /api/pay-hub/masters/holiday-calendars
     localStorage.setItem(HOLIDAY_CALENDARS_KEY, JSON.stringify(items));
     setCalendars(items);
   };
+
+  // ── Compute inherited holidays for a calendar ──────────────────
+  // Walks the parent chain and collects all holidays from ancestors.
+  const resolveInherited = (cal: HolidayCalendar, all: HolidayCalendar[]): Holiday[] => {
+    if (!cal.parentCalendarId) return [];
+    const parent = all.find(c => c.id === cal.parentCalendarId);
+    if (!parent) return [];
+    const grandparentInherited = resolveInherited(parent, all);
+    return [...grandparentInherited, ...parent.holidays];
+  };
+
   const create = (form: Omit<HolidayCalendar,"id"|"created_at"|"updated_at">) => {
     const now = new Date().toISOString();
-    save([...calendars, { ...form, id: `hc-${Date.now()}`, created_at: now, updated_at: now }]);
+    const newCal: HolidayCalendar = {
+      ...form,
+      id: `hc-${Date.now()}`,
+      created_at: now, updated_at: now,
+    };
+    // Auto-resolve inherited holidays from parent chain
+    const allWithNew = [...calendars, newCal];
+    newCal.inheritedHolidays = resolveInherited(newCal, allWithNew);
+    save([...calendars, newCal]);
     toast.success(`Calendar '${form.name}' created`);
     // [JWT] POST /api/pay-hub/masters/holiday-calendars
   };
+
   const update = (id: string, patch: Partial<HolidayCalendar>) => {
-    save(calendars.map(c => c.id === id ? { ...c, ...patch, updated_at: new Date().toISOString() } : c));
-    toast.success("Holiday calendar updated");
+    const updated = calendars.map(c => c.id === id
+      ? { ...c, ...patch, updated_at: new Date().toISOString() } : c);
+    // Re-resolve inherited for this and any children
+    const reResolved = updated.map(c => {
+      if (c.id === id || c.parentCalendarId === id) {
+        return { ...c, inheritedHolidays: resolveInherited(c, updated) };
+      }
+      return c;
+    });
+    save(reResolved);
+    toast.success('Holiday calendar updated');
     // [JWT] PATCH /api/pay-hub/masters/holiday-calendars/:id
   };
+
+  const remove = (id: string) => {
+    save(calendars.filter(c => c.id !== id));
+    toast.success('Calendar deleted');
+    // [JWT] DELETE /api/pay-hub/masters/holiday-calendars/:id
+  };
+
   const toggleStatus = (id: string) => {
     const c = calendars.find(x => x.id === id);
     if (c) update(id, { status: c.status === 'active' ? 'inactive' : 'active' });
   };
-  return { calendars, create, update, toggleStatus };
+
+  const clone = (id: string) => {
+    const src = calendars.find(c => c.id === id);
+    if (!src) return;
+    const now = new Date().toISOString();
+    const newCal: HolidayCalendar = {
+      ...src,
+      id: `hc-${Date.now()}`,
+      name: `${src.name} (Copy)`,
+      status: 'inactive',
+      created_at: now, updated_at: now,
+    };
+    save([...calendars, newCal]);
+    toast.success(`Calendar cloned from '${src.name}'`);
+  };
+
+  return { calendars, create, update, remove, clone, toggleStatus };
 }
 
 // ── useAttendanceTypes ───────────────────────────────────────────────
