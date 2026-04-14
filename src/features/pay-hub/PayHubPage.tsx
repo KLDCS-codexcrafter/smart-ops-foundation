@@ -50,7 +50,7 @@ function ComingSoonPanel({ module }: { module: PayHubModule }) {
 
 function renderModule(mod: PayHubModule): React.ReactElement {
   switch (mod) {
-    case 'ph-dashboard': return <PayHubDashboardPanel />;
+    case 'ph-dashboard': return <PayHubDashboardPanel selectedEntityId={selectedEntityId} />;
     case 'ph-pay-heads': return <PayHeadMasterPanel />;
     case 'ph-salary-structures': return <SalaryStructureMasterPanel />;
     case 'ph-pay-grades': return <PayGradeMasterPanel />;
@@ -169,6 +169,8 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
 
 export default function PayHubPage() {
   const [activeModule, setActiveModule] = useState<PayHubModule>('ph-dashboard');
+  const { entities, selectedEntityId, setSelectedEntityId,
+    selectedEntity, isMultiEntity } = useEntityList();
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -190,7 +192,8 @@ export default function PayHubPage() {
             { label: breadcrumbLabels[activeModule] ?? activeModule },
           ]}
           showDatePicker={false}
-          showCompany={false}
+          showCompany={isMultiEntity}
+          companies={entities}
         />
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-7xl mx-auto">
