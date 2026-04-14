@@ -805,7 +805,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                 const lt = loanTypes.find(l => l.id === v);
                 if (lt) {
                   luf('loanTypeId', v); luf('loanTypeName', lt.name);
-                  luf('interestRatePct', lt.interestRatePct); luf('interestType', lt.interestType as any);
+                  luf('interestRatePct', lt.interestRatePct); luf('interestType', lt.interestType as 'simple' | 'compound' | 'nil');
                 }
               }}>
                 <SelectTrigger><SelectValue placeholder="Select loan type" /></SelectTrigger>
@@ -875,7 +875,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Recovery Period</Label>
-              <Select value={advForm.recoveryPeriod} onValueChange={v => setAdvForm(prev => ({ ...prev, recoveryPeriod: v as any }))}>
+              <Select value={advForm.recoveryPeriod} onValueChange={v => setAdvForm(prev => ({ ...prev, recoveryPeriod: v as 'same_month' | 'next_month' | 'split_2_months' }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="same_month">Same Month</SelectItem>
@@ -916,7 +916,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Category *</Label>
-              <Select value={expForm.category} onValueChange={v => setExpForm(prev => ({ ...prev, category: v as any }))}>
+              <Select value={expForm.category} onValueChange={v => setExpForm(prev => ({ ...prev, category: v as ExpenseCategory }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(EXPENSE_CATEGORY_LABELS) as Array<keyof typeof EXPENSE_CATEGORY_LABELS>).map(cat => (
@@ -942,7 +942,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Reimbursement Mode</Label>
-              <Select value={expForm.reimbursementMode} onValueChange={v => setExpForm(prev => ({ ...prev, reimbursementMode: v as any }))}>
+              <Select value={expForm.reimbursementMode} onValueChange={v => setExpForm(prev => ({ ...prev, reimbursementMode: v as 'payroll' | 'bank_transfer' }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="payroll">Via Payroll</SelectItem>
