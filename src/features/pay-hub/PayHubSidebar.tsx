@@ -8,6 +8,7 @@ import {
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
+  Star, Grid3X3, TrendingUp, Target,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -49,7 +50,11 @@ export type PayHubModule =
   | 'ph-recruitment'
   | 'ph-documents'
   | 'ph-policies'
-  | 'ph-onboarding';
+  | 'ph-onboarding'
+  | 'ph-performance'
+  | 'ph-9box'
+  | 'ph-succession'
+  | 'ph-compensation';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -65,6 +70,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
   'ph-recruitment', 'ph-documents', 'ph-policies',
   'ph-onboarding',
+  'ph-performance', 'ph-9box', 'ph-succession', 'ph-compensation',
 ];
 
 interface SidebarItem {
@@ -119,6 +125,13 @@ const RECRUITMENT_ITEMS: SidebarItem[] = [
   { id: 'ph-onboarding',   label: 'Onboarding',      icon: Rocket },
 ];
 
+const PERFORMANCE_ITEMS: SidebarItem[] = [
+  { id: 'ph-performance',   label: 'Performance Reviews', icon: Star },
+  { id: 'ph-9box',          label: '9-Box Grid',          icon: Grid3X3 },
+  { id: 'ph-succession',    label: 'Succession Planning', icon: Users },
+  { id: 'ph-compensation',  label: 'Compensation Actions', icon: TrendingUp },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -130,6 +143,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [statutoryOpen, setStatutoryOpen] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
   const [recruitmentOpen, setRecruitmentOpen] = useState(false);
+  const [performanceOpen, setPerformanceOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -222,6 +236,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('EMPLOYEE FINANCE', FINANCE_ITEMS, financeOpen, setFinanceOpen)}
 
         {renderSection('RECRUITMENT', RECRUITMENT_ITEMS, recruitmentOpen, setRecruitmentOpen)}
+        {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
         {/* Reports placeholder */}
         <div className="px-4 py-2">
           <div className="flex items-center gap-1">
