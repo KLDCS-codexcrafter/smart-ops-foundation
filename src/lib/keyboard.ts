@@ -56,7 +56,8 @@ export const useCtrlS = (handler: () => void) => {
  * Example: 100000 → '1,00,000'
  */
 export const toIndianFormat = (n: number): string => {
-  if (isNaN(n) || n === 0) return '';
+  if (isNaN(n)) return '0';
+  if (n === 0) return '0';
   const [int, dec] = Math.abs(n).toFixed(2).split('.');
   const last3 = int.slice(-3);
   const rest = int.slice(0, -3);

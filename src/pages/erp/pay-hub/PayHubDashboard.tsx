@@ -470,12 +470,12 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
         {[
           { label: 'Active Employees', value: headcount.activeCount,   icon: Users,        color: 'text-violet-500 bg-violet-500/10', module: 'ph-employees' },
-          { label: 'This Month Gross', value: payrollCost ? `₹${toIndianFormat(payrollCost.latestGross)}` : '—', icon: IndianRupee, color: 'text-amber-500 bg-amber-500/10', module: 'ph-payroll-processing' },
+          { label: 'This Month Gross', value: payrollCost ? `₹${toIndianFormat(payrollCost.latestGross)}` : '₹0', icon: IndianRupee, color: 'text-amber-500 bg-amber-500/10', module: 'ph-payroll-processing' },
           { label: 'New Joiners',      value: headcount.newJoiners,    icon: UserPlus,     color: 'text-emerald-500 bg-emerald-500/10', module: 'ph-onboarding' },
           { label: 'On Notice',        value: headcount.onNotice,      icon: UserMinus,    color: 'text-red-500 bg-red-500/10', module: 'ph-exit' },
           { label: 'Leave Pending',    value: leaveData.pending,       icon: Clock,        color: 'text-blue-500 bg-blue-500/10', module: 'ph-leave-requests' },
           { label: 'Open Positions',   value: hiring.openReqs,         icon: Briefcase,    color: 'text-cyan-500 bg-cyan-500/10', module: 'ph-recruitment' },
-          { label: 'Avg Perf Score',   value: talent.avgPerfScore || '—', icon: Star,      color: 'text-yellow-500 bg-yellow-500/10', module: 'ph-performance' },
+          { label: 'Avg Perf Score',   value: talent.avgPerfScore ? `${talent.avgPerfScore}/5` : '0/5', icon: Star,      color: 'text-yellow-500 bg-yellow-500/10', module: 'ph-performance' },
           { label: 'Attrition (FY)',   value: `${attrition.attritionRate}%`, icon: TrendingDown, color: 'text-slate-500 bg-slate-500/10', module: 'ph-exit' },
         ].map(kpi => (
           <button key={kpi.label} onClick={() => navigateTo(kpi.module)}

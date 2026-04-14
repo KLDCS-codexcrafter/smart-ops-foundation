@@ -333,24 +333,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
   const getChallan = (type: ChallanRecord['challanType']) =>
     periodChallans.find(c => c.challanType === type);
 
-  // ── Challan badge ─────────────────────────────────────────────
-  const ChallanBadge = ({ type }: { type: ChallanRecord['challanType'] }) => {
-    const ch = getChallan(type);
-    if (ch) {
-      return (
-        <Badge variant="outline" className={CHALLAN_STATUS_COLORS[ch.status] + ' cursor-pointer'}
-          onClick={() => openEditChallan(ch)}>
-          {ch.status === 'paid' ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-          {ch.status.toUpperCase()} {ch.challanNo ? `— ${ch.challanNo}` : ''}
-        </Badge>
-      );
-    }
-    return (
-      <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
-        <AlertTriangle className="h-3 w-3 mr-1" /> Not paid
-      </Badge>
-    );
-  };
+  // ChallanBadge is defined at module level (above) — see ChallanBadgeComponent
 
   // ── State grouping for PT ─────────────────────────────────────
   const ptByState = useMemo(() => {
