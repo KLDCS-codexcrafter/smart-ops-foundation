@@ -992,10 +992,10 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
             </div>
             <div><Label className="text-xs">New Designation (optional)</Label><Input className="h-8 text-xs" value={compForm.newDesignation} onChange={e => cuf('newDesignation', e.target.value)} onKeyDown={onEnterNext} /></div>
             <div><Label className="text-xs">Link to Review (optional)</Label>
-              <Select value={compForm.linkedReviewId} onValueChange={v => cuf('linkedReviewId', v)}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="None" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+               <Select value={compForm.linkedReviewId || '_none'} onValueChange={v => cuf('linkedReviewId', v === '_none' ? '' : v)}>
+                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="None" /></SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="_none">None</SelectItem>
                   {completedReviews.filter(r => r.employeeId === compForm.employeeId).map(r => (
                     <SelectItem key={r.id} value={r.id}>{r.reviewCode} — {r.cycleName}</SelectItem>
                   ))}

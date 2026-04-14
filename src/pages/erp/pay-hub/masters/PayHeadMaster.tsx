@@ -342,10 +342,10 @@ export function PayHeadMasterPanel() {
               {showCalcFields && (
                 <div>
                   <Label className="text-xs">Calculation Basis</Label>
-                  <Select value={form.calculationBasis} onValueChange={(v) => updateField('calculationBasis', v)}>
-                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">— None —</SelectItem>
+                   <Select value={form.calculationBasis || '_none'} onValueChange={(v) => updateField('calculationBasis', v === '_none' ? '' : v)}>
+                     <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                     <SelectContent>
+                       <SelectItem value="_none">— None —</SelectItem>
                       <SelectItem value="ctc">CTC</SelectItem>
                       <SelectItem value="basic">Basic</SelectItem>
                       <SelectItem value="gross">Gross</SelectItem>

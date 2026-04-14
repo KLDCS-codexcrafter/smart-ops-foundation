@@ -481,7 +481,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
               <SelectTrigger className="w-44 h-8 text-xs"><SelectValue placeholder="Agency" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Agencies</SelectItem>
-                {activeAgencyList.map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}
+                {activeAgencyList.filter(a => a.id).map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={workerSkillFilter} onValueChange={setWorkerSkillFilter}>
@@ -714,7 +714,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
               <SelectTrigger className="w-44 h-8 text-xs"><SelectValue placeholder="Agency" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Agencies</SelectItem>
-                {activeAgencyList.map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}
+                {activeAgencyList.filter(a => a.id).map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={compMonthFilter} onValueChange={setCompMonthFilter}>
@@ -845,7 +845,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
             <div><Label className="text-xs">Agency *</Label>
               <Select value={workerForm.agencyId} onValueChange={v => { const ag = activeAgencyList.find(a => a.id === v); wuf('agencyId', v); wuf('agencyName', ag?.agencyName ?? ''); }}>
                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select agency" /></SelectTrigger>
-                <SelectContent>{activeAgencyList.map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}</SelectContent>
+                <SelectContent>{activeAgencyList.filter(a => a.id).map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -908,7 +908,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
             <div><Label className="text-xs">Agency *</Label>
               <Select value={orderForm.agencyId} onValueChange={v => { const ag = activeAgencyList.find(a => a.id === v); orf('agencyId', v); orf('agencyName', ag?.agencyName ?? ''); }}>
                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select agency" /></SelectTrigger>
-                <SelectContent>{activeAgencyList.map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}</SelectContent>
+                <SelectContent>{activeAgencyList.filter(a => a.id).map(a => <SelectItem key={a.id} value={a.id}>{a.agencyName}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div><Label className="text-xs">Description *</Label><Textarea value={orderForm.description} onChange={e => orf('description', e.target.value)} rows={2} /></div>
@@ -965,7 +965,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
                 ivf('agencyId', wo?.agencyId ?? ''); ivf('agencyName', wo?.agencyName ?? '');
               }}>
                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select work order" /></SelectTrigger>
-                <SelectContent>{activeOrderList.map(o => <SelectItem key={o.id} value={o.id}>{o.orderCode} — {o.agencyName} — {o.description}</SelectItem>)}</SelectContent>
+                <SelectContent>{activeOrderList.filter(o => o.id).map(o => <SelectItem key={o.id} value={o.id}>{o.orderCode} — {o.agencyName} — {o.description}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -1012,7 +1012,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
                 atf('dailyWage', w?.dailyWage ?? 0);
               }}>
                 <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select worker" /></SelectTrigger>
-                <SelectContent>{activeWorkerList.map(w => <SelectItem key={w.id} value={w.id}>{w.workerCode} — {w.displayName}</SelectItem>)}</SelectContent>
+                <SelectContent>{activeWorkerList.filter(w => w.id).map(w => <SelectItem key={w.id} value={w.id}>{w.workerCode} — {w.displayName}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div><Label className="text-xs">Work Order *</Label>
