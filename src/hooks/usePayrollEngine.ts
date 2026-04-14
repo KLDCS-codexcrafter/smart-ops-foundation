@@ -416,6 +416,11 @@ export function usePayrollEngine() {
       ? allRuns.map((r, i) => i === existingIdx ? run : r)
       : [...allRuns, run];
     setRuns(updated); saveRuns(updated);
+
+    // [JWT] POST /api/pay-hub/payroll/runs/:period/calculate
+
+    toast.success(`Payroll ${run.payPeriod} calculated — ${payslips.length} employee(s) processed`);
+
     return run;
   };
 
