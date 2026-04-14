@@ -22,7 +22,7 @@ import { CreditCard, Wallet, Receipt, Gift, Plus, Check, X,
   ChevronDown, ChevronRight, Calculator, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LoanApplication, SalaryAdvance, ExpenseClaim, FlexiAllocation,
-  EMIScheduleRow, FlexiComponent, FinanceTab } from '@/types/employee-finance';
+  EMIScheduleRow, FlexiComponent, FinanceTab, ExpenseCategory } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY, EXPENSE_CLAIMS_KEY,
   FLEXI_ALLOCATIONS_KEY, LOAN_STATUS_COLORS, EXPENSE_STATUS_COLORS,
   EXPENSE_CATEGORY_LABELS, FLEXI_COMPONENT_LABELS } from '@/types/employee-finance';
@@ -205,13 +205,21 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
 
   // ── Loan Sheet ────────────────────────────────────────────────
   const [loanSheetOpen, setLoanSheetOpen] = useState(false);
-  const BLANK_LOAN = {
+  const BLANK_LOAN: {
+    employeeId: string; employeeCode: string; employeeName: string;
+    loanTypeId: string; loanTypeName: string;
+    principalAmount: number; tenureMonths: number; interestRatePct: number;
+    interestType: 'simple' | 'compound' | 'nil'; emiAmount: number; totalPayable: number;
+    disbursedDate: string; firstEMIDate: string; remainingBalance: number; paidEMIs: number;
+    reason: string; status: 'pending'; approvedBy: string;
+    approvedAt: string; rejectionReason: string; foreclosureDate: string; foreclosureAmount: number;
+  } = {
     employeeId:'', employeeCode:'', employeeName:'',
     loanTypeId:'', loanTypeName:'',
     principalAmount:0, tenureMonths:12, interestRatePct:0,
-    interestType:'nil' as const, emiAmount:0, totalPayable:0,
+    interestType:'nil', emiAmount:0, totalPayable:0,
     disbursedDate:'', firstEMIDate:'', remainingBalance:0, paidEMIs:0,
-    reason:'', status:'pending' as const, approvedBy:'',
+    reason:'', status:'pending', approvedBy:'',
     approvedAt:'', rejectionReason:'', foreclosureDate:'', foreclosureAmount:0,
   };
   const [loanForm, setLoanForm] = useState(BLANK_LOAN);
@@ -242,11 +250,16 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
 
   // ── Advance Sheet ─────────────────────────────────────────────
   const [advSheetOpen, setAdvSheetOpen] = useState(false);
-  const BLANK_ADV = {
+  const BLANK_ADV: {
+    employeeId: string; employeeCode: string; employeeName: string;
+    amount: number; requestDate: string;
+    recoveryPeriod: 'same_month' | 'next_month' | 'split_2_months'; reason: string;
+    status: 'pending'; approvedBy: string; recoveredDate: string;
+  } = {
     employeeId:'', employeeCode:'', employeeName:'',
     amount:0, requestDate: format(new Date(),'yyyy-MM-dd'),
-    recoveryPeriod:'next_month' as const, reason:'',
-    status:'pending' as const, approvedBy:'', recoveredDate:'',
+    recoveryPeriod:'next_month', reason:'',
+    status:'pending', approvedBy:'', recoveredDate:'',
   };
   const [advForm, setAdvForm] = useState(BLANK_ADV);
 
@@ -264,13 +277,20 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
 
   // ── Expense Sheet ─────────────────────────────────────────────
   const [expSheetOpen, setExpSheetOpen] = useState(false);
-  const BLANK_EXP = {
+  const BLANK_EXP: {
+    employeeId: string; employeeCode: string; employeeName: string;
+    claimDate: string; expenseDate: string;
+    category: ExpenseCategory; description: string; amount: number;
+    receiptRef: string; status: 'submitted'; approvedBy: string;
+    approvedAmount: number; rejectionReason: string; reimbursedDate: string;
+    reimbursementMode: 'payroll' | 'bank_transfer';
+  } = {
     employeeId:'', employeeCode:'', employeeName:'',
     claimDate: format(new Date(),'yyyy-MM-dd'), expenseDate:'',
-    category:'travel' as const, description:'', amount:0,
-    receiptRef:'', status:'submitted' as const, approvedBy:'',
+    category:'travel', description:'', amount:0,
+    receiptRef:'', status:'submitted', approvedBy:'',
     approvedAmount:0, rejectionReason:'', reimbursedDate:'',
-    reimbursementMode:'payroll' as const,
+    reimbursementMode:'payroll',
   };
   const [expForm, setExpForm] = useState(BLANK_EXP);
 
@@ -805,7 +825,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                 const lt = loanTypes.find(l => l.id === v);
                 if (lt) {
                   luf('loanTypeId', v); luf('loanTypeName', lt.name);
-                  luf('interestRatePct', lt.interestRatePct); luf('interestType', lt.interestType as any);
+                  luf('interestRatePct', lt.interestRatePct); luf('interestType', lt.interestType as 'simple' | 'compound' | 'nil');
                 }
               }}>
                 <SelectTrigger><SelectValue placeholder="Select loan type" /></SelectTrigger>
@@ -875,7 +895,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Recovery Period</Label>
-              <Select value={advForm.recoveryPeriod} onValueChange={v => setAdvForm(prev => ({ ...prev, recoveryPeriod: v as any }))}>
+              <Select value={advForm.recoveryPeriod} onValueChange={v => setAdvForm(prev => ({ ...prev, recoveryPeriod: v as 'same_month' | 'next_month' | 'split_2_months' }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="same_month">Same Month</SelectItem>
@@ -916,7 +936,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Category *</Label>
-              <Select value={expForm.category} onValueChange={v => setExpForm(prev => ({ ...prev, category: v as any }))}>
+              <Select value={expForm.category} onValueChange={v => setExpForm(prev => ({ ...prev, category: v as ExpenseCategory }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(EXPENSE_CATEGORY_LABELS) as Array<keyof typeof EXPENSE_CATEGORY_LABELS>).map(cat => (
@@ -942,7 +962,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             </div>
             <div className="space-y-1.5">
               <Label>Reimbursement Mode</Label>
-              <Select value={expForm.reimbursementMode} onValueChange={v => setExpForm(prev => ({ ...prev, reimbursementMode: v as any }))}>
+              <Select value={expForm.reimbursementMode} onValueChange={v => setExpForm(prev => ({ ...prev, reimbursementMode: v as 'payroll' | 'bank_transfer' }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="payroll">Via Payroll</SelectItem>
