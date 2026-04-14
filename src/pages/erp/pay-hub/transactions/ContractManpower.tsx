@@ -109,7 +109,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     address: '', stateCode: '', panNumber: '', gstNumber: '',
     pfRegistrationNo: '', esicRegistrationNo: '', clraLicenceNo: '',
     clraLicenceExpiry: '', serviceChargePct: 0, paymentTermsDays: 30,
-    status: 'active' as const, notes: '',
+    status: 'active' as LabourContractor['status'], notes: '',
   };
   const [agencyForm, setAgencyForm] = useState(BLANK_AGENCY);
   const auf = <K extends keyof typeof BLANK_AGENCY>(k: K, v: (typeof BLANK_AGENCY)[K]) =>
@@ -135,7 +135,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
   const [workerEditId, setWorkerEditId] = useState<string | null>(null);
   const BLANK_WORKER = {
     agencyId: '', agencyName: '', firstName: '', lastName: '', displayName: '',
-    gender: 'male' as const, dob: '', mobile: '', aadhaar: '', uan: '', esicIpNo: '',
+    gender: 'male' as ContractWorker['gender'], dob: '', mobile: '', aadhaar: '', uan: '', esicIpNo: '',
     skillCategory: 'unskilled' as WorkerSkillCategory,
     designation: '', deployedDepartment: '', deployedLocation: '',
     dailyWage: 0, pfApplicable: true, esicApplicable: true,
