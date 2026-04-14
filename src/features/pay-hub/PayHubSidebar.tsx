@@ -7,7 +7,7 @@ import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
-  CreditCard, Wallet, Receipt,
+  CreditCard, Wallet, Receipt, Briefcase, BookOpen,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -110,6 +110,12 @@ const FINANCE_ITEMS: SidebarItem[] = [
   { id: 'ph-flexi-benefits',  label: 'Flexi Benefits',    icon: Gift },
 ];
 
+const RECRUITMENT_ITEMS: SidebarItem[] = [
+  { id: 'ph-recruitment',  label: 'Recruitment',     icon: Briefcase },
+  { id: 'ph-documents',    label: 'Document Vault',  icon: FileText },
+  { id: 'ph-policies',     label: 'Policy Library',  icon: BookOpen },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -120,6 +126,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [txnOpen, setTxnOpen] = useState(false);
   const [statutoryOpen, setStatutoryOpen] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
+  const [recruitmentOpen, setRecruitmentOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
