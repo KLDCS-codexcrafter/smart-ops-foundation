@@ -43,6 +43,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-asset-master',
   'ph-attendance-entry',
   'ph-leave-requests',
+  'ph-payroll-processing',
 ];
 
 interface SidebarItem {
