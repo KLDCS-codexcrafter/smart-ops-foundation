@@ -9,7 +9,7 @@ import {
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
-  UserCog, Mail, Monitor,
+  UserCog, Mail, Monitor, LogOut,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -67,7 +67,9 @@ export type PayHubModule =
   | 'ph-ess'
   | 'ph-access-control'
   | 'ph-email-templates'
-  | 'ph-activity';
+  | 'ph-activity'
+  | 'ph-exit'
+  | 'ph-fnf';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -86,6 +88,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
   'ph-directory', 'ph-inbox', 'ph-collaboration', 'ph-total-rewards',
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
+  'ph-exit', 'ph-fnf',
 ];
 
 interface SidebarItem {
