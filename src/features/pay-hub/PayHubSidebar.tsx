@@ -149,6 +149,13 @@ const LEARNING_ITEMS: SidebarItem[] = [
   { id: 'ph-certifications',   label: 'Certifications',   icon: Award },
 ];
 
+const EXPERIENCE_ITEMS: SidebarItem[] = [
+  { id: 'ph-directory',     label: 'Employee Directory', icon: Users },
+  { id: 'ph-inbox',         label: 'Inbox',              icon: Bell },
+  { id: 'ph-collaboration', label: 'Collaboration',      icon: Heart },
+  { id: 'ph-total-rewards', label: 'Total Rewards',      icon: Gift },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -162,6 +169,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [recruitmentOpen, setRecruitmentOpen] = useState(false);
   const [performanceOpen, setPerformanceOpen] = useState(false);
   const [learningOpen, setLearningOpen] = useState(false);
+  const [experienceOpen, setExperienceOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
