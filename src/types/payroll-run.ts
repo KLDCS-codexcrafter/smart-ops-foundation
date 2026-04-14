@@ -2,15 +2,34 @@
 
 // ── Single payslip line (one component row) ───────────────────────
 export interface PayslipLine {
+  id?: string;               // optional — used for loan/advance lines
   headCode: string;          // 'BASIC', 'HRA', 'EMP_PF' …
   headName: string;
-  headShortName: string;
+  headShortName?: string;
   type: 'earning' | 'deduction' | 'employer_contribution';
   monthly: number;           // rounded to nearest rupee
   annual: number;
   isTaxable: boolean;
-  partOfCTC: boolean;
-  partOfGross: boolean;
+  partOfCTC?: boolean;
+  partOfGross?: boolean;
+  calculationType?: string;
+  calculationValue?: number;
+  payHeadId?: string;
+}
+
+// ── Loan deduction line (embedded in payslip) ─────────────────────
+export interface LoanDeductionLine {
+  loanId: string;
+  loanTypeName: string;
+  emiAmount: number;
+  remainingBalance: number;
+}
+
+// ── Advance recovery line (embedded in payslip) ───────────────────
+export interface AdvanceRecoveryLine {
+  advanceId: string;
+  amount: number;
+  recoveryPeriod: string;
 }
 
 // ── IT computation detail ─────────────────────────────────────────
@@ -42,6 +61,8 @@ export interface EmployeePayslip {
   presentDays: number;        // days actually worked (after LOP)
   lopDays: number;
   lines: PayslipLine[];
+  loanDeductions: LoanDeductionLine[];
+  advanceRecoveries: AdvanceRecoveryLine[];
   // Totals
   grossEarnings: number;
   totalDeductions: number;

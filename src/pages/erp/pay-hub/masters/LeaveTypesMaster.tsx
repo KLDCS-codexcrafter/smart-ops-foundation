@@ -18,6 +18,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useLeaveTypes } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { LeaveType } from '@/types/payroll-masters';
+import { LEAVE_TYPES_KEY } from '@/types/payroll-masters';
+import { MasterPropagationDialog } from '@/components/pay-hub/MasterPropagationDialog';
 
 type LTForm = Omit<LeaveType, 'id' | 'created_at' | 'updated_at'>;
 const BLANK: LTForm = {
@@ -43,6 +45,9 @@ export function LeaveTypesMasterPanel() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
   const [form, setForm] = useState<LTForm>({...BLANK});
+  const [propagateOpen, setPropagateOpen] = useState(false);
+  const [lastSavedName, setLastSavedName] = useState('');
+  const [lastSavedId, setLastSavedId] = useState('');
 
   const filtered = leaveTypes
     .filter(TAB_FILTERS[tab] || TAB_FILTERS.all)
@@ -59,14 +64,19 @@ export function LeaveTypesMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
+    const generatedId = editId || `lt-${Date.now()}`;
     if (editId) update(editId, form); else create(form);
+    setLastSavedName(form.name);
+    setLastSavedId(generatedId);
     setSheetOpen(false);
+    setPropagateOpen(true);
   }, [form, editId, sheetOpen, create, update]);
 
   useCtrlS(handleSave);
   const setF = <K extends keyof LTForm>(k: K, v: LTForm[K]) => setForm(p => ({...p,[k]:v}));
 
   return (
+    <>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -192,6 +202,16 @@ export function LeaveTypesMasterPanel() {
         </SheetContent>
       </Sheet>
     </div>
+
+    <MasterPropagationDialog
+      open={propagateOpen}
+      onOpenChange={setPropagateOpen}
+      masterType="Leave Type"
+      masterName={lastSavedName}
+      storageKey={LEAVE_TYPES_KEY}
+      recordId={lastSavedId}
+    />
+    </>
   );
 }
 
