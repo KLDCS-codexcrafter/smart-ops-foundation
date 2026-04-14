@@ -8,7 +8,7 @@ import {
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
-  Star, Grid3X3, TrendingUp, Target,
+  Star, Grid3X3, TrendingUp, Target, GraduationCap,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -54,7 +54,11 @@ export type PayHubModule =
   | 'ph-performance'
   | 'ph-9box'
   | 'ph-succession'
-  | 'ph-compensation';
+  | 'ph-compensation'
+  | 'ph-training-catalog'
+  | 'ph-training-enroll'
+  | 'ph-skill-matrix'
+  | 'ph-certifications';
 
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
@@ -71,6 +75,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-recruitment', 'ph-documents', 'ph-policies',
   'ph-onboarding',
   'ph-performance', 'ph-9box', 'ph-succession', 'ph-compensation',
+  'ph-training-catalog', 'ph-training-enroll', 'ph-skill-matrix', 'ph-certifications',
 ];
 
 interface SidebarItem {
@@ -132,6 +137,13 @@ const PERFORMANCE_ITEMS: SidebarItem[] = [
   { id: 'ph-compensation',  label: 'Compensation Actions', icon: TrendingUp },
 ];
 
+const LEARNING_ITEMS: SidebarItem[] = [
+  { id: 'ph-training-catalog', label: 'Training Catalog', icon: BookOpen },
+  { id: 'ph-training-enroll',  label: 'Enrollments',      icon: GraduationCap },
+  { id: 'ph-skill-matrix',     label: 'Skill Matrix',     icon: Grid3X3 },
+  { id: 'ph-certifications',   label: 'Certifications',   icon: Award },
+];
+
 interface PayHubSidebarProps {
   activeModule: PayHubModule;
   onModuleChange: (m: PayHubModule) => void;
@@ -144,6 +156,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   const [financeOpen, setFinanceOpen] = useState(false);
   const [recruitmentOpen, setRecruitmentOpen] = useState(false);
   const [performanceOpen, setPerformanceOpen] = useState(false);
+  const [learningOpen, setLearningOpen] = useState(false);
 
   const isLive = (id: PayHubModule) => LIVE_MODULES.includes(id);
 
@@ -237,6 +250,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
 
         {renderSection('RECRUITMENT', RECRUITMENT_ITEMS, recruitmentOpen, setRecruitmentOpen)}
         {renderSection('PERFORMANCE & TALENT', PERFORMANCE_ITEMS, performanceOpen, setPerformanceOpen)}
+        {renderSection('LEARNING & DEVELOPMENT', LEARNING_ITEMS, learningOpen, setLearningOpen)}
         {/* Reports placeholder */}
         <div className="px-4 py-2">
           <div className="flex items-center gap-1">

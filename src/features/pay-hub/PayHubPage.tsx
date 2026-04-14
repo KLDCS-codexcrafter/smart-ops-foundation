@@ -31,6 +31,7 @@ import { RecruitmentPanel } from '@/pages/erp/pay-hub/transactions/Recruitment';
 import { DocumentsAndPoliciesPanel } from '@/pages/erp/pay-hub/transactions/DocumentsAndPolicies';
 import { OnboardingPanel } from '@/pages/erp/pay-hub/transactions/Onboarding';
 import { PerformanceAndTalentPanel } from '@/pages/erp/pay-hub/transactions/PerformanceAndTalent';
+import { LearningAndDevelopmentPanel } from '@/pages/erp/pay-hub/transactions/LearningAndDevelopment';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -79,6 +80,10 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-9box':            return <PerformanceAndTalentPanel defaultTab="9box" />;
     case 'ph-succession':      return <PerformanceAndTalentPanel defaultTab="succession" />;
     case 'ph-compensation':    return <PerformanceAndTalentPanel defaultTab="compensation" />;
+    case 'ph-training-catalog': return <LearningAndDevelopmentPanel defaultTab="catalog" />;
+    case 'ph-training-enroll':  return <LearningAndDevelopmentPanel defaultTab="enrollments" />;
+    case 'ph-skill-matrix':     return <LearningAndDevelopmentPanel defaultTab="skills" />;
+    case 'ph-certifications':   return <LearningAndDevelopmentPanel defaultTab="certifications" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -120,6 +125,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-9box': '9-Box Grid',
   'ph-succession': 'Succession Planning',
   'ph-compensation': 'Compensation Actions',
+  'ph-training-catalog': 'Training Catalog',
+  'ph-training-enroll':  'Enrollments',
+  'ph-skill-matrix':     'Skill Matrix',
+  'ph-certifications':   'Certifications',
 };
 
 export default function PayHubPage() {
