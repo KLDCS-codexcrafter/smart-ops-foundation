@@ -25,6 +25,7 @@ import { AttendanceEntryPanel } from '@/pages/erp/pay-hub/transactions/Attendanc
 import { LeaveRequestsPanel } from '@/pages/erp/pay-hub/transactions/LeaveRequests';
 import { PayrollProcessingPanel } from '@/pages/erp/pay-hub/transactions/PayrollProcessing';
 import { PayslipGenerationPanel } from '@/pages/erp/pay-hub/transactions/PayslipGeneration';
+import { StatutoryReturnsPanel } from '@/pages/erp/pay-hub/transactions/StatutoryReturns';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -55,6 +56,12 @@ function renderModule(mod: PayHubModule): React.ReactElement {
     case 'ph-leave-requests': return <LeaveRequestsPanel />;
     case 'ph-payroll-processing': return <PayrollProcessingPanel />;
     case 'ph-payslip-gen': return <PayslipGenerationPanel />;
+    case 'ph-pf-ecr':              return <StatutoryReturnsPanel defaultTab="pf-ecr" />;
+    case 'ph-esi-returns':         return <StatutoryReturnsPanel defaultTab="esi" />;
+    case 'ph-pt-returns':          return <StatutoryReturnsPanel defaultTab="pt" />;
+    case 'ph-tds-24q':             return <StatutoryReturnsPanel defaultTab="tds-24q" />;
+    case 'ph-form16':              return <StatutoryReturnsPanel defaultTab="form16" />;
+    case 'ph-statutory-calendar':  return <StatutoryReturnsPanel defaultTab="calendar" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -78,6 +85,12 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-leave-requests': 'Leave Requests',
   'ph-payroll-processing': 'Payroll Processing',
   'ph-payslip-gen': 'Payslip Generation',
+  'ph-pf-ecr':             'PF ECR',
+  'ph-esi-returns':        'ESI Returns',
+  'ph-pt-returns':         'PT Returns',
+  'ph-tds-24q':            'Form 24Q',
+  'ph-form16':             'Form 16',
+  'ph-statutory-calendar': 'Statutory Calendar',
 };
 
 export default function PayHubPage() {
