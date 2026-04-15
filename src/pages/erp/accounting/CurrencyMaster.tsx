@@ -272,7 +272,7 @@ function RateSubScreen({
       )}
     </div>
   );
-import { onEnterNext } from '@/lib/keyboard';
+
 }
 
 // ── Currency Sheet ────────────────────────────────────────────────────────────
