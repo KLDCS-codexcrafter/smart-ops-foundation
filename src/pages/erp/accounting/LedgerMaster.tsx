@@ -4739,6 +4739,51 @@ export function LedgerMasterPanel() {
               </div>
             )}
 
+            {/* Comply360 — GST classification UDFs */}
+            {showGSTUDFs && (
+              <div className='space-y-3 border-t pt-3'>
+                <p className='text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                  Comply360 — GST classification
+                </p>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>RCM Section</Label>
+                  <Select value={dutiesTaxForm.rcmSection ?? 'not_applicable'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, rcmSection: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='not_applicable'>Not applicable</SelectItem>
+                      <SelectItem value='section_9_3'>Section 9(3)</SelectItem>
+                      <SelectItem value='section_9_4'>Section 9(4)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>GST Tax Sub Type</Label>
+                  <Select value={(dutiesTaxForm as any).gstTaxSubType ?? 'output'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, gstTaxSubType: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='output'>Output</SelectItem>
+                      <SelectItem value='input'>Input</SelectItem>
+                      <SelectItem value='rcm_payable'>RCM payable</SelectItem>
+                      <SelectItem value='rcm_input'>RCM input</SelectItem>
+                      <SelectItem value='cess'>Cess</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>ITC Eligibility</Label>
+                  <Select value={(dutiesTaxForm as any).itcEligibility ?? 'full'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, itcEligibility: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='full'>Full</SelectItem>
+                      <SelectItem value='ineligible_17_5'>Ineligible 17(5)</SelectItem>
+                      <SelectItem value='blocked'>Blocked</SelectItem>
+                      <SelectItem value='partial'>Partial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
             {/* Opening Balance */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Opening Balance</Label>
