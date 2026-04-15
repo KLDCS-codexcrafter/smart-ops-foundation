@@ -190,7 +190,7 @@ export function DistrictMasterPanel() {
                 <Zap className="h-4 w-4" /> Auto-Create {selectedStateName} {countryFilter === 'AE' ? 'Areas' : 'Districts'}
               </Button>
             )}
-            <Button onClick={openCreate} className="gap-1.5">
+            <Button data-primary onClick={openCreate} className="gap-1.5">
               <Plus className="h-4 w-4" /> Add District
             </Button>
           </div>

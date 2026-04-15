@@ -157,7 +157,7 @@ export function RegionMasterPanel() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search regions..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
             </div>
-            <Button onClick={openCreate} className="gap-1.5">
+            <Button data-primary onClick={openCreate} className="gap-1.5">
               <Plus className="h-4 w-4" /> Add Region
             </Button>
           </div>

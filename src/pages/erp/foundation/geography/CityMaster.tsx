@@ -294,7 +294,7 @@ export function CityMasterPanel() {
             <Button variant="outline" className="gap-1.5" onClick={() => fileRef.current?.click()}>
               <Upload className="h-4 w-4" /> Import from CSV
             </Button>
-            <Button onClick={openCreate} className="gap-1.5">
+            <Button data-primary onClick={openCreate} className="gap-1.5">
               <Plus className="h-4 w-4" /> Add City
             </Button>
           </div>
