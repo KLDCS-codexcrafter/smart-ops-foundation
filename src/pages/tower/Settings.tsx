@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   Globe, Mail, Shield, IndianRupee, Bell,
   Wrench, Info, ShieldCheck, FileText, Loader2, Eye, EyeOff,
+  Database, RefreshCw, Trash2,
 } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
+import { useDemoSeedLoader } from '@/hooks/useDemoSeedLoader';
 
 const TABS = [
   { key: "general", label: "General", icon: Globe },
@@ -26,6 +28,7 @@ const TABS = [
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "maintenance", label: "Maintenance", icon: Wrench },
   { key: "system", label: "System Info", icon: Info },
+  { key: "demo", label: "Demo Data", icon: Database },
 ] as const;
 
 const TowerSettings = () => {
@@ -498,6 +501,95 @@ const TowerSettings = () => {
     </div>
   );
 
+  const DemoDataSection = () => {
+    const { loadModule, resetModule, loadAll, resetAll, getLoadedModules, DEMO_MODULES: modules } = useDemoSeedLoader();
+    const [, setTick] = useState(0);
+    const refresh = () => setTick(t => t + 1);
+    const loaded = getLoadedModules();
+
+    // [JWT] GET /api/entity/storage/erp_group_entities
+    const entitiesRaw = localStorage.getItem('erp_group_entities');
+    const entities: { shortCode: string; name: string; type: string }[] = entitiesRaw ? JSON.parse(entitiesRaw) : [];
+
+    const sprintBadge = (sprint: string, status: string) => {
+      if (status === 'planned') return <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">Planned — {sprint}</span>;
+      if (sprint.startsWith('Live')) return <span className="text-xs bg-success/10 text-success border border-success/20 px-2 py-0.5 rounded-full">{sprint}</span>;
+      return <span className="text-xs bg-amber-500/10 text-amber-700 border border-amber-500/20 px-2 py-0.5 rounded-full">{sprint}</span>;
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Demo / Seed Data Manager</h2>
+            <p className="text-xs text-muted-foreground mt-1">Load realistic sample data for development, QA, and client demos. All operations are safe — existing data is never overwritten.</p>
+          </div>
+          <div className="flex gap-2">
+            <Button data-primary onClick={() => { loadAll(); refresh(); }}><RefreshCw className="h-4 w-4 mr-1" /> Load All Modules</Button>
+            <Button variant="destructive" onClick={() => { resetAll(); refresh(); }}><Trash2 className="h-4 w-4 mr-1" /> Reset All</Button>
+          </div>
+        </div>
+
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-sm text-amber-800 dark:text-amber-300">
+          Demo data is for development and demonstrations only. Do not load on a live client instance. All company names, PAN, GSTIN, and statutory numbers are fictional.
+        </div>
+
+        {entities.length > 0 && (
+          <div className="bg-muted/20 rounded-lg p-4 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Demo entities loaded</p>
+            {entities.map(e => (
+              <p key={e.shortCode} className="text-sm text-foreground font-mono">
+                {e.shortCode} — {e.name} — {e.type}
+              </p>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {modules.map(mod => {
+            const isLoaded = !!loaded[mod.id];
+            const isPlanned = mod.status === 'planned';
+            const masterCount = mod.masterKeys.reduce((s, k) => s + mod.getCount(k), 0);
+            const txnCount = mod.transactionKeys.reduce((s, k) => s + mod.getCount(k), 0);
+
+            return (
+              <div key={mod.id} className={cn("bg-card border border-border rounded-xl p-5", isPlanned && "opacity-50 pointer-events-none")}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-foreground">{mod.label}</span>
+                    {sprintBadge(mod.sprint, mod.status)}
+                  </div>
+                  {!isPlanned && (
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => { loadModule(mod.id, 'masters'); refresh(); }}>Load Masters</Button>
+                      {mod.transactionKeys.length > 0 && (
+                        <Button variant="outline" size="sm" onClick={() => { loadModule(mod.id, 'transactions'); refresh(); }}>Load Transactions</Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => { loadModule(mod.id, 'all'); refresh(); }}>Load All</Button>
+                      <Button variant="destructive" size="sm" onClick={() => { resetModule(mod.id); refresh(); }}>Reset</Button>
+                    </div>
+                  )}
+                </div>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>Masters: {masterCount} records across {mod.masterKeys.length} keys · Transactions: {txnCount} records across {mod.transactionKeys.length} keys</p>
+                  <p>Last loaded: {isLoaded ? new Date(loaded[mod.id].loadedAt).toLocaleString('en-IN') : 'Not loaded'}</p>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  {[...mod.masterKeys, ...mod.transactionKeys].map(key => (
+                    <div key={key} className="flex items-center justify-between bg-muted/20 rounded px-2 py-1">
+                      <span className="text-xs font-mono text-muted-foreground truncate">{key}</span>
+                      <span className="text-xs font-semibold text-foreground ml-2">{mod.getCount(key)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const sections: Record<string, JSX.Element> = {
     general: <GeneralSection />,
     email: <EmailSection />,
@@ -506,6 +598,7 @@ const TowerSettings = () => {
     notifications: <NotificationsSection />,
     maintenance: <MaintenanceSection />,
     system: <SystemSection />,
+    demo: <DemoDataSection />,
   };
 
   return (
