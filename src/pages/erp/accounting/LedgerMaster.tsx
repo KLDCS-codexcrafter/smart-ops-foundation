@@ -343,6 +343,13 @@ interface DutiesTaxLedgerDefinition {
   gstSubType: GstSubType;
   calculationBasis: CalcBasis;
   rate: number;
+  // Comply360 UDF fields — visible only when enableAdvancedGST is true
+  rcmSection?: 'not_applicable' | 'section_9_3' | 'section_9_4';
+  // TDL UDF 5023 — RCMsection
+  gstTaxSubType?: 'output' | 'input' | 'rcm_payable' | 'rcm_input' | 'cess';
+  // Derived from Duties & Taxes group classification
+  itcEligibility?: 'full' | 'ineligible_17_5' | 'blocked' | 'partial';
+  // Section 17(5) blocks — auto-separates in GSTR-3B Table 4
   description: string;
   notes: string;
   suspendedBy: string | null;
@@ -1226,6 +1233,14 @@ function HSNSACCombobox({
 // ─── Component ────────────────────────────────────────────────────────
 
 export function LedgerMasterPanel() {
+  const showGSTUDFs = (() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/group
+      const cfg = JSON.parse(localStorage.getItem('erp_comply360_group') || '{}');
+      return cfg.enableAdvancedGST === true;
+    } catch { return false; }
+  })();
+
   const [entities] = useState(() => loadEntities());
   const [cashDefs, setCashDefs] = useState<CashLedgerDefinition[]>(() => loadCashDefs());
   const [bankDefs, setBankDefs] = useState<BankLedgerDefinition[]>(() => loadBankDefs());
@@ -1390,6 +1405,10 @@ export function LedgerMasterPanel() {
     rate: 0,
     openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
     scope: 'group' as 'group'|'entity', entityId: '',
+    // Comply360 UDF fields
+    rcmSection: 'not_applicable' as 'not_applicable' | 'section_9_3' | 'section_9_4',
+    gstTaxSubType: 'output' as 'output' | 'input' | 'rcm_payable' | 'rcm_input' | 'cess',
+    itcEligibility: 'full' as 'full' | 'ineligible_17_5' | 'blocked' | 'partial',
   };
   const [dutiesTaxForm, setDutiesTaxForm] = useState(defaultDutiesTaxForm);
 
@@ -1943,6 +1962,9 @@ export function LedgerMasterPanel() {
       calculationBasis: def.calculationBasis, rate: def.rate ?? 0,
       openingBalance: def.openingBalance ?? 0, openingBalanceType: def.openingBalanceType ?? 'Cr',
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+      rcmSection: def.rcmSection ?? 'not_applicable',
+      gstTaxSubType: def.gstTaxSubType ?? 'output',
+      itcEligibility: def.itcEligibility ?? 'full',
     });
     setDutiesTaxOpen(true);
   };
@@ -2755,6 +2777,9 @@ export function LedgerMasterPanel() {
         gstSubType: dutiesTaxForm.gstSubType,
         calculationBasis: dutiesTaxForm.calculationBasis,
         rate: dutiesTaxForm.rate,
+        rcmSection: dutiesTaxForm.rcmSection,
+        gstTaxSubType: dutiesTaxForm.gstTaxSubType,
+        itcEligibility: dutiesTaxForm.itcEligibility,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -2780,6 +2805,9 @@ export function LedgerMasterPanel() {
       gstSubType: dutiesTaxForm.gstSubType,
       calculationBasis: dutiesTaxForm.calculationBasis,
       rate: dutiesTaxForm.rate,
+      rcmSection: dutiesTaxForm.rcmSection,
+      gstTaxSubType: dutiesTaxForm.gstTaxSubType,
+      itcEligibility: dutiesTaxForm.itcEligibility,
       description: '', notes: '',
       suspendedBy: null, suspendedAt: null, suspendedReason: null,
       reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
@@ -4724,6 +4752,51 @@ export function LedgerMasterPanel() {
               </div>
             )}
 
+            {/* Comply360 — GST classification UDFs */}
+            {showGSTUDFs && (
+              <div className='space-y-3 border-t pt-3'>
+                <p className='text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+                  Comply360 — GST classification
+                </p>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>RCM Section</Label>
+                  <Select value={dutiesTaxForm.rcmSection ?? 'not_applicable'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, rcmSection: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='not_applicable'>Not applicable</SelectItem>
+                      <SelectItem value='section_9_3'>Section 9(3)</SelectItem>
+                      <SelectItem value='section_9_4'>Section 9(4)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>GST Tax Sub Type</Label>
+                  <Select value={(dutiesTaxForm as any).gstTaxSubType ?? 'output'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, gstTaxSubType: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='output'>Output</SelectItem>
+                      <SelectItem value='input'>Input</SelectItem>
+                      <SelectItem value='rcm_payable'>RCM payable</SelectItem>
+                      <SelectItem value='rcm_input'>RCM input</SelectItem>
+                      <SelectItem value='cess'>Cess</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='space-y-1.5'>
+                  <Label className='text-xs'>ITC Eligibility</Label>
+                  <Select value={(dutiesTaxForm as any).itcEligibility ?? 'full'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, itcEligibility: v } as any))}>
+                    <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='full'>Full</SelectItem>
+                      <SelectItem value='ineligible_17_5'>Ineligible 17(5)</SelectItem>
+                      <SelectItem value='blocked'>Blocked</SelectItem>
+                      <SelectItem value='partial'>Partial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
             {/* Opening Balance */}
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Opening Balance</Label>
@@ -5819,6 +5892,9 @@ export function LedgerMasterPanel() {
                       <Field label='GST Sub-Type' value={d.gstSubType?.toUpperCase()} />
                       <Field label='Calculation Basis' value={d.calculationBasis?.replace(/_/g,' ')} />
                       <Field label='Rate' value={`${d.rate}%`} />
+                      {d.rcmSection && d.rcmSection !== 'not_applicable' && <Field label='RCM Section' value={d.rcmSection.replace(/_/g,' ')} />}
+                      {d.gstTaxSubType && <Field label='GST Tax Sub Type' value={d.gstTaxSubType.replace(/_/g,' ')} />}
+                      {d.itcEligibility && <Field label='ITC Eligibility' value={d.itcEligibility.replace(/_/g,' ')} />}
                     </Section>;
                   })()}
 
