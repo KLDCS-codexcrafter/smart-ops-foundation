@@ -42,7 +42,8 @@ const BLK:StockGroupFormData={code:'',short_code:'',name:'',display_name:'',pare
   category_type:'Raw Material',material_type:'Non-Perishable',stock_nature:'Inventory',use_for:'All',
   batch_grid_enabled:false,serial_grid_enabled:false,costing_method:'weighted_avg',
   movement_class:null,movement_indicator:'Normal',expiry_tracking:false,
-  reorder_level:null,internal_notes:'',effective_from:''};
+  reorder_level:null,internal_notes:'',effective_from:'',
+  igst_rate:null,cgst_rate:null,sgst_rate:null,cess_rate:null,gst_type:null};
 
 export function StockMatrixPanel() {
   const [groups,setGroups]=useState<StockGroup[]>(load());
@@ -66,7 +67,9 @@ export function StockMatrixPanel() {
       serial_grid_enabled:g.serial_grid_enabled,costing_method:g.costing_method,
       movement_class:g.movement_class||null,movement_indicator:g.movement_indicator,
       expiry_tracking:g.expiry_tracking,reorder_level:g.reorder_level||null,
-      internal_notes:g.internal_notes||'',effective_from:g.effective_from||''});
+      internal_notes:g.internal_notes||'',effective_from:g.effective_from||'',
+      igst_rate:g.igst_rate??null,cgst_rate:g.cgst_rate??null,sgst_rate:g.sgst_rate??null,
+      cess_rate:g.cess_rate??null,gst_type:g.gst_type??null});
     setEdit(g);setOpen(true);
   };
   const handleSave=()=>{
