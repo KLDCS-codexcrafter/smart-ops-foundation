@@ -410,7 +410,6 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
             </Button>
           </div>
         </div>
-      </div>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
