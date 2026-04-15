@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 
@@ -62,7 +63,7 @@ export function FineCoreHubPanel() {
   return (
     <div data-keyboard-form className="p-6 space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">FineCore — Transaction Register</h1>
+        <h1 className="text-2xl font-bold text-foreground">Fin Core — Transaction Register</h1>
         <p className="text-sm text-muted-foreground">Post, view and manage all accounting and inventory vouchers</p>
       </div>
 
@@ -113,6 +114,31 @@ export function FineCoreHubPanel() {
           </div>
         </div>
       </div>
+
+      {/* Accounting Setup */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-1">Accounting Setup</h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Configure ledgers, tax rates, compliance and voucher types.
+          Full setup is available in Command Center.
+        </p>
+        <div
+          onClick={() => navigate('/erp/accounting')}
+          className="border rounded-lg p-4 hover:bg-accent cursor-pointer
+            transition-colors flex items-center justify-between"
+        >
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Compliance & COA
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              FinFrame, Ledger Master, Tax Rates, GST Config,
+              Comply360, Voucher Types
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -122,7 +148,7 @@ export default function FineCoreHub() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[
-          { label: 'FineCore', href: '/erp/finecore' },
+          { label: 'Fin Core', href: '/erp/finecore' },
         ]} showDatePicker={false} showCompany={false} />
         <main>
           <FineCoreHubPanel />

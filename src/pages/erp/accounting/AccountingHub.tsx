@@ -46,7 +46,7 @@ const COMING_SOON_CARDS = [
   { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];
 
-export function FineCoreHubPanel() {
+export function AccountingHubPanel() {
   const navigate = useNavigate();
   return (
     <div className="space-y-8">

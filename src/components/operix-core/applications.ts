@@ -50,16 +50,6 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/command-center',
     icon: 'LayoutDashboard',
-    status: 'wip',
-  },
-  {
-    id: 'accounting-masters',
-    name: 'Accounting Masters',
-    description: 'Tax rates, TDS/TCS sections, HSN/SAC codes and compliance setup',
-    category: 'Fin Hub',
-    route: '/erp/accounting',
-    icon: 'Landmark',
-    status: 'coming_soon',
   },
   {
     id: 'procure360',
@@ -72,11 +62,12 @@ export const applications: AppDefinition[] = [
   },
   {
     id: 'inventory-hub',
-    name: 'Inventory Hub',
-    description: 'Stock control, batch tracking, serial numbers and parametric setup',
+    name: 'Store Hub',
+    description: 'Physical store operations — goods receipt, dispatch, bin management, stock movements and warehouse control',
     category: 'Ops Hub',
     route: '/erp/inventory-hub',
     icon: 'Package',
+    status: 'coming_soon',
   },
   {
     id: 'qulicheak',
@@ -134,12 +125,11 @@ export const applications: AppDefinition[] = [
   },
   {
     id: 'finecore',
-    name: 'FineCore',
-    description: 'Financial operations — bank reconciliation, payables and receivables',
+    name: 'Fin Core',
+    description: 'Accounting and inventory transactions — sales, purchase, payments, journals and voucher register',
     category: 'Fin Hub',
     route: '/erp/finecore',
     icon: 'Calculator',
-    status: 'coming_soon',
   },
   {
     id: 'peoplepay',
