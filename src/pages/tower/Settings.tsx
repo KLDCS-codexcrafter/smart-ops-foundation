@@ -28,6 +28,7 @@ const TABS = [
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "maintenance", label: "Maintenance", icon: Wrench },
   { key: "system", label: "System Info", icon: Info },
+  { key: "demo", label: "Demo Data", icon: Database },
 ] as const;
 
 const TowerSettings = () => {
