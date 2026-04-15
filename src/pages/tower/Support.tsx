@@ -490,7 +490,7 @@ const Support = () => {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
-              <Button style={{ background: "var(--gradient-primary)" }} onClick={handleCreate} disabled={creating}>
+              <Button data-primary style={{ background: "var(--gradient-primary)" }} onClick={handleCreate} disabled={creating}>
                 {creating && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
                 Create Ticket
               </Button>

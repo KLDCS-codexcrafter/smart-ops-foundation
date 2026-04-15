@@ -299,7 +299,7 @@ export default function Profile() {
                 <Input value={MOCK_USER.role} readOnly className='opacity-60 cursor-not-allowed'  onKeyDown={onEnterNext} />
                 <p className='text-[10px] text-muted-foreground mt-1'>Assigned by administrator</p>
               </FieldRow>
-              <Button
+              <Button data-primary
                 className='mt-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground'
                 size='sm'
                 onClick={handleSaveProfile}
@@ -326,7 +326,7 @@ export default function Profile() {
                   <Input placeholder='e.g. EMP-001' value={employeeId} onChange={e => setEmployeeId(e.target.value)} />
                 </FieldRow>
               </div>
-              <Button
+              <Button data-primary
                 variant='outline'
                 size='sm'
                 className='mt-4'

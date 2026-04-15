@@ -1083,12 +1083,12 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
                 </Button>
 
                 {step < 7 ? (
-                  <Button onClick={() => setStep(s => Math.min(7, s + 1))}>
+                  <Button data-primary onClick={() => setStep(s => Math.min(7, s + 1))}>
                     Next
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 ) : (
-                  <Button
+                  <Button data-primary
                     onClick={handleSave}
                     disabled={saving}
                     className={cn(done.length === 6 && 'ring-2 ring-primary/40 animate-pulse')}

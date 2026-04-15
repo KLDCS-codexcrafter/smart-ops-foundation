@@ -407,7 +407,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
             <Button variant="outline" onClick={() => navigate('/erp/foundation/branch-offices')}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button data-primary onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
               {saving ? 'Saving...' : 'Save Branch Office'}
             </Button>
