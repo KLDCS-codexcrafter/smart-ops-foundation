@@ -18,6 +18,7 @@ import type { LabelTemplate, LabelType, LabelSize, LabelBarcodeType } from '@/ty
 import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_label_templates';
+// [JWT] GET /api/inventory/label-templates
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const LABEL_TYPES: { value: LabelType; label: string; group: string; compliance: boolean }[] = [
@@ -75,6 +76,7 @@ export function LabelTemplatesPanel() {
   const [edit, setEdit] = useState<LabelTemplate | null>(null);
   const [form, setForm] = useState<typeof BLANK>(BLANK);
 
+  // [JWT] POST /api/inventory/label-templates
   const sv = (d: LabelTemplate[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/labels/templates */ };
 
   const filtered = useMemo(() => templates.filter(t => {

@@ -184,8 +184,10 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
   const [booksDate, setBooksDate] = useState<Date>();
   const [acqDate, setAcqDate] = useState<Date>();
 
+  // [JWT] GET /api/foundation/entities
   const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
   const lsObj = <T,>(k: string, def: T): T => {
+    // [JWT] GET /api/foundation/entities
     try { const v = localStorage.getItem(k); return v ? {...def, ...JSON.parse(v)} : def; }
     catch { return def; }
   };
@@ -346,6 +348,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
       };
       const idx = existing.findIndex((r: any) => r.id === currentId);
       if (idx >= 0) existing[idx] = record; else existing.push(record);
+      // [JWT] POST /api/foundation/entities
       localStorage.setItem(storageKey, JSON.stringify(existing));
       /* [JWT] POST or PATCH /api/foundation/companies or /api/foundation/subsidiaries */
 
@@ -379,6 +382,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
               created_at: now, updated_at: now,
             });
           }
+          // [JWT] POST /api/foundation/entities
           localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
           // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
           const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
@@ -405,6 +409,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
               default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',
               entity_id: null, created_at: now, updated_at: now,
             });
+            // [JWT] POST /api/foundation/entities
             localStorage.setItem('erp_voucher_types', JSON.stringify(vtypes));
           }
         } catch { /* non-fatal — forex setup can be retried */ }
@@ -425,6 +430,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
       };
       const sIdx = settings.findIndex((s: any) => s.entity_id === currentId);
       if (sIdx >= 0) settings[sIdx] = settingsEntry; else settings.push(settingsEntry);
+      // [JWT] POST /api/foundation/entities
       localStorage.setItem(settingsKey, JSON.stringify(settings));
       /* [JWT] POST /api/company/settings */
 

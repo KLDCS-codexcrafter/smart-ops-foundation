@@ -43,8 +43,10 @@ const EMPTY: RegionRecord = {
 export default function RegionMaster() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<RegionRecord[]>(() => {
+    // [JWT] GET /api/geography/regions
     try { return JSON.parse(localStorage.getItem('erp_geo_regions') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/regions
   const saveRecords = (d: RegionRecord[]) => { localStorage.setItem('erp_geo_regions', JSON.stringify(d)); /* [JWT] PATCH /api/geography/regions/bulk */ };
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);

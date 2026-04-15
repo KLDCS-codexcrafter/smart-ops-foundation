@@ -71,8 +71,10 @@ const PAGE_SIZE = 25;
 export default function CityMaster() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<CityRecord[]>(() => {
+    // [JWT] GET /api/geography/cities
     try { return JSON.parse(localStorage.getItem('erp_geo_cities') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/cities
   const saveRecords = (d: CityRecord[]) => { localStorage.setItem('erp_geo_cities', JSON.stringify(d)); /* [JWT] PATCH /api/geography/cities/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');

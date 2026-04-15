@@ -18,8 +18,10 @@ interface ERPCompanySelectorProps {
 const STORAGE_KEY = 'erp-selected-company';
 
 export function useERPCompany(): [string, (id: string) => void] {
+  // [JWT] GET /api/user/company-selection
   const stored = localStorage.getItem(STORAGE_KEY) ?? 'all';
   const set = useCallback((id: string) => {
+    // [JWT] PATCH /api/user/company-selection
     localStorage.setItem(STORAGE_KEY, id);
   }, []);
   return [stored, set];

@@ -24,6 +24,7 @@ const RRKEY = 'erp_location_reorder_rules';
 const DTKEY = 'erp_department_tags';
 const IKEY = 'erp_inventory_items';
 const SLKEY = 'erp_stock_ledger';
+// [JWT] GET /api/inventory/reorder-rules
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const DEFAULT_DEPT_TAGS: DepartmentTag[] = [
@@ -38,6 +39,7 @@ const DEFAULT_DEPT_TAGS: DepartmentTag[] = [
 const initDeptTags = (): DepartmentTag[] => {
   const stored = ls<DepartmentTag>(DTKEY);
   if (stored.length > 0) return stored;
+  // [JWT] POST /api/inventory/reorder-rules
   localStorage.setItem(DTKEY, JSON.stringify(DEFAULT_DEPT_TAGS)); /* [JWT] POST /api/inventory/department-tags/seed */
   return DEFAULT_DEPT_TAGS;
 };
@@ -97,6 +99,7 @@ export function ReorderAlertsPanel() {
   const [itemSearch, setItemSearch] = useState('');
 
   const godowns: any[] = ls('erp_godowns');
+  // [JWT] POST /api/inventory/reorder-rules
   const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(RRKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/reorder-rules */ };
   const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(DTKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/department-tags */ };
 

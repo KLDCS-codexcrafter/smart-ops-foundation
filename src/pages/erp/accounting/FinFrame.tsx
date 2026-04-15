@@ -50,6 +50,7 @@ export function FinFramePanel() {
   const [namingMode, setNamingMode] = useState<'indas' | 'tally'>('indas');
   const [userGroups, setUserGroups] = useState<UserGroup[]>(() => {
     try {
+      // [JWT] GET /api/accounting/finframe
       const raw = localStorage.getItem('erp_group_finframe_l4_groups');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -57,6 +58,7 @@ export function FinFramePanel() {
 
   const saveGroups = (groups: UserGroup[]) => {
     setUserGroups(groups);
+    // [JWT] PATCH /api/accounting/finframe
     localStorage.setItem('erp_group_finframe_l4_groups', JSON.stringify(groups));
     // [JWT] Replace with sync to /api/group/finecore/account-groups
   };

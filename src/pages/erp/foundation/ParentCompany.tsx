@@ -188,6 +188,7 @@ export default function ParentCompany() {
   }, []);
 
   const lsObj = <T,>(k: string, def: T): T => {
+    // [JWT] GET /api/foundation/company
     try { const v = localStorage.getItem(k); return v ? {...def, ...JSON.parse(v)} : def; }
     catch { return def; }
   };
@@ -247,6 +248,7 @@ export default function ParentCompany() {
   }, [form, fyFromDate, fyToDate]);
 
   const done = completedSteps();
+  // [JWT] GET /api/foundation/company
   const isEditMode = localStorage.getItem('erp_parent_company_saved') === 'true';
 
   // Confetti — fires on save, not on step completion
@@ -308,6 +310,7 @@ export default function ParentCompany() {
         july: '6', august: '7', september: '8', october: '9', november: '10', december: '11',
       };
       // Write full form + GST/LUT arrays
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_parent_company', JSON.stringify({
         ...form, gstRegs, lutBonds,
         fyFromDate: fyFromDate?.toISOString(),
@@ -346,6 +349,7 @@ export default function ParentCompany() {
               created_at: now, updated_at: now,
             });
           }
+          // [JWT] PATCH /api/foundation/company
           localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
           // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
           const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
@@ -372,16 +376,22 @@ export default function ParentCompany() {
               default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',
               entity_id: null, created_at: now, updated_at: now,
             });
+            // [JWT] PATCH /api/foundation/company
             localStorage.setItem('erp_voucher_types', JSON.stringify(vtypes));
           }
         } catch { /* non-fatal — forex setup can be retried */ }
       }
 
       // Write ERP global settings (existing behaviour — keep)
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_fy_start_month', monthMap[form.fyStartMonth] ?? '3');
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_deployment_mode', form.deploymentMode);
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_base_currency', form.baseCurrency);
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_currency_symbol', form.currencySymbol);
+      // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_parent_company_saved', 'true');
       setSaving(false);
       setConfetti(true);

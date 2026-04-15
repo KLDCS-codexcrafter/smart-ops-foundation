@@ -16,7 +16,9 @@ import type { PrintJob, PrintJobStatus } from '@/types/print-job';
 import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_print_jobs';
+// [JWT] GET /api/inventory/print-jobs
 const ld = (): PrintJob[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+// [JWT] POST /api/inventory/print-jobs
 const sv = (d: PrintJob[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/labels/print-jobs */ };
 
 const REPRINT_REASONS = [

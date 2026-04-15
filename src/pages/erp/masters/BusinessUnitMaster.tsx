@@ -103,6 +103,7 @@ const PHYSICAL_UNIT_TYPES: UnitType[] = ['branch_office', 'factory_plant', 'proj
 // ─── Storage Helpers ─────────────────────────────────────────
 
 const loadUnits = (): BusinessUnitMasterDefinition[] => {
+  // [JWT] GET /api/masters/business-units
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
   catch { return []; }
 };
@@ -112,6 +113,7 @@ const genUnitCode = (all: BusinessUnitMasterDefinition[]): string =>
 
 const getCurrentUser = (): string => {
   try {
+    // [JWT] GET /api/masters/business-units
     const u = JSON.parse(localStorage.getItem('erp_current_user') || '{}');
     return u.name || u.email || 'System Administrator';
   } catch { return 'System Administrator'; }
@@ -195,6 +197,7 @@ export function BusinessUnitMasterPanel() {
       const updated = { ...editTarget, ...form };
       const idx = all.findIndex(u => u.id === editTarget.id);
       if (idx >= 0) all[idx] = updated;
+      // [JWT] POST /api/masters/business-units
       localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       // [JWT] PUT /api/group/masters/business-units/:id
       toast.success(`${form.name} updated`);
@@ -205,6 +208,7 @@ export function BusinessUnitMasterPanel() {
         partyCode: genUnitCode(all),
       };
       all.push(newUnit);
+      // [JWT] POST /api/masters/business-units
       localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       // [JWT] POST /api/group/masters/business-units
       toast.success(`${form.name} created`);
@@ -247,6 +251,7 @@ export function BusinessUnitMasterPanel() {
         suspendedAt: new Date().toISOString(),
         suspendedReason: suspendReason.trim(),
       };
+      // [JWT] POST /api/masters/business-units
       localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       // [JWT] PUT /api/group/masters/business-units/:id/suspend
       toast.success(`${suspendTarget.name} suspended`);
@@ -274,6 +279,7 @@ export function BusinessUnitMasterPanel() {
         reinstatedAt: new Date().toISOString(),
         reinstatedReason: reinstateReason.trim(),
       };
+      // [JWT] POST /api/masters/business-units
       localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       // [JWT] PUT /api/group/masters/business-units/:id/reinstate
       toast.success(`${suspendTarget.name} reinstated`);
@@ -285,6 +291,7 @@ export function BusinessUnitMasterPanel() {
   // ─── Delete ────────────────────────────────────────────────
   const handleDelete = (unit: BusinessUnitMasterDefinition) => {
     const all = loadUnits().filter(u => u.id !== unit.id);
+    // [JWT] POST /api/masters/business-units
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
     // [JWT] DELETE /api/group/masters/business-units/:id
     toast.success(`${unit.name} deleted`);

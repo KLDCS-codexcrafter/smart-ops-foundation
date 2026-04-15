@@ -65,8 +65,10 @@ const EMPTY: PortRecord = {
 export default function PortMaster() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<PortRecord[]>(() => {
+    // [JWT] GET /api/geography/ports
     try { return JSON.parse(localStorage.getItem('erp_geo_ports') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/ports
   const saveRecords = (d: PortRecord[]) => { localStorage.setItem('erp_geo_ports', JSON.stringify(d)); /* [JWT] PATCH /api/geography/ports/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');

@@ -18,18 +18,21 @@ const STORAGE_KEY = 'erp_group_terms_of_payment';
 
 const loadTerms = (): TermsOfPayment[] => {
   try {
+    // [JWT] GET /api/masters/terms-of-payment
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
   } catch {}
   const seeded = TERMS_OF_PAYMENT_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
+  // [JWT] POST /api/masters/terms-of-payment
   localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
   // [JWT] GET /api/group/masters/terms-of-payment
   return seeded;
 };
 
 const saveTerms = (terms: TermsOfPayment[]) => {
+  // [JWT] POST /api/masters/terms-of-payment
   localStorage.setItem(STORAGE_KEY, JSON.stringify(terms));
   // [JWT] PUT /api/group/masters/terms-of-payment
 };

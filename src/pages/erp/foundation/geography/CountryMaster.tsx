@@ -45,10 +45,12 @@ const EMPTY: Country = {
 export default function CountryMaster() {
   const navigate = useNavigate();
   const [localCountries, setLocalCountries] = useState<Country[]>(() => {
+    // [JWT] GET /api/geography/countries
     try { return JSON.parse(localStorage.getItem('erp_geo_countries') || '[]'); } catch { return []; }
   });
 
   const saveCountries = (d: Country[]) => {
+    // [JWT] POST /api/geography/countries
     localStorage.setItem('erp_geo_countries', JSON.stringify(d));
     /* [JWT] PATCH /api/geography/countries/bulk */
   };

@@ -42,8 +42,10 @@ const EMPTY: DistrictRecord = {
 export default function DistrictMaster() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<DistrictRecord[]>(() => {
+    // [JWT] GET /api/geography/districts
     try { return JSON.parse(localStorage.getItem('erp_geo_districts') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/districts
   const saveRecords = (d: DistrictRecord[]) => { localStorage.setItem('erp_geo_districts', JSON.stringify(d)); /* [JWT] PATCH /api/geography/districts/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');

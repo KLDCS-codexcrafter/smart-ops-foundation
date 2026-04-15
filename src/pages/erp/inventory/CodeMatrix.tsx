@@ -34,6 +34,7 @@ const CATEGORY_TYPES = ['Raw Material', 'Finished Goods', 'Semi-Finished', 'Comp
   'By-Product', 'Scrap', 'Packaging Material', 'Service', 'Fixed Asset'];
 
 const KEY = 'erp_code_matrix_rules';
+// [JWT] GET /api/inventory/code-matrix
 const load = (): CodeMatrixRule[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 type FormState = Omit<CodeMatrixRule, 'id' | 'created_at' | 'updated_at'>;
@@ -61,6 +62,7 @@ export function CodeMatrixPanel() {
   const [edit, setEdit] = useState<CodeMatrixRule | null>(null);
   const [form, setForm] = useState<FormState>(BLANK);
 
+  // [JWT] POST /api/inventory/code-matrix
   const sv = (d: CodeMatrixRule[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/code-matrix */ };
 
   const openC = () => { setForm(BLANK); setEdit(null); setOpen(true); };

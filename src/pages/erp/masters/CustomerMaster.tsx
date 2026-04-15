@@ -119,6 +119,7 @@ const STORAGE_KEY = 'erp_group_customer_master';
 
 const loadCustomers = (): CustomerMasterDefinition[] => {
   try {
+    // [JWT] GET /api/masters/customers
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
   } catch {}
@@ -126,6 +127,7 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
 };
 
 const saveCustomers = (items: CustomerMasterDefinition[]) => {
+  // [JWT] POST /api/masters/customers
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   // [JWT] PUT /api/group/masters/customer
 };
@@ -211,25 +213,30 @@ export function CustomerMasterPanel() {
 
   // ─── Dropdown helpers ────────────────────────────────────────
   const loadModeOptions = () => {
+    // [JWT] GET /api/masters/customers
     try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
     catch { return []; }
   };
   const loadTermsOptions = () => {
+    // [JWT] GET /api/masters/customers
     try { return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]'); }
     catch { return []; }
   };
   const loadDeliveryOptions = () => {
+    // [JWT] GET /api/masters/customers
     try { return JSON.parse(localStorage.getItem('erp_group_terms_of_delivery') || '[]'); }
     catch { return []; }
   };
   const loadTransporterOptions = () => {
     try {
+      // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]')
         .filter((l: any) => l.logisticType === 'gta' && l.status === 'active');
     } catch { return []; }
   };
   const loadCourierOptions = () => {
     try {
+      // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]')
         .filter((l: any) => l.logisticType === 'courier' && l.status === 'active');
     } catch { return []; }
@@ -784,8 +791,10 @@ export function CustomerMasterPanel() {
                   try {
                     // [JWT] GET /api/accounting/currencies
                     const curs: { id: string; iso_code: string; name: string; symbol: string; is_active: boolean; is_base_currency: boolean }[] =
+                      // [JWT] GET /api/masters/customers
                       JSON.parse(localStorage.getItem('erp_currencies') || '[]');
                     const active = curs.filter(c => c.is_active);
+                    // [JWT] GET /api/masters/customers
                     const base = localStorage.getItem('erp_base_currency') || 'INR';
                     if (!active.length) return <SelectItem value={base}>{base} (Base)</SelectItem>;
                     return active.map(c => (

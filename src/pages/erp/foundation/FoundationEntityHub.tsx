@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 
 // ── localStorage helpers ─────────────────────────────────────────
+// [JWT] GET /api/foundation/entities
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
 
 const BRANCH_TYPE_COLORS: Record<string, string> = {
@@ -397,14 +398,17 @@ export default function FoundationEntityHub() {
                   if (compIdx >= 0) {
                     const next = rawCompanies.filter(r => r.id !== deleteId);
                     setRawCompanies(next);
+                    // [JWT] PATCH /api/foundation/entities
                     localStorage.setItem('erp_companies', JSON.stringify(next));
                   } else if (subIdx >= 0) {
                     const next = rawSubsidiaries.filter(r => r.id !== deleteId);
                     setRawSubsidiaries(next);
+                    // [JWT] PATCH /api/foundation/entities
                     localStorage.setItem('erp_subsidiaries', JSON.stringify(next));
                   } else if (brIdx >= 0) {
                     const next = rawBranches.filter(r => r.id !== deleteId);
                     setRawBranches(next);
+                    // [JWT] PATCH /api/foundation/entities
                     localStorage.setItem('erp_branch_offices', JSON.stringify(next));
                   }
                   /* [JWT] DELETE /api/foundation/entities/:id */

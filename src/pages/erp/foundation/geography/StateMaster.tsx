@@ -45,8 +45,10 @@ const EMPTY: StateRecord = {
 export default function StateMaster() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<StateRecord[]>(() => {
+    // [JWT] GET /api/geography/states
     try { return JSON.parse(localStorage.getItem('erp_geo_states') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/states
   const saveRecords = (d: StateRecord[]) => { localStorage.setItem('erp_geo_states', JSON.stringify(d)); /* [JWT] PATCH /api/geography/states/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');

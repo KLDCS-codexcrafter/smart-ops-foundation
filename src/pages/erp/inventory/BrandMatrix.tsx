@@ -20,7 +20,9 @@ const COUNTRIES = ['India', 'China', 'USA', 'Germany', 'Japan', 'South Korea',
   'Singapore', 'Malaysia', 'Bangladesh', 'Pakistan', 'Sri Lanka', 'Other'];
 
 export function BrandMatrixPanel() {
+  // [JWT] GET /api/inventory/brands
   const loadBrands = (): Brand[] => { try { return JSON.parse(localStorage.getItem('erp_brands') || '[]'); } catch { return []; } };
+  // [JWT] GET /api/inventory/brands
   const loadSubBrands = (): SubBrand[] => { try { return JSON.parse(localStorage.getItem('erp_sub_brands') || '[]'); } catch { return []; } };
 
   const [brands, setBrands] = useState<Brand[]>(loadBrands());
@@ -39,10 +41,12 @@ export function BrandMatrixPanel() {
   const [sbForm, setSbForm] = useState({ code: '', name: '', brand_id: '', description: '' });
 
   const saveBrands = (data: Brand[]) => {
+    // [JWT] POST /api/inventory/brands
     localStorage.setItem('erp_brands', JSON.stringify(data));
     // [JWT] Replace with POST/PATCH/DELETE /api/inventory/brands
   };
   const saveSubBrands = (data: SubBrand[]) => {
+    // [JWT] POST /api/inventory/brands
     localStorage.setItem('erp_sub_brands', JSON.stringify(data));
     // [JWT] Replace with POST/PATCH/DELETE /api/inventory/sub-brands
   };

@@ -36,6 +36,7 @@ interface UserProfileDropdownProps {
 // [JWT] Replace with real useProfile hook
 // Returns mock user data from localStorage token
 function getMockUser() {
+  // [JWT] GET /api/auth/token
   const token = localStorage.getItem("4ds_token");
   if (!token) return null;
   return {

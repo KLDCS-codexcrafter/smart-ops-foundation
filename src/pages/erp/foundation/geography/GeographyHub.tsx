@@ -23,6 +23,7 @@ import { indianStates, indianDistricts, indianCities } from '@/data/india-geogra
 import { countries as worldCountries } from '@/data/world-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS, INDIA_REGIONS, UAE_REGIONS } from '@/data/geo-seed-data';
 
+// [JWT] GET /api/geography/:type
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
 
 type SetupTarget = 'india' | 'uae' | null;
@@ -45,6 +46,7 @@ export function GeographyHubPanel() {
   const [progress, setProgress] = useState(0);
 
   const liveCounts = useMemo(() => {
+    // [JWT] GET /api/geography/:type
     const lsLen = (k: string) => { try { return JSON.parse(localStorage.getItem(k)||'[]').length; } catch { return 0; } };
     return {
       countries: lsLen('erp_geo_countries'),
@@ -95,6 +97,7 @@ export function GeographyHubPanel() {
             countries.push({ code:'IN', name:'India', flag:'🇮🇳', dialCode:'+91',
                              currencyCode:'INR', currencySymbol:'₹', capital:'New Delhi',
                              region:'Asia', timezone:'Asia/Kolkata', status:'active' });
+            // [JWT] POST /api/geography/:type
             localStorage.setItem('erp_geo_countries', JSON.stringify(countries));
             /* [JWT] POST /api/geography/countries/seed */
           }
@@ -106,6 +109,7 @@ export function GeographyHubPanel() {
             gstStateCode: s.gstStateCode, unionTerritory: s.unionTerritory,
             region: '', status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_states', JSON.stringify([...existing, ...indiaStates]));
           /* [JWT] POST /api/geography/states/seed */
         }
@@ -116,6 +120,7 @@ export function GeographyHubPanel() {
             name: d.name, stateCode: d.stateCode || d.state_code || '',
             countryCode: 'IN', headquarters: d.headquarters || '', status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
           /* [JWT] POST /api/geography/districts/seed */
         }
@@ -128,6 +133,7 @@ export function GeographyHubPanel() {
             category: c.category || 'tier2', isMajor: ['metro','tier1'].includes(c.category || ''),
             status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_cities', JSON.stringify([...existing, ...cities]));
           /* [JWT] POST /api/geography/cities/seed */
         }
@@ -137,6 +143,7 @@ export function GeographyHubPanel() {
             code: r.code, name: r.name, countryCode: 'IN',
             states: r.states || [], status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
           /* [JWT] POST /api/geography/regions/seed */
         }
@@ -149,6 +156,7 @@ export function GeographyHubPanel() {
             countries.push({ code:'AE', name:'United Arab Emirates', flag:'🇦🇪', dialCode:'+971',
                              currencyCode:'AED', currencySymbol:'د.إ', capital:'Abu Dhabi',
                              region:'Middle East', timezone:'Asia/Dubai', status:'active' });
+            // [JWT] POST /api/geography/:type
             localStorage.setItem('erp_geo_countries', JSON.stringify(countries));
             /* [JWT] POST /api/geography/countries/seed */
           }
@@ -159,6 +167,7 @@ export function GeographyHubPanel() {
             code: e.code, name: e.name, countryCode: 'AE',
             gstStateCode: '', unionTerritory: false, region: 'Middle East', status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_states', JSON.stringify([...existing, ...emirates]));
           /* [JWT] POST /api/geography/states/seed */
         }
@@ -169,6 +178,7 @@ export function GeographyHubPanel() {
             name: d.name, stateCode: d.emirateCode || d.stateCode || '', countryCode: 'AE',
             headquarters: '', status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
           /* [JWT] POST /api/geography/districts/seed */
         }
@@ -178,6 +188,7 @@ export function GeographyHubPanel() {
             code: r.code, name: r.name, countryCode: 'AE',
             states: r.states || [], status: 'active',
           }));
+          // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
           /* [JWT] POST /api/geography/regions/seed */
         }
