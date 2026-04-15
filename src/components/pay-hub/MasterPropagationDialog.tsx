@@ -86,7 +86,7 @@ export function MasterPropagationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" data-keyboard-form>
         <DialogHeader>
           <DialogTitle>Propagate {masterType}?</DialogTitle>
           <DialogDescription>

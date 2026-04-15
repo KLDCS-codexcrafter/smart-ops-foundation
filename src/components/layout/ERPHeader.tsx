@@ -16,6 +16,7 @@
  *   - Quick entry palette
  */
 import { useState } from 'react';
+import { onEnterNext } from '@/lib/keyboard';
 import { useNavigate } from 'react-router-dom';
 import {
   Grid3X3, RefreshCw, Sparkles, Bell, ChevronRight,
@@ -172,7 +173,7 @@ export function ERPHeader({
 
           {/* Search */}
           <div className='flex-1 max-w-xs hidden md:block'>
-            <Input placeholder='Search... (Ctrl+K)' className='h-8 text-xs bg-muted/30 border-border/50' />
+            <Input placeholder='Search... (Ctrl+K)' className='h-8 text-xs bg-muted/30 border-border/50' onKeyDown={onEnterNext} />
           </div>
         </div>
 

@@ -7,6 +7,7 @@
  * Rate of Exchange: Tally model — date-wise selling/buying/standard per currency
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { onEnterNext } from '@/lib/keyboard';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
@@ -272,7 +273,7 @@ function RateSubScreen({
       )}
     </div>
   );
-import { onEnterNext } from '@/lib/keyboard';
+
 }
 
 // ── Currency Sheet ────────────────────────────────────────────────────────────

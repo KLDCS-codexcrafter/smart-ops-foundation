@@ -1295,7 +1295,7 @@ export default function ParentCompany() {
         showCompany={false}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <div className="mb-6">
           <h1 className="text-xl font-bold text-foreground">Parent Company</h1>
           <p className="text-sm text-muted-foreground">Configure your organisation root entity</p>
@@ -1328,12 +1328,12 @@ export default function ParentCompany() {
               </Button>
 
               {step < 7 ? (
-                <Button onClick={() => setStep(s => Math.min(7, s + 1))}>
+                <Button data-primary onClick={() => setStep(s => Math.min(7, s + 1))}>
                   Next
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               ) : (
-                <Button
+                <Button data-primary
                   onClick={handleSave}
                   disabled={saving}
                   className={cn(done.length === 6 && 'ring-2 ring-primary/40 animate-pulse')}

@@ -261,7 +261,7 @@ const Support = () => {
   const resolvedRecent = TICKETS.filter((t) => t.status === "resolved" && t.updatedAt.includes("Apr 2026")).length;
 
   return (
-    <TowerLayout title="Support" subtitle="Platform helpdesk — manage tenant support tickets and escalations">
+    <TowerLayout title="Support" subtitle="Platform helpdesk — manage tenant support tickets and escalations"><div data-keyboard-form>
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
@@ -490,7 +490,7 @@ const Support = () => {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
-              <Button style={{ background: "var(--gradient-primary)" }} onClick={handleCreate} disabled={creating}>
+              <Button data-primary style={{ background: "var(--gradient-primary)" }} onClick={handleCreate} disabled={creating}>
                 {creating && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
                 Create Ticket
               </Button>
@@ -598,7 +598,7 @@ const Support = () => {
           )}
         </SheetContent>
       </Sheet>
-    </TowerLayout>
+    </div></TowerLayout>
   );
 };
 

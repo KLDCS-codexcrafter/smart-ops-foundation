@@ -168,7 +168,7 @@ const Users = () => {
   );
 
   return (
-    <TowerLayout title="Users" subtitle="Manage all platform users across tenants">
+    <TowerLayout title="Users" subtitle="Manage all platform users across tenants"><div data-keyboard-form>
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard icon={UsersIcon} label="Total Users" value={USERS.length} color="text-foreground" />
@@ -541,7 +541,7 @@ const Users = () => {
           )}
         </SheetContent>
       </Sheet>
-    </TowerLayout>
+    </div></TowerLayout>
   );
 };
 

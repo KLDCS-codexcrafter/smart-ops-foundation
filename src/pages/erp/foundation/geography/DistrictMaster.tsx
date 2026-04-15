@@ -152,6 +152,7 @@ export function DistrictMasterPanel() {
   const selectedStateName = stateOptions.find(s => s.code === stateFilter)?.name ?? stateFilter;
 
   return (
+    <div data-keyboard-form className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -189,7 +190,7 @@ export function DistrictMasterPanel() {
                 <Zap className="h-4 w-4" /> Auto-Create {selectedStateName} {countryFilter === 'AE' ? 'Areas' : 'Districts'}
               </Button>
             )}
-            <Button onClick={openCreate} className="gap-1.5">
+            <Button data-primary onClick={openCreate} className="gap-1.5">
               <Plus className="h-4 w-4" /> Add District
             </Button>
           </div>
@@ -254,6 +255,7 @@ export function DistrictMasterPanel() {
               </TableBody>
             </Table>
           </div>
+    </div>
   );
 }
 
@@ -269,6 +271,7 @@ export default function DistrictMaster() {
               { label:'Foundation' },
               { label:'Geography', href:'/erp/foundation/geography' },
               { label:'Districts' },
+            ]}
             showDatePicker={false} showCompany={false}
           />
         <main className="flex-1 p-6">

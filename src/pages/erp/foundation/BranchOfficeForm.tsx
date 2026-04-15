@@ -195,7 +195,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        <div data-keyboard-form className="max-w-3xl mx-auto px-4 py-6 space-y-6">
           <div>
             <h1 className="text-xl font-bold text-foreground">
               {mode === 'create' ? 'Create Branch Office' : 'Edit Branch Office'}
@@ -407,7 +407,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
             <Button variant="outline" onClick={() => navigate('/erp/foundation/branch-offices')}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button data-primary onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
               {saving ? 'Saving...' : 'Save Branch Office'}
             </Button>

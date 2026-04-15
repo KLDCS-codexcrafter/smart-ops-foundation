@@ -85,7 +85,7 @@ export function FoundationListPage<T extends { id: string; status?: string }>({
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background w-full">
+      <div data-keyboard-form className="min-h-screen bg-background w-full">
         <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4">
           {/* Page header */}

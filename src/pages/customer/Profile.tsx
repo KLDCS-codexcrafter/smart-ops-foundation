@@ -51,7 +51,7 @@ export default function Profile() {
   };
 
   return (
-    <CustomerLayout title="My Profile" subtitle="Account details and preferences">
+    <CustomerLayout title="My Profile" subtitle="Account details and preferences"><div data-keyboard-form>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT */}
         <div className="lg:col-span-2 space-y-4">
@@ -204,6 +204,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </CustomerLayout>
+    </div></CustomerLayout>
   );
 }

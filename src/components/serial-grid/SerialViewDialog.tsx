@@ -15,7 +15,7 @@ const SerialViewDialog: React.FC<Props> = ({ open, onOpenChange, serial }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" data-keyboard-form>
         <DialogHeader>
           <DialogTitle className="font-mono">{serial.serial_number}</DialogTitle>
           <DialogDescription>{serial.item_name ?? 'Serial Unit'}</DialogDescription>

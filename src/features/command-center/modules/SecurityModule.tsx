@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { onEnterNext } from "@/lib/keyboard";
 import {
   BarChart3, Shield, Monitor, Lock, Key, Globe, MonitorCheck,
   ShieldCheck, ShieldAlert, Building, UserCog, TreePine, Users,
@@ -773,7 +774,7 @@ function IPWhitelistPanel() {
         <CardContent className="pt-5 space-y-4">
           <PolicyToggleRow label="Enable IP Whitelist" description="Only allow sign-ins from listed IP ranges" defaultChecked={false} />
           <div className="flex gap-2">
-            <Input placeholder="192.168.1.0/24" value={input} onChange={e => setInput(e.target.value)} className="text-xs h-8" />
+            <Input placeholder="192.168.1.0/24" value={input} onChange={e => setInput(e.target.value)} onKeyDown={onEnterNext} className="text-xs h-8" />
             <Button size="sm" variant="outline" className="gap-1 h-8" onClick={() => { if (input.trim()) { setRanges(p => [...p, input.trim()]); setInput(""); } }}>
               <Plus className="w-3 h-3" /> Add
             </Button>
@@ -901,7 +902,7 @@ function MFARecoveryPanel() {
         <Card className="bg-card/60 border-border">
           <CardHeader className="pb-2"><CardTitle className="text-sm">Backup Email</CardTitle><CardDescription className="text-xs">Admin contact for MFA recovery requests</CardDescription></CardHeader>
           <CardContent className="space-y-3">
-            <Input placeholder="security@yourcompany.in" className="text-xs h-8" />
+            <Input placeholder="security@yourcompany.in" onKeyDown={onEnterNext} className="text-xs h-8" />
             <PolicyToggleRow label="Allow Email Recovery" description="Users can request OTP to backup email" defaultChecked />
             <SaveButton />
           </CardContent>
@@ -1155,7 +1156,7 @@ function AuditLogPanel() {
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input placeholder="Search actions or users..." className="pl-9 text-xs h-8" value={search} onChange={e => setSearch(e.target.value)} />
+          <Input placeholder="Search actions or users..." onKeyDown={onEnterNext} className="pl-9 text-xs h-8" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
@@ -1211,7 +1212,7 @@ function EmailDigestPanel() {
           </div>
           <div>
             <p className="text-sm font-medium text-foreground mb-2">Recipients</p>
-            <Input placeholder="admin@company.in, security@company.in" className="text-xs h-8" />
+            <Input placeholder="admin@company.in, security@company.in" onKeyDown={onEnterNext} className="text-xs h-8" />
           </div>
           <div>
             <p className="text-sm font-medium text-foreground mb-2">Include in Digest</p>
@@ -1268,7 +1269,7 @@ function ImpersonationPanel() {
         <CardContent className="pt-5 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <Input placeholder="Search by name or email..." className="pl-9 text-xs h-8" />
+            <Input placeholder="Search by name or email..." onKeyDown={onEnterNext} className="pl-9 text-xs h-8" />
           </div>
           {MOCK_USERS.slice(0, 5).map((u, i) => {
             const initials = u.name.split(" ").map(n => n[0]).join("").slice(0, 2);
@@ -1349,15 +1350,15 @@ function PortalBrandingPanel() {
         <CardContent className="space-y-4">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Portal Name</p>
-            <Input value={portalName} onChange={e => setPortalName(e.target.value)} className="text-xs h-8" />
+            <Input value={portalName} onChange={e => setPortalName(e.target.value)} onKeyDown={onEnterNext} className="text-xs h-8" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Logo URL</p>
-            <Input placeholder="https://cdn.example.com/logo.png" className="text-xs h-8" />
+            <Input placeholder="https://cdn.example.com/logo.png" onKeyDown={onEnterNext} className="text-xs h-8" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Favicon URL</p>
-            <Input placeholder="https://cdn.example.com/favicon.ico" className="text-xs h-8" />
+            <Input placeholder="https://cdn.example.com/favicon.ico" onKeyDown={onEnterNext} className="text-xs h-8" />
           </div>
         </CardContent>
       </Card>
@@ -1368,7 +1369,7 @@ function PortalBrandingPanel() {
             <p className="text-xs text-muted-foreground mb-1">Primary Color</p>
             <div className="flex gap-2">
               <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="h-8 w-10 rounded cursor-pointer border border-border bg-transparent" />
-              <Input value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-32 text-xs h-8 font-mono" />
+              <Input value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} onKeyDown={onEnterNext} className="w-32 text-xs h-8 font-mono" />
             </div>
           </div>
           <div>
@@ -1616,7 +1617,7 @@ export function SecurityModule() {
     : null;
 
   return (
-    <div className="flex h-full gap-0">
+    <div data-keyboard-form className="flex h-full gap-0">
       {/* Sidebar */}
       <div className="w-[240px] flex-shrink-0 border-r border-border bg-card/30 flex flex-col">
         <div className="p-3 border-b border-border">

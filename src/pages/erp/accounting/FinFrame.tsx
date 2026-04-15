@@ -472,7 +472,7 @@ export function FinFramePanel() {
                 ))}
               </SelectContent>
             </Select>
-            <Button size="sm" onClick={() => openCreate()}>
+            <Button data-primary size="sm" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-1" /> Add Group
             </Button>
           </div>
@@ -658,7 +658,7 @@ export function FinFramePanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!createForm.name.trim() || (!createForm.parentL3Code && !createForm.parentGroupId)}>
+            <Button data-primary onClick={handleSave} disabled={!createForm.name.trim() || (!createForm.parentL3Code && !createForm.parentGroupId)}>
               {editingId ? 'Update' : 'Create'} Group
             </Button>
           </DialogFooter>

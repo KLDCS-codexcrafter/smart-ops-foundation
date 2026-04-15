@@ -85,7 +85,7 @@ export function EntitySetupDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" data-keyboard-form>
         {!result ? (
           <>
             <DialogHeader>
@@ -127,7 +127,7 @@ export function EntitySetupDialog({
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
-              <Button onClick={handleCreate} disabled={loading} className="flex-1">
+              <Button data-primary onClick={handleCreate} disabled={loading} className="flex-1">
                 {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Package className="h-4 w-4 mr-2" />}
                 {loading ? 'Creating…' : 'Create Account Structure'}
               </Button>

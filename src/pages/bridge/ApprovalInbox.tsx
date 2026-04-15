@@ -431,7 +431,7 @@ export default function ApprovalInbox() {
             <Button variant="outline" onClick={() => { setRejectDialog({ id: "", open: false }); setRejectReason(""); }}>
               Cancel
             </Button>
-            <Button
+            <Button data-primary
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={!rejectReason.trim()}
               onClick={handleRejectSubmit}

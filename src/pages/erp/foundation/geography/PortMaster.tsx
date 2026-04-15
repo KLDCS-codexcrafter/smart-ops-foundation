@@ -142,6 +142,7 @@ export function PortMasterPanel() {
   }
 
   return (
+    <div data-keyboard-form className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -196,7 +197,7 @@ export function PortMasterPanel() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search ports..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
             </div>
-            <Button onClick={openCreate} className="gap-1.5"><Plus className="h-4 w-4" /> Add Port</Button>
+            <Button data-primary onClick={openCreate} className="gap-1.5"><Plus className="h-4 w-4" /> Add Port</Button>
           </div>
 
           <div className="border rounded-lg overflow-x-auto">
@@ -265,6 +266,7 @@ export function PortMasterPanel() {
               </TableBody>
             </Table>
           </div>
+    </div>
   );
 }
 
@@ -280,6 +282,7 @@ export default function PortMaster() {
               { label:'Foundation' },
               { label:'Geography', href:'/erp/foundation/geography' },
               { label:'Ports' },
+            ]}
             showDatePicker={false} showCompany={false}
           />
         <main className="flex-1 p-6">

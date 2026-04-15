@@ -110,7 +110,7 @@ const BatchFormDialog: React.FC<BatchFormDialogProps> = ({ open, onOpenChange, o
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form data-keyboard-form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="batch_number" render={({ field }) => (
                 <FormItem><FormLabel>Batch Number</FormLabel><FormControl>
