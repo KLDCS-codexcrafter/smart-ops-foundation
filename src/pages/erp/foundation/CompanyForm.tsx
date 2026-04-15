@@ -1094,7 +1094,6 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
             </div>
           </div>
         </div>
-      </div>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
