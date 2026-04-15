@@ -2777,6 +2777,9 @@ export function LedgerMasterPanel() {
         gstSubType: dutiesTaxForm.gstSubType,
         calculationBasis: dutiesTaxForm.calculationBasis,
         rate: dutiesTaxForm.rate,
+        rcmSection: dutiesTaxForm.rcmSection,
+        gstTaxSubType: dutiesTaxForm.gstTaxSubType,
+        itcEligibility: dutiesTaxForm.itcEligibility,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -2802,6 +2805,9 @@ export function LedgerMasterPanel() {
       gstSubType: dutiesTaxForm.gstSubType,
       calculationBasis: dutiesTaxForm.calculationBasis,
       rate: dutiesTaxForm.rate,
+      rcmSection: dutiesTaxForm.rcmSection,
+      gstTaxSubType: dutiesTaxForm.gstTaxSubType,
+      itcEligibility: dutiesTaxForm.itcEligibility,
       description: '', notes: '',
       suspendedBy: null, suspendedAt: null, suspendedReason: null,
       reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
