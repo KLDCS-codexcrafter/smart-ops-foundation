@@ -64,7 +64,7 @@ export default function Payments() {
   };
 
   return (
-    <CustomerLayout title="Payments" subtitle="Payment history and make a payment">
+    <CustomerLayout title="Payments" subtitle="Payment history and make a payment"><div data-keyboard-form>
       <Tabs defaultValue="make">
         <TabsList className="mb-6">
           <TabsTrigger value="make">Make Payment</TabsTrigger>
@@ -220,6 +220,6 @@ export default function Payments() {
           </div>
         </TabsContent>
       </Tabs>
-    </CustomerLayout>
+    </div></CustomerLayout>
   );
 }

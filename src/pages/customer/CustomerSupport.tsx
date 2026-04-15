@@ -49,7 +49,7 @@ export default function CustomerSupport() {
   };
 
   return (
-    <CustomerLayout title="Support" subtitle="Raise and track support requests">
+    <CustomerLayout title="Support" subtitle="Raise and track support requests"><div data-keyboard-form>
       <Tabs defaultValue="tickets">
         <TabsList className="mb-6">
           <TabsTrigger value="tickets">My Tickets ({activeCount})</TabsTrigger>
@@ -153,6 +153,6 @@ export default function CustomerSupport() {
           </div>
         </TabsContent>
       </Tabs>
-    </CustomerLayout>
+    </div></CustomerLayout>
   );
 }

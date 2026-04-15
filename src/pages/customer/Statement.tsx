@@ -45,7 +45,7 @@ export default function Statement() {
   const closingBalance = STATEMENT[0]?.balance ?? 0;
 
   return (
-    <CustomerLayout title="Account Statement" subtitle="Ledger statement with all transactions">
+    <CustomerLayout title="Account Statement" subtitle="Ledger statement with all transactions"><div data-keyboard-form>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
@@ -112,6 +112,6 @@ export default function Statement() {
           </TableBody>
         </Table>
       </div>
-    </CustomerLayout>
+    </div></CustomerLayout>
   );
 }

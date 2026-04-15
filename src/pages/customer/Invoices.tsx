@@ -57,7 +57,7 @@ export default function Invoices() {
     .reduce((sum, i) => sum + i.amount + i.gst, 0);
 
   return (
-    <CustomerLayout title="My Invoices" subtitle="All invoices from Reliance Digital Solutions">
+    <CustomerLayout title="My Invoices" subtitle="All invoices from Reliance Digital Solutions"><div data-keyboard-form>
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
@@ -157,6 +157,6 @@ export default function Invoices() {
           </TableBody>
         </Table>
       </div>
-    </CustomerLayout>
+    </div></CustomerLayout>
   );
 }
