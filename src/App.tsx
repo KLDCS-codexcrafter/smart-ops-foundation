@@ -74,6 +74,17 @@ import IncomeTaxMaster from './pages/erp/accounting/IncomeTaxMaster';
 import VoucherTypesMaster from './pages/erp/accounting/VoucherTypesMaster';
 import CurrencyMaster from './pages/erp/accounting/CurrencyMaster';
 import TransactionTemplates from './pages/erp/accounting/TransactionTemplates';
+import SalesInvoice from './pages/erp/accounting/vouchers/SalesInvoice';
+import PurchaseInvoice from './pages/erp/accounting/vouchers/PurchaseInvoice';
+import ReceiptVoucher from './pages/erp/accounting/vouchers/Receipt';
+import PaymentVoucher from './pages/erp/accounting/vouchers/Payment';
+import JournalEntry from './pages/erp/accounting/vouchers/JournalEntry';
+import ContraEntry from './pages/erp/accounting/vouchers/ContraEntry';
+import CreditNote from './pages/erp/accounting/vouchers/CreditNote';
+import DebitNote from './pages/erp/accounting/vouchers/DebitNote';
+import DeliveryNote from './pages/erp/accounting/vouchers/DeliveryNote';
+import ReceiptNote from './pages/erp/accounting/vouchers/ReceiptNote';
+import StockTransfer from './pages/erp/accounting/vouchers/StockTransfer';
 import ModeOfPaymentMaster from './pages/erp/masters/supporting/ModeOfPaymentMaster';
 import TermsOfPaymentMaster from './pages/erp/masters/supporting/TermsOfPaymentMaster';
 import TermsOfDeliveryMaster from './pages/erp/masters/supporting/TermsOfDeliveryMaster';
@@ -239,6 +250,17 @@ const App = () => (
             <Route path="/erp/accounting/currency-master" element={<CurrencyMaster />} />
             <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/accounting/transaction-templates" element={<TransactionTemplates />} />
+            <Route path="/erp/accounting/vouchers/sales-invoice" element={<SalesInvoice />} />
+            <Route path="/erp/accounting/vouchers/purchase-invoice" element={<PurchaseInvoice />} />
+            <Route path="/erp/accounting/vouchers/receipt" element={<ReceiptVoucher />} />
+            <Route path="/erp/accounting/vouchers/payment" element={<PaymentVoucher />} />
+            <Route path="/erp/accounting/vouchers/journal" element={<JournalEntry />} />
+            <Route path="/erp/accounting/vouchers/contra" element={<ContraEntry />} />
+            <Route path="/erp/accounting/vouchers/credit-note" element={<CreditNote />} />
+            <Route path="/erp/accounting/vouchers/debit-note" element={<DebitNote />} />
+            <Route path="/erp/accounting/vouchers/delivery-note" element={<DeliveryNote />} />
+            <Route path="/erp/accounting/vouchers/receipt-note" element={<ReceiptNote />} />
+            <Route path="/erp/accounting/vouchers/stock-transfer" element={<StockTransfer />} />
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
