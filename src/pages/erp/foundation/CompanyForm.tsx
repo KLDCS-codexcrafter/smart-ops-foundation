@@ -168,7 +168,7 @@ const INITIAL_FORM: Record<string, unknown> = {
 };
 
 // ── Component ────────────────────────────────────────────────────────────────
-export default function CompanyForm({ entityType, mode, entityId }: CompanyFormProps) {
+export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProps) {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<Record<string, unknown>>({ ...INITIAL_FORM });
