@@ -266,6 +266,7 @@ export function PortMasterPanel() {
               </TableBody>
             </Table>
           </div>
+    </div>
   );
 }
 
@@ -281,6 +282,7 @@ export default function PortMaster() {
               { label:'Foundation' },
               { label:'Geography', href:'/erp/foundation/geography' },
               { label:'Ports' },
+            ]}
             showDatePicker={false} showCompany={false}
           />
         <main className="flex-1 p-6">

@@ -229,6 +229,7 @@ export function RegionMasterPanel() {
               </TableBody>
             </Table>
           </div>
+    </div>
   );
 }
 
@@ -244,6 +245,7 @@ export default function RegionMaster() {
               { label:'Foundation' },
               { label:'Geography', href:'/erp/foundation/geography' },
               { label:'Regions' },
+            ]}
             showDatePicker={false} showCompany={false}
           />
         <main className="flex-1 p-6">
