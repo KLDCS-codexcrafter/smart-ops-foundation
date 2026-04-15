@@ -51,9 +51,9 @@ export function useVouchers(entityCode: string) {
       postVoucher(voucher, entityCode);
       toast.success(`${voucher.voucher_type_name} ${voucher.voucher_no} posted`);
     } else {
-      // [JWT] POST /api/accounting/vouchers (draft)
       const existing = ls<Voucher>(key);
       existing.push({ ...voucher, status: 'draft' });
+      // [JWT] POST /api/accounting/vouchers (draft)
       localStorage.setItem(key, JSON.stringify(existing));
       toast.success(`${voucher.voucher_type_name} saved as draft`);
     }
