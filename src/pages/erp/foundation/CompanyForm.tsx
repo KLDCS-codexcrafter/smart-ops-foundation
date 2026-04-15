@@ -1047,7 +1047,7 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
           showDatePicker={false}
           showCompany={false}
         />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="mb-6">
             <h1 className="text-xl font-bold text-foreground">
               {mode === 'create' ? `Create ${label}` : `Edit ${label}`}
