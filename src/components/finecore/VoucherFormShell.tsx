@@ -31,7 +31,7 @@ export function VoucherFormPanel({
   voucherTypeName, title, showTerms, showPaymentTerms, defaultOpen = false,
 }: VoucherFormShellProps) {
   const [form, setForm] = useState<Partial<Voucher>>({
-    voucher_type: voucherTypeName,
+    voucher_type_name: voucherTypeName,
     date: new Date().toISOString().split('T')[0],
     party_name: '',
     ref_voucher_no: '',
@@ -60,12 +60,16 @@ export function VoucherFormPanel({
     // [JWT] POST /api/accounting/vouchers
     const key = 'erp_group_vouchers';
     try {
+      // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
       const now = new Date().toISOString();
       const voucher: Voucher = {
         id: `v-${Date.now()}`,
         voucher_no: `${voucherTypeName.replace(/\s/g, '')}-${String(existing.length + 1).padStart(4, '0')}`,
-        voucher_type: voucherTypeName,
+        voucher_type_id: '',
+        voucher_type_name: voucherTypeName,
+        base_voucher_type: 'Sales',
+        entity_id: '',
         date: form.date ?? now.split('T')[0],
         party_name: form.party_name ?? '',
         ref_voucher_no: form.ref_voucher_no ?? '',
@@ -79,7 +83,19 @@ export function VoucherFormPanel({
         to_ledger_name: form.to_ledger_name ?? '',
         from_godown_name: form.from_godown_name ?? '',
         to_godown_name: form.to_godown_name ?? '',
+        ledger_lines: [],
+        gross_amount: 0,
+        total_discount: 0,
+        total_taxable: 0,
+        total_cgst: 0,
+        total_sgst: 0,
+        total_igst: 0,
+        total_cess: 0,
+        total_tax: 0,
+        round_off: 0,
+        tds_applicable: false,
         status: 'draft',
+        created_by: 'current-user',
         created_at: now,
         updated_at: now,
       };

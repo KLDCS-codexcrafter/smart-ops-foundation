@@ -25,11 +25,11 @@ export interface StockGroup {
   effective_from?: string | null;
   effective_to?: string | null;
   // GST rate fields — used as fallback when Stock Item has no rate set
-  igst_rate: number | null;
-  cgst_rate: number | null;
-  sgst_rate: number | null;
-  cess_rate: number | null;
-  gst_type: 'taxable' | 'exempt' | 'nil_rated' | 'non_gst' | 'zero_rated' | null;
+  igst_rate?: number | null;
+  cgst_rate?: number | null;
+  sgst_rate?: number | null;
+  cess_rate?: number | null;
+  gst_type?: 'taxable' | 'exempt' | 'nil_rated' | 'non_gst' | 'zero_rated' | null;
   status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
