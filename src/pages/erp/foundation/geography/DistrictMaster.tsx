@@ -254,6 +254,7 @@ export function DistrictMasterPanel() {
               </TableBody>
             </Table>
           </div>
+    </div>
   );
 }
 

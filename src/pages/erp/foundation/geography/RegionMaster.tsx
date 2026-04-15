@@ -135,6 +135,7 @@ export function RegionMasterPanel() {
   }
 
   return (
+    <div data-keyboard-form className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
