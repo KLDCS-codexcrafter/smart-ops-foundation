@@ -659,7 +659,7 @@ export default function Login() {
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <Button type="submit" className="w-full h-11 rounded-lg" style={{ background: "var(--gradient-primary)" }} disabled={loading}>
+                  <Button type="submit" data-primary className="w-full h-11 rounded-lg" style={{ background: "var(--gradient-primary)" }} disabled={loading}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Reset Link"}
                   </Button>
                   <Button type="button" variant="ghost" className="w-full" onClick={() => setView("login")}>
@@ -718,7 +718,7 @@ export default function Login() {
                       <PasswordMatchIndicator password={resetForm.watch("password")} confirmPassword={field.value} />
                     </FormItem>
                   )} />
-                  <Button type="submit" className="w-full h-11 rounded-lg" style={{ background: "var(--gradient-primary)" }} disabled={loading}>
+                  <Button type="submit" data-primary className="w-full h-11 rounded-lg" style={{ background: "var(--gradient-primary)" }} disabled={loading}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update Password"}
                   </Button>
                 </form>
@@ -801,6 +801,7 @@ function SubmitButton({ loading, success, locked }: { loading: boolean; success:
   return (
     <Button
       type="submit"
+      data-primary
       className="w-full h-11 rounded-lg transition-all"
       style={{ background: success ? undefined : "var(--gradient-primary)" }}
       variant={success ? "default" : undefined}

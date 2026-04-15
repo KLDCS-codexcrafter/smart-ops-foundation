@@ -176,7 +176,9 @@ function HSNSACMasterPanelInner() {
   );
 }
 
-export { HSNSACMasterPanelInner as HSNSACMasterPanel };
+export function HSNSACMasterPanel() {
+  return <HSNSACMasterPanelInner />;
+}
 
 export default function HSNSACMaster() {
   return (

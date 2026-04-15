@@ -168,7 +168,7 @@ const INITIAL_FORM: Record<string, unknown> = {
 };
 
 // ── Component ────────────────────────────────────────────────────────────────
-export default function CompanyForm({ entityType, mode, entityId }: CompanyFormProps) {
+export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProps) {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<Record<string, unknown>>({ ...INITIAL_FORM });
@@ -1039,15 +1039,8 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
 
   return (
     <>
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
+      <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
-        <ERPHeader
-          breadcrumbs={breadcrumbs}
-          showDatePicker={false}
-          showCompany={false}
-        />
-        <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="mb-6">
             <h1 className="text-xl font-bold text-foreground">
               {mode === 'create' ? `Create ${label}` : `Edit ${label}`}
@@ -1101,8 +1094,6 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
             </div>
           </div>
         </div>
-      </div>
-    </SidebarProvider>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
@@ -1119,5 +1110,28 @@ export default function CompanyForm({ entityType, mode, entityId }: CompanyFormP
       }}
     />
     </>
+  );
+}
+
+export default function CompanyForm(props: CompanyFormProps) {
+  const label = props.entityType === 'company' ? 'Company' : 'Subsidiary';
+  const breadcrumbs = [
+    { label: 'Operix Core', href: '/erp/dashboard' },
+    { label: 'Command Center', href: '/erp/command-center' },
+    { label: 'Foundation' },
+    { label: props.entityType === 'company' ? 'Companies' : 'Subsidiaries',
+      href: props.entityType === 'company' ? '/erp/foundation/companies' : '/erp/foundation/subsidiaries' },
+    { label: props.mode === 'create' ? `Create ${label}` : `Edit ${label}` },
+  ];
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
+        <main className="p-6">
+          <CompanyFormPanel {...props} />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }

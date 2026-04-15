@@ -115,7 +115,7 @@ interface BranchOfficeFormProps {
   entityId?: string;
 }
 
-export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormProps) {
+export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps) {
   const navigate = useNavigate();
   // [JWT] GET /api/foundation/branch-offices
   const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
@@ -192,10 +192,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
 
   return (
     <>
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
-        <div data-keyboard-form className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+      <div data-keyboard-form className="max-w-3xl mx-auto px-4 py-6 space-y-6">
           <div>
             <h1 className="text-xl font-bold text-foreground">
               {mode === 'create' ? 'Create Branch Office' : 'Edit Branch Office'}
@@ -413,8 +410,6 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
             </Button>
           </div>
         </div>
-      </div>
-    </SidebarProvider>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
@@ -431,5 +426,26 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
       }}
     />
     </>
+  );
+}
+
+export default function BranchOfficeForm(props: BranchOfficeFormProps) {
+  const breadcrumbs = [
+    { label: 'Operix Core', href: '/erp/dashboard' },
+    { label: 'Command Center', href: '/erp/command-center' },
+    { label: 'Foundation' },
+    { label: 'Branch Offices', href: '/erp/foundation/branch-offices' },
+    { label: props.mode === 'create' ? 'Create Branch Office' : 'Edit Branch Office' },
+  ];
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
+        <main className="p-6">
+          <BranchOfficeFormPanel {...props} />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
