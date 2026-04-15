@@ -81,7 +81,7 @@ export default function ImportHub() {
   const [fileFormat, setFileFormat] = useState("");
 
   return (
-    <BridgeLayout title="Import Hub" subtitle="Import data into Tally Prime from external sources">
+    <BridgeLayout title="Import Hub" subtitle="Import data into Tally Prime from external sources"><div data-keyboard-form>
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
@@ -191,6 +191,6 @@ export default function ImportHub() {
           </div>
         </TabsContent>
       </Tabs>
-    </BridgeLayout>
+    </div></BridgeLayout>
   );
 }

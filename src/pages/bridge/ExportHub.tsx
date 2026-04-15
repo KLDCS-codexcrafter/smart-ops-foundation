@@ -92,7 +92,7 @@ export default function ExportHub() {
   const scheduledExports = EXPORT_HISTORY.filter((e) => e.status === "scheduled");
 
   return (
-    <BridgeLayout title="Export Hub" subtitle="Export data from Tally Prime to external destinations">
+    <BridgeLayout title="Export Hub" subtitle="Export data from Tally Prime to external destinations"><div data-keyboard-form>
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
@@ -262,6 +262,6 @@ export default function ExportHub() {
           )}
         </TabsContent>
       </Tabs>
-    </BridgeLayout>
+    </div></BridgeLayout>
   );
 }
