@@ -1405,6 +1405,10 @@ export function LedgerMasterPanel() {
     rate: 0,
     openingBalance: 0, openingBalanceType: 'Cr' as 'Dr'|'Cr',
     scope: 'group' as 'group'|'entity', entityId: '',
+    // Comply360 UDF fields
+    rcmSection: 'not_applicable' as 'not_applicable' | 'section_9_3' | 'section_9_4',
+    gstTaxSubType: 'output' as 'output' | 'input' | 'rcm_payable' | 'rcm_input' | 'cess',
+    itcEligibility: 'full' as 'full' | 'ineligible_17_5' | 'blocked' | 'partial',
   };
   const [dutiesTaxForm, setDutiesTaxForm] = useState(defaultDutiesTaxForm);
 
