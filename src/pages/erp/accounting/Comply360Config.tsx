@@ -29,23 +29,30 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 export interface GroupConfig {
   // GST
   enableAdvancedGST: boolean;
-  enableAutoRCM: boolean;            // disabled if enableAdvancedGST is false
-  enableQRMPScheme: boolean;         // TDL UDF 5024, affects 2B reconciliation
+  enableAutoRCM: boolean;
+  enableQRMPScheme: boolean;
   // Income Tax
   enableAutoTDSPayable: boolean;
   enableAutoTDSReceivable: boolean;
-  enableDiscountAutoPosting: boolean; // from TDL UDF in Receipt.txt
+  enableDiscountAutoPosting: boolean;
   // Audit
   enableTaxAuditReport: boolean;
-  // Trading features — from Charis TDL
-  enableDomesticLandedCost: boolean; // 07 Landed Cost / ENBLC UDF 101
-  enableEximManagement: boolean;     // Exim Management / CMPActivateEximManagement UDF 4013
-  enableSAMModule: boolean;          // SAM Management / EnableSalesManModule UDF 50140
-  // Communication — from TDL-08
+  // Trading features
+  enableDomesticLandedCost: boolean;
+  enableEximManagement: boolean;
+  enableSAMModule: boolean;
+  // Communication
   enableWhatsAppTrigger: boolean;
-  // Reserved — add toggles here as new TDLs are implemented
-  // enableFixedAssetModule: boolean;  // TDL-04, Sprint 30
-  // enableMRAPlanning: boolean;       // TDL-06, Manufacturing sprint
+  // Section 8 — Voucher Features (F11)
+  enableInventory: boolean;
+  enableBillByBill: boolean;
+  enableCostCentres: boolean;
+  enableOrderProcessing: boolean;
+  enableJobWork: boolean;
+  enableBudgets: boolean;
+  enableInterestCalc: boolean;
+  itemInvoiceByDefault: boolean;
+  defaultReceiveGodown: string;
 }
 
 export const DEFAULT_GROUP_CONFIG: GroupConfig = {
@@ -54,6 +61,42 @@ export const DEFAULT_GROUP_CONFIG: GroupConfig = {
   enableTaxAuditReport: false,
   enableDomesticLandedCost: false, enableEximManagement: false, enableSAMModule: false,
   enableWhatsAppTrigger: false,
+  enableInventory: true, enableBillByBill: true, enableCostCentres: false,
+  enableOrderProcessing: false, enableJobWork: false, enableBudgets: false,
+  enableInterestCalc: false, itemInvoiceByDefault: true, defaultReceiveGodown: '',
+};
+
+// Section 9 — Settlement Configuration
+// [JWT] GET/PATCH /api/compliance/comply360/settlement/:entityId
+export interface SettlementConfig {
+  settlementMethod: 'fifo' | 'lifo' | 'manual';
+  allowManualOverride: boolean;
+  advanceAutoAdjust: boolean;
+  discountOnSettlement: boolean;
+  discountLedger: string;
+  overdueInterest: boolean;
+  interestRate: number;
+  interestLedger: string;
+}
+
+export const DEFAULT_SETTLEMENT: SettlementConfig = {
+  settlementMethod: 'fifo', allowManualOverride: true, advanceAutoAdjust: true,
+  discountOnSettlement: false, discountLedger: '', overdueInterest: false,
+  interestRate: 24, interestLedger: '',
+};
+
+// Section 10 — Outstanding Configuration
+// [JWT] GET/PATCH /api/compliance/comply360/outstanding/:entityId
+export interface OutstandingConfig {
+  creditLimitMode: 'warn' | 'block';
+  overdueBlockNewOrders: boolean;
+  agingBuckets: [number, number, number, number, number];
+  showMSMEFlag: boolean;
+}
+
+export const DEFAULT_OUTSTANDING: OutstandingConfig = {
+  creditLimitMode: 'warn', overdueBlockNewOrders: false,
+  agingBuckets: [30, 60, 90, 180, 999], showMSMEFlag: true,
 };
 
 // Storage: erp_comply360_rcm_{entityId}
