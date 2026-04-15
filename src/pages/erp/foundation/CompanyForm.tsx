@@ -1095,7 +1095,6 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
           </div>
         </div>
       </div>
-    </SidebarProvider>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
@@ -1112,5 +1111,28 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       }}
     />
     </>
+  );
+}
+
+export default function CompanyForm(props: CompanyFormProps) {
+  const label = props.entityType === 'company' ? 'Company' : 'Subsidiary';
+  const breadcrumbs = [
+    { label: 'Operix Core', href: '/erp/dashboard' },
+    { label: 'Command Center', href: '/erp/command-center' },
+    { label: 'Foundation' },
+    { label: props.entityType === 'company' ? 'Companies' : 'Subsidiaries',
+      href: props.entityType === 'company' ? '/erp/foundation/companies' : '/erp/foundation/subsidiaries' },
+    { label: props.mode === 'create' ? `Create ${label}` : `Edit ${label}` },
+  ];
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
+        <main className="p-6">
+          <CompanyFormPanel {...props} />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
