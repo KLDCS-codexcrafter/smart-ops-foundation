@@ -123,7 +123,8 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
   }
 
   return (
-    <FormSection data-keyboard-form title="Governance & Compliance" icon={<Shield className="h-4 w-4" />}>
+    <div data-keyboard-form>
+    <FormSection title="Governance & Compliance" icon={<Shield className="h-4 w-4" />}>
       <Tabs value={govTab} onValueChange={setGovTab}>
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
           <TabsTrigger value="companyInfo" className="text-xs">Company Info</TabsTrigger>
@@ -133,7 +134,7 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
         </TabsList>
 
         {/* Company Info tab */}
-        <TabsContent value="companyInfo"><div data-keyboard-form>
+        <TabsContent value="companyInfo">
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Switch
@@ -517,5 +518,6 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
         </TabsContent>
       </Tabs>
     </FormSection>
+    </div>
   );
 }
