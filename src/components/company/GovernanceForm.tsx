@@ -133,7 +133,7 @@ export function GovernanceForm({ formData, upd, gstRegs, setGstRegs, lutBonds, s
         </TabsList>
 
         {/* Company Info tab */}
-        <TabsContent value="companyInfo">
+        <TabsContent value="companyInfo"><div data-keyboard-form>
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Switch
