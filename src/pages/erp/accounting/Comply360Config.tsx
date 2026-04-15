@@ -264,6 +264,9 @@ export const comply360LCKey = (e: string) => `erp_comply360_lc_${e}`;
 export const comply360EximKey = (e: string) => `erp_comply360_exim_${e}`;
 export const comply360SAMKey = (e: string) => `erp_comply360_sam_${e}`;
 export const comply360WAKey = (e: string) => `erp_comply360_wa_${e}`;
+export const comply360FeaturesKey = (e: string) => `erp_comply360_features_${e}`;
+export const comply360SettlementKey = (e: string) => `erp_comply360_settlement_${e}`;
+export const comply360OutstandingKey = (e: string) => `erp_comply360_outstanding_${e}`;
 
 // ─── Section Navigation ──────────────────────────────────────────────
 
@@ -275,6 +278,9 @@ const SECTIONS = [
   { id: 'exim', label: 'Exim', toggle: 'enableEximManagement' as keyof GroupConfig },
   { id: 'sam', label: 'SAM / broker', toggle: 'enableSAMModule' as keyof GroupConfig },
   { id: 'wa', label: 'WhatsApp', toggle: 'enableWhatsAppTrigger' as keyof GroupConfig },
+  { id: 'features', label: 'Features (F11)', toggle: 'enableInventory' as keyof GroupConfig },
+  { id: 'settlement', label: 'Settlement', toggle: 'enableBillByBill' as keyof GroupConfig },
+  { id: 'outstanding', label: 'Outstanding', toggle: 'enableBillByBill' as keyof GroupConfig },
 ];
 
 const IMPORT_DUTY_TYPES = [
