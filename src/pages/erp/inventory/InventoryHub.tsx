@@ -21,7 +21,7 @@ const INV_CARDS = [
   },
 ];
 
-export default function InventoryHub() {
+export function InventoryHubPanel() {
   const navigate = useNavigate();
   return (
     <SidebarProvider>
@@ -64,3 +64,4 @@ export default function InventoryHub() {
     </SidebarProvider>
   );
 }
+export default function InventoryHub() { return <InventoryHubPanel />; }

@@ -139,7 +139,7 @@ function EntityTable<T extends { id: string }>({
 }
 
 // ── Main component ────────────────────────────────────────────────
-export default function FoundationEntityHub() {
+export function FoundationEntityHubPanel() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('tab') as Tab) || 'companies';
@@ -426,3 +426,4 @@ export default function FoundationEntityHub() {
     </SidebarProvider>
   );
 }
+export default function FoundationEntityHub() { return <FoundationEntityHubPanel />; }

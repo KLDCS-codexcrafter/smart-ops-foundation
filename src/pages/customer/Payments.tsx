@@ -36,7 +36,7 @@ function formatINR(paise: number) {
   return `₹${r.toLocaleString("en-IN")}`;
 }
 
-export default function Payments() {
+export function PaymentsPanel() {
   const [selectedInvoices, setSelectedInvoices] = useState<string[]>(["INV-2026-0412", "INV-2026-0389"]);
   const [method, setMethod] = useState("neft");
   const [txnRef, setTxnRef] = useState("");
@@ -223,3 +223,4 @@ export default function Payments() {
     </div></CustomerLayout>
   );
 }
+export default function Payments() { return <PaymentsPanel />; }

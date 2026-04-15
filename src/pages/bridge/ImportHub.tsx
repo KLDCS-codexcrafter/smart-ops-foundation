@@ -74,7 +74,7 @@ const stats = [
   { label: "Processing", value: 1, icon: Loader2, color: "text-warning", spin: true },
 ];
 
-export default function ImportHub() {
+export function ImportHubPanel() {
   const [tab, setTab] = useState("upload");
   const [targetCompany, setTargetCompany] = useState("");
   const [targetModule, setTargetModule] = useState("");
@@ -194,3 +194,4 @@ export default function ImportHub() {
     </div></BridgeLayout>
   );
 }
+export default function ImportHub() { return <ImportHubPanel />; }
