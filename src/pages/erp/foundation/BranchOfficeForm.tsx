@@ -27,6 +27,7 @@ import { FormField } from '@/components/company/FormField';
 import { INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [

@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import type { SerialNumber, SerialFormData } from '@/types/serial-number';
+import { onEnterNext } from '@/lib/keyboard';
 
 const formSchema = z.object({
   serial_number: z.string().min(1, 'Required'),
@@ -114,12 +115,12 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="serial_number" render={({ field }) => (
                 <FormItem><FormLabel>Serial Number</FormLabel><FormControl>
-                  <Input placeholder="SN-2026-00001" {...field} />
+                  <Input placeholder="SN-2026-00001" {...field}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="item_name" render={({ field }) => (
                 <FormItem><FormLabel>Item Name</FormLabel><FormControl>
-                  <Input placeholder="Item name" {...field} value={field.value ?? ''} />
+                  <Input placeholder="Item name" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
             </div>
@@ -157,18 +158,18 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="purchase_date" render={({ field }) => (
                 <FormItem><FormLabel>Purchase Date</FormLabel><FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
+                  <Input type="date" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="warranty_end_date" render={({ field }) => (
                 <FormItem><FormLabel>Warranty End</FormLabel><FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
+                  <Input type="date" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
             </div>
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem><FormLabel>Notes</FormLabel><FormControl>
-                <Input placeholder="Optional notes" {...field} value={field.value ?? ''} />
+                <Input placeholder="Optional notes" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
               </FormControl></FormItem>
             )} />
 
@@ -187,53 +188,53 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="imei_1" render={({ field }) => (
                     <FormItem><FormLabel>IMEI 1 / Primary Serial</FormLabel><FormControl>
-                      <Input placeholder="15-digit IMEI" {...field} value={field.value ?? ''} />
+                      <Input placeholder="15-digit IMEI" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="imei_2" render={({ field }) => (
                     <FormItem><FormLabel>IMEI 2 / Secondary</FormLabel><FormControl>
-                      <Input placeholder="For dual-SIM devices" {...field} value={field.value ?? ''} />
+                      <Input placeholder="For dual-SIM devices" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="custom_field_1_label" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 1 — Label</FormLabel><FormControl>
-                      <Input placeholder="e.g. Engine No, Chassis No" {...field} value={field.value ?? ''} />
+                      <Input placeholder="e.g. Engine No, Chassis No" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="custom_field_1_value" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 1 — Value</FormLabel><FormControl>
-                      <Input placeholder="Value for this unit" {...field} value={field.value ?? ''} />
+                      <Input placeholder="Value for this unit" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="custom_field_2_label" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 2 — Label</FormLabel><FormControl>
-                      <Input placeholder="e.g. Body No, Battery No" {...field} value={field.value ?? ''} />
+                      <Input placeholder="e.g. Body No, Battery No" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="custom_field_2_value" render={({ field }) => (
                     <FormItem><FormLabel>Custom Field 2 — Value</FormLabel><FormControl>
-                      <Input placeholder="Value" {...field} value={field.value ?? ''} />
+                      <Input placeholder="Value" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                 </div>
                 <FormField control={form.control} name="current_custodian" render={({ field }) => (
                   <FormItem><FormLabel>Current Custodian</FormLabel><FormControl>
-                    <Input placeholder="Person responsible" {...field} value={field.value ?? ''} />
+                    <Input placeholder="Person responsible" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                   </FormControl></FormItem>
                 )} />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="grn_reference" render={({ field }) => (
                     <FormItem><FormLabel>Purchase Receipt / GRN No</FormLabel><FormControl>
-                      <Input {...field} value={field.value ?? ''} />
+                      <Input {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                   <FormField control={form.control} name="sales_reference" render={({ field }) => (
                     <FormItem><FormLabel>Sales Invoice / Delivery Note</FormLabel><FormControl>
-                      <Input {...field} value={field.value ?? ''} />
+                      <Input {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                     </FormControl></FormItem>
                   )} />
                 </div>

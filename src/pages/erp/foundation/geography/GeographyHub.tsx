@@ -229,7 +229,7 @@ export function GeographyHubPanel() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
           {/* Header row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>

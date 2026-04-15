@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { onEnterNext } from '@/lib/keyboard';
 
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 
@@ -76,7 +77,7 @@ function EntityTable<T extends { id: string }>({
   }, [rows, sortKey, sortDir]);
 
   return (
-    <div className='rounded-xl border border-border overflow-hidden'>
+    <div data-keyboard-form className='rounded-xl border border-border overflow-hidden'>
       <table className='w-full text-sm'>
         <thead className='bg-muted/50 border-b border-border'>
           <tr>

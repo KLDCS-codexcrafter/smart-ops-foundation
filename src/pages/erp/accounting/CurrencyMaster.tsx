@@ -64,7 +64,7 @@ function RateInput({ label, value, onChange, hint }: {
   label: string; value: number | null; onChange: (v: number | null) => void; hint?: string;
 }) {
   return (
-    <div className="space-y-1">
+    <div data-keyboard-form className="space-y-1">
       <Label className="text-[11px] text-muted-foreground uppercase tracking-wider">{label}</Label>
       <Input
         type="number" step="0.0001" min="0"
@@ -141,7 +141,7 @@ function RateSubScreen({
   );
 
   return (
-    <div className="space-y-3">
+    <div data-keyboard-form className="space-y-3">
       {/* Context info */}
       <div className="rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20 px-3 py-2 text-[11px]">
         <div className="flex items-center gap-2 mb-1.5">
@@ -272,6 +272,7 @@ function RateSubScreen({
       )}
     </div>
   );
+import { onEnterNext } from '@/lib/keyboard';
 }
 
 // ── Currency Sheet ────────────────────────────────────────────────────────────

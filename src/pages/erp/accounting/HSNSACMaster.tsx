@@ -18,6 +18,7 @@ import {
 import { Search, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 function HSNSACMasterPanelInner() {
   const [hsnSearch, setHsnSearch] = useState('');
@@ -44,7 +45,7 @@ function HSNSACMasterPanelInner() {
   }), []);
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       <div>
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="text-2xl font-bold text-foreground">HSN / SAC Code Directory</h1>

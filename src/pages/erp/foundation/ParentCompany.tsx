@@ -32,6 +32,7 @@ import {
 } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {

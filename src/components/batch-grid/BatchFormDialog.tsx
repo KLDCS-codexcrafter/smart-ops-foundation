@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import type { Batch, BatchFormData } from '@/types/batch';
+import { onEnterNext } from '@/lib/keyboard';
 
 const formSchema = z.object({
   batch_number: z.string().min(1, 'Required'),
@@ -113,31 +114,31 @@ const BatchFormDialog: React.FC<BatchFormDialogProps> = ({ open, onOpenChange, o
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="batch_number" render={({ field }) => (
                 <FormItem><FormLabel>Batch Number</FormLabel><FormControl>
-                  <Input placeholder="BATCH-2604-0001" {...field} />
+                  <Input placeholder="BATCH-2604-0001" {...field}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="item_name" render={({ field }) => (
                 <FormItem><FormLabel>Item Name</FormLabel><FormControl>
-                  <Input placeholder="Item name" {...field} value={field.value ?? ''} />
+                  <Input placeholder="Item name" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="manufacturing_date" render={({ field }) => (
                 <FormItem><FormLabel>Mfg Date</FormLabel><FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
+                  <Input type="date" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="expiry_date" render={({ field }) => (
                 <FormItem><FormLabel>Expiry Date</FormLabel><FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
+                  <Input type="date" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
             </div>
             <div className="grid grid-cols-3 gap-4">
               <FormField control={form.control} name="quantity" render={({ field }) => (
                 <FormItem><FormLabel>Quantity</FormLabel><FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="number" {...field}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="qc_status" render={({ field }) => (
@@ -169,7 +170,7 @@ const BatchFormDialog: React.FC<BatchFormDialogProps> = ({ open, onOpenChange, o
             </div>
             <FormField control={form.control} name="notes" render={({ field }) => (
               <FormItem><FormLabel>Notes</FormLabel><FormControl>
-                <Input placeholder="Optional notes" {...field} value={field.value ?? ''} />
+                <Input placeholder="Optional notes" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
               </FormControl></FormItem>
             )} />
 
@@ -179,18 +180,18 @@ const BatchFormDialog: React.FC<BatchFormDialogProps> = ({ open, onOpenChange, o
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="lot_number" render={({ field }) => (
                   <FormItem><FormLabel>Lot Number</FormLabel><FormControl>
-                    <Input placeholder="Production lot reference" {...field} value={field.value ?? ''} />
+                    <Input placeholder="Production lot reference" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                   </FormControl></FormItem>
                 )} />
                 <FormField control={form.control} name="supplier_batch_number" render={({ field }) => (
                   <FormItem><FormLabel>Supplier Batch No</FormLabel><FormControl>
-                    <Input placeholder="Vendor's own batch ID" {...field} value={field.value ?? ''} />
+                    <Input placeholder="Vendor's own batch ID" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                   </FormControl></FormItem>
                 )} />
               </div>
               <FormField control={form.control} name="godown_name" render={({ field }) => (
                 <FormItem><FormLabel>Physical Location</FormLabel><FormControl>
-                  <Input placeholder="Godown / Store name" {...field} value={field.value ?? ''} />
+                  <Input placeholder="Godown / Store name" {...field} value={field.value ?? ''}  onKeyDown={onEnterNext} />
                 </FormControl></FormItem>
               )} />
               <FormField control={form.control} name="qc_hold" render={({ field }) => (

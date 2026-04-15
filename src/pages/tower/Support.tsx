@@ -179,6 +179,7 @@ const TICKETS: SupportTicket[] = [
     description: "Dashboard blank screen for all Manager role users after the March 24 deployment. Rolled back and hotfixed.",
   },
 ];
+import { onEnterNext } from '@/lib/keyboard';
 
 const PRIORITY_CONFIG: Record<TicketPriority, { label: string; color: string }> = {
   low: { label: "Low", color: "bg-secondary text-muted-foreground border-border" },

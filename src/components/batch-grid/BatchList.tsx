@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useBatches } from '@/hooks/useBatches';
 import BatchFormDialog from './BatchFormDialog';
 import type { Batch } from '@/types/batch';
+import { onEnterNext } from '@/lib/keyboard';
 
 export function BatchList() {
   const { batches, deleteBatch, createBatch, updateBatch } = useBatches();
@@ -30,7 +31,7 @@ export function BatchList() {
   );
 
   return (
-    <div className="space-y-4">
+    <div data-keyboard-form className="space-y-4">
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>

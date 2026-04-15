@@ -37,6 +37,7 @@ import {
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import type { SetupResult } from '@/services/entity-setup-service';
+import { onEnterNext } from '@/lib/keyboard';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 

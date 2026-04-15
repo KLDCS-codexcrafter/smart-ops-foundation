@@ -23,6 +23,7 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Types ──────────────────────────────────────────────
 type PlanType = "Starter" | "Growth" | "Enterprise";
@@ -318,7 +319,7 @@ function StatCard({ icon: Icon, label, value, color, sub }: {
   sub?: string;
 }) {
   return (
-    <div className="rounded-xl p-4 border border-slate-700" style={{ background: "#1E3A5F" }}>
+    <div data-keyboard-form className="rounded-xl p-4 border border-slate-700" style={{ background: "#1E3A5F" }}>
       <div className="flex items-center justify-between mb-2">
         <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-cyan-500/10">
           <Icon className={cn("h-5 w-5", color)} />

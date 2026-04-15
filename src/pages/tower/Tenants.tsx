@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 type TenantStatus = "Active" | "Suspended" | "Trial";
 type TenantPlan = "Starter" | "Professional" | "Enterprise";
@@ -219,7 +220,7 @@ export default function Tenants() {
             {filtered.map(t => {
               const pct = (t.storageUsed / t.storageTotal) * 100;
               return (
-                <div key={t.id} className="bg-[#1E3A5F] border border-slate-700 rounded-xl p-5 flex flex-col gap-3">
+                <div data-keyboard-form key={t.id} className="bg-[#1E3A5F] border border-slate-700 rounded-xl p-5 flex flex-col gap-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold", AVATAR_COLORS[t.plan])}>
@@ -294,20 +295,20 @@ export default function Tenants() {
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Company Details</h3>
               <div className="space-y-2.5">
-                <div><label className="text-xs text-slate-400 mb-1 block">Company Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="e.g. Acme India Pvt Ltd" /></div>
+                <div><label className="text-xs text-slate-400 mb-1 block">Company Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="e.g. Acme India Pvt Ltd"  onKeyDown={onEnterNext} /></div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div><label className="text-xs text-slate-400 mb-1 block">GSTIN *</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="27AABCA1234F1Z5" maxLength={15} /></div>
-                  <div><label className="text-xs text-slate-400 mb-1 block">PAN</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="AABCA1234F" maxLength={10} /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">GSTIN *</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="27AABCA1234F1Z5" maxLength={15}  onKeyDown={onEnterNext} /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">PAN</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="AABCA1234F" maxLength={10}  onKeyDown={onEnterNext} /></div>
                 </div>
-                <div><label className="text-xs text-slate-400 mb-1 block">Registered Address</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Address line" /></div>
+                <div><label className="text-xs text-slate-400 mb-1 block">Registered Address</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Address line"  onKeyDown={onEnterNext} /></div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div><label className="text-xs text-slate-400 mb-1 block">City</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Mumbai" /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">City</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Mumbai"  onKeyDown={onEnterNext} /></div>
                   <div><label className="text-xs text-slate-400 mb-1 block">State</label>
                     <Select><SelectTrigger className="bg-slate-800 border-slate-600 text-white text-xs"><SelectValue placeholder="State" /></SelectTrigger>
                       <SelectContent>{INDIAN_STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
-                  <div><label className="text-xs text-slate-400 mb-1 block">PIN Code</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="400001" maxLength={6} /></div>
+                  <div><label className="text-xs text-slate-400 mb-1 block">PIN Code</label><Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="400001" maxLength={6}  onKeyDown={onEnterNext} /></div>
                 </div>
               </div>
             </div>
@@ -333,14 +334,14 @@ export default function Tenants() {
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Admin User</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="text-xs text-slate-400 mb-1 block">First Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="First name" /></div>
-                <div><label className="text-xs text-slate-400 mb-1 block">Last Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Last name" /></div>
+                <div><label className="text-xs text-slate-400 mb-1 block">First Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="First name"  onKeyDown={onEnterNext} /></div>
+                <div><label className="text-xs text-slate-400 mb-1 block">Last Name *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="Last name"  onKeyDown={onEnterNext} /></div>
               </div>
-              <div><label className="text-xs text-slate-400 mb-1 block">Email *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="admin@company.in" type="email" /></div>
+              <div><label className="text-xs text-slate-400 mb-1 block">Email *</label><Input className="bg-slate-800 border-slate-600 text-white" placeholder="admin@company.in" type="email"  onKeyDown={onEnterNext} /></div>
               <div><label className="text-xs text-slate-400 mb-1 block">Mobile *</label>
                 <div className="flex gap-2">
                   <span className="flex items-center px-3 bg-slate-800 border border-slate-600 rounded-md text-xs text-slate-400">+91</span>
-                  <Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="9876543210" maxLength={10} />
+                  <Input className="bg-slate-800 border-slate-600 text-white font-mono" placeholder="9876543210" maxLength={10}  onKeyDown={onEnterNext} />
                 </div>
               </div>
             </div>
@@ -349,7 +350,7 @@ export default function Tenants() {
               <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Settings</h3>
               <div><label className="text-xs text-slate-400 mb-1 block">Subdomain</label>
                 <div className="flex items-center">
-                  <Input className="bg-slate-800 border-slate-600 text-white rounded-r-none" placeholder="acme-india" />
+                  <Input className="bg-slate-800 border-slate-600 text-white rounded-r-none" placeholder="acme-india"  onKeyDown={onEnterNext} />
                   <span className="flex items-center px-3 h-10 bg-slate-700 border border-l-0 border-slate-600 rounded-r-md text-xs text-slate-400 whitespace-nowrap">.4dsmartops.in</span>
                 </div>
               </div>

@@ -29,6 +29,7 @@ import {
   L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   type L4IndustryGroup,
 } from '@/data/finframe-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ─── Types ──────────────────────────────────────────────────────
 interface UserGroup {
@@ -298,7 +299,7 @@ export function FinFramePanel() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
@@ -369,7 +370,7 @@ export function FinFramePanel() {
                 const isL1Open = expandedL1.has(l1.code);
                 const totalL3 = l2s.reduce((sum, l2) => sum + L3_FINANCIAL_GROUPS.filter(g => g.l2Code === l2.code).length, 0);
                 return (
-                  <div key={l1.code}>
+                  <div data-keyboard-form key={l1.code}>
                     {/* L1 Row */}
                     <button
                       onClick={() => toggle(expandedL1, l1.code, setExpandedL1)}

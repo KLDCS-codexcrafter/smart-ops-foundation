@@ -155,7 +155,7 @@ function SSOTSummaryBar({ reqId }: { reqId: string }) {
     { label: "Canonical", value: s.canonical, ok: s.canonical === s.source },
   ];
   return (
-    <div className="bg-muted/20 border border-border rounded-xl p-4 mb-4">
+    <div data-keyboard-form className="bg-muted/20 border border-border rounded-xl p-4 mb-4">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
         SSOT Reconciliation Pipeline
       </p>
@@ -203,7 +203,7 @@ export default function ReconciliationWorkbench() {
     const isMissing = field.tally === "—";
 
     return (
-      <div className="space-y-0.5">
+      <div data-keyboard-form className="space-y-0.5">
         <div className={cn("text-xs", differs ? "line-through text-muted-foreground/50" : "text-muted-foreground")}>
           {field.source}
         </div>

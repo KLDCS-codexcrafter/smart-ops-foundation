@@ -85,7 +85,7 @@ export default function BarcodeAddon() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div data-keyboard-form className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto p-6 space-y-8">
         {/* Top nav */}
         <Button variant="ghost" size="sm" onClick={() => navigate('/add-ons')}>

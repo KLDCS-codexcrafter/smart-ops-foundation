@@ -174,6 +174,7 @@ const MOCK_TICKETS: SupportTicket[] = [
   { id: "TKT-1028", title: "Chart of accounts import failing for more than 500 rows", tenant: "Gupta & Sons Mfg.", priority: "Medium", status: "Resolved", sla: "ok", agent: "Priya M.", created: "3d ago" },
   { id: "TKT-1027", title: "Service desk SLA calendar not syncing correctly", tenant: "Patel Chemicals Ltd", priority: "Low", status: "Resolved", sla: "ok", agent: "Suresh K.", created: "4d ago" },
 ];
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Server Ops data ───────────────────────────────────────────
 interface TenantHealth {
@@ -321,7 +322,7 @@ function SupportOpsTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       {stats.breaching > 0 && (
         <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
           <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
@@ -340,7 +341,7 @@ function SupportOpsTab() {
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
+            <div data-keyboard-form key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
               <Icon className={cn("h-5 w-5 mx-auto mb-1", s.color)} />
               <p className="text-2xl font-bold text-foreground font-mono">{s.value}</p>
               <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -650,7 +651,7 @@ export default function Welcome() {
             <Input
               placeholder="Search... (Ctrl+K)"
               className="h-8 text-xs bg-muted/30 border-border/50"
-            />
+             onKeyDown={onEnterNext} />
           </div>
         </div>
         <div className="flex items-center gap-0.5">

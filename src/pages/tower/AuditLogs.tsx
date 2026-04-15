@@ -23,6 +23,7 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Types ──────────────────────────────────────────────
 type EventType = "Security" | "Customer" | "User" | "Billing" | "System" | "Integration" | "Data Export";

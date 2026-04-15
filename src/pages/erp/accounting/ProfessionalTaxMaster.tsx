@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Info } from 'lucide-react';
 import { PROFESSIONAL_TAX_SLABS, type ProfessionalTaxSlab } from '@/data/payroll-statutory-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 export function ProfessionalTaxMasterPanel() {
   const [search, setSearch] = useState('');
@@ -52,7 +53,7 @@ export function ProfessionalTaxMasterPanel() {
   const fmt = (n: number) => n.toLocaleString('en-IN');
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       <div>
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="text-2xl font-bold text-foreground">Professional Tax Reference</h1>
