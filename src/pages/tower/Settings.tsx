@@ -509,7 +509,7 @@ const TowerSettings = () => {
   };
 
   return (
-    <TowerLayout title="Settings" subtitle="Platform configuration and system preferences">
+    <TowerLayout title="Settings" subtitle="Platform configuration and system preferences"><div data-keyboard-form>
       <div className="flex gap-6">
         {/* Left nav */}
         <div className="w-56 shrink-0 sticky top-0 self-start space-y-1">
@@ -539,7 +539,7 @@ const TowerSettings = () => {
           {sections[activeSection]}
         </div>
       </div>
-    </TowerLayout>
+    </div></TowerLayout>
   );
 };
 

@@ -186,7 +186,7 @@ export default function AuditLogs() {
   };
 
   return (
-    <TowerLayout>
+    <TowerLayout><div data-keyboard-form>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -476,6 +476,6 @@ export default function AuditLogs() {
           )}
         </SheetContent>
       </Sheet>
-    </TowerLayout>
+    </div></TowerLayout>
   );
 }

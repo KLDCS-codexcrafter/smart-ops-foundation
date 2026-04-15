@@ -261,7 +261,7 @@ const Support = () => {
   const resolvedRecent = TICKETS.filter((t) => t.status === "resolved" && t.updatedAt.includes("Apr 2026")).length;
 
   return (
-    <TowerLayout title="Support" subtitle="Platform helpdesk — manage tenant support tickets and escalations">
+    <TowerLayout title="Support" subtitle="Platform helpdesk — manage tenant support tickets and escalations"><div data-keyboard-form>
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
@@ -598,7 +598,7 @@ const Support = () => {
           )}
         </SheetContent>
       </Sheet>
-    </TowerLayout>
+    </div></TowerLayout>
   );
 };
 

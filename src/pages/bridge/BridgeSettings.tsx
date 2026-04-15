@@ -63,7 +63,7 @@ export default function BridgeSettings() {
   };
 
   return (
-    <BridgeLayout title="Bridge Settings" subtitle="Agent configuration and sync preferences">
+    <BridgeLayout title="Bridge Settings" subtitle="Agent configuration and sync preferences"><div data-keyboard-form>
       <div className="flex gap-6">
         {/* Sidebar */}
         <div className="w-56 shrink-0">
@@ -457,6 +457,6 @@ export default function BridgeSettings() {
           )}
         </div>
       </div>
-    </BridgeLayout>
+    </div></BridgeLayout>
   );
 }
