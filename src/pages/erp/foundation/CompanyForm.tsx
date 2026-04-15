@@ -1039,15 +1039,8 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
 
   return (
     <>
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
+      <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <Confetti active={showConfetti} onComplete={() => setConfetti(false)} />
-        <ERPHeader
-          breadcrumbs={breadcrumbs}
-          showDatePicker={false}
-          showCompany={false}
-        />
-        <div data-keyboard-form className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="mb-6">
             <h1 className="text-xl font-bold text-foreground">
               {mode === 'create' ? `Create ${label}` : `Edit ${label}`}
