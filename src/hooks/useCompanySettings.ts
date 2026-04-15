@@ -5,6 +5,7 @@ import type { CompanySettings } from '@/types/company-settings';
 const KEY = 'erp_company_settings';
 
 const loadAll = (): CompanySettings[] => {
+  // [JWT] GET /api/company/settings
   try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
 };
 

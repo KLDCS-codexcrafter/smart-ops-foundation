@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { RFIDTag } from '@/types/rfid-tag';
 
 const KEY = 'erp_rfid_tags';
+// [JWT] GET /api/inventory/rfid-tags
 const load = (): RFIDTag[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useRFIDTags() {

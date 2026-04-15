@@ -5,13 +5,14 @@ import type { Batch, BatchFormData } from '@/types/batch';
 const STORAGE_KEY = 'erp_batches';
 
 function loadBatches(): Batch[] {
+  // [JWT] GET /api/inventory/batches
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
   catch { return []; }
 }
 
 function saveBatches(batches: Batch[]): void {
+  // [JWT] POST /api/inventory/batches
   localStorage.setItem(STORAGE_KEY, JSON.stringify(batches));
-  // [JWT] Replace with POST/PUT/DELETE /api/inventory/batches
 }
 
 export function useBatches() {

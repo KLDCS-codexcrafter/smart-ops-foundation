@@ -34,6 +34,7 @@ export const PRESET_LABELS: Record<DatePreset, string> = {
 };
 
 // April = month index 3 (Indian FY)
+// [JWT] GET /api/entity/storage/:key
 const FY_START_MONTH = parseInt(localStorage.getItem('erp_fy_start_month') ?? '3', 10);
 const COMPANY_START_YEAR = 2020;
 
@@ -112,6 +113,7 @@ const STORAGE_KEY = 'erp-date-range';
 
 function loadStored(): { preset: DatePreset; selectedFY: string } {
   try {
+    // [JWT] GET /api/entity/storage/:key
     const s = localStorage.getItem(STORAGE_KEY);
     if (s) { const p = JSON.parse(s); return { preset: p.preset ?? 'cur_fy', selectedFY: p.selectedFY ?? '' }; }
   } catch {}
@@ -157,6 +159,7 @@ export function GlobalDateRangeProvider({ children }: { children: ReactNode }) {
   const isFuture = useMemo(() => range.to > new Date(), [range]);
 
   function save(p: DatePreset, fy: string) {
+    // [JWT] POST /api/entity/storage/:key
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ preset: p, selectedFY: fy }));
   }
 

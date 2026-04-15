@@ -20,8 +20,8 @@ const load = (): VoucherType[] => {
     }
   } catch { /* ignore */ }
   // First load — seed the 24 Tally defaults
+  // [JWT] POST /api/accounting/voucher-types
   localStorage.setItem(KEY, JSON.stringify(VOUCHER_TYPE_SEEDS));
-  // [JWT] POST /api/accounting/voucher-types/seed
   return VOUCHER_TYPE_SEEDS;
 };
 
@@ -29,8 +29,8 @@ export function useVoucherTypes() {
   const [types, setTypes] = useState<VoucherType[]>(load);
 
   const save = (data: VoucherType[]) => {
+    // [JWT] POST /api/accounting/voucher-types
     localStorage.setItem(KEY, JSON.stringify(data));
-    // [JWT] Replace with API CRUD calls
   };
 
   const updateType = (id: string, patch: Partial<VoucherType>) => {

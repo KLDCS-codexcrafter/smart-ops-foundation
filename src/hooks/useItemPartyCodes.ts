@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { ItemPartyCode } from '@/types/item-party-code';
 
 const KEY = 'erp_item_party_codes';
+// [JWT] GET /api/inventory/item-party-codes
 const load = (): ItemPartyCode[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useItemPartyCodes() {

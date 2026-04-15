@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { LabelTemplate } from '@/types/label-template';
 
 const KEY = 'erp_label_templates';
+// [JWT] GET /api/inventory/label-templates
 const load = (): LabelTemplate[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useLabelTemplates() {

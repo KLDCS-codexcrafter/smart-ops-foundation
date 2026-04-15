@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { CodeMatrixRule } from '@/types/code-matrix';
 
 const KEY = 'erp_code_matrix_rules';
+// [JWT] GET /api/inventory/code-matrix
 const load = (): CodeMatrixRule[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useCodeMatrix() {

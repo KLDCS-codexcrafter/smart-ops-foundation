@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { BinLabel } from '@/types/bin-label';
 
 const KEY = 'erp_bin_labels';
+// [JWT] GET /api/inventory/bin-labels
 const load = (): BinLabel[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useBinLabels() {

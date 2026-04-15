@@ -17,14 +17,17 @@ const DEFAULT_DEPT_TAGS: DepartmentTag[] = [
 ];
 
 const loadRules = (): LocationReorderRule[] => {
+  // [JWT] GET /api/inventory/reorder-rules
   try { return JSON.parse(localStorage.getItem(KEY_RULES) || '[]'); } catch { return []; }
 };
 
 const loadTags = (): DepartmentTag[] => {
   try {
+    // [JWT] GET /api/inventory/reorder-rules
     const raw = localStorage.getItem(KEY_TAGS);
     if (!raw) {
       // Seed defaults on first load
+      // [JWT] POST /api/inventory/reorder-rules
       localStorage.setItem(KEY_TAGS, JSON.stringify(DEFAULT_DEPT_TAGS)); /* [JWT] CRUD /api/inventory/department-tags */
       return DEFAULT_DEPT_TAGS;
     }
@@ -37,6 +40,7 @@ export function useLocationReorderRules() {
   const [rules, setRules] = useState<LocationReorderRule[]>(loadRules());
   const [tags, setTags] = useState<DepartmentTag[]>(loadTags());
 
+  // [JWT] POST /api/inventory/reorder-rules
   const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(KEY_RULES, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/reorder-rules */ };
   const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(KEY_TAGS, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/department-tags */ };
 

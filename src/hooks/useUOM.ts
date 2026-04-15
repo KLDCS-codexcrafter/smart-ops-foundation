@@ -6,6 +6,7 @@ const STORAGE_KEY = 'erp_uom';
 
 export function useUOM() {
   const load = (): UnitOfMeasure[] => {
+    // [JWT] GET /api/inventory/uom
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
     catch { return []; }
   };
@@ -13,8 +14,8 @@ export function useUOM() {
   // [JWT] Replace with GET /api/inventory/uom
 
   const save = (data: UnitOfMeasure[]) => {
+    // [JWT] POST /api/inventory/uom
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/uom
   };
 
   const createUnit = (form: Omit<UnitOfMeasure, 'id' | 'created_at' | 'updated_at'>) => {
