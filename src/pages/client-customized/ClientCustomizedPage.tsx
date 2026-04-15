@@ -59,7 +59,7 @@ const STATUS_CONFIG = {
   'scoping':     { label: 'Scoping',      color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
 };
 
-export default function ClientCustomizedPage() {
+export function ClientCustomizedPagePanel() {
   const navigate = useNavigate();
 
   return (
@@ -131,3 +131,4 @@ export default function ClientCustomizedPage() {
     </div>
   );
 }
+export default function ClientCustomizedPage() { return <ClientCustomizedPagePanel />; }

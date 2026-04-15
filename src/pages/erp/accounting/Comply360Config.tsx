@@ -322,6 +322,8 @@ export function Comply360ConfigPanel() {
   const [eximConfig, setEximConfig] = useState<EximConfig>(DEFAULT_EXIM);
   const [samConfig, setSamConfig] = useState<SAMConfig>(DEFAULT_SAM);
   const [waConfig, setWaConfig] = useState<WhatsAppConfig>(DEFAULT_WA);
+  const [settlementConfig, setSettlementConfig] = useState<SettlementConfig>(DEFAULT_SETTLEMENT);
+  const [outstandingConfig, setOutstandingConfig] = useState<OutstandingConfig>(DEFAULT_OUTSTANDING);
 
   const [activeSection, setActiveSection] = useState('rcm');
 
@@ -337,6 +339,8 @@ export function Comply360ConfigPanel() {
     setEximConfig(loadOrDefault(comply360EximKey(entityId), DEFAULT_EXIM));
     setSamConfig(loadOrDefault(comply360SAMKey(entityId), DEFAULT_SAM));
     setWaConfig(loadOrDefault(comply360WAKey(entityId), DEFAULT_WA));
+    setSettlementConfig(loadOrDefault(comply360SettlementKey(entityId), DEFAULT_SETTLEMENT));
+    setOutstandingConfig(loadOrDefault(comply360OutstandingKey(entityId), DEFAULT_OUTSTANDING));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
@@ -396,6 +400,22 @@ export function Comply360ConfigPanel() {
     toast.success('WhatsApp configuration saved');
   }, [waConfig, selectedEntityId]);
 
+  const handleSaveFeatures = useCallback(() => {
+    handleSaveGroup();
+  }, [handleSaveGroup]);
+
+  const handleSaveSettlement = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/settlement/:entityId
+    localStorage.setItem(comply360SettlementKey(selectedEntityId), JSON.stringify(settlementConfig));
+    toast.success('Settlement configuration saved');
+  }, [settlementConfig, selectedEntityId]);
+
+  const handleSaveOutstanding = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/outstanding/:entityId
+    localStorage.setItem(comply360OutstandingKey(selectedEntityId), JSON.stringify(outstandingConfig));
+    toast.success('Outstanding configuration saved');
+  }, [outstandingConfig, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
       case 'rcm':   handleSaveRCM(); break;
@@ -405,9 +425,12 @@ export function Comply360ConfigPanel() {
       case 'exim':  handleSaveExim(); break;
       case 'sam':   handleSaveSAM(); break;
       case 'wa':    handleSaveWA(); break;
+      case 'features': handleSaveFeatures(); break;
+      case 'settlement': handleSaveSettlement(); break;
+      case 'outstanding': handleSaveOutstanding(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding]);
 
   useCtrlS(handleCtrlS);
 
@@ -460,6 +483,9 @@ export function Comply360ConfigPanel() {
       case 'exim': return renderEximSection();
       case 'sam': return renderSAMSection();
       case 'wa': return renderWASection();
+      case 'features': return renderFeaturesSection();
+      case 'settlement': return renderSettlementSection();
+      case 'outstanding': return renderOutstandingSection();
       default: return null;
     }
   };

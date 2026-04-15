@@ -40,7 +40,7 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-tds-advance': 'TDS Advance',
 };
 
-export default function FinCorePage() {
+export function FinCorePagePanel() {
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
@@ -112,3 +112,4 @@ export default function FinCorePage() {
     </SidebarProvider>
   );
 }
+export default function FinCorePage() { return <FinCorePagePanel />; }

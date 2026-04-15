@@ -79,7 +79,7 @@ const PHASE_CONFIG: Record<ModulePhase, { label: string; color: string }> = {
   planned: { label: 'Planned', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
 };
 
-export default function ModulesPage() {
+export function ModulesPagePanel() {
   const navigate = useNavigate();
 
   return (
@@ -150,3 +150,4 @@ export default function ModulesPage() {
     </div>
   );
 }
+export default function ModulesPage() { return <ModulesPagePanel />; }

@@ -74,7 +74,7 @@ import IncomeTaxMaster from './pages/erp/accounting/IncomeTaxMaster';
 import VoucherTypesMaster from './pages/erp/accounting/VoucherTypesMaster';
 import CurrencyMaster from './pages/erp/accounting/CurrencyMaster';
 import TransactionTemplates from './pages/erp/accounting/TransactionTemplates';
-import FineCoreHub from './pages/erp/finecore/FineCoreHub';
+import FinCorePage from './pages/erp/finecore/FinCorePage';
 import SalesInvoice from './pages/erp/accounting/vouchers/SalesInvoice';
 import PurchaseInvoice from './pages/erp/accounting/vouchers/PurchaseInvoice';
 import ReceiptVoucher from './pages/erp/accounting/vouchers/Receipt';
@@ -251,7 +251,7 @@ const App = () => (
             <Route path="/erp/accounting/currency-master" element={<CurrencyMaster />} />
             <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/accounting/transaction-templates" element={<TransactionTemplates />} />
-            <Route path="/erp/finecore" element={<FineCoreHub />} />
+            <Route path="/erp/finecore" element={<FinCorePage />} />
             <Route path="/erp/accounting/vouchers/sales-invoice" element={<SalesInvoice />} />
             <Route path="/erp/accounting/vouchers/purchase-invoice" element={<PurchaseInvoice />} />
             <Route path="/erp/accounting/vouchers/receipt" element={<ReceiptVoucher />} />
