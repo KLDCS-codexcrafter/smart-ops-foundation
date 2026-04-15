@@ -172,12 +172,20 @@ export function getTemplateSeedData(): TransactionTemplate[] {
       'Being fund transfer from {from_ledger} to {to_ledger} dt. {date}'),
 
     mk('tnt-seed-011','TNT-0011','Stock Transfer Narration',
-      'narration','Stores',['Stock Journal'],
+      'narration','Stores',['Stock Transfer'],
       'Being stock transferred from {from_godown} to {to_godown}'),
 
     mk('tnt-seed-012','TNT-0012','Universal Fallback Narration',
       'narration','Universal',[],
       'Being transaction with {party} on {date}',false),
+
+    mk('tnt-seed-027','TNT-0027','Delivery Note — Narration',
+      'narration','Stores',['Delivery Note'],
+      'Being goods dispatched to {party} vide Delivery Note {voucher_no} dt. {date}'),
+
+    mk('tnt-seed-028','TNT-0028','Receipt Note (GRN) — Narration',
+      'narration','Stores',['Receipt Note'],
+      'Being goods received from {party} vide GRN {voucher_no} against Challan dt. {date}'),
 
     // ── TERMS & CONDITIONS (6) ───────────────────────────────────────
     mk('tnt-seed-013','TNT-0013','Standard Domestic Sale — T&C',
