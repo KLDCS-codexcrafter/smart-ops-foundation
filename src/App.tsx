@@ -250,6 +250,17 @@ const App = () => (
             <Route path="/erp/accounting/currency-master" element={<CurrencyMaster />} />
             <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
             <Route path="/erp/accounting/transaction-templates" element={<TransactionTemplates />} />
+            <Route path="/erp/accounting/vouchers/sales-invoice" element={<SalesInvoice />} />
+            <Route path="/erp/accounting/vouchers/purchase-invoice" element={<PurchaseInvoice />} />
+            <Route path="/erp/accounting/vouchers/receipt" element={<ReceiptVoucher />} />
+            <Route path="/erp/accounting/vouchers/payment" element={<PaymentVoucher />} />
+            <Route path="/erp/accounting/vouchers/journal" element={<JournalEntry />} />
+            <Route path="/erp/accounting/vouchers/contra" element={<ContraEntry />} />
+            <Route path="/erp/accounting/vouchers/credit-note" element={<CreditNote />} />
+            <Route path="/erp/accounting/vouchers/debit-note" element={<DebitNote />} />
+            <Route path="/erp/accounting/vouchers/delivery-note" element={<DeliveryNote />} />
+            <Route path="/erp/accounting/vouchers/receipt-note" element={<ReceiptNote />} />
+            <Route path="/erp/accounting/vouchers/stock-transfer" element={<StockTransfer />} />
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
