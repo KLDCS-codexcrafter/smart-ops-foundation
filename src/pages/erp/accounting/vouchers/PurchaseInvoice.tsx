@@ -91,8 +91,9 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-purchase-invoice',
-        label: `PI ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, vendorBillNo, inventoryLines, ledgerLines, narration },
+        label: `PI ${partyName || 'New'}`, voucherTypeName: 'Purchase Invoice',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, vendor_bill_no: vendorBillNo, narration } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, vendorBillNo, inventoryLines, ledgerLines, narration]);
@@ -119,7 +120,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
             </div>
             <div className="flex items-end">
-              <InvoiceModeToggle mode={invoiceMode} onChange={setInvoiceMode} />
+              <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -154,7 +155,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
 
       {invoiceMode === 'item' && <GSTComputationPanel lines={inventoryLines} isInterState={false} />}
 
-      <TDSDeductionPanel vendorId="" entityCode={entityCode} grossAmount={gstTotals.total} />
+      <TDSDeductionPanel vendorId="" entityCode={entityCode} grossAmount={gstTotals.total} sectionCode="" deducteeType="company" />
 
       <Collapsible open={collapseOpen} onOpenChange={setCollapseOpen}>
         <Card>

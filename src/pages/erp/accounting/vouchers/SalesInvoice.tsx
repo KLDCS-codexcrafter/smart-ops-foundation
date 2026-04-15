@@ -109,8 +109,9 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
         id: `draft-${Date.now()}`,
         module: 'fc-txn-sales-invoice',
         label: `SI ${partyName || 'New'}`,
+        voucherTypeName: 'Sales Invoice',
         savedAt: new Date().toISOString(),
-        state: { partyName, date, inventoryLines, ledgerLines, narration },
+        formState: { party_name: partyName, date, narration } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, inventoryLines, ledgerLines, narration]);
@@ -147,7 +148,7 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
               <Input value={againstDN} onChange={e => setAgainstDN(e.target.value)} onKeyDown={onEnterNext} placeholder="DN reference (optional)" />
             </div>
             <div className="flex items-end">
-              <InvoiceModeToggle mode={invoiceMode} onChange={setInvoiceMode} />
+              <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
         </CardContent>

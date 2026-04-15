@@ -68,8 +68,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-delivery-note',
-        label: `DLN ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, inventoryLines },
+        label: `DLN ${partyName || 'New'}`, voucherTypeName: 'Delivery Note',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, inventoryLines]);

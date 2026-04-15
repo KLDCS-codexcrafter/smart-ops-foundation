@@ -89,8 +89,9 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-credit-note',
-        label: `CN ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, againstInvoice, reasonCode, inventoryLines },
+        label: `CN ${partyName || 'New'}`, voucherTypeName: 'Credit Note',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, ref_voucher_no: againstInvoice } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, againstInvoice, reasonCode, inventoryLines]);
@@ -117,7 +118,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer name" />
             </div>
             <div className="flex items-end">
-              <InvoiceModeToggle mode={invoiceMode} onChange={setInvoiceMode} />
+              <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

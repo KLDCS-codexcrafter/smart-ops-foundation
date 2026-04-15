@@ -70,8 +70,9 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-payment',
-        label: `PV ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, amount, bankCashLedger },
+        label: `PV ${partyName || 'New'}`, voucherTypeName: 'Payment',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, net_amount: amount } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, amount, bankCashLedger]);
@@ -128,7 +129,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       </Card>
 
       <SettlementPanel partyId={partyName} entityCode={entityCode} mode="creditor" />
-      <TDSDeductionPanel vendorId="" entityCode={entityCode} grossAmount={amount} />
+      <TDSDeductionPanel vendorId="" entityCode={entityCode} grossAmount={amount} sectionCode="" deducteeType="company" />
 
       <Card>
         <CardContent className="pt-5">

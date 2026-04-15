@@ -89,8 +89,9 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-debit-note',
-        label: `DBN ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, againstBill, reasonCode, inventoryLines },
+        label: `DBN ${partyName || 'New'}`, voucherTypeName: 'Debit Note',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, ref_voucher_no: againstBill } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, againstBill, reasonCode, inventoryLines]);
@@ -117,7 +118,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
             </div>
             <div className="flex items-end">
-              <InvoiceModeToggle mode={invoiceMode} onChange={setInvoiceMode} />
+              <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

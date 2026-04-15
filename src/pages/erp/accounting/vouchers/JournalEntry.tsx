@@ -68,8 +68,9 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-journal',
-        label: `JV ${date}`, savedAt: new Date().toISOString(),
-        state: { date, ledgerLines, narration },
+        label: `JV ${date}`, voucherTypeName: 'Journal',
+        savedAt: new Date().toISOString(),
+        formState: { date, narration } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, date, ledgerLines, narration]);

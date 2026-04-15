@@ -70,8 +70,9 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-receipt-note',
-        label: `GRN ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, vendorChallanNo, inventoryLines },
+        label: `GRN ${partyName || 'New'}`, voucherTypeName: 'Receipt Note',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, ref_voucher_no: vendorChallanNo } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, vendorChallanNo, inventoryLines]);

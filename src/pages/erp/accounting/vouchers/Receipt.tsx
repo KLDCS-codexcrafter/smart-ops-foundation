@@ -69,8 +69,9 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-receipt',
-        label: `RV ${partyName || 'New'}`, savedAt: new Date().toISOString(),
-        state: { partyName, date, amount, bankCashLedger },
+        label: `RV ${partyName || 'New'}`, voucherTypeName: 'Receipt',
+        savedAt: new Date().toISOString(),
+        formState: { party_name: partyName, date, net_amount: amount } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, partyName, date, amount, bankCashLedger]);
