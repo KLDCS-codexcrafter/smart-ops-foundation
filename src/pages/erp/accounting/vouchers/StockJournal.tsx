@@ -33,8 +33,8 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const [purpose, setPurpose] = useState('Store Transfer');
   const [department, setDepartment] = useState('');
   const [referenceNo, setReferenceNo] = useState('');
-  const [consumptionLines, setConsumptionLines] = useState<Array<{ id: string; item_name: string; godown_name: string; qty: number; uom: string; rate: number }>>([]);
-  const [productionLines, setProductionLines] = useState<Array<{ id: string; item_name: string; godown_name: string; qty: number; uom: string; rate: number }>>([]);
+  const [consumptionLines, setConsumptionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
+  const [productionLines, setProductionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [narration, setNarration] = useState('');
 
   const handlePost = useCallback(() => {
@@ -69,8 +69,9 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-inv-stock-journal',
-        label: `SJ ${purpose}`, savedAt: new Date().toISOString(),
-        state: { date, purpose, consumptionLines, productionLines },
+        label: `SJ ${purpose}`, voucherTypeName: 'Stock Journal',
+        savedAt: new Date().toISOString(),
+        formState: { date, narration } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, date, purpose, consumptionLines, productionLines]);

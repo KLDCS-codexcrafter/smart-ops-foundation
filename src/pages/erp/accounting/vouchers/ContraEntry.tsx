@@ -27,7 +27,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
   const entityCode = 'SMRT';
   const [voucherNo] = useState(() => generateVoucherNo('CT', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [contraMode, setContraMode] = useState<'bank' | 'cash'>('bank');
+  const [contraMode, setContraMode] = useState<'bank_transfer' | 'cash_transfer'>('bank_transfer');
   const [fromLedger, setFromLedger] = useState('');
   const [toLedger, setToLedger] = useState('');
   const [amount, setAmount] = useState(0);
@@ -69,8 +69,9 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
     if (onSaveDraft) {
       onSaveDraft({
         id: `draft-${Date.now()}`, module: 'fc-txn-contra',
-        label: `CT ${fromLedger || 'New'}`, savedAt: new Date().toISOString(),
-        state: { date, fromLedger, toLedger, amount, contraMode },
+        label: `CT ${fromLedger || 'New'}`, voucherTypeName: 'Contra',
+        savedAt: new Date().toISOString(),
+        formState: { date, from_ledger_name: fromLedger, to_ledger_name: toLedger, net_amount: amount } as Partial<Voucher>,
       });
     }
   }, [onSaveDraft, date, fromLedger, toLedger, amount, contraMode]);
@@ -97,20 +98,20 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
               <Input type="number" value={amount || ''} onChange={e => setAmount(Number(e.target.value))} onKeyDown={onEnterNext} />
             </div>
             <div className="flex items-end">
-              <ContraModeToggle mode={contraMode} onChange={setContraMode} />
+              <ContraModeToggle mode={contraMode} onToggle={setContraMode} hasLines={false} />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs">From {contraMode === 'bank' ? 'Bank' : 'Cash'} Ledger</Label>
-              <Input value={fromLedger} onChange={e => setFromLedger(e.target.value)} onKeyDown={onEnterNext} placeholder={`From ${contraMode} ledger`} />
+              <Label className="text-xs">From {contraMode === 'bank_transfer' ? 'Bank' : 'Cash'} Ledger</Label>
+              <Input value={fromLedger} onChange={e => setFromLedger(e.target.value)} onKeyDown={onEnterNext} placeholder={`From ${contraMode === 'bank_transfer' ? 'bank' : 'cash'} ledger`} />
             </div>
             <div>
-              <Label className="text-xs">To {contraMode === 'bank' ? 'Bank' : 'Cash'} Ledger</Label>
-              <Input value={toLedger} onChange={e => setToLedger(e.target.value)} onKeyDown={onEnterNext} placeholder={`To ${contraMode} ledger`} />
+              <Label className="text-xs">To {contraMode === 'bank_transfer' ? 'Bank' : 'Cash'} Ledger</Label>
+              <Input value={toLedger} onChange={e => setToLedger(e.target.value)} onKeyDown={onEnterNext} placeholder={`To ${contraMode === 'bank_transfer' ? 'bank' : 'cash'} ledger`} />
             </div>
           </div>
-          {contraMode === 'bank' && (
+          {contraMode === 'bank_transfer' && (
             <div>
               <Label className="text-xs">UTR / NEFT / RTGS Ref</Label>
               <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Transfer reference" />
