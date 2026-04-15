@@ -5892,6 +5892,9 @@ export function LedgerMasterPanel() {
                       <Field label='GST Sub-Type' value={d.gstSubType?.toUpperCase()} />
                       <Field label='Calculation Basis' value={d.calculationBasis?.replace(/_/g,' ')} />
                       <Field label='Rate' value={`${d.rate}%`} />
+                      {d.rcmSection && d.rcmSection !== 'not_applicable' && <Field label='RCM Section' value={d.rcmSection.replace(/_/g,' ')} />}
+                      {d.gstTaxSubType && <Field label='GST Tax Sub Type' value={d.gstTaxSubType.replace(/_/g,' ')} />}
+                      {d.itcEligibility && <Field label='ITC Eligibility' value={d.itcEligibility.replace(/_/g,' ')} />}
                     </Section>;
                   })()}
 
