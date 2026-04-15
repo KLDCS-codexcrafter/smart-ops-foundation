@@ -170,6 +170,22 @@ export const DEMO_MODULES: DemoModule[] = [
     loadTransactions: loadPayHubTransactions,
     getCount: (key) => getStoredCount(key),
   },
+  {
+    id: 'finecore',
+    label: 'Fin Core',
+    sprint: 'FC Sprint 1',
+    status: 'partial' as const,
+    masterKeys: ['erp_group_vouchers_SMRT'],
+    transactionKeys: [],
+    loadMasters: () => {
+      try {
+        const { loadFineCoreTransactions } = require('@/data/demo-transactions-finecore');
+        loadFineCoreTransactions('SMRT');
+      } catch { /* seed data module not yet loaded */ }
+    },
+    loadTransactions: () => {},
+    getCount: (key: string) => getStoredCount(key),
+  },
   // ── Future modules — uncomment + implement as sprints complete ──
   // { id:'procure360', label:'Procure360', sprint:'Sprint 25', status:'planned',
   //   masterKeys:['erp_group_vendor_master','erp_item_vendors'], transactionKeys:[],

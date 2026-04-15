@@ -47,7 +47,7 @@ const PHASE_CONFIG: Record<AppPhase, { label: string; color: string }> = {
   planned: { label: 'Planned', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
 };
 
-export default function OperixGoPage() {
+export function OperixGoPagePanel() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background">
@@ -114,3 +114,4 @@ export default function OperixGoPage() {
     </div>
   );
 }
+export default function OperixGoPage() { return <OperixGoPagePanel />; }

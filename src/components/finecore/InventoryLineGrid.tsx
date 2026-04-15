@@ -66,7 +66,7 @@ export function InventoryLineGrid({ lines, onChange, mode, showTax = true, isInt
   const showTaxCols = showTax && mode !== 'delivery' && mode !== 'grn';
 
   return (
-    <div className="space-y-2">
+    <div data-keyboard-form className="space-y-2">
       <div className="overflow-x-auto border rounded-md">
         <Table>
           <TableHeader>

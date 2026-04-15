@@ -61,7 +61,7 @@ const PHASE_CONFIG: Record<AddonPhase, { label: string; color: string }> = {
   planned: { label: 'Planned',   color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
 };
 
-export default function AddOnsPage() {
+export function AddOnsPagePanel() {
   const navigate = useNavigate();
 
   return (
@@ -132,3 +132,4 @@ export default function AddOnsPage() {
     </div>
   );
 }
+export default function AddOnsPage() { return <AddOnsPagePanel />; }

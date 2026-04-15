@@ -79,7 +79,7 @@ const PHASE_CONFIG: Record<VerticalPhase, { label: string; color: string }> = {
   planned: { label: 'Planned', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
 };
 
-export default function VerticalsPage() {
+export function VerticalsPagePanel() {
   const navigate = useNavigate();
 
   return (
@@ -145,3 +145,4 @@ export default function VerticalsPage() {
     </div>
   );
 }
+export default function VerticalsPage() { return <VerticalsPagePanel />; }
