@@ -305,49 +305,62 @@ export function Comply360ConfigPanel() {
     toast.success('Group configuration saved');
   }, [groupConfig]);
 
-  useCtrlS(handleSaveGroup);
-
-  const handleSaveRCM = () => {
+  const handleSaveRCM = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/rcm/:entityId
     localStorage.setItem(comply360RCMKey(selectedEntityId), JSON.stringify(rcmConfig));
     toast.success('RCM configuration saved');
-  };
+  }, [rcmConfig, selectedEntityId]);
 
-  const handleSaveTDSP = () => {
+  const handleSaveTDSP = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/tds-payable/:entityId
     localStorage.setItem(comply360TDSPKey(selectedEntityId), JSON.stringify(tdspConfig));
     toast.success('TDS Payable configuration saved');
-  };
+  }, [tdspConfig, selectedEntityId]);
 
-  const handleSaveTDSR = () => {
+  const handleSaveTDSR = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/tds-receivable/:entityId
     localStorage.setItem(comply360TDSRKey(selectedEntityId), JSON.stringify(tdsrConfig));
     toast.success('TDS Receivable configuration saved');
-  };
+  }, [tdsrConfig, selectedEntityId]);
 
-  const handleSaveLC = () => {
+  const handleSaveLC = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/landed-cost/:entityId
     localStorage.setItem(comply360LCKey(selectedEntityId), JSON.stringify(lcConfig));
     toast.success('Landed Cost configuration saved');
-  };
+  }, [lcConfig, selectedEntityId]);
 
-  const handleSaveExim = () => {
+  const handleSaveExim = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/exim/:entityId
     localStorage.setItem(comply360EximKey(selectedEntityId), JSON.stringify(eximConfig));
     toast.success('Exim configuration saved');
-  };
+  }, [eximConfig, selectedEntityId]);
 
-  const handleSaveSAM = () => {
+  const handleSaveSAM = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/sam/:entityId
     localStorage.setItem(comply360SAMKey(selectedEntityId), JSON.stringify(samConfig));
     toast.success('SAM configuration saved');
-  };
+  }, [samConfig, selectedEntityId]);
 
-  const handleSaveWA = () => {
+  const handleSaveWA = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/whatsapp/:entityId
     localStorage.setItem(comply360WAKey(selectedEntityId), JSON.stringify(waConfig));
     toast.success('WhatsApp configuration saved');
-  };
+  }, [waConfig, selectedEntityId]);
+
+  const handleCtrlS = useCallback(() => {
+    switch (activeSection) {
+      case 'rcm':   handleSaveRCM(); break;
+      case 'tdsp':  handleSaveTDSP(); break;
+      case 'tdsr':  handleSaveTDSR(); break;
+      case 'lc':    handleSaveLC(); break;
+      case 'exim':  handleSaveExim(); break;
+      case 'sam':   handleSaveSAM(); break;
+      case 'wa':    handleSaveWA(); break;
+      default:      handleSaveGroup(); break;
+    }
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA]);
+
+  useCtrlS(handleCtrlS);
 
   // ── Toggle helper ──
   const updateGroup = (key: keyof GroupConfig, value: boolean) => {

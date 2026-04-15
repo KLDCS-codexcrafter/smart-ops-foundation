@@ -276,6 +276,7 @@ export function CustomerMasterPanel() {
 
   // ─── Save ────────────────────────────────────────────────────
   const handleSave = () => {
+    if (!addOpen && !editTarget) return;
     if (!form.partyName.trim()) return toast.error('Party Name is required');
     const all = loadCustomers();
     if (editTarget) {
@@ -300,7 +301,7 @@ export function CustomerMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(() => { if (addOpen) handleSave(); });
+  useCtrlS(handleSave);
 
   const openEdit = (item: CustomerMasterDefinition) => {
     const { id, partyCode, ...rest } = item;

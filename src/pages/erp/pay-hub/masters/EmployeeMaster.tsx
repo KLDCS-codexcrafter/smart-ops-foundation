@@ -134,7 +134,7 @@ export function EmployeeMasterPanel() {
 
   // ── handleSave ─────────────────────────────────────────────────────
   const handleSave = useCallback(() => {
-    if (view === 'list' || view === 'profile') return;  // guard
+    if (view !== 'create' && view !== 'edit') return;
     if (!form.firstName.trim()) return toast.error("First name is required");
     if (!form.lastName.trim()) return toast.error("Last name is required");
     if (!form.doj) return toast.error("Date of joining is required");

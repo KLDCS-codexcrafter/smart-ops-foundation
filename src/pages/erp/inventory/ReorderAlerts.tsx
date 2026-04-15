@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner';
 import type { LocationReorderRule, DepartmentTag, ReorderPriority } from '@/types/location-reorder-rule';
 import type { InventoryItem } from '@/types/inventory-item';
+import { onEnterNext } from '@/lib/keyboard';
 
 const RRKEY = 'erp_location_reorder_rules';
 const DTKEY = 'erp_department_tags';
@@ -391,7 +392,7 @@ export function ReorderAlertsPanel() {
   , [filteredMatrixItems, getItemStatus]);
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-5 p-6">
+    <div data-keyboard-form className="max-w-[1600px] mx-auto space-y-5 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><AlertTriangle className="h-6 w-6" />Reorder & Min-Max Alerts</h1>
@@ -840,7 +841,7 @@ export function ReorderAlertsPanel() {
             <DialogTitle>{editRule ? 'Edit Reorder Rule' : 'New Reorder Rule'}</DialogTitle>
             <DialogDescription>Set min/max stock levels and lead time for location-wise monitoring</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Item *</Label>
               {ruleForm.item_id ? (
@@ -925,7 +926,7 @@ export function ReorderAlertsPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRuleOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveRule}>{editRule ? 'Update' : 'Create'} Rule</Button>
+            <Button data-primary onClick={handleSaveRule}>{editRule ? 'Update' : 'Create'} Rule</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -937,7 +938,7 @@ export function ReorderAlertsPanel() {
             <DialogTitle>Department Tags</DialogTitle>
             <DialogDescription>Manage tags for grouping godowns by department</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-2">
               {deptTags.map(tag => (
                 <div key={tag.id} className="flex items-center justify-between p-2 border rounded-lg">
@@ -969,7 +970,7 @@ export function ReorderAlertsPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setTagOpen(false)}>Close</Button>
-            <Button size="sm" onClick={addDeptTag} disabled={!newTagName.trim()}>Add Tag</Button>
+            <Button data-primary size="sm" onClick={addDeptTag} disabled={!newTagName.trim()}>Add Tag</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

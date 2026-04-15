@@ -38,6 +38,7 @@ function getGreeting() {
 
 function getUserName(): string {
   try {
+    // [JWT] GET /api/auth/saved-credential
     const raw = localStorage.getItem("4ds_login_credential");
     if (raw) {
       const parsed = JSON.parse(raw);

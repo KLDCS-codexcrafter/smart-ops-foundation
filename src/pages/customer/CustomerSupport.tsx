@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // [JWT] Replace with real ticket data
 const TICKETS = [
@@ -100,7 +101,7 @@ export default function CustomerSupport() {
           <div className="max-w-xl space-y-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Subject *</label>
-              <Input placeholder="Brief description of your issue" />
+              <Input placeholder="Brief description of your issue" onKeyDown={onEnterNext} />
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Category</label>
@@ -129,11 +130,11 @@ export default function CustomerSupport() {
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Related Invoice (optional)</label>
-              <Input className="font-mono" placeholder="INV-2026-XXXX" />
+              <Input className="font-mono" placeholder="INV-2026-XXXX" onKeyDown={onEnterNext} />
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Related Order (optional)</label>
-              <Input className="font-mono" placeholder="ORD-XXXX" />
+              <Input className="font-mono" placeholder="ORD-XXXX" onKeyDown={onEnterNext} />
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Description *</label>
@@ -142,7 +143,7 @@ export default function CustomerSupport() {
             <p className="text-xs text-muted-foreground">
               For file attachments, email support@company.in
             </p>
-            <Button
+            <Button data-primary
               className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground w-full"
               onClick={handleSubmit}
               disabled={submitting}

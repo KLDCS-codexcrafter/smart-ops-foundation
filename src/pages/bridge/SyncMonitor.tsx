@@ -27,6 +27,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 type SyncState =
   | "draft" | "submitted" | "validating" | "approved"
@@ -243,7 +244,7 @@ export default function SyncMonitor() {
             <SelectItem value="cloud_to_tally">Cloud → Tally</SelectItem>
           </SelectContent>
         </Select>
-        <Button
+        <Button data-primary
           className="ml-auto"
           style={{ background: "var(--gradient-primary)" }}
           onClick={() => setShowCreate(true)}
@@ -379,7 +380,7 @@ export default function SyncMonitor() {
             <DialogTitle>New Sync Request</DialogTitle>
             <DialogDescription>Configure a Tally Prime data sync job</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 mt-2">
+          <div data-keyboard-form className="space-y-4 mt-2">
             <div>
               <label className="text-xs font-medium text-foreground mb-1 block">Company *</label>
               <Select value={newCompany} onValueChange={setNewCompany}>
@@ -448,7 +449,7 @@ export default function SyncMonitor() {
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
+            <Button data-primary variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
             <Button
               style={{ background: "var(--gradient-primary)" }}
               onClick={handleCreate}
@@ -466,7 +467,7 @@ export default function SyncMonitor() {
         <SheetContent className="w-[540px] overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="font-mono text-lg text-primary">{selectedRequest?.requestNo}</SheetTitle>
-            <div className="flex gap-2 mt-1">
+            <div data-keyboard-form className="flex gap-2 mt-1">
               {selectedRequest && (
                 <>
                   <span className={cn("text-xs border rounded-md px-2 py-0.5", PRIORITY_CONFIG[selectedRequest.priority].color)}>

@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Search, Edit2, Trash2, Tag, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Brand, SubBrand } from '@/types/brand';
+import { onEnterNext } from '@/lib/keyboard';
 
 const COUNTRIES = ['India', 'China', 'USA', 'Germany', 'Japan', 'South Korea',
   'UK', 'France', 'Italy', 'Taiwan', 'Netherlands', 'Sweden', 'Switzerland',
@@ -97,7 +98,7 @@ export function BrandMatrixPanel() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-5xl mx-auto space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -167,7 +168,7 @@ export function BrandMatrixPanel() {
                   <Tag className="h-10 w-10 mx-auto mb-3 opacity-20" />
                   <p className="text-sm font-semibold text-foreground mb-1">No brands yet</p>
                   <p className="text-xs mb-4">Add your first brand or manufacturer</p>
-                  <Button size="sm" onClick={() => { setEditBrand(null); setBrandDialogOpen(true); }}>
+                  <Button data-primary size="sm" onClick={() => { setEditBrand(null); setBrandDialogOpen(true); }}>
                     <Plus className="h-4 w-4 mr-1" /> Add Brand
                   </Button>
                 </div>
@@ -325,7 +326,7 @@ export function BrandMatrixPanel() {
             <DialogTitle>{editBrand ? 'Edit Brand' : 'New Brand'}</DialogTitle>
             <DialogDescription>Brand and manufacturer details</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Brand Code *</Label>
@@ -366,7 +367,7 @@ export function BrandMatrixPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setBrandDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveBrand}>{editBrand ? 'Update' : 'Create'} Brand</Button>
+            <Button data-primary onClick={handleSaveBrand}>{editBrand ? 'Update' : 'Create'} Brand</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -378,7 +379,7 @@ export function BrandMatrixPanel() {
             <DialogTitle>{editSubBrand ? 'Edit Sub-Brand' : 'New Sub-Brand'}</DialogTitle>
             <DialogDescription>Sub-brand must be linked to a parent brand</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Sub-Brand Code *</Label>
@@ -413,7 +414,7 @@ export function BrandMatrixPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSubBrandDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveSubBrand}>{editSubBrand ? 'Update' : 'Create'} Sub-Brand</Button>
+            <Button data-primary onClick={handleSaveSubBrand}>{editSubBrand ? 'Update' : 'Create'} Sub-Brand</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

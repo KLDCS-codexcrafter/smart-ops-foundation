@@ -22,6 +22,7 @@ function getGreeting() {
 
 function getUserName(): string {
   try {
+    // [JWT] GET /api/auth/saved-credential
     const raw = localStorage.getItem("4ds_login_credential");
     if (raw) {
       const parsed = JSON.parse(raw);
@@ -59,11 +60,13 @@ export default function CommandCenterWelcome() {
 
   // Auto-skip if already seen
   useEffect(() => {
+    // [JWT] GET /api/onboarding/seen
     const seen = localStorage.getItem(SEEN_KEY);
     if (seen) navigate("/erp/command-center/hub", { replace: true });
   }, [navigate]);
 
   function handleEnter() {
+    // [JWT] PATCH /api/onboarding/seen
     localStorage.setItem(SEEN_KEY, "true");
     navigate("/erp/command-center/hub");
   }

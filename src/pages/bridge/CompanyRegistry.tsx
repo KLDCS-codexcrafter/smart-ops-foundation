@@ -25,6 +25,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 type ConnMode = "json_http" | "odbc" | "file_watch";
 type CompanyStatus = "connected" | "disconnected" | "syncing" | "error";
@@ -246,7 +247,7 @@ export default function CompanyRegistry() {
             <SelectItem value="file_watch">File Watch</SelectItem>
           </SelectContent>
         </Select>
-        <Button className="ml-auto bg-gradient-to-r from-primary to-primary/80" onClick={() => setShowAdd(true)}>
+        <Button data-primary className="ml-auto bg-gradient-to-r from-primary to-primary/80" onClick={() => setShowAdd(true)}>
           <Plus className="h-4 w-4 mr-1" /> Add Company
         </Button>
       </div>
@@ -379,7 +380,7 @@ export default function CompanyRegistry() {
             <DialogTitle>Add Tally Company</DialogTitle>
             <DialogDescription>Register a new Tally Prime company for sync</DialogDescription>
           </DialogHeader>
-          <div className="space-y-5 mt-2">
+          <div data-keyboard-form className="space-y-5 mt-2">
             <div>
               <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Tenant & Agent</p>
               <div className="space-y-3">
@@ -477,7 +478,7 @@ export default function CompanyRegistry() {
               <SheetHeader>
                 <SheetTitle className="text-lg font-semibold">{selectedCompany.name}</SheetTitle>
                 <p className="text-sm text-muted-foreground italic">{selectedCompany.tallyCompanyName}</p>
-                <div className="flex gap-2 mt-2">
+                <div data-keyboard-form className="flex gap-2 mt-2">
                   <span className={cn("inline-flex items-center gap-1.5 text-xs border rounded-lg px-2 py-1", STATUS_CONFIG[selectedCompany.status].color)}>
                     <span className={cn("w-2 h-2 rounded-full", STATUS_CONFIG[selectedCompany.status].dot)} />
                     {STATUS_CONFIG[selectedCompany.status].label}

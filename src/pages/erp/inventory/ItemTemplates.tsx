@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LayoutTemplate, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ItemTemplateA3 } from '@/types/item-template-a3';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_item_templates_a3';
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
@@ -126,7 +127,7 @@ export function ItemTemplatesPanel() {
   const industries = [...new Set(templates.map(t => t.industry).filter(Boolean))];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-6xl mx-auto space-y-6 p-6">
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -292,7 +293,7 @@ export function ItemTemplatesPanel() {
             <DialogTitle>{edit ? `Edit: ${edit.name}` : 'New Item Template'}</DialogTitle>
             <DialogDescription>Configure default values that will pre-fill Item Craft when this template is applied</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-4 gap-2">
               <div className="space-y-1.5">
                 <Label>Icon</Label>
@@ -403,7 +404,7 @@ export function ItemTemplatesPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Template</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Template</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

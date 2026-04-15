@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Printer, Play, XCircle, RotateCw, Clock, CheckCircle2, Tags, AlertTriangle, Search, Info, BarChart3 } from 'lucide-react';
 import type { PrintJob, PrintJobStatus } from '@/types/print-job';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_print_jobs';
 const ld = (): PrintJob[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
@@ -210,7 +211,7 @@ export function PrintQueuePanel() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-6xl mx-auto space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Printer className="h-6 w-6" />Print Queue</h1>
         <p className="text-sm text-muted-foreground">Monitor and manage label print jobs across all modules</p>
@@ -310,7 +311,7 @@ export function PrintQueuePanel() {
             <DialogTitle>Reprint Job — {reprintJob?.job_number}</DialogTitle>
             <DialogDescription>Create a reprint job for this label. Authorization is required.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="space-y-2">
               <Label>Reprint Reason</Label>
               <Select value={reprintReason} onValueChange={setReprintReason}>
@@ -327,7 +328,7 @@ export function PrintQueuePanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setReprintOpen(false)}>Cancel</Button>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={submitReprint}>
+            <Button data-primary className="bg-amber-600 hover:bg-amber-700 text-white" onClick={submitReprint}>
               <RotateCw className="h-4 w-4 mr-1" />Create Reprint
             </Button>
           </DialogFooter>

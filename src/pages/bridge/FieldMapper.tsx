@@ -16,6 +16,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 interface FieldMapping {
   id: string;
@@ -353,7 +354,7 @@ const FieldMapper = () => {
                 </div>
               </div>
 
-              <Button
+              <Button data-primary
                 className="bg-gradient-to-r from-primary to-primary/80 w-full mt-4"
                 onClick={() => toast("Field mapping saved")}
               >
@@ -410,7 +411,7 @@ const FieldMapper = () => {
           </SheetHeader>
 
           {detailTemplate && (
-            <div className="space-y-5 mt-5">
+            <div data-keyboard-form className="space-y-5 mt-5">
               {/* Info */}
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Info</h3>

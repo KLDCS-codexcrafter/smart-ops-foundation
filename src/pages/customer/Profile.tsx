@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // [JWT] Replace with real profile data
 const PROFILE = {
@@ -60,22 +61,22 @@ export default function Profile() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Full Name</label>
-                <Input defaultValue={PROFILE.name} />
+                <Input defaultValue={PROFILE.name} onKeyDown={onEnterNext} />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
-                <Input type="email" defaultValue={PROFILE.email} />
+                <Input type="email" defaultValue={PROFILE.email} onKeyDown={onEnterNext} />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Mobile</label>
-                <Input className="font-mono" defaultValue={PROFILE.mobile} />
+                <Input className="font-mono" defaultValue={PROFILE.mobile} onKeyDown={onEnterNext} />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Designation</label>
-                <Input defaultValue={PROFILE.designation} />
+                <Input defaultValue={PROFILE.designation} onKeyDown={onEnterNext} />
               </div>
             </div>
-            <Button
+            <Button data-primary
               size="sm"
               className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground mt-4"
               onClick={handleSave}
@@ -91,16 +92,16 @@ export default function Profile() {
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Company Name</label>
-                <Input readOnly value={PROFILE.company} className="bg-muted/20" />
+                <Input readOnly value={PROFILE.company} className="bg-muted/20" onKeyDown={onEnterNext} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">GSTIN</label>
-                  <Input readOnly value={PROFILE.gstin} className="font-mono uppercase bg-muted/20" />
+                  <Input readOnly value={PROFILE.gstin} className="font-mono uppercase bg-muted/20" onKeyDown={onEnterNext} />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">PAN</label>
-                  <Input readOnly value={PROFILE.pan} className="font-mono uppercase bg-muted/20" />
+                  <Input readOnly value={PROFILE.pan} className="font-mono uppercase bg-muted/20" onKeyDown={onEnterNext} />
                 </div>
               </div>
               <div>
@@ -110,15 +111,15 @@ export default function Profile() {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">City</label>
-                  <Input readOnly value={PROFILE.city} className="bg-muted/20" />
+                  <Input readOnly value={PROFILE.city} className="bg-muted/20" onKeyDown={onEnterNext} />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">State</label>
-                  <Input readOnly value={PROFILE.state} className="bg-muted/20" />
+                  <Input readOnly value={PROFILE.state} className="bg-muted/20" onKeyDown={onEnterNext} />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Pincode</label>
-                  <Input readOnly value={PROFILE.pincode} className="font-mono bg-muted/20" />
+                  <Input readOnly value={PROFILE.pincode} className="font-mono bg-muted/20" onKeyDown={onEnterNext} />
                 </div>
               </div>
             </div>

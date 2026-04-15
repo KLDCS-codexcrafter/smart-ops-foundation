@@ -26,6 +26,7 @@ import type { ItemVendor } from '@/types/item-vendor';
 import type { ItemQCParam } from '@/types/item-qc-param';
 import type { ItemPartyCode } from '@/types/item-party-code';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
+import { onEnterNext } from '@/lib/keyboard';
 
 /* ─── constants ─── */
 const ITEM_TYPES: ItemType[] = [
@@ -113,7 +114,7 @@ function ItemProgressBar({ activeTab, form, onTabClick }: { activeTab: number; f
   const filled = TABS.filter(t => t.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; })).length;
   const pct = Math.round((filled / TABS.length) * 100);
   return (
-    <div className="px-5 pt-4 pb-3 border-b bg-muted/30">
+    <div data-keyboard-form className="px-5 pt-4 pb-3 border-b bg-muted/30">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Record Completeness</span>
         <span className={`text-sm font-semibold ${pct === 100 ? 'text-emerald-600' : pct >= 60 ? 'text-blue-600' : 'text-amber-600'}`}>{pct}%</span>
@@ -153,7 +154,7 @@ function WhereUsedPanel({ item, onClose }: { item: InventoryItem; onClose: () =>
           </SheetTitle>
           <SheetDescription>All BOMs and Finished Goods that use this item as a component</SheetDescription>
         </SheetHeader>
-        <div className="space-y-3">
+        <div data-keyboard-form className="space-y-3">
           <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
             <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground">
@@ -260,7 +261,7 @@ export function ItemCraftPanel() {
           <h1 className="text-2xl font-bold flex items-center gap-2"><Package className="h-6 w-6" />Item Craft</h1>
           <p className="text-sm text-muted-foreground">Complete item master — pricing handled in Price Lists module</p>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={openCreate}><Plus className="h-4 w-4" />Add Item</Button>
+        <Button data-primary size="sm" className="gap-1.5" onClick={openCreate}><Plus className="h-4 w-4" />Add Item</Button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardHeader className="pb-2"><CardDescription>Total Items</CardDescription><CardTitle className="text-2xl">{items.length}</CardTitle></CardHeader></Card>
@@ -290,7 +291,7 @@ export function ItemCraftPanel() {
             <TableRow><TableCell colSpan={9} className="text-center py-16 text-muted-foreground">
               <Package className="h-10 w-10 mx-auto mb-3 opacity-20" />
               <p className="text-sm font-semibold text-foreground mb-1">No items yet</p>
-              <Button size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>
+ <Button data-primary size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>Item</Button>
             </TableCell></TableRow>
           ) : filtered.map(item => (
             <TableRow key={item.id} className="group">
@@ -328,7 +329,7 @@ export function ItemCraftPanel() {
       {/* ── Main Dialog ── */}
       <Dialog open={dlgOpen} onOpenChange={setDlgOpen}>
         <DialogContent className="max-w-2xl p-0 gap-0 max-h-[92vh] flex flex-col">
-          <div className="px-5 pt-4 pb-3 border-b">
+          <div data-keyboard-form className="px-5 pt-4 pb-3 border-b">
             <DialogTitle>{editItem ? `Edit: ${editItem.name}` : 'New Item'}</DialogTitle>
             <DialogDescription className="text-xs mt-0.5">
               {editItem ? 'Update item master record' : 'Complete all 8 sections — pricing in Price Lists module'}
@@ -904,12 +905,12 @@ export function ItemCraftPanel() {
                     </div>
                     <div className="space-y-1.5">
                       <Label>CGST (%)</Label>
-                      <Input readOnly value={form.cgst_rate ?? ''} className="bg-muted" />
+                      <Input readOnly value={form.cgst_rate ?? ''} className="bg-muted" onKeyDown={onEnterNext} />
                       <p className="text-[10px] text-muted-foreground">Auto = IGST ÷ 2</p>
                     </div>
                     <div className="space-y-1.5">
                       <Label>SGST / UTGST (%)</Label>
-                      <Input readOnly value={form.sgst_rate ?? ''} className="bg-muted" />
+                      <Input readOnly value={form.sgst_rate ?? ''} className="bg-muted" onKeyDown={onEnterNext} />
                       <p className="text-[10px] text-muted-foreground">Auto = IGST ÷ 2</p>
                     </div>
                   </div>
@@ -1435,7 +1436,7 @@ export function ItemCraftPanel() {
                   <ChevronLeft className="h-3.5 w-3.5" />Back
                 </Button>
               )}
-              <Button variant="outline" size="sm"
+              <Button data-primary variant="outline" size="sm"
                 onClick={() => { setForm(f => ({ ...f, status: 'draft' })); handleSave(); }}>
                 Save Draft
               </Button>
@@ -1444,7 +1445,7 @@ export function ItemCraftPanel() {
                   Next<ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               ) : (
-                <Button size="sm" onClick={handleSave}>
+                <Button data-primary size="sm" onClick={handleSave}>
                   {editItem ? 'Update Item' : 'Create Item'}
                 </Button>
               )}

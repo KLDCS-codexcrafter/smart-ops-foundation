@@ -19,6 +19,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 type AuditOperation = "read" | "write" | "validate" | "approve" | "reconcile"
   | "exception" | "agent_event" | "user_action";
@@ -224,7 +225,7 @@ export default function AuditExplorer() {
             <SheetTitle className="font-mono text-lg text-primary">{detailLog?.id}</SheetTitle>
           </SheetHeader>
           {detailLog && (
-            <div className="mt-6 space-y-4">
+            <div data-keyboard-form className="mt-6 space-y-4">
               <div>
                 {(() => { const rc = RESULT_CONFIG[detailLog.result]; return (
                   <span className={cn("text-xs border rounded-lg px-2 py-0.5", rc.color)}>{rc.label}</span>

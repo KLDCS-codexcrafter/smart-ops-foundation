@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 interface ImportJob {
   id: string;
@@ -140,7 +141,7 @@ export default function ImportHub() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1.5 block">Date Override (optional)</label>
-              <Input type="date" />
+              <Input type="date" onKeyDown={onEnterNext} />
             </div>
           </div>
 

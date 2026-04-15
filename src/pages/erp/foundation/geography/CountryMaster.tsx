@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { countries as worldCountries, type WorldCountry } from '@/data/world-geography';
 import { useNavigate } from 'react-router-dom';
+import { onEnterNext } from '@/lib/keyboard';
 
 const COUNTRY_REGIONS = ['Asia','Middle East','Europe','Americas','Africa','Oceania','SAARC'];
 
@@ -153,7 +154,7 @@ export default function CountryMaster() {
             <Button onClick={() => { setLibSearch(''); setLibraryOpen(true); }} className="gap-1.5" variant="secondary">
               <Library className="h-4 w-4" /> Add from Library
             </Button>
-            <Button onClick={openCreate} className="gap-1.5">
+            <Button data-primary onClick={openCreate} className="gap-1.5">
               <Plus className="h-4 w-4" /> Add Custom Country
             </Button>
           </div>
@@ -236,7 +237,7 @@ export default function CountryMaster() {
             <DialogHeader>
               <DialogTitle>Add Country from Library</DialogTitle>
             </DialogHeader>
-            <div className="relative">
+            <div data-keyboard-form className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search 55 countries..." value={libSearch} onChange={e => setLibSearch(e.target.value)} className="pl-9" />
             </div>
@@ -269,7 +270,7 @@ export default function CountryMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit Country' : 'Add Country'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            <div data-keyboard-form className="space-y-3">
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <Label>Code *</Label>
@@ -330,7 +331,7 @@ export default function CountryMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

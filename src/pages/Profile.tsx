@@ -158,6 +158,7 @@ export default function Profile() {
   // Display — persisted to localStorage
   const [displaySettings, setDisplaySettings] = useState(() => {
     try {
+      // [JWT] GET /api/profile/display-settings
       const s = localStorage.getItem('display_settings');
       return s ? JSON.parse(s) : { compactMode: false, animations: true };
     } catch { return { compactMode: false, animations: true }; }
@@ -165,6 +166,7 @@ export default function Profile() {
   function updateDisplay(key: string, val: boolean) {
     const updated = { ...displaySettings, [key]: val };
     setDisplaySettings(updated);
+    // [JWT] PATCH /api/profile/display-settings
     localStorage.setItem('display_settings', JSON.stringify(updated));
     toast.success('Display setting saved');
   }
@@ -173,6 +175,7 @@ export default function Profile() {
   // These are PLATFORM alerts only — NOT invoice/statement (those are in Customer Portal)
   const [notifSettings, setNotifSettings] = useState(() => {
     try {
+      // [JWT] GET /api/profile/notif-settings
       const s = localStorage.getItem('notif_settings');
       return s ? JSON.parse(s) : { syncAlerts: true, securityAlerts: true, maintenanceAlerts: true, productUpdates: false };
     } catch { return { syncAlerts: true, securityAlerts: true, maintenanceAlerts: true, productUpdates: false }; }
@@ -180,6 +183,7 @@ export default function Profile() {
   function updateNotif(key: string, val: boolean) {
     const updated = { ...notifSettings, [key]: val };
     setNotifSettings(updated);
+    // [JWT] PATCH /api/profile/notif-settings
     localStorage.setItem('notif_settings', JSON.stringify(updated));
     toast.success('Notification preference saved');
   }

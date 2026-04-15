@@ -14,6 +14,7 @@ import {
   SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ─── [JWT] BRIDGE TIER SCOPING ────────────────────────────────────────────
 // Replace this mock data with a real fetch scoped by JWT tier:
@@ -95,7 +96,7 @@ export default function BridgeSettings() {
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">Agent Registration Key</label>
                 <div className="relative">
-                  <Input type={showKey ? "text" : "password"} className="font-mono pr-10" defaultValue="4dso-agent-key-xxxx-xxxx-xxxx" />
+                  <Input type={showKey ? "text" : "password"} className="font-mono pr-10" defaultValue="4dso-agent-key-xxxx-xxxx-xxxx" onKeyDown={onEnterNext} />
                   <button onClick={() => setShowKey(!showKey)} className="absolute right-3 top-1/2 -translate-y-1/2">
                     {showKey ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                   </button>
@@ -117,7 +118,7 @@ export default function BridgeSettings() {
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground mb-1.5 block">Max Concurrent Syncs</label>
-                  <Input type="number" defaultValue={3} />
+                  <Input type="number" defaultValue={3} onKeyDown={onEnterNext} />
                 </div>
               </div>
 
@@ -147,7 +148,7 @@ export default function BridgeSettings() {
                 </div>
               </div>
 
-              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Agent config saved")}>
+              <Button data-primary className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Agent config saved")}>
                 Save Agent Config
               </Button>
             </div>
@@ -194,11 +195,11 @@ export default function BridgeSettings() {
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <div>
                     <label className="text-xs text-muted-foreground mb-1.5 block">Quiet Hours — From</label>
-                    <Input type="time" defaultValue="23:00" className="font-mono" />
+                    <Input type="time" defaultValue="23:00" className="font-mono" onKeyDown={onEnterNext} />
                   </div>
                   <div>
                     <label className="text-xs text-muted-foreground mb-1.5 block">Quiet Hours — To</label>
-                    <Input type="time" defaultValue="06:00" className="font-mono" />
+                    <Input type="time" defaultValue="06:00" className="font-mono" onKeyDown={onEnterNext} />
                     <p className="text-[10px] text-muted-foreground mt-1">No syncs start during this window</p>
                   </div>
                 </div>
@@ -241,7 +242,7 @@ export default function BridgeSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-muted-foreground mb-1.5 block">Retry Limit</label>
-                    <Input type="number" defaultValue={5} min={0} max={20} />
+                    <Input type="number" defaultValue={5} min={0} max={20} onKeyDown={onEnterNext} />
                     <p className="text-[10px] text-muted-foreground mt-1">0 = no auto-retry. Max 20.</p>
                   </div>
                   <div>
@@ -280,7 +281,7 @@ export default function BridgeSettings() {
                 </div>
               </div>
 
-              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Sync policy saved — agent applies on next heartbeat")}>
+              <Button data-primary className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Sync policy saved — agent applies on next heartbeat")}>
                 Save Sync Policy
               </Button>
             </div>
@@ -293,7 +294,7 @@ export default function BridgeSettings() {
 
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">Tally HTTP Port</label>
-                <Input type="number" className="font-mono" defaultValue={9000} />
+                <Input type="number" className="font-mono" defaultValue={9000} onKeyDown={onEnterNext} />
               </div>
 
               <div>
@@ -319,7 +320,7 @@ export default function BridgeSettings() {
 
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">File Watch Path</label>
-                <Input className="font-mono" defaultValue="C:\Tally\Export\" />
+                <Input className="font-mono" defaultValue="C:\Tally\Export\" onKeyDown={onEnterNext} />
                 <p className="text-[10px] text-muted-foreground mt-1">Folder path Tally exports JSON files to</p>
               </div>
 
@@ -349,10 +350,10 @@ export default function BridgeSettings() {
 
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">Alert Email</label>
-                <Input type="email" defaultValue="ops@4dsmartops.in" />
+                <Input type="email" defaultValue="ops@4dsmartops.in" onKeyDown={onEnterNext} />
               </div>
 
-              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Notification settings saved")}>
+              <Button data-primary className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Notification settings saved")}>
                 Save Notifications
               </Button>
             </div>
@@ -413,7 +414,7 @@ export default function BridgeSettings() {
                 <p className="text-[10px] text-muted-foreground mt-1">One CIDR range per line. Leave blank to allow all.</p>
               </div>
 
-              <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Security settings saved")}>
+              <Button data-primary className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast.success("Security settings saved")}>
                 Save Security
               </Button>
             </div>

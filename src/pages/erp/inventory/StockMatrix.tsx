@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Boxes, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import type { StockGroup, StockGroupFormData, CostingMethod } from '@/types/stock-group';
+import { onEnterNext } from '@/lib/keyboard';
 
 const CATEGORY_TYPES=['Raw Material','Finished Goods','Semi-Finished','Component','By-Product','Co-Product','Scrap','Consumables','Stores & Consumables','Fixed Assets','Service','Spare Parts','Equipment','Tools','Packaging'];
 const MATERIAL_TYPES=['Non-Perishable','Perishable','Service'];
@@ -35,6 +36,7 @@ const COSTING_METHODS:{value:CostingMethod;label:string}[]=[
 ];
 const ABC: Record<string, string>={A:'bg-emerald-500/10 text-emerald-700',B:'bg-amber-500/10 text-amber-700',C:'bg-slate-500/10 text-slate-600'};
 const SKEY='erp_stock_groups';
+// [JWT] GET /api/entity/storage/:key
 const load=():StockGroup[]=>{try{return JSON.parse(localStorage.getItem(SKEY)||'[]');}catch{return [];}};
 const BLK:StockGroupFormData={code:'',short_code:'',name:'',display_name:'',parent_id:null,
   category_type:'Raw Material',material_type:'Non-Perishable',stock_nature:'Inventory',use_for:'All',
@@ -52,6 +54,7 @@ export function StockMatrixPanel() {
   const [form,setForm]=useState<StockGroupFormData>(BLK);
   const [exp,setExp]=useState<Set<string>>(new Set());
 
+  // [JWT] PATCH /api/entity/storage/:key
   const sv=(d:StockGroup[])=>{localStorage.setItem(SKEY,JSON.stringify(d));
   // [JWT] POST/PATCH/DELETE /api/inventory/stock-groups
   };
@@ -116,7 +119,7 @@ export function StockMatrixPanel() {
   };
 
   return (
-    <div className='max-w-5xl mx-auto space-y-6 p-6'>
+    <div data-keyboard-form className='max-w-5xl mx-auto space-y-6 p-6'>
       <div className='flex items-center justify-between'>
         <div><h1 className='text-2xl font-bold flex items-center gap-2'><Boxes className='h-6 w-6'/>Stock Matrix</h1>
         <p className='text-sm text-muted-foreground'>Hierarchical stock groups — costing method is a soft default (items can override)</p></div>
@@ -167,7 +170,7 @@ export function StockMatrixPanel() {
             <DialogTitle>{edit?`Edit: ${edit.name}`:'New Stock Group'}</DialogTitle>
             <DialogDescription>Costing method is a soft default — items can override individually</DialogDescription>
           </DialogHeader>
-          <div className='space-y-4'>
+          <div data-keyboard-form className='space-y-4'>
             <div className='grid grid-cols-3 gap-4'>
               <div className='space-y-1.5'><Label>Code *</Label><Input placeholder='RM' value={form.code} onChange={e=>setForm(f=>({...f,code:e.target.value.toUpperCase()}))}/></div>
               <div className='space-y-1.5'><Label>Short Code</Label><Input value={form.short_code||''} onChange={e=>setForm(f=>({...f,short_code:e.target.value}))}/></div>
@@ -251,7 +254,7 @@ export function StockMatrixPanel() {
             <div className='space-y-1.5'><Label>Internal Notes</Label><Input value={form.internal_notes||''} onChange={e=>setForm(f=>({...f,internal_notes:e.target.value}))}/></div>
           </div>
           <DialogFooter><Button variant='outline' onClick={()=>setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit?'Update':'Create'} Group</Button></DialogFooter>
+            <Button data-primary onClick={handleSave}>{edit?'Update':'Create'} Group</Button></DialogFooter>
         </DialogContent></Dialog>
     </div>
   );

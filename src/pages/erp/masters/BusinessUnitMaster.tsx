@@ -185,6 +185,7 @@ export function BusinessUnitMasterPanel() {
 
   // ─── Save ──────────────────────────────────────────────────
   const handleSave = () => {
+    if (!addOpen && !editTarget) return;
     if (!form.name.trim()) return toast.error('Business Unit name is required');
     if (!form.shortCode.trim()) return toast.error('Short code is required');
     if (form.shortCode.length > 4) return toast.error('Short code must be 4 characters or less');
@@ -213,7 +214,7 @@ export function BusinessUnitMasterPanel() {
     setJustSaved(true); setTimeout(() => setJustSaved(false), 1500);
   };
 
-  useCtrlS(() => { if (addOpen || editTarget) handleSave(); });
+  useCtrlS(handleSave);
 
   const openEdit = (unit: BusinessUnitMasterDefinition) => {
     const { id, partyCode, ...rest } = unit;

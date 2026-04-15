@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates } from '@/data/india-geography';
 import { UAE_EMIRATES, INDIA_REGIONS, UAE_REGIONS } from '@/data/geo-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface RegionRecord {
   code: string; name: string; countryCode: string;
@@ -246,7 +247,7 @@ export default function RegionMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit Region' : 'Add Region'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            <div data-keyboard-form className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Region Code *</Label>
@@ -316,7 +317,7 @@ export default function RegionMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

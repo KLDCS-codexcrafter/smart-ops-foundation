@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByState, getCitiesByDistrict } from '@/data/india-geography';
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 export const CITY_CATEGORIES = [
   { value:'metro', label:'Metro', desc:'Population 4M+, Tier-0 cities' },
@@ -403,7 +404,7 @@ export default function CityMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit City' : 'Add City'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div data-keyboard-form className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>City Code *</Label>
@@ -508,7 +509,7 @@ export default function CityMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
