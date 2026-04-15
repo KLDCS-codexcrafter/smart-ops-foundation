@@ -42,7 +42,8 @@ const BLK:StockGroupFormData={code:'',short_code:'',name:'',display_name:'',pare
   category_type:'Raw Material',material_type:'Non-Perishable',stock_nature:'Inventory',use_for:'All',
   batch_grid_enabled:false,serial_grid_enabled:false,costing_method:'weighted_avg',
   movement_class:null,movement_indicator:'Normal',expiry_tracking:false,
-  reorder_level:null,internal_notes:'',effective_from:''};
+  reorder_level:null,internal_notes:'',effective_from:'',
+  igst_rate:null,cgst_rate:null,sgst_rate:null,cess_rate:null,gst_type:null};
 
 export function StockMatrixPanel() {
   const [groups,setGroups]=useState<StockGroup[]>(load());
@@ -66,7 +67,9 @@ export function StockMatrixPanel() {
       serial_grid_enabled:g.serial_grid_enabled,costing_method:g.costing_method,
       movement_class:g.movement_class||null,movement_indicator:g.movement_indicator,
       expiry_tracking:g.expiry_tracking,reorder_level:g.reorder_level||null,
-      internal_notes:g.internal_notes||'',effective_from:g.effective_from||''});
+      internal_notes:g.internal_notes||'',effective_from:g.effective_from||'',
+      igst_rate:g.igst_rate??null,cgst_rate:g.cgst_rate??null,sgst_rate:g.sgst_rate??null,
+      cess_rate:g.cess_rate??null,gst_type:g.gst_type??null});
     setEdit(g);setOpen(true);
   };
   const handleSave=()=>{
@@ -252,6 +255,31 @@ export function StockMatrixPanel() {
               <div className='space-y-1.5'><Label>Effective From</Label><Input type='date' value={form.effective_from||''} onChange={e=>setForm(f=>({...f,effective_from:e.target.value}))}/></div>
             </div>
             <div className='space-y-1.5'><Label>Internal Notes</Label><Input value={form.internal_notes||''} onChange={e=>setForm(f=>({...f,internal_notes:e.target.value}))}/></div>
+            <Separator/>
+            <h4 className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>GST Settings</h4>
+            <p className='text-xs text-muted-foreground'>Leave blank to use individual item GST rates. Set a rate here to apply it as the default for all items in this group.</p>
+            <div className='grid grid-cols-2 gap-4'>
+              <div className='space-y-1.5'><Label>GST Type</Label>
+                <Select value={form.gst_type||'none'} onValueChange={v=>setForm(f=>({...f,gst_type:v==='none'?null:v as StockGroupFormData['gst_type']}))}>
+                  <SelectTrigger><SelectValue placeholder='Inherit from item'/></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='none'>— Inherit from item —</SelectItem>
+                    <SelectItem value='taxable'>Taxable</SelectItem>
+                    <SelectItem value='nil_rated'>Nil Rated</SelectItem>
+                    <SelectItem value='exempt'>Exempt</SelectItem>
+                    <SelectItem value='zero_rated'>Zero Rated</SelectItem>
+                    <SelectItem value='non_gst'>Non-GST</SelectItem>
+                  </SelectContent></Select></div>
+              <div className='space-y-1.5'><Label>IGST Rate (%)</Label>
+                <Input type='number' value={form.igst_rate??''} onKeyDown={onEnterNext} onChange={e=>{
+                  const v=parseFloat(e.target.value)||null;
+                  setForm(f=>({...f,igst_rate:v,cgst_rate:v?v/2:null,sgst_rate:v?v/2:null}));
+                }}/></div>
+            </div>
+            {form.gst_type==='taxable'&&(
+              <div className='space-y-1.5'><Label>Cess Rate (%)</Label>
+                <Input type='number' value={form.cess_rate??''} onKeyDown={onEnterNext} onChange={e=>setForm(f=>({...f,cess_rate:parseFloat(e.target.value)||null}))}/></div>
+            )}
           </div>
           <DialogFooter><Button variant='outline' onClick={()=>setOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleSave}>{edit?'Update':'Create'} Group</Button></DialogFooter>
