@@ -140,7 +140,7 @@ export function CodeMatrixPanel() {
                   <Hash className="h-10 w-10 mx-auto mb-3 opacity-20" />
                   <p className="text-sm font-semibold text-foreground mb-1">No code rules yet</p>
                   <p className="text-xs mb-4">Define how item codes are generated — prefix, sequence, year</p>
-     <Button data-primary size="sm" onClick={openC}><Plus className="h-4 w-4 mr-1" />Add Rule</Button>Rule</Button>
+     <Button data-primary size="sm" onClick={openC}><Plus className="h-4 w-4 mr-1" />Add Rule</Button>
                 </TableCell></TableRow>
               ) : rules.map(r => {
                 const preview = genPreview(r);

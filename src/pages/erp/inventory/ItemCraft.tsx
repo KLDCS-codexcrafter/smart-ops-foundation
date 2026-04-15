@@ -291,7 +291,7 @@ export function ItemCraftPanel() {
             <TableRow><TableCell colSpan={9} className="text-center py-16 text-muted-foreground">
               <Package className="h-10 w-10 mx-auto mb-3 opacity-20" />
               <p className="text-sm font-semibold text-foreground mb-1">No items yet</p>
- <Button data-primary size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>Item</Button>
+ <Button data-primary size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>
             </TableCell></TableRow>
           ) : filtered.map(item => (
             <TableRow key={item.id} className="group">
