@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 
@@ -111,6 +112,31 @@ export function FineCoreHubPanel() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Accounting Setup */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-1">Accounting Setup</h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Configure ledgers, tax rates, compliance and voucher types.
+          Full setup is available in Command Center.
+        </p>
+        <div
+          onClick={() => navigate('/erp/accounting')}
+          className="border rounded-lg p-4 hover:bg-accent cursor-pointer
+            transition-colors flex items-center justify-between"
+        >
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Compliance & COA
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              FinFrame, Ledger Master, Tax Rates, GST Config,
+              Comply360, Voucher Types
+            </p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
         </div>
       </div>
     </div>
