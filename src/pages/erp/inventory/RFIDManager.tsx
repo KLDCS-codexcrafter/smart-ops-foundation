@@ -200,7 +200,7 @@ export function RFIDManagerPanel() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search tag UID, item name or code..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
             </div>
-            <Button onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Register Tag</Button>
+            <Button data-primary onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Register Tag</Button>
           </div>
 
           <div className="rounded-md border">
@@ -425,7 +425,7 @@ export function RFIDManagerPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{editId ? 'Update' : 'Register Tag'}</Button>
+            <Button data-primary onClick={handleSave}>{editId ? 'Update' : 'Register Tag'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
