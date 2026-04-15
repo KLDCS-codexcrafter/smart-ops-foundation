@@ -1,4 +1,7 @@
 import VoucherFormShell from '@/components/finecore/VoucherFormShell';
-export default function DebitNote() {
+export function DebitNotePanel() {
   return <VoucherFormShell voucherTypeName="Debit Note" title="Debit Note" showTerms showPaymentTerms={false} />;
+}
+export default function DebitNote() {
+  return <DebitNotePanel />;
 }

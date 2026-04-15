@@ -1,4 +1,7 @@
 import VoucherFormShell from '@/components/finecore/VoucherFormShell';
-export default function ContraEntry() {
+export function ContraEntryPanel() {
   return <VoucherFormShell voucherTypeName="Contra" title="Contra Entry" showTerms={false} showPaymentTerms={false} />;
+}
+export default function ContraEntry() {
+  return <ContraEntryPanel />;
 }
