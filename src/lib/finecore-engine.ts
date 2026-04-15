@@ -52,8 +52,8 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
 // ── Voucher Number Generation ────────────────────────────────────────
 
 export function generateVoucherNo(prefix: string, entityCode: string): string {
-  // [JWT] GET /api/accounting/voucher-types/:id/next-number
   const key = `erp_voucher_seq_${prefix}_${entityCode}`;
+  // [JWT] GET /api/accounting/voucher-types/:id/next-number
   const raw = localStorage.getItem(key);
   const seq = raw ? parseInt(raw, 10) + 1 : 1;
   // [JWT] PATCH /api/accounting/voucher-types/:id/sequence
