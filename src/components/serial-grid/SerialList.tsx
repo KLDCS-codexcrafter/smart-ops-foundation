@@ -35,7 +35,7 @@ export function SerialList() {
   );
 
   return (
-    <>
+    <div data-keyboard-form>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
@@ -141,6 +141,6 @@ export function SerialList() {
         onOpenChange={setViewOpen}
         serial={viewSerial}
       />
-    </>
+    </div>
   );
 }
