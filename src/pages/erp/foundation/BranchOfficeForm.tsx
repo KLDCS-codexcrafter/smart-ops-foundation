@@ -411,7 +411,6 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
           </div>
         </div>
       </div>
-    </SidebarProvider>
     <EntitySetupDialog
       open={setupOpen}
       onOpenChange={setSetupOpen}
@@ -428,5 +427,26 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
       }}
     />
     </>
+  );
+}
+
+export default function BranchOfficeForm(props: BranchOfficeFormProps) {
+  const breadcrumbs = [
+    { label: 'Operix Core', href: '/erp/dashboard' },
+    { label: 'Command Center', href: '/erp/command-center' },
+    { label: 'Foundation' },
+    { label: 'Branch Offices', href: '/erp/foundation/branch-offices' },
+    { label: props.mode === 'create' ? 'Create Branch Office' : 'Edit Branch Office' },
+  ];
+
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={breadcrumbs} showDatePicker={false} showCompany={false} />
+        <main className="p-6">
+          <BranchOfficeFormPanel {...props} />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
