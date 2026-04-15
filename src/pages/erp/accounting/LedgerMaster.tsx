@@ -2886,7 +2886,26 @@ export function LedgerMasterPanel() {
     refreshAll();
   };
 
-  // ── Delete flow ──
+  // Ctrl+S saves the active form
+  const handleCtrlS = useCallback(() => {
+    if (cashCreateOpen) { handleCashSave(); return; }
+    if (bankCreateOpen) { handleBankSave(); return; }
+    if (liabilityOpen) { handleLiabilitySave(); return; }
+    if (capitalOpen) { handleCapitalSave(); return; }
+    if (loanRecOpen) { handleLoanRecSave(); return; }
+    if (borrowingOpen) { handleBorrowingSave(); return; }
+    if (incomeOpen) { handleIncomeSave(); return; }
+    if (expenseOpen) { handleExpenseSave(); return; }
+    if (dutiesTaxOpen) { handleDutiesTaxSave(); return; }
+    if (payrollStatOpen) { handlePayrollStatSave(); return; }
+    if (assetOpen) { handleAssetSave(); return; }
+  }, [cashCreateOpen, bankCreateOpen, liabilityOpen, capitalOpen, loanRecOpen,
+    borrowingOpen, incomeOpen, expenseOpen, dutiesTaxOpen, payrollStatOpen, assetOpen,
+    handleCashSave, handleBankSave, handleLiabilitySave, handleCapitalSave, handleLoanRecSave,
+    handleBorrowingSave, handleIncomeSave, handleExpenseSave, handleDutiesTaxSave,
+    handlePayrollStatSave, handleAssetSave]);
+  useCtrlS(handleCtrlS);
+
   const openDeleteFlow = (def: AnyLedgerDefinition) => {
     setDeleteTarget(def);
     setPickerOpen(false);
