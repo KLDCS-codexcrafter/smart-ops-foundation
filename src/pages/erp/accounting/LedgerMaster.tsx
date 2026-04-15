@@ -1962,6 +1962,9 @@ export function LedgerMasterPanel() {
       calculationBasis: def.calculationBasis, rate: def.rate ?? 0,
       openingBalance: def.openingBalance ?? 0, openingBalanceType: def.openingBalanceType ?? 'Cr',
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
+      rcmSection: def.rcmSection ?? 'not_applicable',
+      gstTaxSubType: def.gstTaxSubType ?? 'output',
+      itcEligibility: def.itcEligibility ?? 'full',
     });
     setDutiesTaxOpen(true);
   };
