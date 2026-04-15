@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -116,7 +116,11 @@ export function TransactionTemplatesPanel() {
     setEditTarget(null);
   };
 
-  useCtrlS(() => { if (sheetOpen) handleSave(); });
+  const handleCtrlSave = useCallback(() => {
+    if (!sheetOpen) return;
+    handleSave();
+  }, [sheetOpen, handleSave]);
+  useCtrlS(handleCtrlSave);
 
   const insertVariable = (variable: string) => {
     const ta = contentRef.current;
