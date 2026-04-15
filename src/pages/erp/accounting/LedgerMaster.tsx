@@ -343,6 +343,13 @@ interface DutiesTaxLedgerDefinition {
   gstSubType: GstSubType;
   calculationBasis: CalcBasis;
   rate: number;
+  // Comply360 UDF fields — visible only when enableAdvancedGST is true
+  rcmSection?: 'not_applicable' | 'section_9_3' | 'section_9_4';
+  // TDL UDF 5023 — RCMsection
+  gstTaxSubType?: 'output' | 'input' | 'rcm_payable' | 'rcm_input' | 'cess';
+  // Derived from Duties & Taxes group classification
+  itcEligibility?: 'full' | 'ineligible_17_5' | 'blocked' | 'partial';
+  // Section 17(5) blocks — auto-separates in GSTR-3B Table 4
   description: string;
   notes: string;
   suspendedBy: string | null;
@@ -1226,6 +1233,14 @@ function HSNSACCombobox({
 // ─── Component ────────────────────────────────────────────────────────
 
 export function LedgerMasterPanel() {
+  const showGSTUDFs = (() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/group
+      const cfg = JSON.parse(localStorage.getItem('erp_comply360_group') || '{}');
+      return cfg.enableAdvancedGST === true;
+    } catch { return false; }
+  })();
+
   const [entities] = useState(() => loadEntities());
   const [cashDefs, setCashDefs] = useState<CashLedgerDefinition[]>(() => loadCashDefs());
   const [bankDefs, setBankDefs] = useState<BankLedgerDefinition[]>(() => loadBankDefs());
