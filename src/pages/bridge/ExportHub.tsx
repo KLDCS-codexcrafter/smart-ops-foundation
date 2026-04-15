@@ -79,7 +79,7 @@ const stats = [
   { label: "Failed", value: 1, icon: XCircle, color: "text-destructive" },
 ];
 
-export default function ExportHub() {
+export function ExportHubPanel() {
   const [tab, setTab] = useState("new");
   const [scheduleEnabled, setScheduleEnabled] = useState(false);
   const [exportName, setExportName] = useState("");
@@ -265,3 +265,4 @@ export default function ExportHub() {
     </div></BridgeLayout>
   );
 }
+export default function ExportHub() { return <ExportHubPanel />; }

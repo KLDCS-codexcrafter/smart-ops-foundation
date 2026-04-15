@@ -36,7 +36,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   overdue: { label: "Overdue", color: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
-export default function Invoices() {
+export function InvoicesPanel() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fromDate, setFromDate] = useState("");
@@ -160,3 +160,4 @@ export default function Invoices() {
     </div></CustomerLayout>
   );
 }
+export default function Invoices() { return <InvoicesPanel />; }
