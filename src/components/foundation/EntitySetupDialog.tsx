@@ -85,7 +85,7 @@ export function EntitySetupDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" data-keyboard-form>
         {!result ? (
           <>
             <DialogHeader>
