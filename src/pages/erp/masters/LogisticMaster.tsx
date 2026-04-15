@@ -265,6 +265,7 @@ export function LogisticMasterPanel() {
   };
 
   const handleSave = () => {
+    if (!addOpen && !editTarget) return;
     if (!form.partyName.trim()) return toast.error('Party Name is required');
     if (!form.logisticType) return toast.error('Logistic Type is required');
     const all = loadLogistics();
@@ -292,7 +293,7 @@ export function LogisticMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(() => { if (addOpen || editTarget) handleSave(); });
+  useCtrlS(handleSave);
 
   const openEdit = (item: LogisticMasterDefinition) => {
     const { id, partyCode, ...rest } = item;

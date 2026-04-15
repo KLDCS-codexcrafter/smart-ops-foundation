@@ -302,6 +302,7 @@ export function VendorMasterPanel() {
 
   // ─── Save ────────────────────────────────────────────────────
   const handleSave = () => {
+    if (!addOpen && !editTarget) return;
     if (!form.partyName.trim()) return toast.error('Party Name is required');
     const all = loadVendors();
     if (editTarget) {
@@ -326,7 +327,7 @@ export function VendorMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(() => { if (addOpen || editTarget) handleSave(); });
+  useCtrlS(handleSave);
 
   const openEdit = (item: VendorMasterDefinition) => {
     const { id, partyCode, ...rest } = item;
