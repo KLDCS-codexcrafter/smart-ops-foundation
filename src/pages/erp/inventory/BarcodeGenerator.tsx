@@ -22,6 +22,7 @@ import { onEnterNext } from '@/lib/keyboard';
 const KEY = 'erp_barcode_jobs';
 const IKEY = 'erp_inventory_items';
 const LTKEY = 'erp_label_templates';
+// [JWT] GET /api/inventory/barcode-jobs
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const BARCODE_TYPES: { value: BarcodeSuperType; label: string; desc: string; group: 'standard' | 'advanced' }[] = [
@@ -72,6 +73,7 @@ export function BarcodeGeneratorPanel() {
   const [itemSearch, setItemSearch] = useState('');
   const [itemPicked, setItemPicked] = useState(false);
 
+  // [JWT] POST /api/inventory/barcode-jobs
   const sv = (d: BarcodeJob[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/labels/barcode-jobs */ };
 
   const filtered = useMemo(() => jobs.filter(j => {

@@ -29,6 +29,7 @@ import {
   L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
   type L4IndustryGroup,
 } from '@/data/finframe-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ─── Types ──────────────────────────────────────────────────────
 interface UserGroup {
@@ -50,6 +51,7 @@ export function FinFramePanel() {
   const [namingMode, setNamingMode] = useState<'indas' | 'tally'>('indas');
   const [userGroups, setUserGroups] = useState<UserGroup[]>(() => {
     try {
+      // [JWT] GET /api/accounting/finframe
       const raw = localStorage.getItem('erp_group_finframe_l4_groups');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -57,6 +59,7 @@ export function FinFramePanel() {
 
   const saveGroups = (groups: UserGroup[]) => {
     setUserGroups(groups);
+    // [JWT] PATCH /api/accounting/finframe
     localStorage.setItem('erp_group_finframe_l4_groups', JSON.stringify(groups));
     // [JWT] Replace with sync to /api/group/finecore/account-groups
   };
@@ -296,7 +299,7 @@ export function FinFramePanel() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
@@ -367,7 +370,7 @@ export function FinFramePanel() {
                 const isL1Open = expandedL1.has(l1.code);
                 const totalL3 = l2s.reduce((sum, l2) => sum + L3_FINANCIAL_GROUPS.filter(g => g.l2Code === l2.code).length, 0);
                 return (
-                  <div key={l1.code}>
+                  <div data-keyboard-form key={l1.code}>
                     {/* L1 Row */}
                     <button
                       onClick={() => toggle(expandedL1, l1.code, setExpandedL1)}

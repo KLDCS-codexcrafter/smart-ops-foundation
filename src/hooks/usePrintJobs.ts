@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { PrintJob } from '@/types/print-job';
 
 const KEY = 'erp_print_jobs';
+// [JWT] GET /api/inventory/print-jobs
 const load = (): PrintJob[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function usePrintJobs() {

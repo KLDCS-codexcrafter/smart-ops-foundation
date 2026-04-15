@@ -7,10 +7,12 @@ const SUB_BRANDS_KEY = 'erp_sub_brands';
 
 export function useBrands() {
   const loadBrands = (): Brand[] => {
+    // [JWT] GET /api/inventory/brands
     try { return JSON.parse(localStorage.getItem(BRANDS_KEY) || '[]'); }
     catch { return []; }
   };
   const loadSubBrands = (): SubBrand[] => {
+    // [JWT] GET /api/inventory/brands
     try { return JSON.parse(localStorage.getItem(SUB_BRANDS_KEY) || '[]'); }
     catch { return []; }
   };
@@ -21,12 +23,12 @@ export function useBrands() {
   // [JWT] Replace with GET /api/inventory/sub-brands
 
   const saveBrands = (data: Brand[]) => {
+    // [JWT] POST /api/inventory/brands
     localStorage.setItem(BRANDS_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/brands
   };
   const saveSubBrands = (data: SubBrand[]) => {
+    // [JWT] POST /api/inventory/brands
     localStorage.setItem(SUB_BRANDS_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/sub-brands
   };
 
   const createBrand = (form: Omit<Brand, 'id' | 'created_at' | 'updated_at'>) => {

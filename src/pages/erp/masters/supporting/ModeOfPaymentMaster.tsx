@@ -18,18 +18,21 @@ const STORAGE_KEY = 'erp_group_mode_of_payment';
 
 const loadModes = (): ModeOfPayment[] => {
   try {
+    // [JWT] GET /api/masters/mode-of-payment
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
   } catch {}
   const seeded = MODE_OF_PAYMENT_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
+  // [JWT] POST /api/masters/mode-of-payment
   localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
   // [JWT] GET /api/group/masters/mode-of-payment
   return seeded;
 };
 
 const saveModes = (modes: ModeOfPayment[]) => {
+  // [JWT] POST /api/masters/mode-of-payment
   localStorage.setItem(STORAGE_KEY, JSON.stringify(modes));
   // [JWT] PUT /api/group/masters/mode-of-payment
 };

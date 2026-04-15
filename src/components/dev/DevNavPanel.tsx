@@ -25,13 +25,16 @@ export function DevNavPanel() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    // [JWT] GET /api/dev/mode
     setDevMode(localStorage.getItem(DEV_KEY) === 'true');
   }, []);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.ctrlKey && e.shiftKey && e.key === 'D') {
       e.preventDefault();
+      // [JWT] GET /api/dev/mode
       const next = localStorage.getItem(DEV_KEY) !== 'true';
+      // [JWT] PATCH /api/dev/mode
       localStorage.setItem(DEV_KEY, String(next));
       // [JWT] localStorage only — not synced to server
       setDevMode(next);

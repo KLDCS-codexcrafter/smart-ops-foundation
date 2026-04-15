@@ -68,11 +68,13 @@ const EMPTY: CityRecord = {
 
 const PAGE_SIZE = 25;
 
-export default function CityMaster() {
+export function CityMasterPanel() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<CityRecord[]>(() => {
+    // [JWT] GET /api/geography/cities
     try { return JSON.parse(localStorage.getItem('erp_geo_cities') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/cities
   const saveRecords = (d: CityRecord[]) => { localStorage.setItem('erp_geo_cities', JSON.stringify(d)); /* [JWT] PATCH /api/geography/cities/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
@@ -224,19 +226,6 @@ export default function CityMaster() {
   const selectedDistrictName = districtOptions.find(d => d.code === districtFilter)?.name ?? districtFilter;
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography', href:'/erp/foundation/geography' },
-            { label:'Cities' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-        <main className="p-6 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -396,139 +385,26 @@ export default function CityMaster() {
               </div>
             </div>
           )}
+  );
+}
+
+
+export default function CityMaster() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+          <ERPHeader
+            breadcrumbs={[
+              { label:'Operix Core', href:'/erp/dashboard' },
+              { label:'Command Center', href:'/erp/command-center' },
+              { label:'Foundation' },
+              { label:'Geography', href:'/erp/foundation/geography' },
+              { label:'Cities' },
+            showDatePicker={false} showCompany={false}
+          />
+        <main className="flex-1 p-6">
+          <CityMasterPanel />
         </main>
-
-        {/* Create/Edit Dialog */}
-        <Dialog open={formOpen} onOpenChange={setFormOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{editIndex !== null ? 'Edit City' : 'Add City'}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>City Code *</Label>
-                  <Input value={formData.code} onChange={e => setFormData(p => ({...p, code:e.target.value.toUpperCase()}))} placeholder="MH-MUM-CT001" className="font-mono" disabled={editIndex !== null} />
-                  <p className="text-xs text-muted-foreground">Auto: DISTRICT-CT001</p>
-                </div>
-                <div className="space-y-1">
-                  <Label>City Name *</Label>
-                  <Input value={formData.name} onChange={e => setFormData(p => ({...p, name:e.target.value}))} placeholder="Mumbai" />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label>Country</Label>
-                  <Select value={formData.countryCode} onValueChange={v => setFormData(p => ({...p, countryCode:v, stateCode:'', districtCode:''}))}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="IN">🇮🇳 India</SelectItem>
-                      <SelectItem value="AE">🇦🇪 UAE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label>State</Label>
-                  <Select value={formData.stateCode} onValueChange={v => setFormData(p => ({...p, stateCode:v, districtCode:''}))}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      {(formData.countryCode === 'IN' ? indianStates : formData.countryCode === 'AE' ? UAE_EMIRATES : []).map((s: any) =>
-                        <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label>District</Label>
-                  <Select value={formData.districtCode} onValueChange={v => setFormData(p => ({...p, districtCode:v}))}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      {indianDistricts.filter(d => d.stateCode === formData.stateCode).map(d =>
-                        <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Pin Code / Postal Code</Label>
-                  <Input value={formData.pinCode} onChange={e => setFormData(p => ({...p, pinCode:e.target.value}))} placeholder="400001" maxLength={6} />
-                  <p className="text-xs text-muted-foreground">e.g. 400001</p>
-                </div>
-                <div className="space-y-1">
-                  <Label>City Category *</Label>
-                  <Select value={formData.category} onValueChange={v => setFormData(p => ({...p, category:v, isMajor: v === 'metro' ? true : p.isMajor}))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {CITY_CATEGORIES.map(c => (
-                        <SelectItem key={c.value} value={c.value}>
-                          <span className="font-medium">{c.label}</span>
-                          <span className="text-xs text-muted-foreground ml-1">— {c.desc}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={formData.isMajor} onCheckedChange={v => setFormData(p => ({...p, isMajor:v}))} />
-                <Label>Is Metro / Major City</Label>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label>Latitude</Label>
-                  <Input type="number" step="0.000001" value={formData.latitude} onChange={e => setFormData(p => ({...p, latitude:e.target.value}))} placeholder="19.076090" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Longitude</Label>
-                  <Input type="number" step="0.000001" value={formData.longitude} onChange={e => setFormData(p => ({...p, longitude:e.target.value}))} placeholder="72.877426" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Coverage Radius (km)</Label>
-                  <Input type="number" value={formData.coverageRadius} onChange={e => setFormData(p => ({...p, coverageRadius:Number(e.target.value)}))} />
-                  <p className="text-xs text-muted-foreground">Vendor proximity</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Timezone</Label>
-                  <Input value={formData.timezone} onChange={e => setFormData(p => ({...p, timezone:e.target.value}))} placeholder="Asia/Kolkata" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Status</Label>
-                  <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Confirmation */}
-        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete City</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete {deleteIndex !== null ? records[deleteIndex]?.name : ''}?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </SidebarProvider>
   );

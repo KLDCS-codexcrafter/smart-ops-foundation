@@ -29,8 +29,8 @@ import {
 import { Anchor, Plus, Search, Edit, Trash2, Zap, ArrowLeft, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import {
 import { onEnterNext } from '@/lib/keyboard';
+import {
   INDIA_PORTS, UAE_PORTS, type PortRecord, type PortType, type CustomsZone,
 } from '@/data/geo-seed-data';
 
@@ -62,11 +62,13 @@ const EMPTY: PortRecord = {
   status:'active',
 };
 
-export default function PortMaster() {
+export function PortMasterPanel() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<PortRecord[]>(() => {
+    // [JWT] GET /api/geography/ports
     try { return JSON.parse(localStorage.getItem('erp_geo_ports') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/ports
   const saveRecords = (d: PortRecord[]) => { localStorage.setItem('erp_geo_ports', JSON.stringify(d)); /* [JWT] PATCH /api/geography/ports/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
@@ -140,19 +142,6 @@ export default function PortMaster() {
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography', href:'/erp/foundation/geography' },
-            { label:'Ports' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-        <main className="p-6 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -276,150 +265,26 @@ export default function PortMaster() {
               </TableBody>
             </Table>
           </div>
+  );
+}
+
+
+export default function PortMaster() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+          <ERPHeader
+            breadcrumbs={[
+              { label:'Operix Core', href:'/erp/dashboard' },
+              { label:'Command Center', href:'/erp/command-center' },
+              { label:'Foundation' },
+              { label:'Geography', href:'/erp/foundation/geography' },
+              { label:'Ports' },
+            showDatePicker={false} showCompany={false}
+          />
+        <main className="flex-1 p-6">
+          <PortMasterPanel />
         </main>
-
-        {/* Preview Dialog */}
-        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogContent className="sm:max-w-2xl max-h-[70vh] overflow-hidden flex flex-col">
-            <DialogHeader>
-              <DialogTitle>
-                Preview: {previewTarget === 'india' ? '21 Indian Ports' : '8 UAE Ports'}
-              </DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
-              {(previewTarget === 'india' ? INDIA_PORTS : UAE_PORTS).map(p => (
-                <div key={p.portCode} className="flex items-center gap-2 p-2 rounded border text-sm">
-                  <span className="font-mono text-xs w-16">{p.portCode}</span>
-                  <Badge variant="outline" className={cn('text-xs', PORT_TYPE_COLORS[p.portType])}>{PORT_TYPE_LABELS[p.portType]}</Badge>
-                  <span className="flex-1 truncate">{p.portName}</span>
-                </div>
-              ))}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setPreviewOpen(false)}>Cancel</Button>
-              <Button onClick={() => previewTarget && seedPorts(previewTarget)}>Confirm & Seed</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Create/Edit Dialog */}
-        <Dialog open={formOpen} onOpenChange={setFormOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{editIndex !== null ? 'Edit Port' : 'Add Port'}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Port Code *</Label>
-                  <Input value={formData.portCode} onChange={e => setFormData(p => ({...p, portCode:e.target.value.toUpperCase()}))} placeholder="INJNP" className="font-mono" disabled={editIndex !== null} />
-                </div>
-                <div className="space-y-1">
-                  <Label>Port Type *</Label>
-                  <Select value={formData.portType} onValueChange={v => setFormData(p => ({...p, portType:v as PortType}))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {PORT_TYPES.map(t => <SelectItem key={t} value={t}>{PORT_TYPE_LABELS[t]}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Port Name *</Label>
-                <Input value={formData.portName} onChange={e => setFormData(p => ({...p, portName:e.target.value}))} placeholder="Jawaharlal Nehru Port" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Country</Label>
-                  <Input value={formData.countryCode} onChange={e => setFormData(p => ({...p, countryCode:e.target.value.toUpperCase()}))} placeholder="IN" className="font-mono" />
-                </div>
-                <div className="space-y-1">
-                  <Label>State/Emirate</Label>
-                  <Input value={formData.stateCode} onChange={e => setFormData(p => ({...p, stateCode:e.target.value.toUpperCase()}))} placeholder="MH" className="font-mono" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Nearest City</Label>
-                  <Input value={formData.nearestCity} onChange={e => setFormData(p => ({...p, nearestCity:e.target.value}))} placeholder="Mumbai" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Operator</Label>
-                  <Input value={formData.operator} onChange={e => setFormData(p => ({...p, operator:e.target.value}))} placeholder="JNPT Authority" />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label className="flex items-center gap-1">
-                  Customs Zone
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>Free Zone = VAT-free supply in UAE</TooltipContent>
-                  </Tooltip>
-                </Label>
-                <Select value={formData.customsZone} onValueChange={v => setFormData(p => ({...p, customsZone:v as CustomsZone}))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CUSTOMS_ZONES.map(z => <SelectItem key={z} value={z}>{CUSTOMS_ZONE_LABELS[z]}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>UNLOC Code</Label>
-                  <Input value={formData.unlocCode ?? ''} onChange={e => setFormData(p => ({...p, unlocCode:e.target.value.toUpperCase()}))} placeholder="e.g. INJNP, AEJEA" className="font-mono" />
-                </div>
-                {formData.portType === 'airport' && (
-                  <div className="space-y-1">
-                    <Label>IATA Code</Label>
-                    <Input value={formData.iataCode ?? ''} onChange={e => setFormData(p => ({...p, iataCode:e.target.value.toUpperCase()}))} placeholder="e.g. BOM, DXB" className="font-mono" />
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Latitude</Label>
-                  <Input type="number" step="0.0001" value={formData.latitude} onChange={e => setFormData(p => ({...p, latitude:Number(e.target.value)}))} />
-                </div>
-                <div className="space-y-1">
-                  <Label>Longitude</Label>
-                  <Input type="number" step="0.0001" value={formData.longitude} onChange={e => setFormData(p => ({...p, longitude:Number(e.target.value)}))} />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Status</Label>
-                <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete */}
-        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Port</AlertDialogTitle>
-              <AlertDialogDescription>
-                Delete {deleteIndex !== null ? records[deleteIndex]?.portName : ''}?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </SidebarProvider>
   );

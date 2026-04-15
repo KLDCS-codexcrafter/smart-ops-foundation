@@ -23,6 +23,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 /* ── types ─────────────────────────────────────── */
 type NotifChannel = "email" | "in_app" | "sms";
@@ -234,7 +235,7 @@ const Notifications = () => {
           {filtered.map((n) => {
             const TypeIcon = TYPE_CONFIG[n.type].icon;
             return (
-              <div
+              <div data-keyboard-form
                 key={n.id}
                 className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 transition-colors cursor-pointer"
                 onClick={() => openDetail(n)}

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 const TABS = [
   { key: "general", label: "General", icon: Globe },
@@ -329,16 +330,16 @@ const TowerSettings = () => {
 
       <PolicyGroup label="Bank Account for Receipt">
         <Field label="Account Name">
-          <Input value="4DSmartOps Pvt Ltd" readOnly />
+          <Input value="4DSmartOps Pvt Ltd" readOnly  onKeyDown={onEnterNext} />
         </Field>
         <Field label="Account Number">
-          <Input className="font-mono" value="••••••4521" readOnly />
+          <Input className="font-mono" value="••••••4521" readOnly  onKeyDown={onEnterNext} />
         </Field>
         <Field label="IFSC Code">
-          <Input className="font-mono uppercase" value="HDFC0001234" readOnly />
+          <Input className="font-mono uppercase" value="HDFC0001234" readOnly  onKeyDown={onEnterNext} />
         </Field>
         <Field label="Bank Name">
-          <Input value="HDFC Bank" readOnly />
+          <Input value="HDFC Bank" readOnly  onKeyDown={onEnterNext} />
         </Field>
       </PolicyGroup>
 

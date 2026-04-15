@@ -19,6 +19,7 @@ import { onEnterNext } from '@/lib/keyboard';
 const KEY = 'erp_asset_tags';
 const CTKEY = 'erp_custody_transfers';
 const IKEY = 'erp_inventory_items';
+// [JWT] GET /api/inventory/asset-tags
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const DEPTS = ['Administration', 'Finance', 'HR', 'IT', 'Operations', 'Production', 'QC', 'R&D', 'Sales', 'Warehouse', 'Other'];
@@ -46,6 +47,7 @@ export function AssetTagManagerPanel() {
   const [xferForm, setXferForm] = useState({ to_department: '', to_custodian: '', authorized_by: '', notes: '' });
   const [itemSearch, setItemSearch] = useState('');
 
+  // [JWT] POST /api/inventory/asset-tags
   const sv = (d: AssetTag[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/labels/asset-tags */ };
 
   const filtered = useMemo(() => tags.filter(t => {
@@ -106,6 +108,7 @@ export function AssetTagManagerPanel() {
       notes: xferForm.notes || undefined, created_at: now
     };
     const existCT = ls<CustodyTransfer>(CTKEY);
+    // [JWT] POST /api/inventory/asset-tags
     localStorage.setItem(CTKEY, JSON.stringify([ct, ...existCT]));
     // [JWT] POST /api/labels/asset-tags/:id/transfer
     const u = tags.map(x => x.id === xferTag.id ?

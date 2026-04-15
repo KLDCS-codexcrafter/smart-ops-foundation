@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 
 const KEY = 'erp_inventory_items';
+// [JWT] GET /api/inventory/items
 const load = (): InventoryItem[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useInventoryItems() {

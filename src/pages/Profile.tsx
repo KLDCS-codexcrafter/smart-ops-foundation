@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Mock user data — [JWT] replace with useProfile hook ──────────────
 const MOCK_USER = {
@@ -56,7 +57,7 @@ type TabKey = typeof TABS[number]['key'];
 function LanguageGrid() {
   const { language, setLanguage, languages } = useLanguage();
   return (
-    <div>
+    <div data-keyboard-form>
       <p className='text-sm font-semibold text-foreground mb-1'>Display Language</p>
       <p className='text-xs text-muted-foreground mb-4'>
         Choose the language for the 4DSmartOps interface. English is fully available.
@@ -101,7 +102,7 @@ function LanguageGrid() {
 // ── Section card wrapper ──────────────────────────────────────────────
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className='bg-card border border-border rounded-xl p-5'>
+    <div data-keyboard-form className='bg-card border border-border rounded-xl p-5'>
       <p className='text-sm font-semibold text-foreground mb-4'>{title}</p>
       {children}
     </div>
@@ -280,7 +281,7 @@ export default function Profile() {
                 </FieldRow>
                 <FieldRow label='Email'>
                   {/* [JWT] Email change needs OTP verification flow */}
-                  <Input value={MOCK_USER.email} readOnly className='opacity-60 cursor-not-allowed' />
+                  <Input value={MOCK_USER.email} readOnly className='opacity-60 cursor-not-allowed'  onKeyDown={onEnterNext} />
                   <p className='text-[10px] text-muted-foreground mt-1'>Contact admin to change email</p>
                 </FieldRow>
                 <FieldRow label='Mobile'>
@@ -292,10 +293,10 @@ export default function Profile() {
               </div>
               <Separator className='my-4' />
               <FieldRow label='Company'>
-                <Input value={MOCK_USER.company} readOnly className='opacity-60 cursor-not-allowed' />
+                <Input value={MOCK_USER.company} readOnly className='opacity-60 cursor-not-allowed'  onKeyDown={onEnterNext} />
               </FieldRow>
               <FieldRow label='Role'>
-                <Input value={MOCK_USER.role} readOnly className='opacity-60 cursor-not-allowed' />
+                <Input value={MOCK_USER.role} readOnly className='opacity-60 cursor-not-allowed'  onKeyDown={onEnterNext} />
                 <p className='text-[10px] text-muted-foreground mt-1'>Assigned by administrator</p>
               </FieldRow>
               <Button

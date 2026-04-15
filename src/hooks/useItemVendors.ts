@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { ItemVendor } from '@/types/item-vendor';
 
 const KEY = 'erp_item_vendors';
+// [JWT] GET /api/inventory/item-vendors
 const load = (): ItemVendor[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useItemVendors() {

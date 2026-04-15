@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { ItemQCParam } from '@/types/item-qc-param';
 
 const KEY = 'erp_item_qc_params';
+// [JWT] GET /api/inventory/item-qc-params
 const load = (): ItemQCParam[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useItemQCParams() {

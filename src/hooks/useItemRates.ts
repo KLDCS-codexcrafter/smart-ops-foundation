@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
 
 const KEY = 'erp_item_rate_history';
+// [JWT] GET /api/inventory/item-rates
 const load = (): ItemRateHistory[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useItemRates() {

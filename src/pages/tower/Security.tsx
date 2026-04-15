@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Section / Panel definitions ──────────────────────
 interface PanelDef {
@@ -144,7 +145,7 @@ export default function Security() {
             {filteredSections.map(section => {
               const collapsed = collapsedSections.has(section.id);
               return (
-                <div key={section.id}>
+                <div data-keyboard-form key={section.id}>
                   <button
                     onClick={() => toggleSection(section.id)}
                     className="flex items-center gap-2 w-full px-2 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/50 transition-colors"
@@ -201,7 +202,7 @@ export default function Security() {
 // ── Coming Soon Placeholder ──────────────────────────
 function ComingSoonPanel({ name }: { name: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+    <div data-keyboard-form className="flex flex-col items-center justify-center h-full min-h-[400px]">
       <Lock className="h-12 w-12 text-slate-600 mb-4" />
       <h2 className="text-xl font-bold text-slate-400 mb-2">{name}</h2>
       <span className="text-xs bg-slate-700 text-slate-400 px-3 py-1 rounded-full mb-3">Under Development</span>
@@ -455,7 +456,7 @@ function GeoFencingPanel() {
           ))}
         </div>
         <div className="flex gap-2 mt-4">
-          <Input placeholder="Add country..." className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+          <Input placeholder="Add country..." className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"  onKeyDown={onEnterNext} />
           <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white h-8"><Plus className="h-3 w-3" /></Button>
         </div>
       </div>
@@ -597,8 +598,8 @@ function IPWhitelistPanel() {
           </table>
         </div>
         <div className="flex gap-2 mt-4">
-          <Input placeholder="e.g. 192.168.1.0/24" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white font-mono placeholder:text-slate-500" />
-          <Input placeholder="e.g. Office Network" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+          <Input placeholder="e.g. 192.168.1.0/24" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white font-mono placeholder:text-slate-500"  onKeyDown={onEnterNext} />
+          <Input placeholder="e.g. Office Network" className="flex-1 h-8 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"  onKeyDown={onEnterNext} />
           <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white h-8">Add</Button>
         </div>
       </div>
@@ -656,7 +657,7 @@ function AuditLogPanel() {
       <div className="flex gap-2 mb-2">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
-          <Input placeholder="Search audit logs..." className="pl-8 h-9 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
+          <Input placeholder="Search audit logs..." className="pl-8 h-9 text-xs bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"  onKeyDown={onEnterNext} />
         </div>
         <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 h-9">
           <Download className="h-3 w-3 mr-1" /> Export

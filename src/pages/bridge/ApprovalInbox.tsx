@@ -246,7 +246,7 @@ export default function ApprovalInbox() {
               const isHighRisk = req.riskLevel === "high" || req.riskLevel === "critical";
 
               return (
-                <div
+                <div data-keyboard-form
                   key={req.id}
                   className={cn(
                     "bg-card border border-border rounded-xl p-5 cursor-pointer transition-colors hover:border-primary/30",

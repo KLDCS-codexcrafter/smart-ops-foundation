@@ -60,6 +60,7 @@ const IKEY = 'erp_inventory_items', PKEY = 'erp_item_packings', VKEY = 'erp_item
 const QKEY = 'erp_item_qc_params', PCKEY = 'erp_item_party_codes', OSKEY = 'erp_item_opening_stock';
 const SGKEY = 'erp_stock_groups', BKEY = 'erp_brands', SBKEY = 'erp_sub_brands';
 const CKEY = 'erp_classifications', UKEY = 'erp_uom', GKEY = 'erp_godowns';
+// [JWT] GET /api/inventory/items
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 /* ─── BLANK form ─── */
@@ -207,6 +208,7 @@ export function ItemCraftPanel() {
   const godowns = useState(() => ls<any>(GKEY))[0];
   const groupParams = useState(() => ls<any>('erp_parametric_templates'))[0];
 
+  // [JWT] POST /api/inventory/items
   const sv  = (d: InventoryItem[]) => { localStorage.setItem(IKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items */ };
   const svR = <T,>(k: string, d: T[]) => { localStorage.setItem(k, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items/:id/related */ };
 
@@ -291,7 +293,7 @@ export function ItemCraftPanel() {
             <TableRow><TableCell colSpan={9} className="text-center py-16 text-muted-foreground">
               <Package className="h-10 w-10 mx-auto mb-3 opacity-20" />
               <p className="text-sm font-semibold text-foreground mb-1">No items yet</p>
- <Button data-primary size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>Item</Button>
+ <Button data-primary size="sm" className="mt-2" onClick={openCreate}><Plus className="h-4 w-4 mr-1" />Add Item</Button>
             </TableCell></TableRow>
           ) : filtered.map(item => (
             <TableRow key={item.id} className="group">

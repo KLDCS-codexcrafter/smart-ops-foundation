@@ -5,13 +5,14 @@ import type { SerialNumber, SerialFormData } from '@/types/serial-number';
 const STORAGE_KEY = 'erp_serial_numbers';
 
 function loadSerials(): SerialNumber[] {
+  // [JWT] GET /api/inventory/serial-numbers
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
   catch { return []; }
 }
 
 function saveSerials(serials: SerialNumber[]): void {
+  // [JWT] POST /api/inventory/serial-numbers
   localStorage.setItem(STORAGE_KEY, JSON.stringify(serials));
-  // [JWT] Replace with POST/PUT/DELETE /api/inventory/serial-numbers
 }
 
 export function useSerialNumbers() {

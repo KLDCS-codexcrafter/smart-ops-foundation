@@ -28,6 +28,7 @@ const TYPES: { value: UOMType; label: string }[] = [
   { value: 'alternate', label: 'Alternate' },
 ];
 const KEY = 'erp_uom';
+// [JWT] GET /api/inventory/uom
 const load = (): UnitOfMeasure[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 const BLK = { name: '', symbol: '', code: '', short_name: '', category: 'quantity' as UOMCategory, uom_type: 'simple' as UOMType, decimal_precision: 2, uqc_code: '', internal_notes: '' };
 
@@ -39,6 +40,7 @@ export function MeasureXPanel() {
   const [edit, setEdit] = useState<UnitOfMeasure | null>(null);
   const [form, setForm] = useState(BLK);
 
+  // [JWT] POST /api/inventory/uom
   const sv = (d: UnitOfMeasure[]) => { localStorage.setItem(KEY, JSON.stringify(d)); // [JWT] CRUD /api/inventory/uom
   };
   const fil = useMemo(() => units.filter(u => (catF === 'all' || u.category === catF) && (u.name.toLowerCase().includes(search.toLowerCase()) || u.symbol.toLowerCase().includes(search.toLowerCase()))), [units, search, catF]);

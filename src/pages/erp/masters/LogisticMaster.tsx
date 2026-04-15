@@ -110,6 +110,7 @@ const STORAGE_KEY = 'erp_group_logistic_master';
 
 const loadLogistics = (): LogisticMasterDefinition[] => {
   try {
+    // [JWT] GET /api/masters/logistics
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
   } catch {}
@@ -117,6 +118,7 @@ const loadLogistics = (): LogisticMasterDefinition[] => {
 };
 
 const saveLogistics = (items: LogisticMasterDefinition[]) => {
+  // [JWT] POST /api/masters/logistics
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   // [JWT] PUT /api/group/masters/logistic
 };
@@ -206,10 +208,12 @@ export function LogisticMasterPanel() {
   const [justSaved, setJustSaved] = useState(false);
 
   const loadModeOptions = () => {
+    // [JWT] GET /api/masters/logistics
     try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
     catch { return []; }
   };
   const loadTermsOptions = () => {
+    // [JWT] GET /api/masters/logistics
     try { return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]'); }
     catch { return []; }
   };

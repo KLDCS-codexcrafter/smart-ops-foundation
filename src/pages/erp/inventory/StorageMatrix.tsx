@@ -87,7 +87,7 @@ export function StorageMatrixPanel(){
     <TableBody>
     {fil.length===0?(<TableRow><TableCell colSpan={8} className='text-center py-16 text-muted-foreground'>
     <Warehouse className='h-10 w-10 mx-auto mb-3 opacity-20'/>
-    <p className='text-sm font-semibold mb-1 text-foreground'>No godowns<Button data-primary size='sm' className='mt-2' onClick={openC}><Plus className='h-4 w-4 mr-1'/>Add Godown</Button>down</Button>
+    <p className='text-sm font-semibold mb-1 text-foreground'>No godowns</p><Button data-primary size='sm' className='mt-2' onClick={openC}><Plus className='h-4 w-4 mr-1'/>Add Godown</Button>
     </TableCell></TableRow>):fil.map(g=>(
     <TableRow key={g.id} className='group'>
     <TableCell><Badge variant='secondary' className='font-mono text-xs'>{g.code}</Badge></TableCell>

@@ -6,6 +6,7 @@ const STORAGE_KEY = 'erp_stock_groups';
 
 export function useStockGroups() {
   const load = (): StockGroup[] => {
+    // [JWT] GET /api/inventory/stock-groups
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
     catch { return []; }
   };
@@ -13,8 +14,8 @@ export function useStockGroups() {
   // [JWT] Replace with GET /api/inventory/stock-groups
 
   const save = (data: StockGroup[]) => {
+    // [JWT] POST /api/inventory/stock-groups
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/stock-groups
   };
 
   const createGroup = (form: StockGroupFormData) => {

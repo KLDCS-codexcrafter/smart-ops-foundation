@@ -16,6 +16,7 @@ import type { ItemTemplateA3 } from '@/types/item-template-a3';
 import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_item_templates_a3';
+// [JWT] GET /api/inventory/item-templates
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const INDUSTRIES = ['All', 'Manufacturing', 'Pharma', 'Electronics', 'FMCG', 'Steel & Metals', 'Services'];
@@ -64,6 +65,7 @@ const GST_RATES = [0, 5, 12, 18, 28];
 function initTemplates(): ItemTemplateA3[] {
   const stored = ls<ItemTemplateA3>(KEY);
   if (stored.length > 0) return stored;
+  // [JWT] POST /api/inventory/item-templates
   localStorage.setItem(KEY, JSON.stringify(SYSTEM_TEMPLATES)); /* [JWT] SEED /api/inventory/item-templates */
   return SYSTEM_TEMPLATES;
 }
@@ -77,6 +79,7 @@ export function ItemTemplatesPanel() {
   const [edit, setEdit] = useState<ItemTemplateA3 | null>(null);
   const [form, setForm] = useState<typeof BLANK>(BLANK);
 
+  // [JWT] POST /api/inventory/item-templates
   const sv = (d: ItemTemplateA3[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/item-templates */ };
 
   const filtered = useMemo(() => templates.filter(t => {

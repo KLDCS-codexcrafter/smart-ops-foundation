@@ -415,7 +415,7 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
 
       {/* ── HEADER ──────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

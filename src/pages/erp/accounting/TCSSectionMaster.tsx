@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Search } from 'lucide-react';
 import { TCS_SECTIONS } from '@/data/compliance-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 function formatAmount(val: number | null): string {
   if (val === null) return '—';
@@ -30,7 +31,7 @@ export function TCSSectionMasterPanel() {
     ), [search]);
 
   return (
-    <div className="space-y-6">
+    <div data-keyboard-form className="space-y-6">
       <div>
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="text-2xl font-bold text-foreground">TCS Section Reference</h1>

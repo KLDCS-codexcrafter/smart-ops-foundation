@@ -14,6 +14,7 @@ const STORAGE_KEY = "4ds-theme";
 
 function getInitialTheme(): Theme {
   try {
+    // [JWT] GET /api/user/theme
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "dark" || saved === "light") return saved;
   } catch { /* ignore */ }
@@ -31,6 +32,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.remove("dark");
     }
     try {
+      // [JWT] PATCH /api/user/theme
       localStorage.setItem(STORAGE_KEY, theme);
     } catch { /* ignore */ }
   }, [theme]);

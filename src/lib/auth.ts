@@ -34,6 +34,7 @@ export async function mockLogin(email: string, _password: string): Promise<{ use
 export async function mockGetCurrentUser(): Promise<User | null> {
   return new Promise((resolve) => {
     setTimeout(() => {
+      // [JWT] GET /api/auth/token
       const token = localStorage.getItem("4ds_token");
       resolve(token ? MOCK_USER : null);
     }, 500);
@@ -44,6 +45,7 @@ export async function mockGetCurrentUser(): Promise<User | null> {
 export async function mockLogout(): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
+      // [JWT] DELETE /api/auth/token
       localStorage.removeItem("4ds_token");
       resolve();
     }, 300);

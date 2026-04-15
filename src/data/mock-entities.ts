@@ -18,6 +18,7 @@ export const getPrimaryEntity = () =>
 // Dynamic entity loader — reads from localStorage, falls back to hardcoded mock
 export const loadEntities = (): MockEntity[] => {
   try {
+    // [JWT] GET /api/foundation/entities
     const raw = localStorage.getItem('erp_group_entities');
     if (raw) {
       const stored = JSON.parse(raw);

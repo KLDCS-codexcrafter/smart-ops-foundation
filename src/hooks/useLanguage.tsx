@@ -56,12 +56,14 @@ const Ctx = createContext<LanguageCtx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLang] = useState<SupportedLanguage>(() => {
+    // [JWT] GET /api/entity/storage/:key
     const saved = localStorage.getItem('app_language');
     return (saved && VALID.has(saved as SupportedLanguage)) ? saved as SupportedLanguage : 'en';
   });
 
   const setLanguage = useCallback((lang: SupportedLanguage) => {
     setLang(lang);
+    // [JWT] POST /api/entity/storage/:key
     localStorage.setItem('app_language', lang);
   }, []);
 

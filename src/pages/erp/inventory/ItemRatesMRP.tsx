@@ -111,6 +111,7 @@ export function ItemRatesPanel() {
   const companySettings: any[] = ls(CSKEY);
   const mrpTax = companySettings?.[0]?.mrp_tax_treatment || 'inclusive';
 
+  // [JWT] POST /api/inventory/item-rates
   const saveItems = (d: InventoryItem[]) => { localStorage.setItem(IKEY, JSON.stringify(d)); /* [JWT] PATCH /api/inventory/items/bulk-rates */ };
   const saveHistory = (d: ItemRateHistory[]) => { localStorage.setItem(RHKEY, JSON.stringify(d)); /* [JWT] POST /api/inventory/item-rates/history */ };
 

@@ -4,13 +4,16 @@ import type { PriceList, PriceListItem } from '@/types/price-list';
 
 const KEY_LISTS = 'erp_price_lists';
 const KEY_ITEMS = 'erp_price_list_items';
+// [JWT] GET /api/inventory/price-lists
 const loadLists = (): PriceList[] => { try { return JSON.parse(localStorage.getItem(KEY_LISTS) || '[]'); } catch { return []; } };
+// [JWT] GET /api/inventory/price-lists
 const loadItems = (): PriceListItem[] => { try { return JSON.parse(localStorage.getItem(KEY_ITEMS) || '[]'); } catch { return []; } };
 
 export function usePriceLists() {
   const [lists, setLists] = useState<PriceList[]>(loadLists());
   const [items, setItems] = useState<PriceListItem[]>(loadItems());
 
+  // [JWT] POST /api/inventory/price-lists
   const saveLists = (d: PriceList[]) => { localStorage.setItem(KEY_LISTS, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/price-lists */ };
   const saveItems = (d: PriceListItem[]) => { localStorage.setItem(KEY_ITEMS, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/price-lists/items */ };
 

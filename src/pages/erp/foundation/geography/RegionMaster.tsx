@@ -40,11 +40,13 @@ const EMPTY: RegionRecord = {
   code:'', name:'', countryCode:'', states:[], status:'active',
 };
 
-export default function RegionMaster() {
+export function RegionMasterPanel() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<RegionRecord[]>(() => {
+    // [JWT] GET /api/geography/regions
     try { return JSON.parse(localStorage.getItem('erp_geo_regions') || '[]'); } catch { return []; }
   });
+  // [JWT] POST /api/geography/regions
   const saveRecords = (d: RegionRecord[]) => { localStorage.setItem('erp_geo_regions', JSON.stringify(d)); /* [JWT] PATCH /api/geography/regions/bulk */ };
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -133,19 +135,6 @@ export default function RegionMaster() {
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography', href:'/erp/foundation/geography' },
-            { label:'Regions' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-        <main className="p-6 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -239,104 +228,26 @@ export default function RegionMaster() {
               </TableBody>
             </Table>
           </div>
+  );
+}
+
+
+export default function RegionMaster() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+          <ERPHeader
+            breadcrumbs={[
+              { label:'Operix Core', href:'/erp/dashboard' },
+              { label:'Command Center', href:'/erp/command-center' },
+              { label:'Foundation' },
+              { label:'Geography', href:'/erp/foundation/geography' },
+              { label:'Regions' },
+            showDatePicker={false} showCompany={false}
+          />
+        <main className="flex-1 p-6">
+          <RegionMasterPanel />
         </main>
-
-        {/* Create/Edit Dialog */}
-        <Dialog open={formOpen} onOpenChange={setFormOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{editIndex !== null ? 'Edit Region' : 'Add Region'}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Region Code *</Label>
-                  <Input value={formData.code} onChange={e => setFormData(p => ({...p, code:e.target.value.toUpperCase()}))} placeholder="NORTH-IN" className="font-mono" disabled={editIndex !== null} />
-                </div>
-                <div className="space-y-1">
-                  <Label>Country *</Label>
-                  <Select value={formData.countryCode} onValueChange={v => setFormData(p => ({...p, countryCode:v, states:[]}))}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="IN">🇮🇳 India</SelectItem>
-                      <SelectItem value="AE">🇦🇪 UAE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Region Name *</Label>
-                <Input value={formData.name} onChange={e => setFormData(p => ({...p, name:e.target.value}))} placeholder="North India" />
-              </div>
-
-              {/* Member States multi-select */}
-              {formData.countryCode && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Member States</Label>
-                    <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={selectAllStates}>
-                      Select All States for {formData.countryCode === 'IN' ? 'India' : 'UAE'}
-                    </Button>
-                  </div>
-                  {/* Selected chips */}
-                  {formData.states.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {formData.states.map(sc => (
-                        <Badge key={sc} variant="outline" className="text-xs gap-1 bg-primary/10 text-primary border-primary/20">
-                          {sc}
-                          <button onClick={() => toggleState(sc)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  <div className="max-h-40 overflow-y-auto border rounded-md p-2 space-y-1">
-                    {stateOptionsForForm.map(s => (
-                      <label key={s.code} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-accent/50 p-1 rounded">
-                        <Checkbox
-                          checked={formData.states.includes(s.code)}
-                          onCheckedChange={() => toggleState(s.code)}
-                        />
-                        <span className="font-mono text-xs w-12">{s.code}</span>
-                        <span>{s.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <Label>Status</Label>
-                <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete */}
-        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Region</AlertDialogTitle>
-              <AlertDialogDescription>
-                Delete {deleteIndex !== null ? records[deleteIndex]?.name : ''}?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </SidebarProvider>
   );

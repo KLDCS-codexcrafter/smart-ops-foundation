@@ -73,10 +73,12 @@ interface AnyLedgerDefinition {
 // ── 2.2 Entity Registry ─────────────────────────────────────────────────────
 
 export const registerEntity = (entity: MockEntity): void => {
+  // [JWT] GET /api/entities/setup/:entityId
   const raw = localStorage.getItem('erp_group_entities');
   const all: MockEntity[] = raw ? JSON.parse(raw) : [];
   if (!all.find(e => e.id === entity.id)) {
     all.push(entity);
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem('erp_group_entities', JSON.stringify(all));
     // [JWT] POST /api/foundation/entities/register
   }
@@ -86,6 +88,7 @@ export const registerEntity = (entity: MockEntity): void => {
 
 export const loadEntities = (): MockEntity[] => {
   try {
+    // [JWT] GET /api/entities/setup/:entityId
     const raw = localStorage.getItem('erp_group_entities');
     if (raw) {
       const stored = JSON.parse(raw);
@@ -179,6 +182,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
   }
 
   // Deduplicate against existing
+  // [JWT] GET /api/entities/setup/:entityId
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const existing: AnyLedgerDefinition[] = raw ? JSON.parse(raw) : [];
   const existingNames = new Set(existing.map(d => d.name.toLowerCase()));
@@ -188,6 +192,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     .map(l => ({ ...l, id: crypto.randomUUID() } as AnyLedgerDefinition));
 
   const updated = [...existing, ...toCreate];
+  // [JWT] POST /api/entities/setup/:entityId
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(updated));
   // [JWT] POST /api/group/finecore/ledger-definitions/bulk
 
@@ -196,6 +201,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
   toCreate.forEach(def => {
     entities.forEach(entity => {
       const key = `erp_entity_${entity.id}_ledger_instances`;
+      // [JWT] GET /api/entities/setup/:entityId
       const inst = JSON.parse(localStorage.getItem(key) || '[]');
       if (!inst.find((i: any) => i.ledgerDefinitionId === def.id)) {
         inst.push({
@@ -211,6 +217,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
           displayNumericCode: `${entity.shortCode}/${def.numericCode ?? def.code}`,
           currentCustodian: null,
         });
+        // [JWT] POST /api/entities/setup/:entityId
         localStorage.setItem(key, JSON.stringify(inst));
       }
     });
@@ -227,6 +234,7 @@ const loadIndustryPack = (businessActivity: string): number => {
     : ['Services', 'IT Services', 'Consulting'].includes(businessActivity) ? 'services'
     : null;
 
+  // [JWT] GET /api/entities/setup/:entityId
   const raw = localStorage.getItem('erp_group_finframe_l4_groups');
   const existing = raw ? JSON.parse(raw) : [];
   const existingNames = new Set(existing.map((g: any) => g.name.toLowerCase()));
@@ -258,6 +266,7 @@ const loadIndustryPack = (businessActivity: string): number => {
     });
 
   if (toCreate.length > 0) {
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem('erp_group_finframe_l4_groups',
       JSON.stringify([...existing, ...toCreate]));
     // [JWT] POST /api/group/finecore/account-groups/bulk
@@ -270,6 +279,7 @@ const loadIndustryPack = (businessActivity: string): number => {
 const createBDLedgers = (opts: SetupOptions): number => {
   if (opts.siblingEntities.length === 0) return 0;
 
+  // [JWT] GET /api/entities/setup/:entityId
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const existing: AnyLedgerDefinition[] = raw ? JSON.parse(raw) : [];
   const existingNames = new Set(existing.map(d => d.name.toLowerCase()));
@@ -301,6 +311,7 @@ const createBDLedgers = (opts: SetupOptions): number => {
 
     // In THE SIBLING's books: create a ledger for this new entity
     const nameInSibling = `${opts.entityName} A/c`;
+    // [JWT] GET /api/entities/setup/:entityId
     const sibRaw = localStorage.getItem('erp_group_ledger_definitions');
     const sibExisting: AnyLedgerDefinition[] = sibRaw ? JSON.parse(sibRaw) : [];
     const sibNames = new Set(sibExisting.map(d => d.name.toLowerCase()));
@@ -323,8 +334,10 @@ const createBDLedgers = (opts: SetupOptions): number => {
   });
 
   if (toCreate.length > 0) {
+    // [JWT] GET /api/entities/setup/:entityId
     const allRaw = localStorage.getItem('erp_group_ledger_definitions');
     const all = allRaw ? JSON.parse(allRaw) : [];
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem('erp_group_ledger_definitions',
       JSON.stringify([...all, ...toCreate]));
     // [JWT] POST /api/group/finecore/ledger-definitions/bulk
@@ -380,6 +393,7 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
 // ── 2.8 createDefaultBusinessUnit ──────────────────────────────────────────
 export const createDefaultBusinessUnit = (entityId: string, entityName: string, entityShortCode: string): void => {
   const BU_KEY = 'erp_group_business_unit_master';
+  // [JWT] GET /api/entities/setup/:entityId
   const existing: any[] = JSON.parse(localStorage.getItem(BU_KEY) || '[]');
   // Don't create if already exists for this entity
   if (existing.some(u => u.parentEntityId === entityId && u.unitType === 'branch_office')) return;
@@ -405,6 +419,7 @@ export const createDefaultBusinessUnit = (entityId: string, entityName: string, 
     reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
   };
   existing.push(defaultUnit);
+  // [JWT] POST /api/entities/setup/:entityId
   localStorage.setItem(BU_KEY, JSON.stringify(existing));
   // [JWT] POST /api/group/masters/business-units
 };
@@ -412,12 +427,14 @@ export const createDefaultBusinessUnit = (entityId: string, entityName: string, 
 // ── 2.9 createDefaultModeOfPayment ─────────────────────────────────────────
 const createDefaultModeOfPayment = (): number => {
   const key = 'erp_group_mode_of_payment';
+  // [JWT] GET /api/entities/setup/:entityId
   const existing: ModeOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
   const toCreate = MODE_OF_PAYMENT_SEED
     .filter(r => !existingCodes.has(r.code))
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
     // [JWT] POST /api/group/masters/mode-of-payment/bulk
   }
@@ -427,12 +444,14 @@ const createDefaultModeOfPayment = (): number => {
 // ── 2.9 createDefaultTermsOfPayment ────────────────────────────────────────
 const createDefaultTermsOfPayment = (): number => {
   const key = 'erp_group_terms_of_payment';
+  // [JWT] GET /api/entities/setup/:entityId
   const existing: TermsOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
   const toCreate = TERMS_OF_PAYMENT_SEED
     .filter(r => !existingCodes.has(r.code))
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
     // [JWT] POST /api/group/masters/terms-of-payment/bulk
   }
@@ -442,12 +461,14 @@ const createDefaultTermsOfPayment = (): number => {
 // ── 2.10 createDefaultTermsOfDelivery ──────────────────────────────────────
 const createDefaultTermsOfDelivery = (): number => {
   const key = 'erp_group_terms_of_delivery';
+  // [JWT] GET /api/entities/setup/:entityId
   const existing: TermsOfDelivery[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
   const toCreate = TERMS_OF_DELIVERY_SEED
     .filter(r => !existingCodes.has(r.code))
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
+    // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
     // [JWT] POST /api/group/masters/terms-of-delivery/bulk
   }
@@ -511,12 +532,14 @@ const UOM_SEED_DATA=[
 // ── 2.12 createDefaultUOMs ─────────────────────────────────────────────────
 const createDefaultUOMs=():number=>{
     const key='erp_uom';
+    // [JWT] GET /api/entities/setup/:entityId
     const existing:any[]=JSON.parse(localStorage.getItem(key)||'[]');
     const existingSymbols=new Set(existing.map((u:any)=>u.symbol));
     const toCreate=UOM_SEED_DATA.filter(u=>!existingSymbols.has(u.symbol))
         .map(u=>({...u,id:crypto.randomUUID(),status:'active',is_active:true,
             created_at:new Date().toISOString(),updated_at:new Date().toISOString()}));
     if(toCreate.length>0){
+        // [JWT] POST /api/entities/setup/:entityId
         localStorage.setItem(key,JSON.stringify([...existing,...toCreate]));
         // [JWT] POST /api/inventory/uom/bulk-seed
     }

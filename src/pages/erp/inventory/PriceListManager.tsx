@@ -77,6 +77,7 @@ export function PriceListsPanel() {
 
   const pendingMatrixCount = Object.keys(pendingPrices).length;
 
+  // [JWT] POST /api/inventory/price-lists
   const saveLists = (d: PriceList[]) => { localStorage.setItem(PLKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/price-lists */ };
   const saveListItems = (d: PriceListItem[]) => { localStorage.setItem(PLIKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/price-list-items */ };
 

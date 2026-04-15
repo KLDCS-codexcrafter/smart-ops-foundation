@@ -27,6 +27,7 @@ import { FormField } from '@/components/company/FormField';
 import { INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
@@ -116,6 +117,7 @@ interface BranchOfficeFormProps {
 
 export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormProps) {
   const navigate = useNavigate();
+  // [JWT] GET /api/foundation/branch-offices
   const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
   const [form, setForm] = useState<BranchFormData>({ ...INITIAL });
   const [saving, setSaving] = useState(false);
@@ -129,6 +131,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
 
   // Dynamic parent company picker
   const parentCompanyOptions = useMemo(() => {
+    // [JWT] GET /api/foundation/branch-offices
     const parentRecord = (() => { try { const v = localStorage.getItem('erp_parent_company'); return v ? JSON.parse(v) : null; } catch { return null; } })();
     const companies: any[] = ls('erp_companies');
     const options: {id: string; name: string}[] = [];
@@ -171,6 +174,7 @@ export default function BranchOfficeForm({ mode, entityId }: BranchOfficeFormPro
       };
       const idx = existing.findIndex((r: any) => r.id === currentId);
       if (idx >= 0) existing[idx] = record; else existing.push(record);
+      // [JWT] POST /api/foundation/branch-offices
       localStorage.setItem('erp_branch_offices', JSON.stringify(existing));
       /* [JWT] POST or PATCH /api/foundation/branch-offices */
       toast.success('Branch Office saved', { description: '[JWT] Will persist to database.' });

@@ -42,13 +42,15 @@ const EMPTY: Country = {
   capital:'', region:'', timezone:'', status:'active',
 };
 
-export default function CountryMaster() {
+export function CountryMasterPanel() {
   const navigate = useNavigate();
   const [localCountries, setLocalCountries] = useState<Country[]>(() => {
+    // [JWT] GET /api/geography/countries
     try { return JSON.parse(localStorage.getItem('erp_geo_countries') || '[]'); } catch { return []; }
   });
 
   const saveCountries = (d: Country[]) => {
+    // [JWT] POST /api/geography/countries
     localStorage.setItem('erp_geo_countries', JSON.stringify(d));
     /* [JWT] PATCH /api/geography/countries/bulk */
   };
@@ -123,19 +125,6 @@ export default function CountryMaster() {
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography', href:'/erp/foundation/geography' },
-            { label:'Countries' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-        <main className="p-6 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -229,128 +218,26 @@ export default function CountryMaster() {
               </TableBody>
             </Table>
           </div>
+  );
+}
+
+
+export default function CountryMaster() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+          <ERPHeader
+            breadcrumbs={[
+              { label:'Operix Core', href:'/erp/dashboard' },
+              { label:'Command Center', href:'/erp/command-center' },
+              { label:'Foundation' },
+              { label:'Geography', href:'/erp/foundation/geography' },
+              { label:'Countries' },
+            showDatePicker={false} showCompany={false}
+          />
+        <main className="flex-1 p-6">
+          <CountryMasterPanel />
         </main>
-
-        {/* Library Picker Dialog */}
-        <Dialog open={libraryOpen} onOpenChange={setLibraryOpen}>
-          <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
-            <DialogHeader>
-              <DialogTitle>Add Country from Library</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search 55 countries..." value={libSearch} onChange={e => setLibSearch(e.target.value)} className="pl-9" />
-            </div>
-            <div className="overflow-y-auto flex-1 -mx-6 px-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2">
-                {libraryFiltered.map(wc => (
-                  <button
-                    key={wc.code}
-                    onClick={() => pickFromLibrary(wc)}
-                    className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent/50 text-left transition-colors"
-                  >
-                    <span className="text-2xl">{wc.flag}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-foreground">{wc.name}</p>
-                      <p className="text-xs text-muted-foreground">{wc.code} · {wc.currencyCode} · {wc.dialCode}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              {libraryFiltered.length === 0 && (
-                <p className="py-8 text-center text-sm text-muted-foreground">No matching countries found.</p>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Create/Edit Dialog */}
-        <Dialog open={formOpen} onOpenChange={setFormOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{editIndex !== null ? 'Edit Country' : 'Add Country'}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="space-y-3">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label>Code *</Label>
-                  <Input value={formData.code} onChange={e => setFormData(p => ({...p, code:e.target.value.toUpperCase().slice(0,3)}))} placeholder="IN" className="font-mono" maxLength={3} disabled={editIndex !== null} />
-                </div>
-                <div className="space-y-1">
-                  <Label>Flag</Label>
-                  <Input value={formData.flag} onChange={e => setFormData(p => ({...p, flag:e.target.value}))} placeholder="🇮🇳" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Dial Code</Label>
-                  <Input value={formData.dialCode} onChange={e => setFormData(p => ({...p, dialCode:e.target.value}))} placeholder="+91" />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Name *</Label>
-                <Input value={formData.name} onChange={e => setFormData(p => ({...p, name:e.target.value}))} placeholder="India" />
-              </div>
-              <div className="space-y-1">
-                <Label>Capital</Label>
-                <Input value={formData.capital} onChange={e => setFormData(p => ({...p, capital:e.target.value}))} placeholder="New Delhi" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Currency Code</Label>
-                  <Input value={formData.currencyCode} onChange={e => setFormData(p => ({...p, currencyCode:e.target.value.toUpperCase()}))} placeholder="INR" className="font-mono" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Currency Symbol</Label>
-                  <Input value={formData.currencySymbol} onChange={e => setFormData(p => ({...p, currencySymbol:e.target.value}))} placeholder="₹" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Region</Label>
-                  <Select value={formData.region} onValueChange={v => setFormData(p => ({...p, region:v}))}>
-                    <SelectTrigger><SelectValue placeholder="Select region" /></SelectTrigger>
-                    <SelectContent>
-                      {COUNTRY_REGIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label>Status</Label>
-                  <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>Timezone</Label>
-                <Input value={formData.timezone} onChange={e => setFormData(p => ({...p, timezone:e.target.value}))} placeholder="Asia/Kolkata" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Confirmation */}
-        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Country</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete {deleteIndex !== null ? localCountries[deleteIndex]?.name : ''}? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </SidebarProvider>
   );

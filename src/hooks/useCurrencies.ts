@@ -24,7 +24,7 @@ const loadCurrencies = (): Currency[] => {
   try {
     // [JWT] GET /api/foundation/parent-company/base-currency
     const baseCurrencyCode = localStorage.getItem('erp_base_currency') || 'INR';
-    // [JWT] GET /api/foundation/parent-company
+    // [JWT] GET /api/masters/currencies
     const parentRaw = localStorage.getItem('erp_parent_company');
     const parent = parentRaw ? JSON.parse(parentRaw) : {};
     const now = new Date().toISOString();
@@ -45,8 +45,8 @@ const loadCurrencies = (): Currency[] => {
       updated_at: now,
     };
     const seeds = [baseCurrency];
+    // [JWT] POST /api/masters/currencies
     localStorage.setItem(KEY, JSON.stringify(seeds));
-    // [JWT] POST /api/accounting/currencies/init
     return seeds;
   } catch { return []; }
 };
@@ -64,12 +64,12 @@ export function useCurrencies() {
   const [rates, setRates] = useState<ForexRate[]>(loadRates);
 
   const saveCurrencies = (data: Currency[]) => {
+    // [JWT] POST /api/masters/currencies
     localStorage.setItem(KEY, JSON.stringify(data));
-    // [JWT] Replace with API calls
   };
   const saveRates = (data: ForexRate[]) => {
+    // [JWT] POST /api/masters/currencies
     localStorage.setItem(RATES_KEY, JSON.stringify(data));
-    // [JWT] Replace with API calls
   };
 
   const createCurrency = (form: Omit<Currency, 'id' | 'created_at' | 'updated_at'>) => {

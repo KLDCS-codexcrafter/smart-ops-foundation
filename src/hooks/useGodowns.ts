@@ -6,6 +6,7 @@ const STORAGE_KEY = 'erp_godowns';
 
 export function useGodowns() {
   const load = (): Godown[] => {
+    // [JWT] GET /api/inventory/godowns
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
     catch { return []; }
   };
@@ -13,8 +14,8 @@ export function useGodowns() {
   // [JWT] Replace with GET /api/inventory/godowns
 
   const save = (data: Godown[]) => {
+    // [JWT] POST /api/inventory/godowns
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/godowns
   };
 
   const createGodown = (form: Omit<Godown, 'id' | 'created_at' | 'updated_at'>) => {

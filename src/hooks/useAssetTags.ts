@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { AssetTag } from '@/types/asset-tag';
 
 const KEY = 'erp_asset_tags';
+// [JWT] GET /api/inventory/asset-tags
 const load = (): AssetTag[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useAssetTags() {

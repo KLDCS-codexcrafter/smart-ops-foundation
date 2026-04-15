@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
 import { PasswordMatchIndicator } from "@/components/auth/PasswordMatchIndicator";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Schemas ──
 const emailSchema = z.object({
@@ -160,7 +161,7 @@ function LiveClock() {
   });
 
   return (
-    <div className="flex items-center gap-4">
+    <div data-keyboard-form className="flex items-center gap-4">
       <div className="relative w-16 h-16">
         <svg viewBox="0 0 100 100" className="w-full h-full">
           <circle cx="50" cy="50" r="45" fill="none" stroke={ringColor} strokeWidth="2" />
@@ -379,7 +380,7 @@ export default function Login() {
   // ── Loading skeleton ──
   if (authInit) {
     return (
-      <div className="flex min-h-screen">
+      <div data-keyboard-form className="flex min-h-screen">
         <div className="hidden lg:flex lg:w-[44%] xl:w-[44%] p-8 flex-col justify-between" style={{ background: "var(--gradient-hero)" }}>
           <div className="space-y-4">
             <div className="h-10 w-40 rounded-lg bg-white/10 animate-pulse" />
@@ -652,7 +653,7 @@ export default function Login() {
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="you@example.com" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field} />
+                          <Input placeholder="you@example.com" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field}  onKeyDown={onEnterNext} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -697,7 +698,7 @@ export default function Login() {
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input type="password" placeholder="Enter new password" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field} />
+                          <Input type="password" placeholder="Enter new password" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field}  onKeyDown={onEnterNext} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -710,7 +711,7 @@ export default function Login() {
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input type="password" placeholder="Confirm password" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field} />
+                          <Input type="password" placeholder="Confirm password" className="pl-9 rounded-lg bg-muted/50 border-border/50" {...field}  onKeyDown={onEnterNext} />
                         </div>
                       </FormControl>
                       <FormMessage />

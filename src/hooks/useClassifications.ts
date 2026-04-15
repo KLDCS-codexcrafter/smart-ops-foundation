@@ -6,6 +6,7 @@ const STORAGE_KEY = 'erp_classifications';
 
 export function useClassifications() {
   const load = (): Classification[] => {
+    // [JWT] GET /api/inventory/classifications
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
     catch { return []; }
   };
@@ -13,8 +14,8 @@ export function useClassifications() {
   // [JWT] Replace with GET /api/inventory/classifications
 
   const save = (data: Classification[]) => {
+    // [JWT] POST /api/inventory/classifications
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // [JWT] Replace with POST/PUT/DELETE /api/inventory/classifications
   };
 
   const createClassification = (form: Omit<Classification, 'id' | 'created_at' | 'updated_at'>) => {

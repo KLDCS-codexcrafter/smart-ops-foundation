@@ -45,6 +45,7 @@ import {
   FAMILY_COLORS, NO_LINE_NARRATION_TYPES,
   ALWAYS_OPTIONAL_TYPES, SALES_ONLY_FIELDS,
 } from '@/types/voucher-type';
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -173,7 +174,7 @@ function InheritedBanner({ base }: { base: VoucherBaseType }) {
   ].filter((c, i) => i < 2 || c.on);
 
   return (
-    <div className="rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/20 p-3">
+    <div data-keyboard-form className="rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/20 p-3">
       <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-2">
         Nature inherited from "{base}" — fixed, cannot override
       </p>
@@ -201,7 +202,7 @@ function RuleCard({ rule, inherited = false, onToggle, onRemove }:
   const meta = RULE_META[rule.rule_type];
   const Icon = meta.icon as React.ElementType;
   return (
-    <div className={cn(
+    <div data-keyboard-form className={cn(
       'flex items-start gap-2 rounded-md border p-2 text-[11px]',
       inherited ? 'bg-muted/20 border-border/30 opacity-60' : 'bg-card border-border/60',
       !rule.is_active && !inherited && 'opacity-40'

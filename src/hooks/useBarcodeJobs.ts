@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { BarcodeJob } from '@/types/barcode-job';
 
 const KEY = 'erp_barcode_jobs';
+// [JWT] GET /api/inventory/barcode-jobs
 const load = (): BarcodeJob[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
 
 export function useBarcodeJobs() {

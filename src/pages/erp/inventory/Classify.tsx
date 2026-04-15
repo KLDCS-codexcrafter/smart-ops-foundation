@@ -29,9 +29,11 @@ const MOVE_C: Record<string, string> = {
 const KEY = 'erp_classifications';
 const BKEY = 'erp_brands';
 const load = (): Classification[] => {
+  // [JWT] GET /api/inventory/classifications
   try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
 };
 const loadB = (): Brand[] => {
+  // [JWT] GET /api/inventory/classifications
   try { return JSON.parse(localStorage.getItem(BKEY) || '[]'); } catch { return []; }
 };
 const BLK = {
@@ -53,6 +55,7 @@ export function ClassifyPanel() {
   const [exp, setExp] = useState<Set<string>>(new Set());
 
   const sv = (d: Classification[]) => {
+    // [JWT] POST /api/inventory/classifications
     localStorage.setItem(KEY, JSON.stringify(d)); // [JWT] CRUD /api/inventory/classifications
   };
 

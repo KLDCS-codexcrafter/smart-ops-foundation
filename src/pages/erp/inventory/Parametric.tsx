@@ -554,9 +554,9 @@ export function ParametricPanel() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-semibold">Parameters ({tplParams.length})</Label>
-   <Button data-primary size="sm" variant="outline" className="gap-1" onClick={addParameter}>
+                <Button data-primary size="sm" variant="outline" className="gap-1" onClick={addParameter}>
                   <Plus className="h-3.5 w-3.5" /> Add Parameter
-                </Button>    </Button>
+                </Button>
               </div>
 
               {tplParams.length === 0 && (

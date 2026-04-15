@@ -19,6 +19,7 @@ import {
   type AppCategory,
   type AppDefinition,
 } from "@/components/operix-core/applications";
+import { onEnterNext } from '@/lib/keyboard';
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -127,7 +128,7 @@ export default function ErpDashboard() {
   }, [search, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative">
+    <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
       {/* Background Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div

@@ -836,6 +836,7 @@ const hasLedgerData = (defId: string): boolean => {
     if (inst && inst.openingBalance !== 0) return true;
   }
   // Check 2: future voucher check (uncomment when transactions are built)
+  // [JWT] GET /api/accounting/ledgers
   // const vouchers = JSON.parse(localStorage.getItem('erp_group_vouchers') || '[]');
   // if (vouchers.some((v: any) => v.entries?.some((e: any) => e.ledgerId === defId))) return true;
   return false;
@@ -895,6 +896,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
   })) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
+  // [JWT] POST /api/accounting/ledgers
   localStorage.setItem(`erp_entity_${inst.entityId}_ledger_instances`, JSON.stringify(all));
   // [JWT] POST/PUT /api/entity/${inst.entityId}/finecore/ledger-instances
 };
@@ -902,6 +904,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
 // ── Custodian History ─────────────────────────────────────────────
 const loadCustodianHistory = (entityId: string, defId: string): CustodianHistoryRecord[] => {
   const key = `erp_entity_${entityId}_custodian_history_${defId}`;
+  // [JWT] GET /api/accounting/ledgers
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
   catch { return []; }
 };
@@ -917,6 +920,7 @@ const appendCustodianHistory = (record: CustodianHistoryRecord) => {
 // ── Cheque Book helpers ───────────────────────────────────────────
 const loadChequeBooks = (entityId: string, defId: string): ChequeBook[] => {
   const key = `erp_entity_${entityId}_cheque_books_${defId}`;
+  // [JWT] GET /api/accounting/ledgers
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; }
   catch { return []; }
 };
@@ -934,6 +938,7 @@ const saveChequeBook = (book: ChequeBook): void => {
 // ── Cheque Record helpers ─────────────────────────────────────────
 const loadChequeRecords = (entityId: string, bookId: string): ChequeRecord[] => {
   const key = `erp_entity_${entityId}_cheque_records_${bookId}`;
+  // [JWT] GET /api/accounting/ledgers
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; }
   catch { return []; }
 };
@@ -951,6 +956,7 @@ const saveChequeRecord = (rec: ChequeRecord): void => {
 // ── NACH Mandate helpers ──────────────────────────────────────────
 const loadNachMandates = (entityId: string, defId: string): NachMandate[] => {
   const key = `erp_entity_${entityId}_nach_mandates_${defId}`;
+  // [JWT] GET /api/accounting/ledgers
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; }
   catch { return []; }
 };
@@ -976,6 +982,7 @@ const saveLoanSchedule = (records: LoanRepaymentRecord[]): void => {
 };
 const loadLoanSchedule = (entityId: string, defId: string): LoanRepaymentRecord[] => {
   try {
+    // [JWT] GET /api/accounting/ledgers
     const r = localStorage.getItem(`erp_entity_${entityId}_loan_schedule_${defId}`);
     return r ? JSON.parse(r) : [];
   } catch { return []; }
@@ -1084,6 +1091,7 @@ const autoCreateInstances = (
 // ─── FinFrame L4 Groups Reader ────────────────────────────────────────
 
 const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; parentL3Code: string }[] => {
+  // [JWT] GET /api/accounting/ledgers
   const raw = localStorage.getItem('erp_group_finframe_l4_groups');
   if (!raw) return [];
   try {
@@ -1526,6 +1534,7 @@ export function LedgerMasterPanel() {
 
   const getCurrentUser = (): string => {
     try {
+      // [JWT] GET /api/accounting/ledgers
       const u = JSON.parse(localStorage.getItem('erp_current_user') || '{}');
       return u.name || u.email || 'System Administrator';
     } catch { return 'System Administrator'; }
@@ -1609,20 +1618,7 @@ export function LedgerMasterPanel() {
     }));
   };
 
-  // Ctrl+S saves the active form
-  useCtrlS(() => {
-    if (cashCreateOpen) handleCashSave();
-    if (bankCreateOpen) handleBankSave();
-    if (liabilityOpen) handleLiabilitySave();
-    if (capitalOpen) handleCapitalSave();
-    if (loanRecOpen) handleLoanRecSave();
-    if (borrowingOpen) handleBorrowingSave();
-    if (incomeOpen) handleIncomeSave();
-    if (expenseOpen) handleExpenseSave();
-    if (dutiesTaxOpen) handleDutiesTaxSave();
-    if (payrollStatOpen) handlePayrollStatSave();
-    if (assetOpen) handleAssetSave();
-  });
+
 
   // ── getLabelCount ──
   const getLabelCount = (label: string): number => {
@@ -1640,18 +1636,25 @@ export function LedgerMasterPanel() {
         case 'Duties & Taxes': return dutiesTaxDefs.length;
         case 'Payroll Statutory': return payrollStatDefs.length;
         case 'Customer':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]').length;
         case 'Vendor':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]').length;
         case 'Logistic':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]').length;
         case 'Branch & Division':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
         case 'Mode of Payment':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]').length;
         case 'Terms of Payment':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]').length;
         case 'Terms of Delivery':
+          // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_terms_of_delivery') || '[]').length;
         default: return 0;
       }
@@ -2899,7 +2902,26 @@ export function LedgerMasterPanel() {
     refreshAll();
   };
 
-  // ── Delete flow ──
+  // Ctrl+S saves the active form
+  const handleCtrlS = useCallback(() => {
+    if (cashCreateOpen) { handleCashSave(); return; }
+    if (bankCreateOpen) { handleBankSave(); return; }
+    if (liabilityOpen) { handleLiabilitySave(); return; }
+    if (capitalOpen) { handleCapitalSave(); return; }
+    if (loanRecOpen) { handleLoanRecSave(); return; }
+    if (borrowingOpen) { handleBorrowingSave(); return; }
+    if (incomeOpen) { handleIncomeSave(); return; }
+    if (expenseOpen) { handleExpenseSave(); return; }
+    if (dutiesTaxOpen) { handleDutiesTaxSave(); return; }
+    if (payrollStatOpen) { handlePayrollStatSave(); return; }
+    if (assetOpen) { handleAssetSave(); return; }
+  }, [cashCreateOpen, bankCreateOpen, liabilityOpen, capitalOpen, loanRecOpen,
+    borrowingOpen, incomeOpen, expenseOpen, dutiesTaxOpen, payrollStatOpen, assetOpen,
+    handleCashSave, handleBankSave, handleLiabilitySave, handleCapitalSave, handleLoanRecSave,
+    handleBorrowingSave, handleIncomeSave, handleExpenseSave, handleDutiesTaxSave,
+    handlePayrollStatSave, handleAssetSave]);
+  useCtrlS(handleCtrlS);
+
   const openDeleteFlow = (def: AnyLedgerDefinition) => {
     setDeleteTarget(def);
     setPickerOpen(false);
@@ -4064,6 +4086,7 @@ export function LedgerMasterPanel() {
                   {(() => {
                     // [JWT] GET /api/accounting/voucher-types
                     try {
+                      // [JWT] GET /api/accounting/ledgers
                       const allVt = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]') as { id: string; name: string; base_voucher_type: string; is_active: boolean }[];
                       return allVt.filter(vt => vt.base_voucher_type === 'Receipt' && vt.is_active).map(vt => (
                         <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
@@ -4146,6 +4169,7 @@ export function LedgerMasterPanel() {
                     try {
                       // [JWT] GET /api/accounting/currencies
                       const currencies: { id: string; iso_code: string; name: string; symbol: string; is_active: boolean; is_base_currency: boolean }[] =
+                        // [JWT] GET /api/accounting/ledgers
                         JSON.parse(localStorage.getItem('erp_currencies') || '[]');
                       const active = currencies.filter(c => c.is_active);
                       if (active.length === 0) {
