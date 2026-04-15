@@ -39,7 +39,7 @@ const EMPTY: DistrictRecord = {
   code:'', name:'', stateCode:'', countryCode:'', headquarters:'', status:'active',
 };
 
-export default function DistrictMaster() {
+export function DistrictMasterPanel() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<DistrictRecord[]>(() => {
     // [JWT] GET /api/geography/districts
@@ -152,19 +152,6 @@ export default function DistrictMaster() {
   const selectedStateName = stateOptions.find(s => s.code === stateFilter)?.name ?? stateFilter;
 
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen bg-background">
-        <ERPHeader
-          breadcrumbs={[
-            { label:'Operix Core', href:'/erp/dashboard' },
-            { label:'Command Center', href:'/erp/command-center' },
-            { label:'Foundation' },
-            { label:'Geography', href:'/erp/foundation/geography' },
-            { label:'Districts' },
-          ]}
-          showDatePicker={false} showCompany={false}
-        />
-        <main className="p-6 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button variant="ghost" size="icon" onClick={() => navigate('/erp/foundation/geography')}>
               <ArrowLeft className="h-4 w-4" />
@@ -267,106 +254,26 @@ export default function DistrictMaster() {
               </TableBody>
             </Table>
           </div>
+  );
+}
+
+
+export default function DistrictMaster() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+          <ERPHeader
+            breadcrumbs={[
+              { label:'Operix Core', href:'/erp/dashboard' },
+              { label:'Command Center', href:'/erp/command-center' },
+              { label:'Foundation' },
+              { label:'Geography', href:'/erp/foundation/geography' },
+              { label:'Districts' },
+            showDatePicker={false} showCompany={false}
+          />
+        <main className="flex-1 p-6">
+          <DistrictMasterPanel />
         </main>
-
-        {/* Preview Dialog */}
-        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogContent className="sm:max-w-lg max-h-[70vh] overflow-hidden flex flex-col">
-            <DialogHeader>
-              <DialogTitle>Preview: {previewData.items.length} {countryFilter === 'AE' ? 'Areas' : 'Districts'} for {previewData.name}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
-              {previewData.items.map(d => (
-                <div key={d.code} className="flex items-center gap-2 p-2 rounded border text-sm">
-                  <span className="font-mono text-xs w-24">{d.code}</span>
-                  <span className="flex-1">{d.name}</span>
-                  <span className="text-xs text-muted-foreground">{d.headquarters}</span>
-                </div>
-              ))}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setPreviewOpen(false)}>Cancel</Button>
-              <Button onClick={confirmSeed}>Confirm & Seed</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Create/Edit Dialog */}
-        <Dialog open={formOpen} onOpenChange={setFormOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{editIndex !== null ? 'Edit District' : 'Add District'}</DialogTitle>
-            </DialogHeader>
-            <div data-keyboard-form className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Code</Label>
-                  <Input value={formData.code} onChange={e => setFormData(p => ({...p, code:e.target.value.toUpperCase()}))} placeholder="MH-MUM" className="font-mono" disabled={editIndex !== null} />
-                  <p className="text-xs text-muted-foreground">Auto-generated: STATE-3CHAR</p>
-                </div>
-                <div className="space-y-1">
-                  <Label>Country</Label>
-                  <Select value={formData.countryCode} onValueChange={v => setFormData(p => ({...p, countryCode:v}))}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="IN">🇮🇳 India</SelectItem>
-                      <SelectItem value="AE">🇦🇪 UAE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label>State</Label>
-                <Select value={formData.stateCode} onValueChange={v => setFormData(p => ({...p, stateCode:v}))}>
-                  <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
-                  <SelectContent>
-                    {(formData.countryCode === 'IN' ? indianStates.map(s => ({code:s.code,name:s.name})) : formData.countryCode === 'AE' ? UAE_EMIRATES.map(e => ({code:e.code,name:e.name})) : []).map(s =>
-                      <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label>Name *</Label>
-                <Input value={formData.name} onChange={e => setFormData(p => ({...p, name:e.target.value}))} placeholder="Mumbai City" />
-              </div>
-              <div className="space-y-1">
-                <Label>Headquarters</Label>
-                <Input value={formData.headquarters} onChange={e => setFormData(p => ({...p, headquarters:e.target.value}))} placeholder="Mumbai" />
-              </div>
-              <div className="space-y-1">
-                <Label>Status</Label>
-                <Select value={formData.status} onValueChange={v => setFormData(p => ({...p, status:v as 'active'|'inactive'}))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Confirmation */}
-        <AlertDialog open={deleteIndex !== null} onOpenChange={o => { if (!o) setDeleteIndex(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete District</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete {deleteIndex !== null ? records[deleteIndex]?.name : ''}?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </SidebarProvider>
   );
