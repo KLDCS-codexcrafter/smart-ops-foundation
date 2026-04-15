@@ -15,6 +15,7 @@ import type { BinLabel } from '@/types/bin-label';
 
 const KEY = 'erp_bin_labels';
 const GKEY = 'erp_godowns';
+// [JWT] GET /api/entity/storage/:key
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const LOC_TYPES = ['storage', 'inward', 'qc', 'production', 'dispatch'] as const;
@@ -33,6 +34,7 @@ export function BinLocationLabelsPanel() {
   const [edit, setEdit] = useState<BinLabel | null>(null);
   const [form, setForm] = useState<typeof BLANK>(BLANK);
 
+  // [JWT] PATCH /api/entity/storage/:key
   const sv = (d: BinLabel[]) => { localStorage.setItem(KEY, JSON.stringify(d)); /* [JWT] CRUD /api/labels/bin-labels */ };
 
   const buildCode = (f: typeof BLANK) => [

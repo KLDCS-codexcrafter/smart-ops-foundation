@@ -227,6 +227,7 @@ export default function Login() {
 
   const [view, setView] = useState<AuthView>(isReset ? "reset" : "login");
   const [activeTab, setActiveTab] = useState<LoginTab>(() => {
+    // [JWT] GET /api/auth/saved-method
     const saved = localStorage.getItem("4ds_login_method");
     return (saved as LoginTab) || "email";
   });
@@ -278,6 +279,7 @@ export default function Login() {
 
   // Remember me restore
   useEffect(() => {
+    // [JWT] GET /api/auth/saved-credential
     const savedCred = localStorage.getItem("4ds_login_credential");
     if (savedCred) {
       try {
@@ -299,6 +301,7 @@ export default function Login() {
   const forgotForm = useForm({ resolver: zodResolver(resetEmailSchema), defaultValues: { email: "" } });
   const resetForm = useForm({ resolver: zodResolver(newPasswordSchema), defaultValues: { password: "", confirmPassword: "" } });
 
+  // [JWT] GET /api/auth/saved-credential
   const [rememberMe, setRememberMe] = useState(!!localStorage.getItem("4ds_login_credential"));
 
   const activeForm = activeTab === "email" ? emailForm : activeTab === "nickname" ? nickForm : mobileForm;
@@ -324,14 +327,19 @@ export default function Login() {
     }
 
     if (rememberMe) {
+      // [JWT] POST /api/auth/save-credential
       localStorage.setItem("4ds_login_credential", JSON.stringify({ method: activeTab, value: credential }));
+      // [JWT] POST /api/auth/save-method
       localStorage.setItem("4ds_login_method", activeTab);
     } else {
+      // [JWT] DELETE /api/auth/saved-credential
       localStorage.removeItem("4ds_login_credential");
+      // [JWT] DELETE /api/auth/saved-method
       localStorage.removeItem("4ds_login_method");
     }
 
     setLoginSuccess(true);
+    // [JWT] POST /api/auth/login
     localStorage.setItem("4ds_token", "mock-jwt-token-xyz");
     toast.success("Welcome to 4DSmartOps");
     setTimeout(() => {

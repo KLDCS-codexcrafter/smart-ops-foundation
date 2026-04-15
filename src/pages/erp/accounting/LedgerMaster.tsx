@@ -687,6 +687,7 @@ const amountToWords = (amount: number): string => {
 // ─── localStorage Helpers ─────────────────────────────────────────────
 
 const loadAllDefinitions = (): AnyLedgerDefinition[] => {
+  // [JWT] GET /api/ledger/definitions
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   if (!raw) return [];
   const all = JSON.parse(raw);
@@ -718,6 +719,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     brsEnabled: d.brsEnabled ?? true,
     clearingDays: d.clearingDays ?? 2,
     cutoffTime: d.cutoffTime ?? '14:30',
+    // [JWT] GET /api/entity/base-currency
     currency: d.currency ?? localStorage.getItem('erp_base_currency') ?? 'INR',
     acHolderName: d.acHolderName ?? '',
     bankPhone: d.bankPhone ?? '',
@@ -813,10 +815,12 @@ const loadAssetDefs = (): AssetLedgerDefinition[] =>
   loadAllDefinitions().filter(d => d.ledgerType === 'asset') as AssetLedgerDefinition[];
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
+  // [JWT] GET /api/ledger/definitions
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
+  // [JWT] POST /api/ledger/definitions
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
   // [JWT] POST/PUT /api/group/finecore/ledger-definitions
 };
@@ -826,6 +830,7 @@ const hasLedgerData = (defId: string): boolean => {
   const entities = loadEntities();
   for (const entity of entities) {
     const key = `erp_entity_${entity.id}_ledger_instances`;
+    // [JWT] GET /api/ledger/instances/:entityId
     const instances: { ledgerDefinitionId: string; openingBalance: number }[] = JSON.parse(localStorage.getItem(key) || '[]');
     const inst = instances.find(i => i.ledgerDefinitionId === defId);
     if (inst && inst.openingBalance !== 0) return true;
@@ -838,17 +843,21 @@ const hasLedgerData = (defId: string): boolean => {
 
 const removeDefinition = (defId: string): void => {
   // Remove definition
+  // [JWT] GET /api/ledger/definitions
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all = raw ? JSON.parse(raw) : [];
   const filtered = all.filter((d: any) => d.id !== defId);
+  // [JWT] DELETE /api/ledger/definitions/:id
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
   // [JWT] DELETE /api/group/finecore/ledger-definitions/:id
   // Remove entity instances for this definition
   const entities = loadEntities();
   entities.forEach(entity => {
     const key = `erp_entity_${entity.id}_ledger_instances`;
+    // [JWT] GET /api/ledger/instances/:entityId
     const instances: { ledgerDefinitionId: string }[] = JSON.parse(localStorage.getItem(key) || '[]');
     const remaining = instances.filter(i => i.ledgerDefinitionId !== defId);
+    // [JWT] PATCH /api/ledger/instances/:entityId
     localStorage.setItem(key, JSON.stringify(remaining));
   });
   // [JWT] DELETE /api/group/finecore/ledger-instances/by-definition/:id
@@ -856,6 +865,7 @@ const removeDefinition = (defId: string): void => {
 
 
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
+  // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
   return JSON.parse(raw).map((i: any) => ({
@@ -871,6 +881,7 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
+  // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${inst.entityId}_ledger_instances`);
   const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({
     ...i,
@@ -898,6 +909,7 @@ const loadCustodianHistory = (entityId: string, defId: string): CustodianHistory
 const appendCustodianHistory = (record: CustodianHistoryRecord) => {
   const key = `erp_entity_${record.entityId}_custodian_history_${record.ledgerDefinitionId}`;
   const existing = loadCustodianHistory(record.entityId, record.ledgerDefinitionId);
+  // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify([...existing, record]));
   // [JWT] POST /api/entity/${record.entityId}/finecore/custodian-history
 };
@@ -914,6 +926,7 @@ const saveChequeBook = (book: ChequeBook): void => {
   const all = loadChequeBooks(book.entityId, book.bankLedgerDefinitionId);
   const idx = all.findIndex(b => b.id === book.id);
   if (idx >= 0) all[idx] = book; else all.push(book);
+  // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
   // [JWT] POST/PUT /api/entity/${book.entityId}/finecore/cheque-books
 };
@@ -930,6 +943,7 @@ const saveChequeRecord = (rec: ChequeRecord): void => {
   const all = loadChequeRecords(rec.entityId, rec.chequeBookId);
   const idx = all.findIndex(r => r.id === rec.id);
   if (idx >= 0) all[idx] = rec; else all.push(rec);
+  // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
   // [JWT] POST/PUT /api/entity/${rec.entityId}/finecore/cheque-records
 };
@@ -946,6 +960,7 @@ const saveNachMandate = (m: NachMandate): void => {
   const all = loadNachMandates(m.entityId, m.bankLedgerDefinitionId);
   const idx = all.findIndex(n => n.id === m.id);
   if (idx >= 0) all[idx] = m; else all.push(m);
+  // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
   // [JWT] POST/PUT /api/entity/${m.entityId}/finecore/nach-mandates
 };
@@ -955,6 +970,7 @@ const saveLoanSchedule = (records: LoanRepaymentRecord[]): void => {
   if (!records.length) return;
   const { borrowingLedgerDefinitionId: defId, entityId } = records[0];
   const key = `erp_entity_${entityId}_loan_schedule_${defId}`;
+  // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(records));
   // [JWT] POST /api/entity/${entityId}/finecore/loan-schedule
 };
@@ -1041,6 +1057,7 @@ const autoCreateInstances = (
   const allEntities = loadEntities();
   allEntities.forEach((entity, idx) => {
     const existingInstances = JSON.parse(
+      // [JWT] GET /api/ledger/instances/:entityId
       localStorage.getItem(`erp_entity_${entity.id}_ledger_instances`) || '[]'
     ) as { ledgerDefinitionId: string }[];
     if (existingInstances.find(i => i.ledgerDefinitionId === def.id)) return;
@@ -1127,6 +1144,7 @@ const defaultBankForm = {
   name: '', alias: '', bankName: '', bankNameOther: '',
   accountNumber: '', ifscCode: '',
   accountType: '' as BankAccountType | '',
+  // [JWT] GET /api/entity/base-currency
   currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   odLimit: 0, openingBalance: 0,
   openingBalanceType: 'Dr' as 'Dr' | 'Cr',
@@ -2984,6 +3002,7 @@ export function LedgerMasterPanel() {
       const existing = loadCustodianHistory(inst.entityId, inst.ledgerDefinitionId);
       const updatedHistory = existing.map(h => h.toDate === null ? { ...h, toDate: now, handoverToName: custodianForm.name } : h);
       const key = `erp_entity_${inst.entityId}_custodian_history_${inst.ledgerDefinitionId}`;
+      // [JWT] PATCH /api/ledger/instances/:entityId
       localStorage.setItem(key, JSON.stringify(updatedHistory));
       // [JWT] PUT /api/entity/${inst.entityId}/finecore/custodian-history (close previous)
     }
@@ -3140,6 +3159,7 @@ export function LedgerMasterPanel() {
     const key = `erp_entity_${updated.entityId}_loan_schedule_${updated.borrowingLedgerDefinitionId}`;
     const existing = loadLoanSchedule(updated.entityId, updated.borrowingLedgerDefinitionId);
     const updatedSchedule = existing.map(r => r.id === updated.id ? updated : r);
+    // [JWT] PATCH /api/ledger/instances/:entityId
     localStorage.setItem(key, JSON.stringify(updatedSchedule));
     // [JWT] PUT /api/entity/${updated.entityId}/finecore/loan-schedule
     setLoanSchedule(updatedSchedule);
@@ -4129,6 +4149,7 @@ export function LedgerMasterPanel() {
                         JSON.parse(localStorage.getItem('erp_currencies') || '[]');
                       const active = currencies.filter(c => c.is_active);
                       if (active.length === 0) {
+                        // [JWT] GET /api/entity/base-currency
                         const base = localStorage.getItem('erp_base_currency') || 'INR';
                         return <SelectItem value={base}>{base}</SelectItem>;
                       }

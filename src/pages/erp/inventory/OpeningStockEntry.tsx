@@ -16,6 +16,7 @@ import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 const OSKEY = 'erp_item_opening_stock';
 const IKEY = 'erp_inventory_items';
 const SLKEY = 'erp_stock_ledger';
+// [JWT] GET /api/entity/storage/:key
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 interface RowState {
@@ -163,6 +164,7 @@ export function OpeningStockPanel() {
 
     // Save entries
     const existing = ls<ItemOpeningStockEntry>(OSKEY);
+    // [JWT] PATCH /api/inventory/opening-stock
     localStorage.setItem(OSKEY, JSON.stringify([...existing, ...toPost]));
     /* [JWT] POST /api/inventory/opening-stock/bulk */
 
@@ -176,10 +178,12 @@ export function OpeningStockPanel() {
       qty_in: e.quantity, qty_out: 0, rate: e.rate, value: e.value,
       batch_number: e.batch_number || null, txn_date: goDate, created_at: now,
     }));
+    // [JWT] PATCH /api/inventory/opening-stock
     localStorage.setItem(SLKEY, JSON.stringify([...existSL, ...newSL]));
     /* [JWT] POST /api/inventory/stock-ledger/opening-entries */
 
     // Save item master updates
+    // [JWT] PATCH /api/inventory/opening-stock
     localStorage.setItem(IKEY, JSON.stringify(allItems));
     /* [JWT] PATCH /api/inventory/items/bulk-rates */
 

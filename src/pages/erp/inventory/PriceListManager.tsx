@@ -20,6 +20,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';
 const IKEY = 'erp_inventory_items';
+// [JWT] GET /api/entity/storage/:key
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const LIST_TYPE_CONFIG: { value: PriceListType; label: string; desc: string; color: string }[] = [
@@ -165,6 +166,7 @@ export function PriceListsPanel() {
       }
     });
     setListItems(updatedItems);
+    // [JWT] PATCH /api/inventory/opening-stock
     localStorage.setItem(PLIKEY, JSON.stringify(updatedItems));
     /* [JWT] POST /api/inventory/price-lists/items/bulk-upsert */
     const count = Object.keys(pendingPrices).length;
@@ -621,6 +623,7 @@ export function PriceListsPanel() {
                         const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]');
                         const active = currencies.filter((c: any) => c.is_active);
                         if (!active.length) {
+                          // [JWT] GET /api/entity/base-currency
                           const base = localStorage.getItem('erp_base_currency') || 'INR';
                           return <SelectItem value={base}>{base} (Base)</SelectItem>;
                         }

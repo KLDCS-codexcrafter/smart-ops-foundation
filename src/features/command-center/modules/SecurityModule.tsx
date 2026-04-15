@@ -1585,6 +1585,7 @@ function SidebarSection({
 // ── Main SecurityModule Component ─────────────────────────────
 export function SecurityModule() {
   const [activeTab, setActiveTab] = useState<ConsoleTab>(() => {
+    // [JWT] GET /api/console/storage/:key
     const saved = localStorage.getItem("operix_console_tab");
     if (saved && saved in PANEL_MAP) return saved as ConsoleTab;
     return "org-analytics";
@@ -1599,6 +1600,7 @@ export function SecurityModule() {
 
   const handleTabChange = useCallback((tab: ConsoleTab) => {
     setActiveTab(tab);
+    // [JWT] PATCH /api/console/storage/:key
     localStorage.setItem("operix_console_tab", tab);
   }, []);
 

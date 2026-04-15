@@ -21,6 +21,7 @@ import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
 const IKEY = 'erp_inventory_items';
 const RHKEY = 'erp_item_rate_history';
 const CSKEY = 'erp_company_settings';
+// [JWT] GET /api/entity/storage/:key
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
 const REASON_CATEGORIES = [

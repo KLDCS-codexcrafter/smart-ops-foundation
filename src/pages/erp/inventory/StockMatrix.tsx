@@ -35,6 +35,7 @@ const COSTING_METHODS:{value:CostingMethod;label:string}[]=[
 ];
 const ABC: Record<string, string>={A:'bg-emerald-500/10 text-emerald-700',B:'bg-amber-500/10 text-amber-700',C:'bg-slate-500/10 text-slate-600'};
 const SKEY='erp_stock_groups';
+// [JWT] GET /api/entity/storage/:key
 const load=():StockGroup[]=>{try{return JSON.parse(localStorage.getItem(SKEY)||'[]');}catch{return [];}};
 const BLK:StockGroupFormData={code:'',short_code:'',name:'',display_name:'',parent_id:null,
   category_type:'Raw Material',material_type:'Non-Perishable',stock_nature:'Inventory',use_for:'All',
@@ -52,6 +53,7 @@ export function StockMatrixPanel() {
   const [form,setForm]=useState<StockGroupFormData>(BLK);
   const [exp,setExp]=useState<Set<string>>(new Set());
 
+  // [JWT] PATCH /api/entity/storage/:key
   const sv=(d:StockGroup[])=>{localStorage.setItem(SKEY,JSON.stringify(d));
   // [JWT] POST/PATCH/DELETE /api/inventory/stock-groups
   };

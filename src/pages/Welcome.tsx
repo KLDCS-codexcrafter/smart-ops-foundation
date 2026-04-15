@@ -42,6 +42,7 @@ function getGreeting() {
 
 function getUserName(): string {
   try {
+    // [JWT] GET /api/auth/saved-credential
     const raw = localStorage.getItem("4ds_login_credential");
     if (raw) {
       const parsed = JSON.parse(raw);
@@ -582,6 +583,7 @@ export default function Welcome() {
   const [activeTab, setActiveTab] = useState<WelcomeTab>("workspace");
 
   useEffect(() => {
+    // [JWT] GET /api/auth/token
     const token = localStorage.getItem("4ds_token");
     if (!token) {
       navigate("/auth/login", { replace: true });

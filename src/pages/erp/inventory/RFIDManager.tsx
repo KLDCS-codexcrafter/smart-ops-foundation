@@ -16,7 +16,9 @@ import type { RFIDTag, RFIDTagStatus, RFIDEvent } from '@/types/rfid-tag';
 
 const TAG_KEY = 'erp_rfid_tags';
 const EVT_KEY = 'erp_rfid_events';
+// [JWT] GET /api/entity/storage/:key
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
+// [JWT] PATCH /api/entity/storage/:key
 const sv = <T,>(k: string, d: T[]) => { localStorage.setItem(k, JSON.stringify(d)); };
 
 const ITEM_KEY = 'erp_inventory_items';
@@ -64,6 +66,7 @@ export function RFIDManagerPanel() {
 
   // Godowns
   const godowns = useMemo(() => {
+    // [JWT] GET /api/entity/storage/:key
     try { return JSON.parse(localStorage.getItem('erp_godowns') || '[]') as { id: string; name: string }[]; } catch { return []; }
   }, []);
 
