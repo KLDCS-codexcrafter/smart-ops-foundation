@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
+import { useDemoSeedLoader } from '@/hooks/useDemoSeedLoader';
 
 const TABS = [
   { key: "general", label: "General", icon: Globe },
