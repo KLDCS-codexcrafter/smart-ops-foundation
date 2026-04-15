@@ -648,7 +648,7 @@ export function ItemRatesPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setReasonOpen(false)}>Cancel</Button>
-            <Button onClick={applyAllPending}>Apply All {pendingCount} Changes</Button>
+            <Button onClick={applyAllPending} data-primary>Apply All {pendingCount} Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -734,7 +734,7 @@ export function ItemRatesPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setBulkOpen(false)}>Cancel</Button>
-            <Button onClick={applyBulkUpdate}>Apply Bulk Update</Button>
+            <Button onClick={applyBulkUpdate} data-primary>Apply Bulk Update</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

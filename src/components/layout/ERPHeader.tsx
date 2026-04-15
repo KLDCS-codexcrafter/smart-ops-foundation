@@ -172,7 +172,7 @@ export function ERPHeader({
           </span>
 
           {/* Search */}
-          <div className='flex-1 max-w-xs hidden md:block'>
+          <div className='flex-1 max-w-xs hidden md:block' data-keyboard-form>
             <Input placeholder='Search... (Ctrl+K)' className='h-8 text-xs bg-muted/30 border-border/50' onKeyDown={onEnterNext} />
           </div>
         </div>

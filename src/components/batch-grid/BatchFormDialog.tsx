@@ -210,7 +210,7 @@ const BatchFormDialog: React.FC<BatchFormDialogProps> = ({ open, onOpenChange, o
             <Separator />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">{editBatch ? 'Update' : 'Create'}</Button>
+              <Button type="submit" data-primary>{editBatch ? 'Update' : 'Create'}</Button>
             </div>
           </form>
         </Form>

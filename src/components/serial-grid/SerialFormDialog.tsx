@@ -244,7 +244,7 @@ const SerialFormDialog: React.FC<Props> = ({ open, onOpenChange, onSubmit, editS
             <Separator />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">{editSerial ? 'Update' : 'Create'}</Button>
+              <Button type="submit" data-primary>{editSerial ? 'Update' : 'Create'}</Button>
             </div>
           </form>
         </Form>
