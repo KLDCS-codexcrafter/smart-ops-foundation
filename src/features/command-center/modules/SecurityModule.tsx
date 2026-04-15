@@ -1617,7 +1617,7 @@ export function SecurityModule() {
     : null;
 
   return (
-    <div className="flex h-full gap-0">
+    <div data-keyboard-form className="flex h-full gap-0">
       {/* Sidebar */}
       <div className="w-[240px] flex-shrink-0 border-r border-border bg-card/30 flex flex-col">
         <div className="p-3 border-b border-border">
