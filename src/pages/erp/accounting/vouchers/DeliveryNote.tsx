@@ -1,4 +1,7 @@
 import VoucherFormShell from '@/components/finecore/VoucherFormShell';
-export default function DeliveryNote() {
+export function DeliveryNotePanel() {
   return <VoucherFormShell voucherTypeName="Delivery Note" title="Delivery Note" showTerms showPaymentTerms={false} />;
+}
+export default function DeliveryNote() {
+  return <DeliveryNotePanel />;
 }

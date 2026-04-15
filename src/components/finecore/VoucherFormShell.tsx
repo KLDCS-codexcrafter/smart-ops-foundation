@@ -14,7 +14,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { ChevronDown } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
-import { resolveVars } from '@/lib/finecore-engine';
+import { resolveVars, vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -58,7 +58,7 @@ export function VoucherFormPanel({
 
   const handleSave = () => {
     // [JWT] POST /api/accounting/vouchers
-    const key = 'erp_group_vouchers';
+    const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');

@@ -1,4 +1,7 @@
 import VoucherFormShell from '@/components/finecore/VoucherFormShell';
-export default function JournalEntry() {
+export function JournalEntryPanel() {
   return <VoucherFormShell voucherTypeName="Journal" title="Journal Entry" showTerms={false} showPaymentTerms={false} />;
+}
+export default function JournalEntry() {
+  return <JournalEntryPanel />;
 }
