@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Ruler, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UnitOfMeasure, UOMCategory, UOMType } from '@/types/uom';
+import { onEnterNext } from '@/lib/keyboard';
 
 const CATS: { value: UOMCategory; label: string }[] = [
   { value: 'weight', label: 'Weight / Mass' },
@@ -69,11 +70,11 @@ export function MeasureXPanel() {
   };
 
   return (
-    <div className='max-w-5xl mx-auto space-y-6 p-6'>
+    <div data-keyboard-form className='max-w-5xl mx-auto space-y-6 p-6'>
       <div className='flex items-center justify-between'>
         <div><h1 className='text-2xl font-bold flex items-center gap-2'><Ruler className='h-6 w-6' />Measure X</h1>
           <p className='text-sm text-muted-foreground'>Standard UOM set auto-seeded on entity creation — prevents naming inconsistency across branches</p></div>
-        <Button size='sm' className='gap-1.5' onClick={openC}><Plus className='h-4 w-4' />Add Custom UOM</Button>
+        <Button data-primary size='sm' className='gap-1.5' onClick={openC}><Plus className='h-4 w-4' />Add Custom UOM</Button>
       </div>
       <div className='grid grid-cols-3 md:grid-cols-6 gap-3'>
         {CATS.map((cat) => (
@@ -120,7 +121,7 @@ export function MeasureXPanel() {
           <DialogHeader><DialogTitle>{edit ? `Edit: ${edit.name}` : 'New Custom UOM'}</DialogTitle>
             <DialogDescription>{edit?.is_system ? 'System UOM — symbol locked' : 'Create a custom unit of measure'}</DialogDescription>
           </DialogHeader>
-          <div className='space-y-4'>
+          <div data-keyboard-form className='space-y-4'>
             <div className='grid grid-cols-2 gap-4'>
               <div className='space-y-1.5'><Label>Name *</Label><Input placeholder='Bundle of 50' value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
@@ -145,7 +146,7 @@ export function MeasureXPanel() {
             <div className='space-y-1.5'><Label>Notes</Label><Input value={form.internal_notes}
               onChange={e => setForm(f => ({ ...f, internal_notes: e.target.value }))} /></div>
           </div>
-          <DialogFooter><Button variant='outline' onClick={() => setOpen(false)}>Cancel</Button><Button onClick={handleSave}>{edit ? 'Update' : 'Create'} UOM</Button></DialogFooter>
+          <DialogFooter><Button variant='outline' onClick={() => setOpen(false)}>Cancel</Button><Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} UOM</Button></DialogFooter>
         </DialogContent></Dialog>
     </div>
   );

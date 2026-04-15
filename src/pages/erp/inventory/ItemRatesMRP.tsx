@@ -17,6 +17,7 @@ import { DollarSign, Search, History, AlertTriangle, TrendingUp, Copy, CheckCirc
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
+import { onEnterNext } from '@/lib/keyboard';
 
 const IKEY = 'erp_inventory_items';
 const RHKEY = 'erp_item_rate_history';
@@ -333,7 +334,7 @@ export function ItemRatesPanel() {
   const fmt = (v: number | null) => v != null ? '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—';
 
   return (
-    <div className="max-w-full mx-auto space-y-4 p-6">
+    <div data-keyboard-form className="max-w-full mx-auto space-y-4 p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -606,7 +607,7 @@ export function ItemRatesPanel() {
               Provide a reason and effective date for all pending changes.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 flex-1 overflow-hidden flex flex-col">
+          <div data-keyboard-form className="space-y-3 flex-1 overflow-hidden flex flex-col">
             <div className="space-y-1.5">
               <Label>Reason Category *</Label>
               <Select value={reasonCat} onValueChange={setReasonCat}>
@@ -665,7 +666,7 @@ export function ItemRatesPanel() {
               <TabsTrigger value="csv" className="flex-1">CSV / Paste</TabsTrigger>
             </TabsList>
             <TabsContent value="percent" className="space-y-3 mt-4">
-              <div className="space-y-1.5">
+              <div data-keyboard-form className="space-y-1.5">
                 <Label>Rate to Update</Label>
                 <Select value={bulkField} onValueChange={v => setBulkField(v as RateType)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>

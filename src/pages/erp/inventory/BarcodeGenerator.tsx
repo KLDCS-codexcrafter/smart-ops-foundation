@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import type { BarcodeJob, BarcodeSuperType } from '@/types/barcode-job';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { LabelTemplate } from '@/types/label-template';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_barcode_jobs';
 const IKEY = 'erp_inventory_items';
@@ -175,7 +176,7 @@ export function BarcodeGeneratorPanel() {
   const advancedTypes = BARCODE_TYPES.filter(b => b.group === 'advanced');
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-7xl mx-auto space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><QrCode className="h-6 w-6" />Barcode Generator</h1>
         <p className="text-sm text-muted-foreground">Create barcode jobs, assign label templates, and send to the print queue</p>
@@ -254,7 +255,7 @@ export function BarcodeGeneratorPanel() {
             <DialogDescription>Configure barcode type, value, and print quantity</DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-5">
+          <div data-keyboard-form className="space-y-5">
             {/* Item Picker */}
             <div className="space-y-2">
               <Label className="font-semibold">Item *</Label>
@@ -364,8 +365,8 @@ export function BarcodeGeneratorPanel() {
           </div>
 
           <DialogFooter className="gap-2 pt-4">
-            <Button variant="outline" onClick={() => handleSave('draft')}>Save Draft</Button>
-            <Button onClick={() => handleSave('queued')}>Add to Queue</Button>
+            <Button data-primary variant="outline" onClick={() => handleSave('draft')}>Save Draft</Button>
+            <Button data-primary onClick={() => handleSave('queued')}>Add to Queue</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Search, Plus, Lock, Settings2, Boxes, Trash2, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { onEnterNext } from '@/lib/keyboard';
 
 export interface ParameterEntry {
   id: string;
@@ -250,7 +251,7 @@ export function ParametricPanel() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-5xl mx-auto space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -300,7 +301,7 @@ export function ParametricPanel() {
                     <Input className="pl-8 h-9 w-56" placeholder="Search..."
                       value={search} onChange={e => setSearch(e.target.value)} />
                   </div>
-                  <Button size="sm" className="gap-1" onClick={openCreateTemplate}>
+                  <Button data-primary size="sm" className="gap-1" onClick={openCreateTemplate}>
                     <Plus className="h-4 w-4" /> Add Template
                   </Button>
                 </div>
@@ -478,7 +479,7 @@ export function ParametricPanel() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
+          <div data-keyboard-form className="space-y-6">
             {/* ── Template Details ── */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -553,9 +554,9 @@ export function ParametricPanel() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-semibold">Parameters ({tplParams.length})</Label>
-                <Button size="sm" variant="outline" className="gap-1" onClick={addParameter}>
+   <Button data-primary size="sm" variant="outline" className="gap-1" onClick={addParameter}>
                   <Plus className="h-3.5 w-3.5" /> Add Parameter
-                </Button>
+                </Button>    </Button>
               </div>
 
               {tplParams.length === 0 && (

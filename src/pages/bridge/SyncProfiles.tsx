@@ -16,6 +16,7 @@ import {
   SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 type ProfileStatus = "approved" | "pending" | "draft";
 type SyncModule =
@@ -364,7 +365,7 @@ export default function SyncProfiles() {
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Profile Name for Save</label>
-                <Input placeholder="e.g. Q1 Monthly Close — Reliance Digital" />
+                <Input placeholder="e.g. Q1 Monthly Close — Reliance Digital" onKeyDown={onEnterNext} />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-foreground">Save as reusable template</span>
@@ -374,8 +375,8 @@ export default function SyncProfiles() {
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => toast("Saved as draft")}>Save as Draft</Button>
-            <Button className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast("Submitted for approval")}>Submit for Approval</Button>
+            <Button data-primary variant="outline" onClick={() => toast("Saved as draft")}>Save as Draft</Button>
+            <Button data-primary className="bg-gradient-to-r from-primary to-primary/80" onClick={() => toast("Submitted for approval")}>Submit for Approval</Button>
           </div>
         </TabsContent>
 
@@ -386,7 +387,7 @@ export default function SyncProfiles() {
             {TEMPLATE_GALLERY.map((t) => {
               const Icon = TEMPLATE_ICONS[t.icon] || Calendar;
               return (
-                <div key={t.name} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 cursor-pointer transition-colors">
+                <div data-keyboard-form key={t.name} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 cursor-pointer transition-colors">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>

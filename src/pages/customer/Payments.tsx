@@ -14,6 +14,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // [JWT] Replace with real payment data
 const PAYMENT_HISTORY = [
@@ -103,7 +104,7 @@ export default function Payments() {
             {/* Amount */}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Payment Amount</label>
-              <Input type="number" className="font-mono" value={selectedTotal / 100} readOnly />
+              <Input type="number" className="font-mono" value={selectedTotal / 100} readOnly onKeyDown={onEnterNext} />
               <p className="text-xs text-muted-foreground mt-1">Amount in ₹</p>
             </div>
 
@@ -168,7 +169,7 @@ export default function Payments() {
               <p className="text-sm text-foreground">Bank: HDFC Bank, Mumbai</p>
             </div>
 
-            <Button
+            <Button data-primary
               className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground w-full"
               onClick={handleSubmit}
               disabled={submitting}

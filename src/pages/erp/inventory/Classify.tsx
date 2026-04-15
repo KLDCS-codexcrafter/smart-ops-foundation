@@ -15,6 +15,7 @@ import { Tags, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, Chevron
 import { toast } from 'sonner';
 import type { Classification } from '@/types/classification';
 import type { Brand } from '@/types/brand';
+import { onEnterNext } from '@/lib/keyboard';
 
 const CLASS_TYPES = ['category', 'subcategory', 'group', 'class'];
 const CAT_LVLS = ['L1', 'L2', 'L3'];
@@ -129,7 +130,7 @@ export function ClassifyPanel() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-5xl mx-auto space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Tags className="h-6 w-6" />Classifications</h1>
@@ -196,7 +197,7 @@ export function ClassifyPanel() {
             <DialogTitle>{edit ? `Edit: ${edit.name}` : 'New Classification'}</DialogTitle>
             <DialogDescription>Analytical grouping – optional on items</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5"><Label>Name *</Label><Input placeholder="e.g. 19 Inch" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
               <div className="space-y-1.5"><Label>Code</Label><Input placeholder="TV-19" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} /></div>
@@ -255,7 +256,7 @@ export function ClassifyPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Classification</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Classification</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

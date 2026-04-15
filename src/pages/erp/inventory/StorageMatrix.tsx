@@ -16,6 +16,7 @@ import { Warehouse, Plus, Search, Edit2, Trash2, MapPin, Phone, AlertTriangle } 
 import { toast } from 'sonner';
 import type { Godown, GodownAgreement, GodownOwnershipType } from '@/types/godown';
 import { OWNERSHIP_LABELS, RENTED_TYPES } from '@/types/godown';
+import { onEnterNext } from '@/lib/keyboard';
 
 const STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Andaman & Nicobar Islands'];
 const OWN_C:Record<string,string>={own_own_stock:'bg-emerald-500/10 text-emerald-700',own_third_party_stock:'bg-blue-500/10 text-blue-700',third_party_our_stock:'bg-amber-500/10 text-amber-700',third_party_third_party_stock:'bg-slate-500/10 text-slate-600',job_work_location:'bg-purple-500/10 text-purple-700',consignment_at_dealer:'bg-cyan-500/10 text-cyan-700',cwc_swc_godown:'bg-orange-500/10 text-orange-700',customs_bonded:'bg-red-500/10 text-red-700',sez_ftz:'bg-indigo-500/10 text-indigo-700'};
@@ -66,11 +67,11 @@ export function StorageMatrixPanel(){
     g.code.toLowerCase().includes(search.toLowerCase()));
 
     return (
-    <div className='max-w-5xl mx-auto space-y-6 p-6'>
+    <div data-keyboard-form className='max-w-5xl mx-auto space-y-6 p-6'>
     <div className='flex items-center justify-between'>
     <div><h1 className='text-2xl font-bold flex items-center gap-2'><Warehouse className='h-6 w-6'/>Storage Matrix</h1>
     <p className='text-sm text-muted-foreground'>Godown hierarchy — 5 levels optional (Godown → Zone → Rack → Shelf → Bin)</p></div>
-    <Button size='sm' className='gap-1.5' onClick={openC}><Plus className='h-4 w-4'/>Add Godown</Button>
+    <Button data-primary size='sm' className='gap-1.5' onClick={openC}><Plus className='h-4 w-4'/>Add Godown</Button>
     </div>
     <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
     <Card><CardHeader className='pb-2'><CardDescription>Total Godowns</CardDescription><CardTitle className='text-2xl'>{godowns.length}</CardTitle></CardHeader></Card>
@@ -86,8 +87,7 @@ export function StorageMatrixPanel(){
     <TableBody>
     {fil.length===0?(<TableRow><TableCell colSpan={8} className='text-center py-16 text-muted-foreground'>
     <Warehouse className='h-10 w-10 mx-auto mb-3 opacity-20'/>
-    <p className='text-sm font-semibold mb-1 text-foreground'>No godowns yet</p>
-    <Button size='sm' className='mt-2' onClick={openC}><Plus className='h-4 w-4 mr-1'/>Add Godown</Button>
+    <p className='text-sm font-semibold mb-1 text-foreground'>No godowns<Button data-primary size='sm' className='mt-2' onClick={openC}><Plus className='h-4 w-4 mr-1'/>Add Godown</Button>down</Button>
     </TableCell></TableRow>):fil.map(g=>(
     <TableRow key={g.id} className='group'>
     <TableCell><Badge variant='secondary' className='font-mono text-xs'>{g.code}</Badge></TableCell>
@@ -112,7 +112,7 @@ export function StorageMatrixPanel(){
     <TabsList><TabsTrigger value='details'>Details</TabsTrigger><TabsTrigger value='contact'>Contact & Capacity</TabsTrigger>{showA&&<TabsTrigger value='agreement'>Rental Agreement</TabsTrigger>}</TabsList>
 
     <TabsContent value='details' className='space-y-4 mt-4'>
-    <div className='grid grid-cols-3 gap-4'>
+    <div data-keyboard-form className='grid grid-cols-3 gap-4'>
     <div className='space-y-1.5'><Label>Code *</Label><Input placeholder='GDN-MUM-01' value={gf.code} onChange={e=>setGf(f=>({...f,code:e.target.value.toUpperCase()}))}/></div>
     <div className='col-span-2 space-y-1.5'><Label>Name *</Label><Input placeholder='Mumbai Main Warehouse' value={gf.name} onChange={e=>setGf(f=>({...f,name:e.target.value}))}/></div>
     </div>
@@ -191,7 +191,7 @@ export function StorageMatrixPanel(){
     </div>
     </TabsContent>)}
     </Tabs>
-    <DialogFooter className='mt-4'><Button variant='outline' onClick={()=>setOpen(false)}>Cancel</Button><Button onClick={handleSave}>{edit?'Update':'Create'} Godown</Button></DialogFooter>
+    <DialogFooter className='mt-4'><Button variant='outline' onClick={()=>setOpen(false)}>Cancel</Button><Button data-primary onClick={handleSave}>{edit?'Update':'Create'} Godown</Button></DialogFooter>
     </DialogContent></Dialog>
     </div>
     );

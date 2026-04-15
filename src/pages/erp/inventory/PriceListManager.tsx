@@ -16,6 +16,7 @@ import { TrendingDown, Plus, Search, Edit2, Trash2, ChevronRight, CheckCircle2, 
 import { toast } from 'sonner';
 import type { PriceList, PriceListItem, PriceListType } from '@/types/price-list';
 import type { InventoryItem } from '@/types/inventory-item';
+import { onEnterNext } from '@/lib/keyboard';
 
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';
@@ -294,7 +295,7 @@ export function PriceListsPanel() {
   };
 
   return (
-    <div className="max-w-full mx-auto space-y-4 p-6">
+    <div data-keyboard-form className="max-w-full mx-auto space-y-4 p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -546,7 +547,7 @@ export function PriceListsPanel() {
             </SheetTitle>
           </SheetHeader>
           {activeList && (
-            <div className="mt-4 space-y-4">
+            <div data-keyboard-form className="mt-4 space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">{activeListItems.length} items in this list</p>
                 <Button size="sm" className="gap-1"
@@ -599,7 +600,7 @@ export function PriceListsPanel() {
           <DialogHeader>
             <DialogTitle>{editList ? 'Edit Price List' : 'New Price List'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>List Name *</Label>
               <Input placeholder="e.g. Wholesale FY26, Export USD, Diwali Sale" value={listForm.name} onChange={e => setListForm(f => ({ ...f, name: e.target.value }))} />
@@ -685,7 +686,7 @@ export function PriceListsPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setListOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveList}>{editList ? 'Update' : 'Create'} List</Button>
+            <Button data-primary onClick={handleSaveList}>{editList ? 'Update' : 'Create'} List</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -697,7 +698,7 @@ export function PriceListsPanel() {
             <DialogTitle>{editPLItem ? 'Edit Item Price' : 'Add Item to List'}</DialogTitle>
             <DialogDescription>{activeList?.name}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             {selItem ? (
               <div className="p-2.5 border rounded-lg bg-muted/30">
                 <p className="text-sm font-medium">{selItem.name}</p>
@@ -749,7 +750,7 @@ export function PriceListsPanel() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setItemOpen(false); setSelItem(null); setEditPLItem(null); }}>Cancel</Button>
+            <Button data-primary variant="outline" onClick={() => { setItemOpen(false); setSelItem(null); setEditPLItem(null); }}>Cancel</Button>
             <Button onClick={addItemToList}>{editPLItem ? 'Update' : 'Add'}</Button>
           </DialogFooter>
         </DialogContent>
@@ -762,7 +763,7 @@ export function PriceListsPanel() {
             <DialogTitle>Fill Column: {lists.find(l => l.id === fillListId)?.name}</DialogTitle>
             <DialogDescription>Set prices for all visible items ({filteredItems.length}) in one action</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Fill Mode</Label>
               <Select value={fillMode} onValueChange={v => setFillMode(v as any)}>

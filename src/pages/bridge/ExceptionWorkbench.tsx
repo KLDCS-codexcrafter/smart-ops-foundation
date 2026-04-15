@@ -23,6 +23,7 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 // Step 1 — Exception types
 type ExceptionCode =
@@ -294,7 +295,7 @@ export default function ExceptionWorkbench() {
               <>
                 <SheetHeader>
                   <SheetTitle className="font-mono text-lg text-primary">{selectedExc.id}</SheetTitle>
-                  <div className="flex gap-2 mt-1 flex-wrap">
+                  <div data-keyboard-form className="flex gap-2 mt-1 flex-wrap">
                     <span className="font-mono text-xs text-foreground border border-border rounded-md px-2 py-0.5">{selectedExc.code}</span>
                     <span className="text-xs text-muted-foreground border border-border rounded-md px-2 py-0.5">{cat.category}</span>
                     <span className={cn("text-xs border rounded-md px-2 py-0.5", SEVERITY_COLOR[cat.severity])}>

@@ -12,6 +12,7 @@ import { PackageOpen, CheckCircle2, Info, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
+import { onEnterNext } from '@/lib/keyboard';
 
 const OSKEY = 'erp_item_opening_stock';
 const IKEY = 'erp_inventory_items';
@@ -220,7 +221,7 @@ export function OpeningStockPanel() {
   };
 
   return (
-    <div className="max-w-full mx-auto space-y-4 p-6">
+    <div data-keyboard-form className="max-w-full mx-auto space-y-4 p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>

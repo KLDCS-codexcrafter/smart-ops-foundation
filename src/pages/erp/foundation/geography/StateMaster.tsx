@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates } from '@/data/india-geography';
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface StateRecord {
   code: string; name: string; countryCode: string;
@@ -167,7 +168,7 @@ export default function StateMaster() {
               </Button>
             )}
             {showUAESeed && (
-              <Button variant="outline" className="gap-1.5" onClick={() => { setPreviewTarget('uae'); setPreviewOpen(true); }}>
+              <Button data-primary variant="outline" className="gap-1.5" onClick={() => { setPreviewTarget('uae'); setPreviewOpen(true); }}>
                 <Zap className="h-4 w-4" /> Auto-Create 7 Emirates
               </Button>
             )}
@@ -256,7 +257,7 @@ export default function StateMaster() {
                 {previewTarget === 'india' ? 'Preview: 38 Indian States/UTs' : 'Preview: 7 UAE Emirates'}
               </DialogTitle>
             </DialogHeader>
-            <div className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
+            <div data-keyboard-form className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
               {(previewTarget === 'india' ? indianStates : UAE_EMIRATES).map(s => (
                 <div key={s.code ?? s.name} className="flex items-center gap-2 p-2 rounded border text-sm">
                   <span className="font-mono text-xs w-16">{s.code}</span>
@@ -282,7 +283,7 @@ export default function StateMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit State' : 'Add State'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            <div data-keyboard-form className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Code *</Label>
@@ -332,7 +333,7 @@ export default function StateMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

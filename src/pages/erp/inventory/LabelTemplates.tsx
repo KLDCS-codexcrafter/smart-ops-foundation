@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tag, Plus, Search, Edit2, Trash2, Copy, ShieldCheck, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LabelTemplate, LabelType, LabelSize, LabelBarcodeType } from '@/types/label-template';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_label_templates';
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
@@ -126,7 +127,7 @@ export function LabelTemplatesPanel() {
   const activeCount = templates.filter(t => t.is_active).length;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5 p-6">
+    <div data-keyboard-form className="max-w-6xl mx-auto space-y-5 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Tag className="h-6 w-6" />Label Templates</h1>
@@ -215,7 +216,7 @@ export function LabelTemplatesPanel() {
             <DialogTitle>{edit ? `Edit: ${edit.name}` : 'New Label Template'}</DialogTitle>
             <DialogDescription>Configure what appears on this label layout</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5 col-span-2">
                 <Label>Template Name *</Label>
@@ -351,7 +352,7 @@ export function LabelTemplatesPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Template</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Template</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

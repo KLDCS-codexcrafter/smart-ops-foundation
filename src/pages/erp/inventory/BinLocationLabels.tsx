@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MapPin, Plus, Search, Edit2, Trash2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BinLabel } from '@/types/bin-label';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_bin_labels';
 const GKEY = 'erp_godowns';
@@ -89,7 +90,7 @@ export function BinLocationLabelsPanel() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5 p-6">
+    <div data-keyboard-form className="max-w-6xl mx-auto space-y-5 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><MapPin className="h-6 w-6" />Bin Location Labels</h1>
@@ -155,7 +156,7 @@ export function BinLocationLabelsPanel() {
             <DialogTitle>{edit ? 'Edit Bin Label' : 'New Bin Location Label'}</DialogTitle>
             <DialogDescription>Location code auto-generates from fields below</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Godown *</Label>
               <Select value={form.godown_id || 'none'} onValueChange={v => { const g = godowns.find((x: any) => x.id === v); setForm(f => ({ ...f, godown_id: v === 'none' ? '' : v, godown_name: g?.name || '' })); }}>
@@ -200,7 +201,7 @@ export function BinLocationLabelsPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Label</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Label</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

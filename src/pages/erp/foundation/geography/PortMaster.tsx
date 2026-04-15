@@ -30,6 +30,7 @@ import { Anchor, Plus, Search, Edit, Trash2, Zap, ArrowLeft, Info } from 'lucide
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
+import { onEnterNext } from '@/lib/keyboard';
   INDIA_PORTS, UAE_PORTS, type PortRecord, type PortType, type CustomsZone,
 } from '@/data/geo-seed-data';
 
@@ -285,7 +286,7 @@ export default function PortMaster() {
                 Preview: {previewTarget === 'india' ? '21 Indian Ports' : '8 UAE Ports'}
               </DialogTitle>
             </DialogHeader>
-            <div className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
+            <div data-keyboard-form className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
               {(previewTarget === 'india' ? INDIA_PORTS : UAE_PORTS).map(p => (
                 <div key={p.portCode} className="flex items-center gap-2 p-2 rounded border text-sm">
                   <span className="font-mono text-xs w-16">{p.portCode}</span>
@@ -307,7 +308,7 @@ export default function PortMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit Port' : 'Add Port'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div data-keyboard-form className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Port Code *</Label>
@@ -399,7 +400,7 @@ export default function PortMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

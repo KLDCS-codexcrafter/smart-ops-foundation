@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { onEnterNext } from '@/lib/keyboard';
 
 interface ExportJob {
   id: string;
@@ -167,7 +168,7 @@ export default function ExportHub() {
             {scheduleEnabled && (
               <div>
                 <label className="text-xs text-muted-foreground mb-1.5 block">Schedule Date & Time</label>
-                <Input type="datetime-local" />
+                <Input type="datetime-local" onKeyDown={onEnterNext} />
               </div>
             )}
 

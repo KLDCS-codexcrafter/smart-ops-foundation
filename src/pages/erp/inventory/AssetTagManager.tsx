@@ -14,6 +14,7 @@ import { ScanLine, Plus, Search, Edit2, Trash2, ArrowRightLeft, CheckSquare } fr
 import { toast } from 'sonner';
 import type { AssetTag, CustodyTransfer } from '@/types/asset-tag';
 import type { InventoryItem } from '@/types/inventory-item';
+import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_asset_tags';
 const CTKEY = 'erp_custody_transfers';
@@ -122,7 +123,7 @@ export function AssetTagManagerPanel() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5 p-6">
+    <div data-keyboard-form className="max-w-6xl mx-auto space-y-5 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><ScanLine className="h-6 w-6" />Asset Tag Manager</h1>
@@ -207,7 +208,7 @@ export function AssetTagManagerPanel() {
             <DialogTitle>{edit ? 'Edit Asset Tag' : 'New Asset Tag'}</DialogTitle>
             <DialogDescription>Tag a Fixed Asset for audit compliance and physical tracking</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Asset Tag Number</Label>
@@ -299,7 +300,7 @@ export function AssetTagManagerPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Tag</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Tag</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -311,7 +312,7 @@ export function AssetTagManagerPanel() {
             <DialogTitle>Custody Transfer — {xferTag?.asset_tag_number}</DialogTitle>
             <DialogDescription>Transfer {xferTag?.item_name} from {xferTag?.custodian_name} ({xferTag?.department})</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Transfer To — Department *</Label>
               <Select value={xferForm.to_department || 'none'}

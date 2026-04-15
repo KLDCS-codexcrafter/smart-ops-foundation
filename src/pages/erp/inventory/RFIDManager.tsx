@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wifi, Plus, Search, Edit2, Trash2, Radio, Zap, Info, Tag, Activity, ScanLine, Package, MapPin, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RFIDTag, RFIDTagStatus, RFIDEvent } from '@/types/rfid-tag';
+import { onEnterNext } from '@/lib/keyboard';
 
 const TAG_KEY = 'erp_rfid_tags';
 const EVT_KEY = 'erp_rfid_events';
@@ -157,7 +158,7 @@ export function RFIDManagerPanel() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-7xl mx-auto space-y-6 p-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Wifi className="h-6 w-6" />RFID Manager</h1>
@@ -349,7 +350,7 @@ export function RFIDManagerPanel() {
             <DialogTitle>{editId ? 'Edit RFID Tag' : 'Register RFID Tag'}</DialogTitle>
             <DialogDescription>{editId ? 'Update tag details' : 'Register a new RFID tag and optionally assign it to an item'}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             {/* Tag UID */}
             <div className="space-y-1.5">
               <Label>Tag UID *</Label>

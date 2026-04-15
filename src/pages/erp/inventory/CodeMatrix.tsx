@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Hash, Plus, Edit2, Trash2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CodeMatrixRule, BarcodeType } from '@/types/code-matrix';
+import { onEnterNext } from '@/lib/keyboard';
 
 const BARCODE_TYPES: { value: BarcodeType; label: string; desc: string }[] = [
   { value: 'EAN13', label: 'EAN-13', desc: 'Standard retail barcode (13 digits)' },
@@ -97,7 +98,7 @@ export function CodeMatrixPanel() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div data-keyboard-form className="max-w-5xl mx-auto space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -107,7 +108,7 @@ export function CodeMatrixPanel() {
             Item code generation rules — applied when items are created
           </p>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={openC}>
+        <Button data-primary size="sm" className="gap-1.5" onClick={openC}>
           <Plus className="h-4 w-4" /> Add Rule
         </Button>
       </div>
@@ -139,7 +140,7 @@ export function CodeMatrixPanel() {
                   <Hash className="h-10 w-10 mx-auto mb-3 opacity-20" />
                   <p className="text-sm font-semibold text-foreground mb-1">No code rules yet</p>
                   <p className="text-xs mb-4">Define how item codes are generated — prefix, sequence, year</p>
-                  <Button size="sm" onClick={openC}><Plus className="h-4 w-4 mr-1" />Add Rule</Button>
+     <Button data-primary size="sm" onClick={openC}><Plus className="h-4 w-4 mr-1" />Add Rule</Button>Rule</Button>
                 </TableCell></TableRow>
               ) : rules.map(r => {
                 const preview = genPreview(r);
@@ -200,7 +201,7 @@ export function CodeMatrixPanel() {
             <DialogTitle>{edit ? `Edit: ${edit.name}` : 'New Code Rule'}</DialogTitle>
             <DialogDescription>Define the format for auto-generated item codes</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div data-keyboard-form className="space-y-4">
             <div className="space-y-1.5">
               <Label>Rule Name *</Label>
               <Input placeholder="e.g. Default Item Code, Steel Items Code"
@@ -305,7 +306,7 @@ export function CodeMatrixPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>{edit ? 'Update' : 'Create'} Rule</Button>
+            <Button data-primary onClick={handleSave}>{edit ? 'Update' : 'Create'} Rule</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

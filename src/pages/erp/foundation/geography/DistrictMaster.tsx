@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, getDistrictsByState } from '@/data/india-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS } from '@/data/geo-seed-data';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface DistrictRecord {
   code: string; name: string; stateCode: string; countryCode: string;
@@ -272,7 +273,7 @@ export default function DistrictMaster() {
             <DialogHeader>
               <DialogTitle>Preview: {previewData.items.length} {countryFilter === 'AE' ? 'Areas' : 'Districts'} for {previewData.name}</DialogTitle>
             </DialogHeader>
-            <div className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
+            <div data-keyboard-form className="overflow-y-auto flex-1 -mx-6 px-6 space-y-1">
               {previewData.items.map(d => (
                 <div key={d.code} className="flex items-center gap-2 p-2 rounded border text-sm">
                   <span className="font-mono text-xs w-24">{d.code}</span>
@@ -294,7 +295,7 @@ export default function DistrictMaster() {
             <DialogHeader>
               <DialogTitle>{editIndex !== null ? 'Edit District' : 'Add District'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            <div data-keyboard-form className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Code</Label>
@@ -344,7 +345,7 @@ export default function DistrictMaster() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setFormOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
+              <Button data-primary onClick={handleSave}>{editIndex !== null ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
