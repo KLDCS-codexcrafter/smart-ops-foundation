@@ -1,23 +1,41 @@
 import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { ArrowRight, Settings2, Grid3X3, Hash } from 'lucide-react';
+import {
+  PackageOpen, ArrowRight, Warehouse, Truck,
+  ScanLine, GitBranch, LayoutGrid, Clock,
+} from 'lucide-react';
 
-const INV_CARDS = [
+const COMING_FEATURES = [
   {
-    title: 'Parametric Hub',
-    desc: 'Parameter templates, stock group assignments and attribute library',
-    icon: Settings2, href: '/erp/inventory-hub/parametric',
+    icon: PackageOpen,
+    title: 'Goods Receipt (GRN)',
+    desc: 'Record vendor deliveries, QC inspection routing and 3-way PO match',
   },
   {
-    title: 'Batch Grid',
-    desc: 'Batch tracking, lot numbers, supplier batches, QC hold and expiry management',
-    icon: Grid3X3, href: '/erp/inventory-hub/batch-grid',
+    icon: Truck,
+    title: 'Dispatch & Delivery',
+    desc: 'Outward goods, dispatch notes, vehicle and transporter tracking',
   },
   {
-    title: 'Serial Grid',
-    desc: 'Serial number tracking, IMEI, warranty and individual unit lifecycle',
-    icon: Hash, href: '/erp/inventory-hub/serial-grid',
+    icon: GitBranch,
+    title: 'Store-to-Store Transfers',
+    desc: 'RM to WIP to FG to Dispatch store movements with department attribution',
+  },
+  {
+    icon: Warehouse,
+    title: 'Bin & Rack Management',
+    desc: 'Zone, aisle, rack and bin allocation with pick-path optimisation',
+  },
+  {
+    icon: ScanLine,
+    title: 'Barcode & RFID Scanning',
+    desc: 'Live scan-based GRN, picking and dispatch with mobile devices',
+  },
+  {
+    icon: LayoutGrid,
+    title: 'Stock Position Dashboard',
+    desc: 'Real-time stock by godown, bin, batch and serial with aging',
   },
 ];
 
@@ -28,36 +46,73 @@ export function InventoryHubPanel() {
       <div className="min-h-screen flex flex-col w-full bg-background">
         <ERPHeader />
         <main className="flex-1 p-6">
-          <div className="max-w-5xl mx-auto space-y-8">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Inventory Hub</h1>
-              <p className="text-sm text-muted-foreground">
-                A.1 Parameter & Tracking — Stock Matrix, Batch, Serial
+          <div className="max-w-4xl mx-auto space-y-8">
+
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  Store Hub
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Physical warehouse and store operations
+                </p>
+              </div>
+              <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                Coming in Sprint 26
+              </span>
+            </div>
+
+            <div className="rounded-xl border bg-card p-5">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Store Hub covers all physical warehouse operations — inward receipts,
+                outward dispatch, inter-store stock movements and bin-level tracking.
+                Item masters, pricing, stock groups and parametric setup are managed
+                in Command Center &rarr; Inventory Masters.
               </p>
             </div>
+
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-3">
-                A.1 — Parameter & Tracking
+                What&apos;s coming in Store Hub
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {INV_CARDS.map(c => (
-                  <button key={c.title} onClick={() => navigate(c.href)}
-                    className="group flex flex-col gap-3 p-5 rounded-xl border bg-card
-                    hover:border-primary/40 hover:bg-accent/30 transition-all text-left">
-                    <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <c.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {COMING_FEATURES.map(f => (
+                  <div key={f.title} className="flex gap-3 p-4 rounded-xl border bg-card/60">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <f.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {f.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {f.desc}
+                      </p>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
+
+            <div
+              onClick={() => navigate('/erp/command-center')}
+              className="flex items-center justify-between p-4 rounded-xl
+                border border-border bg-card hover:bg-accent cursor-pointer
+                transition-colors"
+            >
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Item masters are in Command Center
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  ItemCraft, Stock Groups, Pricing, UOM, Batch/Serial
+                  tracking setup and Labels
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+
           </div>
         </main>
       </div>

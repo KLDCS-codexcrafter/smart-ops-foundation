@@ -62,7 +62,7 @@ export function FineCoreHubPanel() {
   return (
     <div data-keyboard-form className="p-6 space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">FineCore — Transaction Register</h1>
+        <h1 className="text-2xl font-bold text-foreground">Fin Core — Transaction Register</h1>
         <p className="text-sm text-muted-foreground">Post, view and manage all accounting and inventory vouchers</p>
       </div>
 
@@ -122,7 +122,7 @@ export default function FineCoreHub() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[
-          { label: 'FineCore', href: '/erp/finecore' },
+          { label: 'Fin Core', href: '/erp/finecore' },
         ]} showDatePicker={false} showCompany={false} />
         <main>
           <FineCoreHubPanel />
