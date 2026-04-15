@@ -25,10 +25,11 @@ interface VoucherFormShellProps {
   showTerms: boolean;
   showPaymentTerms: boolean;
   defaultOpen?: boolean;
+  entityCode?: string;
 }
 
 export function VoucherFormPanel({
-  voucherTypeName, title, showTerms, showPaymentTerms, defaultOpen = false,
+  voucherTypeName, title, showTerms, showPaymentTerms, defaultOpen = false, entityCode = 'SMRT',
 }: VoucherFormShellProps) {
   const [form, setForm] = useState<Partial<Voucher>>({
     voucher_type_name: voucherTypeName,
