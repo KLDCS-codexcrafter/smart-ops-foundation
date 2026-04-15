@@ -107,19 +107,22 @@ const l3Name = (code: string): string => {
 
 // ── 2.4 Default Ledger Definitions ──────────────────────────────────────────
 
+const isCompany = (e: string) => ['Private Limited', 'Public Limited', 'OPC'].includes(e);
+const isPartnershipOrLLP = (e: string) => ['LLP', 'Partnership'].includes(e);
+const isProprietorshipOrHUF = (e: string) => ['Sole Proprietorship', 'HUF'].includes(e);
+const isExportEntity = (o: SetupOptions) => o.businessActivity === 'Import / Export' || (o as any).specialZone === 'SEZ';
+
 const createDefaultLedgers = (opts: SetupOptions): number => {
-  const isCo = ['Private Limited', 'Public Limited', 'OPC'].includes(opts.businessEntity);
-  const isLLP = ['LLP', 'Partnership'].includes(opts.businessEntity);
   const isMfg = opts.businessActivity === 'Manufacturing';
-  const isTrade = ['Trading', 'Import / Export', 'Distribution'].includes(opts.businessActivity);
   const isService = ['Services', 'IT Services', 'Consulting'].includes(opts.businessActivity);
+  const sc = opts.shortCode;
 
   const ledgers: Omit<AnyLedgerDefinition, 'id'>[] = [
     // Cash
     { ledgerType: 'cash', name: 'Cash', code: 'CASH-000001', numericCode: '1203-0001', parentGroupCode: 'CASH', parentGroupName: l3Name('CASH'), alias: 'Cash', entityId: null, entityShortCode: null, location: 'Main Office', cashLimit: 0, alertThreshold: 0, isMainCash: true, voucherSeries: 'CR', status: 'active' },
     // P&L (entity-specific)
-    { ledgerType: 'equity', name: 'Profit & Loss A/c', code: `${opts.shortCode}-PL-000001`, parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'P&L', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' },
-    // GST — duties_tax type
+    { ledgerType: 'equity', name: 'Profit & Loss A/c', code: `${sc}-PL-000001`, parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'P&L', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+    // GST
     { ledgerType: 'duties_tax', name: 'CGST', code: 'CGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'cgst', calculationBasis: 'item_rate', rate: 0, alias: 'CGST', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'duties_tax', name: 'SGST', code: 'SGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'sgst', calculationBasis: 'item_rate', rate: 0, alias: 'SGST', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'duties_tax', name: 'IGST', code: 'IGST-000001', parentGroupCode: 'GSTP', parentGroupName: l3Name('GSTP'), taxType: 'gst', gstSubType: 'igst', calculationBasis: 'item_rate', rate: 0, alias: 'IGST', entityId: null, entityShortCode: null, status: 'active' },
@@ -172,13 +175,38 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     ledgers.push({ ledgerType: 'income', name: 'Service Revenue', code: 'SERV-000001', parentGroupCode: 'SERV', parentGroupName: l3Name('SERV'), alias: 'Serv Rev', entityId: null, entityShortCode: null, status: 'active' });
   }
 
-  // Capital: Company vs LLP/others
-  if (isCo) {
-    ledgers.push({ ledgerType: 'capital_equity', name: 'Share Capital', code: `${opts.shortCode}-CAP-000001`, parentGroupCode: 'EQSH', parentGroupName: l3Name('EQSH'), alias: 'Capital', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' });
-  } else if (isLLP) {
-    ledgers.push({ ledgerType: 'capital_equity', name: "Partners' Capital A/c", code: `${opts.shortCode}-CAP-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Capital', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' });
+  // Capital: branch by entity type (FIX 5 — LLP/Partnership gets CE-PP, not CE-SF)
+  if (isCompany(opts.businessEntity)) {
+    ledgers.push(
+      { ledgerType: 'capital_equity', name: 'Share Capital', code: `${sc}-SCAP-000001`, parentGroupCode: 'EQSH', parentGroupName: l3Name('EQSH'), alias: 'Share Cap', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'capital_equity', name: 'Securities Premium Reserve', code: `${sc}-SECP-000001`, parentGroupCode: 'RSRV', parentGroupName: l3Name('RSRV'), alias: 'Sec Prem', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+    );
+  } else if (isPartnershipOrLLP(opts.businessEntity)) {
+    ledgers.push(
+      { ledgerType: 'capital_equity', name: 'Partner A — Capital Account', code: `${sc}-PCAP1-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Partner A', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'capital_equity', name: 'Partner B — Capital Account', code: `${sc}-PCAP2-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Partner B', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'capital_equity', name: 'Partners Current Account', code: `${sc}-PCA-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Partners Cur', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+    );
+  } else if (isProprietorshipOrHUF(opts.businessEntity)) {
+    ledgers.push(
+      { ledgerType: 'capital_equity', name: "Owner's Capital Account", code: `${sc}-OCAP-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Owner Cap', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'capital_equity', name: "Owner's Drawing Account", code: `${sc}-ODRW-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Owner Draw', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+    );
   } else {
-    ledgers.push({ ledgerType: 'capital_equity', name: "Proprietor's Capital A/c", code: `${opts.shortCode}-CAP-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Capital', entityId: opts.entityId, entityShortCode: opts.shortCode, status: 'active' });
+    // Branch Office or other — basic capital account
+    ledgers.push({ ledgerType: 'capital_equity', name: "Capital A/c", code: `${sc}-CAP-000001`, parentGroupCode: 'PCAP', parentGroupName: l3Name('PCAP'), alias: 'Capital', entityId: opts.entityId, entityShortCode: sc, status: 'active' });
+  }
+
+  // EXIM / SEZ ledgers (FIX 5)
+  if (isExportEntity(opts)) {
+    ledgers.push(
+      { ledgerType: 'asset', name: 'RODTEP Scrip Receivable', code: `${sc}-RDTP-000001`, parentGroupCode: 'ADTAX', parentGroupName: l3Name('ADTAX'), alias: 'RODTEP', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'asset', name: 'Duty Drawback Receivable', code: `${sc}-DDWB-000001`, parentGroupCode: 'ADTAX', parentGroupName: l3Name('ADTAX'), alias: 'Duty DBK', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'liability', name: 'LC Payable — Buyers Credit', code: `${sc}-LCPY-000001`, parentGroupCode: 'UNSB', parentGroupName: l3Name('UNSB'), alias: 'LC Pay', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'asset', name: 'Forward Contract (Hedge)', code: `${sc}-FWDC-000001`, parentGroupCode: 'STLA', parentGroupName: l3Name('STLA'), alias: 'Fwd Cont', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'income', name: 'Export Sales (FOB)', code: `${sc}-EXSALE-000001`, parentGroupCode: 'SALE', parentGroupName: l3Name('SALE'), alias: 'Exp Sales', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+      { ledgerType: 'income', name: 'Freight Inward (Reimbursable)', code: `${sc}-FRTI-000001`, parentGroupCode: 'OTHI', parentGroupName: l3Name('OTHI'), alias: 'Frt Inward', entityId: opts.entityId, entityShortCode: sc, status: 'active' },
+    );
   }
 
   // Deduplicate against existing
