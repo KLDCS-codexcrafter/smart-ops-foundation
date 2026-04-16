@@ -2040,6 +2040,10 @@ export function LedgerMasterPanel() {
       openingBalance: def.openingBalance ?? 0,
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
       description: def.description ?? '', notes: def.notes ?? '',
+      it_act_block: def.it_act_block ?? 'Plant & Machinery',
+      it_act_depr_rate: def.it_act_depr_rate ?? 15,
+      salvage_value_percent: def.salvage_value_percent ?? 5,
+      accum_depr_ledger_id: def.accum_depr_ledger_id ?? '',
     });
     setAssetOpen(true);
   };
@@ -2061,6 +2065,8 @@ export function LedgerMasterPanel() {
         usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
         vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
         description: assetForm.description, notes: assetForm.notes,
+        it_act_block: assetForm.it_act_block, it_act_depr_rate: assetForm.it_act_depr_rate,
+        salvage_value_percent: assetForm.salvage_value_percent, accum_depr_ledger_id: assetForm.accum_depr_ledger_id,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -2089,6 +2095,8 @@ export function LedgerMasterPanel() {
       status: 'active', description: assetForm.description, notes: assetForm.notes,
       suspendedBy: null, suspendedAt: null, suspendedReason: null,
       reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+      it_act_block: assetForm.it_act_block, it_act_depr_rate: assetForm.it_act_depr_rate,
+      salvage_value_percent: assetForm.salvage_value_percent, accum_depr_ledger_id: assetForm.accum_depr_ledger_id,
     };
     saveDefinition(def);
     autoCreateInstances(def, assetForm.openingBalance, 'Dr');
