@@ -22,12 +22,14 @@ interface GSTEntityRow {
   qrmpEnrolled: boolean;
   turnoverSlab: string;
   effectiveFrom: string;
+  tan_number: string;              // Company TAN — required for all 3 TDS returns
+  deductor_type: "company" | "non-company"; // drives major head 0020/0021
 }
 
 const MOCK_DATA: GSTEntityRow[] = [
-  { id: '1', entityName: '4DSmartOps Pvt Ltd', gstin: '27AABCU9603R1ZM', registrationType: 'Regular', eInvoice: true, qrmpEnrolled: false, turnoverSlab: 'Rs 5 Cr to Rs 20 Cr', effectiveFrom: '2023-04-01' },
-  { id: '2', entityName: 'SmartOps Digital LLP', gstin: '29AADCS1234P1Z5', registrationType: 'Regular', eInvoice: false, qrmpEnrolled: true, turnoverSlab: 'Up to Rs 1.5 Cr', effectiveFrom: '2024-01-01' },
-  { id: '3', entityName: '4D Exports SEZ Unit', gstin: '27AABCU9603R2ZN', registrationType: 'SEZ Unit', eInvoice: true, qrmpEnrolled: false, turnoverSlab: 'Rs 20 Cr to Rs 100 Cr', effectiveFrom: '2023-07-01' },
+  { id: '1', entityName: '4DSmartOps Pvt Ltd', gstin: '27AABCU9603R1ZM', registrationType: 'Regular', eInvoice: true, qrmpEnrolled: false, turnoverSlab: 'Rs 5 Cr to Rs 20 Cr', effectiveFrom: '2023-04-01', tan_number: 'BLRK01234C', deductor_type: 'company' },
+  { id: '2', entityName: 'SmartOps Digital LLP', gstin: '29AADCS1234P1Z5', registrationType: 'Regular', eInvoice: false, qrmpEnrolled: true, turnoverSlab: 'Up to Rs 1.5 Cr', effectiveFrom: '2024-01-01', tan_number: 'MUMB56789D', deductor_type: 'company' },
+  { id: '3', entityName: '4D Exports SEZ Unit', gstin: '27AABCU9603R2ZN', registrationType: 'SEZ Unit', eInvoice: true, qrmpEnrolled: false, turnoverSlab: 'Rs 20 Cr to Rs 100 Cr', effectiveFrom: '2023-07-01', tan_number: '', deductor_type: 'non-company' },
 ];
 
 export function GSTEntityConfigPanel() {
@@ -75,6 +77,8 @@ export function GSTEntityConfigPanel() {
               <TableHead>Registration Type</TableHead>
               <TableHead className="text-center">E-Invoice</TableHead>
               <TableHead className="text-center">QRMP Enrolled</TableHead>
+              <TableHead>TAN Number</TableHead>
+              <TableHead>Deductor Type</TableHead>
               <TableHead>Turnover Slab</TableHead>
               <TableHead>Effective From</TableHead>
               <TableHead className="text-right">Action</TableHead>
@@ -92,6 +96,8 @@ export function GSTEntityConfigPanel() {
                 <TableCell className="text-center">
                   {r.qrmpEnrolled ? <Badge className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">QRMP</Badge> : <Minus className="h-4 w-4 text-muted-foreground mx-auto" />}
                 </TableCell>
+                <TableCell className="text-xs font-mono">{r.tan_number || <span className="text-red-500">Missing</span>}</TableCell>
+                <TableCell><Badge variant="outline" className="text-[10px]">{r.deductor_type === 'company' ? 'Company (0020)' : 'Non-Company (0021)'}</Badge></TableCell>
                 <TableCell className="text-xs">{r.turnoverSlab}</TableCell>
                 <TableCell className="text-xs">{r.effectiveFrom}</TableCell>
                 <TableCell className="text-right">
