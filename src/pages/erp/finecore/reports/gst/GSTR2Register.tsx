@@ -137,7 +137,7 @@ export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
             <SelectTrigger className="w-20 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{['2024', '2025', '2026', '2027'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={handleExport}><Download className="h-3.5 w-3.5 mr-1" />Export CSV</Button>
+          <Button data-primary variant="outline" size="sm" onClick={handleExport}><Download className="h-3.5 w-3.5 mr-1" />Export CSV</Button>
         </div>
       </div>
 
