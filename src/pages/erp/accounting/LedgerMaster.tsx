@@ -1492,6 +1492,10 @@ export function LedgerMasterPanel() {
     vendorId: '', vendorName: '',
     openingBalance: 0, scope: 'group' as 'group'|'entity', entityId: '',
     description: '', notes: '',
+    it_act_block: 'Plant & Machinery' as ITActBlock,
+    it_act_depr_rate: 15,
+    salvage_value_percent: 5,
+    accum_depr_ledger_id: '',
   };
   const [assetForm, setAssetForm] = useState(defaultAssetForm);
 
