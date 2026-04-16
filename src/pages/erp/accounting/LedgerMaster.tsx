@@ -830,12 +830,13 @@ const loadAssetDefs = (): AssetLedgerDefinition[] =>
 
 const saveDefinition = (def: AnyLedgerDefinition) => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
-  // [JWT] GET /api/accounting/ledger-definitions (group-scoped)
+  // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
-  // [JWT] POST /api/accounting/ledger-definitions (group-scoped)
+  // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
+  // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
   // [JWT] POST/PUT /api/group/finecore/ledger-definitions
 };
@@ -859,11 +860,12 @@ const hasLedgerData = (defId: string): boolean => {
 
 const removeDefinition = (defId: string): void => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
-  // [JWT] GET /api/accounting/ledger-definitions (group-scoped)
+  // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all = raw ? JSON.parse(raw) : [];
   const filtered = all.filter((d: any) => d.id !== defId);
-  // [JWT] DELETE /api/accounting/ledger-definitions/:id (group-scoped)
+  // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
+  // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
   // [JWT] DELETE /api/group/finecore/ledger-definitions/:id
   // Remove entity instances for this definition
