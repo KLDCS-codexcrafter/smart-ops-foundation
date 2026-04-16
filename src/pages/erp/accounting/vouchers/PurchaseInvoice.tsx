@@ -120,6 +120,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         round_off: 0, tds_applicable: false, status: 'posted',
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
+        po_ref: againstPO ? openPOs.find(p => p.id === againstPO)?.order_no : undefined,
       };
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
@@ -145,9 +146,13 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
           localStorage.setItem(advancesKey(entityCode), JSON.stringify(advStore));
         }
       }
+      // Fulfil PO if linked
+      if (againstPO) {
+        fulfillOrderLine(againstPO, gstTotals.total);
+      }
       toast.success('Purchase Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance]);
+  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstPO, openPOs, fulfillOrderLine]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
