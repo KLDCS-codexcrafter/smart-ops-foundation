@@ -440,6 +440,11 @@ interface AssetLedgerDefinition {
   reinstatedBy: string | null;
   reinstatedAt: string | null;
   reinstatedReason: string | null;
+  // Sprint 4 — Fixed Asset extensions
+  it_act_block: ITActBlock;
+  it_act_depr_rate: number;
+  salvage_value_percent: number;
+  accum_depr_ledger_id: string;
 }
 
 interface LoanRepaymentRecord {
