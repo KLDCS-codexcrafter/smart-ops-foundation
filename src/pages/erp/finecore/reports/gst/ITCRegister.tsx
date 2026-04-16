@@ -145,7 +145,7 @@ export function ITCRegisterPanel({ entityCode }: ITCRegisterPanelProps) {
         </div>
         <div className="flex items-center gap-2">
           <Select value={fy} onValueChange={setFy}>
-            <SelectTrigger className="w-28 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-28 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{fyOptions.map(f => <SelectItem key={f} value={f}>FY {f}</SelectItem>)}</SelectContent>
           </Select>
           <Button variant="outline" size="sm" onClick={() => exportCSV(`ITC_Register_${fy}.csv`,
@@ -187,7 +187,7 @@ export function ITCRegisterPanel({ entityCode }: ITCRegisterPanelProps) {
             <div>
               <Label className="text-xs">Reason</Label>
               <Select value={reversalReason} onValueChange={setReversalReason}>
-                <SelectTrigger className="h-8 text-xs" onKeyDown={onEnterNext}><SelectValue placeholder="Select reason" /></SelectTrigger>
+                <SelectTrigger className="h-8 text-xs" ><SelectValue placeholder="Select reason" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="sec_17_5">Section 17(5) — Blocked Credit</SelectItem>
                   <SelectItem value="rule_42">Rule 42 — Common Credit Reversal</SelectItem>

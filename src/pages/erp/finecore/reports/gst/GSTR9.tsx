@@ -97,7 +97,7 @@ export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
         </div>
         <div className="flex items-center gap-2">
           <Select value={fy} onValueChange={setFy}>
-            <SelectTrigger className="w-28 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-28 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{fyOptions.map(f => <SelectItem key={f} value={f}>FY {f}</SelectItem>)}</SelectContent>
           </Select>
           <Button size="sm" data-primary onClick={handleDownload}><Download className="h-3.5 w-3.5 mr-1" />Download JSON</Button>

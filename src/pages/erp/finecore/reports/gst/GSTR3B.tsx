@@ -105,11 +105,11 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
         <div className="flex items-center gap-2">
           {qrmpEnrolled && <Badge className="bg-blue-500/15 text-blue-700 border-blue-500/30 text-[10px]">QRMP Scheme</Badge>}
           <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-24 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-24 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{months.map((m, i) => <SelectItem key={m} value={m}>{monthNames[i]}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-20 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-20 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{['2024', '2025', '2026', '2027'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
           <Button size="sm" data-primary onClick={handleDownload}><Download className="h-3.5 w-3.5 mr-1" />Download JSON</Button>

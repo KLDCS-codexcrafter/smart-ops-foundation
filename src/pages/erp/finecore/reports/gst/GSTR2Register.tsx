@@ -130,11 +130,11 @@ export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
               value={partyFilter} onChange={e => setPartyFilter(e.target.value)} onKeyDown={onEnterNext} />
           </div>
           <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-24 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-24 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{months.map((m, i) => <SelectItem key={m} value={m}>{monthNames[i]}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-20 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-20 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{['2024', '2025', '2026', '2027'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
           <Button variant="outline" size="sm" onClick={handleExport}><Download className="h-3.5 w-3.5 mr-1" />Export CSV</Button>

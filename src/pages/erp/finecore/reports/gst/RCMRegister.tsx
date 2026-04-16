@@ -166,11 +166,11 @@ export function RCMRegisterPanel({ entityCode }: RCMRegisterPanelProps) {
         </div>
         <div className="flex items-center gap-2">
           <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-24 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-24 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{months.map((m, i) => <SelectItem key={m} value={m}>{monthNames[i]}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-20 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-20 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{['2024', '2025', '2026', '2027'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
           <Button size="sm" data-primary onClick={handlePostRCMJV} disabled={selected.size === 0}>

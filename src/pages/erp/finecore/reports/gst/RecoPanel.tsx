@@ -170,11 +170,11 @@ export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
             <Label className="text-xs">2B</Label>
           </div>
           <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-24 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-24 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{months.map((m, i) => <SelectItem key={m} value={m}>{monthNames[i]}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-20 h-8 text-xs" onKeyDown={onEnterNext}><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-20 h-8 text-xs" ><SelectValue /></SelectTrigger>
             <SelectContent>{['2024', '2025', '2026', '2027'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
         </div>
