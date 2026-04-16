@@ -311,6 +311,66 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       ss(rcmEntriesKey(entityCode), rcmStore);
     }
   }
+
+  // 6. Write TDS Deduction Entry
+  if (voucher.tds_applicable && (voucher.tds_amount ?? 0) > 0) {
+    const tdsStore = ls<TDSDeductionEntry>(tdsDeductionsKey(entityCode));
+    const quarter = getQuarter(voucher.date);
+    const isPayment = voucher.base_voucher_type === 'Payment';
+    const advanceTDS = getAdvanceTDSAlreadyDeducted(voucher.party_id ?? '', voucher.id, entityCode);
+    // [JWT] GET /api/accounting/ledger-definitions
+    const ldefs = ls<any>('erp_group_ledger_definitions');
+    const expLedger = ldefs.find((l: any) => voucher.ledger_lines?.some(ll => ll.ledger_id === l.id && l.isTdsApplicable));
+    tdsStore.push({
+      id: `tds-${Date.now()}`,
+      entity_id: entityCode,
+      source_voucher_id: voucher.id, source_voucher_no: voucher.voucher_no,
+      source_voucher_type: voucher.base_voucher_type as 'Purchase' | 'Payment' | 'Journal',
+      party_id: voucher.party_id ?? '', party_name: voucher.party_name ?? '',
+      party_pan: voucher.deductee_pan ?? '',
+      deductee_type: voucher.deductee_type ?? 'company',
+      tds_section: voucher.tds_section ?? '',
+      nature_of_payment: expLedger?.name ?? '',
+      tds_rate: voucher.tds_rate ?? 0,
+      gross_amount: voucher.gross_amount,
+      advance_tds_already: advanceTDS,
+      net_tds_amount: (voucher.tds_amount ?? 0) - advanceTDS,
+      date: voucher.date,
+      quarter, assessment_year: getAssessmentYear(voucher.date),
+      status: isPayment ? 'posted' : 'open',
+      created_at: now,
+    });
+    // [JWT] POST /api/compliance/tds-deductions
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+
+  // 7. Write Advance Entry for advance payments/receipts
+  const isAdvance = voucher.bill_references?.some(b => b.type === 'advance');
+  if (isAdvance) {
+    const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+    const isVendorAdvance = voucher.base_voucher_type === 'Payment';
+    const refNo = generateDocNo(isVendorAdvance ? 'ADVP' : 'ADVR', entityCode);
+    advStore.push({
+      id: `adv-${Date.now()}`, advance_ref_no: refNo,
+      entity_id: entityCode,
+      party_type: isVendorAdvance ? 'vendor' : 'customer',
+      party_id: voucher.party_id ?? '', party_name: voucher.party_name ?? '',
+      date: voucher.date,
+      source_voucher_id: voucher.id, source_voucher_no: voucher.voucher_no,
+      po_ref: voucher.po_ref ?? '', so_ref: '',
+      advance_amount: voucher.gross_amount,
+      tds_amount: voucher.tds_amount ?? 0,
+      net_amount: voucher.net_amount,
+      adjustments: [],
+      balance_amount: voucher.gross_amount,
+      tds_balance: voucher.tds_amount ?? 0,
+      status: 'open',
+      tds_status: (voucher.tds_amount ?? 0) > 0 ? 'deducted_inline' : 'na',
+      created_at: now, updated_at: now,
+    });
+    // [JWT] POST /api/compliance/advances
+    ss(advancesKey(entityCode), advStore);
+  }
 }
 
 // ── Cancel Voucher — reversal entries ────────────────────────────────
