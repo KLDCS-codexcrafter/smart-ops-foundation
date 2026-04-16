@@ -5022,6 +5022,38 @@ export function LedgerMasterPanel() {
                 </div>
               )}
             </div>
+            {/* IT Act Block & Fixed Asset Extensions */}
+            <div className="rounded-lg border border-border p-3 space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">IT Act / Fixed Asset</p>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">IT Act Block</Label>
+                <Select value={assetForm.it_act_block} onValueChange={(v: string) => {
+                  const block = v as ITActBlock;
+                  setAssetForm(f => ({ ...f, it_act_block: block, it_act_depr_rate: IT_ACT_RATES[block] }));
+                }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(IT_ACT_BLOCK_LABELS) as ITActBlock[]).map(k => (
+                      <SelectItem key={k} value={k}>{IT_ACT_BLOCK_LABELS[k]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">IT Act Depr Rate (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.it_act_depr_rate} onChange={e => setAssetForm(f => ({ ...f, it_act_depr_rate: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Salvage Value (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.salvage_value_percent} onChange={e => setAssetForm(f => ({ ...f, salvage_value_percent: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Accum. Depreciation Ledger ID</Label>
+                <Input value={assetForm.accum_depr_ledger_id} onChange={e => setAssetForm(f => ({ ...f, accum_depr_ledger_id: e.target.value }))} onKeyDown={onEnterNext} placeholder="e.g. ADEP-PPE ledger" />
+              </div>
+            </div>
             {/* Vendor Link */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
