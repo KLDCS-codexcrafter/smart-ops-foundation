@@ -1,5 +1,4 @@
 import React, { lazy, Suspense } from 'react';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
@@ -150,7 +149,7 @@ const AIInsights = lazy(() => import('./pages/tower/AIInsights'));
 const Themes = lazy(() => import('./pages/tower/Themes'));
 const BusinessUnitMaster = lazy(() => import('./pages/erp/masters/BusinessUnitMaster'));
 
-const queryClient = new QueryClient();
+
 
 const P = ProtectedRoute;
 
@@ -158,7 +157,6 @@ const App = () => (
   <ThemeProvider>
   <LanguageProvider>
   <GlobalDateRangeProvider>
-  <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <DishaniProvider>
         <Sonner />
@@ -326,7 +324,6 @@ const App = () => (
         </ErrorBoundary>
       </DishaniProvider>
     </TooltipProvider>
-  </QueryClientProvider>
   </GlobalDateRangeProvider>
   </LanguageProvider>
   </ThemeProvider>
