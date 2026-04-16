@@ -122,6 +122,9 @@ export interface Voucher {
   irn_status?: 'pending' | 'generated' | 'cancelled';
   from_ledger_name?: string;
   to_ledger_name?: string;
+  party_registration_type?: string;
+  party_country?: string;
+  party_lut_number?: string;
   from_godown_name?: string;
   to_godown_name?: string;
   status: 'draft' | 'posted' | 'cancelled';
@@ -233,6 +236,11 @@ export interface GSTEntry {
   is_inter_state: boolean;
   is_rcm: boolean;
   itc_eligible: boolean;
+  itc_reversal: number;
+  uqc: string;
+  rcm_section?: string;
+  qty?: number;
+  line_item_id?: string;
   irn?: string;
   ewb_no?: string;
   is_cancelled: boolean;

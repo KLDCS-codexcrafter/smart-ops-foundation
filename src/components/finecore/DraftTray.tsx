@@ -21,7 +21,7 @@ export type FineCoreModule =
   | 'fc-rpt-daybook' | 'fc-rpt-ledger' | 'fc-rpt-trial-balance'
   | 'fc-rpt-pl' | 'fc-rpt-bs' | 'fc-rpt-stock-summary'
   | 'fc-rpt-outstanding' | 'fc-rpt-26as' | 'fc-rpt-24q' | 'fc-rpt-challan'
-  | 'fc-gst-gstr1' | 'fc-gst-gstr3b' | 'fc-gst-2a' | 'fc-gst-itc'
+  | 'fc-gst-gstr1' | 'fc-gst-gstr3b' | 'fc-gst-2a' | 'fc-gst-itc' | 'fc-gst-gstr2' | 'fc-gst-gstr9'
   | 'fc-tds-advance'
   | 'fc-fa-register' | 'fc-fa-master' | 'fc-fa-depreciation'
   | 'fc-fa-amc' | 'fc-fa-disposal' | 'fc-fa-cwip' | 'fc-fa-reports';
