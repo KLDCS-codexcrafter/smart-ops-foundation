@@ -425,6 +425,30 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
     ownRCM.forEach(r => { r.status = 'cancelled'; r.cancelled_at = now; r.cancel_reason = 'Source voucher cancelled'; });
     ss(rcmEntriesKey(entityCode), rcmStore);
   }
+
+  // TDS cascade: if cancelled voucher was a TDS JV → reset linked entry to "open"
+  const tdsStore = ls<TDSDeductionEntry>(tdsDeductionsKey(entityCode));
+  const linkedTDS = tdsStore.find(t => t.tds_jv_id === voucherId);
+  if (linkedTDS) {
+    linkedTDS.status = 'open';
+    linkedTDS.tds_jv_id = undefined; linkedTDS.tds_jv_no = undefined;
+    // [JWT] PATCH /api/compliance/tds-deductions/:id
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+  // If source voucher cancelled, cascade-cancel its TDS entries
+  const ownTDS = tdsStore.filter(t => t.source_voucher_id === voucherId && t.status !== 'cancelled');
+  if (ownTDS.length > 0) {
+    ownTDS.forEach(t => { t.status = 'cancelled'; });
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+  // Advance cascade: cancel linked AdvanceEntry if source voucher cancelled
+  const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+  const ownAdv = advStore.find(a => a.source_voucher_id === voucherId);
+  if (ownAdv) {
+    ownAdv.status = 'cancelled'; ownAdv.updated_at = now;
+    // [JWT] PATCH /api/compliance/advances/:id
+    ss(advancesKey(entityCode), advStore);
+  }
 }
 
 // ── Template variable resolver ───────────────────────────────────────
