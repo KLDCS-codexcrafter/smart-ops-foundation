@@ -357,3 +357,7 @@ export function ExceptionWorkbenchPanel() {
     </BridgeLayout>
   );
 }
+
+export default function ExceptionWorkbench() {
+  return <ExceptionWorkbenchPanel />;
+}
