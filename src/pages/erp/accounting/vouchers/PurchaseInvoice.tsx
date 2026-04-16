@@ -1,5 +1,6 @@
 /**
  * PurchaseInvoice.tsx — Full Purchase Invoice form
+ * Sprint 3B: Advance Adjustment Enhancement
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
@@ -10,7 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ChevronDown, Send } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
@@ -21,9 +24,19 @@ import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
 import { TDSDeductionPanel } from '@/components/finecore/TDSDeductionPanel';
 import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
+import type { AdvanceEntry } from '@/types/compliance';
+import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+
+function ls<T>(key: string): T[] {
+  try {
+    // [JWT] GET /api/entity/storage/:key
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
 
 interface PurchaseInvoicePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -42,6 +55,20 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
   const [collapseOpen, setCollapseOpen] = useState(false);
+  const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
+  const [advancesOpen, setAdvancesOpen] = useState(false);
+
+  // Load open advances for vendor
+  const openAdvances = useMemo(() => {
+    if (!partyName) return [];
+    // [JWT] GET /api/masters/vendors
+    const vendors: any[] = (() => { try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]'); } catch { return []; } })();
+    const vendor = vendors.find((v: any) => v.partyName === partyName);
+    if (!vendor) return [];
+    // [JWT] GET /api/compliance/advances
+    return ls<AdvanceEntry>(advancesKey(entityCode))
+      .filter(a => a.party_id === vendor.id && a.party_type === 'vendor' && (a.status === 'open' || a.status === 'partial'));
+  }, [partyName, entityCode]);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
@@ -56,6 +83,11 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     { party_name: partyName, date, net_amount: gstTotals.total, vendor_bill_no: vendorBillNo } as Partial<Voucher>,
     null, null, 'Current User'
   ), [partyName, date, gstTotals.total, vendorBillNo]);
+
+  const handleLinkAdvance = (adv: AdvanceEntry) => {
+    setLinkedAdvance(adv);
+    toast.success(`Linked advance ${adv.advance_ref_no}`);
+  };
 
   const handlePost = useCallback(() => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
@@ -83,9 +115,30 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+
+      // Update advance if linked
+      if (linkedAdvance) {
+        // [JWT] PATCH /api/compliance/advances/:id
+        const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+        const adv = advStore.find(a => a.id === linkedAdvance.id);
+        if (adv) {
+          const adjAmount = Math.min(adv.balance_amount, gstTotals.total);
+          adv.adjustments.push({
+            invoice_id: voucher.id, invoice_no: voucher.voucher_no,
+            amount_adjusted: adjAmount, tds_adjusted: adv.tds_balance,
+            date: voucher.date,
+          });
+          adv.balance_amount -= adjAmount;
+          adv.tds_balance = 0;
+          adv.status = adv.balance_amount <= 0 ? 'adjusted' : 'partial';
+          adv.updated_at = now;
+          // [JWT] PATCH /api/compliance/advances
+          localStorage.setItem(advancesKey(entityCode), JSON.stringify(advStore));
+        }
+      }
       toast.success('Purchase Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
+  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -96,7 +149,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         formState: { party_name: partyName, date, vendor_bill_no: vendorBillNo, narration } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, partyName, date, vendorBillNo, inventoryLines, ledgerLines, narration]);
+  }, [onSaveDraft, partyName, date, vendorBillNo, narration]);
 
   return (
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
@@ -146,6 +199,67 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
           </div>
         </CardContent>
       </Card>
+
+      {/* Open Advances for this vendor */}
+      {openAdvances.length > 0 && (
+        <Collapsible open={advancesOpen} onOpenChange={setAdvancesOpen}>
+          <Card className="border-blue-500/20">
+            <CollapsibleTrigger asChild>
+              <button className="w-full flex items-center justify-between px-6 py-3 text-sm font-medium text-foreground hover:bg-accent/50 transition-colors rounded-t-lg">
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs">Open Advances for this vendor ({openAdvances.length})</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform ${advancesOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Ref No</TableHead>
+                      <TableHead className="text-xs">Date</TableHead>
+                      <TableHead className="text-xs text-right">Advance Amount</TableHead>
+                      <TableHead className="text-xs text-right">TDS Deducted</TableHead>
+                      <TableHead className="text-xs text-right">Balance</TableHead>
+                      <TableHead className="text-xs text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {openAdvances.map(adv => (
+                      <TableRow key={adv.id}>
+                        <TableCell className="text-xs font-mono">{adv.advance_ref_no}</TableCell>
+                        <TableCell className="text-xs">{adv.date}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">₹{adv.advance_amount.toLocaleString('en-IN')}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">₹{adv.tds_amount.toLocaleString('en-IN')}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">₹{adv.balance_amount.toLocaleString('en-IN')}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="outline" size="sm" className="h-6 text-[10px]"
+                            onClick={() => handleLinkAdvance(adv)}
+                            disabled={linkedAdvance?.id === adv.id}>
+                            <Link2 className="h-3 w-3 mr-1" />
+                            {linkedAdvance?.id === adv.id ? 'Linked' : 'Link to this Invoice'}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+      )}
+
+      {linkedAdvance && (
+        <Alert className="border-green-500/30 bg-green-500/5">
+          <Info className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-xs text-green-700">
+            Advance {linkedAdvance.advance_ref_no} linked. Advance TDS ₹{linkedAdvance.tds_amount.toLocaleString('en-IN')} already deducted. Net TDS JV required: ₹{Math.max(0, (gstTotals.total * 0.1) - linkedAdvance.tds_amount).toLocaleString('en-IN')} (estimated).
+          </AlertDescription>
+        </Alert>
+      )}
 
       {invoiceMode === 'item' ? (
         <InventoryLineGrid lines={inventoryLines} onChange={setInventoryLines} mode="purchase" showTax isInterState={false} />

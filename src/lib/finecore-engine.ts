@@ -3,8 +3,8 @@
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
-import type { RCMEntry } from '@/types/compliance';
-import { rcmEntriesKey } from '@/types/compliance';
+import type { RCMEntry, TDSDeductionEntry, AdvanceEntry } from '@/types/compliance';
+import { rcmEntriesKey, tdsDeductionsKey, advancesKey } from '@/types/compliance';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
 
 // ── Storage key helpers ──────────────────────────────────────────────
@@ -69,6 +69,41 @@ function getFY(): string {
   const now = new Date();
   const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
+}
+
+// ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
+export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'ADVP' | 'ADVR', entityCode: string): string {
+  const key = `erp_doc_seq_${prefix}_${entityCode}`;
+  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
+  const raw = localStorage.getItem(key);
+  const seq = raw ? parseInt(raw, 10) + 1 : 1;
+  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode
+  localStorage.setItem(key, String(seq));
+  const fy = getFY();
+  return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
+}
+
+// ── TDS Helper Functions ─────────────────────────────────────────────
+function getQuarter(date: string): 'Q1' | 'Q2' | 'Q3' | 'Q4' {
+  const m = new Date(date).getMonth() + 1;
+  if (m >= 4 && m <= 6) return 'Q1';
+  if (m >= 7 && m <= 9) return 'Q2';
+  if (m >= 10 && m <= 12) return 'Q3';
+  return 'Q4';
+}
+
+function getAssessmentYear(date: string): string {
+  const y = new Date(date);
+  const yr = y.getMonth() >= 3 ? y.getFullYear() : y.getFullYear() - 1;
+  return `${yr + 1}-${String(yr + 2).slice(2)}`;
+}
+
+function getAdvanceTDSAlreadyDeducted(partyId: string, _invoiceId: string, entityCode: string): number {
+  // [JWT] GET /api/compliance/advances?party&type=vendor
+  const advances = ls<AdvanceEntry>(advancesKey(entityCode));
+  return advances
+    .filter(a => a.party_id === partyId && a.tds_amount > 0 && a.status !== 'cancelled')
+    .reduce((s, a) => s + a.tds_balance, 0);
 }
 
 // ── Supply type detection ────────────────────────────────────────────
@@ -276,6 +311,66 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       ss(rcmEntriesKey(entityCode), rcmStore);
     }
   }
+
+  // 6. Write TDS Deduction Entry
+  if (voucher.tds_applicable && (voucher.tds_amount ?? 0) > 0) {
+    const tdsStore = ls<TDSDeductionEntry>(tdsDeductionsKey(entityCode));
+    const quarter = getQuarter(voucher.date);
+    const isPayment = voucher.base_voucher_type === 'Payment';
+    const advanceTDS = getAdvanceTDSAlreadyDeducted(voucher.party_id ?? '', voucher.id, entityCode);
+    // [JWT] GET /api/accounting/ledger-definitions
+    const ldefs = ls<any>('erp_group_ledger_definitions');
+    const expLedger = ldefs.find((l: any) => voucher.ledger_lines?.some(ll => ll.ledger_id === l.id && l.isTdsApplicable));
+    tdsStore.push({
+      id: `tds-${Date.now()}`,
+      entity_id: entityCode,
+      source_voucher_id: voucher.id, source_voucher_no: voucher.voucher_no,
+      source_voucher_type: voucher.base_voucher_type as 'Purchase' | 'Payment' | 'Journal',
+      party_id: voucher.party_id ?? '', party_name: voucher.party_name ?? '',
+      party_pan: voucher.deductee_pan ?? '',
+      deductee_type: voucher.deductee_type ?? 'company',
+      tds_section: voucher.tds_section ?? '',
+      nature_of_payment: expLedger?.name ?? '',
+      tds_rate: voucher.tds_rate ?? 0,
+      gross_amount: voucher.gross_amount,
+      advance_tds_already: advanceTDS,
+      net_tds_amount: (voucher.tds_amount ?? 0) - advanceTDS,
+      date: voucher.date,
+      quarter, assessment_year: getAssessmentYear(voucher.date),
+      status: isPayment ? 'posted' : 'open',
+      created_at: now,
+    });
+    // [JWT] POST /api/compliance/tds-deductions
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+
+  // 7. Write Advance Entry for advance payments/receipts
+  const isAdvance = voucher.bill_references?.some(b => b.type === 'advance');
+  if (isAdvance) {
+    const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+    const isVendorAdvance = voucher.base_voucher_type === 'Payment';
+    const refNo = generateDocNo(isVendorAdvance ? 'ADVP' : 'ADVR', entityCode);
+    advStore.push({
+      id: `adv-${Date.now()}`, advance_ref_no: refNo,
+      entity_id: entityCode,
+      party_type: isVendorAdvance ? 'vendor' : 'customer',
+      party_id: voucher.party_id ?? '', party_name: voucher.party_name ?? '',
+      date: voucher.date,
+      source_voucher_id: voucher.id, source_voucher_no: voucher.voucher_no,
+      po_ref: voucher.po_ref ?? '', so_ref: '',
+      advance_amount: voucher.gross_amount,
+      tds_amount: voucher.tds_amount ?? 0,
+      net_amount: voucher.net_amount,
+      adjustments: [],
+      balance_amount: voucher.gross_amount,
+      tds_balance: voucher.tds_amount ?? 0,
+      status: 'open',
+      tds_status: (voucher.tds_amount ?? 0) > 0 ? 'deducted_inline' : 'na',
+      created_at: now, updated_at: now,
+    });
+    // [JWT] POST /api/compliance/advances
+    ss(advancesKey(entityCode), advStore);
+  }
 }
 
 // ── Cancel Voucher — reversal entries ────────────────────────────────
@@ -329,6 +424,30 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
   if (ownRCM.length > 0) {
     ownRCM.forEach(r => { r.status = 'cancelled'; r.cancelled_at = now; r.cancel_reason = 'Source voucher cancelled'; });
     ss(rcmEntriesKey(entityCode), rcmStore);
+  }
+
+  // TDS cascade: if cancelled voucher was a TDS JV → reset linked entry to "open"
+  const tdsStore = ls<TDSDeductionEntry>(tdsDeductionsKey(entityCode));
+  const linkedTDS = tdsStore.find(t => t.tds_jv_id === voucherId);
+  if (linkedTDS) {
+    linkedTDS.status = 'open';
+    linkedTDS.tds_jv_id = undefined; linkedTDS.tds_jv_no = undefined;
+    // [JWT] PATCH /api/compliance/tds-deductions/:id
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+  // If source voucher cancelled, cascade-cancel its TDS entries
+  const ownTDS = tdsStore.filter(t => t.source_voucher_id === voucherId && t.status !== 'cancelled');
+  if (ownTDS.length > 0) {
+    ownTDS.forEach(t => { t.status = 'cancelled'; });
+    ss(tdsDeductionsKey(entityCode), tdsStore);
+  }
+  // Advance cascade: cancel linked AdvanceEntry if source voucher cancelled
+  const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+  const ownAdv = advStore.find(a => a.source_voucher_id === voucherId);
+  if (ownAdv) {
+    ownAdv.status = 'cancelled'; ownAdv.updated_at = now;
+    // [JWT] PATCH /api/compliance/advances/:id
+    ss(advancesKey(entityCode), advStore);
   }
 }
 
