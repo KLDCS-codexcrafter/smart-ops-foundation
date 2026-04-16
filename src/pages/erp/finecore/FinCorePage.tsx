@@ -23,6 +23,8 @@ import { DebitNotePanel } from '@/pages/erp/accounting/vouchers/DebitNote';
 import { DeliveryNotePanel } from '@/pages/erp/accounting/vouchers/DeliveryNote';
 import { ReceiptNotePanel } from '@/pages/erp/accounting/vouchers/ReceiptNote';
 import { StockJournalPanel } from '@/pages/erp/accounting/vouchers/StockJournal';
+import { PurchaseOrderPanel } from '@/pages/erp/finecore/PurchaseOrder';
+import { SalesOrderPanel } from '@/pages/erp/finecore/SalesOrder';
 import { DayBookPanel } from './reports/DayBook';
 import { LedgerReportPanel } from './reports/LedgerReport';
 import { TrialBalancePanel } from './reports/TrialBalance';
@@ -70,6 +72,8 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-txn-delivery-note': 'Delivery Note',
   'fc-txn-receipt-note': 'Receipt Note (GRN)',
   'fc-inv-stock-journal': 'Stock Journal',
+  'fc-ord-purchase-order': 'Purchase Order',
+  'fc-ord-sales-order': 'Sales Order',
   'fc-rpt-daybook': 'Day Book',
   'fc-rpt-ledger': 'Ledger Report',
   'fc-rpt-trial-balance': 'Trial Balance',
@@ -145,6 +149,8 @@ export function FinCorePagePanel() {
       case 'fc-txn-delivery-note': return <DeliveryNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt-note': return <ReceiptNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-inv-stock-journal': return <StockJournalPanel onSaveDraft={addToDraftTray} />;
+      case 'fc-ord-purchase-order': return <PurchaseOrderPanel entityCode={entityCode} />;
+      case 'fc-ord-sales-order': return <SalesOrderPanel entityCode={entityCode} />;
       case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
       case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
       case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;

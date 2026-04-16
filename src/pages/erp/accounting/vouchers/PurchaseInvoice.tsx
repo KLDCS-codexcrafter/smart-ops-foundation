@@ -4,6 +4,7 @@
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,6 +28,7 @@ import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/v
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
+import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 
@@ -57,6 +59,13 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [collapseOpen, setCollapseOpen] = useState(false);
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [advancesOpen, setAdvancesOpen] = useState(false);
+  const [againstPO, setAgainstPO] = useState('');
+  const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
+  const openPOs = useMemo(() => {
+    const pos = getOpenOrdersForLookup('Purchase Order');
+    if (partyName) return pos.filter(p => p.party_name === partyName);
+    return pos;
+  }, [getOpenOrdersForLookup, partyName]);
 
   // Load open advances for vendor
   const openAdvances = useMemo(() => {
@@ -111,6 +120,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         round_off: 0, tds_applicable: false, status: 'posted',
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
+        po_ref: againstPO ? openPOs.find(p => p.id === againstPO)?.order_no : undefined,
       };
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
@@ -136,9 +146,13 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
           localStorage.setItem(advancesKey(entityCode), JSON.stringify(advStore));
         }
       }
+      // Fulfil PO if linked
+      if (againstPO) {
+        fulfillOrderLine(againstPO, gstTotals.total);
+      }
       toast.success('Purchase Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance]);
+  }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstPO, openPOs, fulfillOrderLine]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -186,15 +200,17 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
               <Input type="date" value={vendorBillDate} onChange={e => setVendorBillDate(e.target.value)} onKeyDown={onEnterNext} />
             </div>
             <div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Against PO No</Label>
-                    <Input disabled placeholder="Available in Sprint 25" className="opacity-50" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Available in Sprint 25 (Procure360)</TooltipContent>
-              </Tooltip>
+              <Label className="text-xs">Against PO No</Label>
+              <Select value={againstPO} onValueChange={setAgainstPO}>
+                <SelectTrigger><SelectValue placeholder="Select PO (optional)" /></SelectTrigger>
+                <SelectContent>
+                  {openPOs.map(po => (
+                    <SelectItem key={po.id} value={po.id}>
+                      {po.order_no} — {po.party_name} (pending ₹{po.pending_value.toLocaleString('en-IN')})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
