@@ -71,6 +71,41 @@ function getFY(): string {
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
 }
 
+// ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
+export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'ADVP' | 'ADVR', entityCode: string): string {
+  const key = `erp_doc_seq_${prefix}_${entityCode}`;
+  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
+  const raw = localStorage.getItem(key);
+  const seq = raw ? parseInt(raw, 10) + 1 : 1;
+  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode
+  localStorage.setItem(key, String(seq));
+  const fy = getFY();
+  return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
+}
+
+// ── TDS Helper Functions ─────────────────────────────────────────────
+function getQuarter(date: string): 'Q1' | 'Q2' | 'Q3' | 'Q4' {
+  const m = new Date(date).getMonth() + 1;
+  if (m >= 4 && m <= 6) return 'Q1';
+  if (m >= 7 && m <= 9) return 'Q2';
+  if (m >= 10 && m <= 12) return 'Q3';
+  return 'Q4';
+}
+
+function getAssessmentYear(date: string): string {
+  const y = new Date(date);
+  const yr = y.getMonth() >= 3 ? y.getFullYear() : y.getFullYear() - 1;
+  return `${yr + 1}-${String(yr + 2).slice(2)}`;
+}
+
+function getAdvanceTDSAlreadyDeducted(partyId: string, _invoiceId: string, entityCode: string): number {
+  // [JWT] GET /api/compliance/advances?party&type=vendor
+  const advances = ls<AdvanceEntry>(advancesKey(entityCode));
+  return advances
+    .filter(a => a.party_id === partyId && a.tds_amount > 0 && a.status !== 'cancelled')
+    .reduce((s, a) => s + a.tds_balance, 0);
+}
+
 // ── Supply type detection ────────────────────────────────────────────
 function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['supply_type'] {
   const partyReg = voucher.party_registration_type ?? 'regular';
