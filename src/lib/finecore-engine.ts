@@ -5,6 +5,9 @@
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
 import type { RCMEntry, TDSDeductionEntry, AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
 import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '@/types/compliance';
+import type { AssetUnitRecord } from '@/types/fixed-asset';
+import { faUnitsKey, IT_ACT_RATES } from '@/types/fixed-asset';
+import { mapUOMtoUQC } from '@/lib/uqcMap';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
 
 // ── Storage key helpers ──────────────────────────────────────────────
@@ -400,6 +403,43 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     }
     // [JWT] POST /api/compliance/tds-receivable
     ss(tdsReceivableKey(entityCode), rcvStore);
+  }
+
+  // 9. Write Asset Unit records (Capital Purchase only)
+  if (voucher.base_voucher_type === 'Capital Purchase' && voucher.asset_unit_lines?.length) {
+    // [JWT] GET /api/fixed-assets/units
+    const units = ls<AssetUnitRecord>(faUnitsKey(entityCode));
+    for (const line of voucher.asset_unit_lines) {
+      for (let i = 0; i < line.asset_id_count; i++) {
+        const seq = line.asset_id_from + i;
+        const asset_id = `${line.asset_id_prefix}/${line.asset_id_suffix}/${String(seq).padStart(3, '0')}`;
+        units.push({
+          id: `fau-${Date.now()}-${i}`,
+          entity_id: entityCode,
+          item_id: line.item_id, item_name: line.item_name,
+          ledger_definition_id: line.ledger_definition_id,
+          ledger_name: '',
+          asset_id, asset_id_prefix: line.asset_id_prefix,
+          asset_id_suffix: line.asset_id_suffix, asset_id_seq: seq,
+          gross_block_cost: line.cost_per_unit,
+          salvage_value: line.salvage_value,
+          accumulated_depreciation: 0,
+          net_book_value: line.cost_per_unit,
+          opening_wdv: line.cost_per_unit,
+          purchase_date: voucher.date,
+          put_to_use_date: line.put_to_use_date ?? '',
+          it_act_block: line.it_act_block,
+          it_act_depr_rate: IT_ACT_RATES[line.it_act_block],
+          location: line.location, department: line.department,
+          custodian_name: line.custodian_name,
+          status: line.put_to_use_date ? 'active' : 'cwip',
+          capital_purchase_voucher_id: voucher.id,
+          created_at: now, updated_at: now,
+        });
+      }
+    }
+    // [JWT] POST /api/fixed-assets/units
+    ss(faUnitsKey(entityCode), units);
   }
 }
 
