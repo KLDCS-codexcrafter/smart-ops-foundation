@@ -74,7 +74,7 @@ function getFY(): string {
 }
 
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
-export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'ADVP' | 'ADVR', entityCode: string): string {
+export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'SO' | 'ADVP' | 'ADVR', entityCode: string): string {
   const key = `erp_doc_seq_${prefix}_${entityCode}`;
   // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
   const raw = localStorage.getItem(key);

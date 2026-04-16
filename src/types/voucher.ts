@@ -129,6 +129,7 @@ export interface Voucher {
   vendor_bill_date?: string;
   grn_ref?: string;
   po_ref?: string;
+  so_ref?: string; // SO number that this Sales Invoice or Delivery Note fulfils
   vehicle_no?: string;
   transporter?: string;
   ewb_no?: string;
