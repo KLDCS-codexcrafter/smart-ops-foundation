@@ -110,7 +110,9 @@ interface CustomerMasterDefinition {
   termsOfDeliveryId: string;
   dispatchMode: 'road' | 'rail' | 'air' | 'sea' | 'courier' | 'hand' | '';
   status: 'active' | 'inactive';
-  default_currency: string;  // ISO code — billing currency for this customer
+  default_currency: string;
+  country: string;
+  lut_number: string;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -189,6 +191,8 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   referredBy: '', associatedDealer: '', otherReference: '',
   businessHours: '', termsOfDeliveryId: '', dispatchMode: '',
   status: 'active',
+  country: 'IN',
+  lut_number: '',
 };
 
 // ─── Panel Component ──────────────────────────────────────────

@@ -3,6 +3,9 @@
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
+import type { RCMEntry } from '@/types/compliance';
+import { rcmEntriesKey } from '@/types/compliance';
+import { mapUOMtoUQC } from '@/lib/uqcMap';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -66,6 +69,21 @@ function getFY(): string {
   const now = new Date();
   const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
+}
+
+// ── Supply type detection ────────────────────────────────────────────
+function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['supply_type'] {
+  const partyReg = voucher.party_registration_type ?? 'regular';
+  const partyCountry = voucher.party_country ?? 'IN';
+  if (partyCountry !== 'IN') {
+    return voucher.party_lut_number ? 'EXP_WP' : 'EXP_WOP';
+  }
+  if (partyReg === 'sez') {
+    return voucher.party_lut_number ? 'SEZWP' : 'SEZWOP';
+  }
+  if (!voucher.party_gstin && voucher.is_inter_state === false) return 'B2BUR';
+  if (voucher.party_gstin) return 'B2B';
+  return 'B2C';
 }
 
 // ── Post Voucher — writes to all 4 storage keys atomically ──────────
@@ -166,40 +184,97 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
   }
 
   // 5. Write GST register
-  if (voucher.tax_lines && voucher.tax_lines.length > 0 && voucher.party_gstin) {
+  if (voucher.tax_lines && voucher.tax_lines.length > 0) {
     const gstEntries = ls<GSTEntry>(gstRegisterKey(entityCode));
-    const supplyType = voucher.party_gstin ? 'B2B' : 'B2C';
-    gstEntries.push({
-      id: `gst-${Date.now()}`,
-      voucher_id: voucher.id,
-      voucher_no: voucher.voucher_no,
-      entity_id: voucher.entity_id,
-      date: voucher.date,
-      base_voucher_type: voucher.base_voucher_type,
-      party_id: voucher.party_id || '',
-      party_gstin: voucher.party_gstin || '',
-      party_name: voucher.party_name || '',
-      party_state_code: voucher.party_state_code || '',
-      supply_type: supplyType,
-      hsn_code: '',
-      taxable_value: voucher.total_taxable,
-      cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
-      cgst_amount: voucher.total_cgst,
-      sgst_amount: voucher.total_sgst,
-      igst_amount: voucher.total_igst,
-      cess_amount: voucher.total_cess,
-      total_tax: voucher.total_tax,
-      invoice_value: voucher.net_amount,
-      place_of_supply: voucher.place_of_supply || '',
-      is_inter_state: voucher.is_inter_state || false,
-      is_rcm: false,
-      itc_eligible: voucher.base_voucher_type === 'Purchase',
-      irn: voucher.irn,
-      ewb_no: voucher.ewb_no,
-      is_cancelled: false,
-      created_at: now,
-    });
+    const supplyType = resolveSupplyType(voucher, entityCode);
+
+    if (voucher.invoice_mode === 'item' && voucher.inventory_lines?.length) {
+      // One GSTEntry per inventory line
+      for (const line of voucher.inventory_lines) {
+        if (line.taxable_value <= 0) continue;
+        // [JWT] GET /api/accounting/ledger-definitions
+        const ldefs = ls<any>('erp_group_ledger_definitions');
+        const salesLedger = ldefs.find((l: any) =>
+          voucher.ledger_lines?.some(ll => ll.ledger_id === l.id));
+        gstEntries.push({
+          id: `gst-${Date.now()}-${line.id}`,
+          voucher_id: voucher.id, voucher_no: voucher.voucher_no,
+          entity_id: voucher.entity_id, date: voucher.date,
+          base_voucher_type: voucher.base_voucher_type,
+          party_id: voucher.party_id || '', party_gstin: voucher.party_gstin || '',
+          party_name: voucher.party_name || '', party_state_code: voucher.party_state_code || '',
+          supply_type: supplyType,
+          hsn_code: line.hsn_sac_code,
+          qty: line.qty,
+          uqc: mapUOMtoUQC(line.uom),
+          taxable_value: line.taxable_value,
+          cgst_rate: line.cgst_rate, sgst_rate: line.sgst_rate,
+          igst_rate: line.igst_rate, cess_rate: line.cess_rate,
+          cgst_amount: line.cgst_amount, sgst_amount: line.sgst_amount,
+          igst_amount: line.igst_amount, cess_amount: line.cess_amount,
+          total_tax: line.cgst_amount + line.sgst_amount + line.igst_amount + line.cess_amount,
+          invoice_value: line.total,
+          place_of_supply: voucher.place_of_supply || '',
+          is_inter_state: voucher.is_inter_state || false,
+          is_rcm: salesLedger?.isRcmApplicable || false,
+          itc_eligible: salesLedger?.isItcEligible ?? (voucher.base_voucher_type === 'Purchase'),
+          itc_reversal: 0,
+          rcm_section: salesLedger?.rcmSection ?? '',
+          irn: voucher.irn, ewb_no: voucher.ewb_no,
+          line_item_id: line.id,
+          is_cancelled: false, created_at: now,
+        });
+      }
+    } else {
+      // Accounting mode — one entry per voucher
+      gstEntries.push({
+        id: `gst-${Date.now()}`,
+        voucher_id: voucher.id, voucher_no: voucher.voucher_no,
+        entity_id: voucher.entity_id, date: voucher.date,
+        base_voucher_type: voucher.base_voucher_type,
+        party_id: voucher.party_id || '', party_gstin: voucher.party_gstin || '',
+        party_name: voucher.party_name || '', party_state_code: voucher.party_state_code || '',
+        supply_type: supplyType,
+        hsn_code: '',
+        uqc: 'NOS',
+        taxable_value: voucher.total_taxable,
+        cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
+        cgst_amount: voucher.total_cgst, sgst_amount: voucher.total_sgst,
+        igst_amount: voucher.total_igst, cess_amount: voucher.total_cess,
+        total_tax: voucher.total_tax,
+        invoice_value: voucher.net_amount,
+        place_of_supply: voucher.place_of_supply || '',
+        is_inter_state: voucher.is_inter_state || false,
+        is_rcm: false,
+        itc_eligible: voucher.base_voucher_type === 'Purchase',
+        itc_reversal: 0,
+        irn: voucher.irn, ewb_no: voucher.ewb_no,
+        is_cancelled: false, created_at: now,
+      });
+    }
+    // [JWT] POST /api/accounting/gst-register
     ss(gstRegisterKey(entityCode), gstEntries);
+
+    // 5b. Write RCM entries if is_rcm
+    const rcmLines = gstEntries.filter(e => e.is_rcm && !e.is_cancelled && e.voucher_id === voucher.id);
+    if (rcmLines.length > 0) {
+      // [JWT] POST /api/compliance/rcm-entries
+      const rcmStore = ls<RCMEntry>(rcmEntriesKey(entityCode));
+      rcmLines.forEach(line => rcmStore.push({
+        id: `rcm-${Date.now()}-${line.id}`,
+        voucher_id: voucher.id, voucher_no: voucher.voucher_no,
+        entity_id: entityCode, date: voucher.date,
+        party_name: voucher.party_name || '',
+        party_gstin: voucher.party_gstin || '',
+        rcm_section: (line.rcm_section as RCMEntry['rcm_section']) || 'section_9_3',
+        taxable_value: line.taxable_value,
+        cgst_amount: line.cgst_amount, sgst_amount: line.sgst_amount,
+        igst_amount: line.igst_amount, cess_amount: line.cess_amount,
+        status: 'open', created_at: now,
+      }));
+      // [JWT] POST /api/compliance/rcm-entries
+      ss(rcmEntriesKey(entityCode), rcmStore);
+    }
   }
 }
 
@@ -234,6 +309,27 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
   const gst = ls<GSTEntry>(gstRegisterKey(entityCode));
   const updGst = gst.map(g => g.voucher_id === voucherId ? { ...g, is_cancelled: true } : g);
   ss(gstRegisterKey(entityCode), updGst);
+
+  // Check if cancelled voucher is an RCM JV — if so, reset linked RCM entry to "open"
+  // [JWT] PATCH /api/compliance/rcm-entries/:id
+  const rcmStore = ls<RCMEntry>(rcmEntriesKey(entityCode));
+  const linkedRCM = rcmStore.find(r => r.rcm_jv_id === voucherId);
+  if (linkedRCM) {
+    linkedRCM.status = 'open';
+    linkedRCM.rcm_jv_id = undefined;
+    linkedRCM.rcm_jv_no = undefined;
+    linkedRCM.posted_at = undefined;
+    linkedRCM.cancelled_at = now;
+    linkedRCM.cancel_reason = reason;
+    // [JWT] PATCH /api/compliance/rcm-entries/:id
+    ss(rcmEntriesKey(entityCode), rcmStore);
+  }
+  // If cancelling the original purchase voucher, also cascade-cancel its RCM entries
+  const ownRCM = rcmStore.filter(r => r.voucher_id === voucherId && r.status !== 'cancelled');
+  if (ownRCM.length > 0) {
+    ownRCM.forEach(r => { r.status = 'cancelled'; r.cancelled_at = now; r.cancel_reason = 'Source voucher cancelled'; });
+    ss(rcmEntriesKey(entityCode), rcmStore);
+  }
 }
 
 // ── Template variable resolver ───────────────────────────────────────

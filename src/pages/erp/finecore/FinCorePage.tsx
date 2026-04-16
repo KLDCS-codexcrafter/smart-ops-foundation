@@ -33,6 +33,12 @@ import { OutstandingAgingPanel } from './reports/OutstandingAging';
 import { BankReconciliationPanel } from './reports/BankReconciliation';
 import { ChequeManagementPanel } from './reports/ChequeManagement';
 import { TDSAdvancePanel } from './reports/TDSAdvance';
+import { GSTR1Panel } from './reports/gst/GSTR1';
+import { GSTR3BPanel } from './reports/gst/GSTR3B';
+import { GSTR9Panel } from './reports/gst/GSTR9';
+import { GSTR2RegisterPanel } from './reports/gst/GSTR2Register';
+import { ITCRegisterPanel } from './reports/gst/ITCRegister';
+import { RecoPanelGST } from './reports/gst/RecoPanel';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
@@ -60,6 +66,12 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-out-receivables': 'Receivables',
   'fc-out-payables': 'Payables',
   'fc-tds-advance': 'TDS Advance',
+  'fc-gst-gstr1': 'GSTR-1',
+  'fc-gst-gstr3b': 'GSTR-3B',
+  'fc-gst-gstr9': 'GSTR-9 Annual Return',
+  'fc-gst-gstr2': 'GSTR-2 Purchase Register',
+  'fc-gst-itc': 'ITC Register',
+  'fc-gst-2a': '2A/2B Reconciliation',
 };
 
 export function FinCorePagePanel() {
@@ -118,6 +130,12 @@ export function FinCorePagePanel() {
       case 'fc-out-receivables': return <OutstandingAgingPanel entityCode={entityCode} type="debtor" />;
       case 'fc-out-payables': return <OutstandingAgingPanel entityCode={entityCode} type="creditor" />;
       case 'fc-tds-advance': return <TDSAdvancePanel entityCode={entityCode} />;
+      case 'fc-gst-gstr1': return <GSTR1Panel entityCode={entityCode} />;
+      case 'fc-gst-gstr3b': return <GSTR3BPanel entityCode={entityCode} />;
+      case 'fc-gst-gstr9': return <GSTR9Panel entityCode={entityCode} />;
+      case 'fc-gst-gstr2': return <GSTR2RegisterPanel entityCode={entityCode} />;
+      case 'fc-gst-itc': return <ITCRegisterPanel entityCode={entityCode} />;
+      case 'fc-gst-2a': return <RecoPanelGST entityCode={entityCode} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
