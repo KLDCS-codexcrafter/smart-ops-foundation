@@ -17,6 +17,20 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-radix': [
+            '@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs',
+            '@radix-ui/react-dropdown-menu', '@radix-ui/react-popover',
+          ],
+          'vendor-ui': ['recharts', 'lucide-react', 'date-fns'],
+          'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
+        },
+      },
+    },
   },
 }));

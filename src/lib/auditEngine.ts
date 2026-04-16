@@ -5,7 +5,7 @@
  */
 import type { Voucher, GSTEntry, JournalEntry } from '@/types/voucher';
 import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry, AdvanceEntry } from '@/types/compliance';
-import { vouchersKey, journalKey, gstRegisterKey } from '@/lib/finecore-engine';
+import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/finecore-engine';
 import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey, advancesKey } from '@/types/compliance';
 
 // ── Storage reader ──────────────────────────────────────────────────
@@ -46,7 +46,7 @@ export function computeClause44(entityCode: string, from: string, to: string): C
   const ledgerDefs = (() => {
     try {
       // [JWT] GET /api/accounting/ledger-definitions
-      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      const raw = localStorage.getItem(ledgerDefsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   })() as Array<{ id: string; name: string; ledgerType: string; parentGroupCode: string; parentGroupName: string;
@@ -162,7 +162,7 @@ export function computeClause26(entityCode: string, from: string, to: string): C
   const ledgerDefs = (() => {
     try {
       // [JWT] GET /api/accounting/ledger-definitions
-      return JSON.parse(localStorage.getItem('erp_group_ledger_definitions') || '[]') as Array<{ id: string; name: string; ledgerType: string; parentGroupCode: string }>; }
+      return JSON.parse(localStorage.getItem(ledgerDefsKey(entityCode)) || '[]') as Array<{ id: string; name: string; ledgerType: string; parentGroupCode: string }>; }
     catch { return []; }
   })();
 
