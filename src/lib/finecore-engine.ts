@@ -309,6 +309,27 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
   const gst = ls<GSTEntry>(gstRegisterKey(entityCode));
   const updGst = gst.map(g => g.voucher_id === voucherId ? { ...g, is_cancelled: true } : g);
   ss(gstRegisterKey(entityCode), updGst);
+
+  // Check if cancelled voucher is an RCM JV — if so, reset linked RCM entry to "open"
+  // [JWT] PATCH /api/compliance/rcm-entries/:id
+  const rcmStore = ls<RCMEntry>(rcmEntriesKey(entityCode));
+  const linkedRCM = rcmStore.find(r => r.rcm_jv_id === voucherId);
+  if (linkedRCM) {
+    linkedRCM.status = 'open';
+    linkedRCM.rcm_jv_id = undefined;
+    linkedRCM.rcm_jv_no = undefined;
+    linkedRCM.posted_at = undefined;
+    linkedRCM.cancelled_at = now;
+    linkedRCM.cancel_reason = reason;
+    // [JWT] PATCH /api/compliance/rcm-entries/:id
+    ss(rcmEntriesKey(entityCode), rcmStore);
+  }
+  // If cancelling the original purchase voucher, also cascade-cancel its RCM entries
+  const ownRCM = rcmStore.filter(r => r.voucher_id === voucherId && r.status !== 'cancelled');
+  if (ownRCM.length > 0) {
+    ownRCM.forEach(r => { r.status = 'cancelled'; r.cancelled_at = now; r.cancel_reason = 'Source voucher cancelled'; });
+    ss(rcmEntriesKey(entityCode), rcmStore);
+  }
 }
 
 // ── Template variable resolver ───────────────────────────────────────
