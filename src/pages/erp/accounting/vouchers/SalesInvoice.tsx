@@ -134,6 +134,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         round_off: 0, tds_applicable: false, status: 'posted',
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
+        so_ref: againstSO ? openSOs.find(s => s.id === againstSO)?.order_no : undefined,
       };
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
@@ -157,9 +158,13 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
           localStorage.setItem(advancesKey(entityCode), JSON.stringify(advStore));
         }
       }
+      // Fulfil SO if linked
+      if (againstSO) {
+        fulfillOrderLine(againstSO, gstTotals.total);
+      }
       toast.success('Sales Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance]);
+  }, [partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstSO, openSOs, fulfillOrderLine]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -205,10 +210,24 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
               <Label className="text-xs">Against Delivery Note</Label>
               <Input value={againstDN} onChange={e => setAgainstDN(e.target.value)} onKeyDown={onEnterNext} placeholder="DN reference (optional)" />
             </div>
+            <div>
+              <Label className="text-xs">Against SO</Label>
+              <Select value={againstSO} onValueChange={setAgainstSO}>
+                <SelectTrigger><SelectValue placeholder="Select SO (optional)" /></SelectTrigger>
+                <SelectContent>
+                  {openSOs.map(so => (
+                    <SelectItem key={so.id} value={so.id}>
+                      {so.order_no} — {so.party_name} (pending ₹{so.pending_value.toLocaleString('en-IN')})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-end">
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
-          </div>
         </CardContent>
       </Card>
 
