@@ -19,6 +19,7 @@ export function SettlementPanel({ partyId, entityCode, mode }: SettlementPanelPr
   // [JWT] GET /api/accounting/outstanding?partyId=...
   let bills: BillEntry[] = [];
   try {
+    // [JWT] GET /api/accounting/outstanding?partyId=...
     const raw = localStorage.getItem(`erp_outstanding_${entityCode}`);
     if (raw) {
       const all = JSON.parse(raw);

@@ -22,13 +22,15 @@ export function InlineMasterCreate({ open, onOpenChange, type, onCreated }: Inli
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{titles[type]}</SheetTitle>
-          <SheetDescription>Quick create — saves and auto-fills the triggering field</SheetDescription>
-        </SheetHeader>
-        <div className="mt-4 text-sm text-muted-foreground">
-          <p>Master creation form will render here in a future update.</p>
-          <p className="mt-2 text-xs">This Sheet uses existing Panel exports from each master page.</p>
+        <div data-keyboard-form>
+          <SheetHeader>
+            <SheetTitle>{titles[type]}</SheetTitle>
+            <SheetDescription>Quick create — saves and auto-fills the triggering field</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 text-sm text-muted-foreground">
+            <p>Master creation form will render here in a future update.</p>
+            <p className="mt-2 text-xs">This Sheet uses existing Panel exports from each master page.</p>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

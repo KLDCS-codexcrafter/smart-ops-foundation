@@ -38,7 +38,7 @@ export function LedgerLineGrid({ lines, onChange, showDrCr = true }: LedgerLineG
   const diff = Math.abs(totalDr - totalCr);
 
   return (
-    <div className="space-y-2">
+    <div data-keyboard-form className="space-y-2">
       <div className="overflow-x-auto border rounded-md">
         <Table>
           <TableHeader>

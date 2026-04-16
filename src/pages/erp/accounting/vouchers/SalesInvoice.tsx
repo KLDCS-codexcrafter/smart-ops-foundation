@@ -45,8 +45,8 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
 
   const isInterState = useMemo(() => {
     if (!placeOfSupply) return false;
-    // [JWT] GET /api/accounting/gst-config/:entityCode
     try {
+      // [JWT] GET /api/accounting/gst-config/:entityCode
       const raw = localStorage.getItem(`erp_gst_entity_config_${entityCode}`);
       if (raw) {
         const config = JSON.parse(raw);
@@ -195,7 +195,7 @@ export default function SalesInvoice() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Sales Invoice' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Invoice' }]} showDatePicker={false} showCompany={false} />
         <main><SalesInvoicePanel /></main>
       </div>
     </SidebarProvider>

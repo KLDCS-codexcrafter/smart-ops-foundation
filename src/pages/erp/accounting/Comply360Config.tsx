@@ -821,7 +821,150 @@ export function Comply360ConfigPanel() {
     </div>
   );
 
-  // ── Toggle row helper ──
+  // ── Features (F11) Section ──
+  const renderFeaturesSection = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Voucher Features (F11)</h3>
+      <div className="grid grid-cols-1 gap-3">
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Enable Inventory</Label><p className="text-[10px] text-muted-foreground">Allow item-based invoices</p></div>
+          <Switch checked={groupConfig.enableInventory} onCheckedChange={v => updateGroup('enableInventory', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Bill-by-Bill</Label><p className="text-[10px] text-muted-foreground">Track outstanding per invoice</p></div>
+          <Switch checked={groupConfig.enableBillByBill} onCheckedChange={v => updateGroup('enableBillByBill', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Cost Centres</Label><p className="text-[10px] text-muted-foreground">Allocate to cost/profit centres</p></div>
+          <Switch checked={groupConfig.enableCostCentres} onCheckedChange={v => updateGroup('enableCostCentres', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Order Processing</Label><p className="text-[10px] text-muted-foreground">Sales/Purchase order tracking</p></div>
+          <Switch checked={groupConfig.enableOrderProcessing} onCheckedChange={v => updateGroup('enableOrderProcessing', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Job Work</Label><p className="text-[10px] text-muted-foreground">Job work in/out tracking</p></div>
+          <Switch checked={groupConfig.enableJobWork} onCheckedChange={v => updateGroup('enableJobWork', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Budgets</Label><p className="text-[10px] text-muted-foreground">Budget and control allocation</p></div>
+          <Switch checked={groupConfig.enableBudgets} onCheckedChange={v => updateGroup('enableBudgets', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Interest Calculation</Label><p className="text-[10px] text-muted-foreground">Auto interest on overdue bills</p></div>
+          <Switch checked={groupConfig.enableInterestCalc} onCheckedChange={v => updateGroup('enableInterestCalc', v)} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Item Invoice by Default</Label><p className="text-[10px] text-muted-foreground">Default to item mode in invoices</p></div>
+          <Switch checked={groupConfig.itemInvoiceByDefault} onCheckedChange={v => updateGroup('itemInvoiceByDefault', v)} />
+        </div>
+        <div>
+          <Label className="text-xs">Default Receive Godown</Label>
+          <Input value={groupConfig.defaultReceiveGodown} onKeyDown={onEnterNext} onChange={e => setGroupConfig(p => ({ ...p, defaultReceiveGodown: e.target.value }))} className="h-8 text-sm" placeholder="Main Store" />
+        </div>
+      </div>
+      <Button data-primary onClick={handleSaveFeatures} className="w-full"><Save className="h-4 w-4 mr-1" /> Save Features</Button>
+    </div>
+  );
+
+  // ── Settlement Section ──
+  const renderSettlementSection = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Settlement Configuration</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs">Settlement Method</Label>
+          <Select value={settlementConfig.settlementMethod} onValueChange={v => setSettlementConfig(p => ({ ...p, settlementMethod: v as 'fifo' | 'lifo' | 'manual' }))}>
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fifo">FIFO (First In First Out)</SelectItem>
+              <SelectItem value="lifo">LIFO (Last In First Out)</SelectItem>
+              <SelectItem value="manual">Manual</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Allow Manual Override</Label><p className="text-[10px] text-muted-foreground">Override auto-settlement</p></div>
+          <Switch checked={settlementConfig.allowManualOverride} onCheckedChange={v => setSettlementConfig(p => ({ ...p, allowManualOverride: v }))} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Advance Auto-Adjust</Label><p className="text-[10px] text-muted-foreground">Auto-adjust advances against bills</p></div>
+          <Switch checked={settlementConfig.advanceAutoAdjust} onCheckedChange={v => setSettlementConfig(p => ({ ...p, advanceAutoAdjust: v }))} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Discount on Settlement</Label><p className="text-[10px] text-muted-foreground">Allow prompt-payment discount</p></div>
+          <Switch checked={settlementConfig.discountOnSettlement} onCheckedChange={v => setSettlementConfig(p => ({ ...p, discountOnSettlement: v }))} />
+        </div>
+      </div>
+      {settlementConfig.discountOnSettlement && (
+        <div>
+          <Label className="text-xs">Discount Ledger</Label>
+          <Input value={settlementConfig.discountLedger} onKeyDown={onEnterNext} onChange={e => setSettlementConfig(p => ({ ...p, discountLedger: e.target.value }))} className="h-8 text-sm" placeholder="Discount Allowed A/c" />
+        </div>
+      )}
+      <div className="flex items-center justify-between">
+        <div><Label className="text-sm">Overdue Interest</Label><p className="text-[10px] text-muted-foreground">Calculate interest on overdue bills</p></div>
+        <Switch checked={settlementConfig.overdueInterest} onCheckedChange={v => setSettlementConfig(p => ({ ...p, overdueInterest: v }))} />
+      </div>
+      {settlementConfig.overdueInterest && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs">Interest Rate (%)</Label>
+            <Input type="number" value={settlementConfig.interestRate} onKeyDown={onEnterNext} onChange={e => setSettlementConfig(p => ({ ...p, interestRate: Number(e.target.value) }))} className="h-8 text-sm" />
+          </div>
+          <div>
+            <Label className="text-xs">Interest Ledger</Label>
+            <Input value={settlementConfig.interestLedger} onKeyDown={onEnterNext} onChange={e => setSettlementConfig(p => ({ ...p, interestLedger: e.target.value }))} className="h-8 text-sm" placeholder="Interest Received A/c" />
+          </div>
+        </div>
+      )}
+      <Button data-primary onClick={handleSaveSettlement} className="w-full"><Save className="h-4 w-4 mr-1" /> Save Settlement Config</Button>
+    </div>
+  );
+
+  // ── Outstanding Section ──
+  const renderOutstandingSection = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Outstanding Configuration</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs">Credit Limit Mode</Label>
+          <Select value={outstandingConfig.creditLimitMode} onValueChange={v => setOutstandingConfig(p => ({ ...p, creditLimitMode: v as 'warn' | 'block' }))}>
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="warn">Warn Only</SelectItem>
+              <SelectItem value="block">Block Transaction</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Block New Orders on Overdue</Label><p className="text-[10px] text-muted-foreground">Prevent orders when overdue</p></div>
+          <Switch checked={outstandingConfig.overdueBlockNewOrders} onCheckedChange={v => setOutstandingConfig(p => ({ ...p, overdueBlockNewOrders: v }))} />
+        </div>
+        <div className="flex items-center justify-between">
+          <div><Label className="text-sm">Show MSME Flag</Label><p className="text-[10px] text-muted-foreground">Flag MSME vendors in outstanding</p></div>
+          <Switch checked={outstandingConfig.showMSMEFlag} onCheckedChange={v => setOutstandingConfig(p => ({ ...p, showMSMEFlag: v }))} />
+        </div>
+      </div>
+      <div>
+        <Label className="text-xs mb-2 block">Aging Buckets (days)</Label>
+        <div className="grid grid-cols-5 gap-2">
+          {outstandingConfig.agingBuckets.map((val, idx) => (
+            <div key={idx}>
+              <Label className="text-[10px] text-muted-foreground">Bucket {idx + 1}</Label>
+              <Input type="number" value={val} onKeyDown={onEnterNext} onChange={e => {
+                const updated = [...outstandingConfig.agingBuckets] as [number, number, number, number, number];
+                updated[idx] = Number(e.target.value);
+                setOutstandingConfig(p => ({ ...p, agingBuckets: updated }));
+              }} className="h-8 text-sm" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <Button data-primary onClick={handleSaveOutstanding} className="w-full"><Save className="h-4 w-4 mr-1" /> Save Outstanding Config</Button>
+    </div>
+  );
+
   const ToggleRow = ({ label, desc, toggleKey, disabled = false }: {
     label: string; desc: string; toggleKey: keyof GroupConfig; disabled?: boolean;
   }) => (

@@ -149,7 +149,7 @@ export default function Receipt() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Receipt Voucher' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Receipt Voucher' }]} showDatePicker={false} showCompany={false} />
         <main><ReceiptPanel /></main>
       </div>
     </SidebarProvider>

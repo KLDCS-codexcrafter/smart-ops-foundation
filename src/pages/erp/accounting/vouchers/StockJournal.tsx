@@ -149,7 +149,7 @@ export default function StockJournal() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Inventory', href: '/erp/inventory-hub' }, { label: 'Stock Journal' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Journal' }]} showDatePicker={false} showCompany={false} />
         <main><StockJournalPanel /></main>
       </div>
     </SidebarProvider>

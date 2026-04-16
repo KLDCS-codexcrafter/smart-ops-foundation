@@ -167,7 +167,7 @@ export default function CreditNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Credit Note' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Credit Note' }]} showDatePicker={false} showCompany={false} />
         <main><CreditNotePanel /></main>
       </div>
     </SidebarProvider>
