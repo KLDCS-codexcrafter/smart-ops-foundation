@@ -50,7 +50,7 @@ export function StockJournalLineGrid({ lines, onChange, side }: StockJournalLine
   const totalValue = lines.reduce((s, l) => s + l.value, 0);
 
   return (
-    <div className="space-y-2">
+    <div data-keyboard-form className="space-y-2">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {side === 'consumption' ? 'Source (Consumption)' : 'Destination (Production)'}
       </p>

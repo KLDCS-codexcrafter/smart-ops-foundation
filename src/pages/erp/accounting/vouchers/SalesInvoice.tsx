@@ -45,8 +45,8 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
 
   const isInterState = useMemo(() => {
     if (!placeOfSupply) return false;
-    // [JWT] GET /api/accounting/gst-config/:entityCode
     try {
+      // [JWT] GET /api/accounting/gst-config/:entityCode
       const raw = localStorage.getItem(`erp_gst_entity_config_${entityCode}`);
       if (raw) {
         const config = JSON.parse(raw);
