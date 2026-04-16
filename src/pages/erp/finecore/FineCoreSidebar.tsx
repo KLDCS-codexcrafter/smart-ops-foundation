@@ -9,7 +9,7 @@ import {
   LayoutDashboard, FileText, CreditCard, Wallet, BookOpen, ArrowLeftRight,
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
-  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee,
+  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -32,7 +32,8 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-rpt-pl', 'fc-rpt-bs', 'fc-rpt-stock-summary', 'fc-rpt-outstanding',
   'fc-bnk-reconciliation', 'fc-bnk-cheque',
   'fc-out-receivables', 'fc-out-payables',
-  'fc-tds-advance',
+  'fc-tds-advance', 'fc-tds-analytics',
+  'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
 ];
@@ -99,7 +100,9 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-stock-summary', label: 'Stock Summary', icon: Package },
   { id: 'fc-rpt-outstanding', label: 'Outstanding Aging', icon: TrendingUp },
   { id: 'fc-rpt-26as', label: 'Form 26AS', icon: FileText },
-  { id: 'fc-rpt-24q', label: 'Form 24Q', icon: FileText },
+  { id: 'fc-rpt-24q', label: 'Form 24Q (Salary)', icon: FileText },
+  { id: 'fc-rpt-26q', label: 'Form 26Q (Non-salary)', icon: FileText },
+  { id: 'fc-rpt-27q', label: 'Form 27Q (NRI)', icon: Globe },
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
 ];
 
@@ -114,6 +117,7 @@ const GST_ITEMS: SidebarItem[] = [
 
 const TDS_ITEMS: SidebarItem[] = [
   { id: 'fc-tds-advance', label: 'TDS Advance Tracking', icon: IndianRupee },
+  { id: 'fc-tds-analytics', label: 'TDS Analytics Report', icon: BarChart3 },
 ];
 
 const FA_ITEMS: SidebarItem[] = [

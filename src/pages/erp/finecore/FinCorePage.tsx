@@ -39,6 +39,11 @@ import { GSTR9Panel } from './reports/gst/GSTR9';
 import { GSTR2RegisterPanel } from './reports/gst/GSTR2Register';
 import { ITCRegisterPanel } from './reports/gst/ITCRegister';
 import { RecoPanelGST } from './reports/gst/RecoPanel';
+import { Form24QPanel } from './reports/Form24Q';
+import { Form26QPanel } from './reports/Form26Q';
+import { Form27QPanel } from './reports/Form27Q';
+import { ChallanRegisterPanel } from './reports/ChallanRegister';
+import { TDSAnalyticsPanel } from './reports/TDSAnalyticsReport';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
@@ -130,6 +135,11 @@ export function FinCorePagePanel() {
       case 'fc-out-receivables': return <OutstandingAgingPanel entityCode={entityCode} type="debtor" />;
       case 'fc-out-payables': return <OutstandingAgingPanel entityCode={entityCode} type="creditor" />;
       case 'fc-tds-advance': return <TDSAdvancePanel entityCode={entityCode} />;
+      case 'fc-rpt-24q': return <Form24QPanel entityCode={entityCode} />;
+      case 'fc-rpt-26q': return <Form26QPanel entityCode={entityCode} />;
+      case 'fc-rpt-27q': return <Form27QPanel entityCode={entityCode} />;
+      case 'fc-rpt-challan': return <ChallanRegisterPanel entityCode={entityCode} />;
+      case 'fc-tds-analytics': return <TDSAnalyticsPanel entityCode={entityCode} />;
       case 'fc-gst-gstr1': return <GSTR1Panel entityCode={entityCode} />;
       case 'fc-gst-gstr3b': return <GSTR3BPanel entityCode={entityCode} />;
       case 'fc-gst-gstr9': return <GSTR9Panel entityCode={entityCode} />;
