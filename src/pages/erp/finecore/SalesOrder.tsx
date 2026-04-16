@@ -101,8 +101,8 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
           line.gst_rate = item.igst_rate || 0;
           line.qty = 1;
           // Rate: PriceList → fallback std_selling_rate → 0
-          const plItem = priceListId ? priceListItems.find(p => p.price_list_id === priceListId && p.item_id === item.id) : null as any;
-          line.rate = plItem?.rate ?? item.std_selling_rate ?? 0;
+          const plItem = priceListId ? priceListItems.find(p => p.price_list_id === priceListId && p.item_id === item.id) : null;
+          line.rate = plItem?.price ?? item.std_selling_rate ?? 0;
         }
       }
       line.taxable_value = line.qty * line.rate * (1 - line.discount_percent / 100);
