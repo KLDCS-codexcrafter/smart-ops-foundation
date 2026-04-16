@@ -141,6 +141,7 @@ function exportFile(data: AuditEvent[], format: "csv" | "json") {
 }
 
 // ── Component ──────────────────────────────────────────
+export function AuditLogsPanel() { return <AuditLogs />; }
 export default function AuditLogs() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");

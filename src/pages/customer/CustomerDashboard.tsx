@@ -68,6 +68,7 @@ const ORDER_STATUS: Record<string, { label: string; color: string }> = {
   delivered: { label: "Delivered", color: "bg-success/10 text-success" },
 };
 
+export function CustomerDashboardPanel() { return <CustomerDashboard />; }
 export default function CustomerDashboard() {
   const navigate = useNavigate();
 

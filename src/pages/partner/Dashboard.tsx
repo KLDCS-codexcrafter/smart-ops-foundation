@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 
+export function PartnerDashboardPanel() { return <PartnerDashboard />; }
 export default function PartnerDashboard() {
   return (
     <AppLayout title="Partner Panel" breadcrumbs={[{ label: "Partner Panel" }]}>

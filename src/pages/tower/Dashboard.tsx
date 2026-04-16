@@ -100,6 +100,7 @@ function RadialGauge({ pct, color, display, label, subtitle }: {
   );
 }
 
+export function TowerDashboardPanel() { return <TowerDashboard />; }
 export default function TowerDashboard() {
   const navigate = useNavigate();
 
