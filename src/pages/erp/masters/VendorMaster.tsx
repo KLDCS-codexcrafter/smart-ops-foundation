@@ -113,6 +113,7 @@ interface VendorMasterDefinition {
   defaultCourierId: string;
   primary_division_id: string;    // MIS — org structure division
   primary_department_id: string;  // MIS — org structure department
+  is_related_party: boolean; // Clause 26(b) + Clause 23. Related person u/s 40A(2)(b).
   status: 'active' | 'inactive';
   default_currency: string;  // ISO code — payment currency for this vendor
 }
@@ -178,6 +179,7 @@ const defaultForm: Omit<VendorMasterDefinition, 'id' | 'partyCode'> = {
   gstFilingType: 'monthly', einvoiceApplicable: false,
   tdsApplicable: false, tdsSection: '',
   lower_deduction_cert: '', lower_deduction_rate: 0, lower_deduction_expiry: '',
+  is_related_party: false,
   defaultBranch: '', businessMode: 'b2b',
   // [JWT] GET /api/foundation/parent-company/base-currency
   default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
@@ -1023,6 +1025,10 @@ export function VendorMasterPanel() {
             <Input value={form.defaultBranch}
               onChange={e => setForm(f => ({ ...f, defaultBranch: e.target.value }))}
               onKeyDown={onEnterNext} />
+          </div>
+          <div className="flex items-center gap-3 py-2">
+            <Switch checked={form.is_related_party} onCheckedChange={v => setForm(f => ({ ...f, is_related_party: v }))} />
+            <Label className="text-xs">Related Party (u/s 40A(2)(b))</Label>
           </div>
           <div>
             <Label className="text-xs">Business Mode</Label>

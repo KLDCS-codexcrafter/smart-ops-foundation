@@ -308,6 +308,8 @@ interface ExpenseLedgerDefinition {
   costCentreApplicable: boolean;
   isBudgetHead: boolean;
   expenseNature: 'revenue' | 'capital_expense';
+  clause44Category: 'auto' | 'regular_taxable' | 'regular_exempted' | 'composition' | 'unregistered' | 'exclude';
+  forceIncludeClause44: boolean;
   status: 'active' | 'suspended';
   description: string;
   notes: string;
@@ -1216,6 +1218,8 @@ const defaultExpenseForm = {
   usePurchaseAdditionalExpense: false,
   costCentreApplicable: false, isBudgetHead: false,
   expenseNature: 'revenue' as 'revenue'|'capital_expense',
+  clause44Category: 'auto' as 'auto'|'regular_taxable'|'regular_exempted'|'composition'|'unregistered'|'exclude',
+  forceIncludeClause44: false,
   scope: 'group' as 'group'|'entity', entityId: '',
 };
 
@@ -1972,6 +1976,8 @@ export function LedgerMasterPanel() {
       usePurchaseAdditionalExpense: def.usePurchaseAdditionalExpense ?? false,
       costCentreApplicable: def.costCentreApplicable ?? false,
       isBudgetHead: def.isBudgetHead ?? false, expenseNature: def.expenseNature ?? 'revenue',
+      clause44Category: def.clause44Category ?? 'auto',
+      forceIncludeClause44: def.forceIncludeClause44 ?? false,
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
     });
     setExpenseOpen(true);
@@ -2731,6 +2737,7 @@ export function LedgerMasterPanel() {
         usePurchaseAdditionalExpense: expenseForm.usePurchaseAdditionalExpense,
         costCentreApplicable: expenseForm.costCentreApplicable,
         isBudgetHead: expenseForm.isBudgetHead, expenseNature: expenseForm.expenseNature,
+        clause44Category: expenseForm.clause44Category, forceIncludeClause44: expenseForm.forceIncludeClause44,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -2767,6 +2774,8 @@ export function LedgerMasterPanel() {
       costCentreApplicable: expenseForm.costCentreApplicable,
       isBudgetHead: expenseForm.isBudgetHead,
       expenseNature: expenseForm.expenseNature,
+      clause44Category: expenseForm.clause44Category,
+      forceIncludeClause44: expenseForm.forceIncludeClause44,
       status: 'active',
     description: '',
     notes: '',
@@ -4663,6 +4672,32 @@ export function LedgerMasterPanel() {
                 </Select>
               )}
             </div>
+            {/* Tax Audit section */}
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-1 w-full text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90 py-1">
+                <ChevronDown className="h-3 w-3" /> Tax Audit
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 pt-1">
+                <div className="flex items-center gap-3">
+                  <Switch checked={expenseForm.forceIncludeClause44} onCheckedChange={v => setExpenseForm(f => ({ ...f, forceIncludeClause44: v }))} />
+                  <Label className="text-xs">Force Include in Clause 44</Label>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Clause 44 Category</Label>
+                  <Select value={expenseForm.clause44Category} onValueChange={v => setExpenseForm(f => ({ ...f, clause44Category: v as typeof f.clause44Category }))}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Auto-detect</SelectItem>
+                      <SelectItem value="regular_taxable">Regular Taxable</SelectItem>
+                      <SelectItem value="regular_exempted">Regular Exempted</SelectItem>
+                      <SelectItem value="composition">Composition</SelectItem>
+                      <SelectItem value="unregistered">Unregistered</SelectItem>
+                      <SelectItem value="exclude">Exclude</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
             <div className="space-y-1.5">
               <Label className="text-xs">Expense Nature</Label>
               <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
