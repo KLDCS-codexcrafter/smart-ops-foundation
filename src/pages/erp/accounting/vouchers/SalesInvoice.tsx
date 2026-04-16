@@ -228,6 +228,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
             <div className="flex items-end">
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
+          </div>
         </CardContent>
       </Card>
 
