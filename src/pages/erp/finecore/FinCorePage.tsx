@@ -23,6 +23,17 @@ import { DebitNotePanel } from '@/pages/erp/accounting/vouchers/DebitNote';
 import { DeliveryNotePanel } from '@/pages/erp/accounting/vouchers/DeliveryNote';
 import { ReceiptNotePanel } from '@/pages/erp/accounting/vouchers/ReceiptNote';
 import { StockJournalPanel } from '@/pages/erp/accounting/vouchers/StockJournal';
+import { DayBookPanel } from './reports/DayBook';
+import { LedgerReportPanel } from './reports/LedgerReport';
+import { TrialBalancePanel } from './reports/TrialBalance';
+import { ProfitLossPanel } from './reports/ProfitLoss';
+import { BalanceSheetPanel } from './reports/BalanceSheet';
+import { StockSummaryPanel } from './reports/StockSummary';
+import { OutstandingAgingPanel } from './reports/OutstandingAging';
+import { BankReconciliationPanel } from './reports/BankReconciliation';
+import { ChequeManagementPanel } from './reports/ChequeManagement';
+import { TDSAdvancePanel } from './reports/TDSAdvance';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-hub': 'Hub Overview',
@@ -37,6 +48,17 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-txn-delivery-note': 'Delivery Note',
   'fc-txn-receipt-note': 'Receipt Note (GRN)',
   'fc-inv-stock-journal': 'Stock Journal',
+  'fc-rpt-daybook': 'Day Book',
+  'fc-rpt-ledger': 'Ledger Report',
+  'fc-rpt-trial-balance': 'Trial Balance',
+  'fc-rpt-pl': 'Profit & Loss',
+  'fc-rpt-bs': 'Balance Sheet',
+  'fc-rpt-stock-summary': 'Stock Summary',
+  'fc-rpt-outstanding': 'Outstanding Aging',
+  'fc-bnk-reconciliation': 'Bank Reconciliation',
+  'fc-bnk-cheque': 'Cheque Management',
+  'fc-out-receivables': 'Receivables',
+  'fc-out-payables': 'Payables',
   'fc-tds-advance': 'TDS Advance',
 };
 
@@ -44,6 +66,8 @@ export function FinCorePagePanel() {
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
 
   const addToDraftTray = useCallback((draft: DraftEntry) => {
     if (drafts.length >= 5) {
@@ -82,6 +106,18 @@ export function FinCorePagePanel() {
       case 'fc-txn-delivery-note': return <DeliveryNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt-note': return <ReceiptNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-inv-stock-journal': return <StockJournalPanel onSaveDraft={addToDraftTray} />;
+      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} />;
+      case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
+      case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;
+      case 'fc-rpt-pl': return <ProfitLossPanel entityCode={entityCode} />;
+      case 'fc-rpt-bs': return <BalanceSheetPanel entityCode={entityCode} />;
+      case 'fc-rpt-stock-summary': return <StockSummaryPanel entityCode={entityCode} />;
+      case 'fc-rpt-outstanding': return <OutstandingAgingPanel entityCode={entityCode} />;
+      case 'fc-bnk-reconciliation': return <BankReconciliationPanel entityCode={entityCode} />;
+      case 'fc-bnk-cheque': return <ChequeManagementPanel entityCode={entityCode} />;
+      case 'fc-out-receivables': return <OutstandingAgingPanel entityCode={entityCode} type="debtor" />;
+      case 'fc-out-payables': return <OutstandingAgingPanel entityCode={entityCode} type="creditor" />;
+      case 'fc-tds-advance': return <TDSAdvancePanel entityCode={entityCode} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };

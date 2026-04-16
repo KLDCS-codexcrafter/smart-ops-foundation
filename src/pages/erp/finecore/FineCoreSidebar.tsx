@@ -28,6 +28,10 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-txn-credit-note', 'fc-txn-debit-note',
   'fc-txn-delivery-note', 'fc-txn-receipt-note',
   'fc-inv-stock-journal',
+  'fc-rpt-daybook', 'fc-rpt-ledger', 'fc-rpt-trial-balance',
+  'fc-rpt-pl', 'fc-rpt-bs', 'fc-rpt-stock-summary', 'fc-rpt-outstanding',
+  'fc-bnk-reconciliation', 'fc-bnk-cheque',
+  'fc-out-receivables', 'fc-out-payables',
   'fc-tds-advance',
 ];
 
