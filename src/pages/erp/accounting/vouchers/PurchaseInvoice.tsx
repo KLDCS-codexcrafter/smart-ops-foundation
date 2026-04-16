@@ -59,6 +59,13 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [collapseOpen, setCollapseOpen] = useState(false);
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [advancesOpen, setAdvancesOpen] = useState(false);
+  const [againstPO, setAgainstPO] = useState('');
+  const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
+  const openPOs = useMemo(() => {
+    const pos = getOpenOrdersForLookup('Purchase Order');
+    if (partyName) return pos.filter(p => p.party_name === partyName);
+    return pos;
+  }, [getOpenOrdersForLookup, partyName]);
 
   // Load open advances for vendor
   const openAdvances = useMemo(() => {
@@ -188,15 +195,17 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
               <Input type="date" value={vendorBillDate} onChange={e => setVendorBillDate(e.target.value)} onKeyDown={onEnterNext} />
             </div>
             <div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Against PO No</Label>
-                    <Input disabled placeholder="Available in Sprint 25" className="opacity-50" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Available in Sprint 25 (Procure360)</TooltipContent>
-              </Tooltip>
+              <Label className="text-xs">Against PO No</Label>
+              <Select value={againstPO} onValueChange={setAgainstPO}>
+                <SelectTrigger><SelectValue placeholder="Select PO (optional)" /></SelectTrigger>
+                <SelectContent>
+                  {openPOs.map(po => (
+                    <SelectItem key={po.id} value={po.id}>
+                      {po.order_no} — {po.party_name} (pending ₹{po.pending_value.toLocaleString('en-IN')})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
