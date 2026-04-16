@@ -198,11 +198,11 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                 </div>
                 <div>
                   <Label className="text-xs">Date</Label>
-                  <SmartDateInput value={date} onChange={setDate} onKeyDown={onEnterNext} />
+                  <SmartDateInput value={date} onChange={setDate} />
                 </div>
                 <div>
                   <Label className="text-xs">Valid Till</Label>
-                  <SmartDateInput value={validTill} onChange={setValidTill} onKeyDown={onEnterNext} />
+                  <SmartDateInput value={validTill} onChange={setValidTill} />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -246,7 +246,7 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                   <Select value={placeOfSupply} onValueChange={setPlaceOfSupply}>
                     <SelectTrigger><SelectValue placeholder="Auto from customer" /></SelectTrigger>
                     <SelectContent>
-                      {INDIAN_STATES.map(s => (
+                      {indianStates.map(s => (
                         <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -301,7 +301,7 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                         <TableCell><Input type="number" value={line.discount_percent} onChange={e => updateLine(idx, 'discount_percent', Number(e.target.value))} onKeyDown={onEnterNext} className="h-8 text-xs font-mono" /></TableCell>
                         <TableCell className="text-right font-mono text-xs">₹{line.taxable_value.toLocaleString('en-IN')}</TableCell>
                         <TableCell className="text-xs text-muted-foreground font-mono">{line.gst_rate}%</TableCell>
-                        <TableCell><SmartDateInput value={line.delivery_date || ''} onChange={v => updateLine(idx, 'delivery_date', v)} onKeyDown={onEnterNext} /></TableCell>
+                        <TableCell><SmartDateInput value={line.delivery_date || ''} onChange={v => updateLine(idx, 'delivery_date', v)} /></TableCell>
                         <TableCell><Button variant="ghost" size="sm" onClick={() => removeLine(idx)} className="h-6 w-6 p-0"><Trash2 className="h-3.5 w-3.5 text-destructive" /></Button></TableCell>
                       </TableRow>
                     ))}
