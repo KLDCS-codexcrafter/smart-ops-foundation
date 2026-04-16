@@ -4,6 +4,7 @@
  * [JWT] All data via localStorage
  */
 import { useState, useMemo, useCallback } from 'react';
+import { onEnterNext } from '@/lib/keyboard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -268,11 +269,11 @@ export function Form26ASPanel({ entityCode }: Props) {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <Label className="text-xs">Period From</Label>
-            <Input type="date" value={periodFrom} onChange={e => setPeriodFrom(e.target.value)} className="h-8 text-xs" />
+            <Input type="date" value={periodFrom} onChange={e => setPeriodFrom(e.target.value)} className="h-8 text-xs" onKeyDown={onEnterNext} />
           </div>
           <div>
             <Label className="text-xs">Period To</Label>
-            <Input type="date" value={periodTo} onChange={e => setPeriodTo(e.target.value)} className="h-8 text-xs" />
+            <Input type="date" value={periodTo} onChange={e => setPeriodTo(e.target.value)} className="h-8 text-xs" onKeyDown={onEnterNext} />
           </div>
           <div className="flex items-end gap-2">
             <label className="cursor-pointer">
