@@ -48,6 +48,8 @@ import {
 } from '@/data/finframe-seed-data';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
 import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
+import type { ITActBlock } from '@/types/fixed-asset';
+import { IT_ACT_RATES, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
