@@ -245,7 +245,7 @@ export function OpeningStockPanel() {
             <Upload className="h-4 w-4" />Import CSV
           </Button>
           {pendingCount > 0 && (
-            <Button size="sm" className="gap-1" onClick={postAll}>
+            <Button size="sm" className="gap-1" onClick={postAll} data-primary>
               <CheckCircle2 className="h-4 w-4" />Post {pendingCount} Items
             </Button>
           )}
