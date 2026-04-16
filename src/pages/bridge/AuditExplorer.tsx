@@ -78,6 +78,7 @@ const auditStats = [
   { label: "Agents Logged", value: uniqueAgents, icon: Radio, color: "text-accent-foreground" },
 ];
 
+export function AuditExplorerPanel() { return <AuditExplorer />; }
 export default function AuditExplorer() {
   const [search, setSearch] = useState("");
   const [opFilter, setOpFilter] = useState("all");

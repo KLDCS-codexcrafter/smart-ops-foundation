@@ -36,8 +36,11 @@ import { tdsDeductionsKey, tdsReceivableKey, challansKey } from '@/types/complia
 const fmt = (n: number) => `₹${Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 0 })}`;
 
 function ls<T>(key: string): T[] {
-  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
-  catch { return []; }
+  try {
+    // [JWT] GET /api/compliance/storage/:key
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
 }
 
 // ── Draft storage ────────────────────────────────────────────────────
@@ -135,6 +138,7 @@ export function Form3CDPanel({ entityCode }: Form3CDPanelProps) {
   // Load entity config
   const entityConfig = useMemo(() => {
     try {
+      // [JWT] GET /api/accounting/gst-entity-config
       const configs = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '[]');
       return configs[0] || {};
     } catch { return {}; }

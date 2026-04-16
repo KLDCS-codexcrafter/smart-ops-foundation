@@ -8,10 +8,13 @@ import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry, Adv
 import { vouchersKey, journalKey, gstRegisterKey } from '@/lib/finecore-engine';
 import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey, advancesKey } from '@/types/compliance';
 
-// ── Storage reader (read-only, no [JWT] needed) ──────────────────────
+// ── Storage reader ──────────────────────────────────────────────────
 function ls<T>(key: string): T[] {
-  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
-  catch { return []; }
+  try {
+    // [JWT] GET /api/compliance/storage/:key
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
 }
 
 // ── Clause 44 — Expenditure by GST vendor category ───────────────────
@@ -42,6 +45,7 @@ export function computeClause44(entityCode: string, from: string, to: string): C
   const gstEntries = ls<GSTEntry>(gstRegisterKey(entityCode));
   const ledgerDefs = (() => {
     try {
+      // [JWT] GET /api/accounting/ledger-definitions
       const raw = localStorage.getItem('erp_group_ledger_definitions');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -49,6 +53,7 @@ export function computeClause44(entityCode: string, from: string, to: string): C
     clause44Category?: string; forceIncludeClause44?: boolean; gstType?: string }>;
   const vendorDefs = (() => {
     try {
+      // [JWT] GET /api/foundation/vendor-master
       const raw = localStorage.getItem('erp_group_vendor_master');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -149,11 +154,15 @@ export function computeClause26(entityCode: string, from: string, to: string): C
     .filter(v => !v.is_cancelled && v.status !== 'cancelled' && v.date >= from && v.date <= to &&
       (v.base_voucher_type === 'Payment' || v.base_voucher_type === 'Contra'));
   const vendorDefs = (() => {
-    try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]') as Array<{ id: string; is_related_party?: boolean }>; }
+    try {
+      // [JWT] GET /api/foundation/vendor-master
+      return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]') as Array<{ id: string; is_related_party?: boolean }>; }
     catch { return []; }
   })();
   const ledgerDefs = (() => {
-    try { return JSON.parse(localStorage.getItem('erp_group_ledger_definitions') || '[]') as Array<{ id: string; name: string; ledgerType: string; parentGroupCode: string }>; }
+    try {
+      // [JWT] GET /api/accounting/ledger-definitions
+      return JSON.parse(localStorage.getItem('erp_group_ledger_definitions') || '[]') as Array<{ id: string; name: string; ledgerType: string; parentGroupCode: string }>; }
     catch { return []; }
   })();
 
@@ -333,7 +342,10 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
     status: openTds.length === 0 ? 'green' : openTds.length <= 3 ? 'amber' : 'red' });
 
   // 11. Related party vendors tagged
-  const vendors = (() => { try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]') as Array<{ is_related_party?: boolean }>; } catch { return []; } })();
+  const vendors = (() => {
+    try {
+      // [JWT] GET /api/foundation/vendor-master
+      return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]') as Array<{ is_related_party?: boolean }>; } catch { return []; } })();
   const hasRelated = vendors.some(v => v.is_related_party);
   checkpoints.push({ label: 'Related Party Tagged', maxPoints: 6,
     score: hasRelated || cl26.filter(r => r.is_related_party).length === 0 ? 6 : 0,

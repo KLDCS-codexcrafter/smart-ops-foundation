@@ -116,6 +116,7 @@ function agentLabel(status: string) {
 
 // ── Component ──────────────────────────────────────────────────────────────
 
+export function ConsoleDashboardPanel() { return <ConsoleDashboard />; }
 export default function ConsoleDashboard() {
   const navigate = useNavigate();
   const pipelineTotal = PIPELINE.reduce((s, p) => s + p.count, 0);

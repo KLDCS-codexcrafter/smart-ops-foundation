@@ -106,6 +106,7 @@ function AppCard({ app }: { app: AppDefinition }) {
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
+export function ErpDashboardPanel() { return <ErpDashboard />; }
 export default function ErpDashboard() {
   const navigate = useNavigate();
   const greeting = getGreeting();
