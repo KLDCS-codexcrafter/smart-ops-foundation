@@ -1,5 +1,6 @@
 /**
  * SalesInvoice.tsx — Full Sales Invoice form
+ * Sprint 3B: Customer Advance Linking
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
@@ -9,7 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ChevronDown, Save, Send } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
@@ -19,16 +21,26 @@ import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
 import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
+import type { AdvanceEntry } from '@/types/compliance';
+import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+
+function ls<T>(key: string): T[] {
+  try {
+    // [JWT] GET /api/entity/storage/:key
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
 
 interface SalesInvoicePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
   initialState?: Record<string, unknown>;
 }
 
-export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePanelProps) {
+export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const entityCode = 'SMRT';
   const [voucherNo] = useState(() => generateVoucherNo('SI', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -42,6 +54,19 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
   const [termsConditions, setTermsConditions] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('');
   const [collapseOpen, setCollapseOpen] = useState(false);
+  const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
+
+  // Load open customer advances
+  const openAdvances = useMemo(() => {
+    if (!partyName) return [];
+    // [JWT] GET /api/masters/customers
+    const customers: any[] = (() => { try { return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]'); } catch { return []; } })();
+    const customer = customers.find((c: any) => c.partyName === partyName);
+    if (!customer) return [];
+    // [JWT] GET /api/compliance/advances
+    return ls<AdvanceEntry>(advancesKey(entityCode))
+      .filter(a => a.party_id === customer.id && a.party_type === 'customer' && (a.status === 'open' || a.status === 'partial'));
+  }, [partyName, entityCode]);
 
   const isInterState = useMemo(() => {
     if (!placeOfSupply) return false;
@@ -74,6 +99,11 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
     null, null, 'Current User'
   ), [partyName, date, gstTotals.total]);
 
+  const handleLinkAdvance = (adv: AdvanceEntry) => {
+    setLinkedAdvance(adv);
+    toast.success(`Linked advance ${adv.advance_ref_no}`);
+  };
+
   const handlePost = useCallback(() => {
     if (!partyName) { toast.error('Party name is required'); return; }
     const key = vouchersKey(entityCode);
@@ -99,9 +129,28 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+
+      // Update advance if linked
+      if (linkedAdvance) {
+        // [JWT] PATCH /api/compliance/advances/:id
+        const advStore = ls<AdvanceEntry>(advancesKey(entityCode));
+        const adv = advStore.find(a => a.id === linkedAdvance.id);
+        if (adv) {
+          const adjAmount = Math.min(adv.balance_amount, gstTotals.total);
+          adv.adjustments.push({
+            invoice_id: voucher.id, invoice_no: voucher.voucher_no,
+            amount_adjusted: adjAmount, tds_adjusted: 0, date: voucher.date,
+          });
+          adv.balance_amount -= adjAmount;
+          adv.status = adv.balance_amount <= 0 ? 'adjusted' : 'partial';
+          adv.updated_at = now;
+          // [JWT] PATCH /api/compliance/advances
+          localStorage.setItem(advancesKey(entityCode), JSON.stringify(advStore));
+        }
+      }
       toast.success('Sales Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms, ledgerLines, inventoryLines, invoiceMode, entityCode]);
+  }, [partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -114,7 +163,7 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
         formState: { party_name: partyName, date, narration } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, partyName, date, inventoryLines, ledgerLines, narration]);
+  }, [onSaveDraft, partyName, date, narration]);
 
   return (
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
@@ -153,6 +202,23 @@ export function SalesInvoicePanel({ onSaveDraft, initialState }: SalesInvoicePan
           </div>
         </CardContent>
       </Card>
+
+      {/* Customer advance banner */}
+      {openAdvances.length > 0 && (
+        <Alert className="border-blue-500/30 bg-blue-500/5">
+          <Info className="h-4 w-4 text-blue-500" />
+          <AlertDescription className="text-xs text-blue-700">
+            Customer has ₹{openAdvances.reduce((s, a) => s + a.balance_amount, 0).toLocaleString('en-IN')} advance (Ref: {openAdvances.map(a => a.advance_ref_no).join(', ')}).
+            {!linkedAdvance && (
+              <Button variant="link" size="sm" className="text-blue-600 h-auto p-0 ml-2 text-xs"
+                onClick={() => handleLinkAdvance(openAdvances[0])}>
+                <Link2 className="h-3 w-3 mr-1" />Link to this invoice
+              </Button>
+            )}
+            {linkedAdvance && <span className="ml-2 font-medium text-green-600">Linked: {linkedAdvance.advance_ref_no}</span>}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {invoiceMode === 'item' ? (
         <InventoryLineGrid lines={inventoryLines} onChange={setInventoryLines} mode="sales" showTax isInterState={isInterState} />
