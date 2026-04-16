@@ -21,7 +21,7 @@ interface LedgerReportPanelProps { entityCode: string; }
 function loadLedgerDefs(entityCode: string): Array<{ id: string; name: string; groupCode: string }> {
   try {
     // [JWT] GET /api/accounting/ledger-definitions
-    const raw = localStorage.getItem(`erp_group_ledger_definitions_${entityCode}`);
+    const raw = localStorage.getItem('erp_group_ledger_definitions');
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
