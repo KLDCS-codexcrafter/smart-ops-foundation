@@ -1031,6 +1031,29 @@ export function CustomerMasterPanel() {
               </div>
             </>
           )}
+
+          {/* 26AS TDS Deductor */}
+          <div className="border-t pt-3 mt-3">
+            <div className="flex items-center gap-3">
+              <Switch checked={form.is_tds_deductor} onCheckedChange={v => setForm(f => ({ ...f, is_tds_deductor: v }))} />
+              <Label className="text-xs">Customer deducts TDS from our invoices (26AS)</Label>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Enable to reconcile TDS receivable via Form 26AS</p>
+          </div>
+          {form.is_tds_deductor && (
+            <div>
+              <Label className="text-xs">Customer TAN</Label>
+              <Input value={form.tan_number}
+                onChange={e => setForm(f => ({ ...f, tan_number: e.target.value.toUpperCase() }))}
+                onKeyDown={onEnterNext} placeholder="e.g. DELK01234C" maxLength={10} className="font-mono" />
+              {form.tan_number && !/^[A-Z]{4}\d{5}[A-Z]$/.test(form.tan_number) && (
+                <Badge variant="outline" className="mt-1 text-[9px] border-destructive/30 text-destructive">Invalid TAN format</Badge>
+              )}
+              {form.tan_number && /^[A-Z]{4}\d{5}[A-Z]$/.test(form.tan_number) && (
+                <Badge variant="outline" className="mt-1 text-[9px] border-teal-500/30 text-teal-600"><Check className="h-3 w-3 mr-1" />Valid TAN</Badge>
+              )}
+            </div>
+          )}
         </CollapsibleContent>
       </Collapsible>
 
