@@ -4,6 +4,7 @@
  * [JWT] Replace with GET/POST /api/accounting/vouchers
  */
 import type { VoucherBaseType } from './voucher-type';
+import type { AssetUnitLine } from './fixed-asset';
 
 export interface VoucherLedgerLine {
   id: string;
@@ -147,6 +148,7 @@ export interface Voucher {
   created_at: string;
   updated_at: string;
   posted_at?: string;
+  asset_unit_lines?: AssetUnitLine[];
 }
 
 // Journal entry line — stored in erp_journal_{e}

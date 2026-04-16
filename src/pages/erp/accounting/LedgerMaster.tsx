@@ -48,6 +48,8 @@ import {
 } from '@/data/finframe-seed-data';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
 import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
+import type { ITActBlock } from '@/types/fixed-asset';
+import { IT_ACT_RATES, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
@@ -440,6 +442,11 @@ interface AssetLedgerDefinition {
   reinstatedBy: string | null;
   reinstatedAt: string | null;
   reinstatedReason: string | null;
+  // Sprint 4 — Fixed Asset extensions
+  it_act_block: ITActBlock;
+  it_act_depr_rate: number;
+  salvage_value_percent: number;
+  accum_depr_ledger_id: string;
 }
 
 interface LoanRepaymentRecord {
@@ -1485,6 +1492,10 @@ export function LedgerMasterPanel() {
     vendorId: '', vendorName: '',
     openingBalance: 0, scope: 'group' as 'group'|'entity', entityId: '',
     description: '', notes: '',
+    it_act_block: 'Plant & Machinery' as ITActBlock,
+    it_act_depr_rate: 15,
+    salvage_value_percent: 5,
+    accum_depr_ledger_id: '',
   };
   const [assetForm, setAssetForm] = useState(defaultAssetForm);
 
@@ -2029,6 +2040,10 @@ export function LedgerMasterPanel() {
       openingBalance: def.openingBalance ?? 0,
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
       description: def.description ?? '', notes: def.notes ?? '',
+      it_act_block: def.it_act_block ?? 'Plant & Machinery',
+      it_act_depr_rate: def.it_act_depr_rate ?? 15,
+      salvage_value_percent: def.salvage_value_percent ?? 5,
+      accum_depr_ledger_id: def.accum_depr_ledger_id ?? '',
     });
     setAssetOpen(true);
   };
@@ -2050,6 +2065,8 @@ export function LedgerMasterPanel() {
         usefulLifeYears: assetForm.usefulLifeYears, depreciationRate: assetForm.depreciationRate,
         vendorId: assetForm.vendorId, vendorName: assetForm.vendorName,
         description: assetForm.description, notes: assetForm.notes,
+        it_act_block: assetForm.it_act_block, it_act_depr_rate: assetForm.it_act_depr_rate,
+        salvage_value_percent: assetForm.salvage_value_percent, accum_depr_ledger_id: assetForm.accum_depr_ledger_id,
       };
       saveDefinition(updated);
       toast.success(`${updated.name} updated`);
@@ -2078,6 +2095,8 @@ export function LedgerMasterPanel() {
       status: 'active', description: assetForm.description, notes: assetForm.notes,
       suspendedBy: null, suspendedAt: null, suspendedReason: null,
       reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+      it_act_block: assetForm.it_act_block, it_act_depr_rate: assetForm.it_act_depr_rate,
+      salvage_value_percent: assetForm.salvage_value_percent, accum_depr_ledger_id: assetForm.accum_depr_ledger_id,
     };
     saveDefinition(def);
     autoCreateInstances(def, assetForm.openingBalance, 'Dr');
@@ -5002,6 +5021,38 @@ export function LedgerMasterPanel() {
                   <Input type="number" step="0.01" value={assetForm.depreciationRate} onChange={e => setAssetForm(f => ({ ...f, depreciationRate: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
                 </div>
               )}
+            </div>
+            {/* IT Act Block & Fixed Asset Extensions */}
+            <div className="rounded-lg border border-border p-3 space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">IT Act / Fixed Asset</p>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">IT Act Block</Label>
+                <Select value={assetForm.it_act_block} onValueChange={(v: string) => {
+                  const block = v as ITActBlock;
+                  setAssetForm(f => ({ ...f, it_act_block: block, it_act_depr_rate: IT_ACT_RATES[block] }));
+                }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(IT_ACT_BLOCK_LABELS) as ITActBlock[]).map(k => (
+                      <SelectItem key={k} value={k}>{IT_ACT_BLOCK_LABELS[k]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">IT Act Depr Rate (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.it_act_depr_rate} onChange={e => setAssetForm(f => ({ ...f, it_act_depr_rate: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Salvage Value (%)</Label>
+                  <Input type="number" step="0.01" value={assetForm.salvage_value_percent} onChange={e => setAssetForm(f => ({ ...f, salvage_value_percent: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Accum. Depreciation Ledger ID</Label>
+                <Input value={assetForm.accum_depr_ledger_id} onChange={e => setAssetForm(f => ({ ...f, accum_depr_ledger_id: e.target.value }))} onKeyDown={onEnterNext} placeholder="e.g. ADEP-PPE ledger" />
+              </div>
             </div>
             {/* Vendor Link */}
             <div className="grid grid-cols-2 gap-3">

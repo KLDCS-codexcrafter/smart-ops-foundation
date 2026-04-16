@@ -15,7 +15,11 @@ export type VoucherBaseType =
   | 'Sales Order' | 'Purchase Order'
   | 'Job Work In Order' | 'Job Work Out Order'
   | 'Material In' | 'Material Out'
-  | 'Attendance' | 'Payroll';
+  | 'Attendance' | 'Payroll'
+  | 'Capital Purchase' | 'Put To Use' | 'Depreciation'
+  | 'Asset Transfer' | 'Asset Verification'
+  | 'Asset Write Off' | 'Capital Sale'
+  | 'Custodian Change' | 'Expense Booking';
 
 export type VoucherFamily =
   | 'Accounting'

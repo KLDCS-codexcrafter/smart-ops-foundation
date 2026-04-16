@@ -80,6 +80,7 @@ export const L3_FINANCIAL_GROUPS: L3FinancialGroup[] = [
   { code: 'DTA',    name: 'Deferred Tax Assets (Net)',            tallyName: 'Deferred Tax Asset',          l2Code: 'A-NCA', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: true,  gstApplicable: false, tdsApplicable: false, order: 6 },
   { code: 'LTLA',   name: 'Long-Term Loans & Advances',          tallyName: 'Loans & Advances (Asset)',    l2Code: 'A-NCA', nature: 'Dr', isBank: false, isCash: false, isParty: true,  isStatutory: false, gstApplicable: false, tdsApplicable: true,  order: 7 },
   { code: 'ONCA',   name: 'Other Non-Current Assets',            tallyName: 'Other Non-Current Assets',    l2Code: 'A-NCA', nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 8 },
+  { code: 'ADEP',   name: 'Accumulated Depreciation',            tallyName: 'Provision for Depreciation',  l2Code: 'A-NCA', nature: 'Cr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: false, tdsApplicable: false, order: 9 },
 
   // Under Current Assets (A-CA) — 10 groups
   { code: 'INV',    name: 'Inventories',                         tallyName: 'Stock-in-Hand',               l2Code: 'A-CA',  nature: 'Dr', isBank: false, isCash: false, isParty: false, isStatutory: false, gstApplicable: true,  tdsApplicable: false, order: 1 },
@@ -205,6 +206,8 @@ const COMMON_PACK: L4IndustryGroup[] = [
   { name: 'Salaries & Wages',              l3Code: 'EMPB',   nature: 'Dr', industry: 'common' },
   { name: 'Directors Remuneration',         l3Code: 'EMPB',   nature: 'Dr', industry: 'common' },
   { name: 'Staff Welfare Expenses',         l3Code: 'EMPB',   nature: 'Dr', industry: 'common' },
+  { name: 'Accum. Depr — PPE',             l3Code: 'ADEP',   nature: 'Cr', industry: 'common' },
+  { name: 'Accum. Depr — Intangibles',     l3Code: 'ADEP',   nature: 'Cr', industry: 'common' },
 ];
 
 // Manufacturing Pack — loads when industry = Manufacturing (30 groups)
