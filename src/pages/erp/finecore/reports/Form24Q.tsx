@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, Info } from 'lucide-react';
 import { toast } from 'sonner';
-import { inr, exportCSV } from '../reportUtils';
+import { inr, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 

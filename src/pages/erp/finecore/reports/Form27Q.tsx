@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, Globe } from 'lucide-react';
 import { toast } from 'sonner';
-import { inr, exportCSV } from '../reportUtils';
+import { inr, exportCSV } from './reportUtils';
 import { onEnterNext } from '@/lib/keyboard';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
