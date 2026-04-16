@@ -1,6 +1,6 @@
 /**
  * Receipt.tsx — Full Receipt Voucher form
- * Sprint 3B: Customer Advance Tracking
+ * Sprint 3C: TDS Deducted by Customer (26AS)
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
@@ -9,17 +9,34 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send } from 'lucide-react';
+import { Send, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
-import type { Voucher, BillReference } from '@/types/voucher';
+import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+
+interface TDSLineRow {
+  id: string;
+  invoice_ref: string;
+  invoice_date: string;
+  gross_amount: number;
+  tds_section: string;
+  tds_rate: number;
+  tds_amount: number;
+  net_received: number;
+}
+
+const incomeTdsSections = ['194J', '194C', '194A', '194H', '194I', '194Q', '194R', '194S'];
 
 interface ReceiptPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -38,6 +55,10 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   const [narration, setNarration] = useState('');
   const [receiptPurpose, setReceiptPurpose] = useState<'regular' | 'advance'>('regular');
 
+  // TDS Receivable state
+  const [tdsEnabled, setTdsEnabled] = useState(false);
+  const [tdsLines, setTdsLines] = useState<TDSLineRow[]>([]);
+
   // Load customers for party lookup
   const customers = useMemo((): any[] => {
     try {
@@ -50,14 +71,64 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
     customers.find((c: any) => c.partyName === partyName) ?? null,
   [customers, partyName]);
 
+  const isDeductor = selectedCustomer?.is_tds_deductor === true;
+  const customerTAN = selectedCustomer?.tan_number || '';
+
+  const addTdsLine = useCallback(() => {
+    setTdsLines(prev => [...prev, {
+      id: `tl-${Date.now()}`, invoice_ref: '', invoice_date: date,
+      gross_amount: 0, tds_section: '194J', tds_rate: 10, tds_amount: 0, net_received: 0,
+    }]);
+  }, [date]);
+
+  const removeTdsLine = useCallback((id: string) => {
+    setTdsLines(prev => prev.filter(l => l.id !== id));
+  }, []);
+
+  const updateTdsLine = useCallback((id: string, field: keyof TDSLineRow, value: string | number) => {
+    setTdsLines(prev => prev.map(l => {
+      if (l.id !== id) return l;
+      const updated = { ...l, [field]: value };
+      if (field === 'gross_amount' || field === 'tds_rate') {
+        updated.tds_amount = Math.round(updated.gross_amount * updated.tds_rate / 100);
+        updated.net_received = updated.gross_amount - updated.tds_amount;
+      }
+      if (field === 'tds_amount') {
+        updated.net_received = updated.gross_amount - (value as number);
+      }
+      if (field === 'tds_section') {
+        const sec = TDS_SECTIONS.find(s => s.sectionCode === value);
+        if (sec) { updated.tds_rate = sec.rate; updated.tds_amount = Math.round(updated.gross_amount * sec.rate / 100); updated.net_received = updated.gross_amount - updated.tds_amount; }
+      }
+      return updated;
+    }));
+  }, []);
+
+  const totalTds = tdsLines.reduce((s, l) => s + l.tds_amount, 0);
+
   const handlePost = useCallback(() => {
     if (!partyName) { toast.error('Party name is required'); return; }
     if (!bankCashLedger) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
+    if (tdsEnabled && tdsLines.length > 0 && !customerTAN) {
+      toast.error('Customer TAN is required for TDS receivable. Configure in CustomerMaster.');
+      return;
+    }
     const now = new Date().toISOString();
     const billRefs: BillReference[] = receiptPurpose === 'advance'
       ? [{ voucher_id: '', voucher_no: '', voucher_date: date, amount, type: 'advance' }]
       : [];
+
+    const tdsReceivableLines: TDSReceivableLine[] = tdsEnabled ? tdsLines.map(l => ({
+      customer_tan: customerTAN,
+      tds_section: l.tds_section,
+      invoice_ref: l.invoice_ref,
+      invoice_date: l.invoice_date,
+      gross_amount: l.gross_amount,
+      tds_amount: l.tds_amount,
+      net_amount: l.net_received,
+    })) : [];
+
     const voucher: Voucher = {
       id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
       voucher_type_name: 'Receipt', base_voucher_type: 'Receipt',
@@ -72,13 +143,15 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       total_taxable: 0, total_cgst: 0, total_sgst: 0, total_igst: 0,
       total_cess: 0, total_tax: 0, round_off: 0, tds_applicable: false,
       bill_references: billRefs,
+      tds_receivable_lines: tdsReceivableLines.length > 0 ? tdsReceivableLines : undefined,
+      deductee_pan: selectedCustomer?.pan ?? '',
       status: 'draft', created_by: 'current-user', created_at: now, updated_at: now,
     };
     try {
       postVoucher(voucher, entityCode);
       toast.success('Receipt voucher posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedCustomer, receiptPurpose]);
+  }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedCustomer, receiptPurpose, tdsEnabled, tdsLines, customerTAN]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -90,6 +163,8 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       });
     }
   }, [onSaveDraft, partyName, date, amount]);
+
+  const activeTdsSections = TDS_SECTIONS.filter(t => t.status === 'active' && incomeTdsSections.includes(t.sectionCode));
 
   return (
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
@@ -173,6 +248,83 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       </Card>
 
       <SettlementPanel partyId={partyName} entityCode={entityCode} mode="debtor" />
+
+      {/* TDS Deducted by Customer — Sprint 3C */}
+      {isDeductor && (
+        <Card>
+          <CardContent className="pt-5 space-y-3">
+            <div data-keyboard-form className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-xs font-semibold">TDS Deducted by Customer on this Payment?</Label>
+                  <p className="text-[10px] text-muted-foreground">Creates TDS Receivable entries for Form 26AS reconciliation</p>
+                </div>
+                <Switch checked={tdsEnabled} onCheckedChange={setTdsEnabled} />
+              </div>
+
+              {tdsEnabled && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="font-mono text-[10px]">Customer TAN: {customerTAN || 'Not set'}</Badge>
+                    {!customerTAN && (
+                      <Alert className="border-amber-500/30 bg-amber-500/5 py-1 px-2">
+                        <AlertTriangle className="h-3 w-3 text-amber-600" />
+                        <AlertDescription className="text-[10px] text-amber-700">No TAN configured. Add in CustomerMaster before booking 26AS TDS.</AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+
+                  <div className="border rounded-lg overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Invoice Ref</TableHead>
+                          <TableHead className="text-xs">Invoice Date</TableHead>
+                          <TableHead className="text-xs text-right">Gross Amount</TableHead>
+                          <TableHead className="text-xs">TDS Section</TableHead>
+                          <TableHead className="text-xs text-right">TDS %</TableHead>
+                          <TableHead className="text-xs text-right">TDS Amount</TableHead>
+                          <TableHead className="text-xs text-right">Net Received</TableHead>
+                          <TableHead className="text-xs w-8"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {tdsLines.length === 0 && (
+                          <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-4">No TDS lines. Click + to add.</TableCell></TableRow>
+                        )}
+                        {tdsLines.map(l => (
+                          <TableRow key={l.id}>
+                            <TableCell><Input value={l.invoice_ref} onChange={e => updateTdsLine(l.id, 'invoice_ref', e.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs" placeholder="INV-001" /></TableCell>
+                            <TableCell><Input type="date" value={l.invoice_date} onChange={e => updateTdsLine(l.id, 'invoice_date', e.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs" /></TableCell>
+                            <TableCell><Input type="number" value={l.gross_amount || ''} onChange={e => updateTdsLine(l.id, 'gross_amount', Number(e.target.value))} onKeyDown={onEnterNext} className="h-7 text-xs text-right font-mono" /></TableCell>
+                            <TableCell>
+                              <Select value={l.tds_section} onValueChange={v => updateTdsLine(l.id, 'tds_section', v)}>
+                                <SelectTrigger className="h-7 text-xs w-24"><SelectValue /></SelectTrigger>
+                                <SelectContent>{activeTdsSections.map(t => <SelectItem key={t.sectionCode} value={t.sectionCode}>{t.sectionCode}</SelectItem>)}</SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell><Input type="number" value={l.tds_rate || ''} onChange={e => updateTdsLine(l.id, 'tds_rate', Number(e.target.value))} onKeyDown={onEnterNext} className="h-7 text-xs text-right font-mono w-16" /></TableCell>
+                            <TableCell><Input type="number" value={l.tds_amount || ''} onChange={e => updateTdsLine(l.id, 'tds_amount', Number(e.target.value))} onKeyDown={onEnterNext} className="h-7 text-xs text-right font-mono" /></TableCell>
+                            <TableCell className="text-xs text-right font-mono text-muted-foreground">{l.net_received.toLocaleString('en-IN')}</TableCell>
+                            <TableCell><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeTdsLine(l.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Button variant="outline" size="sm" onClick={addTdsLine}><Plus className="h-3 w-3 mr-1" />Add Invoice Row</Button>
+                    {tdsLines.length > 0 && (
+                      <p className="text-xs text-muted-foreground">Total TDS: <span className="font-mono font-bold text-foreground">₹{totalTds.toLocaleString('en-IN')}</span></p>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="pt-5">
