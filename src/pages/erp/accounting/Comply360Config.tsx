@@ -860,7 +860,7 @@ export function Comply360ConfigPanel() {
         </div>
         <div>
           <Label className="text-xs">Default Receive Godown</Label>
-          <Input value={groupConfig.defaultReceiveGodown} onKeyDown={onEnterNext} onChange={e => updateGroup('defaultReceiveGodown', e.target.value)} className="h-8 text-sm" placeholder="Main Store" />
+          <Input value={groupConfig.defaultReceiveGodown} onKeyDown={onEnterNext} onChange={e => setGroupConfig(p => ({ ...p, defaultReceiveGodown: e.target.value }))} className="h-8 text-sm" placeholder="Main Store" />
         </div>
       </div>
       <Button data-primary onClick={handleSaveFeatures} className="w-full"><Save className="h-4 w-4 mr-1" /> Save Features</Button>
