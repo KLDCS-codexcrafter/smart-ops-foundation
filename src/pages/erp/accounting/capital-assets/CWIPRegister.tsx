@@ -52,7 +52,7 @@ export function CWIPRegisterPanel({ entityCode }: Props) {
   };
 
   return (
-    <div className="p-6 space-y-4 animate-fade-in">
+    <div className="p-6 space-y-4 animate-fade-in" data-keyboard-form>
       <div>
         <h2 className="text-lg font-bold flex items-center gap-2">
           <Package className="h-5 w-5 text-teal-500" /> Capital Work-in-Progress

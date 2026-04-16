@@ -158,7 +158,7 @@ export function AssetDisposalPanel({ entityCode }: Props) {
 
         <TabsContent value="writeoff" className="space-y-3">
           <p className="text-sm text-muted-foreground">Write off the selected asset — entire net book value is treated as loss.</p>
-          <Button onClick={handleWriteOff} disabled={!selectedUnit} variant="destructive">
+          <Button onClick={handleWriteOff} disabled={!selectedUnit} variant="destructive" data-primary>
             <Trash2 className="h-3.5 w-3.5 mr-1" /> Write Off Asset
           </Button>
         </TabsContent>
@@ -185,7 +185,7 @@ export function AssetDisposalPanel({ entityCode }: Props) {
                 : `Loss: ₹${(selectedUnit.net_book_value - salePrice).toLocaleString('en-IN')}`}
             </p>
           )}
-          <Button onClick={handleCapitalSale} disabled={!selectedUnit || salePrice <= 0}>
+          <Button onClick={handleCapitalSale} disabled={!selectedUnit || salePrice <= 0} data-primary>
             <DollarSign className="h-3.5 w-3.5 mr-1" /> Record Sale
           </Button>
         </TabsContent>
