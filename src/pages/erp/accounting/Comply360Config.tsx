@@ -541,8 +541,9 @@ export function Comply360ConfigPanel() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div><Label className="text-xs">TDS Receivable Journal VCH</Label>
           <Input value={tdsrConfig.tdsReceivableJournalVCH} onKeyDown={onEnterNext} onChange={e => setTdsrConfig(p => ({ ...p, tdsReceivableJournalVCH: e.target.value }))} className="h-8 text-sm" placeholder="UDF 5019" /></div>
-        <div><Label className="text-xs">TDS Receivable Ledger</Label>
-          <Input value={tdsrConfig.tdsReceivableLedger} onKeyDown={onEnterNext} onChange={e => setTdsrConfig(p => ({ ...p, tdsReceivableLedger: e.target.value }))} className="h-8 text-sm" placeholder="UDF 5020" /></div>
+        <div><Label className="text-xs">TDS Receivable Ledger (Dr for 26AS JV)</Label>
+          <Input value={tdsrConfig.tdsReceivableLedger} onKeyDown={onEnterNext} onChange={e => setTdsrConfig(p => ({ ...p, tdsReceivableLedger: e.target.value }))} className="h-8 text-sm" placeholder="Default: TDS Receivable" />
+          <p className="text-[10px] text-muted-foreground mt-0.5">Current Assets ledger. Auto-JV: Dr this ledger, Cr Customer.</p></div>
         <div><Label className="text-xs">Discount Journal VCH</Label>
           <Input value={tdsrConfig.discountJournalVCH} onKeyDown={onEnterNext} onChange={e => setTdsrConfig(p => ({ ...p, discountJournalVCH: e.target.value }))} className="h-8 text-sm" placeholder="UDF 3209" /></div>
         <div><Label className="text-xs">Discount Ledger</Label>
