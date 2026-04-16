@@ -45,6 +45,9 @@ import { Form27QPanel } from './reports/Form27Q';
 import { ChallanRegisterPanel } from './reports/ChallanRegister';
 import { TDSAnalyticsPanel } from './reports/TDSAnalyticsReport';
 import { Form26ASPanel } from './reports/Form26AS';
+import { AuditDashboardPanel } from './reports/AuditDashboard';
+import { Form3CDPanel } from './reports/Form3CD';
+import { Clause44ReportPanel } from './reports/gst/Clause44Report';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
@@ -79,6 +82,9 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-gst-gstr2': 'GSTR-2 Purchase Register',
   'fc-gst-itc': 'ITC Register',
   'fc-gst-2a': '2A/2B Reconciliation',
+  'fc-audit-dashboard': 'Audit Dashboard',
+  'fc-audit-3cd': 'Form 3CD',
+  'fc-audit-clause44': 'Clause 44 Report',
 };
 
 export function FinCorePagePanel() {
@@ -149,6 +155,9 @@ export function FinCorePagePanel() {
       case 'fc-gst-gstr2': return <GSTR2RegisterPanel entityCode={entityCode} />;
       case 'fc-gst-itc': return <ITCRegisterPanel entityCode={entityCode} />;
       case 'fc-gst-2a': return <RecoPanelGST entityCode={entityCode} />;
+      case 'fc-audit-dashboard': return <AuditDashboardPanel entityCode={entityCode} />;
+      case 'fc-audit-3cd': return <Form3CDPanel entityCode={entityCode} />;
+      case 'fc-audit-clause44': return <Clause44ReportPanel entityCode={entityCode} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
