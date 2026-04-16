@@ -92,6 +92,9 @@ interface VendorMasterDefinition {
   einvoiceApplicable: boolean;
   tdsApplicable: boolean;
   tdsSection: string;
+  lower_deduction_cert: string;    // Form 13 certificate number (blank = none)
+  lower_deduction_rate: number;    // e.g. 5 (for 5% instead of 10%)
+  lower_deduction_expiry: string;  // ISO date. Empty = certificate not set
   defaultBranch: string;
   businessMode: 'b2b' | 'b2c' | 'export' | 'import' | 'both';
   typeOfBusinessEntity:
@@ -174,6 +177,7 @@ const defaultForm: Omit<VendorMasterDefinition, 'id' | 'partyCode'> = {
   gstRegistrationType: 'regular', gstStateCode2: '',
   gstFilingType: 'monthly', einvoiceApplicable: false,
   tdsApplicable: false, tdsSection: '',
+  lower_deduction_cert: '', lower_deduction_rate: 0, lower_deduction_expiry: '',
   defaultBranch: '', businessMode: 'b2b',
   // [JWT] GET /api/foundation/parent-company/base-currency
   default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
