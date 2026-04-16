@@ -98,7 +98,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       }
       if (field === 'tds_section') {
         const sec = TDS_SECTIONS.find(s => s.sectionCode === value);
-        if (sec) { updated.tds_rate = sec.rate; updated.tds_amount = Math.round(updated.gross_amount * sec.rate / 100); updated.net_received = updated.gross_amount - updated.tds_amount; }
+        if (sec) { updated.tds_rate = sec.rateIndividual; updated.tds_amount = Math.round(updated.gross_amount * sec.rateIndividual / 100); updated.net_received = updated.gross_amount - updated.tds_amount; }
       }
       return updated;
     }));
