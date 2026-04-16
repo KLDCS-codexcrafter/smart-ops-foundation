@@ -130,6 +130,12 @@ export function FinCorePagePanel() {
       case 'fc-out-receivables': return <OutstandingAgingPanel entityCode={entityCode} type="debtor" />;
       case 'fc-out-payables': return <OutstandingAgingPanel entityCode={entityCode} type="creditor" />;
       case 'fc-tds-advance': return <TDSAdvancePanel entityCode={entityCode} />;
+      case 'fc-gst-gstr1': return <GSTR1Panel entityCode={entityCode} />;
+      case 'fc-gst-gstr3b': return <GSTR3BPanel entityCode={entityCode} />;
+      case 'fc-gst-gstr9': return <GSTR9Panel entityCode={entityCode} />;
+      case 'fc-gst-gstr2': return <GSTR2RegisterPanel entityCode={entityCode} />;
+      case 'fc-gst-itc': return <ITCRegisterPanel entityCode={entityCode} />;
+      case 'fc-gst-2a': return <RecoPanelGST entityCode={entityCode} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
