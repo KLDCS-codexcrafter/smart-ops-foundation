@@ -117,6 +117,7 @@ export interface Voucher {
   deductee_pan?: string;          // vendor PAN at time of deduction
   deductee_type?: "individual" | "company" | "huf" | "no_pan";
   bill_references?: BillReference[];
+  tds_receivable_lines?: TDSReceivableLine[];
   narration: string;
   terms_conditions: string;
   payment_enforcement: string;

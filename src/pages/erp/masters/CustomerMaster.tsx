@@ -113,6 +113,8 @@ interface CustomerMasterDefinition {
   default_currency: string;
   country: string;
   lut_number: string;
+  is_tds_deductor: boolean;  // UDF 29001. Enables 26AS reconciliation for this customer.
+  tan_number: string;        // UDF 29000. Customer's TAN (they deduct TDS from our invoices).
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -193,6 +195,8 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   status: 'active',
   country: 'IN',
   lut_number: '',
+  is_tds_deductor: false,
+  tan_number: '',
 };
 
 // ─── Panel Component ──────────────────────────────────────────
