@@ -48,6 +48,13 @@ import { Form26ASPanel } from './reports/Form26AS';
 import { AuditDashboardPanel } from './reports/AuditDashboard';
 import { Form3CDPanel } from './reports/Form3CD';
 import { Clause44ReportPanel } from './reports/gst/Clause44Report';
+import { CapitalAssetMasterPanel } from '@/pages/erp/accounting/capital-assets/CapitalAssetMaster';
+import { DepreciationWorkingsPanel } from '@/pages/erp/accounting/capital-assets/DepreciationWorkings';
+import { AMCWarrantyTrackerPanel } from '@/pages/erp/accounting/capital-assets/AMCWarrantyTracker';
+import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetDisposal';
+import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
+import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
+import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
