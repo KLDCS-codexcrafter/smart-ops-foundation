@@ -71,6 +71,21 @@ function getFY(): string {
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
 }
 
+// ── Supply type detection ────────────────────────────────────────────
+function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['supply_type'] {
+  const partyReg = voucher.party_registration_type ?? 'regular';
+  const partyCountry = voucher.party_country ?? 'IN';
+  if (partyCountry !== 'IN') {
+    return voucher.party_lut_number ? 'EXP_WP' : 'EXP_WOP';
+  }
+  if (partyReg === 'sez') {
+    return voucher.party_lut_number ? 'SEZWP' : 'SEZWOP';
+  }
+  if (!voucher.party_gstin && voucher.is_inter_state === false) return 'B2BUR';
+  if (voucher.party_gstin) return 'B2B';
+  return 'B2C';
+}
+
 // ── Post Voucher — writes to all 4 storage keys atomically ──────────
 
 export function postVoucher(voucher: Voucher, entityCode: string): void {
