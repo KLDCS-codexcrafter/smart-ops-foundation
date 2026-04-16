@@ -275,6 +275,7 @@ interface IncomeLedgerDefinition {
   includeInGstTurnover: boolean;
   isTdsApplicable: boolean;
   tdsSection: string;
+  isTdsReceivableLedger: boolean; // UDF 29004+29005. Marks income ledger for 26AS TDS receivable.
   costCentreApplicable: boolean;
   status: 'active' | 'suspended';
   description: string;
@@ -1199,6 +1200,7 @@ const defaultIncomeForm = {
   gstType: 'taxable' as IncomeLedgerDefinition['gstType'],
   includeInGstTurnover: true,
   isTdsApplicable: false, tdsSection: '',
+  isTdsReceivableLedger: false,
   costCentreApplicable: false,
   scope: 'group' as 'group'|'entity', entityId: '',
 };
@@ -2656,6 +2658,7 @@ export function LedgerMasterPanel() {
         sgstRate: incomeForm.sgstRate, igstRate: incomeForm.igstRate, cessRate: incomeForm.cessRate,
         gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
         isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
+        isTdsReceivableLedger: incomeForm.isTdsReceivableLedger,
         costCentreApplicable: incomeForm.costCentreApplicable,
       };
       saveDefinition(updated);
@@ -2686,6 +2689,7 @@ export function LedgerMasterPanel() {
       sgstRate: incomeForm.sgstRate, igstRate: incomeForm.igstRate, cessRate: incomeForm.cessRate,
       gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
       isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
+      isTdsReceivableLedger: incomeForm.isTdsReceivableLedger,
       costCentreApplicable: incomeForm.costCentreApplicable,
       status: 'active',
     description: '',
