@@ -141,6 +141,7 @@ export function FinCorePagePanel() {
       case 'fc-rpt-27q': return <Form27QPanel entityCode={entityCode} />;
       case 'fc-rpt-challan': return <ChallanRegisterPanel entityCode={entityCode} />;
       case 'fc-tds-analytics': return <TDSAnalyticsPanel entityCode={entityCode} />;
+      case 'fc-rpt-26as': return <Form26ASPanel entityCode={entityCode} />;
       case 'fc-gst-gstr1': return <GSTR1Panel entityCode={entityCode} />;
       case 'fc-gst-gstr3b': return <GSTR3BPanel entityCode={entityCode} />;
       case 'fc-gst-gstr9': return <GSTR9Panel entityCode={entityCode} />;
