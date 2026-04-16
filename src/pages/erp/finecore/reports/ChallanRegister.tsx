@@ -21,8 +21,12 @@ import { inr, today } from './reportUtils';
 import type { ChallanEntry, TDSDeductionEntry } from '@/types/compliance';
 import { challansKey, tdsDeductionsKey } from '@/types/compliance';
 
-function ls<T>(key: string): T[] { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
-function ss<T>(key: string, d: T[]) { localStorage.setItem(key, JSON.stringify(d)); }
+function ls<T>(key: string): T[] { try {
+  // [JWT] GET /api/compliance/challans/:key
+  const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
+function ss<T>(key: string, d: T[]) {
+  // [JWT] POST /api/compliance/challans/:key
+  localStorage.setItem(key, JSON.stringify(d)); }
 
 interface Props { entityCode: string; }
 
