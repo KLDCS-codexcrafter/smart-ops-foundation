@@ -167,7 +167,7 @@ export default function DebitNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Debit Note' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Debit Note' }]} showDatePicker={false} showCompany={false} />
         <main><DebitNotePanel /></main>
       </div>
     </SidebarProvider>

@@ -140,7 +140,7 @@ export default function ContraEntry() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Contra Entry' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Contra Entry' }]} showDatePicker={false} showCompany={false} />
         <main><ContraEntryPanel /></main>
       </div>
     </SidebarProvider>

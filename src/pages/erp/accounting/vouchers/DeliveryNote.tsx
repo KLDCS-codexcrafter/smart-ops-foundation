@@ -150,7 +150,7 @@ export default function DeliveryNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Delivery Note' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Delivery Note' }]} showDatePicker={false} showCompany={false} />
         <main><DeliveryNotePanel /></main>
       </div>
     </SidebarProvider>

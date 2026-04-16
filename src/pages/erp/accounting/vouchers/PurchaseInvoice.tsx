@@ -186,7 +186,7 @@ export default function PurchaseInvoice() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Purchase Invoice' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Invoice' }]} showDatePicker={false} showCompany={false} />
         <main><PurchaseInvoicePanel /></main>
       </div>
     </SidebarProvider>

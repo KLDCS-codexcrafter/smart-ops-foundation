@@ -151,7 +151,7 @@ export default function Payment() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Accounting', href: '/erp/accounting' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
         <main><PaymentPanel /></main>
       </div>
     </SidebarProvider>
