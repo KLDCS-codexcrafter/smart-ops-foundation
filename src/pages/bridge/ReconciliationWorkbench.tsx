@@ -188,7 +188,7 @@ function SSOTSummaryBar({ reqId }: { reqId: string }) {
   );
 }
 
-export default function ReconciliationWorkbench() {
+export function ReconciliationWorkbenchPanel() {
   const [selectedReqId, setSelectedReqId] = useState("REQ-0038");
   const [signOffDialog, setSignOffDialog] = useState(false);
   const [signedOff, setSignedOff] = useState(false);
