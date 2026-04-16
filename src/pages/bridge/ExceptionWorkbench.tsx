@@ -94,7 +94,7 @@ const TREND_DATA = [
   { day: "03 Apr", count: 5 },
 ];
 
-export default function ExceptionWorkbench() {
+export function ExceptionWorkbenchPanel() {
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [codeFilter, setCodeFilter] = useState("all");
