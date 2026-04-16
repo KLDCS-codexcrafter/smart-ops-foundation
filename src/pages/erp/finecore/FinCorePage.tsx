@@ -44,6 +44,7 @@ import { Form26QPanel } from './reports/Form26Q';
 import { Form27QPanel } from './reports/Form27Q';
 import { ChallanRegisterPanel } from './reports/ChallanRegister';
 import { TDSAnalyticsPanel } from './reports/TDSAnalyticsReport';
+import { Form26ASPanel } from './reports/Form26AS';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {

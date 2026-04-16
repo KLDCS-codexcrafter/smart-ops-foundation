@@ -33,7 +33,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-bnk-reconciliation', 'fc-bnk-cheque',
   'fc-out-receivables', 'fc-out-payables',
   'fc-tds-advance', 'fc-tds-analytics',
-  'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan',
+  'fc-rpt-24q', 'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan', 'fc-rpt-26as',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
 ];
