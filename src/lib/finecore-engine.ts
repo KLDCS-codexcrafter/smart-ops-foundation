@@ -537,6 +537,23 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
     // [JWT] PATCH /api/compliance/tds-receivable/:id
     ss(tdsReceivableKey(entityCode), rcvStore);
   }
+
+  // FA cascade: when a Capital Purchase is cancelled, mark AssetUnitRecords as written_off
+  const cancelledVoucher = vouchers[idx];
+  if (cancelledVoucher.base_voucher_type === 'Capital Purchase') {
+    // [JWT] GET /api/fixed-assets/units
+    const faUnits = ls<AssetUnitRecord>(faUnitsKey(entityCode));
+    let changed = false;
+    for (const u of faUnits) {
+      if (u.capital_purchase_voucher_id === voucherId && u.accumulated_depreciation === 0) {
+        u.status = 'written_off'; u.updated_at = now; changed = true;
+      }
+    }
+    if (changed) {
+      // [JWT] PATCH /api/fixed-assets/units
+      ss(faUnitsKey(entityCode), faUnits);
+    }
+  }
 }
 
 // ── Template variable resolver ───────────────────────────────────────
