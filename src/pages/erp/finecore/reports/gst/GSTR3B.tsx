@@ -28,8 +28,9 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
   const active = useMemo(() => entries.filter(e => !e.is_cancelled && e.date.startsWith(period)), [entries, period]);
 
   // [JWT] GET /api/accounting/gst-entity-config
-  const gstin = (() => { try { const c = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); return c.gstin || ''; } catch { return ''; } })();
-  const qrmpEnrolled = (() => { try { const c = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); return c.qrmpEnrolled || false; } catch { return false; } })();
+  const gstEntityConfig = (() => { try { return JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); } catch { return {}; } })();
+  const gstin: string = gstEntityConfig.gstin || '';
+  const qrmpEnrolled: boolean = gstEntityConfig.qrmpEnrolled || false;
 
   // 3.1 computations
   const outTaxable = active.filter(e => ['Sales', 'Credit Note', 'Debit Note'].includes(e.base_voucher_type) && ['B2B', 'B2C'].includes(e.supply_type));
