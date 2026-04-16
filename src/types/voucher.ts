@@ -66,6 +66,16 @@ export interface BillReference {
   type: 'new' | 'against_ref' | 'advance';
 }
 
+export interface TDSReceivableLine {
+  customer_tan: string;
+  tds_section: string;
+  invoice_ref: string;
+  invoice_date: string;
+  gross_amount: number;
+  tds_amount: number;
+  net_amount: number;
+}
+
 // The voucher header – stored in erp_group_vouchers_{e}
 export interface Voucher {
   id: string;

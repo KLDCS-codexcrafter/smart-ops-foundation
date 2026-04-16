@@ -100,3 +100,34 @@ export interface ChallanEntry {
   created_at: string; updated_at: string;
 }
 export const challansKey = (e: string) => `erp_tds_challan_${e}`;
+
+// ── TDS Receivable Entry (Form 26AS — income-side TDS) ────────────────
+export interface TDSReceivableEntry {
+  id: string; entity_id: string;
+  voucher_id: string;             // Receipt or Journal voucher that captured this
+  voucher_no: string;
+  customer_id: string; customer_name: string;
+  customer_pan: string;
+  customer_tan: string;           // customer's TAN — key for 26AS matching
+  tds_section: string;            // 194J, 194C, 194A etc.
+  invoice_ref: string;            // bill reference from receipt bill allocation
+  invoice_date: string;
+  amount_received: number;        // gross amount (what customer should have paid)
+  tds_amount: number;             // TDS deducted by customer
+  net_received: number;           // bank inflow = amount_received - tds_amount
+  date: string;
+  quarter: "Q1"|"Q2"|"Q3"|"Q4";
+  assessment_year: string;        // "2026-27"
+  // 26AS portal reconciliation
+  portal_sr_no?: string;          // matched row from TRACES 26AS file
+  portal_tds_amount?: number;
+  portal_status?: "F"|"P"|"U";    // F=Final, P=Pending, U=Under Processing
+  portal_booking_date?: string;
+  portal_deductor_name?: string;
+  match_status: "unmatched"|"matched"|"partially_matched"|"not_in_portal"|"not_in_tally";
+  // JV lifecycle (same pattern as TDSDeductionEntry)
+  jv_id?: string; jv_no?: string;
+  status: "open"|"posted"|"cancelled";
+  created_at: string;
+}
+export const tdsReceivableKey = (e: string) => `erp_tds_receivable_${e}`;
