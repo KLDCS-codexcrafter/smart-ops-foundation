@@ -74,6 +74,10 @@ const BASE_FAMILY: Record<VoucherBaseType, VoucherFamily> = {
   'Job Work In Order': 'Job Work', 'Job Work Out Order': 'Job Work',
   'Material In': 'Job Work', 'Material Out': 'Job Work',
   Attendance: 'Payroll', Payroll: 'Payroll',
+  'Capital Purchase': 'Accounting', 'Put To Use': 'Non-Accounting', 'Depreciation': 'Accounting',
+  'Asset Transfer': 'Non-Accounting', 'Asset Verification': 'Non-Accounting',
+  'Asset Write Off': 'Accounting', 'Capital Sale': 'Accounting',
+  'Custodian Change': 'Non-Accounting', 'Expense Booking': 'Accounting',
 };
 
 const BASE_INHERITED: Record<VoucherBaseType, { gl: boolean; inv: boolean; settlement: boolean; report: string }> = {
@@ -101,6 +105,15 @@ const BASE_INHERITED: Record<VoucherBaseType, { gl: boolean; inv: boolean; settl
   'Material Out':       { gl: false, inv: true,  settlement: false, report: 'Material Out Register' },
   Attendance:           { gl: false, inv: false, settlement: false, report: 'Attendance Register' },
   Payroll:              { gl: true,  inv: false, settlement: false, report: 'Payroll Register' },
+  'Capital Purchase':   { gl: true,  inv: false, settlement: false, report: 'Fixed Asset Register' },
+  'Put To Use':         { gl: false, inv: false, settlement: false, report: 'Fixed Asset Register' },
+  'Depreciation':       { gl: true,  inv: false, settlement: false, report: 'Depreciation Workings' },
+  'Asset Transfer':     { gl: false, inv: false, settlement: false, report: 'Fixed Asset Register' },
+  'Asset Verification': { gl: false, inv: false, settlement: false, report: 'Fixed Asset Register' },
+  'Asset Write Off':    { gl: true,  inv: false, settlement: false, report: 'Asset Disposal' },
+  'Capital Sale':       { gl: true,  inv: false, settlement: false, report: 'Asset Disposal' },
+  'Custodian Change':   { gl: false, inv: false, settlement: false, report: 'Fixed Asset Register' },
+  'Expense Booking':    { gl: true,  inv: false, settlement: false, report: 'Fixed Asset Register' },
 };
 
 const NUMBERING_LABELS: Record<NumberingMethod, string> = {
