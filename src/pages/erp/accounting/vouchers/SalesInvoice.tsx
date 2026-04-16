@@ -24,6 +24,8 @@ import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/v
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 
@@ -55,6 +57,13 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [paymentTerms, setPaymentTerms] = useState('');
   const [collapseOpen, setCollapseOpen] = useState(false);
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
+  const [againstSO, setAgainstSO] = useState('');
+  const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
+  const openSOs = useMemo(() => {
+    const sos = getOpenOrdersForLookup('Sales Order');
+    if (partyName) return sos.filter(s => s.party_name === partyName);
+    return sos;
+  }, [getOpenOrdersForLookup, partyName]);
 
   // Load open customer advances
   const openAdvances = useMemo(() => {
