@@ -424,3 +424,7 @@ export function ReconciliationWorkbenchPanel() {
     </BridgeLayout>
   );
 }
+
+export default function ReconciliationWorkbench() {
+  return <ReconciliationWorkbenchPanel />;
+}
