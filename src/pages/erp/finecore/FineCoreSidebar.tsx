@@ -9,7 +9,7 @@ import {
   LayoutDashboard, FileText, CreditCard, Wallet, BookOpen, ArrowLeftRight,
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
-  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe,
+  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -36,6 +36,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-rpt-24q', 'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan', 'fc-rpt-26as',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
+  'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
 ];
 
 interface SidebarItem {
@@ -130,6 +131,12 @@ const FA_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-reports', label: 'FA Reports', icon: BarChart3 },
 ];
 
+const AUDIT_ITEMS: SidebarItem[] = [
+  { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
+  { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
+  { id: 'fc-audit-clause44', label: 'Clause 44 Report', icon: Table2 },
+];
+
 interface FineCoreSidebarProps {
   active: FineCoreModule;
   onNavigate: (m: FineCoreModule) => void;
@@ -147,6 +154,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
   const [gstOpen, setGstOpen] = useState(false);
   const [tdsOpen, setTdsOpen] = useState(false);
   const [faOpen, setFaOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
 
   const isLive = (id: FineCoreModule) => LIVE_MODULES.includes(id);
 
@@ -256,6 +264,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
         {renderSection('GST', GST_ITEMS, gstOpen, setGstOpen)}
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
+        {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
     </Sidebar>
   );
