@@ -106,7 +106,7 @@ export function FinCorePagePanel() {
       case 'fc-txn-delivery-note': return <DeliveryNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt-note': return <ReceiptNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-inv-stock-journal': return <StockJournalPanel onSaveDraft={addToDraftTray} />;
-      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} />;
+      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
       case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
       case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;
       case 'fc-rpt-pl': return <ProfitLossPanel entityCode={entityCode} />;

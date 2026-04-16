@@ -17,11 +17,28 @@ import { useVouchers } from '@/hooks/useVouchers';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today, exportCSV } from './reportUtils';
 
-interface DayBookPanelProps { entityCode: string; }
+interface DayBookPanelProps {
+  entityCode: string;
+  onNavigate?: (module: string) => void;
+}
 
 const VOUCHER_TYPES = ['All', 'Sales', 'Purchase', 'Receipt', 'Payment', 'Journal', 'Contra', 'Credit Note', 'Debit Note', 'Delivery Note', 'Receipt Note', 'Stock Journal'];
 
-export function DayBookPanel({ entityCode }: DayBookPanelProps) {
+const typeToModule: Record<string, string> = {
+  'Sales': 'fc-txn-sales-invoice',
+  'Purchase': 'fc-txn-purchase-invoice',
+  'Receipt': 'fc-txn-receipt',
+  'Payment': 'fc-txn-payment',
+  'Journal': 'fc-txn-journal',
+  'Contra': 'fc-txn-contra',
+  'Credit Note': 'fc-txn-credit-note',
+  'Debit Note': 'fc-txn-debit-note',
+  'Delivery Note': 'fc-txn-delivery-note',
+  'Receipt Note': 'fc-txn-receipt-note',
+  'Stock Journal': 'fc-inv-stock-journal',
+};
+
+export function DayBookPanel({ entityCode, onNavigate }: DayBookPanelProps) {
   const { vouchers } = useVouchers(entityCode);
   const t = today();
   const monthStart = t.slice(0, 8) + '01';
@@ -130,7 +147,7 @@ export function DayBookPanel({ entityCode }: DayBookPanelProps) {
             </TableHeader>
             <TableBody>
               {filtered.map(v => (
-                <TableRow key={v.id} className="cursor-pointer hover:bg-muted/50">
+                <TableRow key={v.id} className="cursor-pointer hover:bg-muted/50" onClick={() => { if (onNavigate) onNavigate(typeToModule[v.base_voucher_type] ?? 'fc-hub'); }}>
                   <TableCell className="text-xs">{fmtDate(v.date)}</TableCell>
                   <TableCell className="text-xs font-mono">{v.voucher_no}</TableCell>
                   <TableCell><Badge variant="outline" className="text-[10px]">{v.base_voucher_type}</Badge></TableCell>
