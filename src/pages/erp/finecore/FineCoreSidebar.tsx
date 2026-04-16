@@ -33,6 +33,8 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-bnk-reconciliation', 'fc-bnk-cheque',
   'fc-out-receivables', 'fc-out-payables',
   'fc-tds-advance',
+  'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
+  'fc-gst-gstr2', 'fc-gst-gstr9',
 ];
 
 interface SidebarItem {
@@ -106,6 +108,8 @@ const GST_ITEMS: SidebarItem[] = [
   { id: 'fc-gst-gstr3b', label: 'GSTR-3B', icon: FileText },
   { id: 'fc-gst-2a', label: '2A Reconciliation', icon: ArrowLeftRight },
   { id: 'fc-gst-itc', label: 'ITC Register', icon: Calculator },
+  { id: 'fc-gst-gstr2', label: 'GSTR-2 Purchase Register', icon: ShoppingCart },
+  { id: 'fc-gst-gstr9', label: 'GSTR-9 Annual Return', icon: FileCheck },
 ];
 
 const TDS_ITEMS: SidebarItem[] = [
