@@ -66,6 +66,16 @@ export interface BillReference {
   type: 'new' | 'against_ref' | 'advance';
 }
 
+export interface TDSReceivableLine {
+  customer_tan: string;
+  tds_section: string;
+  invoice_ref: string;
+  invoice_date: string;
+  gross_amount: number;
+  tds_amount: number;
+  net_amount: number;
+}
+
 // The voucher header – stored in erp_group_vouchers_{e}
 export interface Voucher {
   id: string;
@@ -107,6 +117,7 @@ export interface Voucher {
   deductee_pan?: string;          // vendor PAN at time of deduction
   deductee_type?: "individual" | "company" | "huf" | "no_pan";
   bill_references?: BillReference[];
+  tds_receivable_lines?: TDSReceivableLine[];
   narration: string;
   terms_conditions: string;
   payment_enforcement: string;

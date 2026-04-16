@@ -3,8 +3,8 @@
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
-import type { RCMEntry, TDSDeductionEntry, AdvanceEntry } from '@/types/compliance';
-import { rcmEntriesKey, tdsDeductionsKey, advancesKey } from '@/types/compliance';
+import type { RCMEntry, TDSDeductionEntry, AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
+import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '@/types/compliance';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
 
 // ── Storage key helpers ──────────────────────────────────────────────
@@ -371,6 +371,36 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     // [JWT] POST /api/compliance/advances
     ss(advancesKey(entityCode), advStore);
   }
+
+  // 8. Write TDS Receivable entries (for Receipt vouchers with customer TDS deduction)
+  if (voucher.base_voucher_type === 'Receipt' && voucher.tds_receivable_lines?.length) {
+    const rcvStore = ls<TDSReceivableEntry>(tdsReceivableKey(entityCode));
+    for (const line of voucher.tds_receivable_lines) {
+      rcvStore.push({
+        id: `tdsrcv-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        entity_id: entityCode,
+        voucher_id: voucher.id, voucher_no: voucher.voucher_no,
+        customer_id: voucher.party_id ?? "",
+        customer_name: voucher.party_name ?? "",
+        customer_pan: voucher.deductee_pan ?? "",
+        customer_tan: line.customer_tan,
+        tds_section: line.tds_section,
+        invoice_ref: line.invoice_ref,
+        invoice_date: line.invoice_date,
+        amount_received: line.gross_amount,
+        tds_amount: line.tds_amount,
+        net_received: line.net_amount,
+        date: voucher.date,
+        quarter: getQuarter(voucher.date),
+        assessment_year: getAssessmentYear(voucher.date),
+        match_status: "unmatched",
+        status: "open",
+        created_at: now,
+      });
+    }
+    // [JWT] POST /api/compliance/tds-receivable
+    ss(tdsReceivableKey(entityCode), rcvStore);
+  }
 }
 
 // ── Cancel Voucher — reversal entries ────────────────────────────────
@@ -448,6 +478,25 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
     ownAdv.status = 'cancelled'; ownAdv.updated_at = now;
     // [JWT] PATCH /api/compliance/advances/:id
     ss(advancesKey(entityCode), advStore);
+  }
+
+  // TDS Receivable cascade
+  const rcvStore = ls<TDSReceivableEntry>(tdsReceivableKey(entityCode));
+  // If cancelled voucher is a TDS Receivable JV → reset linked entries to "open"
+  const linkedRcv = rcvStore.filter(r => r.jv_id === voucherId);
+  if (linkedRcv.length > 0) {
+    linkedRcv.forEach(r => {
+      r.status = "open"; r.jv_id = undefined; r.jv_no = undefined;
+    });
+    // [JWT] PATCH /api/compliance/tds-receivable/:id
+    ss(tdsReceivableKey(entityCode), rcvStore);
+  }
+  // If source Receipt is cancelled → cancel its TDS receivable entries
+  const ownRcv = rcvStore.filter(r => r.voucher_id === voucherId && r.status !== "cancelled");
+  if (ownRcv.length > 0) {
+    ownRcv.forEach(r => { r.status = "cancelled"; });
+    // [JWT] PATCH /api/compliance/tds-receivable/:id
+    ss(tdsReceivableKey(entityCode), rcvStore);
   }
 }
 
