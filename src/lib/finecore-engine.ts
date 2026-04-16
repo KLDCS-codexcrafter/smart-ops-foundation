@@ -230,7 +230,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       for (const line of voucher.inventory_lines) {
         if (line.taxable_value <= 0) continue;
         // [JWT] GET /api/accounting/ledger-definitions
-        const ldefs = ls<any>('erp_group_ledger_definitions');
+        const ldefs = ls<any>(ledgerDefsKey(entityCode));
         const salesLedger = ldefs.find((l: any) =>
           voucher.ledger_lines?.some(ll => ll.ledger_id === l.id));
         gstEntries.push({
@@ -321,7 +321,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     const isPayment = voucher.base_voucher_type === 'Payment';
     const advanceTDS = getAdvanceTDSAlreadyDeducted(voucher.party_id ?? '', voucher.id, entityCode);
     // [JWT] GET /api/accounting/ledger-definitions
-    const ldefs = ls<any>('erp_group_ledger_definitions');
+    const ldefs = ls<any>(ledgerDefsKey(entityCode));
     const expLedger = ldefs.find((l: any) => voucher.ledger_lines?.some(ll => ll.ledger_id === l.id && l.isTdsApplicable));
     tdsStore.push({
       id: `tds-${Date.now()}`,
