@@ -47,5 +47,16 @@ export function useJournal(entityCode: string) {
     );
   }, [entries]);
 
-  return { entries, getLedgerBalance, getTrialBalance, getLedgerHistory };
+  const getTrialBalanceAsOf = useCallback((asOfDate: string) => {
+    const filtered = entries.filter(e => e.date <= asOfDate && !e.is_cancelled);
+    const map = new Map<string, { ledgerId: string; ledgerName: string; ledgerGroupCode: string; dr: number; cr: number }>();
+    for (const e of filtered) {
+      const ex = map.get(e.ledger_id) || { ledgerId: e.ledger_id, ledgerName: e.ledger_name, ledgerGroupCode: e.ledger_group_code, dr: 0, cr: 0 };
+      ex.dr += e.dr_amount; ex.cr += e.cr_amount;
+      map.set(e.ledger_id, ex);
+    }
+    return Array.from(map.values());
+  }, [entries]);
+
+  return { entries, getLedgerBalance, getTrialBalance, getTrialBalanceAsOf, getLedgerHistory };
 }
