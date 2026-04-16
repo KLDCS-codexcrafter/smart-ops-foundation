@@ -92,6 +92,13 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-audit-dashboard': 'Audit Dashboard',
   'fc-audit-3cd': 'Form 3CD',
   'fc-audit-clause44': 'Clause 44 Report',
+  'fc-fa-register':     'Fixed Asset Register',
+  'fc-fa-master':       'Capital Asset Master',
+  'fc-fa-depreciation': 'Depreciation Workings',
+  'fc-fa-amc':          'AMC & Warranty',
+  'fc-fa-disposal':     'Asset Disposal',
+  'fc-fa-cwip':         'Capital WIP',
+  'fc-fa-reports':      'FA Reports',
 };
 
 export function FinCorePagePanel() {
@@ -165,6 +172,13 @@ export function FinCorePagePanel() {
       case 'fc-audit-dashboard': return <AuditDashboardPanel entityCode={entityCode} />;
       case 'fc-audit-3cd': return <Form3CDPanel entityCode={entityCode} />;
       case 'fc-audit-clause44': return <Clause44ReportPanel entityCode={entityCode} />;
+      case 'fc-fa-register':    return <FixedAssetRegisterPanel entityCode={entityCode} />;
+      case 'fc-fa-master':      return <CapitalAssetMasterPanel entityCode={entityCode} />;
+      case 'fc-fa-depreciation':return <DepreciationWorkingsPanel entityCode={entityCode} />;
+      case 'fc-fa-amc':         return <AMCWarrantyTrackerPanel entityCode={entityCode} />;
+      case 'fc-fa-disposal':    return <AssetDisposalPanel entityCode={entityCode} />;
+      case 'fc-fa-cwip':        return <CWIPRegisterPanel entityCode={entityCode} />;
+      case 'fc-fa-reports':     return <FAReportsPanel entityCode={entityCode} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };

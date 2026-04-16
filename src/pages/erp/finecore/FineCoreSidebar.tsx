@@ -37,6 +37,8 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
   'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
+  'fc-fa-register', 'fc-fa-master', 'fc-fa-depreciation',
+  'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
 ];
 
 interface SidebarItem {
