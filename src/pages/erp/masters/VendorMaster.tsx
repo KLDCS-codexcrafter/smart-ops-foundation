@@ -950,19 +950,60 @@ export function VendorMasterPanel() {
             <Label className="text-xs">TDS Applicable</Label>
           </div>
           {form.tdsApplicable && (
-            <div>
-              <Label className="text-xs">TDS Section</Label>
-              <Select value={form.tdsSection} onValueChange={v => setForm(f => ({ ...f, tdsSection: v }))}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select TDS section" /></SelectTrigger>
-                <SelectContent>
-                  {activeTdsOptions.map(t => (
-                    <SelectItem key={t.sectionCode} value={t.sectionCode}>
-                      {t.sectionCode} — {t.natureOfPayment}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <>
+              <div>
+                <Label className="text-xs">TDS Section</Label>
+                <Select value={form.tdsSection} onValueChange={v => setForm(f => ({ ...f, tdsSection: v }))}>
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select TDS section" /></SelectTrigger>
+                  <SelectContent>
+                    {activeTdsOptions.map(t => (
+                      <SelectItem key={t.sectionCode} value={t.sectionCode}>
+                        {t.sectionCode} — {t.natureOfPayment}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Lower Deduction Certificate (Form 13) */}
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <button type="button" className="flex items-center gap-2 w-full text-left py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
+                    <ChevronDown className="h-3 w-3" />
+                    Lower Deduction Certificate (Form 13)
+                    {form.lower_deduction_cert && (
+                      form.lower_deduction_expiry && form.lower_deduction_expiry < new Date().toISOString().split('T')[0]
+                        ? <Badge variant="outline" className="text-[9px] bg-red-500/10 text-red-600 border-red-500/30 ml-1">EXPIRED</Badge>
+                        : <Badge variant="outline" className="text-[9px] bg-green-500/10 text-green-600 border-green-500/30 ml-1">Active</Badge>
+                    )}
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 pt-2 pl-5">
+                  <div>
+                    <Label className="text-xs">Certificate Number</Label>
+                    <Input value={form.lower_deduction_cert}
+                      onChange={e => setForm(f => ({ ...f, lower_deduction_cert: e.target.value }))}
+                      onKeyDown={onEnterNext} placeholder="Form 13 cert number" className="text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Lower Rate (%)</Label>
+                    <Input type="number" value={form.lower_deduction_rate || ''}
+                      onChange={e => setForm(f => ({ ...f, lower_deduction_rate: parseFloat(e.target.value) || 0 }))}
+                      onKeyDown={onEnterNext} placeholder="e.g. 5" className="text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Expiry Date</Label>
+                    <Input type="date" value={form.lower_deduction_expiry}
+                      onChange={e => setForm(f => ({ ...f, lower_deduction_expiry: e.target.value }))}
+                      onKeyDown={onEnterNext} className="text-xs" />
+                  </div>
+                  {form.lower_deduction_cert && form.lower_deduction_expiry && form.lower_deduction_expiry < new Date().toISOString().split('T')[0] && (
+                    <div className="border border-red-500/30 rounded-lg p-2 bg-red-500/5">
+                      <p className="text-[10px] text-red-600 font-medium">Certificate expired — standard TDS rate will apply.</p>
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            </>
           )}
         </CollapsibleContent>
       </Collapsible>
