@@ -1949,6 +1949,7 @@ export function LedgerMasterPanel() {
       sgstRate: def.sgstRate ?? 0, igstRate: def.igstRate ?? 0, cessRate: def.cessRate ?? 0,
       gstType: def.gstType ?? 'taxable', includeInGstTurnover: def.includeInGstTurnover ?? true,
       isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
+      isTdsReceivableLedger: def.isTdsReceivableLedger ?? false,
       costCentreApplicable: def.costCentreApplicable ?? false,
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
     });

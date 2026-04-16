@@ -277,3 +277,43 @@ function downloadJSON(filename: string, data: object) {
   const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
 }
+
+// ── TRACES 26AS Text File Parser ──────────────────────────────────────
+export interface TRACES26ASRow {
+  sr_no: string; deductor_name: string; deductor_tan: string;
+  section_code: string; payment_date: string;
+  amount_paid: number; tax_deducted: number; tds_deposited: number;
+  status: "F" | "P" | "U" | "";
+  booking_date: string; remarks: string;
+}
+
+export function parse26ASTextFile(text: string): TRACES26ASRow[] {
+  const rows: TRACES26ASRow[] = [];
+  let inPartA = false;
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith("^PART B") || trimmed.startsWith("^PART C") ||
+        trimmed.startsWith("^PART D") || trimmed.startsWith("^PART E") ||
+        trimmed.startsWith("^PART F") || trimmed.startsWith("^PART G") ||
+        trimmed.startsWith("^PART H")) { inPartA = false; continue; }
+    if (trimmed.startsWith("^PART A")) { inPartA = true; continue; }
+    if (trimmed.startsWith("1^")) inPartA = true;
+    if (!inPartA) continue;
+    const f = trimmed.split("^");
+    if (f.length < 7) continue;
+    const amtPaid = parseFloat(f[5] || "0") || 0;
+    const taxDed = parseFloat(f[6] || "0") || 0;
+    if (taxDed === 0) continue;
+    rows.push({
+      sr_no: f[0], deductor_name: f[1], deductor_tan: f[2],
+      section_code: f[3], payment_date: f[4],
+      amount_paid: amtPaid, tax_deducted: taxDed,
+      tds_deposited: parseFloat(f[7] || "0") || 0,
+      status: (f[8] || "") as TRACES26ASRow['status'],
+      booking_date: f[9] || "", remarks: f[10] || "",
+    });
+  }
+  return rows;
+}
