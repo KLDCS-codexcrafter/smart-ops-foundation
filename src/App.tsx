@@ -85,7 +85,7 @@ import CreditNote from './pages/erp/accounting/vouchers/CreditNote';
 import DebitNote from './pages/erp/accounting/vouchers/DebitNote';
 import DeliveryNote from './pages/erp/accounting/vouchers/DeliveryNote';
 import ReceiptNote from './pages/erp/accounting/vouchers/ReceiptNote';
-import StockTransfer from './pages/erp/accounting/vouchers/StockTransfer';
+import StockJournal from './pages/erp/accounting/vouchers/StockJournal';
 import ModeOfPaymentMaster from './pages/erp/masters/supporting/ModeOfPaymentMaster';
 import TermsOfPaymentMaster from './pages/erp/masters/supporting/TermsOfPaymentMaster';
 import TermsOfDeliveryMaster from './pages/erp/masters/supporting/TermsOfDeliveryMaster';
@@ -262,7 +262,7 @@ const App = () => (
             <Route path="/erp/accounting/vouchers/debit-note" element={<DebitNote />} />
             <Route path="/erp/accounting/vouchers/delivery-note" element={<DeliveryNote />} />
             <Route path="/erp/accounting/vouchers/receipt-note" element={<ReceiptNote />} />
-            <Route path="/erp/accounting/vouchers/stock-transfer" element={<StockTransfer />} />
+            <Route path="/erp/accounting/vouchers/stock-journal" element={<StockJournal />} />
             <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
             <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
