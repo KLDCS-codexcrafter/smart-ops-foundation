@@ -72,6 +72,7 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-out-receivables': 'Receivables',
   'fc-out-payables': 'Payables',
   'fc-tds-advance': 'TDS Advance',
+  'fc-rpt-26as': 'Form 26AS Reconciliation',
   'fc-gst-gstr1': 'GSTR-1',
   'fc-gst-gstr3b': 'GSTR-3B',
   'fc-gst-gstr9': 'GSTR-9 Annual Return',
