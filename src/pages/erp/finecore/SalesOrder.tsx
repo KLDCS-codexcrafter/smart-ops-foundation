@@ -24,7 +24,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { usePriceLists } from '@/hooks/usePriceLists';
 import type { Order, OrderLine } from '@/types/order';
-import { INDIAN_STATES } from '@/data/india-geography';
+import { indianStates } from '@/data/india-geography';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 
@@ -101,7 +101,7 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
           line.gst_rate = item.igst_rate || 0;
           line.qty = 1;
           // Rate: PriceList → fallback std_selling_rate → 0
-          const plItem = priceListId ? priceListItems.find(p => p.price_list_id === priceListId && p.item_id === item.id) : null;
+          const plItem = priceListId ? priceListItems.find(p => p.price_list_id === priceListId && p.item_id === item.id) : null as any;
           line.rate = plItem?.rate ?? item.std_selling_rate ?? 0;
         }
       }
