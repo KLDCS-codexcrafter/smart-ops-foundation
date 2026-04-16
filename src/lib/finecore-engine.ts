@@ -3,8 +3,8 @@
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
-import type { RCMEntry } from '@/types/compliance';
-import { rcmEntriesKey } from '@/types/compliance';
+import type { RCMEntry, TDSDeductionEntry, AdvanceEntry } from '@/types/compliance';
+import { rcmEntriesKey, tdsDeductionsKey, advancesKey } from '@/types/compliance';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
 
 // ── Storage key helpers ──────────────────────────────────────────────
