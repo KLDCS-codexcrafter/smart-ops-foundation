@@ -15,7 +15,9 @@ import { inr, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 
-function ls<T>(key: string): T[] { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
+function ls<T>(key: string): T[] { try {
+  // [JWT] GET /api/compliance/storage/:key
+  const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
 
 const DUE_DATES: Record<string, string> = { Q1: '31 Jul', Q2: '31 Oct', Q3: '31 Jan', Q4: '31 May' };
 

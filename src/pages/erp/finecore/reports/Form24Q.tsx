@@ -15,7 +15,9 @@ import { inr, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 
-function ls<T>(key: string): T[] { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
+function ls<T>(key: string): T[] { try {
+  // [JWT] GET /api/compliance/storage/:key
+  const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
 
 interface Props { entityCode: string; }
 

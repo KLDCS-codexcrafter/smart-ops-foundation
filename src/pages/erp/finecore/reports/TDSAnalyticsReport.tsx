@@ -21,7 +21,9 @@ import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 
 function ls<T>(key: string): T[] {
-  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; }
+  try {
+    // [JWT] GET /api/compliance/tds-analytics/:key
+    const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; }
 }
 
 interface Props { entityCode: string; }
@@ -75,6 +77,7 @@ export function TDSAnalyticsPanel({ entityCode }: Props) {
           t.status = 'posted'; t.tds_jv_id = jv.id; t.tds_jv_no = jvNo;
         }
       });
+      // [JWT] PATCH /api/compliance/tds-deductions
       localStorage.setItem(tdsDeductionsKey(entityCode), JSON.stringify(store));
       setSelected(new Set());
       toast.success(`TDS Journal ${jvNo} posted for ${selected.size} entries`);

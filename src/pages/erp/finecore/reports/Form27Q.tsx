@@ -17,7 +17,9 @@ import { onEnterNext } from '@/lib/keyboard';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 
-function ls<T>(key: string): T[] { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
+function ls<T>(key: string): T[] { try {
+  // [JWT] GET /api/compliance/storage/:key
+  const r = localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch { return []; } }
 
 const NRI_SECTIONS = ['195', '196A', '196B', '196C', '196D'];
 
