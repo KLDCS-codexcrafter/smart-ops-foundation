@@ -15,6 +15,7 @@ export const journalKey = (e: string) => `erp_journal_${e}`;
 export const stockLedgerKey = (e: string) => `erp_stock_ledger_${e}`;
 export const outstandingKey = (e: string) => `erp_outstanding_${e}`;
 export const gstRegisterKey = (e: string) => `erp_gst_register_${e}`;
+export const ledgerDefsKey = (e: string) => `erp_group_ledger_definitions_${e}`;
 
 function ls<T>(key: string): T[] {
   try {
