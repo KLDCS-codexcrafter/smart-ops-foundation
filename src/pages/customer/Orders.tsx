@@ -48,6 +48,10 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   delivered: { label: "Delivered", color: "bg-success/10 text-success border-success/20" },
 };
 
+export function OrdersPanel() {
+  return <Orders />;
+}
+
 export default function Orders() {
   const confirmedCount = ORDERS.filter((o) => o.status === "confirmed").length;
   const deliveredCount = ORDERS.filter((o) => o.status === "delivered").length;
