@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,7 +7,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme";
 import { GlobalDateRangeProvider } from '@/hooks/useGlobalDateRange';
 import { LanguageProvider } from '@/hooks/useLanguage';
-import { DevNavPanel } from '@/components/dev/DevNavPanel';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+
+const DevNavPanel = import.meta.env.DEV
+  ? React.lazy(() => import('@/components/dev/DevNavPanel').then(m => ({ default: m.DevNavPanel })))
+  : null;
 
 const ConditionalDishani = () => {
   const location = useLocation();
@@ -143,8 +148,11 @@ const Support = lazy(() => import('./pages/tower/Support'));
 const Integrations = lazy(() => import('./pages/tower/Integrations'));
 const AIInsights = lazy(() => import('./pages/tower/AIInsights'));
 const Themes = lazy(() => import('./pages/tower/Themes'));
+const BusinessUnitMaster = lazy(() => import('./pages/erp/masters/BusinessUnitMaster'));
 
 const queryClient = new QueryClient();
+
+const P = ProtectedRoute;
 
 const App = () => (
   <ThemeProvider>
@@ -154,165 +162,168 @@ const App = () => (
     <TooltipProvider>
       <DishaniProvider>
         <Sonner />
+        <ErrorBoundary>
         <BrowserRouter>
           <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
             <Routes>
               <Route path="/" element={<Navigate to="/auth/login" replace />} />
               <Route path="/auth/login" element={<Login />} />
-              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
-                <div className="min-h-screen bg-background flex items-center justify-center">
+                <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Verticals & Modules — coming soon</p>
-                </div>
+                </div></P>
               } />
-              <Route path="/verticals" element={<VerticalsPage />} />
-              <Route path="/modules" element={<ModulesPage />} />
-              <Route path="/modules/vetan-nidhi" element={<VetanNidhi />} />
-              <Route path="/client-customized" element={<ClientCustomizedPage />} />
-              <Route path="/add-ons" element={<AddOnsPage />} />
-              <Route path="/add-ons/barcode" element={<AddonsBarcode />} />
-              <Route path="/operix-go" element={<OperixGoPage />} />
-              <Route path="/operix-go/vetan-nidhi" element={<VetanNidhiMobile />} />
+              <Route path="/verticals" element={<P><VerticalsPage /></P>} />
+              <Route path="/modules" element={<P><ModulesPage /></P>} />
+              <Route path="/modules/vetan-nidhi" element={<P><VetanNidhi /></P>} />
+              <Route path="/client-customized" element={<P><ClientCustomizedPage /></P>} />
+              <Route path="/add-ons" element={<P><AddOnsPage /></P>} />
+              <Route path="/add-ons/barcode" element={<P><AddonsBarcode /></P>} />
+              <Route path="/operix-go" element={<P><OperixGoPage /></P>} />
+              <Route path="/operix-go/vetan-nidhi" element={<P><VetanNidhiMobile /></P>} />
               <Route path="/prudent360" element={
-                <div className="min-h-screen bg-background flex items-center justify-center">
+                <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
-                </div>
+                </div></P>
               } />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<P><Profile /></P>} />
               <Route path="/settings" element={
-                <div className="min-h-screen bg-background flex items-center justify-center">
+                <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Settings — coming soon</p>
-                </div>
+                </div></P>
               } />
-              <Route path="/tower" element={<TowerDashboard />} />
-              <Route path="/tower/dashboard" element={<TowerDashboard />} />
-              <Route path="/tower/customers" element={<Tenants />} />
-              <Route path="/tower/users" element={<Users />} />
-              <Route path="/tower/permissions" element={<Permissions />} />
-              <Route path="/tower/proforma-invoice" element={<Billing />} />
-              <Route path="/tower/security" element={<Security />} />
-              <Route path="/tower/notifications" element={<Notifications />} />
-              <Route path="/tower/audit-logs" element={<AuditLogs />} />
-              <Route path="/tower/settings" element={<TowerSettings />} />
-              <Route path="/tower/support" element={<Support />} />
-              <Route path="/tower/integrations" element={<Integrations />} />
-              <Route path="/tower/ai-insights" element={<AIInsights />} />
-              <Route path="/tower/themes" element={<Themes />} />
-              <Route path="/bridge" element={<ConsoleDashboard />} />
-              <Route path="/bridge/dashboard" element={<ConsoleDashboard />} />
-              <Route path="/bridge/sync-monitor" element={<SyncMonitor />} />
-              <Route path="/bridge/approvals" element={<ApprovalInbox />} />
-              <Route path="/bridge/exceptions" element={<ExceptionWorkbench />} />
-              <Route path="/bridge/reconciliation" element={<ReconciliationWorkbench />} />
-              <Route path="/bridge/agents" element={<AgentFleet />} />
-              <Route path="/bridge/companies" element={<CompanyRegistry />} />
-              <Route path="/bridge/sync-profiles" element={<SyncProfiles />} />
-              <Route path="/bridge/field-mapper" element={<FieldMapper />} />
-              <Route path="/bridge/import" element={<ImportHub />} />
-              <Route path="/bridge/export" element={<ExportHub />} />
-              <Route path="/bridge/audit" element={<AuditExplorer />} />
-              <Route path="/bridge/settings" element={<BridgeSettings />} />
-              <Route path="/erp/foundation/company" element={<ParentCompany />} />
-              <Route path="/erp/foundation/entities" element={<FoundationEntityHub />} />
+              <Route path="/tower" element={<P><TowerDashboard /></P>} />
+              <Route path="/tower/dashboard" element={<P><TowerDashboard /></P>} />
+              <Route path="/tower/customers" element={<P><Tenants /></P>} />
+              <Route path="/tower/users" element={<P><Users /></P>} />
+              <Route path="/tower/permissions" element={<P><Permissions /></P>} />
+              <Route path="/tower/proforma-invoice" element={<P><Billing /></P>} />
+              <Route path="/tower/security" element={<P><Security /></P>} />
+              <Route path="/tower/notifications" element={<P><Notifications /></P>} />
+              <Route path="/tower/audit-logs" element={<P><AuditLogs /></P>} />
+              <Route path="/tower/settings" element={<P><TowerSettings /></P>} />
+              <Route path="/tower/support" element={<P><Support /></P>} />
+              <Route path="/tower/integrations" element={<P><Integrations /></P>} />
+              <Route path="/tower/ai-insights" element={<P><AIInsights /></P>} />
+              <Route path="/tower/themes" element={<P><Themes /></P>} />
+              <Route path="/bridge" element={<P><ConsoleDashboard /></P>} />
+              <Route path="/bridge/dashboard" element={<P><ConsoleDashboard /></P>} />
+              <Route path="/bridge/sync-monitor" element={<P><SyncMonitor /></P>} />
+              <Route path="/bridge/approvals" element={<P><ApprovalInbox /></P>} />
+              <Route path="/bridge/exceptions" element={<P><ExceptionWorkbench /></P>} />
+              <Route path="/bridge/reconciliation" element={<P><ReconciliationWorkbench /></P>} />
+              <Route path="/bridge/agents" element={<P><AgentFleet /></P>} />
+              <Route path="/bridge/companies" element={<P><CompanyRegistry /></P>} />
+              <Route path="/bridge/sync-profiles" element={<P><SyncProfiles /></P>} />
+              <Route path="/bridge/field-mapper" element={<P><FieldMapper /></P>} />
+              <Route path="/bridge/import" element={<P><ImportHub /></P>} />
+              <Route path="/bridge/export" element={<P><ExportHub /></P>} />
+              <Route path="/bridge/audit" element={<P><AuditExplorer /></P>} />
+              <Route path="/bridge/settings" element={<P><BridgeSettings /></P>} />
+              <Route path="/erp/foundation/company" element={<P><ParentCompany /></P>} />
+              <Route path="/erp/foundation/entities" element={<P><FoundationEntityHub /></P>} />
               <Route path="/erp/foundation/companies"
                 element={<Navigate to="/erp/foundation/entities?tab=companies" replace />} />
               <Route path="/erp/foundation/subsidiaries"
                 element={<Navigate to="/erp/foundation/entities?tab=subsidiaries" replace />} />
               <Route path="/erp/foundation/branch-offices"
                 element={<Navigate to="/erp/foundation/entities?tab=branch-offices" replace />} />
-              <Route path="/erp/foundation/companies/create" element={<CompanyCreate />} />
-              <Route path="/erp/foundation/companies/:id/edit" element={<CompanyEdit />} />
-              <Route path="/erp/foundation/subsidiaries/create" element={<SubsidiaryCreate />} />
-              <Route path="/erp/foundation/subsidiaries/:id/edit" element={<SubsidiaryEdit />} />
-              <Route path="/erp/foundation/branch-offices/create" element={<BranchOfficeCreate />} />
-              <Route path="/erp/foundation/branch-offices/:id/edit" element={<BranchOfficeEdit />} />
-              <Route path="/erp/foundation/org-structure" element={<OrgStructureHub />} />
-              <Route path="/erp/foundation/geography" element={<GeographyHub />} />
-              <Route path="/erp/foundation/geography/countries" element={<CountryMaster />} />
-              <Route path="/erp/foundation/geography/states" element={<StateMaster />} />
-              <Route path="/erp/foundation/geography/districts" element={<DistrictMaster />} />
-              <Route path="/erp/foundation/geography/cities" element={<CityMaster />} />
-              <Route path="/erp/foundation/geography/ports" element={<PortMaster />} />
-              <Route path="/erp/foundation/geography/regions" element={<RegionMaster />} />
-              <Route path="/erp/accounting" element={<AccountingHub />} />
-              <Route path="/erp/accounting/tax-rates" element={<TaxRateMaster />} />
-              <Route path="/erp/accounting/tds-sections" element={<TDSSectionMaster />} />
-              <Route path="/erp/accounting/tcs-sections" element={<TCSSectionMaster />} />
-              <Route path="/erp/accounting/hsn-sac" element={<HSNSACMaster />} />
-              <Route path="/erp/accounting/professional-tax" element={<ProfessionalTaxMaster />} />
-              <Route path="/erp/accounting/epf-esi-lwf" element={<EPFESILWFMaster />} />
-              <Route path="/erp/accounting/statutory-registrations" element={<StatutoryRegistrations />} />
-              <Route path="/erp/accounting/gst-config" element={<GSTEntityConfig />} />
-              <Route path="/erp/accounting/comply360-config" element={<Comply360Config />} />
-              <Route path="/erp/accounting/finframe" element={<FinFrame />} />
-              <Route path="/erp/accounting/ledger-master" element={<LedgerMaster />} />
-              <Route path="/erp/accounting/income-tax" element={<IncomeTaxMaster />} />
-              <Route path="/erp/accounting/currency-master" element={<CurrencyMaster />} />
-              <Route path="/erp/accounting/voucher-types" element={<VoucherTypesMaster />} />
-              <Route path="/erp/accounting/transaction-templates" element={<TransactionTemplates />} />
-              <Route path="/erp/finecore" element={<FinCorePage />} />
-              <Route path="/erp/accounting/vouchers/sales-invoice" element={<SalesInvoice />} />
-              <Route path="/erp/accounting/vouchers/purchase-invoice" element={<PurchaseInvoice />} />
-              <Route path="/erp/accounting/vouchers/receipt" element={<ReceiptVoucher />} />
-              <Route path="/erp/accounting/vouchers/payment" element={<PaymentVoucher />} />
-              <Route path="/erp/accounting/vouchers/journal" element={<JournalEntry />} />
-              <Route path="/erp/accounting/vouchers/contra" element={<ContraEntry />} />
-              <Route path="/erp/accounting/vouchers/credit-note" element={<CreditNote />} />
-              <Route path="/erp/accounting/vouchers/debit-note" element={<DebitNote />} />
-              <Route path="/erp/accounting/vouchers/delivery-note" element={<DeliveryNote />} />
-              <Route path="/erp/accounting/vouchers/receipt-note" element={<ReceiptNote />} />
-              <Route path="/erp/accounting/vouchers/stock-journal" element={<StockJournal />} />
-              <Route path="/erp/masters/mode-of-payment" element={<ModeOfPaymentMaster />} />
-              <Route path="/erp/masters/terms-of-payment" element={<TermsOfPaymentMaster />} />
-              <Route path="/erp/masters/terms-of-delivery" element={<TermsOfDeliveryMaster />} />
-              <Route path="/erp/masters/logistic" element={<LogisticMaster />} />
-              <Route path="/erp/masters/vendor" element={<VendorMaster />} />
-              <Route path="/erp/masters/customer" element={<CustomerMaster />} />
-              <Route path="/erp/inventory-hub" element={<InventoryHub />} />
-              <Route path="/erp/inventory-hub/parametric" element={<Parametric />} />
-              <Route path="/erp/inventory-hub/batch-grid" element={<BatchGrid />} />
-              <Route path="/erp/inventory-hub/serial-grid" element={<SerialGrid />} />
-              <Route path="/erp/inventory-hub/stock-matrix" element={<StockMatrix />} />
-              <Route path="/erp/inventory-hub/classify" element={<Classify />} />
-              <Route path="/erp/inventory-hub/brand-matrix" element={<BrandMatrix />} />
-              <Route path="/erp/inventory-hub/storage-matrix" element={<StorageMatrix />} />
-              <Route path="/erp/inventory-hub/measure-x" element={<MeasureX />} />
-              <Route path="/erp/inventory-hub/item-craft" element={<ItemCraft />} />
-              <Route path="/erp/inventory-hub/code-matrix" element={<CodeMatrix />} />
-              <Route path="/erp/inventory-hub/item-templates" element={<ItemTemplates />} />
-              <Route path="/erp/inventory-hub/label-templates" element={<LabelTemplates />} />
-              <Route path="/erp/inventory-hub/barcode-generator" element={<BarcodeGenerator />} />
-              <Route path="/erp/inventory-hub/asset-tags" element={<AssetTagManager />} />
-              <Route path="/erp/inventory-hub/bin-labels" element={<BinLocationLabels />} />
-              <Route path="/erp/inventory-hub/print-queue" element={<PrintQueue />} />
-              <Route path="/erp/inventory-hub/rfid-manager" element={<RFIDManager />} />
-              <Route path="/erp/inventory-hub/opening-stock" element={<OpeningStockEntry />} />
-              <Route path="/erp/inventory-hub/item-rates" element={<ItemRatesMRP />} />
-              <Route path="/erp/inventory-hub/price-lists" element={<PriceListManager />} />
-              <Route path="/erp/inventory-hub/reorder-alerts" element={<ReorderAlerts />} />
-              <Route path="/erp/command-center" element={<CommandCenterPage />} />
-              <Route path="/erp/pay-hub" element={<PayHubPage />} />
-              <Route path="/erp" element={<ErpDashboard />} />
-              <Route path="/erp/dashboard" element={<ErpDashboard />} />
-              <Route path="/partner" element={<PartnerDashboard />} />
-              <Route path="/partner/dashboard" element={<PartnerDashboard />} />
-              <Route path="/customer" element={<CustomerDashboard />} />
-              <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-              <Route path="/customer/invoices" element={<Invoices />} />
-              <Route path="/customer/payments" element={<Payments />} />
-              <Route path="/customer/statement" element={<Statement />} />
-              <Route path="/customer/orders" element={<Orders />} />
-              <Route path="/customer/documents" element={<Documents />} />
-              <Route path="/customer/support" element={<CustomerSupport />} />
-              <Route path="/customer/profile" element={<CustomerProfile />} />
-              <Route path="/my" element={<CustomerDashboard />} />
-              <Route path="/my/dashboard" element={<CustomerDashboard />} />
+              <Route path="/erp/foundation/companies/create" element={<P><CompanyCreate /></P>} />
+              <Route path="/erp/foundation/companies/:id/edit" element={<P><CompanyEdit /></P>} />
+              <Route path="/erp/foundation/subsidiaries/create" element={<P><SubsidiaryCreate /></P>} />
+              <Route path="/erp/foundation/subsidiaries/:id/edit" element={<P><SubsidiaryEdit /></P>} />
+              <Route path="/erp/foundation/branch-offices/create" element={<P><BranchOfficeCreate /></P>} />
+              <Route path="/erp/foundation/branch-offices/:id/edit" element={<P><BranchOfficeEdit /></P>} />
+              <Route path="/erp/foundation/org-structure" element={<P><OrgStructureHub /></P>} />
+              <Route path="/erp/foundation/geography" element={<P><GeographyHub /></P>} />
+              <Route path="/erp/foundation/geography/countries" element={<P><CountryMaster /></P>} />
+              <Route path="/erp/foundation/geography/states" element={<P><StateMaster /></P>} />
+              <Route path="/erp/foundation/geography/districts" element={<P><DistrictMaster /></P>} />
+              <Route path="/erp/foundation/geography/cities" element={<P><CityMaster /></P>} />
+              <Route path="/erp/foundation/geography/ports" element={<P><PortMaster /></P>} />
+              <Route path="/erp/foundation/geography/regions" element={<P><RegionMaster /></P>} />
+              <Route path="/erp/accounting" element={<P><AccountingHub /></P>} />
+              <Route path="/erp/accounting/tax-rates" element={<P><TaxRateMaster /></P>} />
+              <Route path="/erp/accounting/tds-sections" element={<P><TDSSectionMaster /></P>} />
+              <Route path="/erp/accounting/tcs-sections" element={<P><TCSSectionMaster /></P>} />
+              <Route path="/erp/accounting/hsn-sac" element={<P><HSNSACMaster /></P>} />
+              <Route path="/erp/accounting/professional-tax" element={<P><ProfessionalTaxMaster /></P>} />
+              <Route path="/erp/accounting/epf-esi-lwf" element={<P><EPFESILWFMaster /></P>} />
+              <Route path="/erp/accounting/statutory-registrations" element={<P><StatutoryRegistrations /></P>} />
+              <Route path="/erp/accounting/gst-config" element={<P><GSTEntityConfig /></P>} />
+              <Route path="/erp/accounting/comply360-config" element={<P><Comply360Config /></P>} />
+              <Route path="/erp/accounting/finframe" element={<P><FinFrame /></P>} />
+              <Route path="/erp/accounting/ledger-master" element={<P><LedgerMaster /></P>} />
+              <Route path="/erp/accounting/income-tax" element={<P><IncomeTaxMaster /></P>} />
+              <Route path="/erp/accounting/currency-master" element={<P><CurrencyMaster /></P>} />
+              <Route path="/erp/accounting/voucher-types" element={<P><VoucherTypesMaster /></P>} />
+              <Route path="/erp/accounting/transaction-templates" element={<P><TransactionTemplates /></P>} />
+              <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
+              <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
+              <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
+              <Route path="/erp/accounting/vouchers/receipt" element={<P><ReceiptVoucher /></P>} />
+              <Route path="/erp/accounting/vouchers/payment" element={<P><PaymentVoucher /></P>} />
+              <Route path="/erp/accounting/vouchers/journal" element={<P><JournalEntry /></P>} />
+              <Route path="/erp/accounting/vouchers/contra" element={<P><ContraEntry /></P>} />
+              <Route path="/erp/accounting/vouchers/credit-note" element={<P><CreditNote /></P>} />
+              <Route path="/erp/accounting/vouchers/debit-note" element={<P><DebitNote /></P>} />
+              <Route path="/erp/accounting/vouchers/delivery-note" element={<P><DeliveryNote /></P>} />
+              <Route path="/erp/accounting/vouchers/receipt-note" element={<P><ReceiptNote /></P>} />
+              <Route path="/erp/accounting/vouchers/stock-journal" element={<P><StockJournal /></P>} />
+              <Route path="/erp/masters/mode-of-payment" element={<P><ModeOfPaymentMaster /></P>} />
+              <Route path="/erp/masters/terms-of-payment" element={<P><TermsOfPaymentMaster /></P>} />
+              <Route path="/erp/masters/terms-of-delivery" element={<P><TermsOfDeliveryMaster /></P>} />
+              <Route path="/erp/masters/logistic" element={<P><LogisticMaster /></P>} />
+              <Route path="/erp/masters/vendor" element={<P><VendorMaster /></P>} />
+              <Route path="/erp/masters/customer" element={<P><CustomerMaster /></P>} />
+              <Route path="/erp/masters/business-unit" element={<P><BusinessUnitMaster /></P>} />
+              <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
+              <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
+              <Route path="/erp/inventory-hub/batch-grid" element={<P><BatchGrid /></P>} />
+              <Route path="/erp/inventory-hub/serial-grid" element={<P><SerialGrid /></P>} />
+              <Route path="/erp/inventory-hub/stock-matrix" element={<P><StockMatrix /></P>} />
+              <Route path="/erp/inventory-hub/classify" element={<P><Classify /></P>} />
+              <Route path="/erp/inventory-hub/brand-matrix" element={<P><BrandMatrix /></P>} />
+              <Route path="/erp/inventory-hub/storage-matrix" element={<P><StorageMatrix /></P>} />
+              <Route path="/erp/inventory-hub/measure-x" element={<P><MeasureX /></P>} />
+              <Route path="/erp/inventory-hub/item-craft" element={<P><ItemCraft /></P>} />
+              <Route path="/erp/inventory-hub/code-matrix" element={<P><CodeMatrix /></P>} />
+              <Route path="/erp/inventory-hub/item-templates" element={<P><ItemTemplates /></P>} />
+              <Route path="/erp/inventory-hub/label-templates" element={<P><LabelTemplates /></P>} />
+              <Route path="/erp/inventory-hub/barcode-generator" element={<P><BarcodeGenerator /></P>} />
+              <Route path="/erp/inventory-hub/asset-tags" element={<P><AssetTagManager /></P>} />
+              <Route path="/erp/inventory-hub/bin-labels" element={<P><BinLocationLabels /></P>} />
+              <Route path="/erp/inventory-hub/print-queue" element={<P><PrintQueue /></P>} />
+              <Route path="/erp/inventory-hub/rfid-manager" element={<P><RFIDManager /></P>} />
+              <Route path="/erp/inventory-hub/opening-stock" element={<P><OpeningStockEntry /></P>} />
+              <Route path="/erp/inventory-hub/item-rates" element={<P><ItemRatesMRP /></P>} />
+              <Route path="/erp/inventory-hub/price-lists" element={<P><PriceListManager /></P>} />
+              <Route path="/erp/inventory-hub/reorder-alerts" element={<P><ReorderAlerts /></P>} />
+              <Route path="/erp/command-center" element={<P><CommandCenterPage /></P>} />
+              <Route path="/erp/pay-hub" element={<P><PayHubPage /></P>} />
+              <Route path="/erp" element={<P><ErpDashboard /></P>} />
+              <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
+              <Route path="/partner" element={<P><PartnerDashboard /></P>} />
+              <Route path="/partner/dashboard" element={<P><PartnerDashboard /></P>} />
+              <Route path="/customer" element={<P><CustomerDashboard /></P>} />
+              <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
+              <Route path="/customer/invoices" element={<P><Invoices /></P>} />
+              <Route path="/customer/payments" element={<P><Payments /></P>} />
+              <Route path="/customer/statement" element={<P><Statement /></P>} />
+              <Route path="/customer/orders" element={<P><Orders /></P>} />
+              <Route path="/customer/documents" element={<P><Documents /></P>} />
+              <Route path="/customer/support" element={<P><CustomerSupport /></P>} />
+              <Route path="/customer/profile" element={<P><CustomerProfile /></P>} />
+              <Route path="/my" element={<P><CustomerDashboard /></P>} />
+              <Route path="/my/dashboard" element={<P><CustomerDashboard /></P>} />
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           </Suspense>
           <ConditionalDishani />
-          <DevNavPanel />
+          {import.meta.env.DEV && DevNavPanel && <React.Suspense fallback={null}><DevNavPanel /></React.Suspense>}
         </BrowserRouter>
+        </ErrorBoundary>
       </DishaniProvider>
     </TooltipProvider>
   </QueryClientProvider>
