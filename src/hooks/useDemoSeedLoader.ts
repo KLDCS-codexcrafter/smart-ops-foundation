@@ -16,6 +16,7 @@ import {
   DEMO_PAYROLL_RUNS, DEMO_LEAVE_REQUESTS, DEMO_IT_DECLARATIONS,
   DEMO_LOAN_APPLICATIONS, DEMO_SALARY_ADVANCES, generateAttendanceRecords,
 } from '@/data/demo-transactions-pay-hub';
+import { payrollRunsKey } from '@/types/payroll-run';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
@@ -122,7 +123,7 @@ function loadPayHubMasters(): void {
 // ── Pay Hub transaction loader ──────────────────────────────────────────
 
 function loadPayHubTransactions(): void {
-  safeSet('erp_payroll_runs', DEMO_PAYROLL_RUNS);
+  safeSet(payrollRunsKey('SMRT'), DEMO_PAYROLL_RUNS);
   safeSet('erp_leave_requests', DEMO_LEAVE_REQUESTS);
   safeSet('erp_it_declarations', DEMO_IT_DECLARATIONS);
   safeSet('erp_loan_applications', DEMO_LOAN_APPLICATIONS);
@@ -163,7 +164,7 @@ export const DEMO_MODULES: DemoModule[] = [
                  'erp_shifts', 'erp_leave_types', 'erp_holiday_calendars',
                  'erp_attendance_types', 'erp_overtime_rules',
                  'erp_loan_types', 'erp_bonus_configs', 'erp_gratuity_nps_config'],
-    transactionKeys: ['erp_payroll_runs', 'erp_attendance_records',
+    transactionKeys: ['erp_payroll_runs_SMRT', 'erp_attendance_records',
                       'erp_leave_requests', 'erp_it_declarations',
                       'erp_loan_applications', 'erp_salary_advances'],
     loadMasters: loadPayHubMasters,
