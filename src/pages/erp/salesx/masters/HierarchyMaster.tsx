@@ -78,7 +78,8 @@ export function HierarchyMasterPanel({ entityCode }: Props) {
     setForm(BLANK);
   }, [form, levels, saveLevel, entityCode]);
 
-  useCtrlS(handleSave);
+  const isFormActive = !!(form.level_name.trim() || form.editingId);
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const handleEdit = (l: SAMHierarchyLevel) => {
     setForm({
