@@ -103,7 +103,6 @@ function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
   const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
   const isLive = !app.status;
-  const categoryColor = CATEGORY_COLORS[app.category] ?? "";
 
   function handleClick() {
     if (app.status === 'coming_soon') return;
@@ -142,9 +141,6 @@ function AppCard({ app }: { app: AppDefinition }) {
         <h3 className="text-sm font-semibold text-foreground leading-tight">
           {app.name}
         </h3>
-        <span className={`inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColor}`}>
-          {app.category}
-        </span>
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">
