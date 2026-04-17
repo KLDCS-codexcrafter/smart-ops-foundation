@@ -98,6 +98,13 @@ function getUserName(): string {
   return "there";
 }
 
+// ── Prefetch map for hover-based code splitting ───────────────────────────────
+const PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
+  '/erp/finecore':       () => import('@/pages/erp/finecore/FinCorePage'),
+  '/erp/pay-hub':        () => import('@/features/pay-hub/PayHubPage'),
+  '/erp/command-center': () => import('@/features/command-center/pages/CommandCenterPage'),
+};
+
 // ── App Card ─────────────────────────────────────────────────────────────────
 function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
@@ -112,6 +119,7 @@ function AppCard({ app }: { app: AppDefinition }) {
   return (
     <button
       onClick={handleClick}
+      onMouseEnter={() => { if (!app.status) PREFETCH_MAP[app.route]?.(); }}
       className={[
         "group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-300",
         "bg-card/60 backdrop-blur-xl border border-border",

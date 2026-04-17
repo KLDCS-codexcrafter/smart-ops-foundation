@@ -39,7 +39,7 @@ const STEP_LABELS = [
   'Period', 'Pre-check', 'Calculate', 'Review', 'Approve', 'GL Post', 'Bank File', 'Lock',
 ];
 
-export function PayrollProcessingPanel() {
+export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel() {
   const [selectedCompany] = useERPCompany();
   const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
   const { runs, holds, calculatePayroll, approveRun, postRun, lockRun,
@@ -787,7 +787,7 @@ export function PayrollProcessingPanel() {
       </Sheet>
     </div>
   );
-}
+});
 
 export default function PayrollProcessing() {
   return (
