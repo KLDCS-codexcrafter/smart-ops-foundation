@@ -1226,6 +1226,7 @@ const defaultIncomeForm = {
   includeInGstTurnover: true,
   isTdsApplicable: false, tdsSection: '',
   isTdsReceivableLedger: false,
+  allow_commission_base: false,
   costCentreApplicable: false,
   scope: 'group' as 'group'|'entity', entityId: '',
 };
