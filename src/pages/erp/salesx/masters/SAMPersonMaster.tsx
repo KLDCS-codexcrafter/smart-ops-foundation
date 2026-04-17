@@ -114,6 +114,20 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
   const { groups } = useStockGroups();
   const employees = useMemo(() => loadEmployees(), []);
 
+  // ── SAM Mini-Sprint: income/expense ledger options for commission booking ──
+  const allDefs = useMemo(() => {
+    try {
+      // [JWT] GET /api/accounting/ledger-definitions
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, []);
+  const commissionLedgerOptions = useMemo(
+    () => allDefs.filter((d: { ledgerType: string }) =>
+      d.ledgerType === 'income' || d.ledgerType === 'expense'),
+    [allDefs],
+  );
+
   const [view, setView] = useState<View>('list');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
