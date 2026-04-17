@@ -1177,19 +1177,141 @@ export function CustomerMasterPanel() {
               onChange={e => setForm(f => ({ ...f, businessActivity: e.target.value }))}
               onKeyDown={onEnterNext} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">Referred By</Label>
-              <Input value={form.referredBy}
-                onChange={e => setForm(f => ({ ...f, referredBy: e.target.value }))}
-                onKeyDown={onEnterNext} />
+          <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
+            <div className="flex items-center gap-2">
+              <Users className="h-3.5 w-3.5 text-primary" />
+              <Label className="text-xs font-semibold uppercase tracking-wider">Sales Assignment</Label>
             </div>
-            <div>
-              <Label className="text-xs">Associated Dealer</Label>
-              <Input value={form.associatedDealer}
-                onChange={e => setForm(f => ({ ...f, associatedDealer: e.target.value }))}
-                onKeyDown={onEnterNext} />
-            </div>
+
+            {samCfg?.enableCompanySalesMan && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">Default Salesman</Label>
+                <Select
+                  value={form.default_salesman_id ?? '__none__'}
+                  onValueChange={v => setForm(f => ({
+                    ...f,
+                    default_salesman_id: v === '__none__' ? null : v,
+                    default_salesman_name: v === '__none__' ? null
+                      : (salesmanOptions.find(p => p.id === v)?.display_name ?? null),
+                  }))}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— None —" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {salesmanOptions.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
+                    ))}
+                    {salesmanOptions.length === 0 && (
+                      <div className="px-2 py-1.5 text-[10px] text-muted-foreground">Create salesmen in SalesX Hub first</div>
+                    )}
+                  </SelectContent>
+                </Select>
+                {form.default_salesman_id && (
+                  <div className="flex items-center gap-3 pt-1">
+                    <span className="text-[10px] text-muted-foreground">Assignment:</span>
+                    <label className="flex items-center gap-1 text-[10px] cursor-pointer">
+                      <input
+                        type="radio"
+                        name="salesmanMode"
+                        checked={form.salesman_assignment_mode === 'fixed'}
+                        onChange={() => setForm(f => ({ ...f, salesman_assignment_mode: 'fixed' }))}
+                      />
+                      Fixed
+                    </label>
+                    <label className="flex items-center gap-1 text-[10px] cursor-pointer">
+                      <input
+                        type="radio"
+                        name="salesmanMode"
+                        checked={form.salesman_assignment_mode === 'select_at_voucher'}
+                        onChange={() => setForm(f => ({ ...f, salesman_assignment_mode: 'select_at_voucher' }))}
+                      />
+                      Select at voucher
+                    </label>
+                  </div>
+                )}
+                {form.referredBy && !form.default_salesman_id && (
+                  <p className="text-[10px] text-amber-600">Previously: {form.referredBy} — select from SAM to update.</p>
+                )}
+              </div>
+            )}
+
+            {samCfg?.enableAgentModule && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">Default Agent / Broker</Label>
+                <Select
+                  value={form.default_agent_id ?? '__none__'}
+                  onValueChange={v => setForm(f => ({
+                    ...f,
+                    default_agent_id: v === '__none__' ? null : v,
+                    default_agent_name: v === '__none__' ? null
+                      : (agentOptions.find(p => p.id === v)?.display_name ?? null),
+                  }))}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— None —" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {agentOptions.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.display_name} ({p.person_type})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.associatedDealer && !form.default_agent_id && (
+                  <p className="text-[10px] text-amber-600">Previously: {form.associatedDealer}</p>
+                )}
+              </div>
+            )}
+
+            {samCfg?.enableReference && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">Reference Person</Label>
+                <Select
+                  value={form.default_reference_id ?? '__none__'}
+                  onValueChange={v => setForm(f => ({
+                    ...f,
+                    default_reference_id: v === '__none__' ? null : v,
+                    default_reference_name: v === '__none__' ? null
+                      : (referenceOptions.find(p => p.id === v)?.display_name ?? null),
+                  }))}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— None —" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {referenceOptions.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {samCfg?.enableCRM && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">Default Telecaller</Label>
+                <Select
+                  value={form.default_telecaller_id ?? '__none__'}
+                  onValueChange={v => setForm(f => ({
+                    ...f,
+                    default_telecaller_id: v === '__none__' ? null : v,
+                    default_telecaller_name: v === '__none__' ? null
+                      : (telecallerOptions.find(e => e.id === v)?.displayName ?? null),
+                  }))}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="— None —" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {telecallerOptions.map(e => (
+                      <SelectItem key={e.id} value={e.id}>{e.displayName}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {!samCfg?.enableSalesActivityModule && (
+              <p className="text-[10px] text-muted-foreground italic">
+                Sales assignment fields appear once SAM is configured in Comply360.
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
