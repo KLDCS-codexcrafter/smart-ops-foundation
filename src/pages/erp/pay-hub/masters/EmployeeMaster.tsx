@@ -27,6 +27,7 @@ import type { Employee, FamilyMember, EquipmentIssued, LoanDetail,
 import { BLANK_EMPLOYEE, DOC_TYPE_LABELS, EMPLOYEE_STATUS_COLORS } from '@/types/employee';
 import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/india-geography';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
@@ -80,6 +81,19 @@ export function EmployeeMasterPanel() {
   const [revisionReason, setRevisionReason] = useState('');
 
   const { employees, stats, createEmployee, updateEmployee, toggleStatus, search: searchFn, yearsOfService } = useEmployees();
+
+  // ── SAM context ─────────────────────────────────────────────────────
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all'
+    ? selectedCompany : 'SMRT';
+
+  const samCfg = useMemo(() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/sam/:entityCode
+      const raw = localStorage.getItem(`erp_comply360_sam_${entityCode}`);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [entityCode]);
 
   // ── Cross-module data reads ─────────────────────────────────────────
   const departments: { id: string; name: string; divisionId?: string }[] = useMemo(() => {
@@ -1024,6 +1038,18 @@ export function EmployeeMasterPanel() {
             <Switch checked={form.essLoginEnabled} onCheckedChange={v => uf('essLoginEnabled', v)} />
             <Label className="text-xs">ESS Login Enabled</Label>
           </div>
+          {samCfg?.enableSalesActivityModule && samCfg?.enableCompanySalesMan && (
+            <div className="flex items-start justify-between border border-border rounded-xl p-3 bg-muted/5">
+              <div>
+                <Label className="text-xs font-medium">Treat as Salesman</Label>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  When enabled, this employee appears in the Company Salesman dropdown on
+                  sales transactions and in commission calculations.
+                </p>
+              </div>
+              <Switch checked={form.is_salesman} onCheckedChange={v => uf('is_salesman', v)} />
+            </div>
+          )}
         </TabsContent>
 
         {/* TAB 3 — Contact */}
