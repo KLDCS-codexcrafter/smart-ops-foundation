@@ -467,8 +467,8 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
                       setForm(p => ({
                         ...p,
                         employee_id: v,
-                        employee_name: emp?.fullName ?? null,
-                        display_name: p.display_name || (emp?.fullName ?? ''),
+                        employee_name: emp?.displayName ?? null,
+                        display_name: p.display_name || (emp?.displayName ?? ''),
                       }));
                     }}>
                     <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select employee" /></SelectTrigger>
@@ -476,7 +476,7 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
                       <SelectItem value="none">— None —</SelectItem>
                       {employees.map(e => (
                         <SelectItem key={e.id} value={e.id}>
-                          {e.empCode} — {e.fullName}
+                          {e.empCode} — {e.displayName}
                         </SelectItem>
                       ))}
                     </SelectContent>

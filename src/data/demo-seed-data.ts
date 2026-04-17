@@ -174,6 +174,7 @@ function emp(
     weeklyOff: ['Sunday'],
     biometricId: '',
     essLoginEnabled: true,
+    is_salesman: false,
     personalMobile: mobile,
     personalEmail: email,
     emergencyContactName: emergName,
