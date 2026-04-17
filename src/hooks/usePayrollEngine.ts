@@ -648,12 +648,93 @@ export function usePayrollEngine(entityCode: string = 'SMRT') {
   };
 
   const postRun = (payPeriod: string) => {
-    const updated = loadRuns().map(r => r.payPeriod !== payPeriod ? r : {
-      ...r, status: 'posted' as const, postedAt: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+    const allRuns = loadRuns();
+    const run = allRuns.find(r => r.payPeriod === payPeriod && r.status === 'approved');
+    if (!run) { toast.error('No approved run found for ' + payPeriod); return; }
+
+    // ── Aggregate payslip totals ───────────────────────────
+    const totalEmpPF = run.payslips.reduce((s, p) => s + p.empPF, 0);
+    const totalEmpESI = run.payslips.reduce((s, p) => s + p.empESI, 0);
+    const totalPT = run.payslips.reduce((s, p) => s + p.pt, 0);
+    const totalTDS = run.payslips.reduce((s, p) => s + p.tds, 0);
+    const totalErEPF = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EPF')?.monthly || 0), 0);
+    const totalErEPS = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EPS')?.monthly || 0), 0);
+    const totalErEDLI = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EDLI')?.monthly || 0), 0);
+    const totalErESI = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_ESI')?.monthly || 0), 0);
+    const totalErPF = totalErEPF + totalErEPS + totalErEDLI;
+    const totalErCont = totalErPF + totalErESI;
+
+    // ── Build journal entries ──────────────────────────────
+    const now = new Date().toISOString();
+    const voucherNo = `PAY/${payPeriod}/${entityCode}`;
+    const periodDate = payPeriod + '-28';
+
+    const makeEntry = (
+      ledgerCode: string, ledgerName: string, groupCode: string,
+      drAmt: number, crAmt: number, narration: string,
+    ): JournalEntry => ({
+      id: `je-pay-${payPeriod}-${ledgerCode}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      voucher_id: voucherNo, voucher_no: voucherNo,
+      base_voucher_type: 'Payroll',
+      entity_id: run.entityId || entityCode,
+      date: periodDate,
+      ledger_id: ledgerCode, ledger_code: ledgerCode,
+      ledger_name: ledgerName, ledger_group_code: groupCode,
+      dr_amount: drAmt, cr_amount: crAmt,
+      narration,
+      is_cancelled: false, created_at: now,
+    });
+
+    const narBase = `Payroll JV - ${run.periodLabel}`;
+    const entries: JournalEntry[] = [];
+
+    // Dr: Salaries & Wages expense
+    if (run.totalGross > 0)
+      entries.push(makeEntry('SAL-EXP-PAYROLL', 'Salaries Salaries & Wages', 'EMPB', run.totalGross, 0, narBase));
+
+    // Dr: Employer PF & ESI contribution expense
+    if (totalErCont > 0)
+      entries.push(makeEntry('ER-CONT-PAYROLL', 'Employer PF & ESI Contribution', 'EMPB', totalErCont, 0, narBase));
+
+    // Cr: Net Salary Payable
+    if (run.totalNet > 0)
+      entries.push(makeEntry('SALP-000001', 'Salary Payable', 'EMPL', 0, run.totalNet, narBase));
+
+    // Cr: Employee PF Payable
+    if (totalEmpPF > 0)
+      entries.push(makeEntry('PFE-000001', 'PF Employee Deduction', 'EMPL', 0, totalEmpPF, narBase));
+
+    // Cr: Employer PF Payable
+    if (totalErPF > 0)
+      entries.push(makeEntry('PFEPF-000001', 'PF Employer Contribution', 'EMPL', 0, totalErPF, narBase));
+
+    // Cr: ESI Payable (employee + employer)
+    if (totalEmpESI + totalErESI > 0)
+      entries.push(makeEntry('ESIE-000001', 'ESI Payable', 'EMPL', 0, totalEmpESI + totalErESI, narBase));
+
+    // Cr: PT Payable
+    if (totalPT > 0)
+      entries.push(makeEntry('PTP-000001', 'Professional Tax Payable', 'DUTYP', 0, totalPT, narBase));
+
+    // Cr: TDS Payable on Salary
+    if (totalTDS > 0)
+      entries.push(makeEntry('TDSP-000001', 'TDS Payable', 'TDSP', 0, totalTDS, narBase));
+
+    // ── Write to journal ───────────────────────────────────
+    // [JWT] POST /api/accounting/journal?entityCode={entityCode}
+    const key = journalKey(entityCode);
+    const existing: JournalEntry[] = (() => {
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+      catch { return []; }
+    })();
+    localStorage.setItem(key, JSON.stringify([...existing, ...entries]));
+
+    // ── Update run status ──────────────────────────────────
+    const updated = allRuns.map(r => r.payPeriod !== payPeriod ? r : {
+      ...r, status: 'posted' as const, postedAt: now, updated_at: now,
     });
     setRuns(updated); saveRuns(updated);
-    toast.success(`Payroll ${payPeriod} posted to GL`);
+    toast.success(`Payroll ${payPeriod} posted — ${entries.length} GL entries written`);
   };
 
   const lockRun = (payPeriod: string, lockedBy: string) => {
