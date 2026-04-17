@@ -102,6 +102,7 @@ function getUserName(): string {
 const PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/erp/finecore':       () => import('@/pages/erp/finecore/FinCorePage'),
   '/erp/pay-hub':        () => import('@/features/pay-hub/PayHubPage'),
+  '/erp/salesx':         () => import('@/features/salesx/SalesXPage'),
   '/erp/command-center': () => import('@/features/command-center/pages/CommandCenterPage'),
 };
 
