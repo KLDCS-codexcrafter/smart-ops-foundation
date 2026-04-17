@@ -162,6 +162,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
       commission_slabs: p.commission_slabs ?? [],
       portfolio: p.portfolio ?? [],
       ledger_name: p.ledger_name ?? p.display_name,
+      commission_expense_ledger_id: p.commission_expense_ledger_id ?? null,
+      commission_expense_ledger_name: p.commission_expense_ledger_name ?? null,
+      treat_as_salesman: p.treat_as_salesman ?? false,
     });
     setView('form');
   };
@@ -194,6 +197,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         commission_slabs: form.commission_slabs,
         portfolio: form.portfolio,
         ledger_name: form.display_name.trim(),
+        commission_expense_ledger_id: form.commission_expense_ledger_id,
+        commission_expense_ledger_name: form.commission_expense_ledger_name,
+        treat_as_salesman: form.treat_as_salesman,
       });
     } else {
       const created = createPerson(personType, {
@@ -216,6 +222,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         primary_agent_id: form.primary_agent_id,
         receiver_share_pct: form.receiver_share_pct,
         is_active: form.is_active,
+        commission_expense_ledger_id: form.commission_expense_ledger_id,
+        commission_expense_ledger_name: form.commission_expense_ledger_name,
+        treat_as_salesman: form.treat_as_salesman,
       });
       setEditingId(created.id);
     }
