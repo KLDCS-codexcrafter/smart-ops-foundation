@@ -8,7 +8,7 @@ import {
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
   QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
-  Zap,
+  Zap, Upload, BookOpen, HandCoins,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -86,6 +86,16 @@ const A5_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Bin Location Labels',module: 'inventory-bin-labels',      icon: MapPin },
   { label: 'Print Queue',        module: 'inventory-print-queue',     icon: Printer },
   { label: 'RFID Manager',       module: 'inventory-rfid',            icon: Wifi },
+];
+
+const OPENING_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Opening Stock Entry',     module: 'inventory-opening-stock',   icon: PackageOpen },
+  { label: 'Ledger Opening Balances', module: 'opening-ledger-balances',   icon: BookOpen },
+  { label: 'Employee Opening Loans',  module: 'opening-employee-loans',    icon: HandCoins },
+];
+
+const UTILITY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Import Hub', module: 'utility-import', icon: Upload },
 ];
 
 const COMING_SOON = [
