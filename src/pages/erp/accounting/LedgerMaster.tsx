@@ -4639,6 +4639,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
                 />
               </div>
             )}
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIncomeOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleIncomeSave}>Create</Button>
