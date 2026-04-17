@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -208,6 +209,15 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   lut_number: '',
   is_tds_deductor: false,
   tan_number: '',
+  default_salesman_id: null,
+  default_salesman_name: null,
+  default_agent_id: null,
+  default_agent_name: null,
+  default_reference_id: null,
+  default_reference_name: null,
+  default_telecaller_id: null,
+  default_telecaller_name: null,
+  salesman_assignment_mode: 'fixed',
 };
 
 // ─── Panel Component ──────────────────────────────────────────
