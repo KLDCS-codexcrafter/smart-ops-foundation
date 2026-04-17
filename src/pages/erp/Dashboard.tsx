@@ -233,40 +233,44 @@ export default function ErpDashboard() {
           />
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
-          {(["All", ...ALL_CATEGORIES] as const).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={[
-                "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors border-none outline-none",
-                activeCategory === cat
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80",
-              ].join(" ")}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {(() => {
+          const appMap = new Map(filtered.map(a => [a.id, a]));
+          const activeLanes = LANES.map(lane => ({
+            ...lane,
+            apps: lane.ids.map(id => appMap.get(id)).filter(Boolean) as AppDefinition[],
+          })).filter(lane => lane.apps.length > 0);
 
-        {filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground py-16">
-            No modules match your search.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((app, i) => (
-              <div
-                key={app.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-              >
-                <AppCard app={app} />
-              </div>
-            ))}
-          </div>
-        )}
+          if (activeLanes.length === 0) {
+            return (
+              <p className="text-center text-muted-foreground py-16">
+                No modules match your search.
+              </p>
+            );
+          }
+
+          return (
+            <div className="space-y-8">
+              {activeLanes.map((lane) => (
+                <section key={lane.id} className={`pl-4 border-l-4 ${lane.borderColor}`}>
+                  <h2 className={`text-xs font-semibold uppercase tracking-wider mb-3 ${lane.labelColor}`}>
+                    {lane.label}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {lane.apps.map((app, i) => (
+                      <div
+                        key={app.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                      >
+                        <AppCard app={app} />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          );
+        })()}
 
         <footer className="mt-12 py-4 border-t border-border/30 text-center text-xs text-muted-foreground">
           © 2026 4DSmartOps · Operix · Built for Indian SMEs
