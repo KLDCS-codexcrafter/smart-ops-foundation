@@ -4772,8 +4772,32 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
                   className={`flex-1 px-3 py-1.5 transition-colors ${expenseForm.expenseNature === 'revenue' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Revenue</button>
                 <button type="button" onClick={() => setExpenseForm(f => ({ ...f, expenseNature: 'capital_expense' }))}
                   className={`flex-1 px-3 py-1.5 transition-colors ${expenseForm.expenseNature === 'capital_expense' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Capital</button>
-              </div>
             </div>
+            {/* AllowCommAssVal — only when SAM module enabled */}
+            {(() => {
+              try {
+                // [JWT] GET /api/compliance/comply360/sam/:entityId
+                const raw = localStorage.getItem(`erp_comply360_sam_${selEntityId}`);
+                const cfg = raw ? JSON.parse(raw) : null;
+                return cfg?.enableSalesActivityModule
+                  && (cfg?.enableAgentModule || cfg?.enableCompanySalesMan);
+              } catch { return false; }
+            })() && (
+              <div className="flex items-center justify-between border border-border rounded-xl p-3 bg-muted/5">
+                <div>
+                  <Label className="text-sm font-medium">Include in commission base?</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    When yes, this ledger&apos;s amount on an invoice is added to the commission
+                    calculation base (AllowCommAssVal in Tally).
+                  </p>
+                </div>
+                <Switch
+                  checked={expenseForm.allow_commission_base}
+                  onCheckedChange={v => setExpenseForm(f => ({ ...f, allow_commission_base: v }))}
+                />
+              </div>
+            )}
+          </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setExpenseOpen(false)}>Cancel</Button>
