@@ -4,7 +4,7 @@ import {
   Cpu, ArrowLeft, Home, Search, Clock, Wrench,
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
-  Landmark, Calculator, Users, Building2, Headphones, BarChart3,
+  Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -25,7 +25,7 @@ import { onEnterNext } from '@/lib/keyboard';
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
-  Landmark, Calculator, Users, Building2, Headphones, BarChart3,
+  Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
 };
 
 // ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────

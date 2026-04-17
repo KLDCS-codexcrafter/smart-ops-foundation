@@ -3,13 +3,14 @@
  * Mirrors CommandCenterSidebar structure. Violet color scheme.
  */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Users2, LayoutDashboard, IndianRupee, Calculator, Award,
   Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box,
   ClipboardList, FileText, BarChart3, ChevronRight, Shield, HardHat,
   CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket,
   Star, Grid3X3, TrendingUp, Target, GraduationCap, Bell,
-  UserCog, Mail, Monitor, LogOut,
+  UserCog, Mail, Monitor, LogOut, ExternalLink,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
@@ -196,6 +197,7 @@ interface PayHubSidebarProps {
 }
 
 export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarProps) {
+  const navigate = useNavigate();
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
   const [statutoryOpen, setStatutoryOpen] = useState(false);
@@ -293,7 +295,28 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {renderSection('Masters', MASTERS_ITEMS, mastersOpen, setMastersOpen)}
+        <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
+          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+            <ChevronRight className={cn('h-3 w-3 text-muted-foreground/90 transition-transform', mastersOpen && 'rotate-90')} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">Masters</span>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SidebarMenu className="px-1 space-y-0.5">
+              {MASTERS_ITEMS.map(item => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => navigate(`/erp/command-center#${item.id}`)}
+                    className="text-xs h-8 gap-2 hover:bg-violet-500/10 cursor-pointer"
+                  >
+                    <item.icon className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate flex-1">{item.label}</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </CollapsibleContent>
+        </Collapsible>
         {renderSection('Transactions', TRANSACTIONS_ITEMS, txnOpen, setTxnOpen)}
         {renderSection('STATUTORY & COMPLIANCE', STATUTORY_ITEMS, statutoryOpen, setStatutoryOpen)}
         {renderSection('EMPLOYEE FINANCE', FINANCE_ITEMS, financeOpen, setFinanceOpen)}

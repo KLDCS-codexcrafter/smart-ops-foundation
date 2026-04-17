@@ -48,6 +48,18 @@ import { OrgStructurePanel } from '@/pages/erp/foundation/OrgStructureHub';
 import { OpeningLedgerBalanceModule } from '../modules/OpeningLedgerBalanceModule';
 import { EmployeeOpeningLoansModule } from '../modules/EmployeeOpeningLoansModule';
 import { ImportHubModule } from '../modules/ImportHubModule';
+import { PayHeadMasterPanel }        from '@/pages/erp/pay-hub/masters/PayHeadMaster';
+import { SalaryStructureMasterPanel } from '@/pages/erp/pay-hub/masters/SalaryStructureMaster';
+import { PayGradeMasterPanel }        from '@/pages/erp/pay-hub/masters/PayGradeMaster';
+import { ShiftMasterPanel }           from '@/pages/erp/pay-hub/masters/ShiftMaster';
+import { LeaveTypesMasterPanel }      from '@/pages/erp/pay-hub/masters/LeaveTypesMaster';
+import { HolidayCalendarMasterPanel } from '@/pages/erp/pay-hub/masters/HolidayCalendarMaster';
+import { AttendanceTypesMasterPanel } from '@/pages/erp/pay-hub/masters/AttendanceTypesMaster';
+import { OvertimeRulesMasterPanel }   from '@/pages/erp/pay-hub/masters/OvertimeRulesMaster';
+import { LoanTypesMasterPanel }       from '@/pages/erp/pay-hub/masters/LoanTypesMaster';
+import { BonusConfigMasterPanel }     from '@/pages/erp/pay-hub/masters/BonusConfigMaster';
+import { GratuityNPSPanel }           from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
+import { AssetMasterPanel }           from '@/pages/erp/pay-hub/masters/AssetMaster';
 
 export type CommandCenterModule =
   | 'overview'
@@ -94,7 +106,19 @@ export type CommandCenterModule =
   | 'inventory-reorder'
   | 'opening-ledger-balances'
   | 'opening-employee-loans'
-  | 'utility-import';
+  | 'utility-import'
+  | 'ph-pay-heads'
+  | 'ph-salary-structures'
+  | 'ph-pay-grades'
+  | 'ph-shifts'
+  | 'ph-leave-types'
+  | 'ph-holiday-calendar'
+  | 'ph-attendance-types'
+  | 'ph-overtime-rules'
+  | 'ph-loan-types'
+  | 'ph-bonus-config'
+  | 'ph-gratuity-nps'
+  | 'ph-asset-master';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -112,7 +136,10 @@ export default function CommandCenterPage() {
       'inventory-label-templates', 'inventory-barcode-gen', 'inventory-asset-tags',
       'inventory-bin-labels', 'inventory-print-queue', 'inventory-rfid',
       'inventory-opening-stock', 'inventory-item-rates', 'inventory-price-lists', 'inventory-reorder',
-      'opening-ledger-balances', 'opening-employee-loans', 'utility-import'].includes(hash)) {
+      'opening-ledger-balances', 'opening-employee-loans', 'utility-import',
+      'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-shifts',
+      'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types', 'ph-overtime-rules',
+      'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps', 'ph-asset-master'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -174,6 +201,18 @@ export default function CommandCenterPage() {
       case 'opening-ledger-balances': return <OpeningLedgerBalanceModule />;
       case 'opening-employee-loans': return <EmployeeOpeningLoansModule />;
       case 'utility-import': return <ImportHubModule />;
+      case 'ph-pay-heads': return <PayHeadMasterPanel />;
+      case 'ph-salary-structures': return <SalaryStructureMasterPanel />;
+      case 'ph-pay-grades': return <PayGradeMasterPanel />;
+      case 'ph-shifts': return <ShiftMasterPanel />;
+      case 'ph-leave-types': return <LeaveTypesMasterPanel />;
+      case 'ph-holiday-calendar': return <HolidayCalendarMasterPanel />;
+      case 'ph-attendance-types': return <AttendanceTypesMasterPanel />;
+      case 'ph-overtime-rules': return <OvertimeRulesMasterPanel />;
+      case 'ph-loan-types': return <LoanTypesMasterPanel />;
+      case 'ph-bonus-config': return <BonusConfigMasterPanel />;
+      case 'ph-gratuity-nps': return <GratuityNPSPanel />;
+      case 'ph-asset-master': return <AssetMasterPanel />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };

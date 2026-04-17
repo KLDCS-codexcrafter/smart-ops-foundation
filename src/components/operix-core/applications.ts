@@ -2,7 +2,6 @@ export type AppStatus = 'coming_soon' | 'wip';
 
 export type AppCategory =
   | 'Ops Hub'
-  | 'RequestX'
   | 'Sales Hub'
   | 'Fin Hub'
   | 'Pay Hub'
@@ -22,7 +21,6 @@ export interface AppDefinition {
 
 export const CATEGORY_COLORS: Record<AppCategory, string> = {
   'Ops Hub':        'bg-cyan-500/15 text-cyan-400',
-  'RequestX':       'bg-emerald-500/15 text-emerald-400',
   'Sales Hub':      'bg-amber-500/15 text-amber-400',
   'Fin Hub':        'bg-indigo-500/15 text-indigo-400',
   'Pay Hub':        'bg-violet-500/15 text-violet-400',
@@ -33,7 +31,6 @@ export const CATEGORY_COLORS: Record<AppCategory, string> = {
 
 export const ALL_CATEGORIES: AppCategory[] = [
   'Ops Hub',
-  'RequestX',
   'Sales Hub',
   'Fin Hub',
   'Pay Hub',
@@ -108,8 +105,8 @@ export const applications: AppDefinition[] = [
   {
     id: 'requestx',
     name: 'RequestX',
-    description: 'Internal purchase requests and indent management',
-    category: 'RequestX',
+    description: 'Department material requisition and indent — raise and track internal requests that feed into Procure360 for vendor sourcing',
+    category: 'Ops Hub',
     route: '/erp/requestx',
     icon: 'ClipboardList',
     status: 'coming_soon',
@@ -130,6 +127,24 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/finecore',
     icon: 'Calculator',
+  },
+  {
+    id: 'payout',
+    name: 'PayOut',
+    description: 'Vendor payment management — AP scheduling, payment run, advance tracking, release approvals and vendor account reconciliation',
+    category: 'Fin Hub',
+    route: '/erp/payout',
+    icon: 'Wallet',
+    status: 'coming_soon',
+  },
+  {
+    id: 'receivx',
+    name: 'ReceivX',
+    description: 'Customer outstanding management — AR tracking, collection follow-up, aging analysis, receipt reconciliation and credit limit monitoring',
+    category: 'Fin Hub',
+    route: '/erp/receivx',
+    icon: 'TrendingUp',
+    status: 'coming_soon',
   },
   {
     id: 'peoplepay',
@@ -157,10 +172,18 @@ export const applications: AppDefinition[] = [
     icon: 'Headphones',
     status: 'coming_soon',
   },
+  // ─── INSIGHTX ARCHITECTURAL RULE — LOCKED BEFORE BUILD ──────────────────────
+  // InsightX is a read-only analytics layer for top management.
+  // ALLOWED : read from any hook (useJournal, useVouchers, useGSTRegister,
+  //         useOutstanding, usePayrollEngine, useOpeningBalances)
+  // FORBIDDEN: postVoucher(), cancelVoucher(), any localStorage.setItem(),
+  //            any import of write functions from finecore-engine.ts
+  // Violation silently corrupts financial data. Enforced in every audit run.
+  // ─────────────────────────────────────────────────────────────────────────────
   {
     id: 'insightx',
     name: 'InsightX',
-    description: 'Business analytics — DataViz Pro, ReportGen and Trend Analyzer',
+    description: 'Top management analytics — cross-department KPIs, P&L trends, headcount, GST liability and cash flow. Read-only.',
     category: 'InsightX',
     route: '/erp/insightx',
     icon: 'BarChart3',

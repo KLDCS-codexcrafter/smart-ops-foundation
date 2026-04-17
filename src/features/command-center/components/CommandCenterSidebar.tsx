@@ -98,10 +98,24 @@ const UTILITY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[]
   { label: 'Import Hub', module: 'utility-import', icon: Upload },
 ];
 
+const PEOPLE_CORE_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Pay Heads',          module: 'ph-pay-heads' },
+  { label: 'Salary Structures',  module: 'ph-salary-structures' },
+  { label: 'Pay Grades',         module: 'ph-pay-grades' },
+  { label: 'Shift Master',       module: 'ph-shifts' },
+  { label: 'Leave Types',        module: 'ph-leave-types' },
+  { label: 'Holiday Calendar',   module: 'ph-holiday-calendar' },
+  { label: 'Attendance Types',   module: 'ph-attendance-types' },
+  { label: 'Overtime Rules',     module: 'ph-overtime-rules' },
+  { label: 'Loan Types',         module: 'ph-loan-types' },
+  { label: 'Bonus Config',       module: 'ph-bonus-config' },
+  { label: 'Gratuity & NPS',     module: 'ph-gratuity-nps' },
+  { label: 'Asset Master',       module: 'ph-asset-master' },
+];
+
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
   { label: 'Sales Masters', icon: TrendingUp },
-  { label: 'HR & Payroll Masters', icon: Users },
 ];
 
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
@@ -113,11 +127,13 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
   const [inventoryOpen, setInventoryOpen] = useState(
     activeModule.startsWith('inventory')
   );
+  const [peopleOpen, setPeopleOpen] = useState(activeModule.startsWith('ph-'));
 
   useEffect(() => {
     if (activeModule === 'foundation' || activeModule === 'geography' || activeModule === 'org-structure') setFoundationOpen(true);
     if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
     if (activeModule.startsWith('inventory')) setInventoryOpen(true);
+    if (activeModule.startsWith('ph-')) setPeopleOpen(true);
   }, [activeModule]);
 
   const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS, ...TRANSACTION_DEFAULTS_ITEMS].map(i => i.module);
@@ -364,6 +380,37 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* PEOPLE CORE */}
+        <SidebarGroup>
+          <SidebarGroupLabel>People Core</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={peopleOpen} onOpenChange={setPeopleOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('ph-')} tooltip="People Core">
+                      <Users className="h-4 w-4" />
+                      <span>People Core</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${peopleOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {PEOPLE_CORE_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
