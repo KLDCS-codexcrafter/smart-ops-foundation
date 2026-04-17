@@ -540,14 +540,6 @@ export function Comply360ConfigPanel() {
     setGroupConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  // ── Voucher scope items for SAM ──
-  const voucherScopes = [
-    { key: 'enableInSalesOrder' as keyof SAMConfig, label: 'Sales Order', udf: '50144' },
-    { key: 'enableInDeliveryNote' as keyof SAMConfig, label: 'Delivery Note', udf: '50145' },
-    { key: 'enableInPurchase' as keyof SAMConfig, label: 'Purchase Invoice', udf: '50146' },
-    { key: 'enableInPurchaseOrder' as keyof SAMConfig, label: 'Purchase Order', udf: '50147', dependsOn: 'enableInPurchase' as keyof SAMConfig },
-    { key: 'enableInReceiptNote' as keyof SAMConfig, label: 'Receipt Note', udf: '50148', dependsOn: 'enableInPurchase' as keyof SAMConfig },
-  ];
 
   // ── Section active check ──
   const isSectionEnabled = (sectionId: string) => {
