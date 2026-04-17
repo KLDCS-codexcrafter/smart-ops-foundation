@@ -14,9 +14,6 @@ import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
 import { ThemeToggle } from "@/components/theme";
 import {
   applications,
-  ALL_CATEGORIES,
-  CATEGORY_COLORS,
-  type AppCategory,
   type AppDefinition,
 } from "@/components/operix-core/applications";
 import { onEnterNext } from '@/lib/keyboard';
