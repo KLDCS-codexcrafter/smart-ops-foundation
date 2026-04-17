@@ -31,6 +31,7 @@ import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
@@ -39,8 +40,10 @@ const STEP_LABELS = [
 ];
 
 export function PayrollProcessingPanel() {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
   const { runs, holds, calculatePayroll, approveRun, postRun, lockRun,
-    createHold, releaseHold } = usePayrollEngine();
+    createHold, releaseHold } = usePayrollEngine(entityCode);
 
   // ── Wizard state
   const [activeStep, setActiveStep] = useState<WizardStep>(1);
