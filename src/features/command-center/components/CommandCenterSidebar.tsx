@@ -384,6 +384,37 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* PEOPLE CORE */}
+        <SidebarGroup>
+          <SidebarGroupLabel>People Core</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={peopleOpen} onOpenChange={setPeopleOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('ph-')} tooltip="People Core">
+                      <Users className="h-4 w-4" />
+                      <span>People Core</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${peopleOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {PEOPLE_CORE_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Coming Soon</SidebarGroupLabel>
           <SidebarGroupContent>
