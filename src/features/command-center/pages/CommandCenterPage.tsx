@@ -47,10 +47,7 @@ import { GeographyHubPanel } from '@/pages/erp/foundation/geography/GeographyHub
 import { OrgStructurePanel } from '@/pages/erp/foundation/OrgStructureHub';
 import { OpeningLedgerBalanceModule } from '../modules/OpeningLedgerBalanceModule';
 import { EmployeeOpeningLoansModule } from '../modules/EmployeeOpeningLoansModule';
-
-function ImportHubModule() {
-  return <div className="p-8 text-muted-foreground">Import Hub — coming next session</div>;
-}
+import { ImportHubModule } from '../modules/ImportHubModule';
 
 export type CommandCenterModule =
   | 'overview'
