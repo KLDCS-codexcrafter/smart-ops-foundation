@@ -103,9 +103,20 @@ interface CustomerMasterDefinition {
     | 'proprietor' | 'opc' | 'huf' | 'individual' | 'trust' | 'other';
   natureOfBusiness: string;
   businessActivity: string;
+  /** @deprecated Use default_reference_id — kept for data compat */
   referredBy: string;
+  /** @deprecated Use default_salesman_id — kept for data compat */
   associatedDealer: string;
   otherReference: string;
+  default_salesman_id: string | null;
+  default_salesman_name: string | null;
+  default_agent_id: string | null;
+  default_agent_name: string | null;
+  default_reference_id: string | null;
+  default_reference_name: string | null;
+  default_telecaller_id: string | null;
+  default_telecaller_name: string | null;
+  salesman_assignment_mode: 'fixed' | 'select_at_voucher';
   businessHours: string;
   termsOfDeliveryId: string;
   dispatchMode: 'road' | 'rail' | 'air' | 'sea' | 'courier' | 'hand' | '';
