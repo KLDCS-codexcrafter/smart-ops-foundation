@@ -66,7 +66,7 @@ function filterByPortfolio(
     overrides.set(p.stock_group_id, p.commission_override_pct)
   );
   const filtered = lines.filter(l => {
-    const sgId = (l as Record<string, unknown>).stock_group_id as string | undefined;
+    const sgId = (l as unknown as Record<string, unknown>).stock_group_id as string | undefined;
     return !sgId || portfolioGroupIds.has(sgId);
   });
   return { lines: filtered, overrides };
@@ -154,7 +154,7 @@ export function calculatePersonCommission(
 
   if (method === 'item_amount' || method === 'both') {
     filteredLines.forEach(l => {
-      const sgId = (l as Record<string, unknown>).stock_group_id as string | undefined;
+      const sgId = (l as unknown as Record<string, unknown>).stock_group_id as string | undefined;
       const overridePct = sgId ? overrides.get(sgId) : undefined;
       const pct = (overridePct != null ? overridePct : rateRow.item_pct) ?? 0;
       const lineBase = l.taxable_value;
