@@ -240,6 +240,46 @@ export function CustomerMasterPanel() {
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
 
+  // ─── SAM context ─────────────────────────────────────────────
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all'
+    ? selectedCompany : 'SMRT';
+
+  const samCfg = useMemo(() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/sam/:entityCode
+      const raw = localStorage.getItem(`erp_comply360_sam_${entityCode}`);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [entityCode]);
+
+  const samPersons: Array<{id:string;display_name:string;person_type:string;is_active:boolean;treat_as_salesman?:boolean}> = useMemo(() => {
+    try {
+      // [JWT] GET /api/salesx/sam/persons?entityCode={entityCode}
+      const raw = localStorage.getItem(`erp_sam_persons_${entityCode}`);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, [entityCode]);
+
+  const empList: Array<{id:string;displayName:string;status:string}> = useMemo(() => {
+    try {
+      // [JWT] GET /api/payhub/employees
+      const raw = localStorage.getItem('erp_employees');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, []);
+
+  const salesmanOptions = samPersons.filter(
+    p => (p.person_type === 'salesman' || p.treat_as_salesman === true) && p.is_active
+  );
+  const agentOptions = samPersons.filter(
+    p => (p.person_type === 'agent' || p.person_type === 'broker') && p.is_active
+  );
+  const referenceOptions = samPersons.filter(
+    p => p.person_type === 'reference' && p.is_active
+  );
+  const telecallerOptions = empList.filter(e => e.status === 'active');
+
   // ─── Dropdown helpers ────────────────────────────────────────
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/customers
