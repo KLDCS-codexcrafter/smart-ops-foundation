@@ -721,12 +721,13 @@ export function usePayrollEngine(entityCode: string = 'SMRT') {
       entries.push(makeEntry('TDSP-000001', 'TDS Payable', 'TDSP', 0, totalTDS, narBase));
 
     // ── Write to journal ───────────────────────────────────
-    // [JWT] POST /api/accounting/journal?entityCode={entityCode}
     const key = journalKey(entityCode);
     const existing: JournalEntry[] = (() => {
+      // [JWT] GET /api/accounting/journal?entityCode={entityCode}
       try { return JSON.parse(localStorage.getItem(key) || '[]'); }
       catch { return []; }
     })();
+    // [JWT] POST /api/accounting/journal?entityCode={entityCode}
     localStorage.setItem(key, JSON.stringify([...existing, ...entries]));
 
     // ── Update run status ──────────────────────────────────
