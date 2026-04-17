@@ -29,11 +29,13 @@ import type { LeaveRequest } from '@/types/leave-management';
 import type { AttendanceRecord } from '@/types/attendance-entry';
 import type { ITDeclaration } from '@/types/it-declaration';
 import { EMPLOYEES_KEY } from '@/types/employee';
-import { PAYROLL_RUNS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import { LEAVE_REQUESTS_KEY } from '@/types/leave-management';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { IT_DECLARATIONS_KEY } from '@/types/it-declaration';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
+void PAYROLL_RUNS_KEY;
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 const ROLE_LEVEL_COLORS: Record<RoleLevel, string> = {
@@ -48,6 +50,8 @@ const ROLE_LEVEL_COLORS: Record<RoleLevel, string> = {
 interface AdminAndMonitoringPanelProps { defaultTab?: AdminTab; }
 
 export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitoringPanelProps) {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
 
   // ── Cross-module reads ───────────────────────────────────────
   const activeEmployees = useMemo<Employee[]>(() => {
@@ -253,8 +257,8 @@ export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitori
   const essPayslips = useMemo(() => {
     if (!essEmpId) return [];
     try {
-      // [JWT] GET /api/pay-hub/payroll/runs
-      const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
       if (!raw) return [];
       const runs = JSON.parse(raw) as PayrollRun[];
       const slips: Array<{ period: string; gross: number; net: number; status: string }> = [];
@@ -266,7 +270,7 @@ export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitori
       }
       return slips;
     } catch { return []; }
-  }, [essEmpId]);
+  }, [essEmpId, entityCode]);
 
   const essLeaves = useMemo(() => {
     if (!essEmpId) return [];

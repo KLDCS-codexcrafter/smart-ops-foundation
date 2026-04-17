@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { format, getDaysInMonth } from 'date-fns';
 import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip, PayslipLine, ITComputation, SalaryHold } from '@/types/payroll-run';
-import { PAYROLL_RUNS_KEY, SALARY_HOLDS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, SALARY_HOLDS_KEY, payrollRunsKey, salaryHoldsKey } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
 import type { SalaryStructure, PayHead } from '@/types/pay-hub';
 import type { AttendanceRecord } from '@/types/attendance-entry';
@@ -19,31 +19,14 @@ import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCHARGE_RATES }
   from '@/data/payroll-statutory-seed-data';
+import { journalKey } from '@/lib/finecore-engine';
+import type { JournalEntry } from '@/types/voucher';
 
-const loadRuns = (): PayrollRun[] => {
-  try {
-    // [JWT] GET /api/pay-hub/payroll/runs
-    const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [];
-};
-const saveRuns = (items: PayrollRun[]) => {
-  // [JWT] PUT /api/pay-hub/payroll/runs
-  localStorage.setItem(PAYROLL_RUNS_KEY, JSON.stringify(items));
-};
-const loadHolds = (): SalaryHold[] => {
-  try {
-    // [JWT] GET /api/pay-hub/payroll/holds
-    const raw = localStorage.getItem(SALARY_HOLDS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [];
-};
-const saveHolds = (items: SalaryHold[]) => {
-  // [JWT] PUT /api/pay-hub/payroll/holds
-  localStorage.setItem(SALARY_HOLDS_KEY, JSON.stringify(items));
-};
+// PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that
+// have not yet migrated to the entity-scoped helpers. New reads/writes use
+// payrollRunsKey(entityCode) / salaryHoldsKey(entityCode).
+void PAYROLL_RUNS_KEY; void SALARY_HOLDS_KEY;
+
 
 // ── computeCTCBreakdown ──────────────────────────────────────────
 export function computeCTCBreakdown(
@@ -474,9 +457,33 @@ export function computeEmployeePayslip(
 }
 
 // ── Main hook ─────────────────────────────────────────────────────
-export function usePayrollEngine() {
+export function usePayrollEngine(entityCode: string = 'SMRT') {
+  const loadRuns = (): PayrollRun[] => {
+    try {
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  };
+  const saveRuns = (items: PayrollRun[]) => {
+    // [JWT] PUT /api/pay-hub/payroll/runs?entityCode={entityCode}
+    localStorage.setItem(payrollRunsKey(entityCode), JSON.stringify(items));
+  };
+  const loadHolds = (): SalaryHold[] => {
+    try {
+      // [JWT] GET /api/pay-hub/payroll/holds?entityCode={entityCode}
+      const raw = localStorage.getItem(salaryHoldsKey(entityCode));
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  };
+  const saveHolds = (items: SalaryHold[]) => {
+    // [JWT] PUT /api/pay-hub/payroll/holds?entityCode={entityCode}
+    localStorage.setItem(salaryHoldsKey(entityCode), JSON.stringify(items));
+  };
+
   const [runs, setRuns] = useState<PayrollRun[]>(loadRuns);
   const [holds, setHolds] = useState<SalaryHold[]>(loadHolds);
+
 
   const calculatePayroll = (payPeriod: string): PayrollRun => {
     const employees: Employee[] = (() => {
@@ -641,12 +648,93 @@ export function usePayrollEngine() {
   };
 
   const postRun = (payPeriod: string) => {
-    const updated = loadRuns().map(r => r.payPeriod !== payPeriod ? r : {
-      ...r, status: 'posted' as const, postedAt: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+    const allRuns = loadRuns();
+    const run = allRuns.find(r => r.payPeriod === payPeriod && r.status === 'approved');
+    if (!run) { toast.error('No approved run found for ' + payPeriod); return; }
+
+    // ── Aggregate payslip totals ───────────────────────────
+    const totalEmpPF = run.payslips.reduce((s, p) => s + p.empPF, 0);
+    const totalEmpESI = run.payslips.reduce((s, p) => s + p.empESI, 0);
+    const totalPT = run.payslips.reduce((s, p) => s + p.pt, 0);
+    const totalTDS = run.payslips.reduce((s, p) => s + p.tds, 0);
+    const totalErEPF = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EPF')?.monthly || 0), 0);
+    const totalErEPS = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EPS')?.monthly || 0), 0);
+    const totalErEDLI = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_EDLI')?.monthly || 0), 0);
+    const totalErESI = run.payslips.reduce((s, p) => s + (p.lines.find(l => l.headCode === 'ER_ESI')?.monthly || 0), 0);
+    const totalErPF = totalErEPF + totalErEPS + totalErEDLI;
+    const totalErCont = totalErPF + totalErESI;
+
+    // ── Build journal entries ──────────────────────────────
+    const now = new Date().toISOString();
+    const voucherNo = `PAY/${payPeriod}/${entityCode}`;
+    const periodDate = payPeriod + '-28';
+
+    const makeEntry = (
+      ledgerCode: string, ledgerName: string, groupCode: string,
+      drAmt: number, crAmt: number, narration: string,
+    ): JournalEntry => ({
+      id: `je-pay-${payPeriod}-${ledgerCode}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      voucher_id: voucherNo, voucher_no: voucherNo,
+      base_voucher_type: 'Payroll',
+      entity_id: run.entityId || entityCode,
+      date: periodDate,
+      ledger_id: ledgerCode, ledger_code: ledgerCode,
+      ledger_name: ledgerName, ledger_group_code: groupCode,
+      dr_amount: drAmt, cr_amount: crAmt,
+      narration,
+      is_cancelled: false, created_at: now,
+    });
+
+    const narBase = `Payroll JV - ${run.periodLabel}`;
+    const entries: JournalEntry[] = [];
+
+    // Dr: Salaries & Wages expense
+    if (run.totalGross > 0)
+      entries.push(makeEntry('SAL-EXP-PAYROLL', 'Salaries Salaries & Wages', 'EMPB', run.totalGross, 0, narBase));
+
+    // Dr: Employer PF & ESI contribution expense
+    if (totalErCont > 0)
+      entries.push(makeEntry('ER-CONT-PAYROLL', 'Employer PF & ESI Contribution', 'EMPB', totalErCont, 0, narBase));
+
+    // Cr: Net Salary Payable
+    if (run.totalNet > 0)
+      entries.push(makeEntry('SALP-000001', 'Salary Payable', 'EMPL', 0, run.totalNet, narBase));
+
+    // Cr: Employee PF Payable
+    if (totalEmpPF > 0)
+      entries.push(makeEntry('PFE-000001', 'PF Employee Deduction', 'EMPL', 0, totalEmpPF, narBase));
+
+    // Cr: Employer PF Payable
+    if (totalErPF > 0)
+      entries.push(makeEntry('PFEPF-000001', 'PF Employer Contribution', 'EMPL', 0, totalErPF, narBase));
+
+    // Cr: ESI Payable (employee + employer)
+    if (totalEmpESI + totalErESI > 0)
+      entries.push(makeEntry('ESIE-000001', 'ESI Payable', 'EMPL', 0, totalEmpESI + totalErESI, narBase));
+
+    // Cr: PT Payable
+    if (totalPT > 0)
+      entries.push(makeEntry('PTP-000001', 'Professional Tax Payable', 'DUTYP', 0, totalPT, narBase));
+
+    // Cr: TDS Payable on Salary
+    if (totalTDS > 0)
+      entries.push(makeEntry('TDSP-000001', 'TDS Payable', 'TDSP', 0, totalTDS, narBase));
+
+    // ── Write to journal ───────────────────────────────────
+    // [JWT] POST /api/accounting/journal?entityCode={entityCode}
+    const key = journalKey(entityCode);
+    const existing: JournalEntry[] = (() => {
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+      catch { return []; }
+    })();
+    localStorage.setItem(key, JSON.stringify([...existing, ...entries]));
+
+    // ── Update run status ──────────────────────────────────
+    const updated = allRuns.map(r => r.payPeriod !== payPeriod ? r : {
+      ...r, status: 'posted' as const, postedAt: now, updated_at: now,
     });
     setRuns(updated); saveRuns(updated);
-    toast.success(`Payroll ${payPeriod} posted to GL`);
+    toast.success(`Payroll ${payPeriod} posted — ${entries.length} GL entries written`);
   };
 
   const lockRun = (payPeriod: string, lockedBy: string) => {
