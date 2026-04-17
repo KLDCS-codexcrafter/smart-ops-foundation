@@ -14,9 +14,6 @@ import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
 import { ThemeToggle } from "@/components/theme";
 import {
   applications,
-  ALL_CATEGORIES,
-  CATEGORY_COLORS,
-  type AppCategory,
   type AppDefinition,
 } from "@/components/operix-core/applications";
 import { onEnterNext } from '@/lib/keyboard';
@@ -27,6 +24,58 @@ const ICON_MAP: Record<string, LucideIcon> = {
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
 };
+
+// ── Swim lanes ───────────────────────────────────────────────────────────────
+const LANES: Array<{
+  id: string;
+  label: string;
+  borderColor: string;
+  labelColor: string;
+  ids: string[];
+}> = [
+  {
+    id: 'management',
+    label: 'Top management',
+    borderColor: 'border-l-sky-500',
+    labelColor: 'text-sky-600 dark:text-sky-400',
+    ids: ['insightx', 'command-center'],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    borderColor: 'border-l-cyan-500',
+    labelColor: 'text-cyan-600 dark:text-cyan-400',
+    ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx'],
+  },
+  {
+    id: 'finance',
+    label: 'Finance',
+    borderColor: 'border-l-indigo-500',
+    labelColor: 'text-indigo-600 dark:text-indigo-400',
+    ids: ['finecore', 'payout', 'receivx'],
+  },
+  {
+    id: 'sales',
+    label: 'Sales',
+    borderColor: 'border-l-amber-500',
+    labelColor: 'text-amber-600 dark:text-amber-400',
+    ids: ['salesx'],
+  },
+  {
+    id: 'people',
+    label: 'People',
+    borderColor: 'border-l-violet-500',
+    labelColor: 'text-violet-600 dark:text-violet-400',
+    ids: ['peoplepay'],
+  },
+  {
+    id: 'support',
+    label: 'Support & back office',
+    borderColor: 'border-l-slate-400',
+    labelColor: 'text-slate-500 dark:text-slate-400',
+    ids: ['backoffice', 'servicedesk'],
+  },
+];
 
 // ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────
 function getGreeting() {
@@ -54,7 +103,6 @@ function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
   const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
   const isLive = !app.status;
-  const categoryColor = CATEGORY_COLORS[app.category] ?? "";
 
   function handleClick() {
     if (app.status === 'coming_soon') return;
@@ -93,9 +141,6 @@ function AppCard({ app }: { app: AppDefinition }) {
         <h3 className="text-sm font-semibold text-foreground leading-tight">
           {app.name}
         </h3>
-        <span className={`inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColor}`}>
-          {app.category}
-        </span>
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">
@@ -113,20 +158,15 @@ export default function ErpDashboard() {
   const userName = getUserName();
 
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<"All" | AppCategory>("All");
 
   const filtered = useMemo(() => {
-    return applications.filter((app) => {
-      const matchesCategory =
-        activeCategory === "All" || app.category === activeCategory;
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !q ||
-        app.name.toLowerCase().includes(q) ||
-        app.description.toLowerCase().includes(q);
-      return matchesCategory && matchesSearch;
-    });
-  }, [search, activeCategory]);
+    const q = search.toLowerCase();
+    if (!q) return applications;
+    return applications.filter((app) =>
+      app.name.toLowerCase().includes(q) ||
+      app.description.toLowerCase().includes(q)
+    );
+  }, [search]);
 
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
@@ -193,40 +233,44 @@ export default function ErpDashboard() {
           />
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
-          {(["All", ...ALL_CATEGORIES] as const).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={[
-                "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors border-none outline-none",
-                activeCategory === cat
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80",
-              ].join(" ")}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {(() => {
+          const appMap = new Map(filtered.map(a => [a.id, a]));
+          const activeLanes = LANES.map(lane => ({
+            ...lane,
+            apps: lane.ids.map(id => appMap.get(id)).filter(Boolean) as AppDefinition[],
+          })).filter(lane => lane.apps.length > 0);
 
-        {filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground py-16">
-            No modules match your search.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((app, i) => (
-              <div
-                key={app.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-              >
-                <AppCard app={app} />
-              </div>
-            ))}
-          </div>
-        )}
+          if (activeLanes.length === 0) {
+            return (
+              <p className="text-center text-muted-foreground py-16">
+                No modules match your search.
+              </p>
+            );
+          }
+
+          return (
+            <div className="space-y-8">
+              {activeLanes.map((lane) => (
+                <section key={lane.id} className={`pl-4 border-l-4 ${lane.borderColor}`}>
+                  <h2 className={`text-xs font-semibold uppercase tracking-wider mb-3 ${lane.labelColor}`}>
+                    {lane.label}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {lane.apps.map((app, i) => (
+                      <div
+                        key={app.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                      >
+                        <AppCard app={app} />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          );
+        })()}
 
         <footer className="mt-12 py-4 border-t border-border/30 text-center text-xs text-muted-foreground">
           © 2026 4DSmartOps · Operix · Built for Indian SMEs
