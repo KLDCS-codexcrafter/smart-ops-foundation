@@ -83,7 +83,7 @@ export function ProfitLossPanel({ entityCode }: ProfitLossPanelProps) {
   };
 
   return (
-    <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
+    <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <PieChart className="h-5 w-5 text-teal-500" />

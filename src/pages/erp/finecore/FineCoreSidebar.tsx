@@ -3,7 +3,7 @@
  * Mirrors PayHubSidebar.tsx structure. Teal color scheme.
  * Masters section items are LINK-OUTS to Command Center.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, CreditCard, Wallet, BookOpen, ArrowLeftRight,
@@ -158,6 +158,35 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
   const [tdsOpen, setTdsOpen] = useState(false);
   const [faOpen, setFaOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
+
+  useEffect(() => {
+    const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
+      'fc-txn-payment','fc-txn-journal','fc-txn-contra','fc-txn-credit-note',
+      'fc-txn-debit-note','fc-txn-delivery-note','fc-txn-receipt-note'];
+    const inv = ['fc-inv-stock-journal'];
+    const ord = ['fc-ord-purchase-order','fc-ord-sales-order'];
+    const bank = ['fc-bnk-reconciliation','fc-bnk-cheque'];
+    const out = ['fc-out-receivables','fc-out-payables'];
+    const rpt = ['fc-rpt-daybook','fc-rpt-ledger','fc-rpt-trial-balance','fc-rpt-pl',
+      'fc-rpt-bs','fc-rpt-stock-summary','fc-rpt-outstanding','fc-rpt-26as',
+      'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan'];
+    const gst = ['fc-gst-gstr1','fc-gst-gstr3b','fc-gst-2a','fc-gst-itc',
+      'fc-gst-gstr2','fc-gst-gstr9'];
+    const tds = ['fc-tds-advance','fc-tds-analytics'];
+    const fa = ['fc-fa-register','fc-fa-master','fc-fa-depreciation','fc-fa-amc',
+      'fc-fa-disposal','fc-fa-cwip','fc-fa-reports'];
+    const aud = ['fc-audit-dashboard','fc-audit-3cd','fc-audit-clause44'];
+    if (txn.includes(active)) setTxnOpen(true);
+    else if (inv.includes(active)) setInvOpen(true);
+    else if (ord.includes(active)) setOrderOpen(true);
+    else if (bank.includes(active)) setBankOpen(true);
+    else if (out.includes(active)) setOutOpen(true);
+    else if (rpt.includes(active)) setRptOpen(true);
+    else if (gst.includes(active)) setGstOpen(true);
+    else if (tds.includes(active)) setTdsOpen(true);
+    else if (fa.includes(active)) setFaOpen(true);
+    else if (aud.includes(active)) setAuditOpen(true);
+  }, [active]);
 
   const isLive = (id: FineCoreModule) => LIVE_MODULES.includes(id);
 

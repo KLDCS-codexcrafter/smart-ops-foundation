@@ -198,7 +198,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   }, [onSaveDraft, partyName, date, amount]);
 
   return (
-    <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
+    <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-foreground">Payment Voucher</h2>

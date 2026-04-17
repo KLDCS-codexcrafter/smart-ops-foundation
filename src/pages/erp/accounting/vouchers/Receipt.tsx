@@ -167,7 +167,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   const activeTdsSections = TDS_SECTIONS.filter(t => t.status === 'active' && incomeTdsSections.includes(t.sectionCode));
 
   return (
-    <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
+    <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-foreground">Receipt Voucher</h2>
