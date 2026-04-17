@@ -197,6 +197,7 @@ interface PayHubSidebarProps {
 }
 
 export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarProps) {
+  const navigate = useNavigate();
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
   const [statutoryOpen, setStatutoryOpen] = useState(false);
