@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { format, getDaysInMonth } from 'date-fns';
 import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip, PayslipLine, ITComputation, SalaryHold } from '@/types/payroll-run';
-import { PAYROLL_RUNS_KEY, SALARY_HOLDS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, SALARY_HOLDS_KEY, payrollRunsKey, salaryHoldsKey } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
 import type { SalaryStructure, PayHead } from '@/types/pay-hub';
 import type { AttendanceRecord } from '@/types/attendance-entry';
@@ -19,31 +19,14 @@ import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCHARGE_RATES }
   from '@/data/payroll-statutory-seed-data';
+import { journalKey } from '@/lib/finecore-engine';
+import type { JournalEntry } from '@/types/voucher';
 
-const loadRuns = (): PayrollRun[] => {
-  try {
-    // [JWT] GET /api/pay-hub/payroll/runs
-    const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [];
-};
-const saveRuns = (items: PayrollRun[]) => {
-  // [JWT] PUT /api/pay-hub/payroll/runs
-  localStorage.setItem(PAYROLL_RUNS_KEY, JSON.stringify(items));
-};
-const loadHolds = (): SalaryHold[] => {
-  try {
-    // [JWT] GET /api/pay-hub/payroll/holds
-    const raw = localStorage.getItem(SALARY_HOLDS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [];
-};
-const saveHolds = (items: SalaryHold[]) => {
-  // [JWT] PUT /api/pay-hub/payroll/holds
-  localStorage.setItem(SALARY_HOLDS_KEY, JSON.stringify(items));
-};
+// PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that
+// have not yet migrated to the entity-scoped helpers. New reads/writes use
+// payrollRunsKey(entityCode) / salaryHoldsKey(entityCode).
+void PAYROLL_RUNS_KEY; void SALARY_HOLDS_KEY;
+
 
 // ── computeCTCBreakdown ──────────────────────────────────────────
 export function computeCTCBreakdown(
