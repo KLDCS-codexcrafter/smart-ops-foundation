@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -1278,7 +1278,7 @@ function HSNSACCombobox({
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export function LedgerMasterPanel() {
+export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
   const showGSTUDFs = (() => {
     try {
       // [JWT] GET /api/compliance/comply360/group
@@ -6095,7 +6095,7 @@ export function LedgerMasterPanel() {
 
     </div>
   );
-}
+});
 
 // ─── Wrapped Export ───────────────────────────────────────────────────
 
