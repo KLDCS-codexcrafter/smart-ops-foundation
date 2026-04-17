@@ -38,8 +38,8 @@ const DEFAULT_STATUS: OpeningStatusFlag = {
 
 function loadStatus(entityCode: string): OpeningStatusFlag {
   // [JWT] GET /api/opening-balances/status/:entityCode
+  const raw = localStorage.getItem(openingStatusKey(entityCode));
   try {
-    const raw = localStorage.getItem(openingStatusKey(entityCode));
     return raw ? { ...DEFAULT_STATUS, ...JSON.parse(raw) } : { ...DEFAULT_STATUS };
   } catch { return { ...DEFAULT_STATUS }; }
 }

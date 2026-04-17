@@ -13,6 +13,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { stockLedgerKey } from '@/lib/finecore-engine';
+import { onEnterNext } from '@/lib/keyboard';
 
 const IKEY = 'erp_inventory_items';
 // [JWT] GET /api/entity/storage/:key
@@ -354,7 +355,7 @@ export function OpeningStockPanel() {
         <div className="flex items-center gap-2 flex-wrap">
           <div className="space-y-0.5">
             <Label className="text-xs text-muted-foreground">Go-Live Date</Label>
-            <Input type="date" className="h-8 w-38 text-sm" value={goDate} onChange={e => setGoDate(e.target.value)} />
+            <Input type="date" className="h-8 w-38 text-sm" value={goDate} onChange={e => setGoDate(e.target.value)} onKeyDown={onEnterNext} />
           </div>
           <Button size="sm" variant="outline" className="gap-1"
             onClick={() => {
@@ -525,6 +526,7 @@ export function OpeningStockPanel() {
                                 className="h-7 w-24 text-xs text-right px-2 border-0 bg-transparent focus:bg-background focus:border focus:border-primary"
                                 value={row?.qty[col.id] || ''}
                                 onChange={e => setQty(item.id, col.id, e.target.value)}
+                                onKeyDown={onEnterNext}
                                 onFocus={e => e.target.select()} />
                             )}
                           </TableCell>
@@ -540,6 +542,7 @@ export function OpeningStockPanel() {
                                 className="h-7 w-24 text-xs text-right px-2 border-0 bg-transparent focus:bg-background focus:border focus:border-primary"
                                 value={row?.rate[col.id] || ''}
                                 onChange={e => setRate(item.id, col.id, e.target.value)}
+                                onKeyDown={onEnterNext}
                                 onFocus={e => e.target.select()} />
                             )}
                           </TableCell>
@@ -554,6 +557,7 @@ export function OpeningStockPanel() {
                           placeholder={item.mrp ? String(item.mrp) : undefined}
                           value={row?.mrp || ''}
                           onChange={e => setMrp(item.id, e.target.value)}
+                          onKeyDown={onEnterNext}
                           onFocus={e => e.target.select()} />
                       )}
                     </TableCell>
@@ -564,6 +568,7 @@ export function OpeningStockPanel() {
                           placeholder={item.std_purchase_rate ? String(item.std_purchase_rate) : undefined}
                           value={row?.stdPO || ''}
                           onChange={e => setStdPO(item.id, e.target.value)}
+                          onKeyDown={onEnterNext}
                           onFocus={e => e.target.select()} />
                       )}
                     </TableCell>
@@ -608,11 +613,11 @@ export function OpeningStockPanel() {
                                             </SelectContent>
                                           </Select>
                                         </td>
-                                        <td className="p-1"><Input className="h-7 text-xs" value={b.batch_no} onChange={e => updateBatchRow(item.id, b.id, 'batch_no', e.target.value)} /></td>
-                                        <td className="p-1"><Input type="date" className="h-7 text-xs" value={b.mfg_date} onChange={e => updateBatchRow(item.id, b.id, 'mfg_date', e.target.value)} /></td>
-                                        <td className="p-1"><Input type="date" className="h-7 text-xs" value={b.expiry_date} onChange={e => updateBatchRow(item.id, b.id, 'expiry_date', e.target.value)} /></td>
-                                        <td className="p-1"><Input type="number" min="0" step="0.001" className="h-7 text-xs text-right" value={b.qty} onChange={e => updateBatchRow(item.id, b.id, 'qty', e.target.value)} /></td>
-                                        <td className="p-1"><Input type="number" min="0" step="0.01" className="h-7 text-xs text-right" value={b.rate} onChange={e => updateBatchRow(item.id, b.id, 'rate', e.target.value)} /></td>
+                                        <td className="p-1"><Input className="h-7 text-xs" value={b.batch_no} onChange={e => updateBatchRow(item.id, b.id, 'batch_no', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                        <td className="p-1"><Input type="date" className="h-7 text-xs" value={b.mfg_date} onChange={e => updateBatchRow(item.id, b.id, 'mfg_date', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                        <td className="p-1"><Input type="date" className="h-7 text-xs" value={b.expiry_date} onChange={e => updateBatchRow(item.id, b.id, 'expiry_date', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                        <td className="p-1"><Input type="number" min="0" step="0.001" className="h-7 text-xs text-right" value={b.qty} onChange={e => updateBatchRow(item.id, b.id, 'qty', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                        <td className="p-1"><Input type="number" min="0" step="0.01" className="h-7 text-xs text-right" value={b.rate} onChange={e => updateBatchRow(item.id, b.id, 'rate', e.target.value)} onKeyDown={onEnterNext} /></td>
                                         <td className="p-1 text-right font-mono text-muted-foreground">₹{val.toLocaleString('en-IN')}</td>
                                         <td className="p-1">
                                           <Button size="icon" variant="ghost" onClick={() => removeBatchRow(item.id, b.id)} className="h-6 w-6">
@@ -666,10 +671,10 @@ export function OpeningStockPanel() {
                                           </SelectContent>
                                         </Select>
                                       </td>
-                                      <td className="p-1"><Input className="h-7 text-xs" value={s.serial_no} onChange={e => updateSerialRow(item.id, s.id, 'serial_no', e.target.value)} /></td>
-                                      <td className="p-1"><Input type="date" className="h-7 text-xs" value={s.mfg_date} onChange={e => updateSerialRow(item.id, s.id, 'mfg_date', e.target.value)} /></td>
-                                      {item.expiry_tracking && <td className="p-1"><Input type="date" className="h-7 text-xs" value={s.expiry_date} onChange={e => updateSerialRow(item.id, s.id, 'expiry_date', e.target.value)} /></td>}
-                                      <td className="p-1"><Input type="number" min="0" step="0.01" className="h-7 text-xs text-right" value={s.rate} onChange={e => updateSerialRow(item.id, s.id, 'rate', e.target.value)} /></td>
+                                      <td className="p-1"><Input className="h-7 text-xs" value={s.serial_no} onChange={e => updateSerialRow(item.id, s.id, 'serial_no', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                      <td className="p-1"><Input type="date" className="h-7 text-xs" value={s.mfg_date} onChange={e => updateSerialRow(item.id, s.id, 'mfg_date', e.target.value)} onKeyDown={onEnterNext} /></td>
+                                      {item.expiry_tracking && <td className="p-1"><Input type="date" className="h-7 text-xs" value={s.expiry_date} onChange={e => updateSerialRow(item.id, s.id, 'expiry_date', e.target.value)} onKeyDown={onEnterNext} /></td>}
+                                      <td className="p-1"><Input type="number" min="0" step="0.01" className="h-7 text-xs text-right" value={s.rate} onChange={e => updateSerialRow(item.id, s.id, 'rate', e.target.value)} onKeyDown={onEnterNext} /></td>
                                       <td className="p-1">
                                         <Button size="icon" variant="ghost" onClick={() => removeSerialRow(item.id, s.id)} className="h-6 w-6">
                                           <Trash2 className="h-3 w-3 text-destructive" />
