@@ -1,0 +1,578 @@
+/**
+ * QuotationEntry.tsx — Sales Quotation register + 2-tab form + revision history
+ * Charis TDL UDF 4955-4975.
+ * [JWT] GET/POST/PATCH /api/salesx/quotations
+ */
+import { useState, useMemo, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { SmartDateInput } from '@/components/ui/smart-date-input';
+import { Plus, Save, Trash2, ArrowLeft, Edit2, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { useQuotations } from '@/hooks/useQuotations';
+import { useEnquiries } from '@/hooks/useEnquiries';
+import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/types/quotation';
+
+interface Props { entityCode: string }
+type View = 'list' | 'form';
+
+const STAGE_FILTERS: Array<{ id: 'all' | QuotationStage; label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'draft', label: 'Draft' },
+  { id: 'negotiation', label: 'Negotiation' },
+  { id: 'confirmed', label: 'Confirmed' },
+  { id: 'lost', label: 'Lost' },
+];
+
+const STAGE_COLOR: Record<QuotationStage, string> = {
+  draft: 'bg-muted text-muted-foreground border-border',
+  on_hold: 'bg-yellow-500/15 text-yellow-700 border-yellow-500/30',
+  negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
+  confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
+  lost: 'bg-destructive/15 text-destructive border-destructive/30',
+  cancelled: 'bg-muted text-muted-foreground border-border',
+};
+
+function loadCustomers(): Array<{ id: string; partyName: string }> {
+  try { return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]'); }
+  catch { return []; }
+}
+
+const todayISO = () => new Date().toISOString().split('T')[0];
+const addDays = (iso: string, n: number): string => {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split('T')[0];
+};
+
+interface FormState extends Omit<Quotation, 'id' | 'quotation_no' | 'entity_id' | 'created_at' | 'updated_at'> {}
+
+const blank = (): FormState => ({
+  quotation_date: todayISO(),
+  quotation_type: 'original',
+  quotation_stage: 'draft',
+  enquiry_id: null, enquiry_no: null,
+  customer_id: null, customer_name: null,
+  valid_until_days: 30,
+  valid_until_date: addDays(todayISO(), 30),
+  original_quotation_no: null,
+  last_quotation_no: null, last_quotation_date: null,
+  revision_number: 0, revision_history: [],
+  items: [],
+  sub_total: 0, tax_amount: 0, total_amount: 0,
+  notes: null, terms_conditions: null,
+  is_active: true,
+});
+
+function recalcLine(it: QuotationItem): QuotationItem {
+  const sub_total = it.qty * it.rate * (1 - (it.discount_pct || 0) / 100);
+  const tax_amount = (sub_total * (it.tax_pct || 0)) / 100;
+  return { ...it, sub_total, tax_amount, amount: sub_total + tax_amount };
+}
+
+export function QuotationEntryPanel({ entityCode }: Props) {
+  const { quotations, createQuotation, updateQuotation, createRevision } = useQuotations(entityCode);
+  const { enquiries } = useEnquiries(entityCode);
+  const customers = useMemo(() => loadCustomers(), []);
+
+  const [view, setView] = useState<View>('list');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(blank());
+  const [stageFilter, setStageFilter] = useState<'all' | QuotationStage>('all');
+  const [revisionReason, setRevisionReason] = useState('');
+  const [snapshotId, setSnapshotId] = useState<string | null>(null);
+
+  const update = useCallback((p: Partial<FormState>) => setForm(prev => ({ ...prev, ...p })), []);
+
+  const filtered = useMemo(() => {
+    let list = quotations;
+    if (stageFilter !== 'all') list = list.filter(q => q.quotation_stage === stageFilter);
+    return list.slice().sort((a, b) => b.quotation_date.localeCompare(a.quotation_date));
+  }, [quotations, stageFilter]);
+
+  const handleNew = () => {
+    setEditingId(null); setForm(blank()); setView('form'); setSnapshotId(null);
+  };
+  const handleEdit = (q: Quotation) => {
+    setEditingId(q.id);
+    const { id, quotation_no, entity_id, created_at, updated_at, ...rest } = q;
+    setForm(rest); setView('form'); setSnapshotId(null);
+  };
+
+  const handleSave = useCallback(() => {
+    if (!form.customer_id) { toast.error('Customer required'); return; }
+    if (form.items.length === 0) { toast.error('Add at least one item'); return; }
+    if (editingId) updateQuotation(editingId, form);
+    else createQuotation(form);
+    setView('list');
+  }, [form, editingId, updateQuotation, createQuotation]);
+
+  useCtrlS(view === 'form' ? handleSave : () => {});
+
+  const addLine = () => update({
+    items: [...form.items, recalcLine({
+      id: `it-${Date.now()}`, item_name: '', description: null,
+      qty: 1, uom: null, rate: 0, discount_pct: 0,
+      sub_total: 0, tax_pct: 0, tax_amount: 0, amount: 0,
+    })],
+  });
+  const updateLine = (idx: number, patch: Partial<QuotationItem>) => {
+    const items = form.items.map((it, i) => i === idx ? recalcLine({ ...it, ...patch }) : it);
+    const sub = items.reduce((s, it) => s + it.sub_total, 0);
+    const tax = items.reduce((s, it) => s + it.tax_amount, 0);
+    update({ items, sub_total: sub, tax_amount: tax, total_amount: sub + tax });
+  };
+  const removeLine = (idx: number) => {
+    const items = form.items.filter((_, i) => i !== idx);
+    const sub = items.reduce((s, it) => s + it.sub_total, 0);
+    const tax = items.reduce((s, it) => s + it.tax_amount, 0);
+    update({ items, sub_total: sub, tax_amount: tax, total_amount: sub + tax });
+  };
+
+  const handleReviseFrom = (qid: string) => {
+    const src = quotations.find(q => q.id === qid);
+    if (!src) return;
+    update({
+      last_quotation_no: src.quotation_no,
+      last_quotation_date: src.quotation_date,
+      original_quotation_no: src.original_quotation_no ?? src.quotation_no,
+      items: src.items.map(it => ({ ...it, id: `it-${Date.now()}-${Math.random()}` })),
+      sub_total: src.sub_total, tax_amount: src.tax_amount, total_amount: src.total_amount,
+      customer_id: src.customer_id, customer_name: src.customer_name,
+    });
+    toast.success('Loaded items from previous quotation');
+  };
+
+  const handleCreateRevision = () => {
+    if (!editingId || !revisionReason) { toast.error('Reason required'); return; }
+    const updated = createRevision(editingId, revisionReason, 'Current User');
+    if (updated) {
+      const { id, quotation_no, entity_id, created_at, updated_at, ...rest } = updated;
+      setForm(rest);
+      setRevisionReason('');
+    }
+  };
+
+  const openEnquiries = enquiries.filter(e => e.status !== 'sold' && e.status !== 'lost');
+  const customerQuotations = quotations.filter(q =>
+    form.customer_id && q.customer_id === form.customer_id && q.id !== editingId,
+  );
+
+  // ── LIST VIEW ─────────────────────────────────────────────────────
+  if (view === 'list') {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Quotation Register</h1>
+            <p className="text-sm text-muted-foreground">Manage sales quotations &amp; revisions</p>
+          </div>
+          <Button onClick={handleNew} data-primary className="bg-orange-500 hover:bg-orange-600">
+            <Plus className="h-4 w-4 mr-2" />New Quotation
+          </Button>
+        </div>
+
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex gap-1 flex-wrap">
+              {STAGE_FILTERS.map(f => (
+                <Button
+                  key={f.id} size="sm"
+                  variant={stageFilter === f.id ? 'default' : 'outline'}
+                  onClick={() => setStageFilter(f.id)}
+                  className={cn('h-7 text-xs', stageFilter === f.id && 'bg-orange-500 hover:bg-orange-600')}
+                >{f.label}</Button>
+              ))}
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="py-12 text-center text-muted-foreground text-sm">No quotations yet.</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Quotation No</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Stage</TableHead>
+                    <TableHead>Enquiry</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Valid Until</TableHead>
+                    <TableHead>Rev</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map(q => (
+                    <TableRow key={q.id} className="cursor-pointer" onClick={() => handleEdit(q)}>
+                      <TableCell className="font-mono text-xs">{q.quotation_no}</TableCell>
+                      <TableCell className="text-xs">{q.quotation_date}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs capitalize">{q.quotation_type}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={cn('text-xs', STAGE_COLOR[q.quotation_stage])}>
+                          {q.quotation_stage}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs font-mono">{q.enquiry_no ?? '—'}</TableCell>
+                      <TableCell className="text-xs">{q.customer_name ?? '—'}</TableCell>
+                      <TableCell className="text-xs font-mono">₹{q.total_amount.toLocaleString('en-IN')}</TableCell>
+                      <TableCell className="text-xs">{q.valid_until_date ?? '—'}</TableCell>
+                      <TableCell>
+                        {q.revision_number > 0 && (
+                          <Badge variant="outline" className="text-[10px] bg-orange-500/15 text-orange-700 border-orange-500/30">
+                            Rev {q.revision_number}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={ev => { ev.stopPropagation(); handleEdit(q); }}>
+                          <Edit2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // ── FORM VIEW ─────────────────────────────────────────────────────
+  const snapshot = snapshotId ? form.revision_history.find(r => r.id === snapshotId) : null;
+
+  return (
+    <div className="space-y-4" data-keyboard-form>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button size="sm" variant="ghost" onClick={() => setView('list')}>
+            <ArrowLeft className="h-4 w-4 mr-1" />Back
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">{editingId ? 'Edit Quotation' : 'New Quotation'}</h1>
+            <p className="text-sm text-muted-foreground">Charis TDL UDF 4955-4975</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {editingId && (
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Revision reason"
+                className="w-40 h-8 text-xs"
+                value={revisionReason}
+                onChange={e => setRevisionReason(e.target.value)}
+              />
+              <Button size="sm" variant="outline" onClick={handleCreateRevision}>
+                Save as Revision
+              </Button>
+            </div>
+          )}
+          <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
+            <Save className="h-4 w-4 mr-2" />Save Quotation
+          </Button>
+        </div>
+      </div>
+
+      <Tabs defaultValue="info">
+        <TabsList>
+          <TabsTrigger value="info">Quotation Info</TabsTrigger>
+          <TabsTrigger value="items">Items &amp; Terms</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="info">
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium">Quotation Date</label>
+                  <SmartDateInput value={form.quotation_date} onChange={v => update({
+                    quotation_date: v,
+                    valid_until_date: addDays(v, form.valid_until_days),
+                  })} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Type</label>
+                  <div className="flex gap-2 mt-1">
+                    {(['original', 'revised'] as QuotationType[]).map(t => (
+                      <Button key={t} size="sm" type="button"
+                        variant={form.quotation_type === t ? 'default' : 'outline'}
+                        onClick={() => update({ quotation_type: t })}
+                        className={cn('capitalize', form.quotation_type === t && 'bg-orange-500 hover:bg-orange-600')}
+                      >{t}</Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {form.quotation_type === 'revised' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Revise from</label>
+                  <Select onValueChange={handleReviseFrom}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={
+                        form.last_quotation_no
+                          ? `${form.last_quotation_no} dated ${form.last_quotation_date}`
+                          : 'Select previous quotation'
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customerQuotations.length === 0 && (
+                        <SelectItem value="none" disabled>No prior quotations for this customer</SelectItem>
+                      )}
+                      {customerQuotations.map(q => (
+                        <SelectItem key={q.id} value={q.id}>
+                          {q.quotation_no} | ₹{q.total_amount.toLocaleString('en-IN')} | {q.quotation_stage}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {form.last_quotation_no && (
+                    <div className="bg-muted/30 rounded p-2 text-xs">
+                      Revising: {form.last_quotation_no} dated {form.last_quotation_date}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium">Enquiry No</label>
+                  <Select
+                    value={form.enquiry_id ?? ''}
+                    onValueChange={v => {
+                      const e = openEnquiries.find(x => x.id === v);
+                      update({ enquiry_id: v, enquiry_no: e?.enquiry_no ?? null });
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Link enquiry" /></SelectTrigger>
+                    <SelectContent>
+                      {openEnquiries.map(e => (
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.enquiry_no} | {e.customer_name ?? e.contact_person ?? '—'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Customer</label>
+                  <Select
+                    value={form.customer_id ?? ''}
+                    onValueChange={v => {
+                      const c = customers.find(x => x.id === v);
+                      update({ customer_id: v, customer_name: c?.partyName ?? null });
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Select customer" /></SelectTrigger>
+                    <SelectContent>
+                      {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.partyName}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-medium">Stage</label>
+                  <Select value={form.quotation_stage} onValueChange={v => update({ quotation_stage: v as QuotationStage })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="on_hold">On Hold</SelectItem>
+                      <SelectItem value="negotiation">Negotiation</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="lost">Lost</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Valid Until Days</label>
+                  <Input
+                    type="number" value={form.valid_until_days}
+                    onChange={e => {
+                      const days = parseInt(e.target.value) || 0;
+                      update({ valid_until_days: days, valid_until_date: addDays(form.quotation_date, days) });
+                    }}
+                    onKeyDown={onEnterNext}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Valid Until Date</label>
+                  <SmartDateInput value={form.valid_until_date ?? ''} onChange={v => update({ valid_until_date: v || null })} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="items">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-base">Items</CardTitle>
+              <Button size="sm" variant="outline" onClick={addLine}>
+                <Plus className="h-3.5 w-3.5 mr-1" />Add Line
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="w-16">Qty</TableHead>
+                    <TableHead className="w-16">UOM</TableHead>
+                    <TableHead className="w-24">Rate</TableHead>
+                    <TableHead className="w-16">Disc%</TableHead>
+                    <TableHead className="w-24">Sub Total</TableHead>
+                    <TableHead className="w-16">Tax%</TableHead>
+                    <TableHead className="w-24">Tax Amt</TableHead>
+                    <TableHead className="w-24">Amount</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {form.items.map((it, i) => (
+                    <TableRow key={it.id}>
+                      <TableCell><Input value={it.item_name} onChange={e => updateLine(i, { item_name: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input value={it.description ?? ''} onChange={e => updateLine(i, { description: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input type="number" value={it.qty} onChange={e => updateLine(i, { qty: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input value={it.uom ?? ''} onChange={e => updateLine(i, { uom: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input type="number" value={it.rate} onChange={e => updateLine(i, { rate: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input type="number" value={it.discount_pct} onChange={e => updateLine(i, { discount_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell className="font-mono text-xs">₹{it.sub_total.toLocaleString('en-IN')}</TableCell>
+                      <TableCell><Input type="number" value={it.tax_pct} onChange={e => updateLine(i, { tax_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell className="font-mono text-xs">₹{it.tax_amount.toLocaleString('en-IN')}</TableCell>
+                      <TableCell className="font-mono text-xs">₹{it.amount.toLocaleString('en-IN')}</TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={() => removeLine(i)}>
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <div className="flex justify-end gap-6 pt-4 text-sm font-mono border-t mt-2">
+                <div>Sub Total: ₹{form.sub_total.toLocaleString('en-IN')}</div>
+                <div>Tax: ₹{form.tax_amount.toLocaleString('en-IN')}</div>
+                <div className="font-bold">Total: ₹{form.total_amount.toLocaleString('en-IN')}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <div>
+                  <label className="text-xs font-medium">Terms &amp; Conditions</label>
+                  <Textarea value={form.terms_conditions ?? ''} onChange={e => update({ terms_conditions: e.target.value })} rows={3} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Notes</label>
+                  <Textarea value={form.notes ?? ''} onChange={e => update({ notes: e.target.value })} rows={3} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {form.revision_number > 0 && (
+        <Card>
+          <Collapsible>
+            <CollapsibleTrigger className="w-full">
+              <CardHeader className="flex flex-row items-center justify-between cursor-pointer">
+                <CardTitle className="text-sm">Revision History ({form.revision_history.length} versions)</CardTitle>
+                <ChevronRight className="h-4 w-4" />
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Revision No</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Changed By</TableHead>
+                      <TableHead>Reason</TableHead>
+                      <TableHead />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {form.revision_history.map(r => (
+                      <TableRow key={r.id}>
+                        <TableCell className="font-mono text-xs">{r.revision_no}</TableCell>
+                        <TableCell className="text-xs">{r.revision_date}</TableCell>
+                        <TableCell className="font-mono text-xs">₹{r.total_at_revision.toLocaleString('en-IN')}</TableCell>
+                        <TableCell className="text-xs">{r.changed_by}</TableCell>
+                        <TableCell className="text-xs">{r.reason ?? '—'}</TableCell>
+                        <TableCell>
+                          <Button size="sm" variant="outline" onClick={() => setSnapshotId(r.id)}>
+                            View Snapshot
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {snapshot && (
+                  <Card className="mt-3">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                      <CardTitle className="text-xs">Snapshot — {snapshot.revision_no}</CardTitle>
+                      <Button size="sm" variant="ghost" onClick={() => setSnapshotId(null)}>Close snapshot</Button>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Item</TableHead>
+                            <TableHead>Qty</TableHead>
+                            <TableHead>Rate</TableHead>
+                            <TableHead>Disc%</TableHead>
+                            <TableHead>Sub Total</TableHead>
+                            <TableHead>Tax%</TableHead>
+                            <TableHead>Amount</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {snapshot.snapshot_items.map(it => (
+                            <TableRow key={it.id}>
+                              <TableCell className="text-xs">{it.item_name}</TableCell>
+                              <TableCell className="text-xs">{it.qty}</TableCell>
+                              <TableCell className="text-xs font-mono">₹{it.rate.toLocaleString('en-IN')}</TableCell>
+                              <TableCell className="text-xs">{it.discount_pct}%</TableCell>
+                              <TableCell className="text-xs font-mono">₹{it.sub_total.toLocaleString('en-IN')}</TableCell>
+                              <TableCell className="text-xs">{it.tax_pct}%</TableCell>
+                              <TableCell className="text-xs font-mono">₹{it.amount.toLocaleString('en-IN')}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+export default QuotationEntryPanel;
