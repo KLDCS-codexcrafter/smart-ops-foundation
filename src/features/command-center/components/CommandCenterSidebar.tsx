@@ -334,6 +334,40 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* OPENING BALANCES */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Opening Balances</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {OPENING_ITEMS.map(item => (
+                <SidebarMenuItem key={item.module}>
+                  <SidebarMenuButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)} tooltip={item.label}>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* UTILITIES */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Utilities</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {UTILITY_ITEMS.map(item => (
+                <SidebarMenuItem key={item.module}>
+                  <SidebarMenuButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)} tooltip={item.label}>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Coming Soon</SidebarGroupLabel>
           <SidebarGroupContent>
