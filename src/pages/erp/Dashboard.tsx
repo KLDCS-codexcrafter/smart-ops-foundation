@@ -25,6 +25,58 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
 };
 
+// ── Swim lanes ───────────────────────────────────────────────────────────────
+const LANES: Array<{
+  id: string;
+  label: string;
+  borderColor: string;
+  labelColor: string;
+  ids: string[];
+}> = [
+  {
+    id: 'management',
+    label: 'Top management',
+    borderColor: 'border-l-sky-500',
+    labelColor: 'text-sky-600 dark:text-sky-400',
+    ids: ['insightx', 'command-center'],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    borderColor: 'border-l-cyan-500',
+    labelColor: 'text-cyan-600 dark:text-cyan-400',
+    ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx'],
+  },
+  {
+    id: 'finance',
+    label: 'Finance',
+    borderColor: 'border-l-indigo-500',
+    labelColor: 'text-indigo-600 dark:text-indigo-400',
+    ids: ['finecore', 'payout', 'receivx'],
+  },
+  {
+    id: 'sales',
+    label: 'Sales',
+    borderColor: 'border-l-amber-500',
+    labelColor: 'text-amber-600 dark:text-amber-400',
+    ids: ['salesx'],
+  },
+  {
+    id: 'people',
+    label: 'People',
+    borderColor: 'border-l-violet-500',
+    labelColor: 'text-violet-600 dark:text-violet-400',
+    ids: ['peoplepay'],
+  },
+  {
+    id: 'support',
+    label: 'Support & back office',
+    borderColor: 'border-l-slate-400',
+    labelColor: 'text-slate-500 dark:text-slate-400',
+    ids: ['backoffice', 'servicedesk'],
+  },
+];
+
 // ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────
 function getGreeting() {
   const hour = new Date().getHours();
