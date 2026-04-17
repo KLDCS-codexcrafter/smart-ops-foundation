@@ -1038,7 +1038,9 @@ export function EmployeeMasterPanel() {
             <Switch checked={form.essLoginEnabled} onCheckedChange={v => uf('essLoginEnabled', v)} />
             <Label className="text-xs">ESS Login Enabled</Label>
           </div>
-          {samCfg?.enableSalesActivityModule && samCfg?.enableCompanySalesMan && (
+          {samCfg?.enableSalesActivityModule &&
+            samCfg?.enableCompanySalesMan &&
+            samCfg?.companySalesManSource === 'payhub' && (
             <div className="flex items-start justify-between border border-border rounded-xl p-3 bg-muted/5">
               <div>
                 <Label className="text-xs font-medium">Treat as Salesman</Label>
