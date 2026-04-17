@@ -1038,6 +1038,18 @@ export function EmployeeMasterPanel() {
             <Switch checked={form.essLoginEnabled} onCheckedChange={v => uf('essLoginEnabled', v)} />
             <Label className="text-xs">ESS Login Enabled</Label>
           </div>
+          {samCfg?.enableSalesActivityModule && samCfg?.enableCompanySalesMan && (
+            <div className="flex items-start justify-between border border-border rounded-xl p-3 bg-muted/5">
+              <div>
+                <Label className="text-xs font-medium">Treat as Salesman</Label>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  When enabled, this employee appears in the Company Salesman dropdown on
+                  sales transactions and in commission calculations.
+                </p>
+              </div>
+              <Switch checked={form.is_salesman} onCheckedChange={v => uf('is_salesman', v)} />
+            </div>
+          )}
         </TabsContent>
 
         {/* TAB 3 — Contact */}
