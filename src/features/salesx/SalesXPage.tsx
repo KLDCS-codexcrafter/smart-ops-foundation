@@ -11,6 +11,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { SalesXHubPanel } from '@/pages/erp/salesx/SalesXHub';
 import { HierarchyMasterPanel } from '@/pages/erp/salesx/masters/HierarchyMaster';
 import { SAMPersonMasterPanel } from '@/pages/erp/salesx/masters/SAMPersonMaster';
+import { EnquiryCapturePanel } from '@/pages/erp/salesx/transactions/EnquiryCapture';
+import { CRMPipelinePanel } from '@/pages/erp/salesx/transactions/CRMPipeline';
+import { TelecallerPanel } from '@/pages/erp/salesx/transactions/Telecaller';
+import { QuotationEntryPanel } from '@/pages/erp/salesx/transactions/QuotationEntry';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':          'Hub Overview',
@@ -20,10 +24,10 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-m-broker':     'Broker Master',
   'sx-m-receiver':   'Receiver Master',
   'sx-m-reference':  'Reference Master',
-  'sx-t-leads':      'Lead Capture',
+  'sx-t-enquiry':    'Enquiry',
   'sx-t-pipeline':   'CRM Pipeline',
   'sx-t-telecaller': 'Telecaller',
-  'sx-t-proforma':   'Proforma Invoice',
+  'sx-t-quotation':  'Quotation',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -35,10 +39,19 @@ function ComingSoonPanel({ module }: { module: SalesXModule }) {
   );
 }
 
-function renderModule(mod: SalesXModule, entityCode: string): React.ReactElement {
+function renderModule(
+  mod: SalesXModule,
+  entityCode: string,
+  setActiveModule: (m: SalesXModule) => void,
+): React.ReactElement {
   switch (mod) {
     case 'sx-hub':
-      return <SalesXHubPanel entityCode={entityCode} />;
+      return (
+        <SalesXHubPanel
+          entityCode={entityCode}
+          onNavigate={(m) => setActiveModule(m as SalesXModule)}
+        />
+      );
     case 'sx-m-hierarchy':
       return <HierarchyMasterPanel entityCode={entityCode} />;
     case 'sx-m-salesman':
@@ -51,6 +64,14 @@ function renderModule(mod: SalesXModule, entityCode: string): React.ReactElement
       return <SAMPersonMasterPanel personType="receiver" entityCode={entityCode} />;
     case 'sx-m-reference':
       return <SAMPersonMasterPanel personType="reference" entityCode={entityCode} />;
+    case 'sx-t-enquiry':
+      return <EnquiryCapturePanel entityCode={entityCode} />;
+    case 'sx-t-pipeline':
+      return <CRMPipelinePanel entityCode={entityCode} />;
+    case 'sx-t-telecaller':
+      return <TelecallerPanel entityCode={entityCode} onNavigate={setActiveModule} />;
+    case 'sx-t-quotation':
+      return <QuotationEntryPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
@@ -83,7 +104,7 @@ export default function SalesXPage() {
         />
         <ScrollArea className="flex-1">
           <div className="p-6 max-w-7xl mx-auto">
-            {renderModule(activeModule, entityCode)}
+            {renderModule(activeModule, entityCode, setActiveModule)}
           </div>
         </ScrollArea>
       </SidebarInset>

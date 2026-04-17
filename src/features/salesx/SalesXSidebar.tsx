@@ -27,10 +27,10 @@ export type SalesXModule =
   | 'sx-m-broker'
   | 'sx-m-receiver'
   | 'sx-m-reference'
-  | 'sx-t-leads'
+  | 'sx-t-enquiry'
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
-  | 'sx-t-proforma';
+  | 'sx-t-quotation';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -40,6 +40,10 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-m-broker',
   'sx-m-receiver',
   'sx-m-reference',
+  'sx-t-enquiry',
+  'sx-t-pipeline',
+  'sx-t-telecaller',
+  'sx-t-quotation',
 ];
 
 interface Props {
@@ -80,11 +84,31 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     return items;
   }, [cfg]);
 
-  const txnItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType }> = [
-    { id: 'sx-t-leads',      label: 'Lead Capture',    icon: Users },
-    { id: 'sx-t-pipeline',   label: 'CRM Pipeline',    icon: Target },
-    { id: 'sx-t-telecaller', label: 'Telecaller',      icon: Phone },
-    { id: 'sx-t-proforma',   label: 'Proforma Invoice', icon: FileText },
+  const txnItems = [
+    {
+      id: 'sx-t-enquiry' as SalesXModule,
+      label: 'Enquiry',
+      icon: Users,
+      live: !!cfg?.enableSalesActivityModule,
+    },
+    {
+      id: 'sx-t-pipeline' as SalesXModule,
+      label: 'CRM Pipeline',
+      icon: Target,
+      live: !!cfg?.enableCRM,
+    },
+    {
+      id: 'sx-t-telecaller' as SalesXModule,
+      label: 'Telecaller',
+      icon: Phone,
+      live: !!cfg?.enableTelecalling,
+    },
+    {
+      id: 'sx-t-quotation' as SalesXModule,
+      label: 'Quotation',
+      icon: FileText,
+      live: true,
+    },
   ];
 
   const btn = (
@@ -126,12 +150,10 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       </SidebarHeader>
 
       <SidebarContent className="py-2 space-y-2">
-        {/* Hub */}
         <SidebarMenu className="px-3">
           {btn('sx-hub', 'Hub Overview', LayoutDashboard, true, 'Hub Overview')}
         </SidebarMenu>
 
-        {/* Masters */}
         {cfg?.enableSalesActivityModule && masterItems.length > 0 && (
           <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
             <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
@@ -151,14 +173,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           </Collapsible>
         )}
 
-        {/* SAM not configured notice */}
         {!cfg?.enableSalesActivityModule && (
           <div className="px-3 py-2 text-[10px] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
             Configure SAM in Comply360 to unlock masters.
           </div>
         )}
 
-        {/* Transactions — all coming soon */}
         <Collapsible open={txnOpen} onOpenChange={setTxnOpen} className="px-2">
           <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
             <ChevronRight className={cn(
@@ -171,7 +191,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           </CollapsibleTrigger>
           <CollapsibleContent>
             <SidebarMenu className="px-1 space-y-0.5">
-              {txnItems.map(item => btn(item.id, item.label, item.icon, false))}
+              {txnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
             </SidebarMenu>
           </CollapsibleContent>
         </Collapsible>
