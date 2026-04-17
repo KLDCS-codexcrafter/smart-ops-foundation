@@ -12,7 +12,7 @@ import {
   Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2,
 } from 'lucide-react';
 import {
-  Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
+  Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
@@ -231,14 +231,14 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
   );
 
   return (
-    <Sidebar className="border-r border-border/50">
+    <Sidebar collapsible="icon" className="border-r border-border/50">
       <SidebarHeader className="p-4 border-b border-border/50">
         <div className="h-1 w-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 mb-3" />
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-teal-500/15 flex items-center justify-center">
             <BookOpen className="h-4 w-4 text-teal-500" />
           </div>
-          <div>
+          <div className="group-data-[collapsible=icon]:hidden">
             <p className="font-bold text-sm">Fin Core</p>
             <p className="text-[10px] text-muted-foreground">Accounting & Transactions</p>
           </div>
@@ -250,6 +250,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
         <SidebarMenu className="px-3">
           <SidebarMenuItem>
             <SidebarMenuButton
+              tooltip="Hub Overview"
               onClick={() => onNavigate('fc-hub')}
               className={cn(
                 'text-xs h-8 gap-2',
@@ -298,6 +299,21 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
+      <SidebarFooter className="p-3">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <div className="h-6 w-6 rounded bg-teal-500/15 flex items-center justify-center flex-shrink-0">
+            <BookOpen className="h-3 w-3 text-teal-500" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <p className="text-[10px] font-semibold leading-tight">
+              <span style={{ color: "hsl(24 95% 53%)" }}>Made</span>{" "}
+              <span className="text-foreground">in</span>{" "}
+              <span style={{ color: "hsl(145 63% 42%)" }}>India</span>
+            </p>
+            <p className="text-[9px] text-muted-foreground/60 leading-tight">4DSmartOps v0.1.0</p>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

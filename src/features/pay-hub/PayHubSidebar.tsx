@@ -13,7 +13,7 @@ import {
   UserCog, Mail, Monitor, LogOut, ExternalLink,
 } from 'lucide-react';
 import {
-  Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
+  Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
@@ -263,14 +263,14 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   );
 
   return (
-    <Sidebar className="border-r border-border/50">
+    <Sidebar collapsible="icon" className="border-r border-border/50">
       <SidebarHeader className="p-4 border-b border-border/50">
         <div className="h-1 w-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 mb-3" />
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-violet-500/15 flex items-center justify-center">
             <Users2 className="h-4 w-4 text-violet-500" />
           </div>
-          <div>
+          <div className="group-data-[collapsible=icon]:hidden">
             <p className="font-bold text-sm">Pay Hub</p>
             <p className="text-[10px] text-muted-foreground">People & Payroll</p>
           </div>
@@ -282,6 +282,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         <SidebarMenu className="px-3">
           <SidebarMenuItem>
             <SidebarMenuButton
+              tooltip="Dashboard"
               onClick={() => onModuleChange('ph-dashboard')}
               className={cn(
                 'text-xs h-8 gap-2',
