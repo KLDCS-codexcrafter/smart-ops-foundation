@@ -39,6 +39,7 @@ export type PayHubModule =
   | 'ph-leave-requests'
   | 'ph-payroll-processing'
   | 'ph-payslip-gen'
+  | 'ph-daybook'
   | 'ph-pf-ecr'
   | 'ph-esi-returns'
   | 'ph-pt-returns'
@@ -85,6 +86,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-leave-requests',
   'ph-payroll-processing',
   'ph-payslip-gen',
+  'ph-daybook',
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
@@ -127,6 +129,7 @@ const TRANSACTIONS_ITEMS: SidebarItem[] = [
   { id: 'ph-leave-requests', label: 'Leave Requests', icon: FileText },
   { id: 'ph-payroll-processing', label: 'Payroll Processing', icon: Calculator },
   { id: 'ph-payslip-gen', label: 'Payslip Generation', icon: FileText },
+  { id: 'ph-daybook', label: 'Day Book', icon: BookOpen },
 ];
 
 const STATUTORY_ITEMS: SidebarItem[] = [
