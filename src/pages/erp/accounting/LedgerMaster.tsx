@@ -281,6 +281,13 @@ interface IncomeLedgerDefinition {
   isTdsApplicable: boolean;
   tdsSection: string;
   isTdsReceivableLedger: boolean; // UDF 29004+29005. Marks income ledger for 26AS TDS receivable.
+  /**
+   * AllowCommAssVal in Tally TDL.
+   * When true, this ledger's amount is ADDED to the SAM commission base.
+   * Service-income ledger with this flag uses service_pct from the rate grid.
+   * Default: false. Not applicable to Cash, Bank, Debtor, Creditor, Tax ledgers.
+   */
+  allow_commission_base: boolean;
   costCentreApplicable: boolean;
   status: 'active' | 'suspended';
   description: string;
@@ -309,6 +316,8 @@ interface ExpenseLedgerDefinition {
   rcmSection: 'section_9_3' | 'section_9_4' | null;
   isTdsApplicable: boolean;
   tdsSection: string;
+  /** Same semantics as IncomeLedgerDefinition.allow_commission_base. */
+  allow_commission_base: boolean;
   usePurchaseAdditionalExpense: boolean;
   costCentreApplicable: boolean;
   isBudgetHead: boolean;
@@ -1217,6 +1226,7 @@ const defaultIncomeForm = {
   includeInGstTurnover: true,
   isTdsApplicable: false, tdsSection: '',
   isTdsReceivableLedger: false,
+  allow_commission_base: false,
   costCentreApplicable: false,
   scope: 'group' as 'group'|'entity', entityId: '',
 };
@@ -1229,6 +1239,7 @@ const defaultExpenseForm = {
   gstType: 'taxable' as ExpenseLedgerDefinition['gstType'],
   isItcEligible: true, isRcmApplicable: false, rcmSection: null as 'section_9_3'|'section_9_4'|null,
   isTdsApplicable: false, tdsSection: '',
+  allow_commission_base: false,
   usePurchaseAdditionalExpense: false,
   costCentreApplicable: false, isBudgetHead: false,
   expenseNature: 'revenue' as 'revenue'|'capital_expense',
@@ -1972,6 +1983,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
       gstType: def.gstType ?? 'taxable', includeInGstTurnover: def.includeInGstTurnover ?? true,
       isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
       isTdsReceivableLedger: def.isTdsReceivableLedger ?? false,
+      allow_commission_base: def.allow_commission_base ?? false,
       costCentreApplicable: def.costCentreApplicable ?? false,
       scope: def.entityId ? 'entity' : 'group', entityId: def.entityId ?? '',
     });
@@ -1991,6 +2003,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
       isItcEligible: def.isItcEligible ?? true, isRcmApplicable: def.isRcmApplicable ?? false,
       rcmSection: def.rcmSection ?? null,
       isTdsApplicable: def.isTdsApplicable ?? false, tdsSection: def.tdsSection ?? '',
+      allow_commission_base: def.allow_commission_base ?? false,
       usePurchaseAdditionalExpense: def.usePurchaseAdditionalExpense ?? false,
       costCentreApplicable: def.costCentreApplicable ?? false,
       isBudgetHead: def.isBudgetHead ?? false, expenseNature: def.expenseNature ?? 'revenue',
@@ -2692,6 +2705,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
         gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
         isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
         isTdsReceivableLedger: incomeForm.isTdsReceivableLedger,
+        allow_commission_base: incomeForm.allow_commission_base,
         costCentreApplicable: incomeForm.costCentreApplicable,
       };
       saveDefinition(updated);
@@ -2723,6 +2737,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
       gstType: incomeForm.gstType, includeInGstTurnover: incomeForm.includeInGstTurnover,
       isTdsApplicable: incomeForm.isTdsApplicable, tdsSection: incomeForm.tdsSection,
       isTdsReceivableLedger: incomeForm.isTdsReceivableLedger,
+      allow_commission_base: incomeForm.allow_commission_base,
       costCentreApplicable: incomeForm.costCentreApplicable,
       status: 'active',
     description: '',
@@ -2760,6 +2775,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
         isItcEligible: expenseForm.isItcEligible, isRcmApplicable: expenseForm.isRcmApplicable,
         rcmSection: expenseForm.rcmSection,
         isTdsApplicable: expenseForm.isTdsApplicable, tdsSection: expenseForm.tdsSection,
+        allow_commission_base: expenseForm.allow_commission_base,
         usePurchaseAdditionalExpense: expenseForm.usePurchaseAdditionalExpense,
         costCentreApplicable: expenseForm.costCentreApplicable,
         isBudgetHead: expenseForm.isBudgetHead, expenseNature: expenseForm.expenseNature,
@@ -2796,6 +2812,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
       isRcmApplicable: expenseForm.isRcmApplicable,
       rcmSection: expenseForm.rcmSection,
       isTdsApplicable: expenseForm.isTdsApplicable, tdsSection: expenseForm.tdsSection,
+      allow_commission_base: expenseForm.allow_commission_base,
       usePurchaseAdditionalExpense: expenseForm.usePurchaseAdditionalExpense,
       costCentreApplicable: expenseForm.costCentreApplicable,
       isBudgetHead: expenseForm.isBudgetHead,
@@ -4598,7 +4615,30 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
                 </Select>
               )}
             </div>
-          </div>
+            {/* AllowCommAssVal — only when SAM module enabled */}
+            {(() => {
+              try {
+                // [JWT] GET /api/compliance/comply360/sam/:entityId
+                const raw = localStorage.getItem(`erp_comply360_sam_${selEntityId}`);
+                const cfg = raw ? JSON.parse(raw) : null;
+                return cfg?.enableSalesActivityModule
+                  && (cfg?.enableAgentModule || cfg?.enableCompanySalesMan);
+              } catch { return false; }
+            })() && (
+              <div className="flex items-center justify-between border border-border rounded-xl p-3 bg-muted/5">
+                <div>
+                  <Label className="text-sm font-medium">Include in commission base?</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    When yes, this ledger&apos;s amount on an invoice is added to the commission
+                    calculation base (AllowCommAssVal in Tally).
+                  </p>
+                </div>
+                <Switch
+                  checked={incomeForm.allow_commission_base}
+                  onCheckedChange={v => setIncomeForm(f => ({ ...f, allow_commission_base: v }))}
+                />
+              </div>
+            )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIncomeOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleIncomeSave}>Create</Button>

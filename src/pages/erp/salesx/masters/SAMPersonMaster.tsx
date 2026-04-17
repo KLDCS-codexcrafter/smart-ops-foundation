@@ -70,6 +70,10 @@ interface FormState {
   commission_slabs: SAMSlabRow[];
   portfolio: SAMPortfolioItem[];
   ledger_name: string;
+  // ── SAM Mini-Sprint additions ──────────────────────────────────────
+  commission_expense_ledger_id: string | null;
+  commission_expense_ledger_name: string | null;
+  treat_as_salesman: boolean;
 }
 
 const BLANK: FormState = {
@@ -83,6 +87,9 @@ const BLANK: FormState = {
   commission_slabs: [],
   portfolio: [],
   ledger_name: '',
+  commission_expense_ledger_id: null,
+  commission_expense_ledger_name: null,
+  treat_as_salesman: false,
 };
 
 function loadCfg(entityCode: string): SAMConfig | null {
@@ -106,6 +113,20 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
   const { levels } = useSAMHierarchy(entityCode);
   const { groups } = useStockGroups();
   const employees = useMemo(() => loadEmployees(), []);
+
+  // ── SAM Mini-Sprint: income/expense ledger options for commission booking ──
+  const allDefs = useMemo(() => {
+    try {
+      // [JWT] GET /api/accounting/ledger-definitions
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, []);
+  const commissionLedgerOptions = useMemo(
+    () => allDefs.filter((d: { ledgerType: string }) =>
+      d.ledgerType === 'income' || d.ledgerType === 'expense'),
+    [allDefs],
+  );
 
   const [view, setView] = useState<View>('list');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -155,6 +176,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
       commission_slabs: p.commission_slabs ?? [],
       portfolio: p.portfolio ?? [],
       ledger_name: p.ledger_name ?? p.display_name,
+      commission_expense_ledger_id: p.commission_expense_ledger_id ?? null,
+      commission_expense_ledger_name: p.commission_expense_ledger_name ?? null,
+      treat_as_salesman: p.treat_as_salesman ?? false,
     });
     setView('form');
   };
@@ -187,6 +211,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         commission_slabs: form.commission_slabs,
         portfolio: form.portfolio,
         ledger_name: form.display_name.trim(),
+        commission_expense_ledger_id: form.commission_expense_ledger_id,
+        commission_expense_ledger_name: form.commission_expense_ledger_name,
+        treat_as_salesman: form.treat_as_salesman,
       });
     } else {
       const created = createPerson(personType, {
@@ -209,6 +236,9 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         primary_agent_id: form.primary_agent_id,
         receiver_share_pct: form.receiver_share_pct,
         is_active: form.is_active,
+        commission_expense_ledger_id: form.commission_expense_ledger_id,
+        commission_expense_ledger_name: form.commission_expense_ledger_name,
+        treat_as_salesman: form.treat_as_salesman,
       });
       setEditingId(created.id);
     }
@@ -467,8 +497,8 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
                       setForm(p => ({
                         ...p,
                         employee_id: v,
-                        employee_name: emp?.fullName ?? null,
-                        display_name: p.display_name || (emp?.fullName ?? ''),
+                        employee_name: emp?.displayName ?? null,
+                        display_name: p.display_name || (emp?.displayName ?? ''),
                       }));
                     }}>
                     <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select employee" /></SelectTrigger>
@@ -476,7 +506,7 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
                       <SelectItem value="none">— None —</SelectItem>
                       {employees.map(e => (
                         <SelectItem key={e.id} value={e.id}>
-                          {e.empCode} — {e.fullName}
+                          {e.empCode} — {e.displayName}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -749,6 +779,60 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         <TabsContent value="tds">
           <Card>
             <CardContent className="pt-4 space-y-3">
+              {/* ── Block A: Commission Expense Ledger ──────────────── */}
+              <div className="space-y-1.5">
+                <div>
+                  <p className="text-xs font-medium">Commission Expense Ledger</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    The P&amp;L ledger debited when commission is booked.
+                    e.g. &quot;Commission on Sales&quot; under Indirect Expenses.
+                  </p>
+                </div>
+                <Select
+                  value={form.commission_expense_ledger_id ?? '__none__'}
+                  onValueChange={v => setForm(p => ({
+                    ...p,
+                    commission_expense_ledger_id: v === '__none__' ? null : v,
+                    commission_expense_ledger_name:
+                      v === '__none__'
+                        ? null
+                        : (commissionLedgerOptions.find((d: { id: string; name: string }) =>
+                          d.id === v)?.name ?? null),
+                  }))}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select income/expense ledger" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {commissionLedgerOptions.map((d: { id: string; name: string }) => (
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {commissionLedgerOptions.length === 0 && (
+                  <p className="text-[10px] text-amber-600">
+                    No income/expense ledgers found. Create them in FineCore → Ledger Master first.
+                  </p>
+                )}
+              </div>
+
+              {/* ── Block B: Treat As Salesman (agent / broker only) ── */}
+              {(personType === 'agent' || personType === 'broker') && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium">Treat as Salesman</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      This {personType} also appears in the salesman dropdown on transactions.
+                      Enables dual-role assignment on a single invoice.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={form.treat_as_salesman}
+                    onCheckedChange={v => setForm(p => ({ ...p, treat_as_salesman: v }))}
+                  />
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium">TDS Deductible</p>

@@ -131,6 +131,12 @@ export interface Employee {
   weeklyOff: string[];
   biometricId: string;
   essLoginEnabled: boolean;
+  /**
+   * SAM: when companySalesManSource === 'payhub', employees with
+   * is_salesman = true populate the SalesX salesman dropdown on transactions.
+   * Default: false.
+   */
+  is_salesman: boolean;
 
   // ── TAB 3 — Contact ──────────────────────────────────────────────
   personalMobile: string;
@@ -220,6 +226,7 @@ export const BLANK_EMPLOYEE: Omit<Employee, "id" | "empCode" | "created_at" | "u
   reportingManagerId: '', reportingManagerName: '',
   workLocation: '', shiftCode: '', weeklyOff: ['Sunday'],
   biometricId: '', essLoginEnabled: true,
+  is_salesman: false,
   personalMobile: '', personalEmail: '',
   emergencyContactName: '', emergencyContactRelation: '', emergencyContactPhone: '',
   currentAddressLine: '', currentStateCode: '', currentStateName: '',

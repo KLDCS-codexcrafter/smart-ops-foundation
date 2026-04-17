@@ -74,6 +74,17 @@ export interface SAMPerson {
   portfolio: SAMPortfolioItem[];
   primary_agent_id?: string | null;
   receiver_share_pct?: number | null;
+  // ── SAM Mini-Sprint additions ──────────────────────────────────────
+  /** Income/expense ledger debited when commission is booked (Tally: Commission ledger). */
+  commission_expense_ledger_id?: string | null;
+  /** Cached display name of commission_expense_ledger_id. */
+  commission_expense_ledger_name?: string | null;
+  /**
+   * Tally TDL UDF: "Treat As Sales Man".
+   * When true, this broker/agent also appears in the Company SalesMan
+   * dropdown on transactions. Relevant for person_type === 'agent' | 'broker'.
+   */
+  treat_as_salesman?: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
