@@ -70,6 +70,10 @@ interface FormState {
   commission_slabs: SAMSlabRow[];
   portfolio: SAMPortfolioItem[];
   ledger_name: string;
+  // ── SAM Mini-Sprint additions ──────────────────────────────────────
+  commission_expense_ledger_id: string | null;
+  commission_expense_ledger_name: string | null;
+  treat_as_salesman: boolean;
 }
 
 const BLANK: FormState = {
@@ -83,6 +87,9 @@ const BLANK: FormState = {
   commission_slabs: [],
   portfolio: [],
   ledger_name: '',
+  commission_expense_ledger_id: null,
+  commission_expense_ledger_name: null,
+  treat_as_salesman: false,
 };
 
 function loadCfg(entityCode: string): SAMConfig | null {
