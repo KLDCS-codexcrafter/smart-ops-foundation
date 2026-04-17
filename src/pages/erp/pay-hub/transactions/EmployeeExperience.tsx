@@ -25,9 +25,11 @@ import { ANNOUNCEMENTS_KEY, RECOGNITIONS_KEY,
 import type { Employee } from '@/types/employee';
 import type { PayrollRun } from '@/types/payroll-run';
 import { EMPLOYEES_KEY } from '@/types/employee';
-import { PAYROLL_RUNS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+void PAYROLL_RUNS_KEY;
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 const avatarColor = (code: string) => {
@@ -56,6 +58,8 @@ const relativeDate = (iso: string) => {
 interface EmployeeExperiencePanelProps { defaultTab?: ExperienceTab; }
 
 export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeExperiencePanelProps) {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
 
   // ── Cross-module reads ───────────────────────────────────────
   const allEmployees = useMemo<Employee[]>(() => {
@@ -70,11 +74,11 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
 
   const payrollRuns = useMemo<PayrollRun[]>(() => {
     try {
-      // [JWT] GET /api/pay-hub/payroll/runs
-      const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   // ── Announcements state ──────────────────────────────────────
   const [announcements, setAnnouncements] = useState<Announcement[]>(() => {

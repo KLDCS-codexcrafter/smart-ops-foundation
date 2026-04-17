@@ -28,9 +28,11 @@ import type {
 } from '@/types/statutory-returns';
 import { STATUTORY_CHALLANS_KEY, CHALLAN_STATUS_COLORS } from '@/types/statutory-returns';
 import type { Employee } from '@/types/employee';
-import { PAYROLL_RUNS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import { EMPLOYEES_KEY } from '@/types/employee';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+void PAYROLL_RUNS_KEY;
 
 // ── Helper: next Form 24Q due date ───────────────────────────────
 function getNext24QDue(): string {
@@ -83,14 +85,16 @@ function ChallanBadge({ challan, onEdit }: ChallanBadgeProps) {
 }
 
 export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryReturnsPanelProps) {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
   // ── Cross-module reads ───────────────────────────────────────
   const payrollRuns = useMemo<PayrollRun[]>(() => {
     try {
-      // [JWT] GET /api/pay-hub/payroll/runs
-      const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const employees = useMemo<Employee[]>(() => {
     try {

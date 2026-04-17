@@ -20,11 +20,13 @@ import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip } from '@/types/payroll-run';
 import type { ITDeclaration, InvestmentProof } from '@/types/it-declaration';
 import { IT_DECLARATIONS_KEY, computeTotal80C, computeTotalDeductions, getCurrentFY } from '@/types/it-declaration';
-import { PAYROLL_RUNS_KEY } from '@/types/payroll-run';
+import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { DEDUCTION_LIMITS } from '@/data/payroll-statutory-seed-data';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+void PAYROLL_RUNS_KEY;
 
 // ── numberToWords helper (inline, no library) ──────────────────
 function numberToWords(num: number): string {
@@ -47,15 +49,17 @@ function numberToWords(num: number): string {
 
 // ── Main Panel ─────────────────────────────────────────────────────
 export function PayslipGenerationPanel() {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
 
   // ── Cross-module reads ───────────────────────────────────────
   const runs = useMemo<PayrollRun[]>(() => {
     try {
-      // [JWT] GET /api/pay-hub/payroll/runs
-      const raw = localStorage.getItem(PAYROLL_RUNS_KEY);
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
       return raw ? (JSON.parse(raw) as PayrollRun[]).filter(r => r.status !== 'draft') : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const allEmployees = useMemo<Employee[]>(() => {
     try {
