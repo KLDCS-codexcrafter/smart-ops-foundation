@@ -77,6 +77,7 @@ export function OpeningLedgerBalanceModule() {
   useEffect(() => {
     if (!entity) return;
     try {
+      // [JWT] GET /api/ledger/instances/:entityId
       const raw = localStorage.getItem(`erp_entity_${entity.id}_ledger_instances`);
       setInstances(raw ? JSON.parse(raw) : []);
     } catch { setInstances([]); }
