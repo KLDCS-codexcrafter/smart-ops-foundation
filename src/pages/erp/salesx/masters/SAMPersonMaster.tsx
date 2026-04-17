@@ -214,7 +214,7 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
     }
   }, [form, editingId, personType, createPerson, updatePerson]);
 
-  useCtrlS(handleSave);
+  useCtrlS(view === 'form' ? handleSave : () => {});
 
   // ── List view ──────────────────────────────────────────────────────
   if (view === 'list') {
