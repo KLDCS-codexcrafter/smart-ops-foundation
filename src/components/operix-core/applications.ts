@@ -118,7 +118,6 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/salesx',
     icon: 'TrendingUp',
-    status: 'coming_soon',
   },
   {
     id: 'finecore',
