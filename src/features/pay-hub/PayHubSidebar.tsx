@@ -95,6 +95,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-ess', 'ph-access-control', 'ph-email-templates', 'ph-activity',
   'ph-exit', 'ph-fnf',
   'ph-doc-vault', 'ph-doc-templates',
+  'ph-documents', 'ph-policies',
   'ph-contract-workers', 'ph-contract-orders', 'ph-contract-compliance',
 ];
 

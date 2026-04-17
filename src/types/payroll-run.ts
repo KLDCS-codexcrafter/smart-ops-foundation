@@ -132,6 +132,12 @@ export interface SalaryHold {
 export const PAYROLL_RUNS_KEY = 'erp_payroll_runs';
 export const SALARY_HOLDS_KEY = 'erp_salary_holds';
 
+// Entity-scoped key helpers — use these for all new reads/writes
+// [JWT] GET /api/pay-hub/payroll/runs?entityCode={e}
+export const payrollRunsKey = (e: string) => `erp_payroll_runs_${e}`;
+// [JWT] GET /api/pay-hub/payroll/holds?entityCode={e}
+export const salaryHoldsKey = (e: string) => `erp_salary_holds_${e}`;
+
 export const PAYROLL_RUN_STATUS_COLORS: Record<PayrollRunStatus, string> = {
   draft:      'bg-slate-500/10 text-slate-600 border-slate-400/30',
   calculated: 'bg-amber-500/10 text-amber-700 border-amber-500/30',
