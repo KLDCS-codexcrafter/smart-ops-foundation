@@ -443,11 +443,53 @@ export function Comply360ConfigPanel() {
     toast.success('Exim configuration saved');
   }, [eximConfig, selectedEntityId]);
 
+  const autoCreateSAMGroups = useCallback((config: SAMConfig) => {
+    // [JWT] POST /api/entities/setup/sam-groups/:entityId
+    // [JWT] GET /api/entities/setup/ledger-definitions/:entityId
+    const raw = localStorage.getItem('erp_group_ledger_definitions');
+    const existing: Array<{ name: string }> = raw ? JSON.parse(raw) : [];
+    const existingNames = new Set(existing.map((d) => d.name.toLowerCase()));
+    const groupsToCreate: Array<{ name: string; code: string }> = [];
+    if (config.enableCompanySalesMan && config.companySalesManSource === 'ledger')
+      groupsToCreate.push({ name: 'Sales Man', code: 'SLSM' });
+    if (config.enableReference)
+      groupsToCreate.push({ name: 'Reference', code: 'REFR' });
+    if (config.enableAgentModule) {
+      groupsToCreate.push({ name: 'Agent', code: 'AGNT' });
+      groupsToCreate.push({ name: 'Broker', code: 'BRKR' });
+    }
+    if (config.enableReceiver)
+      groupsToCreate.push({ name: 'Receiver', code: 'RCVR' });
+    const toCreate = groupsToCreate.filter((g) => !existingNames.has(g.name.toLowerCase()));
+    if (toCreate.length === 0) return [];
+    const newEntries = toCreate.map((g) => ({
+      id: crypto.randomUUID(),
+      ledgerType: 'creditor_group',
+      name: g.name,
+      code: g.code,
+      parentGroupCode: 'TPAY',
+      parentGroupName: 'Trade Payables (Sundry Creditors)',
+      alias: '',
+      entityId: selectedEntityId ?? null,
+      entityShortCode: null,
+      status: 'active' as const,
+    }));
+    const updated = [...existing, ...newEntries];
+    // [JWT] PUT /api/entities/setup/ledger-definitions/:entityId
+    localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(updated));
+    return toCreate.map((g) => g.name);
+  }, [selectedEntityId]);
+
   const handleSaveSAM = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/sam/:entityId
     localStorage.setItem(comply360SAMKey(selectedEntityId), JSON.stringify(samConfig));
-    toast.success('SAM configuration saved');
-  }, [samConfig, selectedEntityId]);
+    const created = autoCreateSAMGroups(samConfig);
+    if (created.length > 0) {
+      toast.success(`SAM saved. Created under Sundry Creditor: ${created.join(', ')}`);
+    } else {
+      toast.success('SAM configuration saved');
+    }
+  }, [samConfig, selectedEntityId, autoCreateSAMGroups]);
 
   const handleSaveWA = useCallback(() => {
     // [JWT] PATCH /api/compliance/comply360/whatsapp/:entityId
