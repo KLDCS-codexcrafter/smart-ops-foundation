@@ -3,34 +3,33 @@
  * [JWT] Voucher stats will move to GET /api/accounting/dashboard
  */
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
-const ENTITY = 'SMRT';
-
-interface VoucherShortcut {
-  name: string;
-  path: string;
-  family: 'Accounting' | 'Inventory';
+interface FineCoreHubPanelProps {
+  onNavigate?: (module: string) => void;
 }
 
+interface VoucherShortcut { name: string; module: string; family: string; }
+
 const SHORTCUTS: VoucherShortcut[] = [
-  { name: 'Sales Invoice', path: '/erp/accounting/vouchers/sales-invoice', family: 'Accounting' },
-  { name: 'Purchase Invoice', path: '/erp/accounting/vouchers/purchase-invoice', family: 'Accounting' },
-  { name: 'Receipt', path: '/erp/accounting/vouchers/receipt', family: 'Accounting' },
-  { name: 'Payment', path: '/erp/accounting/vouchers/payment', family: 'Accounting' },
-  { name: 'Journal Entry', path: '/erp/accounting/vouchers/journal', family: 'Accounting' },
-  { name: 'Contra', path: '/erp/accounting/vouchers/contra', family: 'Accounting' },
-  { name: 'Credit Note', path: '/erp/accounting/vouchers/credit-note', family: 'Accounting' },
-  { name: 'Debit Note', path: '/erp/accounting/vouchers/debit-note', family: 'Accounting' },
-  { name: 'Delivery Note', path: '/erp/accounting/vouchers/delivery-note', family: 'Inventory' },
-  { name: 'Receipt Note (GRN)', path: '/erp/accounting/vouchers/receipt-note', family: 'Inventory' },
-  { name: 'Stock Transfer', path: '/erp/accounting/vouchers/stock-transfer', family: 'Inventory' },
+  { name: 'Sales Invoice', module: 'fc-txn-sales-invoice', family: 'Accounting' },
+  { name: 'Purchase Invoice', module: 'fc-txn-purchase-invoice', family: 'Accounting' },
+  { name: 'Receipt', module: 'fc-txn-receipt', family: 'Accounting' },
+  { name: 'Payment', module: 'fc-txn-payment', family: 'Accounting' },
+  { name: 'Journal Entry', module: 'fc-txn-journal', family: 'Accounting' },
+  { name: 'Contra', module: 'fc-txn-contra', family: 'Accounting' },
+  { name: 'Credit Note', module: 'fc-txn-credit-note', family: 'Accounting' },
+  { name: 'Debit Note', module: 'fc-txn-debit-note', family: 'Accounting' },
+  { name: 'Delivery Note', module: 'fc-txn-delivery-note', family: 'Inventory' },
+  { name: 'Receipt Note (GRN)', module: 'fc-txn-receipt-note', family: 'Inventory' },
+  { name: 'Purchase Order', module: 'fc-ord-purchase-order', family: 'Orders' },
+  { name: 'Sales Order', module: 'fc-ord-sales-order', family: 'Orders' },
 ];
 
 function ls<T>(key: string): T[] {
@@ -41,13 +40,14 @@ function ls<T>(key: string): T[] {
   } catch { return []; }
 }
 
-export function FineCoreHubPanel() {
-  const navigate = useNavigate();
+export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
   const [stats, setStats] = useState({ today: 0, drafts: 0, posted: 0, cancelled: 0 });
 
   useEffect(() => {
     // [JWT] GET /api/accounting/dashboard/stats
-    const vouchers = ls<Voucher>(vouchersKey(ENTITY));
+    const vouchers = ls<Voucher>(vouchersKey(entityCode));
     const todayStr = new Date().toISOString().split('T')[0];
     setStats({
       today: vouchers.filter(v => v.date === todayStr).length,
@@ -55,10 +55,10 @@ export function FineCoreHubPanel() {
       posted: vouchers.filter(v => v.status === 'posted' && v.date === todayStr).length,
       cancelled: vouchers.filter(v => v.is_cancelled || v.status === 'cancelled').length,
     });
-  }, []);
+  }, [entityCode]);
 
   const accounting = SHORTCUTS.filter(s => s.family === 'Accounting');
-  const inventory = SHORTCUTS.filter(s => s.family === 'Inventory');
+  const inventory = SHORTCUTS.filter(s => s.family === 'Inventory' || s.family === 'Orders');
 
   return (
     <div data-keyboard-form className="p-6 space-y-6 max-w-5xl mx-auto">
@@ -92,7 +92,7 @@ export function FineCoreHubPanel() {
             {accounting.map(s => (
               <div
                 key={s.name}
-                onClick={() => navigate(s.path)}
+                onClick={() => onNavigate?.(s.module)}
                 className="border rounded-lg p-3 hover:bg-accent cursor-pointer transition-colors"
               >
                 <p className="text-sm font-medium text-foreground">{s.name}</p>
@@ -104,7 +104,7 @@ export function FineCoreHubPanel() {
             {inventory.map(s => (
               <div
                 key={s.name}
-                onClick={() => navigate(s.path)}
+                onClick={() => onNavigate?.(s.module)}
                 className="border rounded-lg p-3 hover:bg-accent cursor-pointer transition-colors"
               >
                 <p className="text-sm font-medium text-foreground">{s.name}</p>
@@ -123,7 +123,7 @@ export function FineCoreHubPanel() {
           Full setup is available in Command Center.
         </p>
         <div
-          onClick={() => navigate('/erp/accounting')}
+          onClick={() => onNavigate?.('fc-hub')}
           className="border rounded-lg p-4 hover:bg-accent cursor-pointer
             transition-colors flex items-center justify-between"
         >

@@ -137,7 +137,7 @@ export function FinCorePagePanel() {
 
   const renderModule = () => {
     switch (activeModule) {
-      case 'fc-hub': return <FineCoreHubPanel />;
+      case 'fc-hub': return <FineCoreHubPanel onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
       case 'fc-txn-sales-invoice': return <SalesInvoicePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-purchase-invoice': return <PurchaseInvoicePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt': return <ReceiptPanel onSaveDraft={addToDraftTray} />;

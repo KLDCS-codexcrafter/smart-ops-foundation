@@ -5,7 +5,7 @@
  *
  * Row 1: sidebar trigger · back/fwd/home · module selector · company selector ·
  *        date picker · FY badge · search · app launcher · refresh · data dot ·
- *        notifications · dishani · language · theme · profile
+ *        notifications · dishani · theme · profile
  * Row 2: breadcrumb · context strip · online dot · env badge
  *
  * Phase 2 slots (reserved, not rendered):

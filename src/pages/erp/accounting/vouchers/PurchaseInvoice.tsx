@@ -31,6 +31,7 @@ import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 function ls<T>(key: string): T[] {
   try {
@@ -46,7 +47,8 @@ interface PurchaseInvoicePanelProps {
 }
 
 export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps) {
-  const entityCode = 'SMRT';
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
   const [voucherNo] = useState(() => generateVoucherNo('PI', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
@@ -166,7 +168,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   }, [onSaveDraft, partyName, date, vendorBillNo, narration]);
 
   return (
-    <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
+    <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-foreground">Purchase Invoice</h2>
