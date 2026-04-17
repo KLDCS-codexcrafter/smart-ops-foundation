@@ -8,7 +8,7 @@ import {
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
   QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
-  Zap,
+  Zap, Upload, BookOpen, HandCoins,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -86,6 +86,16 @@ const A5_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
   { label: 'Bin Location Labels',module: 'inventory-bin-labels',      icon: MapPin },
   { label: 'Print Queue',        module: 'inventory-print-queue',     icon: Printer },
   { label: 'RFID Manager',       module: 'inventory-rfid',            icon: Wifi },
+];
+
+const OPENING_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Opening Stock Entry',     module: 'inventory-opening-stock',   icon: PackageOpen },
+  { label: 'Ledger Opening Balances', module: 'opening-ledger-balances',   icon: BookOpen },
+  { label: 'Employee Opening Loans',  module: 'opening-employee-loans',    icon: HandCoins },
+];
+
+const UTILITY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[] = [
+  { label: 'Import Hub', module: 'utility-import', icon: Upload },
 ];
 
 const COMING_SOON = [
@@ -320,6 +330,40 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* OPENING BALANCES */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Opening Balances</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {OPENING_ITEMS.map(item => (
+                <SidebarMenuItem key={item.module}>
+                  <SidebarMenuButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)} tooltip={item.label}>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* UTILITIES */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Utilities</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {UTILITY_ITEMS.map(item => (
+                <SidebarMenuItem key={item.module}>
+                  <SidebarMenuButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)} tooltip={item.label}>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
