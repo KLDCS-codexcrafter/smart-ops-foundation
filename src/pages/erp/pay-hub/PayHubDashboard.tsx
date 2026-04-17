@@ -401,7 +401,7 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
     const completedSteps = steps.filter(s => s.done).length;
 
     return { companyName, steps, completedSteps };
-  }, [employees]);
+  }, [employees, selectedEntityId, entityCode]);
 
   // ── 9. UPCOMING HOLIDAYS ──────────────────────────────────────
   const upcomingHolidays = useMemo(() => {
