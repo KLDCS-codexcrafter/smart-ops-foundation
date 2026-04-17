@@ -457,9 +457,33 @@ export function computeEmployeePayslip(
 }
 
 // ── Main hook ─────────────────────────────────────────────────────
-export function usePayrollEngine() {
+export function usePayrollEngine(entityCode: string = 'SMRT') {
+  const loadRuns = (): PayrollRun[] => {
+    try {
+      // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+      const raw = localStorage.getItem(payrollRunsKey(entityCode));
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  };
+  const saveRuns = (items: PayrollRun[]) => {
+    // [JWT] PUT /api/pay-hub/payroll/runs?entityCode={entityCode}
+    localStorage.setItem(payrollRunsKey(entityCode), JSON.stringify(items));
+  };
+  const loadHolds = (): SalaryHold[] => {
+    try {
+      // [JWT] GET /api/pay-hub/payroll/holds?entityCode={entityCode}
+      const raw = localStorage.getItem(salaryHoldsKey(entityCode));
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  };
+  const saveHolds = (items: SalaryHold[]) => {
+    // [JWT] PUT /api/pay-hub/payroll/holds?entityCode={entityCode}
+    localStorage.setItem(salaryHoldsKey(entityCode), JSON.stringify(items));
+  };
+
   const [runs, setRuns] = useState<PayrollRun[]>(loadRuns);
   const [holds, setHolds] = useState<SalaryHold[]>(loadHolds);
+
 
   const calculatePayroll = (payPeriod: string): PayrollRun => {
     const employees: Employee[] = (() => {
