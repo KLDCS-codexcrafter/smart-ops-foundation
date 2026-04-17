@@ -115,6 +115,8 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
   const [navigateTo] = useState(() => (module: string) => {
     window.dispatchEvent(new CustomEvent('ph-navigate', { detail: module }));
   });
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
 
   // ── MASTER DATA READS ────────────────────────────────────────
   const employees = useMemo(() => {
@@ -124,11 +126,12 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
     );
   }, [selectedEntityId]);
   const payrollRuns = useMemo(() => {
-    const all = safeReadJson<PayrollRun[]>(PAYROLL_RUNS_KEY, []);
+    // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
+    const all = safeReadJson<PayrollRun[]>(payrollRunsKey(entityCode), []);
     return all.filter(r =>
       ((r as any).entityId ?? 'parent-root') === selectedEntityId
     );
-  }, [selectedEntityId]);
+  }, [selectedEntityId, entityCode]);
 
   // ── 1. HEADCOUNT ANALYTICS ───────────────────────────────────
   const headcount = useMemo(() => {
@@ -386,7 +389,7 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
     const payHeadCount = safeReadCount('erp_pay_heads');
     const ssCount      = safeReadCount('erp_salary_structures');
     const gradeCount   = safeReadCount('erp_pay_grades');
-    const hasPayroll   = safeReadCount('erp_payroll_runs') > 0;
+    const hasPayroll   = safeReadCount(payrollRunsKey(entityCode)) > 0;
 
     const steps = [
       { label: 'Pay Heads configured',       done: payHeadCount > 0, module: 'ph-pay-heads' },
