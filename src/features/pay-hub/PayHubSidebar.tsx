@@ -13,7 +13,7 @@ import {
   UserCog, Mail, Monitor, LogOut, ExternalLink,
 } from 'lucide-react';
 import {
-  Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
+  Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +39,7 @@ export type PayHubModule =
   | 'ph-leave-requests'
   | 'ph-payroll-processing'
   | 'ph-payslip-gen'
+  | 'ph-daybook'
   | 'ph-pf-ecr'
   | 'ph-esi-returns'
   | 'ph-pt-returns'
@@ -85,6 +86,7 @@ const LIVE_MODULES: PayHubModule[] = [
   'ph-leave-requests',
   'ph-payroll-processing',
   'ph-payslip-gen',
+  'ph-daybook',
   'ph-pf-ecr', 'ph-esi-returns', 'ph-pt-returns',
   'ph-tds-24q', 'ph-form16', 'ph-statutory-calendar',
   'ph-loans', 'ph-salary-advance', 'ph-expense-claims', 'ph-flexi-benefits',
@@ -127,6 +129,7 @@ const TRANSACTIONS_ITEMS: SidebarItem[] = [
   { id: 'ph-leave-requests', label: 'Leave Requests', icon: FileText },
   { id: 'ph-payroll-processing', label: 'Payroll Processing', icon: Calculator },
   { id: 'ph-payslip-gen', label: 'Payslip Generation', icon: FileText },
+  { id: 'ph-daybook', label: 'Day Book', icon: BookOpen },
 ];
 
 const STATUTORY_ITEMS: SidebarItem[] = [
@@ -263,14 +266,14 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
   );
 
   return (
-    <Sidebar className="border-r border-border/50">
+    <Sidebar collapsible="icon" className="border-r border-border/50">
       <SidebarHeader className="p-4 border-b border-border/50">
         <div className="h-1 w-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 mb-3" />
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-violet-500/15 flex items-center justify-center">
             <Users2 className="h-4 w-4 text-violet-500" />
           </div>
-          <div>
+          <div className="group-data-[collapsible=icon]:hidden">
             <p className="font-bold text-sm">Pay Hub</p>
             <p className="text-[10px] text-muted-foreground">People & Payroll</p>
           </div>
@@ -282,6 +285,7 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         <SidebarMenu className="px-3">
           <SidebarMenuItem>
             <SidebarMenuButton
+              tooltip="Dashboard"
               onClick={() => onModuleChange('ph-dashboard')}
               className={cn(
                 'text-xs h-8 gap-2',
@@ -329,6 +333,21 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
         {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
       </SidebarContent>
+      <SidebarFooter className="p-3">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <div className="h-6 w-6 rounded bg-violet-500/15 flex items-center justify-center flex-shrink-0">
+            <Users2 className="h-3 w-3 text-violet-500" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <p className="text-[10px] font-semibold leading-tight">
+              <span style={{ color: "hsl(24 95% 53%)" }}>Made</span>{" "}
+              <span className="text-foreground">in</span>{" "}
+              <span style={{ color: "hsl(145 63% 42%)" }}>India</span>
+            </p>
+            <p className="text-[9px] text-muted-foreground/60 leading-tight">4DSmartOps v0.1.0</p>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

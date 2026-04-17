@@ -58,6 +58,8 @@ interface ERPHeaderProps {
   // Show/hide controls
   showDatePicker?: boolean;   // default true
   showCompany?: boolean;      // default true
+  // Optional last-entry hint shown in Row 2
+  lastEntryLabel?: string;    // e.g. "Last entry: 17 Apr 09:42"
 }
 
 const ENV = import.meta.env.MODE === 'production' ? 'Prod' : 'Dev';
@@ -70,6 +72,7 @@ export function ERPHeader({
   companies = [],
   showDatePicker = true,
   showCompany = true,
+  lastEntryLabel,
 }: ERPHeaderProps) {
   const navigate = useNavigate();
   const { openDishani } = useDishani();
@@ -287,6 +290,11 @@ export function ERPHeader({
           <span className='text-[10px] text-muted-foreground hidden md:inline font-mono truncate max-w-xs'>
             {contextStrip}
           </span>
+          {lastEntryLabel && (
+            <span className='text-[10px] text-muted-foreground hidden lg:inline font-mono border-l border-border/50 pl-2 ml-1'>
+              {lastEntryLabel}
+            </span>
+          )}
           {/* Online dot */}
           <div className='flex items-center gap-1.5'>
             <div className={cn('w-1.5 h-1.5 rounded-full', isOnline ? 'bg-emerald-500' : 'bg-destructive')} />
