@@ -158,20 +158,15 @@ export default function ErpDashboard() {
   const userName = getUserName();
 
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<"All" | AppCategory>("All");
 
   const filtered = useMemo(() => {
-    return applications.filter((app) => {
-      const matchesCategory =
-        activeCategory === "All" || app.category === activeCategory;
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !q ||
-        app.name.toLowerCase().includes(q) ||
-        app.description.toLowerCase().includes(q);
-      return matchesCategory && matchesSearch;
-    });
-  }, [search, activeCategory]);
+    const q = search.toLowerCase();
+    if (!q) return applications;
+    return applications.filter((app) =>
+      app.name.toLowerCase().includes(q) ||
+      app.description.toLowerCase().includes(q)
+    );
+  }, [search]);
 
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
