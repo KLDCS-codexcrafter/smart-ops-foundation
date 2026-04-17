@@ -193,44 +193,99 @@ const DEFAULT_EXIM: EximConfig = {
 // Storage: erp_comply360_sam_{entityId}
 // [JWT] GET/PATCH /api/compliance/comply360/sam/:entityId
 export interface SAMConfig {
-  // General — UDF 50140–50166
-  enableHierarchyMaster: boolean;   // UDF 50141 IsAllowHierancyMaster
-  commissionCalcMethod: 'item_amount' | 'item_qty' | 'both';
+  // Master gate
+  enableSalesActivityModule: boolean;
+  // Card 1 — Internal Sales Team
+  enableCompanySalesMan: boolean;
+  companySalesManSource: 'ledger' | 'payhub';
+  commissionCalcMethod: 'item_amount' | 'item_qty' | 'both' | 'slab_based' | 'net_margin';
+  enableCommissionOnService: boolean;
+  enablePortfolioAssignment: boolean;
+  portfolioMatchMethod: 'auto' | 'manual';
+  allowMultipleSalesmenPerInvoice: boolean;
+  // Card 2 — Reference
+  enableReference: boolean;
+  referenceCommission: boolean;
+  // Card 3 — Sales Operations
+  enableCRM: boolean;
+  crmType: 'option_a' | 'option_b' | null;
+  pipelineType: 'standard' | 'solutions' | null;
+  enableTelecalling: boolean;
+  // Card 4 — Agent Module
+  enableAgentModule: boolean;
+  enableReceiver: boolean;
   commissionRateMethod: 'all_items' | 'item_by_item' | 'stock_group';
-  enableCommissionOnService: boolean; // UDF 50166 CMPCommissionOnService
-  enableReceiver: boolean;            // UDF 50163 CMPsetalterReceiver
-  enableCompanySalesPerson: boolean;  // UDF 50164 CMCompanySalesPerson
-  // Voucher scope toggles
-  enableInSalesOrder: boolean;        // UDF 50144
-  enableInDeliveryNote: boolean;      // UDF 50145
-  enableInPurchase: boolean;          // UDF 50146
-  enableInPurchaseOrder: boolean;     // UDF 50147
-  enableInReceiptNote: boolean;       // UDF 50148
-  // Security
-  hideCommissionInTransaction: boolean; // UDF 50149
+  enableHierarchyMaster: boolean;
+  // Card 5 — Voucher Scope (purchase excluded by design)
+  enableInSalesOrder: boolean;
+  enableInDeliveryNote: boolean;
+  // Card 6 — Security
+  hideCommissionInTransaction: boolean;
   slsmMandatoryOutward: boolean;
   slsmMandatoryInward: boolean;
-  receiverMandatory: boolean;           // UDF 50151
-  // Printing
-  printAgentNameOnInvoice: boolean;  // UDF 50150
-  agentPrintTitle: string;           // UDF 50151 CMPPrintSalesManName
+  receiverMandatory: boolean;
+  // Card 7 — Printing
+  printAgentNameOnInvoice: boolean;
+  agentPrintTitle: string;
+  // Card 8 — Targets: Company
+  enableCompanyTarget: boolean;
+  companyTargetByStockGroup: boolean;
+  companyTargetByStockItem: boolean;
+  companyTargetByService: boolean;
+  companyTargetByDivision: boolean;
+  companyTargetByCustomer: boolean;
+  companyTargetByCustomerCategory: boolean;
+  companyTargetByTerritory: boolean;
+  companyTargetByNewCustomerCount: boolean;
+  companyTargetByCollection: boolean;
+  // Card 8 — Targets: SLSM
+  enableSLSMTarget: boolean;
+  slsmTargetByStockGroup: boolean;
+  slsmTargetByStockItem: boolean;
+  slsmTargetByService: boolean;
+  slsmTargetByDivision: boolean;
+  slsmTargetByCustomer: boolean;
+  slsmTargetByCustomerCategory: boolean;
+  slsmTargetByTerritory: boolean;
+  slsmTargetByNewCustomerCount: boolean;
+  slsmTargetByCollection: boolean;
+  slsmTargetByOrderVolume: boolean;
+  slsmTargetByCallVisitActivity: boolean;
   // TDS on commission
   tdsOnCommissionSection: '194H' | '194J' | 'not_applicable';
   commissionLedgerSales: string;
   commissionLedgerPurchase: string;
+  // Legacy fields kept for backward compat (unused in new screen)
+  enableCompanySalesPerson: boolean;
+  enableInPurchase: boolean;
+  enableInPurchaseOrder: boolean;
+  enableInReceiptNote: boolean;
 }
 
 const DEFAULT_SAM: SAMConfig = {
-  enableHierarchyMaster: false,
-  commissionCalcMethod: 'item_amount', commissionRateMethod: 'all_items',
-  enableCommissionOnService: false, enableReceiver: false, enableCompanySalesPerson: false,
-  enableInSalesOrder: false, enableInDeliveryNote: false, enableInPurchase: false,
-  enableInPurchaseOrder: false, enableInReceiptNote: false,
+  enableSalesActivityModule: false,
+  enableCompanySalesMan: false, companySalesManSource: 'ledger',
+  commissionCalcMethod: 'item_amount', enableCommissionOnService: false,
+  enablePortfolioAssignment: false, portfolioMatchMethod: 'auto', allowMultipleSalesmenPerInvoice: true,
+  enableReference: false, referenceCommission: false,
+  enableCRM: false, crmType: null, pipelineType: null, enableTelecalling: false,
+  enableAgentModule: false, enableReceiver: false,
+  commissionRateMethod: 'all_items', enableHierarchyMaster: false,
+  enableInSalesOrder: false, enableInDeliveryNote: false,
   hideCommissionInTransaction: false, slsmMandatoryOutward: false,
   slsmMandatoryInward: false, receiverMandatory: false,
   printAgentNameOnInvoice: false, agentPrintTitle: '',
-  tdsOnCommissionSection: 'not_applicable',
-  commissionLedgerSales: '', commissionLedgerPurchase: '',
+  enableCompanyTarget: false,
+  companyTargetByStockGroup: false, companyTargetByStockItem: false, companyTargetByService: false,
+  companyTargetByDivision: false, companyTargetByCustomer: false, companyTargetByCustomerCategory: false,
+  companyTargetByTerritory: false, companyTargetByNewCustomerCount: false, companyTargetByCollection: false,
+  enableSLSMTarget: false,
+  slsmTargetByStockGroup: false, slsmTargetByStockItem: false, slsmTargetByService: false,
+  slsmTargetByDivision: false, slsmTargetByCustomer: false, slsmTargetByCustomerCategory: false,
+  slsmTargetByTerritory: false, slsmTargetByNewCustomerCount: false, slsmTargetByCollection: false,
+  slsmTargetByOrderVolume: false, slsmTargetByCallVisitActivity: false,
+  tdsOnCommissionSection: 'not_applicable', commissionLedgerSales: '', commissionLedgerPurchase: '',
+  enableCompanySalesPerson: false, enableInPurchase: false, enableInPurchaseOrder: false, enableInReceiptNote: false,
 };
 
 // Storage: erp_comply360_wa_{entityId}
