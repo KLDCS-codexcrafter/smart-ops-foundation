@@ -281,6 +281,13 @@ interface IncomeLedgerDefinition {
   isTdsApplicable: boolean;
   tdsSection: string;
   isTdsReceivableLedger: boolean; // UDF 29004+29005. Marks income ledger for 26AS TDS receivable.
+  /**
+   * AllowCommAssVal in Tally TDL.
+   * When true, this ledger's amount is ADDED to the SAM commission base.
+   * Service-income ledger with this flag uses service_pct from the rate grid.
+   * Default: false. Not applicable to Cash, Bank, Debtor, Creditor, Tax ledgers.
+   */
+  allow_commission_base: boolean;
   costCentreApplicable: boolean;
   status: 'active' | 'suspended';
   description: string;
@@ -309,6 +316,8 @@ interface ExpenseLedgerDefinition {
   rcmSection: 'section_9_3' | 'section_9_4' | null;
   isTdsApplicable: boolean;
   tdsSection: string;
+  /** Same semantics as IncomeLedgerDefinition.allow_commission_base. */
+  allow_commission_base: boolean;
   usePurchaseAdditionalExpense: boolean;
   costCentreApplicable: boolean;
   isBudgetHead: boolean;
