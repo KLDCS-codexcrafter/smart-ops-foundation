@@ -4615,7 +4615,30 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
                 </Select>
               )}
             </div>
-          </div>
+            {/* AllowCommAssVal — only when SAM module enabled */}
+            {(() => {
+              try {
+                // [JWT] GET /api/compliance/comply360/sam/:entityId
+                const raw = localStorage.getItem(`erp_comply360_sam_${selEntityId}`);
+                const cfg = raw ? JSON.parse(raw) : null;
+                return cfg?.enableSalesActivityModule
+                  && (cfg?.enableAgentModule || cfg?.enableCompanySalesMan);
+              } catch { return false; }
+            })() && (
+              <div className="flex items-center justify-between border border-border rounded-xl p-3 bg-muted/5">
+                <div>
+                  <Label className="text-sm font-medium">Include in commission base?</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    When yes, this ledger&apos;s amount on an invoice is added to the commission
+                    calculation base (AllowCommAssVal in Tally).
+                  </p>
+                </div>
+                <Switch
+                  checked={incomeForm.allow_commission_base}
+                  onCheckedChange={v => setIncomeForm(f => ({ ...f, allow_commission_base: v }))}
+                />
+              </div>
+            )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIncomeOpen(false)}>Cancel</Button>
             <Button data-primary onClick={handleIncomeSave}>Create</Button>
