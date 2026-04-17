@@ -45,6 +45,12 @@ import { PriceListsPanel } from '@/pages/erp/inventory/PriceListManager';
 import { ReorderAlertsPanel } from '@/pages/erp/inventory/ReorderAlerts';
 import { GeographyHubPanel } from '@/pages/erp/foundation/geography/GeographyHub';
 import { OrgStructurePanel } from '@/pages/erp/foundation/OrgStructureHub';
+import { OpeningLedgerBalanceModule } from '../modules/OpeningLedgerBalanceModule';
+import { EmployeeOpeningLoansModule } from '../modules/EmployeeOpeningLoansModule';
+
+function ImportHubModule() {
+  return <div className="p-8 text-muted-foreground">Import Hub — coming next session</div>;
+}
 
 export type CommandCenterModule =
   | 'overview'
@@ -88,7 +94,10 @@ export type CommandCenterModule =
   | 'inventory-opening-stock'
   | 'inventory-item-rates'
   | 'inventory-price-lists'
-  | 'inventory-reorder';
+  | 'inventory-reorder'
+  | 'opening-ledger-balances'
+  | 'opening-employee-loans'
+  | 'utility-import';
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
@@ -105,7 +114,8 @@ export default function CommandCenterPage() {
       'inventory-item-craft', 'inventory-code-matrix', 'inventory-item-templates',
       'inventory-label-templates', 'inventory-barcode-gen', 'inventory-asset-tags',
       'inventory-bin-labels', 'inventory-print-queue', 'inventory-rfid',
-      'inventory-opening-stock', 'inventory-item-rates', 'inventory-price-lists', 'inventory-reorder'].includes(hash)) {
+      'inventory-opening-stock', 'inventory-item-rates', 'inventory-price-lists', 'inventory-reorder',
+      'opening-ledger-balances', 'opening-employee-loans', 'utility-import'].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -164,6 +174,9 @@ export default function CommandCenterPage() {
       case 'inventory-item-rates': return <ItemRatesPanel />;
       case 'inventory-price-lists': return <PriceListsPanel />;
       case 'inventory-reorder': return <ReorderAlertsPanel />;
+      case 'opening-ledger-balances': return <OpeningLedgerBalanceModule />;
+      case 'opening-employee-loans': return <EmployeeOpeningLoansModule />;
+      case 'utility-import': return <ImportHubModule />;
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
