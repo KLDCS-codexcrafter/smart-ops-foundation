@@ -330,6 +330,21 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
         {renderSection('ADMIN & CONFIG', ADMIN_ITEMS, adminOpen, setAdminOpen)}
         {renderSection('EXIT & SEPARATION', EXIT_ITEMS, exitOpen, setExitOpen)}
       </SidebarContent>
+      <SidebarFooter className="p-3">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <div className="h-6 w-6 rounded bg-violet-500/15 flex items-center justify-center flex-shrink-0">
+            <Users2 className="h-3 w-3 text-violet-500" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <p className="text-[10px] font-semibold leading-tight">
+              <span style={{ color: "hsl(24 95% 53%)" }}>Made</span>{" "}
+              <span className="text-foreground">in</span>{" "}
+              <span style={{ color: "hsl(145 63% 42%)" }}>India</span>
+            </p>
+            <p className="text-[9px] text-muted-foreground/60 leading-tight">4DSmartOps v0.1.0</p>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }
