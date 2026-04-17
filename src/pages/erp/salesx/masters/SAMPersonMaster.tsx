@@ -765,6 +765,60 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
         <TabsContent value="tds">
           <Card>
             <CardContent className="pt-4 space-y-3">
+              {/* ── Block A: Commission Expense Ledger ──────────────── */}
+              <div className="space-y-1.5">
+                <div>
+                  <p className="text-xs font-medium">Commission Expense Ledger</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    The P&amp;L ledger debited when commission is booked.
+                    e.g. &quot;Commission on Sales&quot; under Indirect Expenses.
+                  </p>
+                </div>
+                <Select
+                  value={form.commission_expense_ledger_id ?? '__none__'}
+                  onValueChange={v => setForm(p => ({
+                    ...p,
+                    commission_expense_ledger_id: v === '__none__' ? null : v,
+                    commission_expense_ledger_name:
+                      v === '__none__'
+                        ? null
+                        : (commissionLedgerOptions.find((d: { id: string; name: string }) =>
+                          d.id === v)?.name ?? null),
+                  }))}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select income/expense ledger" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {commissionLedgerOptions.map((d: { id: string; name: string }) => (
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {commissionLedgerOptions.length === 0 && (
+                  <p className="text-[10px] text-amber-600">
+                    No income/expense ledgers found. Create them in FineCore → Ledger Master first.
+                  </p>
+                )}
+              </div>
+
+              {/* ── Block B: Treat As Salesman (agent / broker only) ── */}
+              {(personType === 'agent' || personType === 'broker') && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium">Treat as Salesman</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      This {personType} also appears in the salesman dropdown on transactions.
+                      Enables dual-role assignment on a single invoice.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={form.treat_as_salesman}
+                    onCheckedChange={v => setForm(p => ({ ...p, treat_as_salesman: v }))}
+                  />
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium">TDS Deductible</p>
