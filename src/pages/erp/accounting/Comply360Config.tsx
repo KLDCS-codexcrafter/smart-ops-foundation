@@ -794,114 +794,657 @@ export function Comply360ConfigPanel() {
   );
 
   // ── SAM Section ──
-  const renderSAMSection = () => (
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">SAM / Broker Configuration</h3>
-      <div className="space-y-3">
-        {/* General */}
+  const renderSAMSection = () => {
+    const update = <K extends keyof SAMConfig>(key: K, value: SAMConfig[K]) =>
+      setSamConfig(p => ({ ...p, [key]: value }));
+
+    if (!samConfig.enableSalesActivityModule) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sales Activity Module</h3>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Enable Sales Activity Module</Label>
+            <Switch
+              checked={samConfig.enableSalesActivityModule}
+              onCheckedChange={v => update('enableSalesActivityModule', v)}
+            />
+          </div>
+          <div className="p-4 rounded-lg bg-muted/30 border border-border/50 text-xs text-muted-foreground">
+            Enable to unlock all SAM configuration below
+          </div>
+          <Button data-primary onClick={handleSaveSAM} className="w-full">
+            <Save className="h-4 w-4 mr-1" /> Save SAM Configuration
+          </Button>
+        </div>
+      );
+    }
+
+    const calcPreview: Record<SAMConfig['commissionCalcMethod'], string> = {
+      item_amount: 'e.g. ₹10,000 invoice @ 2% = ₹200 commission',
+      item_qty:    'e.g. 100 units × ₹5/unit = ₹500 commission',
+      both:        'e.g. ₹10,000 invoice @ 2% + 100 units × ₹5 = ₹700 commission',
+      slab_based:  'e.g. ₹4L achievement → 2% slab = ₹8,000 commission',
+      net_margin:  'e.g. ₹10,000 invoice, cost ₹7,000, margin ₹3,000 @ 10% = ₹300',
+    };
+
+    const toggleBtn = (active: boolean, label: string, onClick: () => void) => (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`h-8 px-3 text-xs border rounded ${
+          active
+            ? 'bg-primary text-primary-foreground border-primary'
+            : 'bg-background text-foreground border-border hover:bg-muted'
+        }`}
+      >
+        {label}
+      </button>
+    );
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sales Activity Module</h3>
+
+        {/* Master gate */}
         <div className="flex items-center justify-between">
-          <Label className="text-sm">Enable Hierarchy Master</Label>
-          <Switch checked={samConfig.enableHierarchyMaster} onCheckedChange={v => setSamConfig(p => ({ ...p, enableHierarchyMaster: v }))} />
-        </div>
-        <div><Label className="text-xs">Commission Calculation Method</Label>
-          <Select value={samConfig.commissionCalcMethod} onValueChange={v => setSamConfig(p => ({ ...p, commissionCalcMethod: v as SAMConfig['commissionCalcMethod'] }))}>
-            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="item_amount">Item Amount</SelectItem>
-              <SelectItem value="item_qty">Item Quantity</SelectItem>
-              <SelectItem value="both">Both</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div><Label className="text-xs">Commission Rate Method</Label>
-          <Select value={samConfig.commissionRateMethod} onValueChange={v => setSamConfig(p => ({ ...p, commissionRateMethod: v as SAMConfig['commissionRateMethod'] }))}>
-            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all_items">All Items</SelectItem>
-              <SelectItem value="item_by_item">Item by Item</SelectItem>
-              <SelectItem value="stock_group">Stock Group</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Commission on Service</Label>
-          <Switch checked={samConfig.enableCommissionOnService} onCheckedChange={v => setSamConfig(p => ({ ...p, enableCommissionOnService: v }))} />
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Enable Receiver</Label>
-          <Switch checked={samConfig.enableReceiver} onCheckedChange={v => setSamConfig(p => ({ ...p, enableReceiver: v }))} />
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Company Sales Person</Label>
-          <Switch checked={samConfig.enableCompanySalesPerson} onCheckedChange={v => setSamConfig(p => ({ ...p, enableCompanySalesPerson: v }))} />
+          <Label className="text-sm">Enable Sales Activity Module</Label>
+          <Switch
+            checked={samConfig.enableSalesActivityModule}
+            onCheckedChange={v => update('enableSalesActivityModule', v)}
+          />
         </div>
 
+        {/* ─── Card 1: Internal Sales Team ─── */}
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Internal Sales Team</h4>
+
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Enable company salesman</Label>
+          <Switch
+            checked={samConfig.enableCompanySalesMan}
+            onCheckedChange={v => update('enableCompanySalesMan', v)}
+          />
+        </div>
+
+        {samConfig.enableCompanySalesMan && (
+          <div className="pl-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Salesman source</Label>
+              <div className="flex gap-2">
+                {toggleBtn(samConfig.companySalesManSource === 'ledger', 'Ledger', () => update('companySalesManSource', 'ledger'))}
+                {toggleBtn(samConfig.companySalesManSource === 'payhub', 'PayHub (Employee)', () => update('companySalesManSource', 'payhub'))}
+              </div>
+            </div>
+
+            {samConfig.companySalesManSource === 'ledger' && (
+              <Badge variant="outline" className="text-xs border-success/40 text-success bg-success/10">
+                Will create 'Sales Man' group under Sundry Creditor
+              </Badge>
+            )}
+            {samConfig.companySalesManSource === 'payhub' && (
+              <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/10">
+                Employees flagged as Salesman in PeoplePay auto-populate on transactions
+              </Badge>
+            )}
+
+            <div>
+              <Label className="text-xs">Incentive calculation method</Label>
+              <Select
+                value={samConfig.commissionCalcMethod}
+                onValueChange={v => update('commissionCalcMethod', v as SAMConfig['commissionCalcMethod'])}
+              >
+                <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="item_amount">Item amount — % of invoice value</SelectItem>
+                  <SelectItem value="item_qty">Item qty basis — ₹ per unit sold</SelectItem>
+                  <SelectItem value="both">Both — item amount + qty combined</SelectItem>
+                  <SelectItem value="slab_based">Slab-based — achievement-linked escalating %</SelectItem>
+                  <SelectItem value="net_margin">Net margin — % of gross margin</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="mt-2 bg-muted/30 rounded p-2 text-xs text-muted-foreground">
+                {calcPreview[samConfig.commissionCalcMethod]}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Enable incentive on service</Label>
+              <Switch
+                checked={samConfig.enableCommissionOnService}
+                onCheckedChange={v => update('enableCommissionOnService', v)}
+              />
+            </div>
+
+            <Separator />
+            <h5 className="text-xs text-muted-foreground">Portfolio & Division Assignment</h5>
+
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Enable portfolio / division assignment</Label>
+                <p className="text-xs text-muted-foreground">
+                  Assign product groups to each salesman. TV salesman + AC salesman can appear on the same invoice with separate commission calculations.
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.enablePortfolioAssignment}
+                onCheckedChange={v => update('enablePortfolioAssignment', v)}
+              />
+            </div>
+
+            {samConfig.enablePortfolioAssignment && (
+              <div className="pl-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Portfolio match method</Label>
+                  <div className="flex gap-2">
+                    {toggleBtn(samConfig.portfolioMatchMethod === 'auto', 'Auto', () => update('portfolioMatchMethod', 'auto'))}
+                    {toggleBtn(samConfig.portfolioMatchMethod === 'manual', 'Manual', () => update('portfolioMatchMethod', 'manual'))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Allow multiple salesmen per invoice</Label>
+                  <Switch
+                    checked={samConfig.allowMultipleSalesmenPerInvoice}
+                    onCheckedChange={v => update('allowMultipleSalesmenPerInvoice', v)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ─── Card 2: Reference Person ─── */}
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reference Person</h4>
+        <p className="text-xs text-muted-foreground">Shared across company salesman and agent module</p>
+
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <Label className="text-sm">Enable reference</Label>
+            <p className="text-xs text-muted-foreground">
+              Person who introduced the buyer. Tracked on leads, enquiries and transactions. Not mandatory.
+            </p>
+          </div>
+          <Switch
+            checked={samConfig.enableReference}
+            onCheckedChange={v => update('enableReference', v)}
+          />
+        </div>
+
+        {samConfig.enableReference && (
+          <div className="pl-4 space-y-3">
+            <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/10">
+              Will create 'Reference' group under Sundry Creditor
+            </Badge>
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Referral commission?</Label>
+                <p className="text-xs text-muted-foreground">
+                  Reference appears in commission payable register alongside agents
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.referenceCommission}
+                onCheckedChange={v => update('referenceCommission', v)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ─── Card 3: Sales Operations ─── */}
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sales Operations</h4>
+
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Enable CRM</Label>
+          <Switch
+            checked={samConfig.enableCRM}
+            onCheckedChange={v => {
+              setSamConfig(p => ({
+                ...p,
+                enableCRM: v,
+                crmType: v ? (p.crmType ?? 'option_a') : null,
+                pipelineType: v ? (p.pipelineType ?? 'standard') : null,
+                enableTelecalling: v ? p.enableTelecalling : false,
+              }));
+            }}
+          />
+        </div>
+
+        {!samConfig.enableCRM && (
+          <p className="text-xs text-muted-foreground">Disabling CRM also disables telecalling</p>
+        )}
+
+        {samConfig.enableCRM && (
+          <div className="pl-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">CRM type</Label>
+              <div className="flex gap-2">
+                {toggleBtn(samConfig.crmType === 'option_a', 'Option A — basic', () => update('crmType', 'option_a'))}
+                {toggleBtn(samConfig.crmType === 'option_b', 'Option B — full hub', () => update('crmType', 'option_b'))}
+              </div>
+            </div>
+
+            {samConfig.crmType === 'option_a' && (
+              <Badge variant="outline" className="text-xs text-muted-foreground border-border">
+                Lead stages, opportunity cards, activity log — embedded in SalesX
+              </Badge>
+            )}
+            {samConfig.crmType === 'option_b' && (
+              <Badge variant="outline" className="text-xs border-teal-500/40 text-teal-600 dark:text-teal-400 bg-teal-500/10">
+                Full CRM Hub — CallX, ProformaX, PartnerX, MarketingX, CustomerX
+              </Badge>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Pipeline type</Label>
+              <div className="flex gap-2">
+                {toggleBtn(samConfig.pipelineType === 'standard', 'Standard', () => update('pipelineType', 'standard'))}
+                {toggleBtn(samConfig.pipelineType === 'solutions', 'Solutions', () => update('pipelineType', 'solutions'))}
+              </div>
+            </div>
+
+            {samConfig.pipelineType === 'standard' && (
+              <Badge variant="outline" className="text-xs text-muted-foreground border-border">
+                Discovery → Qualification → Proposal → Negotiation → Won/Lost
+              </Badge>
+            )}
+            {samConfig.pipelineType === 'solutions' && (
+              <Badge variant="outline" className="text-xs border-warning/40 text-warning bg-warning/10">
+                Requirement Analysis → Solution Design → PoC → Tech Approval → Commercial → Contract → Won/Lost
+              </Badge>
+            )}
+
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Enable telecalling</Label>
+                <p className="text-xs text-muted-foreground">
+                  CallX call work screen, call queue, analytics — feeds whichever pipeline is active
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.enableTelecalling}
+                onCheckedChange={v => update('enableTelecalling', v)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ─── Card 4: External Sales Network ─── */}
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">External Sales Network</h4>
+
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Enable agent module</Label>
+          <Switch
+            checked={samConfig.enableAgentModule}
+            onCheckedChange={v => update('enableAgentModule', v)}
+          />
+        </div>
+
+        {samConfig.enableAgentModule && (
+          <div className="pl-4 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="text-xs border-success/40 text-success bg-success/10">
+                Will create 'Agent' group under Sundry Creditor
+              </Badge>
+              <Badge variant="outline" className="text-xs border-success/40 text-success bg-success/10">
+                Will create 'Broker' group under Sundry Creditor
+              </Badge>
+            </div>
+
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Enable receiver</Label>
+                <p className="text-xs text-muted-foreground">
+                  Receiver gets a share of commission from the primary agent
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.enableReceiver}
+                onCheckedChange={v => update('enableReceiver', v)}
+              />
+            </div>
+
+            {samConfig.enableReceiver && (
+              <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/10">
+                Will create 'Receiver' group under Sundry Creditor
+              </Badge>
+            )}
+
+            <div>
+              <Label className="text-xs">Commission rate method</Label>
+              <Select
+                value={samConfig.commissionRateMethod}
+                onValueChange={v => update('commissionRateMethod', v as SAMConfig['commissionRateMethod'])}
+              >
+                <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all_items">All items — one flat rate</SelectItem>
+                  <SelectItem value="stock_group">Stock group — rate per product category</SelectItem>
+                  <SelectItem value="item_by_item">Item by item — rate per SKU</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Enable hierarchy master</Label>
+                <p className="text-xs text-muted-foreground">
+                  Define sales department levels e.g. RSM → ASM → TSM → FSE
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.enableHierarchyMaster}
+                onCheckedChange={v => update('enableHierarchyMaster', v)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ─── Card 5: Voucher Scope ─── */}
         <Separator />
         <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Voucher Scope</h4>
-        {voucherScopes.map(vs => {
-          const disabled = vs.dependsOn ? !samConfig[vs.dependsOn] : false;
-          return (
-            <div key={vs.key} className={`flex items-center gap-3 ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
-              <Checkbox
-                checked={samConfig[vs.key] as boolean}
-                onCheckedChange={v => setSamConfig(p => ({ ...p, [vs.key]: v }))}
-              />
-              <Label className="text-sm">{vs.label}</Label>
-              <Badge variant="outline" className="text-[9px] ml-auto">UDF {vs.udf}</Badge>
-            </div>
-          );
-        })}
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Enable SLSM in sales order</Label>
+          <Switch
+            checked={samConfig.enableInSalesOrder}
+            onCheckedChange={v => update('enableInSalesOrder', v)}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Enable SLSM in delivery note</Label>
+          <Switch
+            checked={samConfig.enableInDeliveryNote}
+            onCheckedChange={v => update('enableInDeliveryNote', v)}
+          />
+        </div>
 
+        {/* ─── Card 6: Security ─── */}
         <Separator />
         <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Security</h4>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Hide Commission in Transaction</Label>
-          <Switch checked={samConfig.hideCommissionInTransaction} onCheckedChange={v => setSamConfig(p => ({ ...p, hideCommissionInTransaction: v }))} />
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">SLSM Mandatory Outward</Label>
-          <Switch checked={samConfig.slsmMandatoryOutward} onCheckedChange={v => setSamConfig(p => ({ ...p, slsmMandatoryOutward: v }))} />
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">SLSM Mandatory Inward</Label>
-          <Switch checked={samConfig.slsmMandatoryInward} onCheckedChange={v => setSamConfig(p => ({ ...p, slsmMandatoryInward: v }))} />
-        </div>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Receiver Mandatory</Label>
-          <Switch checked={samConfig.receiverMandatory} onCheckedChange={v => setSamConfig(p => ({ ...p, receiverMandatory: v }))} />
+
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <Label className="text-sm">Hide incentive details in transaction</Label>
+            <p className="text-xs text-muted-foreground">Commission amounts invisible to entry-level users</p>
+          </div>
+          <Switch
+            checked={samConfig.hideCommissionInTransaction}
+            onCheckedChange={v => update('hideCommissionInTransaction', v)}
+          />
         </div>
 
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <Label className="text-sm">SLSM mandatory — outward transactions</Label>
+            <p className="text-xs text-muted-foreground">Invoice / SO / Delivery Note cannot save without salesman assigned</p>
+          </div>
+          <Switch
+            checked={samConfig.slsmMandatoryOutward}
+            onCheckedChange={v => update('slsmMandatoryOutward', v)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">SLSM mandatory — inward transactions</Label>
+          <Switch
+            checked={samConfig.slsmMandatoryInward}
+            onCheckedChange={v => update('slsmMandatoryInward', v)}
+          />
+        </div>
+
+        {samConfig.enableReceiver && (
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Receiver mandatory in transaction</Label>
+            <Switch
+              checked={samConfig.receiverMandatory}
+              onCheckedChange={v => update('receiverMandatory', v)}
+            />
+          </div>
+        )}
+
+        {/* ─── Card 7: Printing ─── */}
         <Separator />
         <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Printing</h4>
-        <div className="flex items-center justify-between">
-          <Label className="text-sm">Print Agent Name on Invoice</Label>
-          <Switch checked={samConfig.printAgentNameOnInvoice} onCheckedChange={v => setSamConfig(p => ({ ...p, printAgentNameOnInvoice: v }))} />
-        </div>
-        <div><Label className="text-xs">Agent Print Title</Label>
-          <Input value={samConfig.agentPrintTitle} onKeyDown={onEnterNext} onChange={e => setSamConfig(p => ({ ...p, agentPrintTitle: e.target.value }))} className="h-8 text-sm" placeholder="e.g. Sales Agent" /></div>
 
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Print SLSM name on invoice</Label>
+          <Switch
+            checked={samConfig.printAgentNameOnInvoice}
+            onCheckedChange={v => update('printAgentNameOnInvoice', v)}
+          />
+        </div>
+
+        {samConfig.printAgentNameOnInvoice && (
+          <div className="pl-4">
+            <Label className="text-xs">Label / title on invoice</Label>
+            <Input
+              value={samConfig.agentPrintTitle}
+              onKeyDown={onEnterNext}
+              onChange={e => update('agentPrintTitle', e.target.value)}
+              className="h-8 text-sm"
+              placeholder="e.g. Sales Executive, Agent, Broker"
+            />
+          </div>
+        )}
+
+        {/* ─── Card 8: Targets ─── */}
         <Separator />
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">TDS on Commission</h4>
-        <div><Label className="text-xs">TDS Section</Label>
-          <Select value={samConfig.tdsOnCommissionSection} onValueChange={v => setSamConfig(p => ({ ...p, tdsOnCommissionSection: v as SAMConfig['tdsOnCommissionSection'] }))}>
-            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="not_applicable">Not Applicable</SelectItem>
-              <SelectItem value="194H">194H — Commission / Brokerage</SelectItem>
-              <SelectItem value="194J">194J — Professional / Technical</SelectItem>
-            </SelectContent>
-          </Select>
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Targets</h4>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* LEFT — Company Targets */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Enable company target</Label>
+              <Switch
+                checked={samConfig.enableCompanyTarget}
+                onCheckedChange={v => update('enableCompanyTarget', v)}
+              />
+            </div>
+
+            {samConfig.enableCompanyTarget && (
+              <div className="pl-2 space-y-3">
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Financial</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByStockGroup}
+                      onCheckedChange={v => update('companyTargetByStockGroup', !!v)}
+                    />
+                    <Label className="text-sm">Stock group</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByStockItem}
+                      onCheckedChange={v => update('companyTargetByStockItem', !!v)}
+                    />
+                    <Label className="text-sm">Stock item</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByService}
+                      onCheckedChange={v => update('companyTargetByService', !!v)}
+                    />
+                    <Label className="text-sm">Service</Label>
+                  </div>
+                  {samConfig.enablePortfolioAssignment && (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={samConfig.companyTargetByDivision}
+                        onCheckedChange={v => update('companyTargetByDivision', !!v)}
+                      />
+                      <Label className="text-sm">Division / portfolio</Label>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Customer</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByCustomer}
+                      onCheckedChange={v => update('companyTargetByCustomer', !!v)}
+                    />
+                    <Label className="text-sm">Customer / party</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByCustomerCategory}
+                      onCheckedChange={v => update('companyTargetByCustomerCategory', !!v)}
+                    />
+                    <Label className="text-sm">Customer category</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByTerritory}
+                      onCheckedChange={v => update('companyTargetByTerritory', !!v)}
+                    />
+                    <Label className="text-sm">Territory / beat</Label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Growth</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByNewCustomerCount}
+                      onCheckedChange={v => update('companyTargetByNewCustomerCount', !!v)}
+                    />
+                    <Label className="text-sm">New customer count</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.companyTargetByCollection}
+                      onCheckedChange={v => update('companyTargetByCollection', !!v)}
+                    />
+                    <Label className="text-sm">Collection / recovery</Label>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT — SLSM Targets */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Enable SLSM target</Label>
+              <Switch
+                checked={samConfig.enableSLSMTarget}
+                onCheckedChange={v => update('enableSLSMTarget', v)}
+              />
+            </div>
+
+            {samConfig.enableSLSMTarget && (
+              <div className="pl-2 space-y-3">
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Financial</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByStockGroup}
+                      onCheckedChange={v => update('slsmTargetByStockGroup', !!v)}
+                    />
+                    <Label className="text-sm">Stock group</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByStockItem}
+                      onCheckedChange={v => update('slsmTargetByStockItem', !!v)}
+                    />
+                    <Label className="text-sm">Stock item</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByService}
+                      onCheckedChange={v => update('slsmTargetByService', !!v)}
+                    />
+                    <Label className="text-sm">Service</Label>
+                  </div>
+                  {samConfig.enablePortfolioAssignment && (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={samConfig.slsmTargetByDivision}
+                        onCheckedChange={v => update('slsmTargetByDivision', !!v)}
+                      />
+                      <Label className="text-sm">Division / portfolio</Label>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Customer</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByCustomer}
+                      onCheckedChange={v => update('slsmTargetByCustomer', !!v)}
+                    />
+                    <Label className="text-sm">Customer / party</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByCustomerCategory}
+                      onCheckedChange={v => update('slsmTargetByCustomerCategory', !!v)}
+                    />
+                    <Label className="text-sm">Customer category</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByTerritory}
+                      onCheckedChange={v => update('slsmTargetByTerritory', !!v)}
+                    />
+                    <Label className="text-sm">Territory / beat</Label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Growth</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByNewCustomerCount}
+                      onCheckedChange={v => update('slsmTargetByNewCustomerCount', !!v)}
+                    />
+                    <Label className="text-sm">New customer count</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByCollection}
+                      onCheckedChange={v => update('slsmTargetByCollection', !!v)}
+                    />
+                    <Label className="text-sm">Collection / recovery</Label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">Operational</p>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={samConfig.slsmTargetByOrderVolume}
+                      onCheckedChange={v => update('slsmTargetByOrderVolume', !!v)}
+                    />
+                    <Label className="text-sm">Order volume (count)</Label>
+                  </div>
+                  {samConfig.enableTelecalling && (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={samConfig.slsmTargetByCallVisitActivity}
+                        onCheckedChange={v => update('slsmTargetByCallVisitActivity', !!v)}
+                      />
+                      <Label className="text-sm">Call / visit activity</Label>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><Label className="text-xs">Commission Ledger (Sales)</Label>
-            <Input value={samConfig.commissionLedgerSales} onKeyDown={onEnterNext} onChange={e => setSamConfig(p => ({ ...p, commissionLedgerSales: e.target.value }))} className="h-8 text-sm" /></div>
-          <div><Label className="text-xs">Commission Ledger (Purchase)</Label>
-            <Input value={samConfig.commissionLedgerPurchase} onKeyDown={onEnterNext} onChange={e => setSamConfig(p => ({ ...p, commissionLedgerPurchase: e.target.value }))} className="h-8 text-sm" /></div>
-        </div>
+
+        {/* Save button */}
+        <Button data-primary onClick={handleSaveSAM} className="w-full">
+          <Save className="h-4 w-4 mr-1" /> Save SAM Configuration
+        </Button>
       </div>
-      <Button data-primary onClick={handleSaveSAM} className="w-full"><Save className="h-4 w-4 mr-1" /> Save SAM Config</Button>
-    </div>
-  );
+    );
+  };
 
   // ── WhatsApp Section ──
   const renderWASection = () => (
