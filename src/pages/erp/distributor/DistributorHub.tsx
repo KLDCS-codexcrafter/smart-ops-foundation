@@ -2,14 +2,19 @@
  * DistributorHub.tsx — Tenant-internal hub for managing the distributor programme.
  * Sprint 10. Indigo-600 accent. Peer of SalesX/ReceivX/FineCore hubs.
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users2, FileCheck, Megaphone, Layers, BarChart3, UserPlus,
-  ArrowRight, IndianRupee, ShoppingBag,
+  ArrowRight, IndianRupee, ShoppingBag, Palette, Copy, Save,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import {
