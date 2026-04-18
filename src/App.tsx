@@ -327,16 +327,19 @@ const App = () => (
               <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
-              <Route path="/partner/login" element={<PartnerLogin />} />
               <Route path="/partner" element={<PartnerDashboard />} />
               <Route path="/partner/dashboard" element={<PartnerDashboard />} />
-              <Route path="/partner/catalog" element={<PartnerCatalog />} />
-              <Route path="/partner/cart" element={<PartnerCart />} />
-              <Route path="/partner/invoices" element={<PartnerInvoices />} />
-              <Route path="/partner/payments" element={<PartnerPayments />} />
-              <Route path="/partner/updates" element={<PartnerUpdates />} />
+              <Route path="/erp/distributor/login" element={<DistributorLogin />} />
+              <Route path="/erp/distributor" element={<P><DistributorHub /></P>} />
+              <Route path="/erp/distributor/hub" element={<P><DistributorHub /></P>} />
+              <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
+              <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
+              <Route path="/erp/distributor/cart" element={<DistributorCart />} />
+              <Route path="/erp/distributor/invoices" element={<DistributorInvoices />} />
+              <Route path="/erp/distributor/payments" element={<DistributorPayments />} />
+              <Route path="/erp/distributor/updates" element={<DistributorUpdates />} />
               <Route path="/erp/salesx/distributor-broadcast" element={<P><DistributorBroadcast /></P>} />
-              <Route path="/erp/finecore/partner-intimations" element={<P><PartnerIntimationQueue /></P>} />
+              <Route path="/erp/finecore/distributor-intimations" element={<P><DistributorIntimationQueue /></P>} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
