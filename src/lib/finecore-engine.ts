@@ -196,28 +196,58 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
   const outstandingTypes = ['Sales', 'Purchase', 'Debit Note', 'Credit Note'];
   if (outstandingTypes.includes(voucher.base_voucher_type) && voucher.party_id) {
     const entries = ls<OutstandingEntry>(outstandingKey(entityCode));
-    entries.push({
-      id: `os-${Date.now()}`,
-      entity_id: voucher.entity_id,
-      party_id: voucher.party_id!,
-      party_code: voucher.party_code || '',
-      party_name: voucher.party_name || '',
-      party_type: ['Sales', 'Debit Note'].includes(voucher.base_voucher_type) ? 'debtor' : 'creditor',
-      voucher_id: voucher.id,
-      voucher_no: voucher.voucher_no,
-      voucher_date: voucher.date,
-      base_voucher_type: voucher.base_voucher_type,
-      original_amount: voucher.net_amount,
-      pending_amount: voucher.net_amount,
-      due_date: voucher.date,
-      credit_days: 30,
-      currency: 'INR',
-      settled_amount: 0,
-      settlement_refs: [],
-      status: 'open',
-      created_at: now,
-      updated_at: now,
-    });
+
+    // Credit Note: reduce the original Sales outstanding by CN amount
+    let creditNoteSettled = false;
+    if (voucher.base_voucher_type === 'Credit Note' && voucher.ref_voucher_no) {
+      const origIdx = entries.findIndex(
+        o => o.voucher_no === voucher.ref_voucher_no &&
+          o.base_voucher_type === 'Sales' &&
+          o.status !== 'cancelled',
+      );
+      if (origIdx >= 0) {
+        const orig = { ...entries[origIdx] };
+        const reduction = Math.min(voucher.net_amount, orig.pending_amount);
+        orig.settled_amount = +(orig.settled_amount + reduction).toFixed(2);
+        orig.pending_amount = +(orig.pending_amount - reduction).toFixed(2);
+        orig.settlement_refs = [
+          ...orig.settlement_refs,
+          { voucher_id: voucher.id, amount: reduction, date: voucher.date },
+        ];
+        orig.status = orig.pending_amount <= 0.01 ? 'settled' : 'partial';
+        orig.updated_at = now;
+        entries[origIdx] = orig;
+        creditNoteSettled = true;
+      }
+    }
+
+    // Push outstanding entry — but NOT for Credit Notes that already settled above
+    const skipOutstandingPush = voucher.base_voucher_type === 'Credit Note' && creditNoteSettled;
+
+    if (!skipOutstandingPush) {
+      entries.push({
+        id: `os-${Date.now()}`,
+        entity_id: voucher.entity_id,
+        party_id: voucher.party_id!,
+        party_code: voucher.party_code || '',
+        party_name: voucher.party_name || '',
+        party_type: ['Sales', 'Debit Note'].includes(voucher.base_voucher_type) ? 'debtor' : 'creditor',
+        voucher_id: voucher.id,
+        voucher_no: voucher.voucher_no,
+        voucher_date: voucher.date,
+        base_voucher_type: voucher.base_voucher_type,
+        original_amount: voucher.net_amount,
+        pending_amount: voucher.net_amount,
+        due_date: voucher.date,
+        credit_days: 30,
+        currency: 'INR',
+        settled_amount: 0,
+        settlement_refs: [],
+        status: 'open',
+        created_at: now,
+        updated_at: now,
+      });
+    }
     ss(outstandingKey(entityCode), entries);
   }
 
