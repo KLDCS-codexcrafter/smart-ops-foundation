@@ -34,6 +34,7 @@ import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { salesReturnMemosKey, type SalesReturnMemo } from '@/types/sales-return-memo';
 
 const REASON_CODES = [
   'Goods Return', 'Price Correction', 'Excess Charged',
