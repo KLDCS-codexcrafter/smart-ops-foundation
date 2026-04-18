@@ -248,6 +248,79 @@ export default function DistributorCartPage() {
     } catch { toast.error('Failed to delete'); }
   };
 
+  // ── Voice-to-Order (Sprint 11a) ─────────────────────────────────────────
+  const startVoice = async () => {
+    if (!voiceSupported) {
+      toast.error('Voice not supported on this browser');
+      return;
+    }
+    setVoiceOpen(true);
+    setVoiceResult(null);
+    setListening(true);
+    try {
+      const transcript = await transcribeVoice('en-IN');
+      // [JWT] GET /api/inventory/items
+      const items = ls<InventoryItem>('erp_inventory_items');
+      const parsed = parseVoiceOrder(transcript, items);
+      setVoiceResult(parsed);
+      if (parsed.lines.length === 0) toast.message('Nothing recognised — try again');
+    } catch (e) {
+      toast.error('Voice failed', { description: e instanceof Error ? e.message : String(e) });
+      setVoiceOpen(false);
+    } finally {
+      setListening(false);
+    }
+  };
+
+  const handleApplyVoiceLines = async () => {
+    if (!voiceResult || !session) return;
+    const matched = voiceResult.lines.filter(l => l.item_id);
+    if (matched.length === 0) {
+      toast.error('No matched items to add');
+      return;
+    }
+    // [JWT] GET /api/inventory/items
+    const items = ls<InventoryItem>('erp_inventory_items');
+    const newLines: DistributorOrderLine[] = matched.map(vl => {
+      const it = items.find(i => i.id === vl.item_id);
+      const ratePaise = 0;
+      const taxable = ratePaise * vl.quantity;
+      return {
+        id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        item_id: vl.item_id ?? '',
+        item_code: it?.code ?? '',
+        item_name: vl.item_name_matched ?? it?.name ?? 'Unknown',
+        uom: it?.primary_uom_symbol ?? 'NOS',
+        qty: vl.quantity,
+        rate_paise: ratePaise,
+        discount_percent: 0,
+        taxable_paise: taxable,
+        cgst_paise: 0,
+        sgst_paise: 0,
+        igst_paise: 0,
+        total_paise: taxable,
+        hsn_sac: null,
+      };
+    });
+    const base: DistributorCartState = cart ?? {
+      id: session.distributor_id,
+      partner_id: session.distributor_id,
+      entity_code: session.entity_code,
+      lines: [],
+      notes: '',
+      delivery_address: '',
+      expected_delivery_date: null,
+      updated_at: new Date().toISOString(),
+    };
+    const next: DistributorCartState = { ...base, lines: [...base.lines, ...newLines] };
+    await setCart(next);
+    setLocalCart(next);
+    setVoiceOpen(false);
+    setVoiceResult(null);
+    toast.success(`${newLines.length} line(s) added from voice`);
+  };
+
+
   if (loading) {
     return (
       <DistributorLayout title="Cart">
