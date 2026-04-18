@@ -26,6 +26,8 @@ import { TargetVsAchievementPanel } from '@/pages/erp/salesx/reports/TargetVsAch
 import { FollowUpRegisterReportPanel } from '@/pages/erp/salesx/reports/FollowUpRegisterReport';
 import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
 import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
+import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
+import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -41,10 +43,12 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-pipeline':           'CRM Pipeline',
   'sx-t-telecaller':         'Telecaller',
   'sx-t-quotation':          'Quotation',
+  'sx-t-return-memo':        'Sales Return Memo',
   'sx-r-commission':         'Commission Register',
   'sx-r-enquiry-register':   'Enquiry Register Report',
   'sx-r-pipeline-summary':   'Pipeline Summary',
   'sx-r-quotation-register': 'Quotation Register Report',
+  'sx-r-return-memo-register': 'Return Memo Register',
   'sx-m-target':             'Target Master',
   'sx-r-followup':           'Follow-Up Register',
   'sx-r-target':             'Target vs Achievement',
