@@ -10,7 +10,7 @@ import {
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
-  FileMinus,
+  FileMinus, MapPin, Route, Navigation, ListTree, MapPinned,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
