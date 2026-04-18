@@ -7,7 +7,7 @@ import {
   TrendingUp, LayoutDashboard, Bell, MessageCircle, Mail,
   ClipboardCheck, AlertTriangle, Shield, Users, Settings,
   CalendarClock, BadgeIndianRupee, BarChart3, Activity,
-  ChevronRight,
+  ChevronRight, CreditCard, MailWarning,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -21,6 +21,7 @@ export type ReceivXModule =
   | 'rx-m-reminder-template' | 'rx-m-collection-exec'
   | 'rx-m-incentive-scheme' | 'rx-m-config'
   | 'rx-t-task-board' | 'rx-t-ptp-tracker' | 'rx-t-reminder-console'
+  | 'rx-t-payment-links' | 'rx-t-dunning'
   | 'rx-r-aging-salesman' | 'rx-r-aging-agent'
   | 'rx-r-aging-broker' | 'rx-r-aging-telecaller'
   | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk';
@@ -29,6 +30,7 @@ export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-hub','rx-m-reminder-template','rx-m-collection-exec',
   'rx-m-incentive-scheme','rx-m-config',
   'rx-t-task-board','rx-t-ptp-tracker','rx-t-reminder-console',
+  'rx-t-payment-links','rx-t-dunning',
   'rx-r-aging-salesman','rx-r-aging-agent',
   'rx-r-aging-broker','rx-r-aging-telecaller',
   'rx-r-collection-eff','rx-r-comm-log','rx-r-credit-risk',
@@ -56,6 +58,8 @@ export function ReceivXSidebar({ activeModule, onModuleChange }: Props) {
     { id: 'rx-t-task-board',       label: 'Outstanding Tasks',  icon: ClipboardCheck },
     { id: 'rx-t-ptp-tracker',      label: 'PTP Tracker',        icon: CalendarClock },
     { id: 'rx-t-reminder-console', label: 'Reminder Console',   icon: MessageCircle },
+    { id: 'rx-t-payment-links',    label: 'Payment Links',      icon: CreditCard },
+    { id: 'rx-t-dunning',          label: 'Dunning Console',    icon: MailWarning },
   ];
 
   const reportItems: Array<{ id: ReceivXModule; label: string; icon: React.ElementType }> = [

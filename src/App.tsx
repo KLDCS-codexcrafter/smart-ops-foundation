@@ -129,6 +129,7 @@ const VetanNidhi = lazy(() => import('./pages/modules/VetanNidhi'));
 const OperixGoPage = lazy(() => import('./pages/mobile/OperixGoPage'));
 const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
+const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
 const ClientCustomizedPage = lazy(() => import('./pages/client-customized/ClientCustomizedPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/Dashboard'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
@@ -186,6 +187,7 @@ const App = () => (
               <Route path="/operix-go" element={<P><OperixGoPage /></P>} />
               <Route path="/operix-go/vetan-nidhi" element={<P><VetanNidhiMobile /></P>} />
               <Route path="/operix-go/salesx" element={<P><SalesXGoMobile /></P>} />
+              <Route path="/operix-go/receivx" element={<P><ReceivXGoMobile /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -28,6 +28,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: "Field force mobile app — today's beat, geo check-in with 500m radius, visit logging with photos, secondary sales capture, live target + commission tracking.",
     details: 'Two apps in one product: Field App (salesman/agent/broker — check-in, visit log, secondary sales, my targets, my commission) and Supervisor App (manager — team coverage, beat productivity, target setting, visit correction approval). PWA — no app install. Capacitor wrapper available for Play Store / App Store distribution.',
     route: '/operix-go/salesx',
+    phase: 'phase2',
+  },
+  {
+    id: 'receivx-go',
+    title: 'ReceivX Go Sahayak — सहायक',
+    icon: IndianRupee,
+    description: "Collection exec mobile app — today's route, receipt capture with UTR + photo, PTP logging, payment link sharing, offline queue for godown dead zones.",
+    details: 'Two apps in one product: Collection Exec App (field team) and Supervisor App (manager). PWA — no install. Capacitor wrapper for Play Store / App Store.',
+    route: '/operix-go/receivx',
     phase: 'phase2',
   },
   {

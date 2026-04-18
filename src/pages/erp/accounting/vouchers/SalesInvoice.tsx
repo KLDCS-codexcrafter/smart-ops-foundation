@@ -12,7 +12,16 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from '@/components/ui/dialog';
+import { ChevronDown, Send, Info, Link2, ShieldAlert } from 'lucide-react';
+import { checkCreditHold } from '@/lib/credit-hold-engine';
+import {
+  creditHoldAuditKey, type CreditHoldCheck, type CreditHoldOverride,
+} from '@/types/credit-hold';
+import type { OutstandingEntry } from '@/types/voucher';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
@@ -94,6 +103,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [samReferenceName, setSamReferenceName] = useState<string | null>(null);
   const [salesmanAssignmentMode, setSalesmanAssignmentMode] =
     useState<'fixed' | 'select_at_voucher'>('fixed');
+
+  // ── Sprint 8 — Credit hold state ────────────────────────────────
+  const [creditCheck, setCreditCheck] = useState<CreditHoldCheck | null>(null);
+  const [overrideOpen, setOverrideOpen] = useState(false);
+  const [overrideReason, setOverrideReason] = useState('');
 
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
@@ -216,8 +230,30 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     toast.success(`Linked advance ${adv.advance_ref_no}`);
   };
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Party name is required'); return; }
+  const recordOverride = useCallback((check: CreditHoldCheck, reason: string, by: string) => {
+    try {
+      // [JWT] POST /api/receivx/credit-hold/override
+      const auditKey = creditHoldAuditKey(entityCode);
+      const existing: CreditHoldOverride[] = JSON.parse(localStorage.getItem(auditKey) || '[]');
+      const now = new Date().toISOString();
+      const entry: CreditHoldOverride = {
+        id: `cho-${Date.now()}`, entity_id: entityCode,
+        party_id: check.party_id, party_name: check.party_name,
+        voucher_type: 'sales_invoice', voucher_ref: voucherNo,
+        amount: check.new_invoice_amount,
+        current_outstanding: check.current_outstanding,
+        credit_limit: check.credit_limit,
+        over_limit_by: check.over_limit_by,
+        override_reason: reason,
+        approved_by_user: by,
+        approved_at: now, created_at: now,
+      };
+      existing.push(entry);
+      localStorage.setItem(auditKey, JSON.stringify(existing));
+    } catch { /* noop */ }
+  }, [entityCode, voucherNo]);
+
+  const commitVoucher = useCallback(() => {
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -385,6 +421,62 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     samSalesmanId, samSalesmanName, samAgentId, samAgentName, samReferenceId, samReferenceName,
     commissionPreview, customerId, samPersons,
   ]);
+
+  const handlePost = useCallback(() => {
+    if (!partyName) { toast.error('Party name is required'); return; }
+    // ── Sprint 8 — Credit hold check ────────────────────────
+    try {
+      // [JWT] GET /api/receivx/config
+      const cfgRaw = localStorage.getItem(`erp_receivx_config_${entityCode}`);
+      const cfg = cfgRaw ? JSON.parse(cfgRaw) : null;
+      const customer = customers.find(c => c.id === customerId);
+      if (cfg && customer && Array.isArray(cfg.credit_hold_block_on)
+        && cfg.credit_hold_block_on.includes('sales_invoice')) {
+        // [JWT] GET /api/accounting/outstanding
+        const allOut: OutstandingEntry[] = JSON.parse(
+          localStorage.getItem(`erp_outstanding_${entityCode}`) || '[]',
+        );
+        const check = checkCreditHold(
+          {
+            id: customer.id,
+            partyCode: customer.partyCode ?? '',
+            partyName: customer.partyName,
+            creditLimit: customer.creditLimit ?? 0,
+            warningLimit: customer.warningLimit ?? 0,
+            credit_hold_mode: customer.credit_hold_mode ?? null,
+          },
+          gstTotals.total,
+          allOut,
+          cfg.credit_hold_mode ?? 'soft_warn',
+          cfg.credit_hold_ratio ?? 1.0,
+        );
+        if (check.is_blocked) {
+          setCreditCheck(check);
+          setOverrideReason('');
+          setOverrideOpen(true);
+          return;
+        }
+        if (check.is_warning) {
+          toast.warning(check.block_reason || 'Customer over warning limit');
+          recordOverride(check, 'soft_warn_auto', 'system');
+        }
+      }
+    } catch { /* noop — credit check failure should not block */ }
+    commitVoucher();
+  }, [partyName, entityCode, customers, customerId, gstTotals.total, commitVoucher, recordOverride]);
+
+  const confirmOverride = useCallback(() => {
+    if (!creditCheck) return;
+    if (overrideReason.trim().length < 10) {
+      toast.error('Override reason must be at least 10 characters');
+      return;
+    }
+    recordOverride(creditCheck, overrideReason.trim(), 'current-user');
+    setOverrideOpen(false);
+    setCreditCheck(null);
+    commitVoucher();
+  }, [creditCheck, overrideReason, recordOverride, commitVoucher]);
+
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
