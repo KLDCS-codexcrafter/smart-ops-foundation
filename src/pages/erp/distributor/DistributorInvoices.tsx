@@ -55,6 +55,15 @@ export default function DistributorInvoices() {
   const [filter, setFilter] = useState<'all' | 'open' | 'paid'>('all');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
+  // Sprint 11a — dispute dialog state
+  const [disputeOpen, setDisputeOpen] = useState(false);
+  const [disputeVoucher, setDisputeVoucher] = useState<Voucher | null>(null);
+  const [disputeLine, setDisputeLine] = useState<VoucherInventoryLine | null>(null);
+  const [disputeReason, setDisputeReason] = useState<DisputeReason>('short_supply');
+  const [receivedQty, setReceivedQty] = useState<string>('');
+  const [disputeRemarks, setDisputeRemarks] = useState('');
+  const [submittingDispute, setSubmittingDispute] = useState(false);
+
   // Item master so we can look up MRP for the tier-saving breakdown.
   const itemMrpMap = useMemo<Map<string, number>>(() => {
     const items = ls<InventoryItem>('erp_inventory_items');
