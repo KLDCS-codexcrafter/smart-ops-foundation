@@ -133,6 +133,20 @@ export function EntitySetupDialog({
               </div>
             </div>
 
+            <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <Checkbox id="autoSeed" checked={autoSeedDemo}
+                onCheckedChange={(c) => setAutoSeedDemo(c === true)} className="mt-0.5" />
+              <div className="flex-1">
+                <label htmlFor="autoSeed" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                  Load demo data on create
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Populates customers, vendors, salesmen, invoices, PTPs, and more — realistic test data for development and demos. Safe: only seeds if entity is empty.
+                </p>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <Button data-primary onClick={handleCreate} disabled={loading} className="flex-1">
                 {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Package className="h-4 w-4 mr-2" />}
