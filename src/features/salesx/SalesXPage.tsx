@@ -102,6 +102,13 @@ function renderModule(
       return <PipelineSummaryPanel entityCode={entityCode} />;
     case 'sx-r-quotation-register':
       return <QuotationRegisterReportPanel entityCode={entityCode} />;
+    case 'sx-m-target':
+      return <TargetMasterPanel entityCode={entityCode} />;
+    case 'sx-r-followup':
+      return <FollowUpRegisterReportPanel entityCode={entityCode}
+        onNavigate={m => setActiveModule(m as SalesXModule)} />;
+    case 'sx-r-target':
+      return <TargetVsAchievementPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
