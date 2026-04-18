@@ -14,6 +14,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Search, Download } from 'lucide-react';
 import { useQuotations } from '@/hooks/useQuotations';
 import type { QuotationStage } from '@/types/quotation';
+import { onEnterNext } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
@@ -82,7 +83,7 @@ export function QuotationRegisterReportPanel({ entityCode }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Quotation Register Report</h1>
@@ -128,6 +129,7 @@ export function QuotationRegisterReportPanel({ entityCode }: Props) {
               <Input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                onKeyDown={onEnterNext}
                 placeholder="Search quotation no / customer"
                 className="pl-9"
               />
