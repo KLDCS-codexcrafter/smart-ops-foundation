@@ -105,6 +105,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     // Always available CRM masters
     items.push({ id: 'sx-m-enquiry-source', label: 'Enquiry Sources', icon: Compass });
     items.push({ id: 'sx-m-campaign', label: 'Campaigns', icon: Megaphone });
+    if (cfg.enableSLSMTarget || cfg.enableCompanyTarget) {
+      items.push({ id: 'sx-m-target' as SalesXModule, label: 'Targets', icon: Target });
+    }
     return items;
   }, [cfg]);
 
