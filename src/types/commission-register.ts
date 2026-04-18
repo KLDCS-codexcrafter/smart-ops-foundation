@@ -1,6 +1,8 @@
 /**
  * commission-register.ts — SAM commission payable register
  * Commission is earned on amount RECEIVED, not on invoice booking.
+ * Sprint 4: CN reversal, GL voucher ref, agent invoice reconciliation,
+ *           catch-up TDS, reversed status.
  * [JWT] GET/POST/PATCH /api/salesx/commission-register
  */
 
@@ -17,6 +19,16 @@ export interface CommissionPayment {
   net_commission_paid: number;
   tds_deduction_entry_id: string | null;
   created_at: string;
+}
+
+// Append-only credit-note reversal reference (Sprint 4)
+export interface CommissionCreditNoteRef {
+  credit_note_id: string;
+  credit_note_no: string;
+  credit_note_date: string;
+  credit_note_amount: number;
+  commission_reversed: number;
+  tds_reversal_entry_id: string | null;
 }
 
 // Commission register row — one per SAM person per Sales Invoice
@@ -59,7 +71,34 @@ export interface CommissionEntry {
   // Append-only payment history
   payments: CommissionPayment[];
 
-  status: 'pending' | 'partial' | 'paid' | 'cancelled';
+  // ── Sprint 4 — Credit note reversal (Scenarios 1-4) ───────────────
+  credit_note_amount: number;              // cumulative CN value; init: 0
+  credit_note_refs: CommissionCreditNoteRef[];
+  net_invoice_amount: number;              // invoice_amount - credit_note_amount
+  net_total_commission: number;            // adjusted for CN
+
+  // Commission expense ledger (from SAMPerson Tab 4)
+  commission_expense_ledger_id: string | null;
+  commission_expense_ledger_name: string | null;
+
+  // GL voucher reference (set after Post GL Voucher)
+  commission_expense_voucher_id: string | null;
+  commission_expense_voucher_no: string | null;
+
+  // Agent GST invoice reconciliation
+  agent_invoice_no: string | null;
+  agent_invoice_date: string | null;
+  agent_invoice_gross_amount: number | null;
+  agent_invoice_gst_amount: number | null;
+  agent_invoice_status: 'pending' | 'received' | 'reconciled' | 'disputed' | null;
+  agent_invoice_variance: number | null;
+  agent_invoice_dispute_reason: string | null;
+
+  // Catch-up TDS (Scenario 8)
+  catchup_tds_required: boolean;
+  catchup_tds_amount: number;
+
+  status: 'pending' | 'partial' | 'paid' | 'reversed' | 'cancelled';
   created_at: string;
   updated_at: string;
 }
