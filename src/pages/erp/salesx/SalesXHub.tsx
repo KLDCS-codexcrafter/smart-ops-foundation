@@ -12,7 +12,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  UserCheck, Briefcase, Award, Users, Settings2,
+  UserCheck, Briefcase, Users, Settings2,
   Wallet, Receipt, FileText, IndianRupee,
 } from 'lucide-react';
 import { samPersonsKey } from '@/types/sam-person';
@@ -78,12 +78,7 @@ export function SalesXHubPanel({ entityCode, onNavigate }: Props) {
   const { enquiries } = useEnquiries(entityCode);
   const { quotations } = useQuotations(entityCode);
 
-  const counts = useMemo(() => ({
-    salesmen: persons.filter(p => p.person_type === 'salesman' && p.is_active).length,
-    agents:   persons.filter(p => p.person_type === 'agent' && p.is_active).length,
-    brokers:  persons.filter(p => p.person_type === 'broker' && p.is_active).length,
-    activeLeads: leads.filter(l => l.status === 'new' || l.status === 'contacted').length,
-  }), [persons, leads]);
+  // counts removed — 4 old KPI cards replaced with new ones
 
   const commissionKpis = useMemo(() => {
     return register.reduce((acc, e) => {
