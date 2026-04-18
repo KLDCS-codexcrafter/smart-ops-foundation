@@ -9,6 +9,7 @@ import {
   Network, Star, Target, Phone, FileText,
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
+  CalendarClock, Trophy,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -37,7 +38,10 @@ export type SalesXModule =
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
-  | 'sx-r-quotation-register';
+  | 'sx-r-quotation-register'
+  | 'sx-m-target'
+  | 'sx-r-followup'
+  | 'sx-r-target';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -57,6 +61,9 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
   'sx-r-quotation-register',
+  'sx-m-target',
+  'sx-r-followup',
+  'sx-r-target',
 ];
 
 interface Props {
@@ -98,6 +105,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     // Always available CRM masters
     items.push({ id: 'sx-m-enquiry-source', label: 'Enquiry Sources', icon: Compass });
     items.push({ id: 'sx-m-campaign', label: 'Campaigns', icon: Megaphone });
+    if (cfg.enableSLSMTarget || cfg.enableCompanyTarget) {
+      items.push({ id: 'sx-m-target' as SalesXModule, label: 'Targets', icon: Target });
+    }
     return items;
   }, [cfg]);
 
@@ -128,11 +138,13 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     },
   ];
 
-  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType }> = [
-    { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet },
-    { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks },
-    { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch },
-    { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart },
+  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = [
+    { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet,        live: true },
+    { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks,    live: true },
+    { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
+    { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart,  live: true },
+    { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
+    { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
   ];
 
   const btn = (
@@ -232,7 +244,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           </CollapsibleTrigger>
           <CollapsibleContent>
             <SidebarMenu className="px-1 space-y-0.5">
-              {reportItems.map(item => btn(item.id, item.label, item.icon, true))}
+              {reportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
             </SidebarMenu>
           </CollapsibleContent>
         </Collapsible>

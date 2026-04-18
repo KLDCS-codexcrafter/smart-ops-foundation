@@ -21,6 +21,9 @@ import { CommissionRegisterPanel } from '@/pages/erp/salesx/reports/CommissionRe
 import { EnquiryRegisterReportPanel } from '@/pages/erp/salesx/reports/EnquiryRegisterReport';
 import { PipelineSummaryPanel } from '@/pages/erp/salesx/reports/PipelineSummary';
 import { QuotationRegisterReportPanel } from '@/pages/erp/salesx/reports/QuotationRegisterReport';
+import { TargetMasterPanel } from '@/pages/erp/salesx/masters/TargetMaster';
+import { TargetVsAchievementPanel } from '@/pages/erp/salesx/reports/TargetVsAchievement';
+import { FollowUpRegisterReportPanel } from '@/pages/erp/salesx/reports/FollowUpRegisterReport';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -40,6 +43,9 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-enquiry-register':   'Enquiry Register Report',
   'sx-r-pipeline-summary':   'Pipeline Summary',
   'sx-r-quotation-register': 'Quotation Register Report',
+  'sx-m-target':             'Target Master',
+  'sx-r-followup':           'Follow-Up Register',
+  'sx-r-target':             'Target vs Achievement',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -96,6 +102,13 @@ function renderModule(
       return <PipelineSummaryPanel entityCode={entityCode} />;
     case 'sx-r-quotation-register':
       return <QuotationRegisterReportPanel entityCode={entityCode} />;
+    case 'sx-m-target':
+      return <TargetMasterPanel entityCode={entityCode} />;
+    case 'sx-r-followup':
+      return <FollowUpRegisterReportPanel entityCode={entityCode}
+        onNavigate={m => setActiveModule(m as SalesXModule)} />;
+    case 'sx-r-target':
+      return <TargetVsAchievementPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
