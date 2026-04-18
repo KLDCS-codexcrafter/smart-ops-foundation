@@ -430,6 +430,18 @@ export default function DistributorCartPage() {
           <ListChecks className="h-3.5 w-3.5 inline mr-1.5" />
           My Templates ({templates.length})
         </button>
+        {/* Sprint 11a — voice-to-order */}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void startVoice()}
+          disabled={!voiceSupported}
+          className="ml-auto gap-1.5 border-indigo-600/40 text-indigo-700 hover:bg-indigo-600/10"
+          title={voiceSupported ? 'Speak your order' : 'Voice not supported on this browser'}
+        >
+          {voiceSupported ? <Mic className="h-3.5 w-3.5" /> : <MicOff className="h-3.5 w-3.5" />}
+          Voice Order
+        </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
         {/* Lines */}
