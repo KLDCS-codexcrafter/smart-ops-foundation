@@ -152,7 +152,7 @@ export default function PartnerCatalog() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredItems.map(item => {
-              const fallback = Math.round((item.standard_rate ?? item.mrp ?? 0) * 100);
+              const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
               const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
               const reorder = suggestReorderQty(item.id, recentVouchers, partner.customer_id, 0, 30);
               const qty = qtyMap[item.id] ?? Math.max(tier.min_qty, reorder.suggested || 1);
@@ -172,7 +172,7 @@ export default function PartnerCatalog() {
                   </div>
                   <div className="flex items-baseline gap-2 mb-3">
                     <p className="text-lg font-bold font-mono text-foreground">{formatINR(tier.rate_paise)}</p>
-                    <p className="text-[11px] text-muted-foreground">/ {item.uom_symbol ?? 'NOS'}</p>
+                    <p className="text-[11px] text-muted-foreground">/ {item.primary_uom_symbol ?? 'NOS'}</p>
                   </div>
                   {tier.discount_percent > 0 && (
                     <p className="text-[11px] text-muted-foreground mb-2">
