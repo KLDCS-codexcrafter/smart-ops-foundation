@@ -7,15 +7,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
+  Bookmark, BookmarkPlus, ListChecks, RotateCcw,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { getDistributorSession, loadDistributors, hasRolePermission } from '@/lib/distributor-auth-engine';
 import {
   getCart, setCart, clearCart, removeLine, isAvailable,
+  saveTemplate, loadTemplates, deleteTemplate,
+  type DistributorCartTemplate,
 } from '@/lib/distributor-cart-store';
 import {
   cartToOrder, nextOrderNumber, checkCreditAvailable,
@@ -26,6 +33,8 @@ import {
 } from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
+// Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
+const CURRENT_ROLE = 'owner' as const;
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
@@ -40,6 +49,12 @@ export default function DistributorCartPage() {
   const [cart, setLocalCart] = useState<DistributorCartState | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  // Sprint 10 Part D · Feature #10 — order templates state.
+  const [view, setView] = useState<'cart' | 'templates'>('cart');
+  const [templates, setTemplates] = useState<DistributorCartTemplate[]>([]);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [templateName, setTemplateName] = useState('');
 
   const distributor = session
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
@@ -60,7 +75,15 @@ export default function DistributorCartPage() {
     }
   }, [session]);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  const refreshTemplates = useCallback(async () => {
+    if (!session) return;
+    try {
+      const list = await loadTemplates(session.distributor_id);
+      setTemplates(list.sort((a, b) => b.created_at.localeCompare(a.created_at)));
+    } catch { /* noop */ }
+  }, [session]);
+
+  useEffect(() => { void refresh(); void refreshTemplates(); }, [refresh, refreshTemplates]);
 
   if (!session || !distributor) {
     return (
@@ -145,11 +168,135 @@ export default function DistributorCartPage() {
     }
   };
 
+  // ── Templates (Sprint 10 Part D · Feature #10) ──
+  const handleSaveTemplate = async () => {
+    if (!cart || cart.lines.length === 0) {
+      toast.error('Cart is empty');
+      return;
+    }
+    const name = templateName.trim();
+    if (!name) { toast.error('Name required'); return; }
+    try {
+      const tpl: DistributorCartTemplate = {
+        id: `tpl_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        distributor_party_id: session.distributor_id,
+        name,
+        lines: cart.lines.map(l => ({ ...l })),
+        created_at: new Date().toISOString(),
+        last_used_at: null,
+        use_count: 0,
+      };
+      await saveTemplate(tpl);
+      await refreshTemplates();
+      setSaveOpen(false);
+      setTemplateName('');
+      toast.success(`Template "${name}" saved`);
+    } catch (e) {
+      toast.error('Could not save template', { description: e instanceof Error ? e.message : 'Storage error' });
+    }
+  };
+
+  const handleApplyTemplate = async (tpl: DistributorCartTemplate) => {
+    if (cart && cart.lines.length > 0 &&
+        !window.confirm(`Cart already has ${cart.lines.length} item(s). Replace with template "${tpl.name}"?`)) {
+      return;
+    }
+    try {
+      const next: DistributorCartState = {
+        id: session.distributor_id,
+        partner_id: session.distributor_id,
+        entity_code: session.entity_code,
+        lines: tpl.lines.map(l => ({ ...l, id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` })),
+        notes: cart?.notes ?? '',
+        delivery_address: cart?.delivery_address ?? '',
+        expected_delivery_date: cart?.expected_delivery_date ?? null,
+        updated_at: new Date().toISOString(),
+      };
+      await setCart(next);
+      setLocalCart(next);
+      // Bump usage counters
+      await saveTemplate({
+        ...tpl,
+        last_used_at: new Date().toISOString(),
+        use_count: tpl.use_count + 1,
+      });
+      await refreshTemplates();
+      setView('cart');
+      toast.success(`Applied "${tpl.name}"`, { description: `${tpl.lines.length} line(s) loaded` });
+    } catch (e) {
+      toast.error('Could not apply template', { description: e instanceof Error ? e.message : 'Storage error' });
+    }
+  };
+
+  const handleDeleteTemplate = async (tpl: DistributorCartTemplate) => {
+    if (!window.confirm(`Delete template "${tpl.name}"?`)) return;
+    try {
+      await deleteTemplate(tpl.id);
+      await refreshTemplates();
+      toast.success('Template deleted');
+    } catch { toast.error('Failed to delete'); }
+  };
+
   if (loading) {
     return (
       <DistributorLayout title="Cart">
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin" style={{ color: INDIGO }} />
+        </div>
+      </DistributorLayout>
+    );
+  }
+
+  // ── Templates view (Sprint 10 Part D · Feature #10) ──
+  if (view === 'templates') {
+    return (
+      <DistributorLayout title="Cart" subtitle="My Templates">
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setView('cart')} className="gap-1.5">
+              <ShoppingCart className="h-3.5 w-3.5" /> Back to Cart
+            </Button>
+            <h3 className="text-sm font-semibold text-foreground">My Templates</h3>
+          </div>
+          {templates.length === 0 ? (
+            <div className="rounded-2xl border border-border/50 p-12 text-center">
+              <Bookmark className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
+              <p className="text-sm text-foreground font-medium mb-1">No saved templates yet</p>
+              <p className="text-xs text-muted-foreground">Save your current cart as a template to reuse later.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {templates.map(t => (
+                <div key={t.id} className="rounded-2xl border border-border/50 bg-card p-4 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-indigo-600/15 shrink-0">
+                    <Bookmark className="h-4 w-4 text-indigo-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{t.name}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      {t.lines.length} line{t.lines.length === 1 ? '' : 's'} · used {t.use_count}×
+                      {t.last_used_at && <> · last used {new Date(t.last_used_at).toLocaleDateString('en-IN')}</>}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => void handleApplyTemplate(t)}
+                    className="gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" /> Apply
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => void handleDeleteTemplate(t)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </DistributorLayout>
     );
@@ -162,9 +309,16 @@ export default function DistributorCartPage() {
           <ShoppingCart className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
           <p className="text-sm text-foreground font-medium mb-1">Your cart is empty</p>
           <p className="text-xs text-muted-foreground mb-4">Browse the catalog to add tier-priced items.</p>
-          <Button onClick={() => navigate('/erp/distributor/catalog')} style={{ background: INDIGO, color: 'white' }}>
-            <Package className="h-4 w-4 mr-2" /> Open Catalog
-          </Button>
+          <div className="flex items-center justify-center gap-2">
+            <Button onClick={() => navigate('/erp/distributor/catalog')} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Package className="h-4 w-4 mr-2" /> Open Catalog
+            </Button>
+            {templates.length > 0 && (
+              <Button variant="outline" onClick={() => setView('templates')} className="gap-1.5">
+                <ListChecks className="h-4 w-4" /> My Templates ({templates.length})
+              </Button>
+            )}
+          </div>
         </div>
       </DistributorLayout>
     );
@@ -172,6 +326,27 @@ export default function DistributorCartPage() {
 
   return (
     <DistributorLayout title="Cart" subtitle={`${cart.lines.length} item${cart.lines.length === 1 ? '' : 's'} • saved offline`}>
+      {/* Sprint 10 Part D · Feature #10 — view tabs */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => setView('cart')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+            view === 'cart'
+              ? 'border-indigo-600 bg-indigo-600/10 text-indigo-700 dark:text-indigo-300'
+              : 'border-border/50 text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <ShoppingCart className="h-3.5 w-3.5 inline mr-1.5" />
+          Current Cart
+        </button>
+        <button
+          onClick={() => setView('templates')}
+          className={'px-3 py-1.5 text-xs font-semibold rounded-lg border border-border/50 text-muted-foreground hover:text-foreground transition-colors'}
+        >
+          <ListChecks className="h-3.5 w-3.5 inline mr-1.5" />
+          My Templates ({templates.length})
+        </button>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
         {/* Lines */}
         <div className="lg:col-span-2 space-y-3">
@@ -282,18 +457,64 @@ export default function DistributorCartPage() {
               )}
             </div>
 
-            <Button
-              onClick={() => void handleSubmit()}
-              disabled={submitting || !credit.ok}
-              className="w-full mt-4 rounded-lg gap-2"
-              style={{ background: INDIGO, color: 'white' }}
-            >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Submit Order
-            </Button>
+            {hasRolePermission(CURRENT_ROLE, 'place_order') ? (
+              <div className="mt-4 space-y-2">
+                <Button
+                  onClick={() => void handleSubmit()}
+                  disabled={submitting || !credit.ok}
+                  className="w-full rounded-lg gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Place Order
+                </Button>
+                <Button
+                  onClick={() => { setTemplateName(''); setSaveOpen(true); }}
+                  variant="outline"
+                  className="w-full rounded-lg gap-2"
+                >
+                  <BookmarkPlus className="h-4 w-4" /> Save as Template
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center mt-4 py-2">
+                Your role does not have permission to place orders.
+              </p>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Save as Template dialog */}
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save cart as template</DialogTitle>
+            <DialogDescription>
+              Reuse this list of items later from the My Templates tab.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="tpl-name" className="text-xs">Template name</Label>
+            <Input
+              id="tpl-name"
+              autoFocus
+              value={templateName}
+              onChange={e => setTemplateName(e.target.value)}
+              placeholder="e.g. Monthly staples"
+              maxLength={60}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => void handleSaveTemplate()}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Save Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DistributorLayout>
   );
 }

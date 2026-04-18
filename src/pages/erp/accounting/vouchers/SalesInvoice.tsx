@@ -48,6 +48,7 @@ import type { SAMPerson } from '@/types/sam-person';
 import { samPersonsKey } from '@/types/sam-person';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { notifyDistributorInvoicePosted } from '@/lib/distributor-whatsapp-notify';
 import { resolveCustomerAddress } from '@/lib/customer-address-lookup';
 import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 
@@ -453,6 +454,22 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       } else if (commissionAlreadyAtDN) {
         toast.info('Commission already recorded at Delivery Note stage — skipping.');
       }
+
+      // Sprint 10 Part D · Feature #5 — notify distributor on WhatsApp.
+      try {
+        const cust = customers.find(c => c.id === customerId);
+        const phone = (cust as unknown as { phone?: string; contact_mobile?: string } | undefined);
+        const contact = phone?.phone ?? phone?.contact_mobile ?? '';
+        if (cust && contact) {
+          const portalLink = `${window.location.origin}/erp/distributor/invoices`;
+          notifyDistributorInvoicePosted(
+            entityCode,
+            { id: cust.id, name: partyName, phone: contact },
+            voucher,
+            portalLink,
+          );
+        }
+      } catch { /* best-effort */ }
 
       toast.success('Sales Invoice posted');
     } catch { toast.error('Failed to save'); }

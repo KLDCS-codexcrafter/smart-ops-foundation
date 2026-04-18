@@ -332,6 +332,7 @@ const App = () => (
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />
               <Route path="/erp/distributor" element={<P><DistributorHub /></P>} />
               <Route path="/erp/distributor/hub" element={<P><DistributorHub /></P>} />
+              <Route path="/erp/distributor-hub" element={<P><DistributorHub /></P>} />
               <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
               <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
               <Route path="/erp/distributor/cart" element={<DistributorCart />} />

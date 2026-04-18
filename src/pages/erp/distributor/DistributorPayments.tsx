@@ -17,12 +17,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { getDistributorSession, loadDistributors, hasRolePermission } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
   distributorIntimationsKey,
   type IntimationMode, type IntimationStatus, type DistributorPaymentIntimation,
 } from '@/types/distributor-order';
+
+// Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
+const CURRENT_ROLE = 'owner' as const;
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -221,15 +224,20 @@ export default function DistributorPayments() {
                 </FormItem>
               )} />
 
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-lg gap-2"
-                style={{ background: INDIGO, color: 'white' }}
-              >
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Submit Intimation
-              </Button>
+              {hasRolePermission(CURRENT_ROLE, 'record_payment') ? (
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full rounded-lg gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Submit Intimation
+                </Button>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-2">
+                  Your role does not have permission to record payments.
+                </p>
+              )}
             </form>
           </Form>
         </div>
