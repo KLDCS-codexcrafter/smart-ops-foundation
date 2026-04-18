@@ -36,7 +36,7 @@ export default function PartnerInvoices() {
   const invoices = useMemo<Voucher[]>(() => {
     if (!session) return [];
     const all = ls<Voucher>(`erp_group_vouchers_${session.entity_code}`);
-    const sales = all.filter(v => v.base_voucher_type === 'sales' && v.status === 'posted');
+    const sales = all.filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted');
     return scopeQueryToPartner(sales, session)
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [session]);

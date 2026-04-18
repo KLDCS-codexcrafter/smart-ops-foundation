@@ -68,7 +68,7 @@ export default function PartnerCatalog() {
     return items.filter(it =>
       (it.name?.toLowerCase().includes(q)) ||
       (it.code?.toLowerCase().includes(q)) ||
-      (it.hsn_sac?.toLowerCase().includes(q)),
+      (it.hsn_sac_code?.toLowerCase().includes(q)),
     ).slice(0, 60);
   }, [items, search]);
 
@@ -88,23 +88,24 @@ export default function PartnerCatalog() {
   const handleAdd = async (item: InventoryItem) => {
     setBusyItem(item.id);
     try {
-      const fallback = Math.round((item.standard_rate ?? item.mrp ?? 0) * 100);
+      const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
       const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
       const qty = Math.max(tier.min_qty, qtyMap[item.id] ?? 1);
       // Interstate detection: partner state vs entity state — defaults intra-state.
       const interstate = false;
-      const totals = calcLineTotals(qty, tier.rate_paise, tier.discount_percent, item.gst_rate ?? 18, interstate);
+      const gstRate = (item.cgst_rate ?? 0) + (item.sgst_rate ?? 0) || (item.igst_rate ?? 18);
+      const totals = calcLineTotals(qty, tier.rate_paise, tier.discount_percent, gstRate, interstate);
       const line: PartnerOrderLine = {
         id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         item_id: item.id,
         item_code: item.code,
         item_name: item.name,
-        uom: item.uom_symbol ?? 'NOS',
+        uom: item.primary_uom_symbol ?? 'NOS',
         qty,
         rate_paise: tier.rate_paise,
         discount_percent: tier.discount_percent,
         ...totals,
-        hsn_sac: item.hsn_sac ?? null,
+        hsn_sac: item.hsn_sac_code ?? null,
       };
       const cart = await upsertLine(session.partner_id, session.entity_code, line);
       setCartCount(cart.lines.length);
