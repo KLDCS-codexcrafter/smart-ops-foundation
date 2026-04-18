@@ -50,6 +50,12 @@ export default function DistributorCartPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Sprint 10 Part D · Feature #10 — order templates state.
+  const [view, setView] = useState<'cart' | 'templates'>('cart');
+  const [templates, setTemplates] = useState<DistributorCartTemplate[]>([]);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+
   const distributor = session
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
@@ -69,7 +75,15 @@ export default function DistributorCartPage() {
     }
   }, [session]);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  const refreshTemplates = useCallback(async () => {
+    if (!session) return;
+    try {
+      const list = await loadTemplates(session.distributor_id);
+      setTemplates(list.sort((a, b) => b.created_at.localeCompare(a.created_at)));
+    } catch { /* noop */ }
+  }, [session]);
+
+  useEffect(() => { void refresh(); void refreshTemplates(); }, [refresh, refreshTemplates]);
 
   if (!session || !distributor) {
     return (
