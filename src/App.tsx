@@ -48,6 +48,7 @@ const PayHubPage = lazy(() => import('./features/pay-hub/PayHubPage'));
 const SalesXPage = lazy(() => import('./features/salesx/SalesXPage'));
 const ReceivXPage = lazy(() => import('./features/receivx/ReceivXPage'));
 const SmokeTestRunner = lazy(() => import('./pages/erp/smoke-test/SmokeTestRunner'));
+const ProformaInvoicePrint = lazy(() => import('./pages/erp/salesx/transactions/ProformaInvoicePrint'));
 const ParentCompany = lazy(() => import('./pages/erp/foundation/ParentCompany'));
 const CompanyCreate = lazy(() => import('./pages/erp/foundation/CompanyCreate'));
 const CompanyEdit = lazy(() => import('./pages/erp/foundation/CompanyEdit'));
@@ -304,6 +305,7 @@ const App = () => (
               <Route path="/erp/command-center" element={<P><CommandCenterPage /></P>} />
               <Route path="/erp/pay-hub" element={<P><PayHubPage /></P>} />
               <Route path="/erp/salesx" element={<P><SalesXPage /></P>} />
+              <Route path="/erp/salesx/proforma-print/:quotationId" element={<P><ProformaInvoicePrint /></P>} />
               <Route path="/erp/receivx" element={<P><ReceivXPage /></P>} />
               <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
