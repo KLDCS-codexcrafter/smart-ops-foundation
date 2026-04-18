@@ -19,15 +19,20 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Wallet, Search, Receipt } from 'lucide-react';
+import { Wallet, Search, Receipt, FileCheck, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import {
   commissionRegisterKey,
 } from '@/types/commission-register';
 import type { CommissionEntry, CommissionPayment } from '@/types/commission-register';
-import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
+import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
+import { computeCommissionGL } from '@/lib/commission-engine';
+import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
+import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import type { Voucher } from '@/types/voucher';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
