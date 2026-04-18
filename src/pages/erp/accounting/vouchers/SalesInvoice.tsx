@@ -747,6 +747,78 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
+
+      <Dialog open={overrideOpen} onOpenChange={setOverrideOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <ShieldAlert className="h-5 w-5" />
+              Credit Hold Triggered
+            </DialogTitle>
+            <DialogDescription>
+              Customer over credit limit. Override requires written reason (min 10 chars), logged to audit.
+            </DialogDescription>
+          </DialogHeader>
+
+          {creditCheck && (
+            <div className="space-y-4">
+              <Alert variant="destructive">
+                <AlertDescription>{creditCheck.block_reason}</AlertDescription>
+              </Alert>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="text-muted-foreground">Credit Limit</div>
+                <div className="font-mono text-right">₹{creditCheck.credit_limit.toLocaleString('en-IN')}</div>
+
+                <div className="text-muted-foreground">Current Outstanding</div>
+                <div className="font-mono text-right">₹{creditCheck.current_outstanding.toLocaleString('en-IN')}</div>
+
+                {creditCheck.overdue_outstanding > 0 && (
+                  <>
+                    <div className="text-muted-foreground">Of Which Overdue</div>
+                    <div className="font-mono text-right text-warning">
+                      ₹{creditCheck.overdue_outstanding.toLocaleString('en-IN')}
+                    </div>
+                  </>
+                )}
+
+                <div className="text-muted-foreground">New Invoice</div>
+                <div className="font-mono text-right">₹{creditCheck.new_invoice_amount.toLocaleString('en-IN')}</div>
+
+                <div className="text-muted-foreground font-semibold">Over By</div>
+                <div className="font-mono text-right font-semibold text-destructive">
+                  ₹{creditCheck.over_limit_by.toLocaleString('en-IN')}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="override-reason" className="text-xs">Override Reason (min 10 chars)</Label>
+                <Textarea
+                  id="override-reason"
+                  rows={3}
+                  value={overrideReason}
+                  onChange={(e) => setOverrideReason(e.target.value)}
+                  placeholder="e.g. Key account, payment confirmed for next week"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {overrideReason.trim().length}/10 characters
+                </p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setOverrideOpen(false); setCreditCheck(null); }}>
+              Cancel
+            </Button>
+            <Button data-primary variant="destructive"
+              disabled={overrideReason.trim().length < 10}
+              onClick={confirmOverride}>
+              Override and Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
