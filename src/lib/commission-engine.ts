@@ -1,6 +1,7 @@
 /**
  * commission-engine.ts — Commission lifecycle pure utility
- * Sprint 4. No React. No localStorage. All data passed as params.
+ * Sprint 4. Sprint 6B: collection-bonus evaluation.
+ * No React. No localStorage. All data passed as params.
  * [JWT] All storage handled by callers.
  */
 import type {
@@ -10,6 +11,7 @@ import type {
 } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import type { VoucherLedgerLine } from '@/types/voucher';
+import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
 import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
 
 export interface CommissionReceiptResult {
@@ -55,6 +57,7 @@ export function triggerCommissionOnReceipt(
   allEntries: CommissionEntry[],
   allTDSEntries: TDSDeductionEntry[],
   entityCode: string,
+  samConfig?: SAMConfig,  // Sprint 6B — optional; no bonus if omitted
 ): CommissionReceiptResult {
   const eligible = allEntries.filter(e =>
     e.customer_id === customerId &&
