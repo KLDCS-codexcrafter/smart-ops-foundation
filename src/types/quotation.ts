@@ -7,7 +7,28 @@
 export type QuotationType = 'original' | 'revised';
 export type QuotationStage =
   | 'draft' | 'on_hold' | 'negotiation'
-  | 'confirmed' | 'lost' | 'cancelled';
+  | 'confirmed' | 'proforma'        // Sprint 6B — between confirmed and sales_order
+  | 'lost' | 'cancelled';
+
+export const QUOTATION_STAGE_LABELS: Record<QuotationStage, string> = {
+  draft: 'Draft',
+  on_hold: 'On Hold',
+  negotiation: 'Negotiation',
+  confirmed: 'Confirmed',
+  proforma: 'Proforma Issued',
+  lost: 'Lost',
+  cancelled: 'Cancelled',
+};
+
+export const QUOTATION_STAGE_COLOURS: Record<QuotationStage, string> = {
+  draft: 'bg-muted text-muted-foreground border-border',
+  on_hold: 'bg-yellow-500/15 text-yellow-700 border-yellow-500/30',
+  negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
+  confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
+  proforma: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
+  lost: 'bg-destructive/15 text-destructive border-destructive/30',
+  cancelled: 'bg-muted text-muted-foreground border-border',
+};
 
 export interface QuotationItem {
   id: string;
@@ -59,6 +80,12 @@ export interface Quotation {
   total_amount: number;
   notes: string | null;
   terms_conditions: string | null;
+
+  // Sprint 6B — Proforma conversion
+  proforma_no: string | null;              // PF/YY-YY/NNNN
+  proforma_date: string | null;
+  proforma_converted_at: string | null;
+
   is_active: boolean;
   created_at: string;
   updated_at: string;
