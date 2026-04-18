@@ -32,16 +32,23 @@ export type SalesXModule =
   | 'sx-m-reference'
   | 'sx-m-enquiry-source'
   | 'sx-m-campaign'
+  | 'sx-m-territory'
+  | 'sx-m-beat'
   | 'sx-t-enquiry'
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
   | 'sx-t-quotation'
   | 'sx-t-return-memo'
+  | 'sx-t-visit'
+  | 'sx-t-secondary'
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
   | 'sx-r-quotation-register'
   | 'sx-r-return-memo-register'
+  | 'sx-r-beat-productivity'
+  | 'sx-r-coverage'
+  | 'sx-r-secondary-sales'
   | 'sx-m-target'
   | 'sx-r-followup'
   | 'sx-r-target'
@@ -58,16 +65,23 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-m-reference',
   'sx-m-enquiry-source',
   'sx-m-campaign',
+  'sx-m-territory',
+  'sx-m-beat',
   'sx-t-enquiry',
   'sx-t-pipeline',
   'sx-t-telecaller',
   'sx-t-quotation',
   'sx-t-return-memo',
+  'sx-t-visit',
+  'sx-t-secondary',
   'sx-r-commission',
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
   'sx-r-quotation-register',
   'sx-r-return-memo-register',
+  'sx-r-beat-productivity',
+  'sx-r-coverage',
+  'sx-r-secondary-sales',
   'sx-m-target',
   'sx-r-followup',
   'sx-r-target',
