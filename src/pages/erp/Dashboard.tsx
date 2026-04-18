@@ -5,6 +5,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
+  Store, Heart, Truck,
   type LucideIcon,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -23,6 +24,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
+  Store, Heart, Truck,
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
@@ -59,7 +61,7 @@ const LANES: Array<{
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub'],
   },
   {
     id: 'people',
