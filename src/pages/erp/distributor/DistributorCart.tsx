@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
-  Bookmark, BookmarkPlus, ListChecks, RotateCcw,
+  Bookmark, BookmarkPlus, ListChecks, RotateCcw, Mic, MicOff,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
@@ -29,8 +29,13 @@ import {
 } from '@/lib/distributor-order-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
-  distributorOrdersKey, type DistributorCartState, type DistributorOrder,
+  distributorOrdersKey, type DistributorCartState, type DistributorOrder, type DistributorOrderLine,
 } from '@/types/distributor-order';
+import {
+  isSpeechRecognitionSupported, transcribeVoice, parseVoiceOrder,
+  type VoiceOrderResult,
+} from '@/lib/voice-to-order-engine';
+import type { InventoryItem } from '@/types/inventory-item';
 
 const INDIGO = 'hsl(231 48% 58%)';
 // Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
