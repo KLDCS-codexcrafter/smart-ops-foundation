@@ -230,8 +230,30 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     toast.success(`Linked advance ${adv.advance_ref_no}`);
   };
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Party name is required'); return; }
+  const recordOverride = useCallback((check: CreditHoldCheck, reason: string, by: string) => {
+    try {
+      // [JWT] POST /api/receivx/credit-hold/override
+      const auditKey = creditHoldAuditKey(entityCode);
+      const existing: CreditHoldOverride[] = JSON.parse(localStorage.getItem(auditKey) || '[]');
+      const now = new Date().toISOString();
+      const entry: CreditHoldOverride = {
+        id: `cho-${Date.now()}`, entity_id: entityCode,
+        party_id: check.party_id, party_name: check.party_name,
+        voucher_type: 'sales_invoice', voucher_ref: voucherNo,
+        amount: check.new_invoice_amount,
+        current_outstanding: check.current_outstanding,
+        credit_limit: check.credit_limit,
+        over_limit_by: check.over_limit_by,
+        override_reason: reason,
+        approved_by_user: by,
+        approved_at: now, created_at: now,
+      };
+      existing.push(entry);
+      localStorage.setItem(auditKey, JSON.stringify(existing));
+    } catch { /* noop */ }
+  }, [entityCode, voucherNo]);
+
+  const commitVoucher = useCallback(() => {
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
