@@ -112,6 +112,21 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [creditCheck, setCreditCheck] = useState<CreditHoldCheck | null>(null);
   const [overrideOpen, setOverrideOpen] = useState(false);
   const [overrideReason, setOverrideReason] = useState('');
+  // ── Sprint 9 — IRN / EWB state ──────────────────────────────────
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [postedVoucherNo, setPostedVoucherNo] = useState<string>('');
+  const [irnStatus, setIrnStatus] = useState<'pending' | 'generated' | 'cancelled' | 'failed'>('pending');
+  const [currentIrn, setCurrentIrn] = useState<string | null>(null);
+  const [irnAckDate, setIrnAckDate] = useState<string | null>(null);
+  const [ewbBusy, setEwbBusy] = useState(false);
+  const [irnBusy, setIrnBusy] = useState(false);
+  const [irnCancelOpen, setIrnCancelOpen] = useState(false);
+  const [irnCancelReason, setIrnCancelReason] = useState('1');
+  const [irnCancelRemarks, setIrnCancelRemarks] = useState('');
+  const [ewbDialogOpen, setEwbDialogOpen] = useState(false);
+  const [ewbVehicleNo, setEwbVehicleNo] = useState('');
+  const [ewbTransporter, setEwbTransporter] = useState('');
+  const [ewbDistanceKm, setEwbDistanceKm] = useState<number>(100);
 
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
@@ -289,6 +304,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+      setPostedVoucherId(voucher.id);
+      setPostedVoucherNo(voucher.voucher_no);
+      setIrnStatus('pending');
+      setCurrentIrn(null);
+      setIrnAckDate(null);
 
       // Update advance if linked
       if (linkedAdvance) {
