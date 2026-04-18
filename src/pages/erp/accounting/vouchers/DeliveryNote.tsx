@@ -160,9 +160,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         samCfg?.enableCommissionOnDeliveryNote &&
         commissionPreview.length > 0
       ) {
-        // [JWT] GET /api/salesx/commission-register
         const regStore: CommissionEntry[] = (() => {
           try {
+            // [JWT] GET /api/salesx/commission-register
             return JSON.parse(
               localStorage.getItem(commissionRegisterKey(entityCode)) || '[]',
             );

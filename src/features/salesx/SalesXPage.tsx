@@ -24,6 +24,8 @@ import { QuotationRegisterReportPanel } from '@/pages/erp/salesx/reports/Quotati
 import { TargetMasterPanel } from '@/pages/erp/salesx/masters/TargetMaster';
 import { TargetVsAchievementPanel } from '@/pages/erp/salesx/reports/TargetVsAchievement';
 import { FollowUpRegisterReportPanel } from '@/pages/erp/salesx/reports/FollowUpRegisterReport';
+import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
+import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -46,6 +48,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-m-target':             'Target Master',
   'sx-r-followup':           'Follow-Up Register',
   'sx-r-target':             'Target vs Achievement',
+  'sx-analytics':            'SalesX Analytics',
+  'sx-r-so-tracker':         'Sales Order Tracker',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -109,6 +113,12 @@ function renderModule(
         onNavigate={m => setActiveModule(m as SalesXModule)} />;
     case 'sx-r-target':
       return <TargetVsAchievementPanel entityCode={entityCode} />;
+    case 'sx-analytics':
+      return <SalesXAnalyticsPanel entityCode={entityCode}
+        onNavigate={m => setActiveModule(m as SalesXModule)} />;
+    case 'sx-r-so-tracker':
+      return <SalesOrderTrackerReportPanel entityCode={entityCode}
+        onNavigate={m => setActiveModule(m as SalesXModule)} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

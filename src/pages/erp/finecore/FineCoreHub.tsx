@@ -20,8 +20,16 @@ import {
   TrendingUp, Wallet, AlertTriangle,
   FileText, CreditCard, BookOpen, ArrowLeftRight, ShoppingCart,
   ClipboardList, FileMinus, BarChart3,
-  ArrowRight, Receipt,
+  ArrowRight, Receipt, Target,
 } from 'lucide-react';
+import { enquiriesKey } from '@/types/enquiry';
+import type { Enquiry } from '@/types/enquiry';
+import { opportunitiesKey } from '@/types/opportunity';
+import type { Opportunity } from '@/types/opportunity';
+import { quotationsKey } from '@/types/quotation';
+import type { Quotation } from '@/types/quotation';
+import { commissionRegisterKey } from '@/types/commission-register';
+import type { CommissionEntry } from '@/types/commission-register';
 
 interface FineCoreHubPanelProps {
   onNavigate?: (module: string) => void;
@@ -189,6 +197,39 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
     draftCount > 0 ? draftCount + ' drafts pending' : '',
   ].filter(Boolean).join(' · ');
 
+  // Sprint 5 — SalesX KPIs aggregated for the Sales Performance widget
+  const salesxKPIs = useMemo(() => {
+    const safeJSON = <T,>(k: string): T[] => {
+      try { return JSON.parse(localStorage.getItem(k) || '[]'); }
+      catch { return []; }
+    };
+    // [JWT] GET /api/salesx/enquiries?entityCode={entityCode}
+    const enquiries = safeJSON<Enquiry>(enquiriesKey(entityCode));
+    // [JWT] GET /api/salesx/opportunities?entityCode={entityCode}
+    const opportunities = safeJSON<Opportunity>(opportunitiesKey(entityCode));
+    // [JWT] GET /api/salesx/quotations?entityCode={entityCode}
+    const quotations = safeJSON<Quotation>(quotationsKey(entityCode));
+    // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
+    const commissions = safeJSON<CommissionEntry>(commissionRegisterKey(entityCode));
+    const pendingCommission = commissions
+      .filter(c => c.status === 'pending' || c.status === 'partial')
+      .reduce((s, c) => s + Math.max(0, c.net_total_commission - c.commission_earned_to_date), 0);
+    const pendingPayouts = commissions.filter(
+      c => c.commission_expense_voucher_id && !c.bank_payment_voucher_id,
+    ).length;
+    const openOpportunityValue = opportunities
+      .filter(o => o.stage !== 'won' && o.stage !== 'lost')
+      .reduce((s, o) => s + o.deal_value, 0);
+    return {
+      enquiriesCount: enquiries.length,
+      opportunitiesCount: opportunities.length,
+      quotationsCount: quotations.length,
+      pendingCommission,
+      pendingPayouts,
+      openOpportunityValue,
+    };
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Context bar */}
@@ -298,7 +339,52 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
         </Card>
       </div>
 
-      {/* SECTION 5 — GST snapshot + Aging */}
+      {/* SECTION 4.5 — Sales Performance (Sprint 5) */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Target className="h-4 w-4 text-orange-500" />
+              Sales Performance
+            </h3>
+            <button
+              onClick={() => onNavigate?.('sx-analytics')}
+              className="text-[10px] text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
+            >
+              Open SalesX Analytics <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Enquiries</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.enquiriesCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Opportunities</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.opportunitiesCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Quotations</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.quotationsCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Open Pipeline</p>
+              <p className="text-lg font-bold font-mono mt-1">{inr(salesxKPIs.openOpportunityValue)}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Pending Comm.</p>
+              <p className="text-lg font-bold font-mono mt-1">{inr(salesxKPIs.pendingCommission)}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Payouts Due</p>
+              <p className={`text-lg font-bold font-mono mt-1 ${salesxKPIs.pendingPayouts > 0 ? 'text-amber-600' : 'text-foreground'}`}>
+                {salesxKPIs.pendingPayouts}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4 space-y-3">
