@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -19,6 +19,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Employee ESS and Manager approvals for Vetan Nidhi payroll — payslips, leave, attendance, and approval inbox on any phone.',
     details: 'Two apps in one product: Sahayak Employee (payslips, leave, attendance, IT declaration) and Sahayak Manager (approval inbox, team view, leave calendar, payroll sign-off). PWA — no app install. Capacitor wrapper available for Play Store / App Store distribution.',
     route: '/operix-go/vetan-nidhi',
+    phase: 'phase2',
+  },
+  {
+    id: 'salesx-go',
+    title: 'SalesX Go Sahayak — सहायक',
+    icon: Navigation,
+    description: "Field force mobile app — today's beat, geo check-in with 500m radius, visit logging with photos, secondary sales capture, live target + commission tracking.",
+    details: 'Two apps in one product: Field App (salesman/agent/broker — check-in, visit log, secondary sales, my targets, my commission) and Supervisor App (manager — team coverage, beat productivity, target setting, visit correction approval). PWA — no app install. Capacitor wrapper available for Play Store / App Store distribution.',
+    route: '/operix-go/salesx',
     phase: 'phase2',
   },
   {
