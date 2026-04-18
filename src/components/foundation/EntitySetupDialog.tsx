@@ -3,12 +3,13 @@
  * Presents preview of what will be created, then runs entity-setup-service.
  */
 import { useState } from 'react';
-import { CheckCircle2, Loader2, Package, FolderTree, GitBranch } from 'lucide-react';
+import { CheckCircle2, Loader2, Package, FolderTree, GitBranch, Sparkles } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { runEntitySetup, loadEntities, type SetupResult } from '@/services/entity-setup-service';
 import { L4_INDUSTRY_PACKS } from '@/data/finframe-seed-data';
@@ -51,6 +52,11 @@ export function EntitySetupDialog({
 }: EntitySetupDialogProps) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SetupResult | null>(null);
+  const [autoSeedDemo, setAutoSeedDemo] = useState<boolean>(() => {
+    const name = (entityName || '').toLowerCase();
+    const isProdish = ['production', 'prod', 'live', 'client'].some(w => name.includes(w));
+    return !isProdish;
+  });
 
   const siblingEntities = loadEntities().filter(e => e.id !== entityId);
   const previewLedgers = getPreviewLedgerCount(businessActivity, businessEntity);
@@ -65,6 +71,7 @@ export function EntitySetupDialog({
         entityType, businessEntity, industry, businessActivity,
         loadIndustryPack: true,
         siblingEntities,
+        autoSeedDemo,
       });
       setResult(res);
       setLoading(false);
@@ -123,6 +130,20 @@ export function EntitySetupDialog({
               <div className="flex items-start gap-3 text-sm text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>All opening balances set to zero — edit in Ledger Master</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <Checkbox id="autoSeed" checked={autoSeedDemo}
+                onCheckedChange={(c) => setAutoSeedDemo(c === true)} className="mt-0.5" />
+              <div className="flex-1">
+                <label htmlFor="autoSeed" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                  Load demo data on create
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Populates customers, vendors, salesmen, invoices, PTPs, and more — realistic test data for development and demos. Safe: only seeds if entity is empty.
+                </p>
               </div>
             </div>
 
