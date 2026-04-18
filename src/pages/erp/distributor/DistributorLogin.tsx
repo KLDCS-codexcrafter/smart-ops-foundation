@@ -1,11 +1,11 @@
 /**
- * PartnerLogin.tsx — Standalone partner portal authentication.
+ * DistributorLogin.tsx — Standalone partner portal authentication.
  * Sprint 10. Indigo-600 accent (distributor identity, distinct from
  * SalesX orange and ReceivX amber). Separate route + JWT scope from
  * internal ERP login.
  *
- * [JWT] On submit, calls partner-auth-engine.verifyPartnerCredential
- * (mocked to localStorage) → issuePartnerToken → persistPartnerSession.
+ * [JWT] On submit, calls partner-auth-engine.verifyDistributorCredential
+ * (mocked to localStorage) → issueDistributorToken → persistDistributorSession.
  * Redirects to /partner/dashboard.
  */
 import { useState } from 'react';
@@ -20,11 +20,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import {
-  verifyPartnerCredential,
-  issuePartnerToken,
-  createPartnerSession,
-  persistPartnerSession,
-} from '@/lib/partner-auth-engine';
+  verifyDistributorCredential,
+  issueDistributorToken,
+  createDistributorSession,
+  persistDistributorSession,
+} from '@/lib/distributor-auth-engine';
 
 const schema = z.object({
   credential: z.string().min(3, 'Enter your registered email, partner code, or mobile'),
@@ -33,7 +33,7 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-export function PartnerLoginPanel() {
+export function DistributorLoginPanel() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
@@ -45,15 +45,15 @@ export function PartnerLoginPanel() {
   // [JWT] Replace with: POST /api/partner/auth/login
   const onSubmit = async (values: FormValues) => {
     setSubmitting(true);
-    const res = await verifyPartnerCredential(values.credential, values.password, values.entity_code);
+    const res = await verifyDistributorCredential(values.credential, values.password, values.entity_code);
     setSubmitting(false);
     if ('error' in res) {
       toast.error(res.error);
       return;
     }
-    const token = issuePartnerToken(res.partner, res.entityCode);
-    const session = createPartnerSession(res.partner, token, res.entityCode);
-    persistPartnerSession(session);
+    const token = issueDistributorToken(res.partner, res.entityCode);
+    const session = createDistributorSession(res.partner, token, res.entityCode);
+    persistDistributorSession(session);
     toast.success(`Welcome, ${res.partner.legal_name}`);
     navigate('/partner/dashboard');
   };
@@ -112,7 +112,7 @@ export function PartnerLoginPanel() {
       <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight">Partner sign-in</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Distributor sign-in</h2>
             <p className="text-sm text-muted-foreground">
               Use your registered email, partner code, or mobile.
             </p>
@@ -151,7 +151,7 @@ export function PartnerLoginPanel() {
                 name="credential"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Email / Partner code / Mobile</FormLabel>
+                    <FormLabel className="text-xs">Email / Distributor code / Mobile</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -221,6 +221,6 @@ export function PartnerLoginPanel() {
   );
 }
 
-export default function PartnerLogin() {
-  return <PartnerLoginPanel />;
+export default function DistributorLogin() {
+  return <DistributorLoginPanel />;
 }

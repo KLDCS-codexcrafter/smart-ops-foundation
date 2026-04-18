@@ -4,7 +4,7 @@
  *
  * Design: ONE active cart per partner_id. Survives browser restarts and flaky
  * WiFi. UI calls getCart → mutate locally → setCart. Submit lifts cart into a
- * PartnerOrder via partner-order-engine.cartToOrder, then clearCart.
+ * DistributorOrder via partner-order-engine.cartToOrder, then clearCart.
  *
  * [JWT] On submit, also POST /api/partner/orders to sync with the server.
  */
@@ -12,9 +12,9 @@ import {
   CART_IDB_DB,
   CART_IDB_STORE,
   CART_IDB_VERSION,
-  type PartnerCart,
-  type PartnerOrderLine,
-} from '@/types/partner-order';
+  type DistributorCartState,
+  type DistributorOrderLine,
+} from '@/types/distributor-order';
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -39,17 +39,17 @@ function tx(db: IDBDatabase, mode: IDBTransactionMode): IDBObjectStore {
 }
 
 /** Read a partner's cart, or null if none exists. */
-export async function getCart(partnerId: string): Promise<PartnerCart | null> {
+export async function getCart(partnerId: string): Promise<DistributorCartState | null> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const req = tx(db, 'readonly').get(partnerId);
-    req.onsuccess = () => resolve((req.result as PartnerCart | undefined) ?? null);
+    req.onsuccess = () => resolve((req.result as DistributorCartState | undefined) ?? null);
     req.onerror = () => reject(req.error ?? new Error('IndexedDB get failed'));
   });
 }
 
 /** Upsert the cart. id MUST equal partner_id. */
-export async function setCart(cart: PartnerCart): Promise<void> {
+export async function setCart(cart: DistributorCartState): Promise<void> {
   if (cart.id !== cart.partner_id) {
     throw new Error('cart.id must equal cart.partner_id');
   }
@@ -78,10 +78,10 @@ export async function clearCart(partnerId: string): Promise<void> {
 export async function upsertLine(
   partnerId: string,
   entityCode: string,
-  line: PartnerOrderLine,
-): Promise<PartnerCart> {
+  line: DistributorOrderLine,
+): Promise<DistributorCartState> {
   const existing = await getCart(partnerId);
-  const base: PartnerCart = existing ?? {
+  const base: DistributorCartState = existing ?? {
     id: partnerId,
     partner_id: partnerId,
     entity_code: entityCode,
@@ -99,7 +99,7 @@ export async function upsertLine(
 }
 
 /** removeLine — drop a line by item_id. No-op if cart or line missing. */
-export async function removeLine(partnerId: string, itemId: string): Promise<PartnerCart | null> {
+export async function removeLine(partnerId: string, itemId: string): Promise<DistributorCartState | null> {
   const existing = await getCart(partnerId);
   if (!existing) return null;
   existing.lines = existing.lines.filter(l => l.item_id !== itemId);

@@ -1,5 +1,5 @@
 /**
- * PartnerIntimationQueue.tsx — FineCore queue for accountants to verify partner
+ * DistributorIntimationQueue.tsx — FineCore queue for accountants to verify partner
  * payment intimations and convert to Receipt vouchers. Sprint 10.
  * [JWT] GET /api/finecore/intimations + POST /api/finecore/intimations/:id/convert
  */
@@ -17,9 +17,9 @@ import {
 import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import {
-  partnerIntimationsKey,
-  type IntimationStatus, type PartnerPaymentIntimation,
-} from '@/types/partner-order';
+  distributorIntimationsKey,
+  type IntimationStatus, type DistributorPaymentIntimation,
+} from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -40,13 +40,13 @@ const statusBadge: Record<IntimationStatus, { bg: string; fg: string; label: str
   duplicate: { bg: 'hsl(215 16% 47% / 0.15)', fg: 'hsl(215 16% 47%)', label: 'Duplicate' },
 };
 
-export function PartnerIntimationQueuePanel() { return <PartnerIntimationQueue />; }
+export function DistributorIntimationQueuePanel() { return <DistributorIntimationQueue />; }
 
-export default function PartnerIntimationQueue() {
+export default function DistributorIntimationQueue() {
   // Auto-detect entity (FineCore is per-entity).
   const entityCode = useMemo(() => {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_partner_payment_intimations_'));
-    return keys[0]?.replace('erp_partner_payment_intimations_', '') ?? 'SMRT';
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_distributor_payment_intimations_'));
+    return keys[0]?.replace('erp_distributor_payment_intimations_', '') ?? 'SMRT';
   }, []);
 
   const [refresh, setRefresh] = useState(0);
@@ -56,8 +56,8 @@ export default function PartnerIntimationQueue() {
   const [rejectReason, setRejectReason] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
 
-  const all = useMemo<PartnerPaymentIntimation[]>(
-    () => ls<PartnerPaymentIntimation>(partnerIntimationsKey(entityCode))
+  const all = useMemo<DistributorPaymentIntimation[]>(
+    () => ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode))
       .sort((a, b) => b.created_at.localeCompare(a.created_at)),
     [entityCode, refresh],
   );
@@ -87,12 +87,12 @@ export default function PartnerIntimationQueue() {
     .filter(i => i.status === 'submitted' || i.status === 'verifying')
     .reduce((s, i) => s + i.amount_paise, 0);
 
-  const updateStatus = (id: string, patch: Partial<PartnerPaymentIntimation>) => {
-    const list = ls<PartnerPaymentIntimation>(partnerIntimationsKey(entityCode));
+  const updateStatus = (id: string, patch: Partial<DistributorPaymentIntimation>) => {
+    const list = ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode));
     const next = list.map(i => i.id === id
       ? { ...i, ...patch, updated_at: new Date().toISOString() }
       : i);
-    setLs(partnerIntimationsKey(entityCode), next);
+    setLs(distributorIntimationsKey(entityCode), next);
     setRefresh(x => x + 1);
   };
 
@@ -132,7 +132,7 @@ export default function PartnerIntimationQueue() {
 
   return (
     <AppLayout
-      title="Partner Payment Intimations"
+      title="Distributor Payment Intimations"
       breadcrumbs={[{ label: 'FineCore', href: '/erp/finecore' }, { label: 'Intimations' }]}
     >
       <div className="space-y-4 animate-fade-in">
@@ -180,7 +180,7 @@ export default function PartnerIntimationQueue() {
             <table className="w-full text-sm">
               <thead className="bg-muted/30">
                 <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-3 font-semibold">Partner</th>
+                  <th className="px-4 py-3 font-semibold">Distributor</th>
                   <th className="px-4 py-3 font-semibold text-right">Amount</th>
                   <th className="px-4 py-3 font-semibold">Mode / UTR</th>
                   <th className="px-4 py-3 font-semibold">Paid On</th>

@@ -6,12 +6,12 @@
 import type { PriceList, PriceListItem } from '@/types/price-list';
 import type { Voucher } from '@/types/voucher';
 import type {
-  PartnerCart,
-  PartnerOrder,
-  PartnerOrderLine,
-  PartnerOrderStatus,
-} from '@/types/partner-order';
-import type { Partner } from '@/types/partner';
+  DistributorCartState,
+  DistributorOrder,
+  DistributorOrderLine,
+  DistributorOrderStatus,
+} from '@/types/distributor-order';
+import type { Distributor } from '@/types/distributor';
 
 /**
  * resolveTierPrice — given the partner's price list and an item, return the
@@ -49,7 +49,7 @@ export function calcLineTotals(
   discountPercent: number,
   gstRate: number,
   interstate: boolean,
-): Pick<PartnerOrderLine, 'taxable_paise' | 'cgst_paise' | 'sgst_paise' | 'igst_paise' | 'total_paise'> {
+): Pick<DistributorOrderLine, 'taxable_paise' | 'cgst_paise' | 'sgst_paise' | 'igst_paise' | 'total_paise'> {
   const gross = qty * ratePaise;
   const discount = Math.round(gross * (discountPercent / 100));
   const taxable = gross - discount;
@@ -78,7 +78,7 @@ export function calcLineTotals(
  * Returns OK if (outstanding + cart_total) <= credit_limit.
  */
 export function checkCreditAvailable(
-  partner: Partner,
+  partner: Distributor,
   cartTotalPaise: number,
 ): { ok: boolean; available_paise: number; would_exceed_by_paise: number } {
   const available = partner.credit_limit_paise - partner.outstanding_paise;
@@ -126,15 +126,15 @@ export function suggestReorderQty(
 }
 
 /**
- * cartToOrder — converts a draft cart into a submittable PartnerOrder.
+ * cartToOrder — converts a draft cart into a submittable DistributorOrder.
  * Pure: caller persists the result and clears the cart.
  */
 export function cartToOrder(
-  cart: PartnerCart,
-  partner: Partner,
+  cart: DistributorCartState,
+  partner: Distributor,
   orderNo: string,
   now: string = new Date().toISOString(),
-): PartnerOrder {
+): DistributorOrder {
   const totalTaxable = cart.lines.reduce((s, l) => s + l.taxable_paise, 0);
   const totalTax = cart.lines.reduce(
     (s, l) => s + l.cgst_paise + l.sgst_paise + l.igst_paise, 0);
@@ -146,7 +146,7 @@ export function cartToOrder(
     partner_code: partner.partner_code,
     partner_name: partner.legal_name,
     entity_code: cart.entity_code,
-    status: 'submitted' as PartnerOrderStatus,
+    status: 'submitted' as DistributorOrderStatus,
     lines: cart.lines,
     total_taxable_paise: totalTaxable,
     total_tax_paise: totalTax,
@@ -168,7 +168,7 @@ export function cartToOrder(
  * nextOrderNumber — pure sequence helper. Format: PO/YYYY/00001.
  * Caller passes the current order list; we look at the max for this year.
  */
-export function nextOrderNumber(existingOrders: PartnerOrder[], year: number = new Date().getFullYear()): string {
+export function nextOrderNumber(existingOrders: DistributorOrder[], year: number = new Date().getFullYear()): string {
   const prefix = `PO/${year}/`;
   const maxSeq = existingOrders
     .filter(o => o.order_no.startsWith(prefix))
@@ -184,7 +184,7 @@ export function nextOrderNumber(existingOrders: PartnerOrder[], year: number = n
  * If partner.price_list_id is set, use it. Otherwise pick the one matching
  * `list_type='distributor'` and is_default=true.
  */
-export function pickActivePriceList(partner: Partner, allLists: PriceList[]): string | null {
+export function pickActivePriceList(partner: Distributor, allLists: PriceList[]): string | null {
   if (partner.price_list_id) return partner.price_list_id;
   const defaultList = allLists.find(l => l.list_type === 'distributor' && l.is_default && l.status === 'active');
   return defaultList?.id ?? null;

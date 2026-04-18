@@ -1,5 +1,5 @@
 /**
- * PartnerDashboard.tsx — Distributor home: credit, monthly target, activity.
+ * DistributorDashboard.tsx — Distributor home: credit, monthly target, activity.
  * Sprint 10. Indigo-600 accent. Reads partner from localStorage scoped by session.
  * [JWT] Replace localStorage with GET /api/partner/dashboard.
  */
@@ -9,9 +9,9 @@ import {
   IndianRupee, TrendingUp, AlertTriangle, ShoppingCart,
   Package, FileText, Megaphone, ArrowRight, CircleDollarSign,
 } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
-import { partnerActivityKey, type PartnerActivity } from '@/types/partner';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { distributorActivityKey, type DistributorActivity } from '@/types/distributor';
 import { formatINR } from '@/lib/india-validations';
 
 const INDIGO = 'hsl(231 48% 58%)';
@@ -21,31 +21,31 @@ function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
 
-export function PartnerDashboardPanel() { return <PartnerDashboard />; }
+export function DistributorDashboardPanel() { return <DistributorDashboard />; }
 
-export default function PartnerDashboard() {
+export default function DistributorDashboard() {
   const navigate = useNavigate();
-  const session = getPartnerSession();
+  const session = getDistributorSession();
 
   const partner = useMemo(() => {
     if (!session) return null;
-    return loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null;
+    return loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null;
   }, [session]);
 
-  const activity = useMemo<PartnerActivity[]>(() => {
+  const activity = useMemo<DistributorActivity[]>(() => {
     if (!session) return [];
-    const all = ls<PartnerActivity>(partnerActivityKey(session.entity_code));
+    const all = ls<DistributorActivity>(distributorActivityKey(session.entity_code));
     return all.filter(a => a.partner_id === session.partner_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 8);
   }, [session]);
 
   if (!session || !partner) {
     return (
-      <PartnerLayout title="Dashboard">
+      <DistributorLayout title="Dashboard">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
-          Partner profile unavailable. Please sign in again.
+          Distributor profile unavailable. Please sign in again.
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
@@ -73,7 +73,7 @@ export default function PartnerDashboard() {
   ];
 
   return (
-    <PartnerLayout
+    <DistributorLayout
       title={`Welcome, ${partner.legal_name.split(' ')[0]}`}
       subtitle={`${partner.partner_code} • ${session.entity_code}`}
     >
@@ -199,12 +199,12 @@ export default function PartnerDashboard() {
           )}
         </div>
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }
 
-function ActivityIcon({ kind }: { kind: PartnerActivity['kind'] }) {
-  const map: Record<PartnerActivity['kind'], typeof FileText> = {
+function ActivityIcon({ kind }: { kind: DistributorActivity['kind'] }) {
+  const map: Record<DistributorActivity['kind'], typeof FileText> = {
     invoice_posted: FileText,
     payment_received: IndianRupee,
     order_approved: ShoppingCart,

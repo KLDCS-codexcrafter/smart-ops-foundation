@@ -1,12 +1,12 @@
 /**
- * PartnerUpdates.tsx — Inbox of broadcasts received by the partner.
+ * DistributorUpdates.tsx — Inbox of broadcasts received by the partner.
  * Sprint 10. Filters by audience match (all_partners or matching tier).
  */
 import { useMemo } from 'react';
 import { Megaphone, Calendar, MessageSquare, Mail, Bell } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
-import { partnerBroadcastsKey, type BroadcastMessage } from '@/types/partner-order';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { distributorBroadcastsKey, type BroadcastMessage } from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -18,17 +18,17 @@ function ls<T>(k: string): T[] {
 const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-export function PartnerUpdatesPanel() { return <PartnerUpdates />; }
+export function DistributorUpdatesPanel() { return <DistributorUpdates />; }
 
-export default function PartnerUpdates() {
-  const session = getPartnerSession();
+export default function DistributorUpdates() {
+  const session = getDistributorSession();
   const partner = session
-    ? loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null
+    ? loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null
     : null;
 
   const broadcasts = useMemo<BroadcastMessage[]>(() => {
     if (!session || !partner) return [];
-    const all = ls<BroadcastMessage>(partnerBroadcastsKey(session.entity_code));
+    const all = ls<BroadcastMessage>(distributorBroadcastsKey(session.entity_code));
     return all
       .filter(b => b.status === 'sent')
       .filter(b => {
@@ -41,11 +41,11 @@ export default function PartnerUpdates() {
   }, [session, partner]);
 
   if (!session || !partner) {
-    return <PartnerLayout title="Updates"><div className="text-sm text-muted-foreground">Sign in.</div></PartnerLayout>;
+    return <DistributorLayout title="Updates"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;
   }
 
   return (
-    <PartnerLayout title="Updates" subtitle={`${broadcasts.length} message${broadcasts.length === 1 ? '' : 's'}`}>
+    <DistributorLayout title="Updates" subtitle={`${broadcasts.length} message${broadcasts.length === 1 ? '' : 's'}`}>
       <div className="space-y-3 animate-fade-in">
         {broadcasts.length === 0 ? (
           <div className="rounded-2xl border border-border/50 p-12 text-center">
@@ -79,6 +79,6 @@ export default function PartnerUpdates() {
           </div>
         ))}
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }

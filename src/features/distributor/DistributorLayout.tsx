@@ -1,5 +1,5 @@
 /**
- * PartnerLayout.tsx — Distributor portal shell.
+ * DistributorLayout.tsx — Distributor portal shell.
  * Sprint 10. Indigo-600 accent. Wraps all /partner/* pages.
  * Separate auth boundary: redirects to /partner/login when no session.
  */
@@ -12,7 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { getPartnerSession, clearPartnerSession } from '@/lib/partner-auth-engine';
+import { getDistributorSession, clearDistributorSession } from '@/lib/distributor-auth-engine';
 import { toast } from 'sonner';
 
 const navItems = [
@@ -24,25 +24,25 @@ const navItems = [
   { title: 'Updates',   url: '/partner/updates',   icon: Megaphone },
 ];
 
-interface PartnerLayoutProps {
+interface DistributorLayoutProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
 }
 
-export function PartnerLayout({ children, title, subtitle }: PartnerLayoutProps) {
+export function DistributorLayout({ children, title, subtitle }: DistributorLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const session = getPartnerSession();
+  const session = getDistributorSession();
   if (!session) return <Navigate to="/partner/login" replace />;
 
   const initials = session.legal_name
     .split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase() || 'PR';
 
   const handleLogout = () => {
-    clearPartnerSession();
+    clearDistributorSession();
     toast.success('Signed out');
     navigate('/partner/login');
   };

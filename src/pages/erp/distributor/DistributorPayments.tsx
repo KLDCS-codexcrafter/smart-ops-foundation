@@ -1,6 +1,6 @@
 /**
- * PartnerPayments.tsx — Distributor records "I paid X by RTGS UTR Y".
- * Sprint 10. Creates a PartnerPaymentIntimation; ERP accountant verifies + posts a Receipt.
+ * DistributorPayments.tsx — Distributor records "I paid X by RTGS UTR Y".
+ * Sprint 10. Creates a DistributorPaymentIntimation; ERP accountant verifies + posts a Receipt.
  * [JWT] POST /api/partner/payment-intimations
  */
 import { useMemo, useState } from 'react';
@@ -10,19 +10,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IndianRupee, Send, Loader2, ClipboardList, CheckCircle2, Clock, XCircle,
 } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
-  partnerIntimationsKey,
-  type IntimationMode, type IntimationStatus, type PartnerPaymentIntimation,
-} from '@/types/partner-order';
+  distributorIntimationsKey,
+  type IntimationMode, type IntimationStatus, type DistributorPaymentIntimation,
+} from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -58,20 +58,20 @@ const statusBadge: Record<IntimationStatus, { bg: string; fg: string; Icon: type
   duplicate:  { bg: 'hsl(215 16% 47% / 0.15)', fg: 'hsl(215 16% 47%)', Icon: XCircle, label: 'Duplicate' },
 };
 
-export function PartnerPaymentsPanel() { return <PartnerPayments />; }
+export function DistributorPaymentsPanel() { return <DistributorPayments />; }
 
-export default function PartnerPayments() {
-  const session = getPartnerSession();
+export default function DistributorPayments() {
+  const session = getDistributorSession();
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
   const partner = session
-    ? loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null
+    ? loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null
     : null;
 
-  const intimations = useMemo<PartnerPaymentIntimation[]>(() => {
+  const intimations = useMemo<DistributorPaymentIntimation[]>(() => {
     if (!session) return [];
-    return ls<PartnerPaymentIntimation>(partnerIntimationsKey(session.entity_code))
+    return ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code))
       .filter(i => i.partner_id === session.partner_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
   }, [session, refresh]);
@@ -96,7 +96,7 @@ export default function PartnerPayments() {
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
-      const intimation: PartnerPaymentIntimation = {
+      const intimation: DistributorPaymentIntimation = {
         id: `pi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         partner_id: partner.id,
         partner_code: partner.partner_code,
@@ -118,9 +118,9 @@ export default function PartnerPayments() {
         created_at: now,
         updated_at: now,
       };
-      const existing = ls<PartnerPaymentIntimation>(partnerIntimationsKey(session.entity_code));
+      const existing = ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code));
       // [JWT] POST /api/partner/payment-intimations
-      setLs(partnerIntimationsKey(session.entity_code), [intimation, ...existing]);
+      setLs(distributorIntimationsKey(session.entity_code), [intimation, ...existing]);
       toast.success('Payment intimation submitted', {
         description: `${formatINR(intimation.amount_paise)} • ${v.mode.toUpperCase()}`,
       });
@@ -132,11 +132,11 @@ export default function PartnerPayments() {
   };
 
   if (!session || !partner) {
-    return <PartnerLayout title="Payments"><div className="text-sm text-muted-foreground">Sign in.</div></PartnerLayout>;
+    return <DistributorLayout title="Payments"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;
   }
 
   return (
-    <PartnerLayout title="Payments" subtitle="Record a transfer — accountant will verify against bank statement">
+    <DistributorLayout title="Payments" subtitle="Record a transfer — accountant will verify against bank statement">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in">
         {/* Form */}
         <div className="rounded-2xl border border-border/50 bg-card p-5">
@@ -272,6 +272,6 @@ export default function PartnerPayments() {
           )}
         </div>
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }
