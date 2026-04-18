@@ -6165,6 +6165,8 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
 
 // ─── Wrapped Export ───────────────────────────────────────────────────
 
+export function LedgerMasterPanel() { return <LedgerMaster />; }
+
 export default function LedgerMaster() {
   return (
     <SidebarProvider>
