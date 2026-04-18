@@ -158,15 +158,15 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
       // Auto-trigger commission payments when customer receipt posted (Sprint 4)
       if (selectedCustomer?.id && receiptPurpose === 'regular') {
-        // [JWT] GET /api/salesx/commission-register
         const allEntries: CommissionEntry[] = (() => {
           try {
+            // [JWT] GET /api/salesx/commission-register
             return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
           } catch { return []; }
         })();
-        // [JWT] GET /api/compliance/tds-deductions
         const allTDS: TDSDeductionEntry[] = (() => {
           try {
+            // [JWT] GET /api/compliance/tds-deductions
             return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
           } catch { return []; }
         })();

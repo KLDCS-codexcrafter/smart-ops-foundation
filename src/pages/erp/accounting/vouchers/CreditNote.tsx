@@ -1,5 +1,6 @@
 /**
  * CreditNote.tsx — Full Credit Note form
+ * Sprint 4: Auto-trigger commission reversal + optional reversal JV.
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Send } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,11 +18,21 @@ import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
-import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import {
+  generateVoucherNo,
+  postVoucher,
+  vouchersKey,
+} from '@/lib/finecore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { triggerCommissionReversal } from '@/lib/commission-engine';
+import type { CommissionEntry } from '@/types/commission-register';
+import { commissionRegisterKey } from '@/types/commission-register';
+import type { TDSDeductionEntry } from '@/types/compliance';
+import { tdsDeductionsKey } from '@/types/compliance';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 const REASON_CODES = [
   'Goods Return', 'Price Correction', 'Excess Charged',
@@ -33,7 +45,9 @@ interface CreditNotePanelProps {
 }
 
 export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
-  const entityCode = 'SMRT';
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+
   const [voucherNo] = useState(() => generateVoucherNo('CN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
@@ -43,6 +57,12 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
+
+  const [reversalBanner, setReversalBanner] = useState<string | null>(null);
+  const [pendingReversalJV, setPendingReversalJV] = useState<{
+    lines: VoucherLedgerLine[];
+    banner: string;
+  } | null>(null);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
@@ -81,6 +101,46 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+
+      // Trigger commission reversal on credit note (Sprint 4)
+      if (againstInvoice) {
+        const allEntries: CommissionEntry[] = (() => {
+          try {
+            // [JWT] GET /api/salesx/commission-register
+            return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
+          } catch { return []; }
+        })();
+        const allTDS: TDSDeductionEntry[] = (() => {
+          try {
+            // [JWT] GET /api/compliance/tds-deductions
+            return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
+          } catch { return []; }
+        })();
+        if (allEntries.some(e => e.voucher_no === againstInvoice)) {
+          const result = triggerCommissionReversal(
+            voucherNo, gstTotals.taxable, againstInvoice, date,
+            allEntries, allTDS,
+          );
+          // [JWT] PATCH /api/salesx/commission-register
+          localStorage.setItem(
+            commissionRegisterKey(entityCode),
+            JSON.stringify(result.updatedEntries),
+          );
+          if (result.cancelledTDSIds.length > 0) {
+            const tdsStore = allTDS.map(t =>
+              result.cancelledTDSIds.includes(t.id)
+                ? { ...t, status: 'cancelled' as const } : t,
+            );
+            // [JWT] PATCH /api/compliance/tds-deductions
+            localStorage.setItem(tdsDeductionsKey(entityCode), JSON.stringify(tdsStore));
+          }
+          if (result.banner) setReversalBanner(result.banner);
+          if (result.reversalJVLines) {
+            setPendingReversalJV({ lines: result.reversalJVLines, banner: result.banner });
+          }
+        }
+      }
+
       toast.success('Credit Note posted');
     } catch { toast.error('Failed to save'); }
   }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
@@ -94,7 +154,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
         formState: { party_name: partyName, date, ref_voucher_no: againstInvoice } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, partyName, date, againstInvoice, reasonCode, inventoryLines]);
+  }, [onSaveDraft, partyName, date, againstInvoice]);
 
   return (
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
@@ -146,6 +206,71 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
       )}
 
       {invoiceMode === 'item' && <GSTComputationPanel lines={inventoryLines} isInterState={false} />}
+
+      {reversalBanner && !pendingReversalJV && (
+        <Alert className="border-orange-500/30 bg-orange-500/5">
+          <AlertDescription className="text-xs text-orange-700">
+            ↩ {reversalBanner}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {pendingReversalJV && (
+        <Card className="border-amber-500/40 bg-amber-500/5">
+          <CardContent className="pt-3 space-y-2">
+            <p className="text-xs font-semibold text-amber-700">
+              Commission already paid – reversal journal required
+            </p>
+            <p className="text-xs text-muted-foreground">{pendingReversalJV.banner}</p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                data-primary
+                className="bg-amber-600 hover:bg-amber-700"
+                onClick={() => {
+                  const jvNo = generateVoucherNo('JV', entityCode);
+                  const jv: Voucher = {
+                    id: `v-${Date.now()}`,
+                    voucher_no: jvNo,
+                    voucher_type_id: '',
+                    voucher_type_name: 'Journal',
+                    base_voucher_type: 'Journal',
+                    entity_id: entityCode,
+                    date,
+                    party_name: partyName,
+                    ref_voucher_no: voucherNo,
+                    vendor_bill_no: '',
+                    net_amount: 0,
+                    narration: `Commission reversal JV - ${voucherNo}`,
+                    terms_conditions: '', payment_enforcement: '',
+                    payment_instrument: '', from_ledger_name: '', to_ledger_name: '',
+                    from_godown_name: '', to_godown_name: '',
+                    ledger_lines: pendingReversalJV.lines,
+                    gross_amount: 0, total_discount: 0, total_taxable: 0,
+                    total_cgst: 0, total_sgst: 0, total_igst: 0,
+                    total_cess: 0, total_tax: 0, round_off: 0,
+                    tds_applicable: false, status: 'draft',
+                    created_by: 'current-user',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  };
+                  try {
+                    // [JWT] POST /api/accounting/vouchers (reversal JV)
+                    postVoucher(jv, entityCode);
+                    toast.success(`Reversal JV ${jvNo} posted`);
+                  } catch { toast.error('Failed to post reversal JV'); }
+                  setPendingReversalJV(null);
+                }}
+              >
+                Post Reversal JV
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setPendingReversalJV(null)}>
+                Dismiss (post manually)
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="pt-5">

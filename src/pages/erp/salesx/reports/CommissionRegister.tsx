@@ -19,15 +19,20 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Wallet, Search, Receipt } from 'lucide-react';
+import { Wallet, Search, Receipt, FileCheck, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import {
   commissionRegisterKey,
 } from '@/types/commission-register';
 import type { CommissionEntry, CommissionPayment } from '@/types/commission-register';
-import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
+import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
+import { computeCommissionGL } from '@/lib/commission-engine';
+import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
+import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import type { Voucher } from '@/types/voucher';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
@@ -65,6 +70,22 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
   const [payDate, setPayDate] = useState(todayISO());
   const [receiptNo, setReceiptNo] = useState('');
   const [amountReceived, setAmountReceived] = useState('');
+
+  // Sprint 4 — expand row + agent invoice + GL voucher
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [agentInvoiceId, setAgentInvoiceId] = useState<string | null>(null);
+  const [agentInvNo, setAgentInvNo] = useState('');
+  const [agentInvDate, setAgentInvDate] = useState(todayISO());
+  const [agentInvGross, setAgentInvGross] = useState('');
+  const [agentInvGST, setAgentInvGST] = useState('');
+
+  const samCfg = useMemo<SAMConfig | null>(() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/sam/:entityCode
+      const raw = localStorage.getItem(comply360SAMKey(entityCode));
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [entityCode]);
 
   const reload = useCallback(() => setRegister(loadRegister(entityCode)), [entityCode]);
 
@@ -140,9 +161,9 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
 
     // Write TDSDeductionEntry if TDS is applicable and threshold crossed
     if (active.tds_applicable && active.tds_section && previewPayment.tdsAmount > 0) {
-      // [JWT] GET /api/compliance/tds-deductions
       const allTDS: TDSDeductionEntry[] = (() => {
         try {
+          // [JWT] GET /api/compliance/tds-deductions
           return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
         } catch { return []; }
       })();
@@ -232,6 +253,96 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     reload();
     closePay();
   }, [active, amountReceived, payDate, receiptNo, previewPayment, entityCode, reload]);
+
+  // Sprint 4 — Post GL voucher for paid/partial commission
+  const handlePostGLVoucher = useCallback((entry: CommissionEntry) => {
+    const glResult = computeCommissionGL(
+      entry,
+      samCfg?.commissionLedgerSales ?? '',
+      'Commission on Sales',
+    );
+    if ('error' in glResult) { toast.error(glResult.error); return; }
+    const pvNo = generateVoucherNo('PV', entityCode);
+    const pv: Voucher = {
+      id: `v-${Date.now()}`,
+      voucher_no: pvNo,
+      voucher_type_id: '',
+      voucher_type_name: 'Payment',
+      base_voucher_type: 'Payment',
+      entity_id: entityCode,
+      date: todayISO(),
+      party_name: entry.person_name,
+      ref_voucher_no: entry.voucher_no,
+      vendor_bill_no: '',
+      net_amount: glResult.netPayableToAgent + glResult.tdsPayableAmount,
+      narration: `Commission payment - ${entry.voucher_no}`,
+      terms_conditions: '', payment_enforcement: '',
+      payment_instrument: '', from_ledger_name: '',
+      to_ledger_name: entry.person_name,
+      from_godown_name: '', to_godown_name: '',
+      ledger_lines: glResult.expenseLines,
+      gross_amount: glResult.netPayableToAgent + glResult.tdsPayableAmount,
+      total_discount: 0, total_taxable: 0,
+      total_cgst: 0, total_sgst: 0, total_igst: 0,
+      total_cess: 0, total_tax: 0, round_off: 0,
+      tds_applicable: entry.tds_applicable,
+      status: 'draft',
+      created_by: 'current-user',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    try {
+      // [JWT] POST /api/accounting/vouchers (commission GL)
+      postVoucher(pv, entityCode);
+      const list = loadRegister(entityCode);
+      const idx = list.findIndex(e => e.id === entry.id);
+      if (idx >= 0) {
+        list[idx] = {
+          ...list[idx],
+          commission_expense_voucher_id: pv.id,
+          commission_expense_voucher_no: pvNo,
+          updated_at: new Date().toISOString(),
+        };
+        // [JWT] PATCH /api/salesx/commission-register
+        saveRegister(entityCode, list);
+        reload();
+      }
+      toast.success(`GL voucher ${pvNo} posted`);
+    } catch { toast.error('Failed to post GL voucher'); }
+  }, [entityCode, samCfg, reload]);
+
+  // Sprint 4 — Save / reconcile agent GST invoice
+  const handleSaveAgentInvoice = useCallback((
+    entry: CommissionEntry,
+    nextStatus: 'received' | 'reconciled' | 'disputed',
+    reason?: string,
+  ) => {
+    const gross = Number(agentInvGross);
+    const gst = Number(agentInvGST);
+    if (!agentInvNo.trim()) { toast.error('Agent invoice number required'); return; }
+    if (!gross || gross <= 0) { toast.error('Gross amount must be positive'); return; }
+    const variance = +(gross - gst - entry.commission_earned_to_date).toFixed(2);
+    const list = loadRegister(entityCode);
+    const idx = list.findIndex(e => e.id === entry.id);
+    if (idx < 0) return;
+    list[idx] = {
+      ...list[idx],
+      agent_invoice_no: agentInvNo.trim(),
+      agent_invoice_date: agentInvDate,
+      agent_invoice_gross_amount: gross,
+      agent_invoice_gst_amount: gst,
+      agent_invoice_status: nextStatus,
+      agent_invoice_variance: variance,
+      agent_invoice_dispute_reason: reason ?? null,
+      updated_at: new Date().toISOString(),
+    };
+    // [JWT] PATCH /api/salesx/commission-register/:id/agent-invoice
+    saveRegister(entityCode, list);
+    reload();
+    setAgentInvoiceId(null);
+    setAgentInvNo(''); setAgentInvGross(''); setAgentInvGST('');
+    toast.success(`Agent invoice ${nextStatus}`);
+  }, [agentInvNo, agentInvDate, agentInvGross, agentInvGST, entityCode, reload]);
 
   return (
     <div className="space-y-4" data-keyboard-form>
@@ -326,54 +437,217 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs w-6" />
                   <TableHead className="text-xs">Invoice</TableHead>
                   <TableHead className="text-xs">Date</TableHead>
                   <TableHead className="text-xs">Customer</TableHead>
                   <TableHead className="text-xs">SAM Person</TableHead>
-                  <TableHead className="text-xs text-right">Invoice ₹</TableHead>
+                  <TableHead className="text-xs text-right">Net Inv ₹</TableHead>
                   <TableHead className="text-xs text-right">Commission ₹</TableHead>
                   <TableHead className="text-xs text-right">Received ₹</TableHead>
                   <TableHead className="text-xs text-right">Net Paid ₹</TableHead>
                   <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs w-24" />
+                  <TableHead className="text-xs">Agent Inv</TableHead>
+                  <TableHead className="text-xs w-44" />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map(e => (
-                  <TableRow key={e.id}>
-                    <TableCell className="text-xs font-mono">{e.voucher_no}</TableCell>
-                    <TableCell className="text-xs">{e.voucher_date}</TableCell>
-                    <TableCell className="text-xs">{e.customer_name}</TableCell>
-                    <TableCell className="text-xs">
-                      <div className="font-medium">{e.person_name}</div>
-                      <div className="text-[10px] text-muted-foreground capitalize">
-                        {e.person_type}
-                        {e.tds_applicable && e.tds_section && ` · TDS ${e.tds_section} @ ${e.tds_rate}%`}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.invoice_amount)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.total_commission)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
-                        {e.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {(e.status === 'pending' || e.status === 'partial') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 text-xs"
-                          onClick={() => openPay(e)}
-                        >
-                          <Wallet className="h-3 w-3 mr-1" /> Log
-                        </Button>
+                {filtered.map(e => {
+                  const isExpanded = expandedId === e.id;
+                  const hasCN = (e.credit_note_refs?.length ?? 0) > 0;
+                  const isReversed = e.status === 'reversed';
+                  return (
+                    <>
+                      <TableRow key={e.id} className={cn(isReversed && 'italic opacity-80')}>
+                        <TableCell>
+                          {hasCN && (
+                            <Button
+                              size="icon" variant="ghost" className="h-6 w-6"
+                              onClick={() => setExpandedId(isExpanded ? null : e.id)}
+                            >
+                              {isExpanded
+                                ? <ChevronDown className="h-3.5 w-3.5" />
+                                : <ChevronRight className="h-3.5 w-3.5" />}
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs font-mono">{e.voucher_no}</TableCell>
+                        <TableCell className="text-xs">{e.voucher_date}</TableCell>
+                        <TableCell className="text-xs">{e.customer_name}</TableCell>
+                        <TableCell className="text-xs">
+                          <div className="font-medium">{e.person_name}</div>
+                          <div className="text-[10px] text-muted-foreground capitalize">
+                            {e.person_type}
+                            {e.tds_applicable && e.tds_section && ` · TDS ${e.tds_section} @ ${e.tds_rate}%`}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-right font-mono">
+                          {inrFmt.format(e.net_invoice_amount)}
+                          {hasCN && (
+                            <div className="text-[9px] text-rose-600">
+                              −{inrFmt.format(e.credit_note_amount)} CN
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_total_commission)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
+                            {e.status}
+                          </Badge>
+                          {e.commission_expense_voucher_no && (
+                            <div className="text-[9px] font-mono text-muted-foreground mt-0.5">
+                              GL: {e.commission_expense_voucher_no}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          {e.agent_invoice_status ? (
+                            <Badge variant="outline" className="text-[10px] capitalize">
+                              {e.agent_invoice_status}
+                            </Badge>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {!isReversed && (
+                            <div className="flex flex-wrap gap-1">
+                              {(e.status === 'pending' || e.status === 'partial') && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => openPay(e)}
+                                >
+                                  <Wallet className="h-3 w-3 mr-1" /> Log
+                                </Button>
+                              )}
+                              {(e.status === 'paid' || e.status === 'partial') && !e.commission_expense_voucher_id && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => handlePostGLVoucher(e)}
+                                >
+                                  <FileCheck className="h-3 w-3 mr-1" /> Post GL
+                                </Button>
+                              )}
+                              {!e.agent_invoice_status && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => {
+                                    setAgentInvoiceId(e.id);
+                                    setAgentInvNo(''); setAgentInvDate(todayISO());
+                                    setAgentInvGross(''); setAgentInvGST('');
+                                  }}
+                                >
+                                  Agent Inv
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      {isExpanded && hasCN && (
+                        <TableRow key={`${e.id}-cn`}>
+                          <TableCell colSpan={12} className="bg-muted/30 p-3">
+                            <p className="text-[11px] font-semibold mb-2">Credit Note Reversals</p>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-[10px]">CN No</TableHead>
+                                  <TableHead className="text-[10px]">Date</TableHead>
+                                  <TableHead className="text-[10px] text-right">CN Amount</TableHead>
+                                  <TableHead className="text-[10px] text-right">Commission Reversed</TableHead>
+                                  <TableHead className="text-[10px]">TDS</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {e.credit_note_refs.map(r => (
+                                  <TableRow key={r.credit_note_id}>
+                                    <TableCell className="text-[10px] font-mono">{r.credit_note_no}</TableCell>
+                                    <TableCell className="text-[10px]">{r.credit_note_date}</TableCell>
+                                    <TableCell className="text-[10px] text-right font-mono">{inrFmt.format(r.credit_note_amount)}</TableCell>
+                                    <TableCell className="text-[10px] text-right font-mono">{inrFmt.format(r.commission_reversed)}</TableCell>
+                                    <TableCell>
+                                      {r.tds_reversal_entry_id ? (
+                                        <Badge variant="outline" className="text-[9px] bg-success/15 text-success border-success/30">
+                                          TDS Cancelled
+                                        </Badge>
+                                      ) : (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Badge variant="outline" className="text-[9px] bg-amber-500/15 text-amber-700 border-amber-500/30 cursor-help">
+                                              <AlertTriangle className="h-2.5 w-2.5 mr-1" /> Amend TDS
+                                            </Badge>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            TDS challan already deposited — file 26Q amendment to reverse.
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                        </TableRow>
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      {agentInvoiceId === e.id && (
+                        <TableRow key={`${e.id}-agent`}>
+                          <TableCell colSpan={12} className="bg-orange-500/5 p-3">
+                            <p className="text-[11px] font-semibold mb-2">Enter Agent GST Invoice</p>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                              <div>
+                                <Label className="text-[10px]">Invoice No *</Label>
+                                <Input value={agentInvNo} onChange={ev => setAgentInvNo(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">Invoice Date</Label>
+                                <SmartDateInput value={agentInvDate} onChange={setAgentInvDate} />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">Gross Amount ₹ *</Label>
+                                <Input type="number" value={agentInvGross} onChange={ev => setAgentInvGross(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">GST Amount ₹</Label>
+                                <Input type="number" value={agentInvGST} onChange={ev => setAgentInvGST(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div className="flex items-end gap-1">
+                                <Button data-primary size="sm" className="h-7 text-[10px] bg-orange-500 hover:bg-orange-600" onClick={() => handleSaveAgentInvoice(e, 'received')}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => handleSaveAgentInvoice(e, 'reconciled')}>
+                                  Reconcile
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-[10px] text-destructive" onClick={() => handleSaveAgentInvoice(e, 'disputed', 'Variance > 5%')}>
+                                  Dispute
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setAgentInvoiceId(null)}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                            {Number(agentInvGross) > 0 && (() => {
+                              const variance = +(Number(agentInvGross) - Number(agentInvGST) - e.commission_earned_to_date).toFixed(2);
+                              const variancePct = e.commission_earned_to_date > 0
+                                ? Math.abs(variance / e.commission_earned_to_date) * 100 : 0;
+                              return (
+                                <p className={cn(
+                                  'mt-2 text-[10px]',
+                                  variancePct > 5 ? 'text-amber-700 font-semibold' : 'text-muted-foreground',
+                                )}>
+                                  Variance: ₹{inrFmt.format(variance)} ({variancePct.toFixed(2)}%)
+                                  {variancePct > 5 && ' — review before reconciling'}
+                                </p>
+                              );
+                            })()}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
