@@ -381,7 +381,7 @@ export default function DistributorInvoices() {
                                       <p className="text-xs font-medium text-foreground">
                                         {l.item_name} <span className="text-muted-foreground font-mono">· {l.item_code}</span>
                                       </p>
-                                      {renderBreakdown(l)}
+                                      {renderBreakdown(v, l)}
                                     </div>
                                   ))
                                 )}
