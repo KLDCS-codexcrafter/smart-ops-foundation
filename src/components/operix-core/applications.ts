@@ -139,11 +139,10 @@ export const applications: AppDefinition[] = [
   {
     id: 'receivx',
     name: 'ReceivX',
-    description: 'Customer outstanding management — AR tracking, collection follow-up, aging analysis, receipt reconciliation and credit limit monitoring',
+    description: 'Collections hub — outstanding tasks, PTP tracking, reminder automation, aging by team, collection efficiency and credit risk',
     category: 'Fin Hub',
     route: '/erp/receivx',
     icon: 'TrendingUp',
-    status: 'coming_soon',
   },
   {
     id: 'peoplepay',
