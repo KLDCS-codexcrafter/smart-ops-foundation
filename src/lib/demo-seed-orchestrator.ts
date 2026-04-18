@@ -20,6 +20,9 @@ import {
   DEMO_COMM_LOG_TRADING, DEMO_COMM_LOG_SERVICES, DEMO_COMM_LOG_MFG,
 } from '@/data/demo-receivx-data';
 import { loadSalesXTransactions } from '@/data/demo-transactions-salesx';
+import {
+  DEMO_TERRITORIES, DEMO_BEAT_ROUTES, DEMO_VISIT_LOGS, DEMO_SECONDARY_SALES,
+} from '@/data/demo-field-force-data';
 
 export interface SeedResult {
   entityCode: string;
