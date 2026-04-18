@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Save, Shield, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityList } from '@/hooks/useEntityList';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
