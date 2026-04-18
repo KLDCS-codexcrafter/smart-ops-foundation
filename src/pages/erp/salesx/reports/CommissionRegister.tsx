@@ -254,6 +254,96 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     closePay();
   }, [active, amountReceived, payDate, receiptNo, previewPayment, entityCode, reload]);
 
+  // Sprint 4 — Post GL voucher for paid/partial commission
+  const handlePostGLVoucher = useCallback((entry: CommissionEntry) => {
+    const glResult = computeCommissionGL(
+      entry,
+      samCfg?.commissionLedgerSales ?? '',
+      'Commission on Sales',
+    );
+    if ('error' in glResult) { toast.error(glResult.error); return; }
+    const pvNo = generateVoucherNo('PV', entityCode);
+    const pv: Voucher = {
+      id: `v-${Date.now()}`,
+      voucher_no: pvNo,
+      voucher_type_id: '',
+      voucher_type_name: 'Payment',
+      base_voucher_type: 'Payment',
+      entity_id: entityCode,
+      date: todayISO(),
+      party_name: entry.person_name,
+      ref_voucher_no: entry.voucher_no,
+      vendor_bill_no: '',
+      net_amount: glResult.netPayableToAgent + glResult.tdsPayableAmount,
+      narration: `Commission payment - ${entry.voucher_no}`,
+      terms_conditions: '', payment_enforcement: '',
+      payment_instrument: '', from_ledger_name: '',
+      to_ledger_name: entry.person_name,
+      from_godown_name: '', to_godown_name: '',
+      ledger_lines: glResult.expenseLines,
+      gross_amount: glResult.netPayableToAgent + glResult.tdsPayableAmount,
+      total_discount: 0, total_taxable: 0,
+      total_cgst: 0, total_sgst: 0, total_igst: 0,
+      total_cess: 0, total_tax: 0, round_off: 0,
+      tds_applicable: entry.tds_applicable,
+      status: 'draft',
+      created_by: 'current-user',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    try {
+      // [JWT] POST /api/accounting/vouchers (commission GL)
+      postVoucher(pv, entityCode);
+      const list = loadRegister(entityCode);
+      const idx = list.findIndex(e => e.id === entry.id);
+      if (idx >= 0) {
+        list[idx] = {
+          ...list[idx],
+          commission_expense_voucher_id: pv.id,
+          commission_expense_voucher_no: pvNo,
+          updated_at: new Date().toISOString(),
+        };
+        // [JWT] PATCH /api/salesx/commission-register
+        saveRegister(entityCode, list);
+        reload();
+      }
+      toast.success(`GL voucher ${pvNo} posted`);
+    } catch { toast.error('Failed to post GL voucher'); }
+  }, [entityCode, samCfg, reload]);
+
+  // Sprint 4 — Save / reconcile agent GST invoice
+  const handleSaveAgentInvoice = useCallback((
+    entry: CommissionEntry,
+    nextStatus: 'received' | 'reconciled' | 'disputed',
+    reason?: string,
+  ) => {
+    const gross = Number(agentInvGross);
+    const gst = Number(agentInvGST);
+    if (!agentInvNo.trim()) { toast.error('Agent invoice number required'); return; }
+    if (!gross || gross <= 0) { toast.error('Gross amount must be positive'); return; }
+    const variance = +(gross - gst - entry.commission_earned_to_date).toFixed(2);
+    const list = loadRegister(entityCode);
+    const idx = list.findIndex(e => e.id === entry.id);
+    if (idx < 0) return;
+    list[idx] = {
+      ...list[idx],
+      agent_invoice_no: agentInvNo.trim(),
+      agent_invoice_date: agentInvDate,
+      agent_invoice_gross_amount: gross,
+      agent_invoice_gst_amount: gst,
+      agent_invoice_status: nextStatus,
+      agent_invoice_variance: variance,
+      agent_invoice_dispute_reason: reason ?? null,
+      updated_at: new Date().toISOString(),
+    };
+    // [JWT] PATCH /api/salesx/commission-register/:id/agent-invoice
+    saveRegister(entityCode, list);
+    reload();
+    setAgentInvoiceId(null);
+    setAgentInvNo(''); setAgentInvGross(''); setAgentInvGST('');
+    toast.success(`Agent invoice ${nextStatus}`);
+  }, [agentInvNo, agentInvDate, agentInvGross, agentInvGST, entityCode, reload]);
+
   return (
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
