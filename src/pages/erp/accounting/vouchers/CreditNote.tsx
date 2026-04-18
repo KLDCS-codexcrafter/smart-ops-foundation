@@ -49,22 +49,69 @@ interface CreditNotePanelProps {
 export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [selectedCompany] = useERPCompany();
   const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const [searchParams] = useSearchParams();
+  const fromMemoId = searchParams.get('from_memo');
 
   const [voucherNo] = useState(() => generateVoucherNo('CN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [againstInvoice, setAgainstInvoice] = useState('');
   const [reasonCode, setReasonCode] = useState('');
   const [invoiceMode, setInvoiceMode] = useState<'item' | 'accounting'>('item');
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [selectedMemoId, setSelectedMemoId] = useState<string>(fromMemoId ?? '');
 
   const [reversalBanner, setReversalBanner] = useState<string | null>(null);
   const [pendingReversalJV, setPendingReversalJV] = useState<{
     lines: VoucherLedgerLine[];
     banner: string;
   } | null>(null);
+
+  // Sprint 6B — load approved memos for from-memo selector
+  const approvedMemos = useMemo(() => {
+    try {
+      // [JWT] GET /api/salesx/sales-return-memos
+      const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+      return all.filter(m => m.status === 'approved');
+    } catch { return []; }
+  }, [entityCode]);
+
+  // Pre-fill from selected memo
+  const applyMemo = useCallback((memoId: string) => {
+    const memo = (() => {
+      try {
+        const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+        return all.find(m => m.id === memoId) ?? null;
+      } catch { return null; }
+    })();
+    if (!memo) return;
+    setSelectedMemoId(memoId);
+    setPartyName(memo.customer_name);
+    setPartyId(memo.customer_id);
+    setAgainstInvoice(memo.against_invoice_no);
+    setNarration(`Per Sales Return Memo ${memo.memo_no}`);
+    setInvoiceMode('item');
+    setInventoryLines(memo.items.map((it, i) => ({
+      id: `inv-mem-${Date.now()}-${i}`,
+      item_id: '', item_code: '', item_name: it.item_name,
+      hsn_sac_code: '', godown_id: '', godown_name: '',
+      qty: it.qty, uom: it.uom ?? '', rate: it.rate,
+      discount_percent: 0, discount_amount: 0,
+      taxable_value: it.amount,
+      gst_rate: 0, cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
+      cgst_amount: 0, sgst_amount: 0, igst_amount: 0, cess_amount: 0,
+      total: it.amount,
+      gst_type: 'taxable' as const, gst_source: 'item' as const,
+    })));
+  }, [entityCode]);
+
+  useEffect(() => {
+    if (fromMemoId) applyMemo(fromMemoId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromMemoId]);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
