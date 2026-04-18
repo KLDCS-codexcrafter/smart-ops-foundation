@@ -53,7 +53,7 @@ export default function DistributorCatalog() {
   }, [session]);
 
   const activeListId = useMemo(
-    () => (partner ? pickActivePriceList(partner, priceLists) : null),
+    () => (distributor ? pickActivePriceList(distributor, priceLists) : null),
     [distributor, priceLists],
   );
 
@@ -72,7 +72,7 @@ export default function DistributorCatalog() {
     ).slice(0, 60);
   }, [items, search]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
       <DistributorLayout title="Catalog">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
@@ -91,7 +91,7 @@ export default function DistributorCatalog() {
       const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
       const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
       const qty = Math.max(tier.min_qty, qtyMap[item.id] ?? 1);
-      // Interstate detection: partner state vs entity state — defaults intra-state.
+      // Interstate detection: distributor state vs entity state — defaults intra-state.
       const interstate = false;
       const gstRate = (item.cgst_rate ?? 0) + (item.sgst_rate ?? 0) || (item.igst_rate ?? 18);
       const totals = calcLineTotals(qty, tier.rate_paise, tier.discount_percent, gstRate, interstate);

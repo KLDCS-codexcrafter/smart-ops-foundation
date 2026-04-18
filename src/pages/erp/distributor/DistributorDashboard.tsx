@@ -1,6 +1,6 @@
 /**
  * DistributorDashboard.tsx — Distributor home: credit, monthly target, activity.
- * Sprint 10. Indigo-600 accent. Reads partner from localStorage scoped by session.
+ * Sprint 10. Indigo-600 accent. Reads distributor from localStorage scoped by session.
  * [JWT] Replace localStorage with GET /api/erp/distributor/dashboard.
  */
 import { useMemo } from 'react';
@@ -35,11 +35,11 @@ export default function DistributorDashboard() {
   const activity = useMemo<DistributorActivity[]>(() => {
     if (!session) return [];
     const all = ls<DistributorActivity>(distributorActivityKey(session.entity_code));
-    return all.filter(a => a.partner_id === session.distributor_id)
+    return all.filter(a => a.distributor_id === session.distributor_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 8);
   }, [session]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
       <DistributorLayout title="Dashboard">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">

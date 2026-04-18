@@ -1,7 +1,7 @@
 /**
  * DistributorCartState.tsx — Offline IndexedDB cart, submit creates a DistributorOrder.
- * Sprint 10. Reads/writes via partner-cart-store (IndexedDB).
- * [JWT] On submit, POST /api/partner/orders + clear cart.
+ * Sprint 10. Reads/writes via distributor-cart-store (IndexedDB).
+ * [JWT] On submit, POST /api/distributor/orders + clear cart.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -62,7 +62,7 @@ export default function DistributorCartPage() {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
       <DistributorLayout title="Cart">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
@@ -76,7 +76,7 @@ export default function DistributorCartPage() {
   const taxable = cart?.lines.reduce((s, l) => s + l.taxable_paise, 0) ?? 0;
   const tax = cart?.lines.reduce((s, l) => s + l.cgst_paise + l.sgst_paise + l.igst_paise, 0) ?? 0;
 
-  const credit = checkCreditAvailable(partner, grand);
+  const credit = checkCreditAvailable(distributor, grand);
 
   const handleQtyChange = async (lineId: string, qty: number) => {
     if (!cart) return;
@@ -130,8 +130,8 @@ export default function DistributorCartPage() {
     try {
       const existing = ls<DistributorOrder>(distributorOrdersKey(session.entity_code));
       const orderNo = nextOrderNumber(existing);
-      const order = cartToOrder(cart, partner, orderNo);
-      // [JWT] POST /api/partner/orders
+      const order = cartToOrder(cart, distributor, orderNo);
+      // [JWT] POST /api/distributor/orders
       setLs(distributorOrdersKey(session.entity_code), [order, ...existing]);
       await clearCart(session.distributor_id);
       toast.success(`Order ${orderNo} submitted`, {

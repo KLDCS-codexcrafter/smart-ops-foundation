@@ -1,7 +1,7 @@
 /**
  * DistributorPayments.tsx — Distributor records "I paid X by RTGS UTR Y".
  * Sprint 10. Creates a DistributorPaymentIntimation; ERP accountant verifies + posts a Receipt.
- * [JWT] POST /api/partner/payment-intimations
+ * [JWT] POST /api/distributor/payment-intimations
  */
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -92,7 +92,7 @@ export default function DistributorPayments() {
   const mode = form.watch('mode');
 
   const onSubmit = async (v: FormValues) => {
-    if (!session || !partner) return;
+    if (!session || !distributor) return;
     setSubmitting(true);
     try {
       const now = new Date().toISOString();
@@ -119,7 +119,7 @@ export default function DistributorPayments() {
         updated_at: now,
       };
       const existing = ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code));
-      // [JWT] POST /api/partner/payment-intimations
+      // [JWT] POST /api/distributor/payment-intimations
       setLs(distributorIntimationsKey(session.entity_code), [intimation, ...existing]);
       toast.success('Payment intimation submitted', {
         description: `${formatINR(intimation.amount_paise)} • ${v.mode.toUpperCase()}`,
@@ -131,7 +131,7 @@ export default function DistributorPayments() {
     }
   };
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return <DistributorLayout title="Payments"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;
   }
 

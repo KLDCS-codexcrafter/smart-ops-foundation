@@ -27,7 +27,7 @@ export default function DistributorUpdates() {
     : null;
 
   const broadcasts = useMemo<BroadcastMessage[]>(() => {
-    if (!session || !partner) return [];
+    if (!session || !distributor) return [];
     const all = ls<BroadcastMessage>(distributorBroadcastsKey(session.entity_code));
     return all
       .filter(b => b.status === 'sent')
@@ -40,7 +40,7 @@ export default function DistributorUpdates() {
       .sort((a, b) => (b.sent_at ?? '').localeCompare(a.sent_at ?? ''));
   }, [session, distributor]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return <DistributorLayout title="Updates"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;
   }
 
