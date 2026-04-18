@@ -291,6 +291,9 @@ const DEFAULT_SAM: SAMConfig = {
   slsmTargetByTerritory: false, slsmTargetByNewCustomerCount: false, slsmTargetByCollection: false,
   slsmTargetByOrderVolume: false, slsmTargetByCallVisitActivity: false,
   tdsOnCommissionSection: 'not_applicable', commissionLedgerSales: '', commissionLedgerPurchase: '',
+  // Sprint 6B — Collection Bonus defaults
+  enableCollectionBonus: false, collectionBonusRate: 0.5,
+  collectionBonusWindowDays: 30, collectionBonusAppliesTo: 'salesman',
   enableCompanySalesPerson: false, enableInPurchase: false, enableInPurchaseOrder: false, enableInReceiptNote: false,
 };
 
