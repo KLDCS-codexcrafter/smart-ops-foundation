@@ -170,6 +170,10 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-contract-compliance': 'Compliance Register',
 };
 
+export function PayHubPagePanel() {
+  return <PayHubPage />;
+}
+
 export default function PayHubPage() {
   const [activeModule, setActiveModule] = useState<PayHubModule>('ph-dashboard');
   const { entities, selectedEntityId, setSelectedEntityId,

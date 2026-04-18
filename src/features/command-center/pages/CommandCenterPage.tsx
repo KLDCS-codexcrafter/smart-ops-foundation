@@ -119,6 +119,10 @@ export type CommandCenterModule =
   | 'ph-bonus-config'
   | 'ph-gratuity-nps'
   | 'ph-asset-master';
+export function CommandCenterPagePanel() {
+  return <CommandCenterPage />;
+}
+
 export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
