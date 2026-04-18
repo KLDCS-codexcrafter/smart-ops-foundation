@@ -213,6 +213,15 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
       items: [...form.items, {
         id: `item-${Date.now()}`,
         product_name: '', quantity: 1, unit: null, rate: null, amount: null,
+        line_type: 'product',
+      }],
+    });
+  const addServiceLine = () =>
+    update({
+      items: [...form.items, {
+        id: `svc-${Date.now()}`,
+        product_name: '', quantity: 1, unit: null, rate: null, amount: 0,
+        line_type: 'service', ledger_name: '',
       }],
     });
   const updateItem = (idx: number, patch: Partial<EnquiryItem>) => {
@@ -637,67 +646,128 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
                 <Plus className="h-3.5 w-3.5 mr-1" />Add Item
               </Button>
             </CardHeader>
-            <CardContent>
-              {form.items.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">No items added.</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead className="w-24">Qty</TableHead>
-                      <TableHead className="w-24">Unit</TableHead>
-                      <TableHead className="w-32">Rate</TableHead>
-                      <TableHead className="w-32">Amount</TableHead>
-                      <TableHead className="w-12" />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {form.items.map((it, i) => (
-                      <TableRow key={it.id}>
-                        <TableCell>
-                          <Input
-                            value={it.product_name}
-                            onChange={e => updateItem(i, { product_name: e.target.value })}
-                            onKeyDown={onEnterNext}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            value={it.quantity}
-                            onChange={e => updateItem(i, { quantity: parseFloat(e.target.value) || 0 })}
-                            onKeyDown={onEnterNext}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            value={it.unit ?? ''}
-                            onChange={e => updateItem(i, { unit: e.target.value })}
-                            onKeyDown={onEnterNext}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            value={it.rate ?? ''}
-                            onChange={e => updateItem(i, { rate: parseFloat(e.target.value) || null })}
-                            onKeyDown={onEnterNext}
-                          />
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {it.amount != null ? `₹${it.amount.toLocaleString('en-IN')}` : '—'}
-                        </TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="ghost" onClick={() => removeItem(i)}>
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+            <CardContent className="space-y-6">
+              {(() => {
+                const productLines = form.items
+                  .map((it, i) => ({ it, i }))
+                  .filter(({ it }) => (it.line_type ?? 'product') === 'product');
+                const serviceLines = form.items
+                  .map((it, i) => ({ it, i }))
+                  .filter(({ it }) => it.line_type === 'service');
+                return (
+                  <>
+                    {productLines.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-4 text-center">No product lines added.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product</TableHead>
+                            <TableHead className="w-24">Qty</TableHead>
+                            <TableHead className="w-24">Unit</TableHead>
+                            <TableHead className="w-32">Rate</TableHead>
+                            <TableHead className="w-32">Amount</TableHead>
+                            <TableHead className="w-12" />
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {productLines.map(({ it, i }) => (
+                            <TableRow key={it.id}>
+                              <TableCell>
+                                <Input
+                                  value={it.product_name}
+                                  onChange={e => updateItem(i, { product_name: e.target.value })}
+                                  onKeyDown={onEnterNext}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="number"
+                                  value={it.quantity}
+                                  onChange={e => updateItem(i, { quantity: parseFloat(e.target.value) || 0 })}
+                                  onKeyDown={onEnterNext}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  value={it.unit ?? ''}
+                                  onChange={e => updateItem(i, { unit: e.target.value })}
+                                  onKeyDown={onEnterNext}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="number"
+                                  value={it.rate ?? ''}
+                                  onChange={e => updateItem(i, { rate: parseFloat(e.target.value) || null })}
+                                  onKeyDown={onEnterNext}
+                                />
+                              </TableCell>
+                              <TableCell className="font-mono text-xs">
+                                {it.amount != null ? `₹${it.amount.toLocaleString('en-IN')}` : '—'}
+                              </TableCell>
+                              <TableCell>
+                                <Button size="sm" variant="ghost" onClick={() => removeItem(i)}>
+                                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+
+                    {/* Service / Ledger Lines — VCHEnquiryBodyLed */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-medium">Service / Ledger Lines</h4>
+                        <Button size="sm" variant="outline" onClick={addServiceLine}>
+                          <Plus className="h-3.5 w-3.5 mr-1" />Add
+                        </Button>
+                      </div>
+                      {serviceLines.length === 0 ? (
+                        <p className="text-xs text-muted-foreground py-3 text-center">No service / ledger lines.</p>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Ledger Name</TableHead>
+                              <TableHead className="w-40">Amount</TableHead>
+                              <TableHead className="w-12" />
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {serviceLines.map(({ it, i }) => (
+                              <TableRow key={it.id}>
+                                <TableCell>
+                                  <Input
+                                    value={it.ledger_name ?? ''}
+                                    onChange={e => updateItem(i, { ledger_name: e.target.value })}
+                                    onKeyDown={onEnterNext}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Input
+                                    type="number"
+                                    value={it.amount ?? ''}
+                                    onChange={e => updateItem(i, { amount: parseFloat(e.target.value) || 0, rate: parseFloat(e.target.value) || 0, quantity: 1 })}
+                                    onKeyDown={onEnterNext}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Button size="sm" variant="ghost" onClick={() => removeItem(i)}>
+                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
