@@ -282,7 +282,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
           <Textarea
             value={approveNotes}
             onChange={e => setApproveNotes(e.target.value)}
-            onKeyDown={onEnterNext}
+            onKeyDown={onEnterNext as unknown as React.KeyboardEventHandler<HTMLTextAreaElement>}
             placeholder="Notes for the team (optional)"
             className="min-h-[80px]"
           />
@@ -305,7 +305,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
           <Textarea
             value={rejectReason}
             onChange={e => setRejectReason(e.target.value)}
-            onKeyDown={onEnterNext}
+            onKeyDown={onEnterNext as unknown as React.KeyboardEventHandler<HTMLTextAreaElement>}
             placeholder="Why is this memo being rejected?"
             className="min-h-[100px]"
           />
