@@ -256,7 +256,26 @@ export async function generateIRN(
 
   const irn = makeSyntheticIRN();
   const ackNo = String(Math.floor(Math.random() * 1e14)).padStart(14, '0');
-  const signedQr = btoa(`${irn}|${voucher.voucher_no}|${voucher.net_amount.toFixed(2)}`);
+  // Audit fix #7: signed QR is a JWS (~700 chars) carrying SellerGstin, BuyerGstin,
+  // DocNo, DocDt, TotInvVal, ItemCnt, MainHsnCode, IRN, IRN date.
+  const qrPayload = JSON.stringify({
+    SellerGstin: payload.SellerDtls.Gstin,
+    BuyerGstin: payload.BuyerDtls.Gstin,
+    DocNo: payload.DocDtls.No,
+    DocTyp: payload.DocDtls.Typ,
+    DocDt: payload.DocDtls.Dt,
+    TotInvVal: payload.ValDtls.TotInvVal,
+    ItemCnt: payload.ItemList.length,
+    MainHsnCode: payload.ItemList[0]?.HsnCd ?? '',
+    Irn: irn,
+    IrnDt: now,
+  });
+  const qrHeader = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT', kid: 'NIC-IRP-2024' }));
+  // Synthetic 384-char base64 signature segment to mirror real JWS length.
+  let qrSig = '';
+  const sigChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  for (let i = 0; i < 384; i += 1) qrSig += sigChars[Math.floor(Math.random() * sigChars.length)];
+  const signedQr = `${qrHeader}.${btoa(qrPayload)}.${qrSig}`;
   return {
     id: `irn-${Date.now()}`,
     entity_id: entityCode,
@@ -275,7 +294,7 @@ export async function generateIRN(
     irn,
     ack_no: ackNo,
     ack_date: now,
-    signed_invoice: `header.${btoa(JSON.stringify({ irn, ackNo }))}.signature`,
+    signed_invoice: `${qrHeader}.${btoa(JSON.stringify({ irn, ackNo, payload }))}.${qrSig}`,
     signed_qr_code: signedQr,
     qr_code_url: null,
     status: 'generated',
