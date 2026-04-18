@@ -68,6 +68,7 @@ export function createDistributorSession(
   token: string,
   entityCode: string,
 ): DistributorSession {
+  // Sprint 11a — backfill hierarchy context from the Distributor row
   return {
     token,
     distributor_id: partner.id,
@@ -79,6 +80,8 @@ export function createDistributorSession(
     entity_code: entityCode,
     email: partner.contact_email,
     expires_at: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+    hierarchy_node_id: partner.hierarchy_node_id ?? null,
+    hierarchy_role: partner.hierarchy_role ?? null,
   };
 }
 
