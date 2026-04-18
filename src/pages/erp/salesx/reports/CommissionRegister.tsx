@@ -19,7 +19,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Wallet, Search, Receipt, FileCheck, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Wallet, Search, Receipt, FileCheck, ChevronDown, ChevronRight, AlertTriangle, Banknote } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import {
   commissionRegisterKey,
@@ -309,6 +309,95 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       }
       toast.success(`GL voucher ${pvNo} posted`);
     } catch { toast.error('Failed to post GL voucher'); }
+  }, [entityCode, samCfg, reload]);
+
+  // Sprint 5 — Pay Agent: bank payout for commission-paid + GL-posted entries
+  const handlePayAgent = useCallback((entry: CommissionEntry) => {
+    if (!entry.commission_expense_voucher_id) {
+      toast.error('Post GL Voucher first before bank payout');
+      return;
+    }
+    if (entry.bank_payment_voucher_id) {
+      toast.error('Bank payment already recorded');
+      return;
+    }
+    const netPayable = +(entry.net_paid_to_date).toFixed(2);
+    if (netPayable <= 0) {
+      toast.error('No commission payable for bank payout');
+      return;
+    }
+    const bankLedger = (samCfg?.commissionLedgerSales ?? '').trim();
+    const pvNo = generateVoucherNo('PV', entityCode);
+    const today = todayISO();
+    const pv: Voucher = {
+      id: `v-bank-${Date.now()}`,
+      voucher_no: pvNo,
+      voucher_type_id: '',
+      voucher_type_name: 'Payment',
+      base_voucher_type: 'Payment',
+      entity_id: entityCode,
+      date: today,
+      party_name: entry.person_name,
+      ref_voucher_no: entry.commission_expense_voucher_no ?? entry.voucher_no,
+      vendor_bill_no: '',
+      net_amount: netPayable,
+      narration: `Commission bank payout - ${entry.person_name} - ${entry.voucher_no}`,
+      terms_conditions: '', payment_enforcement: '',
+      payment_instrument: 'NEFT',
+      from_ledger_name: 'Bank',
+      to_ledger_name: entry.person_name,
+      from_godown_name: '', to_godown_name: '',
+      ledger_lines: [
+        {
+          id: `bp-${Date.now()}-1`,
+          ledger_id: '',
+          ledger_code: '',
+          ledger_name: entry.person_name,
+          ledger_group_code: 'CRED',
+          dr_amount: netPayable,
+          cr_amount: 0,
+          narration: `Commission paid - ${entry.voucher_no}`,
+        },
+        {
+          id: `bp-${Date.now()}-2`,
+          ledger_id: bankLedger,
+          ledger_code: '',
+          ledger_name: 'Bank',
+          ledger_group_code: 'BANK',
+          dr_amount: 0,
+          cr_amount: netPayable,
+          narration: `Bank payout - ${entry.person_name}`,
+        },
+      ],
+      gross_amount: netPayable,
+      total_discount: 0, total_taxable: 0,
+      total_cgst: 0, total_sgst: 0, total_igst: 0,
+      total_cess: 0, total_tax: 0, round_off: 0,
+      tds_applicable: false,
+      status: 'draft',
+      created_by: 'current-user',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    try {
+      // [JWT] POST /api/accounting/vouchers (commission bank payout)
+      postVoucher(pv, entityCode);
+      const list = loadRegister(entityCode);
+      const idx = list.findIndex(e => e.id === entry.id);
+      if (idx >= 0) {
+        list[idx] = {
+          ...list[idx],
+          bank_payment_voucher_id: pv.id,
+          bank_payment_voucher_no: pvNo,
+          bank_payment_date: today,
+          updated_at: new Date().toISOString(),
+        };
+        // [JWT] PATCH /api/salesx/commission-register
+        saveRegister(entityCode, list);
+        reload();
+      }
+      toast.success(`Bank payout ${pvNo} recorded · ₹${inrFmt.format(netPayable)}`);
+    } catch { toast.error('Failed to record bank payout'); }
   }, [entityCode, samCfg, reload]);
 
   // Sprint 4 — Save / reconcile agent GST invoice
