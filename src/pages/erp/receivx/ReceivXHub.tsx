@@ -65,7 +65,7 @@ export function ReceivXHubPanel({ entityCode, onNavigate }: Props) {
   const kpiCards = [
     { label: 'Total Receivables', value: fmt(kpis.totalReceivables), icon: TrendingUp, tone: 'text-amber-600' },
     { label: 'Overdue', value: fmt(kpis.overdue), icon: AlertTriangle, tone: 'text-red-600' },
-    { label: 'DSO (days)', value: String(kpis.dso), icon: Clock, tone: 'text-orange-600' },
+    { label: 'DSO (days)', value: String(kpis.dso), icon: Clock, tone: 'text-amber-600' },
     { label: 'At Risk (>60d)', value: fmt(kpis.atRisk), icon: AlertTriangle, tone: 'text-red-700' },
     { label: 'Open Tasks', value: String(kpis.openTasks), icon: ClipboardCheck, tone: 'text-blue-600' },
     { label: 'Active PTPs', value: String(kpis.activePtps), icon: CalendarClock, tone: 'text-green-600' },
@@ -102,7 +102,7 @@ export function ReceivXHubPanel({ entityCode, onNavigate }: Props) {
             {(['0-30','31-60','61-90','91+'] as const).map(b => {
               const v = aging[b];
               const pct = (v / totalAging) * 100;
-              const tone = b === '0-30' ? 'bg-green-500' : b === '31-60' ? 'bg-amber-500' : b === '61-90' ? 'bg-orange-500' : 'bg-red-500';
+              const tone = b === '0-30' ? 'bg-green-500' : b === '31-60' ? 'bg-amber-500' : b === '61-90' ? 'bg-amber-700' : 'bg-red-500';
               return (
                 <button key={b} onClick={() => onNavigate('rx-t-task-board')} className="w-full text-left">
                   <div className="flex items-center justify-between text-xs mb-1">

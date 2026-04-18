@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { CustomerLayout } from "@/components/layout/CustomerLayout";
@@ -9,28 +9,16 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
+import type { Voucher } from '@/types/voucher';
 
-// [JWT] Replace with real statement data
-const STATEMENT = [
-  { id: "ST-001", date: "01 Apr 2026", type: "invoice", ref: "INV-2026-0412", debit: 84000,  credit: 0,      balance: 183500, description: "Sales Invoice — 4 items" },
-  { id: "ST-002", date: "28 Mar 2026", type: "payment", ref: "PAY-0412",      debit: 0,      credit: 120000, balance: 99500,  description: "Payment received — NEFT" },
-  { id: "ST-003", date: "22 Mar 2026", type: "invoice", ref: "INV-2026-0389", debit: 54500,  credit: 0,      balance: 219500, description: "Sales Invoice — 2 items" },
-  { id: "ST-004", date: "15 Mar 2026", type: "invoice", ref: "INV-2026-0361", debit: 45000,  credit: 0,      balance: 165000, description: "Sales Invoice — 3 items" },
-  { id: "ST-005", date: "10 Mar 2026", type: "payment", ref: "PAY-0389",      debit: 0,      credit: 45000,  balance: 120000, description: "Payment received — UPI" },
-  { id: "ST-006", date: "05 Mar 2026", type: "invoice", ref: "INV-2026-0334", debit: 120000, credit: 0,      balance: 165000, description: "Sales Invoice — 6 items" },
-  { id: "ST-007", date: "18 Feb 2026", type: "payment", ref: "PAY-0361",      debit: 0,      credit: 67800,  balance: 45000,  description: "Payment received — IMPS" },
-];
-
-function formatINR(paise: number) {
-  if (paise === 0) return "—";
-  const r = paise / 100;
+function formatINR(r: number) {
+  if (r === 0) return "—";
   if (r >= 100000) return `₹${(r / 100000).toFixed(2)}L`;
   if (r >= 1000) return `₹${(r / 1000).toFixed(1)}K`;
   return `₹${r.toLocaleString("en-IN")}`;
 }
 
-function formatINRAlways(paise: number) {
-  const r = paise / 100;
+function formatINRAlways(r: number) {
   if (r >= 100000) return `₹${(r / 100000).toFixed(2)}L`;
   if (r >= 1000) return `₹${(r / 1000).toFixed(1)}K`;
   return `₹${r.toLocaleString("en-IN")}`;
@@ -40,17 +28,51 @@ export default function Statement() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const totalDebits = STATEMENT.reduce((s, r) => s + r.debit, 0);
-  const totalCredits = STATEMENT.reduce((s, r) => s + r.credit, 0);
-  const closingBalance = STATEMENT[0]?.balance ?? 0;
+  const customerId = 'demo-customer-1'; // [JWT] derived from customer auth context
+  const entityCode = 'SMRT';             // [JWT] derived from customer's entity assignment
+
+  const statementRows = useMemo(() => {
+    let vouchers: Voucher[] = [];
+    try {
+      // [JWT] GET /api/accounting/vouchers?party_id={customerId}
+      vouchers = JSON.parse(localStorage.getItem(`erp_group_vouchers_${entityCode}`) || '[]');
+    } catch { /* noop */ }
+
+    const relevant = vouchers.filter(v =>
+      v.party_id === customerId && !v.is_cancelled && v.status === 'posted' &&
+      ['Sales', 'Receipt', 'Credit Note', 'Debit Note'].includes(v.base_voucher_type),
+    );
+
+    const sorted = [...relevant].sort((a, b) => a.date.localeCompare(b.date));
+    let bal = 0;
+    return sorted.map(v => {
+      const isDr = v.base_voucher_type === 'Sales' || v.base_voucher_type === 'Debit Note';
+      const amt = v.net_amount;
+      if (isDr) bal += amt; else bal -= amt;
+      return {
+        id: v.id,
+        date: v.date,
+        type: isDr ? 'invoice' : 'payment',
+        ref: v.voucher_no,
+        debit: isDr ? amt : 0,
+        credit: isDr ? 0 : amt,
+        balance: bal,
+        description: v.narration || `${v.base_voucher_type} ${v.voucher_no}`,
+      };
+    });
+  }, [customerId, entityCode]);
+
+  const totalDebits = statementRows.reduce((s, r) => s + r.debit, 0);
+  const totalCredits = statementRows.reduce((s, r) => s + r.credit, 0);
+  const closingBalance = statementRows[statementRows.length - 1]?.balance ?? 0;
 
   return (
     <CustomerLayout title="Account Statement" subtitle="Ledger statement with all transactions"><div data-keyboard-form>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <Input type="date" className="w-40" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-          <Input type="date" className="w-40" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+          <Input type="date" className="w-40" value={fromDate} onChange={(e) => setFromDate(e.target.value)} onKeyDown={onEnterNext} />
+          <Input type="date" className="w-40" value={toDate} onChange={(e) => setToDate(e.target.value)} onKeyDown={onEnterNext} />
         </div>
         <Button variant="outline" onClick={() => toast("Downloading statement as PDF...")}>
           <Download className="h-4 w-4 mr-1.5" />
@@ -88,7 +110,9 @@ export default function Statement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {STATEMENT.map((row) => (
+            {statementRows.length === 0 ? (
+              <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">No transactions yet.</TableCell></TableRow>
+            ) : statementRows.map((row) => (
               <TableRow
                 key={row.id}
                 className={cn(
