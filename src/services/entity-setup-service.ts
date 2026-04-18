@@ -23,6 +23,7 @@ export interface SetupOptions {
   businessActivity: string;
   loadIndustryPack: boolean;
   siblingEntities: MockEntity[];
+  autoSeedDemo?: boolean;   // NEW — when true, seeds demo data after setup
 }
 
 export interface SetupResult {
@@ -403,6 +404,17 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
 
   // 7. Create default UOMs
   const uomsCreated = createDefaultUOMs();
+
+  // 8. Optionally seed demo data
+  if (opts.autoSeedDemo) {
+    try {
+      // [JWT] POST /api/demo/seed-entity
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
+      const archetype = mod.detectArchetype(opts.businessActivity);
+      mod.seedEntityDemoData(opts.shortCode, archetype);
+    } catch { /* demo module optional */ }
+  }
 
   return {
     ledgersCreated,

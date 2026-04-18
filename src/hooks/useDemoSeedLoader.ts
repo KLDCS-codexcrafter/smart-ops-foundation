@@ -187,16 +187,44 @@ export const DEMO_MODULES: DemoModule[] = [
     loadTransactions: () => {},
     getCount: (key: string) => getStoredCount(key),
   },
-  // ── Future modules — uncomment + implement as sprints complete ──
-  // { id:'procure360', label:'Procure360', sprint:'Sprint 25', status:'planned',
-  //   masterKeys:['erp_group_vendor_master','erp_item_vendors'], transactionKeys:[],
-  //   loadMasters:()=>{}, loadTransactions:()=>{}, getCount:(key)=>getStoredCount(key) },
-  // { id:'store-hub', label:'Store Hub', sprint:'Sprint 26', status:'planned',
-  //   masterKeys:['erp_godowns','erp_inventory_items','erp_stock_groups'], transactionKeys:[],
-  //   loadMasters:()=>{}, loadTransactions:()=>{}, getCount:(key)=>getStoredCount(key) },
-  // { id:'salesx', label:'SalesX Hub', sprint:'Sprint 27', status:'planned',
-  //   masterKeys:['erp_group_customer_master','erp_price_lists'], transactionKeys:[],
-  //   loadMasters:()=>{}, loadTransactions:()=>{}, getCount:(key)=>getStoredCount(key) },
+  {
+    id: 'salesx',
+    label: 'SalesX Hub',
+    sprint: 'Live — Sprint 1-5',
+    status: 'complete' as const,
+    masterKeys: ['erp_group_customer_master', 'erp_sam_persons_SMRT', 'erp_sam_hierarchy_SMRT',
+                 'erp_enquiry_sources_SMRT', 'erp_campaigns_SMRT'],
+    transactionKeys: ['erp_enquiries_SMRT', 'erp_quotations_SMRT',
+                      'erp_opportunities_SMRT', 'erp_commission_register_SMRT'],
+    loadMasters: () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
+        mod.seedEntityDemoData('SMRT', 'trading');
+      } catch { /* not yet loaded */ }
+    },
+    loadTransactions: () => { /* handled inside seedEntityDemoData */ },
+    getCount: (key: string) => getStoredCount(key),
+  },
+  {
+    id: 'receivx',
+    label: 'ReceivX Hub',
+    sprint: 'Live — Sprint 6A',
+    status: 'complete' as const,
+    masterKeys: ['erp_receivx_templates_SMRT', 'erp_receivx_execs_SMRT',
+                 'erp_receivx_schemes_SMRT', 'erp_receivx_config_SMRT'],
+    transactionKeys: ['erp_receivx_ptps_SMRT', 'erp_receivx_comm_log_SMRT',
+                      'erp_receivx_tasks_SMRT'],
+    loadMasters: () => { /* handled by salesx orchestrator */ },
+    loadTransactions: () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
+        mod.seedEntityDemoData('SMRT', 'trading');
+      } catch { /* not yet loaded */ }
+    },
+    getCount: (key: string) => getStoredCount(key),
+  },
 ];
 
 // ── Hook ────────────────────────────────────────────────────────────────
@@ -238,5 +266,21 @@ export function useDemoSeedLoader() {
     return JSON.parse(localStorage.getItem('erp_demo_loaded') || '{}');
   };
 
-  return { loadModule, resetModule, loadAll, resetAll, getLoadedModules, DEMO_MODULES };
+  const seedEntityByArchetype = (
+    entityCode: string,
+    archetype: 'trading' | 'services' | 'manufacturing',
+  ) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
+      const result = mod.seedEntityDemoData(entityCode, archetype);
+      toast.success(`${entityCode} seeded: ${result.customers} cust, ${result.salesInvoices} inv, ${result.ptps} PTPs`);
+      return result;
+    } catch (err) {
+      toast.error(`Seed failed: ${(err as Error).message}`);
+      return null;
+    }
+  };
+
+  return { loadModule, resetModule, loadAll, resetAll, getLoadedModules, seedEntityByArchetype, DEMO_MODULES };
 }
