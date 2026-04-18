@@ -38,7 +38,10 @@ export type SalesXModule =
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
-  | 'sx-r-quotation-register';
+  | 'sx-r-quotation-register'
+  | 'sx-m-target'
+  | 'sx-r-followup'
+  | 'sx-r-target';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -58,6 +61,9 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
   'sx-r-quotation-register',
+  'sx-m-target',
+  'sx-r-followup',
+  'sx-r-target',
 ];
 
 interface Props {
