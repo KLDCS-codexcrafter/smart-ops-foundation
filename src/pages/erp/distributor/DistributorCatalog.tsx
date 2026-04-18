@@ -20,6 +20,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import type { PriceList, PriceListItem } from '@/types/price-list';
 import type { Voucher } from '@/types/voucher';
 import type { DistributorOrderLine } from '@/types/distributor-order';
+import { isLineVisibleToTier, type PriceListLine } from '@/types/item-price-list';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
