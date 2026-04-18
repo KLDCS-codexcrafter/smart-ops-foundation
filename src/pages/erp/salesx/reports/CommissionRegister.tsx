@@ -71,6 +71,22 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
   const [receiptNo, setReceiptNo] = useState('');
   const [amountReceived, setAmountReceived] = useState('');
 
+  // Sprint 4 — expand row + agent invoice + GL voucher
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [agentInvoiceId, setAgentInvoiceId] = useState<string | null>(null);
+  const [agentInvNo, setAgentInvNo] = useState('');
+  const [agentInvDate, setAgentInvDate] = useState(todayISO());
+  const [agentInvGross, setAgentInvGross] = useState('');
+  const [agentInvGST, setAgentInvGST] = useState('');
+
+  const samCfg = useMemo<SAMConfig | null>(() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/sam/:entityCode
+      const raw = localStorage.getItem(comply360SAMKey(entityCode));
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [entityCode]);
+
   const reload = useCallback(() => setRegister(loadRegister(entityCode)), [entityCode]);
 
   const filtered = useMemo(() => {
