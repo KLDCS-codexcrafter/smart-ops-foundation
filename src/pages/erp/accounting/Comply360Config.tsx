@@ -530,8 +530,25 @@ export function Comply360ConfigPanel() {
     toast.success('Outstanding configuration saved');
   }, [outstandingConfig, selectedEntityId]);
 
+  const handleSaveEntityGst = useCallback(() => {
+    if (!selectedEntityId) { toast.error('Select an entity'); return; }
+    const now = new Date().toISOString();
+    const next: EntityGSTConfig = {
+      ...entityGst,
+      entity_id: selectedEntityId,
+      created_at: entityGst.created_at || now,
+      updated_at: now,
+    };
+    // [JWT] PATCH /api/compliance/entity-gst/:entityId
+    localStorage.setItem(entityGstKey(selectedEntityId), JSON.stringify(next));
+    setEntityGst(next);
+    toast.success('Entity GST configuration saved');
+  }, [entityGst, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
+      case 'gst-entity': handleSaveEntityGst(); break;
+      case 'irn-ewb': handleSaveEntityGst(); break;
       case 'rcm':   handleSaveRCM(); break;
       case 'tdsp':  handleSaveTDSP(); break;
       case 'tdsr':  handleSaveTDSR(); break;
@@ -544,7 +561,7 @@ export function Comply360ConfigPanel() {
       case 'outstanding': handleSaveOutstanding(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst]);
 
   const isConfigActive = true;
   useCtrlS(isConfigActive ? handleCtrlS : () => {});
@@ -583,6 +600,8 @@ export function Comply360ConfigPanel() {
     }
 
     switch (activeSection) {
+      case 'gst-entity': return renderEntityGstSection();
+      case 'irn-ewb': return renderIrnEwbSection();
       case 'rcm': return renderRCMSection();
       case 'tdsp': return renderTDSPSection();
       case 'tdsr': return renderTDSRSection();
@@ -596,6 +615,217 @@ export function Comply360ConfigPanel() {
       default: return null;
     }
   };
+
+  // ── Entity GST Section (Sprint 9) ──
+  const renderEntityGstSection = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <FileText className="h-4 w-4 text-teal-500" /> Entity GST Registration
+          </h3>
+          <p className="text-[10px] text-muted-foreground">GSTIN, legal entity, address, banking and UPI for printable invoice.</p>
+        </div>
+        <Button data-primary size="sm" onClick={handleSaveEntityGst}>
+          <Save className="h-3.5 w-3.5 mr-1" /> Save Entity GST
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><Label className="text-xs">GSTIN</Label>
+          <Input className="h-8 text-sm font-mono uppercase" maxLength={15}
+            value={entityGst.gstin}
+            onChange={e => setEntityGst(p => ({ ...p, gstin: e.target.value.toUpperCase() }))}
+            placeholder="22AAAAA0000A1Z5" /></div>
+        <div><Label className="text-xs">PAN</Label>
+          <Input className="h-8 text-sm font-mono uppercase" maxLength={10}
+            value={entityGst.pan}
+            onChange={e => setEntityGst(p => ({ ...p, pan: e.target.value.toUpperCase() }))}
+            placeholder="AAAAA0000A" /></div>
+        <div><Label className="text-xs">Legal Name</Label>
+          <Input className="h-8 text-sm" value={entityGst.legal_name}
+            onChange={e => setEntityGst(p => ({ ...p, legal_name: e.target.value }))} /></div>
+        <div><Label className="text-xs">Trade Name</Label>
+          <Input className="h-8 text-sm" value={entityGst.trade_name}
+            onChange={e => setEntityGst(p => ({ ...p, trade_name: e.target.value }))} /></div>
+        <div><Label className="text-xs">Registration Type</Label>
+          <Select value={entityGst.registration_type}
+            onValueChange={(v: EntityGSTConfig['registration_type']) => setEntityGst(p => ({ ...p, registration_type: v }))}>
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="regular">Regular</SelectItem>
+              <SelectItem value="composition">Composition</SelectItem>
+              <SelectItem value="sez_unit">SEZ Unit</SelectItem>
+              <SelectItem value="sez_developer">SEZ Developer</SelectItem>
+            </SelectContent>
+          </Select></div>
+        <div><Label className="text-xs">State Code</Label>
+          <Input className="h-8 text-sm font-mono" maxLength={2} value={entityGst.state_code}
+            onChange={e => setEntityGst(p => ({ ...p, state_code: e.target.value }))}
+            placeholder="22" /></div>
+        <div className="md:col-span-2"><Label className="text-xs">Address Line 1</Label>
+          <Input className="h-8 text-sm" value={entityGst.address_line_1}
+            onChange={e => setEntityGst(p => ({ ...p, address_line_1: e.target.value }))} /></div>
+        <div><Label className="text-xs">City</Label>
+          <Input className="h-8 text-sm" value={entityGst.city}
+            onChange={e => setEntityGst(p => ({ ...p, city: e.target.value }))} /></div>
+        <div><Label className="text-xs">PIN Code</Label>
+          <Input className="h-8 text-sm font-mono" maxLength={6} value={entityGst.pincode}
+            onChange={e => setEntityGst(p => ({ ...p, pincode: e.target.value }))} /></div>
+      </div>
+
+      <Separator />
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Banking & UPI (Printed on Invoice)</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><Label className="text-xs">Bank Name</Label>
+          <Input className="h-8 text-sm" value={entityGst.bank_name}
+            onChange={e => setEntityGst(p => ({ ...p, bank_name: e.target.value }))} /></div>
+        <div><Label className="text-xs">Account Number</Label>
+          <Input className="h-8 text-sm font-mono" value={entityGst.bank_account_no}
+            onChange={e => setEntityGst(p => ({ ...p, bank_account_no: e.target.value }))} /></div>
+        <div><Label className="text-xs">IFSC</Label>
+          <Input className="h-8 text-sm font-mono uppercase" maxLength={11} value={entityGst.bank_ifsc}
+            onChange={e => setEntityGst(p => ({ ...p, bank_ifsc: e.target.value.toUpperCase() }))} /></div>
+        <div><Label className="text-xs">Branch</Label>
+          <Input className="h-8 text-sm" value={entityGst.bank_branch}
+            onChange={e => setEntityGst(p => ({ ...p, bank_branch: e.target.value }))} /></div>
+        <div><Label className="text-xs">UPI VPA (for Payment QR)</Label>
+          <Input className="h-8 text-sm font-mono" value={entityGst.upi_vpa}
+            onChange={e => setEntityGst(p => ({ ...p, upi_vpa: e.target.value }))}
+            placeholder="business@hdfcbank" /></div>
+        <div><Label className="text-xs">UPI Payee Name</Label>
+          <Input className="h-8 text-sm" value={entityGst.upi_payee_name}
+            onChange={e => setEntityGst(p => ({ ...p, upi_payee_name: e.target.value }))} /></div>
+      </div>
+    </div>
+  );
+
+  // ── IRN / E-Way Bill API Section (Sprint 9) ──
+  const renderIrnEwbSection = () => (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <Truck className="h-4 w-4 text-teal-500" /> IRN / E-Way Bill API
+          </h3>
+          <p className="text-[10px] text-muted-foreground">GSTN IRP and NIC E-Way Bill API credentials, GSP provider and behaviour.</p>
+        </div>
+        <Button data-primary size="sm" onClick={handleSaveEntityGst}>
+          <Save className="h-3.5 w-3.5 mr-1" /> Save IRN/EWB API
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">IRP (e-Invoice) Credentials</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm">IRP API Enabled</Label>
+                <p className="text-[10px] text-muted-foreground">Auto-generate IRN on Sales Invoice post</p>
+              </div>
+              <Switch checked={entityGst.irp_api_enabled}
+                onCheckedChange={v => setEntityGst(p => ({ ...p, irp_api_enabled: v }))} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm">Test Mode (Sandbox)</Label>
+                <p className="text-[10px] text-muted-foreground">Use NIC sandbox endpoints</p>
+              </div>
+              <Switch checked={entityGst.irp_test_mode}
+                onCheckedChange={v => setEntityGst(p => ({ ...p, irp_test_mode: v }))} />
+            </div>
+            <div><Label className="text-xs">IRP Username</Label>
+              <Input className="h-8 text-sm" value={entityGst.irp_username}
+                onChange={e => setEntityGst(p => ({ ...p, irp_username: e.target.value }))} /></div>
+            <div><Label className="text-xs">IRP Password</Label>
+              <Input type="password" className="h-8 text-sm" value={entityGst.irp_password}
+                onChange={e => setEntityGst(p => ({ ...p, irp_password: e.target.value }))} /></div>
+            <div><Label className="text-xs">Client ID</Label>
+              <Input className="h-8 text-sm font-mono" value={entityGst.irp_client_id}
+                onChange={e => setEntityGst(p => ({ ...p, irp_client_id: e.target.value }))} /></div>
+            <div><Label className="text-xs">Client Secret</Label>
+              <Input type="password" className="h-8 text-sm font-mono" value={entityGst.irp_client_secret}
+                onChange={e => setEntityGst(p => ({ ...p, irp_client_secret: e.target.value }))} /></div>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-sm">Auto-generate IRN on Post</Label>
+              <p className="text-[10px] text-muted-foreground">Trigger IRN immediately when invoice is posted</p>
+            </div>
+            <Switch checked={entityGst.auto_generate_irn_on_post}
+              onCheckedChange={v => setEntityGst(p => ({ ...p, auto_generate_irn_on_post: v }))} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">EWB (E-Way Bill) Credentials</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm">EWB API Enabled</Label>
+                <p className="text-[10px] text-muted-foreground">Generate E-Way Bills via NIC API</p>
+              </div>
+              <Switch checked={entityGst.ewb_api_enabled}
+                onCheckedChange={v => setEntityGst(p => ({ ...p, ewb_api_enabled: v }))} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm">Test Mode (Sandbox)</Label>
+                <p className="text-[10px] text-muted-foreground">Use NIC EWB sandbox</p>
+              </div>
+              <Switch checked={entityGst.ewb_test_mode}
+                onCheckedChange={v => setEntityGst(p => ({ ...p, ewb_test_mode: v }))} />
+            </div>
+            <div><Label className="text-xs">EWB Username</Label>
+              <Input className="h-8 text-sm" value={entityGst.ewb_username}
+                onChange={e => setEntityGst(p => ({ ...p, ewb_username: e.target.value }))} /></div>
+            <div><Label className="text-xs">EWB Password</Label>
+              <Input type="password" className="h-8 text-sm" value={entityGst.ewb_password}
+                onChange={e => setEntityGst(p => ({ ...p, ewb_password: e.target.value }))} /></div>
+            <div><Label className="text-xs">Auto-EWB above (₹)</Label>
+              <Input type="number" className="h-8 text-sm font-mono"
+                value={entityGst.auto_generate_ewb_above}
+                onChange={e => setEntityGst(p => ({ ...p, auto_generate_ewb_above: Number(e.target.value) || 0 }))} /></div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">GSP (GST Suvidha Provider)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><Label className="text-xs">Provider</Label>
+              <Select value={entityGst.gsp_provider}
+                onValueChange={(v: GSPProvider) => setEntityGst(p => ({ ...p, gsp_provider: v }))}>
+                <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(GSP_PROVIDER_LABELS) as GSPProvider[]).map(k => (
+                    <SelectItem key={k} value={k}>{GSP_PROVIDER_LABELS[k]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select></div>
+            <div><Label className="text-xs">API Endpoint</Label>
+              <Input className="h-8 text-sm font-mono" value={entityGst.gsp_api_endpoint}
+                onChange={e => setEntityGst(p => ({ ...p, gsp_api_endpoint: e.target.value }))}
+                placeholder="https://api.gsp.example.com" /></div>
+            <div className="md:col-span-2"><Label className="text-xs">GSP API Key</Label>
+              <Input type="password" className="h-8 text-sm font-mono" value={entityGst.gsp_api_key}
+                onChange={e => setEntityGst(p => ({ ...p, gsp_api_key: e.target.value }))} /></div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   // ── RCM Section ──
   const renderRCMSection = () => (
