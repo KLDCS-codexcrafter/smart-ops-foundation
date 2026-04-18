@@ -6161,7 +6161,7 @@ export function LedgerMasterPanel() {
 
     </div>
   );
-});
+}
 
 // ─── Wrapped Export ───────────────────────────────────────────────────
 
