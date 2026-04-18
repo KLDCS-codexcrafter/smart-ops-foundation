@@ -128,6 +128,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     // Always available CRM masters
     items.push({ id: 'sx-m-enquiry-source', label: 'Enquiry Sources', icon: Compass });
     items.push({ id: 'sx-m-campaign', label: 'Campaigns', icon: Megaphone });
+    // Field Force masters (Sprint 7)
+    items.push({ id: 'sx-m-territory', label: 'Territory Master', icon: MapPin });
+    items.push({ id: 'sx-m-beat', label: 'Beat Routes', icon: Route });
     if (cfg.enableSLSMTarget || cfg.enableCompanyTarget) {
       items.push({ id: 'sx-m-target' as SalesXModule, label: 'Targets', icon: Target });
     }
@@ -166,6 +169,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-visit' as SalesXModule,
+      label: 'Visit Tracking',
+      icon: Navigation,
+      live: true,
+    },
+    {
+      id: 'sx-t-secondary' as SalesXModule,
+      label: 'Secondary Sales',
+      icon: ListTree,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
@@ -179,6 +194,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
     { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart,  live: true },
     { id: 'sx-r-return-memo-register',label: 'Return Memo Register', icon: ClipboardList, live: true },
+    { id: 'sx-r-beat-productivity',   label: 'Beat Productivity',    icon: Route,         live: true },
+    { id: 'sx-r-coverage',            label: 'Coverage Report',      icon: MapPinned,     live: true },
+    { id: 'sx-r-secondary-sales',     label: 'Secondary Sales',      icon: ListTree,      live: true },
     { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
     { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
     { id: 'sx-r-so-tracker',          label: 'Sales Order Tracker',  icon: ClipboardList, live: true },
