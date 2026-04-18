@@ -200,7 +200,10 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
   // Sprint 5 — SalesX KPIs aggregated for the Sales Performance widget
   const salesxKPIs = useMemo(() => {
     const safeJSON = <T,>(k: string): T[] => {
-      try { return JSON.parse(localStorage.getItem(k) || '[]'); }
+      try {
+        // [JWT] GET /api/entity/storage/:key
+        return JSON.parse(localStorage.getItem(k) || '[]');
+      }
       catch { return []; }
     };
     // [JWT] GET /api/salesx/enquiries?entityCode={entityCode}

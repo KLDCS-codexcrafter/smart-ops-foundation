@@ -621,6 +621,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                               )}
                               {e.commission_expense_voucher_id && !e.bank_payment_voucher_id && (
                                 <Button
+                                  data-primary
                                   size="sm" className="h-7 text-[10px] px-2 bg-orange-500 hover:bg-orange-600"
                                   onClick={() => handlePayAgent(e)}
                                 >

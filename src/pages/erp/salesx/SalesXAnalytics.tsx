@@ -43,7 +43,10 @@ const inrFmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
 const formatINR = (n: number) => `₹${inrFmt.format(n)}`;
 
 function ls<T>(key: string): T[] {
-  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  try {
+    // [JWT] GET /api/entity/storage/:key
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  }
   catch { return []; }
 }
 
