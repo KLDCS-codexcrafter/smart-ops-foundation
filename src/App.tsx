@@ -134,6 +134,14 @@ const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
 const ClientCustomizedPage = lazy(() => import('./pages/client-customized/ClientCustomizedPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/Dashboard'));
 const PartnerLogin = lazy(() => import('./pages/partner/PartnerLogin'));
+const PartnerCatalog = lazy(() => import('./pages/partner/Catalog'));
+const PartnerCart = lazy(() => import('./pages/partner/Cart'));
+const PartnerInvoices = lazy(() => import('./pages/partner/Invoices'));
+const PartnerPayments = lazy(() => import('./pages/partner/Payments'));
+const PartnerUpdates = lazy(() => import('./pages/partner/Updates'));
+const DistributorBroadcast = lazy(() => import('./pages/erp/salesx/DistributorBroadcast'));
+const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
+const PartnerIntimationQueue = lazy(() => import('./pages/erp/finecore/PartnerIntimationQueue'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
@@ -318,8 +326,16 @@ const App = () => (
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
               <Route path="/partner/login" element={<PartnerLogin />} />
-              <Route path="/partner" element={<P><PartnerDashboard /></P>} />
-              <Route path="/partner/dashboard" element={<P><PartnerDashboard /></P>} />
+              <Route path="/partner" element={<PartnerDashboard />} />
+              <Route path="/partner/dashboard" element={<PartnerDashboard />} />
+              <Route path="/partner/catalog" element={<PartnerCatalog />} />
+              <Route path="/partner/cart" element={<PartnerCart />} />
+              <Route path="/partner/invoices" element={<PartnerInvoices />} />
+              <Route path="/partner/payments" element={<PartnerPayments />} />
+              <Route path="/partner/updates" element={<PartnerUpdates />} />
+              <Route path="/erp/salesx/distributor-broadcast" element={<P><DistributorBroadcast /></P>} />
+              <Route path="/erp/finecore/partner-intimations" element={<P><PartnerIntimationQueue /></P>} />
+              <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
               <Route path="/my" element={<P><CustomerDashboard /></P>} />
