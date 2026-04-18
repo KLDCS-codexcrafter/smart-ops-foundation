@@ -48,6 +48,8 @@ import type { SAMPerson } from '@/types/sam-person';
 import { samPersonsKey } from '@/types/sam-person';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { resolveCustomerAddress } from '@/lib/customer-address-lookup';
+import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 
 interface CustomerRow {
   id: string;
@@ -279,7 +281,6 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
       const now = new Date().toISOString();
       // Audit fix #3+#8: resolve real customer address + persist state codes
-      const { resolveCustomerAddress } = await import('@/lib/customer-address-lookup');
       const cust = customers.find(c => c.id === customerId) ?? null;
       const resolved = resolveCustomerAddress(customerId, partyName, placeOfSupply);
       const customerGstinValue = (() => {
