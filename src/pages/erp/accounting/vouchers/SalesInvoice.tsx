@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronDown, Send, Info, Link2, ShieldAlert } from 'lucide-react';
+import { ChevronDown, Send, Info, Link2, ShieldAlert, FileText, Truck, Printer, X } from 'lucide-react';
 import { checkCreditHold } from '@/lib/credit-hold-engine';
 import {
   creditHoldAuditKey, type CreditHoldCheck, type CreditHoldOverride,
@@ -112,6 +112,21 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [creditCheck, setCreditCheck] = useState<CreditHoldCheck | null>(null);
   const [overrideOpen, setOverrideOpen] = useState(false);
   const [overrideReason, setOverrideReason] = useState('');
+  // ── Sprint 9 — IRN / EWB state ──────────────────────────────────
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [postedVoucherNo, setPostedVoucherNo] = useState<string>('');
+  const [irnStatus, setIrnStatus] = useState<'pending' | 'generated' | 'cancelled' | 'failed'>('pending');
+  const [currentIrn, setCurrentIrn] = useState<string | null>(null);
+  const [irnAckDate, setIrnAckDate] = useState<string | null>(null);
+  const [ewbBusy, setEwbBusy] = useState(false);
+  const [irnBusy, setIrnBusy] = useState(false);
+  const [irnCancelOpen, setIrnCancelOpen] = useState(false);
+  const [irnCancelReason, setIrnCancelReason] = useState('1');
+  const [irnCancelRemarks, setIrnCancelRemarks] = useState('');
+  const [ewbDialogOpen, setEwbDialogOpen] = useState(false);
+  const [ewbVehicleNo, setEwbVehicleNo] = useState('');
+  const [ewbTransporter, setEwbTransporter] = useState('');
+  const [ewbDistanceKm, setEwbDistanceKm] = useState<number>(100);
 
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
@@ -289,6 +304,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+      setPostedVoucherId(voucher.id);
+      setPostedVoucherNo(voucher.voucher_no);
+      setIrnStatus('pending');
+      setCurrentIrn(null);
+      setIrnAckDate(null);
 
       // Update advance if linked
       if (linkedAdvance) {
@@ -494,6 +514,118 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       });
     }
   }, [onSaveDraft, partyName, date, narration]);
+
+  // ── Sprint 9 — IRN / EWB action handlers ────────────────────────
+  const handleGenerateIRN = useCallback(async () => {
+    if (!postedVoucherId) { toast.error('Post the invoice first'); return; }
+    setIrnBusy(true);
+    try {
+      const { buildIRNPayload, generateIRN } = await import('@/lib/irn-engine');
+      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
+      const { irnRecordsKey } = await import('@/types/irn');
+      const gstRaw = localStorage.getItem(entityGstKey(entityCode));
+      const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityCode };
+      const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
+      const v = allV.find(x => x.id === postedVoucherId);
+      if (!v) { toast.error('Voucher not found'); return; }
+      const payload = buildIRNPayload(
+        v, gst.gstin, gst.legal_name, gst.address_line_1, gst.city, gst.pincode, gst.state_code,
+        v.party_gstin ?? '', v.party_name ?? '', v.party_name ?? '', '', '',
+        v.customer_state_code ?? v.party_state_code ?? '',
+      );
+      const rec = await generateIRN(payload, {
+        username: gst.irp_username, password: gst.irp_password,
+        client_id: gst.irp_client_id, client_secret: gst.irp_client_secret,
+        gsp_provider: gst.gsp_provider, test_mode: gst.irp_test_mode,
+      }, v, entityCode);
+      // [JWT] POST /api/finecore/irn
+      const all = JSON.parse(localStorage.getItem(irnRecordsKey(entityCode)) || '[]');
+      all.push(rec);
+      localStorage.setItem(irnRecordsKey(entityCode), JSON.stringify(all));
+      const idx = allV.findIndex(x => x.id === postedVoucherId);
+      if (idx >= 0) {
+        allV[idx] = { ...allV[idx], irn: rec.irn ?? undefined, irn_status: rec.status, irn_ack_no: rec.ack_no ?? undefined, irn_ack_date: rec.ack_date ?? undefined, irn_signed_qr: rec.signed_qr_code ?? undefined };
+        localStorage.setItem(vouchersKey(entityCode), JSON.stringify(allV));
+      }
+      setIrnStatus(rec.status);
+      setCurrentIrn(rec.irn);
+      setIrnAckDate(rec.ack_date);
+      if (rec.status === 'generated') toast.success('IRN generated');
+      else toast.error(`IRN failed: ${rec.error_message ?? 'unknown'}`);
+    } finally { setIrnBusy(false); }
+  }, [postedVoucherId, entityCode]);
+
+  const handleCancelIRN = useCallback(async () => {
+    if (!currentIrn || !postedVoucherId) return;
+    if (irnCancelRemarks.trim().length < 10) { toast.error('Remarks min 10 chars'); return; }
+    setIrnBusy(true);
+    try {
+      const { cancelIRN } = await import('@/lib/irn-engine');
+      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
+      const { irnRecordsKey } = await import('@/types/irn');
+      const gstRaw = localStorage.getItem(entityGstKey(entityCode));
+      const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
+      const patch = await cancelIRN(currentIrn, irnCancelReason, irnCancelRemarks.trim(), {
+        username: gst.irp_username, password: gst.irp_password,
+        client_id: gst.irp_client_id, client_secret: gst.irp_client_secret,
+        gsp_provider: gst.gsp_provider, test_mode: gst.irp_test_mode,
+      });
+      const all = JSON.parse(localStorage.getItem(irnRecordsKey(entityCode)) || '[]');
+      const updated = all.map((r: { voucher_id: string }) => r.voucher_id === postedVoucherId ? { ...r, ...patch } : r);
+      localStorage.setItem(irnRecordsKey(entityCode), JSON.stringify(updated));
+      setIrnStatus('cancelled');
+      setIrnCancelOpen(false);
+      setIrnCancelRemarks('');
+      toast.success('IRN cancelled');
+    } finally { setIrnBusy(false); }
+  }, [currentIrn, postedVoucherId, irnCancelReason, irnCancelRemarks, entityCode]);
+
+  const handleGenerateEWB = useCallback(async () => {
+    if (!postedVoucherId) return;
+    setEwbBusy(true);
+    try {
+      const { buildEWBPayload, generateEWB } = await import('@/lib/ewb-engine');
+      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
+      const { ewbRecordsKey } = await import('@/types/irn');
+      const gstRaw = localStorage.getItem(entityGstKey(entityCode));
+      const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
+      const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
+      const v = allV.find(x => x.id === postedVoucherId);
+      if (!v) return;
+      const ctx = {
+        voucher: v, irn: currentIrn,
+        supplier_gstin: gst.gstin, supplier_state_code: gst.state_code,
+        supplier_address: gst.address_line_1,
+        customer_gstin: v.party_gstin ?? '',
+        customer_state_code: v.customer_state_code ?? v.party_state_code ?? '',
+        customer_address: v.party_name ?? '',
+        transporter_id: null, transporter_name: ewbTransporter || null,
+        vehicle_no: ewbVehicleNo || null, vehicle_type: 'regular' as const,
+        transport_mode: 'road' as const, transport_distance_km: ewbDistanceKm,
+        sub_supply_type: 'supply' as const, doc_type: 'INV' as const, supply_type: 'outward' as const,
+      };
+      const payload = buildEWBPayload(ctx);
+      const rec = await generateEWB(payload, {
+        username: gst.ewb_username, password: gst.ewb_password, test_mode: gst.ewb_test_mode,
+      }, ctx, entityCode);
+      const all = JSON.parse(localStorage.getItem(ewbRecordsKey(entityCode)) || '[]');
+      all.push(rec);
+      localStorage.setItem(ewbRecordsKey(entityCode), JSON.stringify(all));
+      const idx = allV.findIndex(x => x.id === postedVoucherId);
+      if (idx >= 0) {
+        allV[idx] = { ...allV[idx], ewb_no: rec.ewb_no ?? undefined, ewb_status: rec.status, ewb_valid_until: rec.valid_until ?? undefined, vehicle_no: ewbVehicleNo || undefined, transporter: ewbTransporter || undefined };
+        localStorage.setItem(vouchersKey(entityCode), JSON.stringify(allV));
+      }
+      setEwbDialogOpen(false);
+      if (rec.status === 'generated') toast.success(`E-Way Bill generated: ${rec.ewb_no}`);
+      else toast.error(`EWB failed: ${rec.error_message ?? 'unknown'}`);
+    } finally { setEwbBusy(false); }
+  }, [postedVoucherId, entityCode, currentIrn, ewbVehicleNo, ewbTransporter, ewbDistanceKm]);
+
+  const handlePrintInvoice = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(`/erp/finecore/invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`, '_blank');
+  }, [postedVoucherId, entityCode]);
 
   const showSamPanel = !!samCfg?.enableSalesActivityModule && (
     !!samSalesmanId || !!samAgentId || !!samCfg.enableCompanySalesMan || !!samCfg.enableAgentModule
@@ -747,6 +879,119 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
+
+      {/* Sprint 9 — IRN / EWB / Print toolbar (visible after Post) */}
+      {postedVoucherId && (
+        <Card className="border-teal-500/30">
+          <CardContent className="pt-4 pb-4 space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="text-xs">
+                <div className="font-semibold flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5 text-teal-500" />
+                  e-Invoice / E-Way Bill — {postedVoucherNo}
+                </div>
+                <div className="text-muted-foreground mt-0.5">
+                  IRN: <span className="font-mono">{currentIrn ? currentIrn.slice(0, 24) + '…' : '—'}</span>
+                  <span className="ml-2">Status: <Badge variant="outline" className="text-[9px] ml-1">{irnStatus}</Badge></span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {irnStatus !== 'generated' && (
+                  <Button size="sm" variant="outline" onClick={handleGenerateIRN} disabled={irnBusy}>
+                    <FileText className="h-3.5 w-3.5 mr-1" /> Generate IRN
+                  </Button>
+                )}
+                {irnStatus === 'generated' && (
+                  <Button size="sm" variant="outline" className="text-destructive"
+                    onClick={() => setIrnCancelOpen(true)}>
+                    <X className="h-3.5 w-3.5 mr-1" /> Cancel IRN
+                  </Button>
+                )}
+                <Button size="sm" variant="outline" onClick={() => setEwbDialogOpen(true)} disabled={ewbBusy}>
+                  <Truck className="h-3.5 w-3.5 mr-1" /> Generate E-Way Bill
+                </Button>
+                <Button size="sm" data-primary onClick={handlePrintInvoice}>
+                  <Printer className="h-3.5 w-3.5 mr-1" /> Print Invoice
+                </Button>
+              </div>
+            </div>
+            {irnAckDate && (
+              <div className="text-[10px] text-muted-foreground">
+                Acknowledged at {irnAckDate.slice(0, 19).replace('T', ' ')} IST
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Cancel IRN dialog */}
+      <Dialog open={irnCancelOpen} onOpenChange={setIrnCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel IRN</DialogTitle>
+            <DialogDescription>Cancellation must be done within 24 hours of generation.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Reason</Label>
+              <select value={irnCancelReason} onChange={e => setIrnCancelReason(e.target.value)}
+                className="w-full h-8 text-xs rounded-md border border-input bg-background px-2">
+                <option value="1">Duplicate</option>
+                <option value="2">Data Entry Mistake</option>
+                <option value="3">Order Cancelled</option>
+                <option value="4">Other</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-xs">Remarks (min 10 chars)</Label>
+              <Textarea rows={3} value={irnCancelRemarks}
+                onChange={e => setIrnCancelRemarks(e.target.value)} />
+              <p className="text-[10px] text-muted-foreground mt-1">{irnCancelRemarks.trim().length}/10</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIrnCancelOpen(false)}>Close</Button>
+            <Button data-primary variant="destructive" onClick={handleCancelIRN}
+              disabled={irnBusy || irnCancelRemarks.trim().length < 10}>Cancel IRN</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Generate EWB dialog */}
+      <Dialog open={ewbDialogOpen} onOpenChange={setEwbDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generate E-Way Bill</DialogTitle>
+            <DialogDescription>
+              EWB is mandatory for interstate movement of goods over ₹50,000.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Vehicle Number</Label>
+              <Input value={ewbVehicleNo} onChange={e => setEwbVehicleNo(e.target.value.toUpperCase())}
+                placeholder="MH12AB1234" className="h-8 text-sm font-mono uppercase" />
+            </div>
+            <div>
+              <Label className="text-xs">Transporter</Label>
+              <Input value={ewbTransporter} onChange={e => setEwbTransporter(e.target.value)}
+                className="h-8 text-sm" />
+            </div>
+            <div className="col-span-2">
+              <Label className="text-xs">Distance (km)</Label>
+              <Input type="number" value={ewbDistanceKm}
+                onChange={e => setEwbDistanceKm(Number(e.target.value) || 0)}
+                className="h-8 text-sm font-mono" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEwbDialogOpen(false)}>Close</Button>
+            <Button data-primary onClick={handleGenerateEWB} disabled={ewbBusy || ewbDistanceKm <= 0}>
+              Generate E-Way Bill
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={overrideOpen} onOpenChange={setOverrideOpen}>
         <DialogContent className="max-w-lg">

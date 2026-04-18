@@ -50,6 +50,8 @@ import { Form26ASPanel } from './reports/Form26AS';
 import { AuditDashboardPanel } from './reports/AuditDashboard';
 import { Form3CDPanel } from './reports/Form3CD';
 import { Clause44ReportPanel } from './reports/gst/Clause44Report';
+import { IRNRegisterPanel } from './reports/IRNRegister';
+import { EWayBillRegisterPanel } from './reports/EWayBillRegister';
 import { CapitalAssetMasterPanel } from '@/pages/erp/accounting/capital-assets/CapitalAssetMaster';
 import { DepreciationWorkingsPanel } from '@/pages/erp/accounting/capital-assets/DepreciationWorkings';
 import { AMCWarrantyTrackerPanel } from '@/pages/erp/accounting/capital-assets/AMCWarrantyTracker';
@@ -93,6 +95,8 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-gst-gstr2': 'GSTR-2 Purchase Register',
   'fc-gst-itc': 'ITC Register',
   'fc-gst-2a': '2A/2B Reconciliation',
+  'fc-gst-irn-register': 'IRN Register',
+  'fc-gst-ewb-register': 'E-Way Bill Register',
   'fc-audit-dashboard': 'Audit Dashboard',
   'fc-audit-3cd': 'Form 3CD',
   'fc-audit-clause44': 'Clause 44 Report',
@@ -175,6 +179,8 @@ export function FinCorePagePanel() {
       case 'fc-gst-gstr2': return <GSTR2RegisterPanel entityCode={entityCode} />;
       case 'fc-gst-itc': return <ITCRegisterPanel entityCode={entityCode} />;
       case 'fc-gst-2a': return <RecoPanelGST entityCode={entityCode} />;
+      case 'fc-gst-irn-register': return <IRNRegisterPanel entityCode={entityCode} />;
+      case 'fc-gst-ewb-register': return <EWayBillRegisterPanel entityCode={entityCode} />;
       case 'fc-audit-dashboard': return <AuditDashboardPanel entityCode={entityCode} />;
       case 'fc-audit-3cd': return <Form3CDPanel entityCode={entityCode} />;
       case 'fc-audit-clause44': return <Clause44ReportPanel entityCode={entityCode} />;

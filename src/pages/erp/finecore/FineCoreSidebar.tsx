@@ -37,6 +37,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-rpt-24q', 'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan', 'fc-rpt-26as',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
+  'fc-gst-irn-register', 'fc-gst-ewb-register',
   'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
   'fc-fa-register', 'fc-fa-master', 'fc-fa-depreciation',
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
@@ -117,6 +118,8 @@ const GST_ITEMS: SidebarItem[] = [
   { id: 'fc-gst-itc', label: 'ITC Register', icon: Calculator },
   { id: 'fc-gst-gstr2', label: 'GSTR-2 Purchase Register', icon: ShoppingCart },
   { id: 'fc-gst-gstr9', label: 'GSTR-9 Annual Return', icon: FileCheck },
+  { id: 'fc-gst-irn-register', label: 'IRN Register', icon: FileText },
+  { id: 'fc-gst-ewb-register', label: 'E-Way Bill Register', icon: Truck },
 ];
 
 const TDS_ITEMS: SidebarItem[] = [

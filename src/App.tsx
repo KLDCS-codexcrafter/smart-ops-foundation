@@ -82,6 +82,7 @@ const VoucherTypesMaster = lazy(() => import('./pages/erp/accounting/VoucherType
 const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'));
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
 const FinCorePage = lazy(() => import('./pages/erp/finecore/FinCorePage'));
+const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -266,6 +267,7 @@ const App = () => (
               <Route path="/erp/accounting/voucher-types" element={<P><VoucherTypesMaster /></P>} />
               <Route path="/erp/accounting/transaction-templates" element={<P><TransactionTemplates /></P>} />
               <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
+              <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/receipt" element={<P><ReceiptVoucher /></P>} />
