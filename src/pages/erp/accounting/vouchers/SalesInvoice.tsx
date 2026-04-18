@@ -31,6 +31,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { calculateInvoiceCommission } from '@/lib/sam-engine';
+import { isCommissionAlreadyBooked } from '@/lib/commission-engine';
 import type { CommissionResult } from '@/lib/sam-engine';
 import type { CommissionEntry } from '@/types/commission-register';
 import { commissionRegisterKey } from '@/types/commission-register';
