@@ -619,6 +619,19 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                                   <FileCheck className="h-3 w-3 mr-1" /> Post GL
                                 </Button>
                               )}
+                              {e.commission_expense_voucher_id && !e.bank_payment_voucher_id && (
+                                <Button
+                                  size="sm" className="h-7 text-[10px] px-2 bg-orange-500 hover:bg-orange-600"
+                                  onClick={() => handlePayAgent(e)}
+                                >
+                                  <Banknote className="h-3 w-3 mr-1" /> Pay Agent
+                                </Button>
+                              )}
+                              {e.bank_payment_voucher_no && (
+                                <Badge variant="outline" className="text-[10px] bg-success/15 text-success border-success/30">
+                                  Paid: {e.bank_payment_voucher_no}
+                                </Badge>
+                              )}
                               {!e.agent_invoice_status && (
                                 <Button
                                   size="sm" variant="outline" className="h-7 text-[10px] px-2"
