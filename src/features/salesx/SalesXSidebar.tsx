@@ -1,13 +1,14 @@
 /**
  * SalesXSidebar.tsx — SalesX Hub left sidebar
- * Orange-500 accent. Config-driven Masters section.
+ * Orange-500 accent. Config-driven Masters + Reports sections.
  * [JWT] SAMConfig read from comply360SAMKey(entityCode)
  */
 import { useState, useMemo } from 'react';
 import {
   TrendingUp, LayoutDashboard, Users, UserCheck, Briefcase,
   Network, Star, Target, Phone, FileText,
-  ChevronRight, UserPlus, Award,
+  ChevronRight, UserPlus, Award, Megaphone, Compass,
+  Wallet, ListChecks, GitBranch, FileBarChart,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -27,10 +28,16 @@ export type SalesXModule =
   | 'sx-m-broker'
   | 'sx-m-receiver'
   | 'sx-m-reference'
+  | 'sx-m-enquiry-source'
+  | 'sx-m-campaign'
   | 'sx-t-enquiry'
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
-  | 'sx-t-quotation';
+  | 'sx-t-quotation'
+  | 'sx-r-commission'
+  | 'sx-r-enquiry-register'
+  | 'sx-r-pipeline-summary'
+  | 'sx-r-quotation-register';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -40,10 +47,16 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-m-broker',
   'sx-m-receiver',
   'sx-m-reference',
+  'sx-m-enquiry-source',
+  'sx-m-campaign',
   'sx-t-enquiry',
   'sx-t-pipeline',
   'sx-t-telecaller',
   'sx-t-quotation',
+  'sx-r-commission',
+  'sx-r-enquiry-register',
+  'sx-r-pipeline-summary',
+  'sx-r-quotation-register',
 ];
 
 interface Props {
@@ -63,6 +76,7 @@ function loadSAMConfig(entityCode: string): SAMConfig | null {
 export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Props) {
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
 
   const cfg = useMemo(() => loadSAMConfig(entityCode), [entityCode]);
 
@@ -81,6 +95,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       items.push({ id: 'sx-m-receiver', label: 'Receiver Master', icon: Star });
     if (cfg.enableReference)
       items.push({ id: 'sx-m-reference', label: 'Reference Master', icon: UserPlus });
+    // Always available CRM masters
+    items.push({ id: 'sx-m-enquiry-source', label: 'Enquiry Sources', icon: Compass });
+    items.push({ id: 'sx-m-campaign', label: 'Campaigns', icon: Megaphone });
     return items;
   }, [cfg]);
 
@@ -109,6 +126,13 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       icon: FileText,
       live: true,
     },
+  ];
+
+  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType }> = [
+    { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet },
+    { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks },
+    { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch },
+    { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart },
   ];
 
   const btn = (
@@ -154,7 +178,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           {btn('sx-hub', 'Hub Overview', LayoutDashboard, true, 'Hub Overview')}
         </SidebarMenu>
 
-        {cfg?.enableSalesActivityModule && masterItems.length > 0 && (
+        {masterItems.length > 0 && (
           <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
             <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
               <ChevronRight className={cn(
@@ -175,7 +199,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
 
         {!cfg?.enableSalesActivityModule && (
           <div className="px-3 py-2 text-[10px] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
-            Configure SAM in Comply360 to unlock masters.
+            Configure SAM in Comply360 to unlock SAM masters.
           </div>
         )}
 
@@ -192,6 +216,23 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           <CollapsibleContent>
             <SidebarMenu className="px-1 space-y-0.5">
               {txnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
+            </SidebarMenu>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="px-2">
+          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+            <ChevronRight className={cn(
+              'h-3 w-3 text-muted-foreground/90 transition-transform',
+              reportsOpen && 'rotate-90',
+            )} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+              Reports
+            </span>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SidebarMenu className="px-1 space-y-0.5">
+              {reportItems.map(item => btn(item.id, item.label, item.icon, true))}
             </SidebarMenu>
           </CollapsibleContent>
         </Collapsible>
