@@ -251,6 +251,24 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
+          {approvedMemos.length > 0 && (
+            <div>
+              <Label className="text-xs flex items-center gap-1">
+                <FileMinus className="h-3 w-3 text-orange-500" /> From Sales Return Memo (optional)
+              </Label>
+              <Select value={selectedMemoId || 'none'} onValueChange={v => v !== 'none' && applyMemo(v)}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Pick approved memo to pre-fill" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None —</SelectItem>
+                  {approvedMemos.map(m => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.memo_no} — {m.customer_name} — ₹{m.total_amount.toLocaleString('en-IN')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs">Against Invoice No</Label>
