@@ -518,6 +518,9 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     commitVoucher();
   }, [creditCheck, overrideReason, recordOverride, commitVoucher]);
 
+  // Sprint 9 polish: Ctrl+S triggers Post (unless override dialog is open)
+  useCtrlS(() => { if (!overrideOpen) handlePost(); });
+
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
