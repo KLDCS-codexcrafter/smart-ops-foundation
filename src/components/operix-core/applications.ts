@@ -122,10 +122,19 @@ export const applications: AppDefinition[] = [
   {
     id: 'distributor-hub',
     name: 'Distributor Hub',
-    description: 'Manage tier-priced distributors — credit, targets, broadcasts and partner portal access',
+    description: 'Manage distributors · intimations · broadcasts · analytics',
     category: 'Sales Hub',
-    route: '/erp/distributor/hub',
-    icon: 'Truck',
+    route: '/erp/distributor-hub',
+    icon: 'Store',
+  },
+  {
+    id: 'customer-hub',
+    name: 'Customer Hub',
+    description: 'End-customer loyalty + cross-sell — coming Sprint 13',
+    category: 'Sales Hub',
+    route: '#',
+    icon: 'Heart',
+    status: 'coming_soon',
   },
   {
     id: 'finecore',

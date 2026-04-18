@@ -138,3 +138,40 @@ export function clearDistributorSession(): void {
   localStorage.removeItem(DISTRIBUTOR_TOKEN_KEY);
   localStorage.removeItem(DISTRIBUTOR_SESSION_KEY);
 }
+
+// ── Role-based permissions (Sprint 10 Part D · Feature #2) ──
+
+/**
+ * DistributorRole — sub-roles inside a distributor's own team.
+ * Stored on DistributorSession in a future extension; defaulted to 'owner'
+ * for the current single-user portal flow.
+ */
+export type DistributorRole =
+  | 'owner'
+  | 'purchase_manager'
+  | 'accountant'
+  | 'warehouse_clerk'
+  | 'view_only';
+
+/** Actions guarded inside the portal UI. */
+export type DistributorAction =
+  | 'view_invoices'
+  | 'record_payment'
+  | 'place_order'
+  | 'change_settings'
+  | 'view_reports';
+
+/**
+ * hasRolePermission — pure predicate. Use to hide / disable UI controls.
+ * Server MUST re-check on every mutation (this is a UX guardrail, not security).
+ */
+export function hasRolePermission(role: DistributorRole, action: DistributorAction): boolean {
+  const rules: Record<DistributorAction, DistributorRole[]> = {
+    view_invoices:   ['owner', 'purchase_manager', 'accountant', 'warehouse_clerk', 'view_only'],
+    record_payment:  ['owner', 'accountant'],
+    place_order:     ['owner', 'purchase_manager'],
+    change_settings: ['owner'],
+    view_reports:    ['owner', 'accountant'],
+  };
+  return rules[action]?.includes(role) ?? false;
+}
