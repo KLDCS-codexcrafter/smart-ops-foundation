@@ -581,7 +581,6 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setIrnBusy(true);
     try {
       const { cancelIRN } = await import('@/lib/irn-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { irnRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
@@ -605,20 +604,22 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setEwbBusy(true);
     try {
       const { buildEWBPayload, generateEWB } = await import('@/lib/ewb-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { ewbRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
       const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
       const v = allV.find(x => x.id === postedVoucherId);
       if (!v) return;
+      // Audit fix #3: real customer address (not party_name)
+      const resolved = resolveCustomerAddress(v.party_id ?? null, v.party_name ?? null,
+        v.customer_state_code ?? v.party_state_code ?? null);
       const ctx = {
         voucher: v, irn: currentIrn,
         supplier_gstin: gst.gstin, supplier_state_code: gst.state_code,
         supplier_address: gst.address_line_1,
         customer_gstin: v.party_gstin ?? '',
-        customer_state_code: v.customer_state_code ?? v.party_state_code ?? '',
-        customer_address: v.party_name ?? '',
+        customer_state_code: resolved.state_code || v.customer_state_code || v.party_state_code || '',
+        customer_address: resolved.full_address || 'NA',
         transporter_id: null, transporter_name: ewbTransporter || null,
         vehicle_no: ewbVehicleNo || null, vehicle_type: 'regular' as const,
         transport_mode: 'road' as const, transport_distance_km: ewbDistanceKm,
