@@ -964,7 +964,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
             </div>
             {irnAckDate && (
               <div className="text-[10px] text-muted-foreground">
-                Acknowledged at {irnAckDate.slice(0, 19).replace('T', ' ')} IST
+                Acknowledged at {(() => {
+                  const d = new Date(irnAckDate);
+                  if (Number.isNaN(d.getTime())) return irnAckDate;
+                  const ist = new Date(d.getTime() + 330 * 60 * 1000);
+                  const day = String(ist.getUTCDate()).padStart(2, '0');
+                  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                  const hh = String(ist.getUTCHours()).padStart(2, '0');
+                  const mm = String(ist.getUTCMinutes()).padStart(2, '0');
+                  return `${day} ${months[ist.getUTCMonth()]} ${ist.getUTCFullYear()} ${hh}:${mm} IST`;
+                })()}
               </div>
             )}
           </CardContent>
