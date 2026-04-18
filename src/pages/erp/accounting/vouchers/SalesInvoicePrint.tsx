@@ -170,7 +170,7 @@ export default function SalesInvoicePrint() {
             <div className="text-muted-foreground">Invoice No</div>
             <div className="font-mono text-right">{payload.voucher_no}</div>
             <div className="text-muted-foreground">Invoice Date</div>
-            <div className="font-mono text-right">{payload.voucher_date}</div>
+            <div className="font-mono text-right">{formatDDMMMYYYY(payload.voucher_date)}</div>
             <div className="text-muted-foreground">Place of Supply</div>
             <div className="font-mono text-right">{payload.place_of_supply}</div>
             <div className="text-muted-foreground">Reverse Charge</div>
@@ -302,9 +302,12 @@ export default function SalesInvoicePrint() {
               <>
                 <div className="font-mono break-all">{payload.irn}</div>
                 <div>Ack No: <span className="font-mono">{payload.irn_ack_no}</span></div>
-                <div>Ack Date: <span className="font-mono">{payload.irn_ack_date?.slice(0, 10)}</span></div>
+                <div>Ack Date: <span className="font-mono">{formatDateTimeIST(payload.irn_ack_date)}</span></div>
                 {ewb && (
                   <div className="mt-1">EWB: <span className="font-mono">{ewb.ewb_no}</span></div>
+                )}
+                {ewb?.valid_until && (
+                  <div>Valid Until: <span className="font-mono">{formatDDMMMYYYY(ewb.valid_until)}</span></div>
                 )}
               </>
             ) : (
