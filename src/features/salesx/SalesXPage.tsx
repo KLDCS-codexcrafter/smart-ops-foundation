@@ -28,6 +28,13 @@ import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
 import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
+import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
+import { BeatRouteMasterPanel } from '@/pages/erp/salesx/masters/BeatRouteMaster';
+import { VisitTrackingPanel } from '@/pages/erp/salesx/transactions/VisitTracking';
+import { SecondarySalesPanel } from '@/pages/erp/salesx/transactions/SecondarySales';
+import { BeatProductivityReportPanel } from '@/pages/erp/salesx/reports/BeatProductivityReport';
+import { CoverageReportPanel } from '@/pages/erp/salesx/reports/CoverageReport';
+import { SecondarySalesReportPanel } from '@/pages/erp/salesx/reports/SecondarySalesReport';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -39,16 +46,23 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-m-reference':          'Reference Master',
   'sx-m-enquiry-source':     'Enquiry Source Master',
   'sx-m-campaign':           'Campaign Master',
+  'sx-m-territory':          'Territory Master',
+  'sx-m-beat':               'Beat Routes',
   'sx-t-enquiry':            'Enquiry',
   'sx-t-pipeline':           'CRM Pipeline',
   'sx-t-telecaller':         'Telecaller',
   'sx-t-quotation':          'Quotation',
   'sx-t-return-memo':        'Sales Return Memo',
+  'sx-t-visit':              'Visit Tracking',
+  'sx-t-secondary':          'Secondary Sales',
   'sx-r-commission':         'Commission Register',
   'sx-r-enquiry-register':   'Enquiry Register Report',
   'sx-r-pipeline-summary':   'Pipeline Summary',
   'sx-r-quotation-register': 'Quotation Register Report',
   'sx-r-return-memo-register': 'Return Memo Register',
+  'sx-r-beat-productivity':  'Beat Productivity Report',
+  'sx-r-coverage':           'Coverage Report',
+  'sx-r-secondary-sales':    'Secondary Sales Report',
   'sx-m-target':             'Target Master',
   'sx-r-followup':           'Follow-Up Register',
   'sx-r-target':             'Target vs Achievement',
@@ -106,6 +120,20 @@ function renderModule(
       return <SalesReturnMemoPanel entityCode={entityCode} />;
     case 'sx-r-return-memo-register':
       return <SalesReturnMemoRegisterPanel entityCode={entityCode} />;
+    case 'sx-m-territory':
+      return <TerritoryMasterPanel entityCode={entityCode} />;
+    case 'sx-m-beat':
+      return <BeatRouteMasterPanel entityCode={entityCode} />;
+    case 'sx-t-visit':
+      return <VisitTrackingPanel entityCode={entityCode} />;
+    case 'sx-t-secondary':
+      return <SecondarySalesPanel entityCode={entityCode} />;
+    case 'sx-r-beat-productivity':
+      return <BeatProductivityReportPanel entityCode={entityCode} />;
+    case 'sx-r-coverage':
+      return <CoverageReportPanel entityCode={entityCode} />;
+    case 'sx-r-secondary-sales':
+      return <SecondarySalesReportPanel entityCode={entityCode} />;
     case 'sx-r-commission':
       return <CommissionRegisterPanel entityCode={entityCode} />;
     case 'sx-r-enquiry-register':

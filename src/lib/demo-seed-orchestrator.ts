@@ -20,6 +20,9 @@ import {
   DEMO_COMM_LOG_TRADING, DEMO_COMM_LOG_SERVICES, DEMO_COMM_LOG_MFG,
 } from '@/data/demo-receivx-data';
 import { loadSalesXTransactions } from '@/data/demo-transactions-salesx';
+import {
+  DEMO_TERRITORIES, DEMO_BEAT_ROUTES, DEMO_VISIT_LOGS, DEMO_SECONDARY_SALES,
+} from '@/data/demo-field-force-data';
 
 export interface SeedResult {
   entityCode: string;
@@ -108,6 +111,12 @@ export function seedEntityDemoData(
     : archetype === 'services' ? DEMO_COMM_LOG_SERVICES : DEMO_COMM_LOG_MFG;
   const ptps = safeSetArray(`erp_receivx_ptps_${entityCode}`, ptpsData);
   const commLog = safeSetArray(`erp_receivx_comm_log_${entityCode}`, commLogData);
+
+  // Field Force masters + transactions (Sprint 7)
+  safeSetArray(`erp_territories_${entityCode}`, DEMO_TERRITORIES);
+  safeSetArray(`erp_beat_routes_${entityCode}`, DEMO_BEAT_ROUTES);
+  safeSetArray(`erp_visit_logs_${entityCode}`, DEMO_VISIT_LOGS);
+  safeSetArray(`erp_secondary_sales_${entityCode}`, DEMO_SECONDARY_SALES);
 
   return {
     entityCode, archetype,

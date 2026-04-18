@@ -10,7 +10,7 @@ import {
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
-  FileMinus,
+  FileMinus, MapPin, Route, Navigation, ListTree, MapPinned,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -32,16 +32,23 @@ export type SalesXModule =
   | 'sx-m-reference'
   | 'sx-m-enquiry-source'
   | 'sx-m-campaign'
+  | 'sx-m-territory'
+  | 'sx-m-beat'
   | 'sx-t-enquiry'
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
   | 'sx-t-quotation'
   | 'sx-t-return-memo'
+  | 'sx-t-visit'
+  | 'sx-t-secondary'
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
   | 'sx-r-quotation-register'
   | 'sx-r-return-memo-register'
+  | 'sx-r-beat-productivity'
+  | 'sx-r-coverage'
+  | 'sx-r-secondary-sales'
   | 'sx-m-target'
   | 'sx-r-followup'
   | 'sx-r-target'
@@ -58,16 +65,23 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-m-reference',
   'sx-m-enquiry-source',
   'sx-m-campaign',
+  'sx-m-territory',
+  'sx-m-beat',
   'sx-t-enquiry',
   'sx-t-pipeline',
   'sx-t-telecaller',
   'sx-t-quotation',
   'sx-t-return-memo',
+  'sx-t-visit',
+  'sx-t-secondary',
   'sx-r-commission',
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
   'sx-r-quotation-register',
   'sx-r-return-memo-register',
+  'sx-r-beat-productivity',
+  'sx-r-coverage',
+  'sx-r-secondary-sales',
   'sx-m-target',
   'sx-r-followup',
   'sx-r-target',
@@ -114,6 +128,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     // Always available CRM masters
     items.push({ id: 'sx-m-enquiry-source', label: 'Enquiry Sources', icon: Compass });
     items.push({ id: 'sx-m-campaign', label: 'Campaigns', icon: Megaphone });
+    // Field Force masters (Sprint 7)
+    items.push({ id: 'sx-m-territory', label: 'Territory Master', icon: MapPin });
+    items.push({ id: 'sx-m-beat', label: 'Beat Routes', icon: Route });
     if (cfg.enableSLSMTarget || cfg.enableCompanyTarget) {
       items.push({ id: 'sx-m-target' as SalesXModule, label: 'Targets', icon: Target });
     }
@@ -152,6 +169,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-visit' as SalesXModule,
+      label: 'Visit Tracking',
+      icon: Navigation,
+      live: true,
+    },
+    {
+      id: 'sx-t-secondary' as SalesXModule,
+      label: 'Secondary Sales',
+      icon: ListTree,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
@@ -165,6 +194,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
     { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart,  live: true },
     { id: 'sx-r-return-memo-register',label: 'Return Memo Register', icon: ClipboardList, live: true },
+    { id: 'sx-r-beat-productivity',   label: 'Beat Productivity',    icon: Route,         live: true },
+    { id: 'sx-r-coverage',            label: 'Coverage Report',      icon: MapPinned,     live: true },
+    { id: 'sx-r-secondary-sales',     label: 'Secondary Sales',      icon: ListTree,      live: true },
     { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
     { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
     { id: 'sx-r-so-tracker',          label: 'Sales Order Tracker',  icon: ClipboardList, live: true },
