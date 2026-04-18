@@ -35,6 +35,10 @@ export interface Distributor {
   state_code: string | null;
   full_address: string;
   is_distributor: true;      // tautology marker; rows here ARE distributors
+  // Sprint 11a — hierarchy linkage (optional, backward-compatible)
+  hierarchy_node_id?: string | null;
+  upstream_customer_id?: string | null;
+  hierarchy_role?: import('./distributor-hierarchy').HierarchyRole | null;
   created_at: string;
   updated_at: string;
 }
@@ -54,6 +58,9 @@ export interface DistributorSession {
   entity_code: string;       // which company they purchase from
   email: string;
   expires_at: string;        // ISO; mock 8h
+  // Sprint 11a — hierarchy context (optional, backward-compatible)
+  hierarchy_node_id?: string | null;
+  hierarchy_role?: import('./distributor-hierarchy').HierarchyRole | null;
 }
 
 /**

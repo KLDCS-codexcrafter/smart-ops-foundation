@@ -85,6 +85,10 @@ export interface Enquiry {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  // Sprint 11a — distributor portal CRM origin (optional, backward-compatible)
+  source_distributor_id?: string | null;       // FK Distributor.id if raised from portal
+  source_hierarchy_node_id?: string | null;    // node at which it was raised
+  source_downstream_customer_id?: string | null; // sub-dealer who asked
 }
 
 export const enquiriesKey = (e: string) => `erp_enquiries_${e}`;
