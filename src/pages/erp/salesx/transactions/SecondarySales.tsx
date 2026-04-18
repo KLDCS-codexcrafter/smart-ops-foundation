@@ -259,7 +259,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   useCtrlS(handleSave);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
       <Card className="border-orange-500/20">
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
@@ -413,7 +413,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
               <Button variant="outline" onClick={() => { setForm(BLANK); setShowForm(false); }}>
                 <X className="h-3.5 w-3.5 mr-1" /> Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 text-white">
+              <Button data-primary onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 text-white">
                 <Save className="h-3.5 w-3.5 mr-1" />
                 {form.editingId ? 'Update' : 'Save'} (Ctrl+S)
               </Button>
