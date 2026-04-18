@@ -120,6 +120,14 @@ export const applications: AppDefinition[] = [
     icon: 'TrendingUp',
   },
   {
+    id: 'distributor-hub',
+    name: 'Distributor Hub',
+    description: 'Manage tier-priced distributors — credit, targets, broadcasts and partner portal access',
+    category: 'Sales Hub',
+    route: '/erp/distributor/hub',
+    icon: 'Truck',
+  },
+  {
     id: 'finecore',
     name: 'Fin Core',
     description: 'Accounting and inventory transactions — sales, purchase, payments, journals and voucher register',
