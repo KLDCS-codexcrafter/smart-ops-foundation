@@ -38,7 +38,10 @@ interface SOChainRow {
 }
 
 function ls<T>(key: string): T[] {
-  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  try {
+    // [JWT] GET /api/entity/storage/:key
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  }
   catch { return []; }
 }
 
