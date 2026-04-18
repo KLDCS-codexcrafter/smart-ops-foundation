@@ -275,9 +275,9 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       // Write pending CommissionEntry for each SAM result — NO GL POSTING
       // Commission is payable on receipt, not here.
       if (commissionPreview.length > 0) {
-        // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
         const regStore: CommissionEntry[] = (() => {
           try {
+            // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
             return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
           } catch { return []; }
         })();

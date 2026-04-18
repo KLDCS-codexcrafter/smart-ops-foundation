@@ -11,23 +11,35 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { SalesXHubPanel } from '@/pages/erp/salesx/SalesXHub';
 import { HierarchyMasterPanel } from '@/pages/erp/salesx/masters/HierarchyMaster';
 import { SAMPersonMasterPanel } from '@/pages/erp/salesx/masters/SAMPersonMaster';
+import { EnquirySourceMasterPanel } from '@/pages/erp/salesx/masters/EnquirySourceMaster';
+import { CampaignMasterPanel } from '@/pages/erp/salesx/masters/CampaignMaster';
 import { EnquiryCapturePanel } from '@/pages/erp/salesx/transactions/EnquiryCapture';
 import { CRMPipelinePanel } from '@/pages/erp/salesx/transactions/CRMPipeline';
 import { TelecallerPanel } from '@/pages/erp/salesx/transactions/Telecaller';
 import { QuotationEntryPanel } from '@/pages/erp/salesx/transactions/QuotationEntry';
+import { CommissionRegisterPanel } from '@/pages/erp/salesx/reports/CommissionRegister';
+import { EnquiryRegisterReportPanel } from '@/pages/erp/salesx/reports/EnquiryRegisterReport';
+import { PipelineSummaryPanel } from '@/pages/erp/salesx/reports/PipelineSummary';
+import { QuotationRegisterReportPanel } from '@/pages/erp/salesx/reports/QuotationRegisterReport';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
-  'sx-hub':          'Hub Overview',
-  'sx-m-hierarchy':  'Hierarchy Master',
-  'sx-m-salesman':   'Salesman Master',
-  'sx-m-agent':      'Agent Master',
-  'sx-m-broker':     'Broker Master',
-  'sx-m-receiver':   'Receiver Master',
-  'sx-m-reference':  'Reference Master',
-  'sx-t-enquiry':    'Enquiry',
-  'sx-t-pipeline':   'CRM Pipeline',
-  'sx-t-telecaller': 'Telecaller',
-  'sx-t-quotation':  'Quotation',
+  'sx-hub':                  'Hub Overview',
+  'sx-m-hierarchy':          'Hierarchy Master',
+  'sx-m-salesman':           'Salesman Master',
+  'sx-m-agent':              'Agent Master',
+  'sx-m-broker':             'Broker Master',
+  'sx-m-receiver':           'Receiver Master',
+  'sx-m-reference':          'Reference Master',
+  'sx-m-enquiry-source':     'Enquiry Source Master',
+  'sx-m-campaign':           'Campaign Master',
+  'sx-t-enquiry':            'Enquiry',
+  'sx-t-pipeline':           'CRM Pipeline',
+  'sx-t-telecaller':         'Telecaller',
+  'sx-t-quotation':          'Quotation',
+  'sx-r-commission':         'Commission Register',
+  'sx-r-enquiry-register':   'Enquiry Register Report',
+  'sx-r-pipeline-summary':   'Pipeline Summary',
+  'sx-r-quotation-register': 'Quotation Register Report',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -64,6 +76,10 @@ function renderModule(
       return <SAMPersonMasterPanel personType="receiver" entityCode={entityCode} />;
     case 'sx-m-reference':
       return <SAMPersonMasterPanel personType="reference" entityCode={entityCode} />;
+    case 'sx-m-enquiry-source':
+      return <EnquirySourceMasterPanel entityCode={entityCode} />;
+    case 'sx-m-campaign':
+      return <CampaignMasterPanel entityCode={entityCode} />;
     case 'sx-t-enquiry':
       return <EnquiryCapturePanel entityCode={entityCode} />;
     case 'sx-t-pipeline':
@@ -72,6 +88,14 @@ function renderModule(
       return <TelecallerPanel entityCode={entityCode} onNavigate={setActiveModule} />;
     case 'sx-t-quotation':
       return <QuotationEntryPanel entityCode={entityCode} />;
+    case 'sx-r-commission':
+      return <CommissionRegisterPanel entityCode={entityCode} />;
+    case 'sx-r-enquiry-register':
+      return <EnquiryRegisterReportPanel entityCode={entityCode} />;
+    case 'sx-r-pipeline-summary':
+      return <PipelineSummaryPanel entityCode={entityCode} />;
+    case 'sx-r-quotation-register':
+      return <QuotationRegisterReportPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
