@@ -32,7 +32,7 @@ import { computeCommissionGL } from '@/lib/commission-engine';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
 import type { Voucher } from '@/types/voucher';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
