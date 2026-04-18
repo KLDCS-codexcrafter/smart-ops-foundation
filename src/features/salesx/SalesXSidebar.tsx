@@ -10,6 +10,7 @@ import {
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
+  FileMinus,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -35,10 +36,12 @@ export type SalesXModule =
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
   | 'sx-t-quotation'
+  | 'sx-t-return-memo'
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
   | 'sx-r-quotation-register'
+  | 'sx-r-return-memo-register'
   | 'sx-m-target'
   | 'sx-r-followup'
   | 'sx-r-target'
@@ -59,10 +62,12 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-t-pipeline',
   'sx-t-telecaller',
   'sx-t-quotation',
+  'sx-t-return-memo',
   'sx-r-commission',
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
   'sx-r-quotation-register',
+  'sx-r-return-memo-register',
   'sx-m-target',
   'sx-r-followup',
   'sx-r-target',

@@ -3,7 +3,8 @@
  * Sprint 4: Auto-trigger commission reversal + optional reversal JV.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send } from 'lucide-react';
+import { Send, FileMinus } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
@@ -33,6 +34,7 @@ import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { salesReturnMemosKey, type SalesReturnMemo } from '@/types/sales-return-memo';
 
 const REASON_CODES = [
   'Goods Return', 'Price Correction', 'Excess Charged',
@@ -47,22 +49,69 @@ interface CreditNotePanelProps {
 export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [selectedCompany] = useERPCompany();
   const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const [searchParams] = useSearchParams();
+  const fromMemoId = searchParams.get('from_memo');
 
   const [voucherNo] = useState(() => generateVoucherNo('CN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [againstInvoice, setAgainstInvoice] = useState('');
   const [reasonCode, setReasonCode] = useState('');
   const [invoiceMode, setInvoiceMode] = useState<'item' | 'accounting'>('item');
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [selectedMemoId, setSelectedMemoId] = useState<string>(fromMemoId ?? '');
 
   const [reversalBanner, setReversalBanner] = useState<string | null>(null);
   const [pendingReversalJV, setPendingReversalJV] = useState<{
     lines: VoucherLedgerLine[];
     banner: string;
   } | null>(null);
+
+  // Sprint 6B — load approved memos for from-memo selector
+  const approvedMemos = useMemo(() => {
+    try {
+      // [JWT] GET /api/salesx/sales-return-memos
+      const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+      return all.filter(m => m.status === 'approved');
+    } catch { return []; }
+  }, [entityCode]);
+
+  // Pre-fill from selected memo
+  const applyMemo = useCallback((memoId: string) => {
+    const memo = (() => {
+      try {
+        const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+        return all.find(m => m.id === memoId) ?? null;
+      } catch { return null; }
+    })();
+    if (!memo) return;
+    setSelectedMemoId(memoId);
+    setPartyName(memo.customer_name);
+    setPartyId(memo.customer_id);
+    setAgainstInvoice(memo.against_invoice_no);
+    setNarration(`Per Sales Return Memo ${memo.memo_no}`);
+    setInvoiceMode('item');
+    setInventoryLines(memo.items.map((it, i) => ({
+      id: `inv-mem-${Date.now()}-${i}`,
+      item_id: '', item_code: '', item_name: it.item_name,
+      hsn_sac_code: '', godown_id: '', godown_name: '',
+      qty: it.qty, uom: it.uom ?? '', rate: it.rate,
+      discount_percent: 0, discount_amount: 0,
+      taxable_value: it.amount,
+      gst_rate: 0, cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
+      cgst_amount: 0, sgst_amount: 0, igst_amount: 0, cess_amount: 0,
+      total: it.amount,
+      gst_type: 'taxable' as const, gst_source: 'item' as const,
+    })));
+  }, [entityCode]);
+
+  useEffect(() => {
+    if (fromMemoId) applyMemo(fromMemoId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromMemoId]);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
@@ -141,9 +190,30 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
         }
       }
 
+      // Sprint 6B — flip memo to credit_note_posted
+      if (selectedMemoId) {
+        try {
+          const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+          const idx = all.findIndex(m => m.id === selectedMemoId);
+          if (idx >= 0) {
+            all[idx] = {
+              ...all[idx],
+              status: 'credit_note_posted',
+              credit_note_voucher_id: voucher.id,
+              credit_note_voucher_no: voucherNo,
+              credit_note_posted_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            // [JWT] PATCH /api/salesx/sales-return-memos/:id
+            localStorage.setItem(salesReturnMemosKey(entityCode), JSON.stringify(all));
+            toast.success(`Memo ${all[idx].memo_no} marked as CN posted`);
+          }
+        } catch { /* ignore */ }
+      }
+
       toast.success('Credit Note posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
+  }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, selectedMemoId]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -181,6 +251,24 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
+          {approvedMemos.length > 0 && (
+            <div>
+              <Label className="text-xs flex items-center gap-1">
+                <FileMinus className="h-3 w-3 text-orange-500" /> From Sales Return Memo (optional)
+              </Label>
+              <Select value={selectedMemoId || 'none'} onValueChange={v => v !== 'none' && applyMemo(v)}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Pick approved memo to pre-fill" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None —</SelectItem>
+                  {approvedMemos.map(m => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.memo_no} — {m.customer_name} — ₹{m.total_amount.toLocaleString('en-IN')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs">Against Invoice No</Label>

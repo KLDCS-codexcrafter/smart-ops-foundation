@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Save, Shield, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityList } from '@/hooks/useEntityList';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
@@ -256,6 +256,11 @@ export interface SAMConfig {
   tdsOnCommissionSection: '194H' | '194J' | 'not_applicable';
   commissionLedgerSales: string;
   commissionLedgerPurchase: string;
+  // Sprint 6B — Collection Bonus
+  enableCollectionBonus: boolean;
+  collectionBonusRate: number;                      // % of commission earned on this receipt
+  collectionBonusWindowDays: number;                // days from invoice date
+  collectionBonusAppliesTo: 'salesman' | 'all_persons';
   // Legacy fields kept for backward compat (unused in new screen)
   enableCompanySalesPerson: boolean;
   enableInPurchase: boolean;
@@ -286,6 +291,9 @@ const DEFAULT_SAM: SAMConfig = {
   slsmTargetByTerritory: false, slsmTargetByNewCustomerCount: false, slsmTargetByCollection: false,
   slsmTargetByOrderVolume: false, slsmTargetByCallVisitActivity: false,
   tdsOnCommissionSection: 'not_applicable', commissionLedgerSales: '', commissionLedgerPurchase: '',
+  // Sprint 6B — Collection Bonus defaults
+  enableCollectionBonus: false, collectionBonusRate: 0.5,
+  collectionBonusWindowDays: 30, collectionBonusAppliesTo: 'salesman',
   enableCompanySalesPerson: false, enableInPurchase: false, enableInPurchaseOrder: false, enableInReceiptNote: false,
 };
 
@@ -1446,6 +1454,71 @@ export function Comply360ConfigPanel() {
             )}
           </div>
         </div>
+
+        {/* ─── Sprint 6B: Collection Bonus ─── */}
+        <Card className="border-amber-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <BadgeIndianRupee className="h-4 w-4 text-amber-500" />
+              Collection Bonus
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Reward sales person when customer payment arrives within the credit window.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm">Enable collection bonus</Label>
+                <p className="text-xs text-muted-foreground">
+                  Adds a bonus on top of the regular commission for fast collections.
+                </p>
+              </div>
+              <Switch
+                checked={samConfig.enableCollectionBonus}
+                onCheckedChange={v => update('enableCollectionBonus', v)}
+              />
+            </div>
+
+            {samConfig.enableCollectionBonus && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                <div>
+                  <Label className="text-xs">Bonus rate (% of commission)</Label>
+                  <Input
+                    type="number" step="0.01" min={0}
+                    value={samConfig.collectionBonusRate}
+                    onKeyDown={onEnterNext}
+                    onChange={e => update('collectionBonusRate', Number(e.target.value) || 0)}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Window (days from invoice)</Label>
+                  <Input
+                    type="number" min={1} step={1}
+                    value={samConfig.collectionBonusWindowDays}
+                    onKeyDown={onEnterNext}
+                    onChange={e => update('collectionBonusWindowDays', parseInt(e.target.value, 10) || 0)}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Applies to</Label>
+                  <Select
+                    value={samConfig.collectionBonusAppliesTo}
+                    onValueChange={v => update('collectionBonusAppliesTo', v as 'salesman' | 'all_persons')}
+                  >
+                    <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="salesman">Salesman only</SelectItem>
+                      <SelectItem value="all_persons">All SAM persons</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Save button */}
         <Button data-primary onClick={handleSaveSAM} className="w-full">

@@ -32,7 +32,7 @@ import { computeCommissionGL } from '@/lib/commission-engine';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
 import type { Voucher } from '@/types/voucher';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
@@ -321,7 +321,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       toast.error('Bank payment already recorded');
       return;
     }
-    const netPayable = +(entry.net_paid_to_date).toFixed(2);
+    const netPayable = +(entry.net_paid_to_date + (entry.collection_bonus_amount ?? 0)).toFixed(2);
     if (netPayable <= 0) {
       toast.error('No commission payable for bank payout');
       return;
@@ -535,6 +535,19 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                   <TableHead className="text-xs text-right">Commission ₹</TableHead>
                   <TableHead className="text-xs text-right">Received ₹</TableHead>
                   <TableHead className="text-xs text-right">Net Paid ₹</TableHead>
+                  <TableHead className="text-xs text-right">
+                    <TooltipProvider delayDuration={150}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help underline decoration-dotted">Bonus ₹</span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          Collection bonus earned when payment arrived within credit window
+                          (see Comply360 Config → Collection Bonus)
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableHead>
                   <TableHead className="text-xs">Status</TableHead>
                   <TableHead className="text-xs">Agent Inv</TableHead>
                   <TableHead className="text-xs w-44" />
@@ -581,6 +594,11 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_total_commission)}</TableCell>
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono text-amber-600">
+                          {(e.collection_bonus_amount ?? 0) > 0
+                            ? inrFmt.format(e.collection_bonus_amount ?? 0)
+                            : '—'}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
                             {e.status}
@@ -651,7 +669,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                       </TableRow>
                       {isExpanded && hasCN && (
                         <TableRow key={`${e.id}-cn`}>
-                          <TableCell colSpan={12} className="bg-muted/30 p-3">
+                          <TableCell colSpan={13} className="bg-muted/30 p-3">
                             <p className="text-[11px] font-semibold mb-2">Credit Note Reversals</p>
                             <Table>
                               <TableHeader>
@@ -697,7 +715,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                       )}
                       {agentInvoiceId === e.id && (
                         <TableRow key={`${e.id}-agent`}>
-                          <TableCell colSpan={12} className="bg-orange-500/5 p-3">
+                          <TableCell colSpan={13} className="bg-orange-500/5 p-3">
                             <p className="text-[11px] font-semibold mb-2">Enter Agent GST Invoice</p>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                               <div>

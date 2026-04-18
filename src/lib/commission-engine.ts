@@ -155,6 +155,28 @@ export function triggerCommissionOnReceipt(
 
     const netCommissionPaid = round2(commissionOnReceipt - tdsAmount);
 
+    // ── Sprint 6B — Collection bonus evaluation ───────────────────────
+    let bonusEarned = false;
+    let bonusAmount = 0;
+    let receiptWithinWindow = false;
+    const bonusWindowDays = samConfig?.collectionBonusWindowDays ?? 0;
+
+    if (samConfig?.enableCollectionBonus && commissionOnReceipt > 0) {
+      const personEligible =
+        samConfig.collectionBonusAppliesTo === 'all_persons' ||
+        entry.person_type === 'salesman';
+      if (personEligible) {
+        const invMs = new Date(entry.voucher_date).getTime();
+        const recMs = new Date(receiptDate).getTime();
+        const daysSince = Math.floor((recMs - invMs) / (1000 * 60 * 60 * 24));
+        if (daysSince >= 0 && daysSince <= bonusWindowDays) {
+          receiptWithinWindow = true;
+          bonusEarned = true;
+          bonusAmount = round2(commissionOnReceipt * samConfig.collectionBonusRate / 100);
+        }
+      }
+    }
+
     const payment: CommissionPayment = {
       id: `cp-${Date.now()}-${entry.id}`,
       payment_date: receiptDate,
@@ -189,6 +211,11 @@ export function triggerCommissionOnReceipt(
         ? round2(prev.catchup_tds_amount + tdsAmount)
         : prev.catchup_tds_amount,
       status: newAmtReceived >= prev.net_invoice_amount - 0.01 ? 'paid' : 'partial',
+      // Sprint 6B — persist bonus fields (accumulate across multiple receipts)
+      collection_bonus_earned: prev.collection_bonus_earned || bonusEarned,
+      collection_bonus_window_days: bonusWindowDays || prev.collection_bonus_window_days,
+      collection_bonus_amount: round2((prev.collection_bonus_amount ?? 0) + bonusAmount),
+      receipt_within_window: prev.receipt_within_window || receiptWithinWindow,
       updated_at: now,
     };
 
