@@ -120,6 +120,20 @@ function renderModule(
       return <SalesReturnMemoPanel entityCode={entityCode} />;
     case 'sx-r-return-memo-register':
       return <SalesReturnMemoRegisterPanel entityCode={entityCode} />;
+    case 'sx-m-territory':
+      return <TerritoryMasterPanel entityCode={entityCode} />;
+    case 'sx-m-beat':
+      return <BeatRouteMasterPanel entityCode={entityCode} />;
+    case 'sx-t-visit':
+      return <VisitTrackingPanel entityCode={entityCode} />;
+    case 'sx-t-secondary':
+      return <SecondarySalesPanel entityCode={entityCode} />;
+    case 'sx-r-beat-productivity':
+      return <BeatProductivityReportPanel entityCode={entityCode} />;
+    case 'sx-r-coverage':
+      return <CoverageReportPanel entityCode={entityCode} />;
+    case 'sx-r-secondary-sales':
+      return <SecondarySalesReportPanel entityCode={entityCode} />;
     case 'sx-r-commission':
       return <CommissionRegisterPanel entityCode={entityCode} />;
     case 'sx-r-enquiry-register':
