@@ -20,8 +20,16 @@ import {
   TrendingUp, Wallet, AlertTriangle,
   FileText, CreditCard, BookOpen, ArrowLeftRight, ShoppingCart,
   ClipboardList, FileMinus, BarChart3,
-  ArrowRight, Receipt,
+  ArrowRight, Receipt, Target,
 } from 'lucide-react';
+import { enquiriesKey } from '@/types/enquiry';
+import type { Enquiry } from '@/types/enquiry';
+import { opportunitiesKey } from '@/types/opportunity';
+import type { Opportunity } from '@/types/opportunity';
+import { quotationsKey } from '@/types/quotation';
+import type { Quotation } from '@/types/quotation';
+import { commissionRegisterKey } from '@/types/commission-register';
+import type { CommissionEntry } from '@/types/commission-register';
 
 interface FineCoreHubPanelProps {
   onNavigate?: (module: string) => void;
