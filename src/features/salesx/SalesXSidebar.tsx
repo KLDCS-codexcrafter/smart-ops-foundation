@@ -9,7 +9,7 @@ import {
   Network, Star, Target, Phone, FileText,
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
-  CalendarClock, Trophy,
+  CalendarClock, Trophy, BarChart3, ClipboardList,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -41,7 +41,9 @@ export type SalesXModule =
   | 'sx-r-quotation-register'
   | 'sx-m-target'
   | 'sx-r-followup'
-  | 'sx-r-target';
+  | 'sx-r-target'
+  | 'sx-analytics'
+  | 'sx-r-so-tracker';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -64,6 +66,8 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-m-target',
   'sx-r-followup',
   'sx-r-target',
+  'sx-analytics',
+  'sx-r-so-tracker',
 ];
 
 interface Props {
@@ -136,6 +140,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       icon: FileText,
       live: true,
     },
+    {
+      id: 'sx-analytics' as SalesXModule,
+      label: 'Analytics',
+      icon: BarChart3,
+      live: true,
+    },
   ];
 
   const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = [
@@ -145,6 +155,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart,  live: true },
     { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
     { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
+    { id: 'sx-r-so-tracker',          label: 'Sales Order Tracker',  icon: ClipboardList, live: true },
   ];
 
   const btn = (
