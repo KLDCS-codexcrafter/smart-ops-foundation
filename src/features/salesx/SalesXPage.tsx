@@ -43,6 +43,9 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-enquiry-register':   'Enquiry Register Report',
   'sx-r-pipeline-summary':   'Pipeline Summary',
   'sx-r-quotation-register': 'Quotation Register Report',
+  'sx-m-target':             'Target Master',
+  'sx-r-followup':           'Follow-Up Register',
+  'sx-r-target':             'Target vs Achievement',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
