@@ -110,8 +110,8 @@ export function suggestReorderQty(
   let bought30 = 0;
   for (const v of recentInvoices) {
     if (v.party_id !== partnerCustomerId) continue;
-    if (new Date(v.voucher_date).getTime() < cutoff) continue;
-    for (const ln of v.line_items ?? []) {
+    if (new Date(v.date).getTime() < cutoff) continue;
+    for (const ln of v.inventory_lines ?? []) {
       if (ln.item_id === itemId) bought30 += ln.qty ?? 0;
     }
   }
