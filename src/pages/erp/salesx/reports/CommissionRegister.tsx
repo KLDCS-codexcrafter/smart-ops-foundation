@@ -40,6 +40,7 @@ const STATUS_COLOR: Record<CommissionEntry['status'], string> = {
   pending: 'bg-yellow-500/15 text-yellow-700 border-yellow-500/30',
   partial: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
   paid: 'bg-green-500/15 text-green-700 border-green-500/30',
+  reversed: 'bg-rose-500/15 text-rose-700 border-rose-500/30',
   cancelled: 'bg-destructive/15 text-destructive border-destructive/30',
 };
 

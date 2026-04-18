@@ -24,6 +24,11 @@ import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+import { triggerCommissionOnReceipt } from '@/lib/commission-engine';
+import type { CommissionEntry } from '@/types/commission-register';
+import { commissionRegisterKey } from '@/types/commission-register';
+import type { TDSDeductionEntry } from '@/types/compliance';
+import { tdsDeductionsKey } from '@/types/compliance';
 
 interface TDSLineRow {
   id: string;
@@ -58,6 +63,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   // TDS Receivable state
   const [tdsEnabled, setTdsEnabled] = useState(false);
   const [tdsLines, setTdsLines] = useState<TDSLineRow[]>([]);
+  const [commissionBanner, setCommissionBanner] = useState<string | null>(null);
 
   // Load customers for party lookup
   const customers = useMemo((): any[] => {
@@ -149,6 +155,49 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
     };
     try {
       postVoucher(voucher, entityCode);
+
+      // Auto-trigger commission payments when customer receipt posted (Sprint 4)
+      if (selectedCustomer?.id && receiptPurpose === 'regular') {
+        // [JWT] GET /api/salesx/commission-register
+        const allEntries: CommissionEntry[] = (() => {
+          try {
+            return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
+          } catch { return []; }
+        })();
+        // [JWT] GET /api/compliance/tds-deductions
+        const allTDS: TDSDeductionEntry[] = (() => {
+          try {
+            return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
+          } catch { return []; }
+        })();
+        const hasPending = allEntries.some(e =>
+          e.customer_id === selectedCustomer.id &&
+          (e.status === 'pending' || e.status === 'partial'),
+        );
+        if (hasPending) {
+          const result = triggerCommissionOnReceipt(
+            selectedCustomer.id, amount, date,
+            voucher.id, voucher.voucher_no,
+            allEntries, allTDS, entityCode,
+          );
+          if (result.paymentCount > 0) {
+            // [JWT] PATCH /api/salesx/commission-register
+            localStorage.setItem(
+              commissionRegisterKey(entityCode),
+              JSON.stringify(result.updatedEntries),
+            );
+            if (result.newTDSEntries.length > 0) {
+              // [JWT] POST /api/compliance/tds-deductions
+              localStorage.setItem(
+                tdsDeductionsKey(entityCode),
+                JSON.stringify([...allTDS, ...result.newTDSEntries]),
+              );
+            }
+            setCommissionBanner(result.banner);
+          }
+        }
+      }
+
       toast.success('Receipt voucher posted');
     } catch { toast.error('Failed to save'); }
   }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedCustomer, receiptPurpose, tdsEnabled, tdsLines, customerTAN]);
@@ -248,6 +297,14 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       </Card>
 
       <SettlementPanel partyId={partyName} entityCode={entityCode} mode="debtor" />
+
+      {commissionBanner && (
+        <Alert className="border-orange-500/30 bg-orange-500/5">
+          <AlertDescription className="text-xs text-orange-700">
+            ✓ {commissionBanner}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* TDS Deducted by Customer — Sprint 3C */}
       {isDeductor && (
