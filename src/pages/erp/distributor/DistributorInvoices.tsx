@@ -398,6 +398,74 @@ export default function DistributorInvoices() {
           </div>
         )}
       </div>
+
+      {/* Sprint 11a — Raise dispute dialog */}
+      <Dialog open={disputeOpen} onOpenChange={setDisputeOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertOctagon className="h-4 w-4 text-destructive" /> Raise Dispute
+            </DialogTitle>
+            <DialogDescription>
+              {disputeVoucher && disputeLine && (
+                <>Invoice <span className="font-mono">{disputeVoucher.voucher_no}</span> · {disputeLine.item_name}</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reason</Label>
+              <Select value={disputeReason} onValueChange={(v) => setDisputeReason(v as DisputeReason)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(DISPUTE_REASON_LABELS) as DisputeReason[]).map(r => (
+                    <SelectItem key={r} value={r}>{DISPUTE_REASON_LABELS[r]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Billed Qty</Label>
+                <Input value={disputeLine?.qty ?? ''} disabled className="font-mono" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Received Qty</Label>
+                <Input
+                  type="number"
+                  value={receivedQty}
+                  onChange={e => setReceivedQty(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Remarks (min 20 characters)</Label>
+              <Textarea
+                rows={3}
+                value={disputeRemarks}
+                onChange={e => setDisputeRemarks(e.target.value)}
+                placeholder="Describe what went wrong…"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {disputeRemarks.trim().length}/20
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDisputeOpen(false)} disabled={submittingDispute}>
+              Cancel
+            </Button>
+            <Button
+              onClick={submitDispute}
+              disabled={submittingDispute || disputeRemarks.trim().length < 20}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Submit Dispute
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DistributorLayout>
   );
 }
