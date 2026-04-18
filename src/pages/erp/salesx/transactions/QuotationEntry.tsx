@@ -14,13 +14,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Plus, Save, Trash2, ArrowLeft, Edit2, ChevronRight } from 'lucide-react';
+import { Plus, Save, Trash2, ArrowLeft, Edit2, ChevronRight, FileText, Printer } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useQuotations } from '@/hooks/useQuotations';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useOrders } from '@/hooks/useOrders';
+import { generateDocNo } from '@/lib/finecore-engine';
 import type { OrderLine } from '@/types/order';
 import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/types/quotation';
 
@@ -94,6 +96,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   const { enquiries } = useEnquiries(entityCode);
   const { createOrder } = useOrders(entityCode);
   const customers = useMemo(() => loadCustomers(), []);
+  const navigate = useNavigate();
 
   const [view, setView] = useState<View>('list');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -210,6 +213,39 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
     }
   }, [editingId, quotations, createOrder, entityCode, updateQuotation]);
+
+  const handleConvertToProforma = useCallback(() => {
+    if (!editingId) return;
+    const q = quotations.find(x => x.id === editingId);
+    if (!q) return;
+    if (q.quotation_stage !== 'confirmed' && q.quotation_stage !== 'negotiation') {
+      toast.error('Quotation must be Confirmed or in Negotiation');
+      return;
+    }
+    // [JWT] GET/PATCH /api/procurement/sequences/PF/:entityCode
+    const proforma_no = generateDocNo('PF', entityCode);
+    const now = new Date().toISOString();
+    updateQuotation(editingId, {
+      quotation_stage: 'proforma',
+      proforma_no,
+      proforma_date: todayISO(),
+      proforma_converted_at: now,
+    });
+    setForm(prev => ({
+      ...prev,
+      quotation_stage: 'proforma',
+      proforma_no,
+      proforma_date: todayISO(),
+      proforma_converted_at: now,
+    }));
+    toast.success(`Proforma ${proforma_no} generated`);
+  }, [editingId, quotations, entityCode, updateQuotation]);
+
+  const handlePrintProforma = useCallback(() => {
+    if (!editingId) return;
+    navigate(`/erp/salesx/proforma-print/${editingId}`);
+  }, [editingId, navigate]);
+
 
   const openEnquiries = enquiries.filter(e => e.status !== 'sold' && e.status !== 'lost');
   const customerQuotations = quotations.filter(q =>
@@ -333,7 +369,27 @@ export function QuotationEntryPanel({ entityCode }: Props) {
           <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
             <Save className="h-4 w-4 mr-2" />Save Quotation
           </Button>
-          {editingId && (
+          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'negotiation') && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-teal-500 text-teal-700 hover:bg-teal-50"
+              onClick={handleConvertToProforma}
+            >
+              <FileText className="h-3 w-3 mr-1" /> Convert to Proforma
+            </Button>
+          )}
+          {editingId && form.quotation_stage === 'proforma' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-teal-500 text-teal-700 hover:bg-teal-50"
+              onClick={handlePrintProforma}
+            >
+              <Printer className="h-3 w-3 mr-1" /> Print Proforma
+            </Button>
+          )}
+          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'proforma') && (
             <Button
               size="sm"
               variant="outline"
