@@ -63,15 +63,29 @@ export default function DistributorCatalog() {
     void getCart(session.distributor_id).then(c => setCartCount(c?.lines.length ?? 0));
   }, [session]);
 
+  // Sprint 10 Part D · Feature #3 — apply tier visibility from PriceListLine overlay.
+  // The overlay key is `erp_distributor_price_lines_{priceListId}`. When absent
+  // (current sandbox default) we fall through to the original list.
+  const visibilityOverlay = useMemo<PriceListLine[]>(() => {
+    if (!activeListId) return [];
+    return ls<PriceListLine>(`erp_distributor_price_lines_${activeListId}`);
+  }, [activeListId]);
+
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return items.slice(0, 60);
-    return items.filter(it =>
+    const tier = distributor?.tier ?? null;
+    const tierVisible = items.filter(it => {
+      const overlay = visibilityOverlay.find(l => l.item_id === it.id);
+      if (!overlay) return true; // no overlay row = visible to all (legacy behaviour)
+      return isLineVisibleToTier(overlay, tier);
+    });
+    if (!q) return tierVisible.slice(0, 60);
+    return tierVisible.filter(it =>
       (it.name?.toLowerCase().includes(q)) ||
       (it.code?.toLowerCase().includes(q)) ||
       (it.hsn_sac_code?.toLowerCase().includes(q)),
     ).slice(0, 60);
-  }, [items, search]);
+  }, [items, search, visibilityOverlay, distributor]);
 
   if (!session || !distributor) {
     return (
@@ -211,8 +225,7 @@ export default function DistributorCatalog() {
                       size="sm"
                       onClick={() => handleAdd(item)}
                       disabled={busyItem === item.id}
-                      className="flex-1 rounded-lg gap-1.5"
-                      style={{ background: INDIGO, color: 'white' }}
+                      className="flex-1 rounded-lg gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white"
                     >
                       {busyItem === item.id
                         ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
