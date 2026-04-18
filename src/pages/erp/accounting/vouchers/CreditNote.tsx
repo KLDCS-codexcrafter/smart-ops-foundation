@@ -213,7 +213,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
 
       toast.success('Credit Note posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
+  }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, selectedMemoId]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
