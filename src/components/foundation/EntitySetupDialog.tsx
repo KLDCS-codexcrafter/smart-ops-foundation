@@ -3,12 +3,13 @@
  * Presents preview of what will be created, then runs entity-setup-service.
  */
 import { useState } from 'react';
-import { CheckCircle2, Loader2, Package, FolderTree, GitBranch } from 'lucide-react';
+import { CheckCircle2, Loader2, Package, FolderTree, GitBranch, Sparkles } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { runEntitySetup, loadEntities, type SetupResult } from '@/services/entity-setup-service';
 import { L4_INDUSTRY_PACKS } from '@/data/finframe-seed-data';
@@ -51,6 +52,11 @@ export function EntitySetupDialog({
 }: EntitySetupDialogProps) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SetupResult | null>(null);
+  const [autoSeedDemo, setAutoSeedDemo] = useState<boolean>(() => {
+    const name = (entityName || '').toLowerCase();
+    const isProdish = ['production', 'prod', 'live', 'client'].some(w => name.includes(w));
+    return !isProdish;
+  });
 
   const siblingEntities = loadEntities().filter(e => e.id !== entityId);
   const previewLedgers = getPreviewLedgerCount(businessActivity, businessEntity);
@@ -65,6 +71,7 @@ export function EntitySetupDialog({
         entityType, businessEntity, industry, businessActivity,
         loadIndustryPack: true,
         siblingEntities,
+        autoSeedDemo,
       });
       setResult(res);
       setLoading(false);
