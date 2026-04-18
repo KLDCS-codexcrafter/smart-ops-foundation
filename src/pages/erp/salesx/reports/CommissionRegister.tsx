@@ -437,54 +437,217 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs w-6" />
                   <TableHead className="text-xs">Invoice</TableHead>
                   <TableHead className="text-xs">Date</TableHead>
                   <TableHead className="text-xs">Customer</TableHead>
                   <TableHead className="text-xs">SAM Person</TableHead>
-                  <TableHead className="text-xs text-right">Invoice ₹</TableHead>
+                  <TableHead className="text-xs text-right">Net Inv ₹</TableHead>
                   <TableHead className="text-xs text-right">Commission ₹</TableHead>
                   <TableHead className="text-xs text-right">Received ₹</TableHead>
                   <TableHead className="text-xs text-right">Net Paid ₹</TableHead>
                   <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs w-24" />
+                  <TableHead className="text-xs">Agent Inv</TableHead>
+                  <TableHead className="text-xs w-44" />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map(e => (
-                  <TableRow key={e.id}>
-                    <TableCell className="text-xs font-mono">{e.voucher_no}</TableCell>
-                    <TableCell className="text-xs">{e.voucher_date}</TableCell>
-                    <TableCell className="text-xs">{e.customer_name}</TableCell>
-                    <TableCell className="text-xs">
-                      <div className="font-medium">{e.person_name}</div>
-                      <div className="text-[10px] text-muted-foreground capitalize">
-                        {e.person_type}
-                        {e.tds_applicable && e.tds_section && ` · TDS ${e.tds_section} @ ${e.tds_rate}%`}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.invoice_amount)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.total_commission)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
-                        {e.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {(e.status === 'pending' || e.status === 'partial') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 text-xs"
-                          onClick={() => openPay(e)}
-                        >
-                          <Wallet className="h-3 w-3 mr-1" /> Log
-                        </Button>
+                {filtered.map(e => {
+                  const isExpanded = expandedId === e.id;
+                  const hasCN = (e.credit_note_refs?.length ?? 0) > 0;
+                  const isReversed = e.status === 'reversed';
+                  return (
+                    <>
+                      <TableRow key={e.id} className={cn(isReversed && 'italic opacity-80')}>
+                        <TableCell>
+                          {hasCN && (
+                            <Button
+                              size="icon" variant="ghost" className="h-6 w-6"
+                              onClick={() => setExpandedId(isExpanded ? null : e.id)}
+                            >
+                              {isExpanded
+                                ? <ChevronDown className="h-3.5 w-3.5" />
+                                : <ChevronRight className="h-3.5 w-3.5" />}
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs font-mono">{e.voucher_no}</TableCell>
+                        <TableCell className="text-xs">{e.voucher_date}</TableCell>
+                        <TableCell className="text-xs">{e.customer_name}</TableCell>
+                        <TableCell className="text-xs">
+                          <div className="font-medium">{e.person_name}</div>
+                          <div className="text-[10px] text-muted-foreground capitalize">
+                            {e.person_type}
+                            {e.tds_applicable && e.tds_section && ` · TDS ${e.tds_section} @ ${e.tds_rate}%`}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-right font-mono">
+                          {inrFmt.format(e.net_invoice_amount)}
+                          {hasCN && (
+                            <div className="text-[9px] text-rose-600">
+                              −{inrFmt.format(e.credit_note_amount)} CN
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_total_commission)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
+                            {e.status}
+                          </Badge>
+                          {e.commission_expense_voucher_no && (
+                            <div className="text-[9px] font-mono text-muted-foreground mt-0.5">
+                              GL: {e.commission_expense_voucher_no}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          {e.agent_invoice_status ? (
+                            <Badge variant="outline" className="text-[10px] capitalize">
+                              {e.agent_invoice_status}
+                            </Badge>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {!isReversed && (
+                            <div className="flex flex-wrap gap-1">
+                              {(e.status === 'pending' || e.status === 'partial') && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => openPay(e)}
+                                >
+                                  <Wallet className="h-3 w-3 mr-1" /> Log
+                                </Button>
+                              )}
+                              {(e.status === 'paid' || e.status === 'partial') && !e.commission_expense_voucher_id && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => handlePostGLVoucher(e)}
+                                >
+                                  <FileCheck className="h-3 w-3 mr-1" /> Post GL
+                                </Button>
+                              )}
+                              {!e.agent_invoice_status && (
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-[10px] px-2"
+                                  onClick={() => {
+                                    setAgentInvoiceId(e.id);
+                                    setAgentInvNo(''); setAgentInvDate(todayISO());
+                                    setAgentInvGross(''); setAgentInvGST('');
+                                  }}
+                                >
+                                  Agent Inv
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      {isExpanded && hasCN && (
+                        <TableRow key={`${e.id}-cn`}>
+                          <TableCell colSpan={12} className="bg-muted/30 p-3">
+                            <p className="text-[11px] font-semibold mb-2">Credit Note Reversals</p>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-[10px]">CN No</TableHead>
+                                  <TableHead className="text-[10px]">Date</TableHead>
+                                  <TableHead className="text-[10px] text-right">CN Amount</TableHead>
+                                  <TableHead className="text-[10px] text-right">Commission Reversed</TableHead>
+                                  <TableHead className="text-[10px]">TDS</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {e.credit_note_refs.map(r => (
+                                  <TableRow key={r.credit_note_id}>
+                                    <TableCell className="text-[10px] font-mono">{r.credit_note_no}</TableCell>
+                                    <TableCell className="text-[10px]">{r.credit_note_date}</TableCell>
+                                    <TableCell className="text-[10px] text-right font-mono">{inrFmt.format(r.credit_note_amount)}</TableCell>
+                                    <TableCell className="text-[10px] text-right font-mono">{inrFmt.format(r.commission_reversed)}</TableCell>
+                                    <TableCell>
+                                      {r.tds_reversal_entry_id ? (
+                                        <Badge variant="outline" className="text-[9px] bg-success/15 text-success border-success/30">
+                                          TDS Cancelled
+                                        </Badge>
+                                      ) : (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Badge variant="outline" className="text-[9px] bg-amber-500/15 text-amber-700 border-amber-500/30 cursor-help">
+                                              <AlertTriangle className="h-2.5 w-2.5 mr-1" /> Amend TDS
+                                            </Badge>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            TDS challan already deposited — file 26Q amendment to reverse.
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                        </TableRow>
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      {agentInvoiceId === e.id && (
+                        <TableRow key={`${e.id}-agent`}>
+                          <TableCell colSpan={12} className="bg-orange-500/5 p-3">
+                            <p className="text-[11px] font-semibold mb-2">Enter Agent GST Invoice</p>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                              <div>
+                                <Label className="text-[10px]">Invoice No *</Label>
+                                <Input value={agentInvNo} onChange={ev => setAgentInvNo(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">Invoice Date</Label>
+                                <SmartDateInput value={agentInvDate} onChange={setAgentInvDate} />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">Gross Amount ₹ *</Label>
+                                <Input type="number" value={agentInvGross} onChange={ev => setAgentInvGross(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div>
+                                <Label className="text-[10px]">GST Amount ₹</Label>
+                                <Input type="number" value={agentInvGST} onChange={ev => setAgentInvGST(ev.target.value)} onKeyDown={onEnterNext} className="h-7 text-xs font-mono" />
+                              </div>
+                              <div className="flex items-end gap-1">
+                                <Button data-primary size="sm" className="h-7 text-[10px] bg-orange-500 hover:bg-orange-600" onClick={() => handleSaveAgentInvoice(e, 'received')}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => handleSaveAgentInvoice(e, 'reconciled')}>
+                                  Reconcile
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-[10px] text-destructive" onClick={() => handleSaveAgentInvoice(e, 'disputed', 'Variance > 5%')}>
+                                  Dispute
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setAgentInvoiceId(null)}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                            {Number(agentInvGross) > 0 && (() => {
+                              const variance = +(Number(agentInvGross) - Number(agentInvGST) - e.commission_earned_to_date).toFixed(2);
+                              const variancePct = e.commission_earned_to_date > 0
+                                ? Math.abs(variance / e.commission_earned_to_date) * 100 : 0;
+                              return (
+                                <p className={cn(
+                                  'mt-2 text-[10px]',
+                                  variancePct > 5 ? 'text-amber-700 font-semibold' : 'text-muted-foreground',
+                                )}>
+                                  Variance: ₹{inrFmt.format(variance)} ({variancePct.toFixed(2)}%)
+                                  {variancePct > 5 && ' — review before reconciling'}
+                                </p>
+                              );
+                            })()}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
