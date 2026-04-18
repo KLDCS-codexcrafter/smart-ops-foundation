@@ -422,6 +422,62 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     commissionPreview, customerId, samPersons,
   ]);
 
+  const handlePost = useCallback(() => {
+    if (!partyName) { toast.error('Party name is required'); return; }
+    // ── Sprint 8 — Credit hold check ────────────────────────
+    try {
+      // [JWT] GET /api/receivx/config
+      const cfgRaw = localStorage.getItem(`erp_receivx_config_${entityCode}`);
+      const cfg = cfgRaw ? JSON.parse(cfgRaw) : null;
+      const customer = customers.find(c => c.id === customerId);
+      if (cfg && customer && Array.isArray(cfg.credit_hold_block_on)
+        && cfg.credit_hold_block_on.includes('sales_invoice')) {
+        // [JWT] GET /api/accounting/outstanding
+        const allOut: OutstandingEntry[] = JSON.parse(
+          localStorage.getItem(`erp_outstanding_${entityCode}`) || '[]',
+        );
+        const check = checkCreditHold(
+          {
+            id: customer.id,
+            partyCode: customer.partyCode ?? '',
+            partyName: customer.partyName,
+            creditLimit: customer.creditLimit ?? 0,
+            warningLimit: customer.warningLimit ?? 0,
+            credit_hold_mode: customer.credit_hold_mode ?? null,
+          },
+          gstTotals.total,
+          allOut,
+          cfg.credit_hold_mode ?? 'soft_warn',
+          cfg.credit_hold_ratio ?? 1.0,
+        );
+        if (check.is_blocked) {
+          setCreditCheck(check);
+          setOverrideReason('');
+          setOverrideOpen(true);
+          return;
+        }
+        if (check.is_warning) {
+          toast.warning(check.block_reason || 'Customer over warning limit');
+          recordOverride(check, 'soft_warn_auto', 'system');
+        }
+      }
+    } catch { /* noop — credit check failure should not block */ }
+    commitVoucher();
+  }, [partyName, entityCode, customers, customerId, gstTotals.total, commitVoucher, recordOverride]);
+
+  const confirmOverride = useCallback(() => {
+    if (!creditCheck) return;
+    if (overrideReason.trim().length < 10) {
+      toast.error('Override reason must be at least 10 characters');
+      return;
+    }
+    recordOverride(creditCheck, overrideReason.trim(), 'current-user');
+    setOverrideOpen(false);
+    setCreditCheck(null);
+    commitVoucher();
+  }, [creditCheck, overrideReason, recordOverride, commitVoucher]);
+
+
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
       onSaveDraft({
