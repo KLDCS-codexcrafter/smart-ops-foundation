@@ -107,6 +107,32 @@ const CHECKS: CheckSpec[] = [
     run: (e) => { const n = readArray(`erp_commission_register_${e}`).length;
       return { actual: n, expected: '≥10', pass: n >= 10, details: `${n} entries` }; } },
 
+  // Sprint 7 — Field Force
+  { id: 'sx-territories', section: 'SalesX', name: 'Territories',
+    run: (e) => {
+      // [JWT] GET /api/salesx/territories
+      const n = readArray(`erp_territories_${e}`).length;
+      return { actual: n, expected: '≥8', pass: n >= 8, details: `${n} territories` };
+    } },
+  { id: 'sx-beats', section: 'SalesX', name: 'Beat routes',
+    run: (e) => {
+      // [JWT] GET /api/salesx/beat-routes
+      const n = readArray(`erp_beat_routes_${e}`).length;
+      return { actual: n, expected: '≥20', pass: n >= 20, details: `${n} beats` };
+    } },
+  { id: 'sx-visit-logs', section: 'SalesX', name: 'Visit logs',
+    run: (e) => {
+      // [JWT] GET /api/salesx/visit-logs
+      const n = readArray(`erp_visit_logs_${e}`).length;
+      return { actual: n, expected: '≥50', pass: n >= 50, details: `${n} logs` };
+    } },
+  { id: 'sx-secondary-sales', section: 'SalesX', name: 'Secondary sales',
+    run: (e) => {
+      // [JWT] GET /api/salesx/secondary-sales
+      const n = readArray(`erp_secondary_sales_${e}`).length;
+      return { actual: n, expected: '≥20', pass: n >= 20, details: `${n} rows` };
+    } },
+
   // ReceivX
   { id: 'rx-1', section: 'ReceivX', name: 'ReceivX config',
     run: (e) => { const o = readObj(`erp_receivx_config_${e}`);
