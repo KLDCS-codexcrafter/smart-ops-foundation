@@ -163,9 +163,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         const regStore: CommissionEntry[] = (() => {
           try {
             // [JWT] GET /api/salesx/commission-register
-            return JSON.parse(
-              localStorage.getItem(commissionRegisterKey(entityCode)) || '[]',
-            );
+            return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
           } catch { return []; }
         })();
 
