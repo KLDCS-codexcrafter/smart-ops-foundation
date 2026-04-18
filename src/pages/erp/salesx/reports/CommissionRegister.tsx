@@ -535,6 +535,19 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                   <TableHead className="text-xs text-right">Commission ₹</TableHead>
                   <TableHead className="text-xs text-right">Received ₹</TableHead>
                   <TableHead className="text-xs text-right">Net Paid ₹</TableHead>
+                  <TableHead className="text-xs text-right">
+                    <TooltipProvider delayDuration={150}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help underline decoration-dotted">Bonus ₹</span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          Collection bonus earned when payment arrived within credit window
+                          (see Comply360 Config → Collection Bonus)
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableHead>
                   <TableHead className="text-xs">Status</TableHead>
                   <TableHead className="text-xs">Agent Inv</TableHead>
                   <TableHead className="text-xs w-44" />
