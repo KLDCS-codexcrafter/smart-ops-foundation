@@ -20,6 +20,8 @@ import { cn } from '@/lib/utils';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useQuotations } from '@/hooks/useQuotations';
 import { useEnquiries } from '@/hooks/useEnquiries';
+import { useOrders } from '@/hooks/useOrders';
+import type { OrderLine } from '@/types/order';
 import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/types/quotation';
 
 interface Props { entityCode: string }
@@ -86,6 +88,7 @@ function recalcLine(it: QuotationItem): QuotationItem {
 export function QuotationEntryPanel({ entityCode }: Props) {
   const { quotations, createQuotation, updateQuotation, createRevision } = useQuotations(entityCode);
   const { enquiries } = useEnquiries(entityCode);
+  const { createOrder } = useOrders(entityCode);
   const customers = useMemo(() => loadCustomers(), []);
 
   const [view, setView] = useState<View>('list');
@@ -165,6 +168,44 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       setRevisionReason('');
     }
   };
+
+  const handleConvertToSO = useCallback(() => {
+    if (!editingId) return;
+    const q = quotations.find(x => x.id === editingId);
+    if (!q) return;
+    const lines: OrderLine[] = q.items.map((item, i) => ({
+      id: `ol-${Date.now()}-${i}`,
+      item_id: '', item_code: '', item_name: item.item_name,
+      hsn_sac_code: '',
+      qty: item.qty,
+      uom: item.uom ?? '',
+      rate: item.rate,
+      discount_percent: item.discount_pct,
+      taxable_value: item.sub_total,
+      gst_rate: item.tax_pct,
+      pending_qty: item.qty,
+      fulfilled_qty: 0,
+      status: 'open' as const,
+    }));
+    const result = createOrder({
+      base_voucher_type: 'Sales Order',
+      entity_id: entityCode,
+      date: todayISO(),
+      party_id: q.customer_id ?? '',
+      party_name: q.customer_name ?? '',
+      ref_no: q.quotation_no,
+      lines,
+      gross_amount: q.sub_total,
+      total_tax: q.tax_amount,
+      net_amount: q.total_amount,
+      narration: `Converted from Quotation ${q.quotation_no}`,
+      terms_conditions: q.terms_conditions ?? '',
+    });
+    if (result) {
+      updateQuotation(editingId, { quotation_stage: 'confirmed' });
+      toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
+    }
+  }, [editingId, quotations, createOrder, entityCode, updateQuotation]);
 
   const openEnquiries = enquiries.filter(e => e.status !== 'sold' && e.status !== 'lost');
   const customerQuotations = quotations.filter(q =>
@@ -288,6 +329,16 @@ export function QuotationEntryPanel({ entityCode }: Props) {
           <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
             <Save className="h-4 w-4 mr-2" />Save Quotation
           </Button>
+          {editingId && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-orange-500/40 text-orange-700 hover:bg-orange-500/10"
+              onClick={handleConvertToSO}
+            >
+              Convert to Sales Order
+            </Button>
+          )}
         </div>
       </div>
 

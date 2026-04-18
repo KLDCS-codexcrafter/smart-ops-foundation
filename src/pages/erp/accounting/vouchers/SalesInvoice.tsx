@@ -1,6 +1,7 @@
 /**
  * SalesInvoice.tsx — Full Sales Invoice form
  * Sprint 3B: Customer Advance Linking
+ * Sprint 3 SalesX: SAM assignment + commission preview + commission-on-receipt register booking
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
@@ -29,6 +30,26 @@ import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { calculateInvoiceCommission } from '@/lib/sam-engine';
+import type { CommissionResult } from '@/lib/sam-engine';
+import type { CommissionEntry } from '@/types/commission-register';
+import { commissionRegisterKey } from '@/types/commission-register';
+import type { SAMPerson } from '@/types/sam-person';
+import { samPersonsKey } from '@/types/sam-person';
+import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
+import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+
+interface CustomerRow {
+  id: string;
+  partyName: string;
+  default_salesman_id?: string | null;
+  default_salesman_name?: string | null;
+  default_agent_id?: string | null;
+  default_agent_name?: string | null;
+  default_reference_id?: string | null;
+  default_reference_name?: string | null;
+  salesman_assignment_mode?: 'fixed' | 'select_at_voucher';
+}
 
 function ls<T>(key: string): T[] {
   try {
@@ -61,23 +82,69 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [againstSO, setAgainstSO] = useState('');
   const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
+
+  // ── SAM state ───────────────────────────────────────────────────
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const [samSalesmanId, setSamSalesmanId] = useState<string | null>(null);
+  const [samSalesmanName, setSamSalesmanName] = useState<string | null>(null);
+  const [samAgentId, setSamAgentId] = useState<string | null>(null);
+  const [samAgentName, setSamAgentName] = useState<string | null>(null);
+  const [samReferenceId, setSamReferenceId] = useState<string | null>(null);
+  const [samReferenceName, setSamReferenceName] = useState<string | null>(null);
+  const [salesmanAssignmentMode, setSalesmanAssignmentMode] =
+    useState<'fixed' | 'select_at_voucher'>('fixed');
+
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
     if (partyName) return sos.filter(s => s.party_name === partyName);
     return sos;
   }, [getOpenOrdersForLookup, partyName]);
 
-  // Load open customer advances
+  // Customers
+  const customers = useMemo<CustomerRow[]>(() => {
+    try {
+      // [JWT] GET /api/masters/customers
+      return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
+    } catch { return []; }
+  }, []);
+
+  // SAM config + persons
+  const samCfg = useMemo<SAMConfig | null>(() => {
+    try {
+      // [JWT] GET /api/compliance/comply360/sam/:entityCode
+      const raw = localStorage.getItem(comply360SAMKey(entityCode));
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [entityCode]);
+
+  const samPersons = useMemo<SAMPerson[]>(() => {
+    try {
+      // [JWT] GET /api/salesx/sam/persons?entityCode={entityCode}
+      const raw = localStorage.getItem(samPersonsKey(entityCode));
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, [entityCode]);
+
+  const ledgerFlags = useMemo<Record<string, boolean>>(() => {
+    try {
+      // [JWT] GET /api/accounting/ledger-definitions
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      const defs: Array<{ id: string; allow_commission_base?: boolean }> = raw ? JSON.parse(raw) : [];
+      return Object.fromEntries(
+        defs.filter(d => d.allow_commission_base === true).map(d => [d.id, true])
+      );
+    } catch { return {}; }
+  }, []);
+
+  // Open customer advances
   const openAdvances = useMemo(() => {
     if (!partyName) return [];
-    // [JWT] GET /api/masters/customers
-    const customers: any[] = (() => { try { return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]'); } catch { return []; } })();
-    const customer = customers.find((c: any) => c.partyName === partyName);
+    const customer = customers.find(c => c.partyName === partyName);
     if (!customer) return [];
     // [JWT] GET /api/compliance/advances
     return ls<AdvanceEntry>(advancesKey(entityCode))
       .filter(a => a.party_id === customer.id && a.party_type === 'customer' && (a.status === 'open' || a.status === 'partial'));
-  }, [partyName, entityCode]);
+  }, [partyName, entityCode, customers]);
 
   const isInterState = useMemo(() => {
     if (!placeOfSupply) return false;
@@ -110,6 +177,39 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     null, null, 'Current User'
   ), [partyName, date, gstTotals.total]);
 
+  // Commission preview — live useMemo
+  const commissionPreview = useMemo<CommissionResult[]>(() => {
+    if (!samCfg) return [];
+    const assigned = [samSalesmanId, samAgentId]
+      .filter(Boolean)
+      .map(id => samPersons.find(p => p.id === id))
+      .filter((p): p is SAMPerson => !!p);
+    if (assigned.length === 0) return [];
+    return calculateInvoiceCommission(
+      assigned, inventoryLines, ledgerLines, ledgerFlags, date, samCfg,
+    );
+  }, [samCfg, samSalesmanId, samAgentId, samPersons, inventoryLines, ledgerLines, ledgerFlags, date]);
+
+  const totalCommissionPreview = useMemo(
+    () => commissionPreview.reduce((s, r) => s + r.commission_amount, 0),
+    [commissionPreview]
+  );
+
+  const handleCustomerSelect = useCallback((cId: string) => {
+    // [JWT] GET /api/masters/customers/:id
+    const cust = customers.find(c => c.id === cId);
+    if (!cust) return;
+    setCustomerId(cId);
+    setPartyName(cust.partyName);
+    setSamSalesmanId(cust.default_salesman_id ?? null);
+    setSamSalesmanName(cust.default_salesman_name ?? null);
+    setSamAgentId(cust.default_agent_id ?? null);
+    setSamAgentName(cust.default_agent_name ?? null);
+    setSamReferenceId(cust.default_reference_id ?? null);
+    setSamReferenceName(cust.default_reference_name ?? null);
+    setSalesmanAssignmentMode(cust.salesman_assignment_mode ?? 'fixed');
+  }, [customers]);
+
   const handleLinkAdvance = (adv: AdvanceEntry) => {
     setLinkedAdvance(adv);
     toast.success(`Linked advance ${adv.advance_ref_no}`);
@@ -137,6 +237,13 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
         so_ref: againstSO ? openSOs.find(s => s.id === againstSO)?.order_no : undefined,
+        sam_salesman_id: samSalesmanId,
+        sam_salesman_name: samSalesmanName,
+        sam_agent_id: samAgentId,
+        sam_agent_name: samAgentName,
+        sam_reference_id: samReferenceId,
+        sam_reference_name: samReferenceName,
+        sam_commission_results: commissionPreview,
       };
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
@@ -164,9 +271,80 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       if (againstSO) {
         fulfillOrderLine(againstSO, gstTotals.total);
       }
+
+      // Write pending CommissionEntry for each SAM result — NO GL POSTING
+      // Commission is payable on receipt, not here.
+      if (commissionPreview.length > 0) {
+        // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
+        const regStore: CommissionEntry[] = (() => {
+          try {
+            return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
+          } catch { return []; }
+        })();
+
+        commissionPreview.forEach(result => {
+          const person = samPersons.find(p => p.id === result.person_id);
+          const tdsSection = person?.tds_section ?? null;
+          const tdsApplicable = !!person?.tds_deductible
+            && tdsSection !== 'not_applicable'
+            && !!tdsSection;
+          let tdsRate = 0;
+          if (tdsApplicable && tdsSection) {
+            try {
+              // [JWT] GET /api/accounting/tds-sections
+              const secs = JSON.parse(localStorage.getItem('erp_tds_sections') || '[]');
+              const sec = secs.find(
+                (s: { sectionCode: string; rateIndividual: number }) => s.sectionCode === tdsSection
+              );
+              tdsRate = sec?.rateIndividual ?? 5;
+            } catch { tdsRate = 5; }
+          }
+          const deducteeType: CommissionEntry['deductee_type'] =
+            person?.pan && person.pan.length > 0 ? 'individual' : 'no_pan';
+          const entry: CommissionEntry = {
+            id: `cr-${Date.now()}-${result.person_id}`,
+            entity_id: entityCode,
+            voucher_id: voucher.id,
+            voucher_no: voucher.voucher_no,
+            voucher_date: voucher.date,
+            customer_id: customerId,
+            customer_name: partyName,
+            person_id: result.person_id,
+            person_name: result.person_name,
+            person_type: result.person_type,
+            person_pan: person?.pan ?? null,
+            deductee_type: deducteeType,
+            invoice_amount: gstTotals.total,
+            base_amount: result.base_amount,
+            commission_rate: result.rate_used,
+            total_commission: result.commission_amount,
+            method: result.method,
+            tds_applicable: tdsApplicable,
+            tds_section: tdsApplicable ? tdsSection : null,
+            tds_rate: tdsRate,
+            amount_received_to_date: 0,
+            commission_earned_to_date: 0,
+            tds_deducted_to_date: 0,
+            net_paid_to_date: 0,
+            payments: [],
+            status: 'pending',
+            created_at: now,
+            updated_at: now,
+          };
+          regStore.push(entry);
+        });
+        // [JWT] POST /api/salesx/commission-register
+        localStorage.setItem(commissionRegisterKey(entityCode), JSON.stringify(regStore));
+      }
+
       toast.success('Sales Invoice posted');
     } catch { toast.error('Failed to save'); }
-  }, [partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstSO, openSOs, fulfillOrderLine]);
+  }, [
+    partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms,
+    ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstSO, openSOs, fulfillOrderLine,
+    samSalesmanId, samSalesmanName, samAgentId, samAgentName, samReferenceId, samReferenceName,
+    commissionPreview, customerId, samPersons,
+  ]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -180,6 +358,10 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       });
     }
   }, [onSaveDraft, partyName, date, narration]);
+
+  const showSamPanel = !!samCfg?.enableSalesActivityModule && (
+    !!samSalesmanId || !!samAgentId || !!samCfg.enableCompanySalesMan || !!samCfg.enableAgentModule
+  );
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
@@ -200,7 +382,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
             </div>
             <div>
               <Label className="text-xs">Party (Customer)</Label>
-              <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer name" />
+              <Select value={customerId ?? '__none__'} onValueChange={v => {
+                if (v !== '__none__') handleCustomerSelect(v);
+              }}>
+                <SelectTrigger><SelectValue placeholder="Select customer" /></SelectTrigger>
+                <SelectContent>
+                  {customers.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.partyName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="text-xs">Place of Supply</Label>
@@ -234,6 +425,100 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         </CardContent>
       </Card>
 
+      {/* Sales Assignment (SAM) */}
+      {showSamPanel && (
+        <Card className="border-orange-500/20 bg-orange-500/5">
+          <CardContent className="pt-3 pb-3 space-y-2">
+            <p className="text-xs font-semibold text-orange-700">Sales Assignment</p>
+            {samCfg?.enableCompanySalesMan && (
+              <div className="flex items-center gap-3">
+                <Label className="text-xs w-24 shrink-0">Salesman</Label>
+                {salesmanAssignmentMode === 'fixed' ? (
+                  <Badge variant="outline" className="text-xs">
+                    {samSalesmanName ?? '— None —'}
+                    <span className="ml-1 text-muted-foreground">(fixed)</span>
+                  </Badge>
+                ) : (
+                  <Select
+                    value={samSalesmanId ?? '__none__'}
+                    onValueChange={v => {
+                      const p = samPersons.find(x => x.id === v);
+                      setSamSalesmanId(v === '__none__' ? null : v);
+                      setSamSalesmanName(p?.display_name ?? null);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-xs flex-1">
+                      <SelectValue placeholder="Select salesman" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">— None —</SelectItem>
+                      {samPersons
+                        .filter(p => p.person_type === 'salesman' && p.is_active)
+                        .map(p => (
+                          <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            )}
+            {samCfg?.enableAgentModule && (
+              <div className="flex items-center gap-3">
+                <Label className="text-xs w-24 shrink-0">Agent / Broker</Label>
+                <Select
+                  value={samAgentId ?? '__none__'}
+                  onValueChange={v => {
+                    const p = samPersons.find(x => x.id === v);
+                    setSamAgentId(v === '__none__' ? null : v);
+                    setSamAgentName(p?.display_name ?? null);
+                  }}
+                >
+                  <SelectTrigger className="h-8 text-xs flex-1">
+                    <SelectValue placeholder="Select agent or broker" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {samPersons
+                      .filter(p => (p.person_type === 'agent' || p.person_type === 'broker') && p.is_active)
+                      .map(p => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.display_name}
+                          <span className="text-[10px] text-muted-foreground ml-1">({p.person_type})</span>
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {samCfg?.enableReference && (
+              <div className="flex items-center gap-3">
+                <Label className="text-xs w-24 shrink-0">Reference</Label>
+                <Select
+                  value={samReferenceId ?? '__none__'}
+                  onValueChange={v => {
+                    const p = samPersons.find(x => x.id === v);
+                    setSamReferenceId(v === '__none__' ? null : v);
+                    setSamReferenceName(p?.display_name ?? null);
+                  }}
+                >
+                  <SelectTrigger className="h-8 text-xs flex-1">
+                    <SelectValue placeholder="Select reference" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— None —</SelectItem>
+                    {samPersons
+                      .filter(p => p.person_type === 'reference' && p.is_active)
+                      .map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Customer advance banner */}
       {openAdvances.length > 0 && (
         <Alert className="border-blue-500/30 bg-blue-500/5">
@@ -259,6 +544,48 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
 
       {invoiceMode === 'item' && (
         <GSTComputationPanel lines={inventoryLines} isInterState={isInterState} />
+      )}
+
+      {/* Commission Preview */}
+      {commissionPreview.length > 0 && (
+        <Collapsible defaultOpen>
+          <Card className="border-orange-500/30">
+            <CollapsibleTrigger asChild>
+              <button className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-orange-700 hover:bg-orange-500/5 rounded-t-lg">
+                Commission Preview
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="pt-0 pb-3 space-y-1">
+                {commissionPreview.map(r => (
+                  <div key={r.person_id} className="flex items-center justify-between text-xs py-1 border-b border-border/40 last:border-0">
+                    <span>
+                      <span className="font-medium">{r.person_name}</span>
+                      <span className="text-muted-foreground ml-2">({r.person_type})</span>
+                    </span>
+                    <span className="font-mono">
+                      ₹{r.base_amount.toLocaleString('en-IN')}
+                      <span className="text-muted-foreground mx-1">@</span>
+                      {r.rate_used}%
+                      <span className="text-muted-foreground mx-1">=</span>
+                      <span className="font-semibold text-orange-600">₹{r.commission_amount.toLocaleString('en-IN')}</span>
+                    </span>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between text-xs pt-1 font-semibold">
+                  <span>Total commission payable</span>
+                  <span className="font-mono text-orange-600">
+                    ₹{totalCommissionPreview.toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <p className="text-[10px] text-muted-foreground pt-1">
+                  Commission will be recorded as pending. Payment is processed from Commission Register when receipt is collected.
+                </p>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
       )}
 
       <Collapsible open={collapseOpen} onOpenChange={setCollapseOpen}>

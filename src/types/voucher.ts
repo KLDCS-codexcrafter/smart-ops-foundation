@@ -129,6 +129,15 @@ export interface Voucher {
   vendor_bill_date?: string;
   grn_ref?: string;
   po_ref?: string;
+  // ── SAM fields — populated from Sales Invoice SAM assignment ──────
+  sam_salesman_id?: string | null;
+  sam_salesman_name?: string | null;
+  sam_agent_id?: string | null;
+  sam_agent_name?: string | null;
+  sam_reference_id?: string | null;
+  sam_reference_name?: string | null;
+  // Snapshot of commission calculation at post time (from sam-engine)
+  sam_commission_results?: import('@/lib/sam-engine').CommissionResult[];
   so_ref?: string; // SO number that this Sales Invoice or Delivery Note fulfils
   vehicle_no?: string;
   transporter?: string;

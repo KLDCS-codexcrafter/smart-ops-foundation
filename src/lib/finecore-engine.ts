@@ -87,7 +87,7 @@ export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'SO' | 'ADVP' | 'ADV
 }
 
 // ── TDS Helper Functions ─────────────────────────────────────────────
-function getQuarter(date: string): 'Q1' | 'Q2' | 'Q3' | 'Q4' {
+export function getQuarter(date: string): 'Q1' | 'Q2' | 'Q3' | 'Q4' {
   const m = new Date(date).getMonth() + 1;
   if (m >= 4 && m <= 6) return 'Q1';
   if (m >= 7 && m <= 9) return 'Q2';
@@ -95,7 +95,7 @@ function getQuarter(date: string): 'Q1' | 'Q2' | 'Q3' | 'Q4' {
   return 'Q4';
 }
 
-function getAssessmentYear(date: string): string {
+export function getAssessmentYear(date: string): string {
   const y = new Date(date);
   const yr = y.getMonth() >= 3 ? y.getFullYear() : y.getFullYear() - 1;
   return `${yr + 1}-${String(yr + 2).slice(2)}`;
