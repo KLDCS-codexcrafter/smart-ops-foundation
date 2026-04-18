@@ -363,3 +363,7 @@ export function SalesInvoicePrintPanel() {
     </div>
   );
 }
+
+export default function SalesInvoicePrint() {
+  return <SalesInvoicePrintPanel />;
+}
