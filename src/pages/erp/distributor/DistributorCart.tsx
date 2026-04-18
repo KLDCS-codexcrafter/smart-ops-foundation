@@ -611,6 +611,69 @@ export default function DistributorCartPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Sprint 11a — Voice-to-Order preview */}
+      <Dialog open={voiceOpen} onOpenChange={(o) => { if (!listening) setVoiceOpen(o); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mic className="h-4 w-4 text-indigo-600" /> Voice Order
+            </DialogTitle>
+            <DialogDescription>
+              {listening
+                ? 'Listening… speak items and quantities, e.g. "20 pcs hammer, 5 boxes nails"'
+                : 'Review what we heard before adding to your cart.'}
+            </DialogDescription>
+          </DialogHeader>
+          {listening ? (
+            <div className="flex items-center justify-center py-6 text-indigo-600">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <span className="text-sm">Listening…</span>
+            </div>
+          ) : voiceResult ? (
+            <div className="space-y-3 max-h-72 overflow-y-auto">
+              <div className="rounded-md border border-border/50 bg-muted/30 p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Transcript</p>
+                <p className="text-xs text-foreground">{voiceResult.transcript || '(empty)'}</p>
+              </div>
+              {voiceResult.lines.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">Nothing recognised. Try again.</p>
+              ) : (
+                voiceResult.lines.map((l, i) => (
+                  <div
+                    key={`${l.raw_text}-${i}`}
+                    className="flex items-center justify-between rounded-lg border border-border/50 px-3 py-2 text-xs"
+                  >
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {l.item_name_matched ?? <span className="text-destructive">No match</span>}
+                      </p>
+                      <p className="text-muted-foreground">qty {l.quantity} · "{l.raw_text}"</p>
+                    </div>
+                    {l.item_id ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVoiceOpen(false)} disabled={listening}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => void handleApplyVoiceLines()}
+              disabled={listening || !voiceResult || voiceResult.lines.every(l => !l.item_id)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Add Matched Lines
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DistributorLayout>
   );
 }
