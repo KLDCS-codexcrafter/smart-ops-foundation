@@ -70,7 +70,7 @@ export function createDistributorSession(
 ): DistributorSession {
   return {
     token,
-    partner_id: partner.id,
+    distributor_id: partner.id,
     customer_id: partner.customer_id,
     legal_name: partner.legal_name,
     partner_code: partner.partner_code,
@@ -86,11 +86,12 @@ export function createDistributorSession(
  * scopeQueryToDistributor — pure filter: returns only rows owned by the partner's
  * customer_id. Use in DistributorInvoices, DistributorPayments, etc., to prevent leaks.
  */
-export function scopeQueryToDistributor<T extends { party_id?: string | null; customer_id?: string | null; partner_id?: string | null }>(
+export function scopeQueryToDistributor<T extends { party_id?: string | null; customer_id?: string | null; partner_id?: string | null; distributor_id?: string | null }>(
   rows: T[],
   session: DistributorSession,
 ): T[] {
   return rows.filter(r =>
+    r.distributor_id === session.distributor_id ||
     r.partner_id === session.distributor_id ||
     r.customer_id === session.customer_id ||
     r.party_id === session.customer_id,
