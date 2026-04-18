@@ -4,7 +4,7 @@
  * Sprint 3 SalesX: SAM assignment + commission preview + commission-on-receipt register booking
  * [JWT] All storage via finecore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -647,6 +647,32 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     if (!postedVoucherId) return;
     window.open(`/erp/finecore/invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`, '_blank');
   }, [postedVoucherId, entityCode]);
+
+  // ── Audit fix #1+#2: auto-generate IRN on post + auto-EWB above threshold ──
+  const autoFiredFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!postedVoucherId || autoFiredFor.current === postedVoucherId) return;
+    autoFiredFor.current = postedVoucherId;
+    try {
+      const gstRaw = localStorage.getItem(entityGstKey(entityCode));
+      const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
+      const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
+      const v = allV.find(x => x.id === postedVoucherId);
+      if (!v) return;
+      // Auto IRN
+      if (gst.irp_api_enabled && gst.auto_generate_irn_on_post) {
+        toast.info('Auto-generating IRN as per Comply360 setting…');
+        void handleGenerateIRN();
+      }
+      // Auto EWB threshold check
+      if (gst.ewb_api_enabled && gst.auto_generate_ewb_above > 0
+        && v.net_amount > gst.auto_generate_ewb_above
+        && (v.customer_state_code ?? v.party_state_code) !== gst.state_code) {
+        toast.info(`Invoice exceeds ₹${gst.auto_generate_ewb_above.toLocaleString('en-IN')} interstate threshold — opening E-Way Bill dialog`);
+        setEwbDialogOpen(true);
+      }
+    } catch { /* noop */ }
+  }, [postedVoucherId, entityCode, handleGenerateIRN]);
 
   const showSamPanel = !!samCfg?.enableSalesActivityModule && (
     !!samSalesmanId || !!samAgentId || !!samCfg.enableCompanySalesMan || !!samCfg.enableAgentModule
