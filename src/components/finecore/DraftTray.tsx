@@ -23,6 +23,7 @@ export type FineCoreModule =
   | 'fc-rpt-outstanding' | 'fc-rpt-26as' | 'fc-rpt-24q' | 'fc-rpt-challan'
   | 'fc-rpt-26q' | 'fc-rpt-27q' | 'fc-tds-analytics'
   | 'fc-gst-gstr1' | 'fc-gst-gstr3b' | 'fc-gst-2a' | 'fc-gst-itc' | 'fc-gst-gstr2' | 'fc-gst-gstr9'
+  | 'fc-gst-irn-register' | 'fc-gst-ewb-register'
   | 'fc-tds-advance'
   | 'fc-audit-dashboard' | 'fc-audit-3cd' | 'fc-audit-clause44'
   | 'fc-fa-register' | 'fc-fa-master' | 'fc-fa-depreciation'
