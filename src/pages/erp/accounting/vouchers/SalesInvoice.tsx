@@ -12,7 +12,16 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from '@/components/ui/dialog';
+import { ChevronDown, Send, Info, Link2, ShieldAlert } from 'lucide-react';
+import { checkCreditHold } from '@/lib/credit-hold-engine';
+import {
+  creditHoldAuditKey, type CreditHoldCheck, type CreditHoldOverride,
+} from '@/types/credit-hold';
+import type { OutstandingEntry } from '@/types/voucher';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';

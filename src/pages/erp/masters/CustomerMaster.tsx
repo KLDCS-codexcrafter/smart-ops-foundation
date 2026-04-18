@@ -854,6 +854,41 @@ export function CustomerMasterPanel() {
               </p>
             </div>
           )}
+          {/* Sprint 8 — Credit Hold Override */}
+          <div className="border-t pt-3 mt-2 space-y-2">
+            <Label className="text-xs font-semibold flex items-center gap-1">
+              <Shield className="h-3 w-3 text-amber-500" />Credit Hold Override
+            </Label>
+            <p className="text-[10px] text-muted-foreground">Leave empty to use entity default from ReceivX Config.</p>
+            <div>
+              <Label className="text-xs">Mode Override</Label>
+              <Select
+                value={form.credit_hold_mode ?? '__default__'}
+                onValueChange={v => setForm(f => ({
+                  ...f,
+                  credit_hold_mode: v === '__default__' ? null : (v as 'hard_block' | 'soft_warn' | 'disabled'),
+                }))}
+              >
+                <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__default__">Use entity default</SelectItem>
+                  <SelectItem value="hard_block">Hard Block</SelectItem>
+                  <SelectItem value="soft_warn">Soft Warn</SelectItem>
+                  <SelectItem value="disabled">Disabled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Override Notes</Label>
+              <Input
+                className="text-xs"
+                value={form.credit_hold_notes}
+                onKeyDown={onEnterNext}
+                onChange={e => setForm(f => ({ ...f, credit_hold_notes: e.target.value }))}
+                placeholder="Why is this customer on a non-standard mode?"
+              />
+            </div>
+          </div>
           <div>
             <Label className="text-xs">Credit Period (days)</Label>
             <Input value={form.creditDays || ''}
