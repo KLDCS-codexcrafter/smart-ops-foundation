@@ -153,14 +153,13 @@ export default function DistributorDashboard() {
               <button
                 key={a.url}
                 onClick={() => navigate(a.url)}
-                className="rounded-2xl border border-border/50 bg-card p-4 text-left hover:border-border transition-all hover:shadow-sm group"
+                className="rounded-2xl border border-border/50 bg-card p-4 text-left hover:border-indigo-600/40 transition-all hover:shadow-sm group"
               >
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-                  style={{ background: INDIGO_BG }}>
-                  <a.icon className="h-4 w-4" style={{ color: INDIGO }} />
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3 bg-indigo-600/15">
+                  <a.icon className="h-4 w-4 text-indigo-600" />
                 </div>
                 <p className="text-sm font-medium text-foreground">{a.label}</p>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground mt-1 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-3.5 w-3.5 text-indigo-600 mt-1 group-hover:translate-x-1 transition-transform" />
               </button>
             ))}
           </div>

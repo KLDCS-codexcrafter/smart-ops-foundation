@@ -7,15 +7,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
+  Bookmark, BookmarkPlus, ListChecks, RotateCcw,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { getDistributorSession, loadDistributors, hasRolePermission } from '@/lib/distributor-auth-engine';
 import {
   getCart, setCart, clearCart, removeLine, isAvailable,
+  saveTemplate, loadTemplates, deleteTemplate,
+  type DistributorCartTemplate,
 } from '@/lib/distributor-cart-store';
 import {
   cartToOrder, nextOrderNumber, checkCreditAvailable,
@@ -26,6 +33,8 @@ import {
 } from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
+// Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
+const CURRENT_ROLE = 'owner' as const;
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
