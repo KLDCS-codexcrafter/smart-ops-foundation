@@ -140,9 +140,9 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
 
     // Write TDSDeductionEntry if TDS is applicable and threshold crossed
     if (active.tds_applicable && active.tds_section && previewPayment.tdsAmount > 0) {
-      // [JWT] GET /api/compliance/tds-deductions
       const allTDS: TDSDeductionEntry[] = (() => {
         try {
+          // [JWT] GET /api/compliance/tds-deductions
           return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
         } catch { return []; }
       })();
