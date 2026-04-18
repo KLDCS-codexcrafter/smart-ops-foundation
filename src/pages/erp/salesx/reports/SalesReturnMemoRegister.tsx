@@ -18,6 +18,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Eye, Check, X, FileMinus, Send } from 'lucide-react';
+import { onEnterNext } from '@/lib/keyboard';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -281,6 +282,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
           <Textarea
             value={approveNotes}
             onChange={e => setApproveNotes(e.target.value)}
+            onKeyDown={onEnterNext}
             placeholder="Notes for the team (optional)"
             className="min-h-[80px]"
           />
@@ -303,6 +305,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
           <Textarea
             value={rejectReason}
             onChange={e => setRejectReason(e.target.value)}
+            onKeyDown={onEnterNext}
             placeholder="Why is this memo being rejected?"
             className="min-h-[100px]"
           />
