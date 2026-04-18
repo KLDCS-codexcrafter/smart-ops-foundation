@@ -256,6 +256,11 @@ export interface SAMConfig {
   tdsOnCommissionSection: '194H' | '194J' | 'not_applicable';
   commissionLedgerSales: string;
   commissionLedgerPurchase: string;
+  // Sprint 6B — Collection Bonus
+  enableCollectionBonus: boolean;
+  collectionBonusRate: number;                      // % of commission earned on this receipt
+  collectionBonusWindowDays: number;                // days from invoice date
+  collectionBonusAppliesTo: 'salesman' | 'all_persons';
   // Legacy fields kept for backward compat (unused in new screen)
   enableCompanySalesPerson: boolean;
   enableInPurchase: boolean;
