@@ -1289,7 +1289,7 @@ function HSNSACCombobox({
 
 // ─── Component ────────────────────────────────────────────────────────
 
-export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
+export function LedgerMasterPanel() {
   const showGSTUDFs = (() => {
     try {
       // [JWT] GET /api/compliance/comply360/group
@@ -6161,7 +6161,7 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
 
     </div>
   );
-});
+}
 
 // ─── Wrapped Export ───────────────────────────────────────────────────
 
