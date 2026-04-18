@@ -40,6 +40,7 @@ const STAGE_COLOR: Record<QuotationStage, string> = {
   on_hold: 'bg-yellow-500/15 text-yellow-700 border-yellow-500/30',
   negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
   confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
+  proforma: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
   lost: 'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
 };
@@ -76,6 +77,9 @@ const blank = (): FormState => ({
   items: [],
   sub_total: 0, tax_amount: 0, total_amount: 0,
   notes: null, terms_conditions: null,
+  proforma_no: null,
+  proforma_date: null,
+  proforma_converted_at: null,
   is_active: true,
 });
 

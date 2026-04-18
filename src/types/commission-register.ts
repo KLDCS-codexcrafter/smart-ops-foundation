@@ -106,6 +106,16 @@ export interface CommissionEntry {
   bank_payment_voucher_no: string | null;
   bank_payment_date: string | null;
 
+  // ── Sprint 6B — Collection bonus (behavioural incentive) ──────────
+  /** True if the current commission entry qualified for a collection bonus */
+  collection_bonus_earned: boolean;
+  /** Config snapshot at time of evaluation */
+  collection_bonus_window_days: number;
+  /** Computed bonus amount — added on top of regular commission */
+  collection_bonus_amount: number;
+  /** True if the receipt arrived within window_days of invoice date */
+  receipt_within_window: boolean;
+
   status: 'pending' | 'partial' | 'paid' | 'reversed' | 'cancelled';
   created_at: string;
   updated_at: string;
