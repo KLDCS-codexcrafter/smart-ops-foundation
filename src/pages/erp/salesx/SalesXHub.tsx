@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import {
   UserCheck, Briefcase, Award, Users, Settings2,
-  Wallet, Receipt, FileText,
+  Wallet, Receipt, FileText, IndianRupee,
 } from 'lucide-react';
 import { samPersonsKey } from '@/types/sam-person';
 import type { SAMPerson, SAMPersonType } from '@/types/sam-person';
@@ -127,36 +127,49 @@ export function SalesXHubPanel({ entityCode, onNavigate }: Props) {
     <div data-keyboard-form className="space-y-4">
       {/* Primary KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="border-l-4 border-l-orange-500">
+        {/* Active Enquiries */}
+        <Card className="border-l-4 border-l-purple-500 cursor-pointer hover:shadow-md transition" onClick={() => go('sx-t-enquiry')}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <UserCheck className="h-3.5 w-3.5" /> Total Salesmen
+              <Users className="h-3.5 w-3.5" /> Active Enquiries
             </div>
-            <p className="text-2xl font-bold font-mono mt-1">{counts.salesmen}</p>
+            <p className="text-2xl font-bold font-mono mt-1">{enquiryKpi}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
+
+        {/* Pipeline Value */}
+        <Card className="border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition" onClick={() => go('sx-t-pipeline')}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Briefcase className="h-3.5 w-3.5" /> Total Agents
+              <IndianRupee className="h-3.5 w-3.5" /> Pipeline Value
             </div>
-            <p className="text-2xl font-bold font-mono mt-1">{counts.agents}</p>
+            <p className="text-2xl font-bold font-mono mt-1">
+              ₹{quotationKpi.toLocaleString('en-IN')}
+            </p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-yellow-500">
+
+        {/* Pending Commission */}
+        {(cfg?.enableAgentModule || cfg?.enableCompanySalesMan) && (
+          <Card className="border-l-4 border-l-yellow-500 cursor-pointer hover:shadow-md transition" onClick={() => go('sx-r-commission')}>
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Wallet className="h-3.5 w-3.5" /> Pending Commission
+              </div>
+              <p className="text-2xl font-bold font-mono mt-1">
+                ₹{commissionKpis.pending.toLocaleString('en-IN')}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Open Quotations */}
+        <Card className="border-l-4 border-l-orange-500 cursor-pointer hover:shadow-md transition" onClick={() => go('sx-t-quotation')}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Award className="h-3.5 w-3.5" /> Total Brokers
+              <FileText className="h-3.5 w-3.5" /> Open Quotations
             </div>
-            <p className="text-2xl font-bold font-mono mt-1">{counts.brokers}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Users className="h-3.5 w-3.5" /> Active Leads
-            </div>
-            <p className="text-2xl font-bold font-mono mt-1">{counts.activeLeads}</p>
+            <p className="text-2xl font-bold font-mono mt-1">{quotationKpi}</p>
           </CardContent>
         </Card>
       </div>
