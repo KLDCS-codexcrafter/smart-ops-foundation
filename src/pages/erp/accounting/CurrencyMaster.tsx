@@ -527,7 +527,7 @@ function CurrencySheet({
         {!isBase && (
           <div className="px-5 py-3 border-t border-border/50 flex gap-2 shrink-0">
             <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button size="sm" className="flex-1 h-8 text-xs" onClick={save}>
+            <Button data-primary size="sm" className="flex-1 h-8 text-xs" onClick={save}>
               {isEdit ? 'Save Changes' : 'Create Currency'}
             </Button>
           </div>

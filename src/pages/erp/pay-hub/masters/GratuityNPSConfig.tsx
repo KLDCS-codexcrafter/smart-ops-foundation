@@ -28,7 +28,8 @@ export function GratuityNPSPanel() {
     });
   }, [form, save]);
 
-  useCtrlS(handleSave);
+  const isFormActive = true; // single-view config — always active
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const setG = <K extends keyof GratuityNPSSettings['gratuity']>(k: K, v: GratuityNPSSettings['gratuity'][K]) =>
     setForm(p => ({ ...p, gratuity: { ...p.gratuity, [k]: v } }));
