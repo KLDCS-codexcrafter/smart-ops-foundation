@@ -16,17 +16,35 @@ import {
   type DistributorOrderLine,
 } from '@/types/distributor-order';
 
+// Sprint 10 Part D · Feature #10 — order templates store.
+const TEMPLATE_STORE = 'cart_templates';
+// Bump version so the upgrade handler runs and creates the new object store.
+const DB_VERSION = Math.max(CART_IDB_VERSION, 2);
+
+export interface DistributorCartTemplate {
+  id: string;
+  distributor_party_id: string;
+  name: string;
+  lines: DistributorOrderLine[];
+  created_at: string;
+  last_used_at: string | null;
+  use_count: number;
+}
+
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === 'undefined') {
       reject(new Error('IndexedDB unavailable in this environment'));
       return;
     }
-    const req = indexedDB.open(CART_IDB_DB, CART_IDB_VERSION);
+    const req = indexedDB.open(CART_IDB_DB, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(CART_IDB_STORE)) {
         db.createObjectStore(CART_IDB_STORE, { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains(TEMPLATE_STORE)) {
+        db.createObjectStore(TEMPLATE_STORE, { keyPath: 'id' });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -110,4 +128,42 @@ export async function removeLine(partnerId: string, itemId: string): Promise<Dis
 /** isAvailable — feature-detect IndexedDB so callers can show a fallback UI. */
 export function isAvailable(): boolean {
   return typeof indexedDB !== 'undefined';
+}
+
+// ── Templates (Sprint 10 Part D · Feature #10) ──
+
+/** Persist (insert or update) a cart template. */
+export async function saveTemplate(template: DistributorCartTemplate): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(TEMPLATE_STORE, 'readwrite');
+    t.objectStore(TEMPLATE_STORE).put(template);
+    t.oncomplete = () => resolve();
+    t.onerror = () => reject(t.error ?? new Error('IndexedDB template put failed'));
+  });
+}
+
+/** Load all templates for a given distributor (party_id). */
+export async function loadTemplates(partyId: string): Promise<DistributorCartTemplate[]> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(TEMPLATE_STORE, 'readonly');
+    const req = t.objectStore(TEMPLATE_STORE).getAll();
+    req.onsuccess = () => {
+      const all = (req.result as DistributorCartTemplate[]) ?? [];
+      resolve(all.filter(x => x.distributor_party_id === partyId));
+    };
+    req.onerror = () => reject(req.error ?? new Error('IndexedDB template getAll failed'));
+  });
+}
+
+/** Delete a template by id. */
+export async function deleteTemplate(templateId: string): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(TEMPLATE_STORE, 'readwrite');
+    t.objectStore(TEMPLATE_STORE).delete(templateId);
+    t.oncomplete = () => resolve();
+    t.onerror = () => reject(t.error ?? new Error('IndexedDB template delete failed'));
+  });
 }
