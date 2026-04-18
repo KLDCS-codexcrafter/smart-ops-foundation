@@ -10,7 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { receivxConfigKey, type ReceivXConfig } from '@/types/receivx';
+import { receivxConfigKey, type ReceivXConfig, RECEIVX_CONFIG_SPRINT8_DEFAULTS } from '@/types/receivx';
+import { PROVIDER_LABELS, type GatewayProvider } from '@/types/payment-gateway';
+import { CREDIT_HOLD_MODE_LABELS, type CreditHoldMode } from '@/types/credit-hold';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Props { entityCode: string }
 
@@ -26,6 +29,7 @@ const DEFAULT_CONFIG = (e: string): ReceivXConfig => {
     email_pixel_endpoint: '', email_from_name: '', email_from_address: '',
     default_template_id: null, default_escalation_after_days: 30, auto_run_cadence: false,
     bad_debtor_age_days: 90, credit_hold_ratio: 1.0,
+    ...RECEIVX_CONFIG_SPRINT8_DEFAULTS,
     created_at: now, updated_at: now,
   };
 };
