@@ -27,7 +27,10 @@ interface Props {
 }
 
 function loadCfg(entityCode: string): SAMConfig | null {
-  try { return JSON.parse(localStorage.getItem(comply360SAMKey(entityCode)) || 'null'); }
+  try {
+    // [JWT] GET /api/compliance/comply360/sam/:entityCode
+    return JSON.parse(localStorage.getItem(comply360SAMKey(entityCode)) || 'null');
+  }
   catch { return null; }
 }
 

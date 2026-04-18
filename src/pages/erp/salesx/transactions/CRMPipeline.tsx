@@ -26,16 +26,19 @@ interface Props { entityCode: string }
 
 function loadCfg(entityCode: string): SAMConfig | null {
   try {
+    // [JWT] GET /api/compliance/comply360/sam/:entityCode
     return JSON.parse(localStorage.getItem(comply360SAMKey(entityCode)) || 'null');
   } catch { return null; }
 }
 function loadPersons(entityCode: string): SAMPerson[] {
   try {
+    // [JWT] GET /api/salesx/sam/persons?entityCode={entityCode}
     return JSON.parse(localStorage.getItem(samPersonsKey(entityCode)) || '[]');
   } catch { return []; }
 }
 function loadCustomers(): Array<{ id: string; partyName: string }> {
   try {
+    // [JWT] GET /api/masters/customers
     return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
   } catch { return []; }
 }
