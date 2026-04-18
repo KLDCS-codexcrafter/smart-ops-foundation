@@ -197,6 +197,39 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
     draftCount > 0 ? draftCount + ' drafts pending' : '',
   ].filter(Boolean).join(' · ');
 
+  // Sprint 5 — SalesX KPIs aggregated for the Sales Performance widget
+  const salesxKPIs = useMemo(() => {
+    const safeJSON = <T,>(k: string): T[] => {
+      try { return JSON.parse(localStorage.getItem(k) || '[]'); }
+      catch { return []; }
+    };
+    // [JWT] GET /api/salesx/enquiries?entityCode={entityCode}
+    const enquiries = safeJSON<Enquiry>(enquiriesKey(entityCode));
+    // [JWT] GET /api/salesx/opportunities?entityCode={entityCode}
+    const opportunities = safeJSON<Opportunity>(opportunitiesKey(entityCode));
+    // [JWT] GET /api/salesx/quotations?entityCode={entityCode}
+    const quotations = safeJSON<Quotation>(quotationsKey(entityCode));
+    // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
+    const commissions = safeJSON<CommissionEntry>(commissionRegisterKey(entityCode));
+    const pendingCommission = commissions
+      .filter(c => c.status === 'pending' || c.status === 'partial')
+      .reduce((s, c) => s + Math.max(0, c.net_total_commission - c.commission_earned_to_date), 0);
+    const pendingPayouts = commissions.filter(
+      c => c.commission_expense_voucher_id && !c.bank_payment_voucher_id,
+    ).length;
+    const openOpportunityValue = opportunities
+      .filter(o => o.stage !== 'won' && o.stage !== 'lost')
+      .reduce((s, o) => s + o.deal_value, 0);
+    return {
+      enquiriesCount: enquiries.length,
+      opportunitiesCount: opportunities.length,
+      quotationsCount: quotations.length,
+      pendingCommission,
+      pendingPayouts,
+      openOpportunityValue,
+    };
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Context bar */}
