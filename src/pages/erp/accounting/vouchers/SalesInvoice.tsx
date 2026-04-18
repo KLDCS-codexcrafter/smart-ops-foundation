@@ -104,6 +104,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [salesmanAssignmentMode, setSalesmanAssignmentMode] =
     useState<'fixed' | 'select_at_voucher'>('fixed');
 
+  // ── Sprint 8 — Credit hold state ────────────────────────────────
+  const [creditCheck, setCreditCheck] = useState<CreditHoldCheck | null>(null);
+  const [overrideOpen, setOverrideOpen] = useState(false);
+  const [overrideReason, setOverrideReason] = useState('');
+
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
     if (partyName) return sos.filter(s => s.party_name === partyName);
