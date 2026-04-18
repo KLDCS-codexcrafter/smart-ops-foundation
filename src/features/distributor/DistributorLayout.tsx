@@ -8,6 +8,7 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, FileText, IndianRupee,
   Megaphone, ChevronLeft, ChevronRight, Truck, Bell, LogOut,
+  Network, Users2, TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme';
@@ -16,12 +17,16 @@ import { getDistributorSession, clearDistributorSession } from '@/lib/distributo
 import { toast } from 'sonner';
 
 const navItems = [
-  { title: 'Dashboard', url: '/erp/distributor/dashboard', icon: LayoutDashboard },
-  { title: 'Catalog',   url: '/erp/distributor/catalog',   icon: Package },
-  { title: 'Cart',      url: '/erp/distributor/cart',      icon: ShoppingCart },
-  { title: 'Invoices',  url: '/erp/distributor/invoices',  icon: FileText },
-  { title: 'Payments',  url: '/erp/distributor/payments',  icon: IndianRupee },
-  { title: 'Updates',   url: '/erp/distributor/updates',   icon: Megaphone },
+  { title: 'Dashboard',   url: '/erp/distributor/dashboard',      icon: LayoutDashboard },
+  { title: 'Catalog',     url: '/erp/distributor/catalog',        icon: Package },
+  { title: 'Cart',        url: '/erp/distributor/cart',           icon: ShoppingCart },
+  { title: 'Invoices',    url: '/erp/distributor/invoices',       icon: FileText },
+  { title: 'Payments',    url: '/erp/distributor/payments',       icon: IndianRupee },
+  // Sprint 11a — downstream visibility, CRM, credit
+  { title: 'Downstream',  url: '/erp/distributor/downstream',     icon: Network },
+  { title: 'CRM',         url: '/erp/distributor/crm',            icon: Users2 },
+  { title: 'Credit',      url: '/erp/distributor/credit-request', icon: TrendingUp },
+  { title: 'Updates',     url: '/erp/distributor/updates',        icon: Megaphone },
 ];
 
 interface DistributorLayoutProps {

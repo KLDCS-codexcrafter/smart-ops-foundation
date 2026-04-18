@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
-  Bookmark, BookmarkPlus, ListChecks, RotateCcw,
+  Bookmark, BookmarkPlus, ListChecks, RotateCcw, Mic, MicOff,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
@@ -29,8 +29,13 @@ import {
 } from '@/lib/distributor-order-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
-  distributorOrdersKey, type DistributorCartState, type DistributorOrder,
+  distributorOrdersKey, type DistributorCartState, type DistributorOrder, type DistributorOrderLine,
 } from '@/types/distributor-order';
+import {
+  isSpeechRecognitionSupported, transcribeVoice, parseVoiceOrder,
+  type VoiceOrderResult,
+} from '@/lib/voice-to-order-engine';
+import type { InventoryItem } from '@/types/inventory-item';
 
 const INDIGO = 'hsl(231 48% 58%)';
 // Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
@@ -55,6 +60,12 @@ export default function DistributorCartPage() {
   const [templates, setTemplates] = useState<DistributorCartTemplate[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [templateName, setTemplateName] = useState('');
+
+  // Sprint 11a — Voice-to-order state.
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceResult, setVoiceResult] = useState<VoiceOrderResult | null>(null);
+  const voiceSupported = isSpeechRecognitionSupported();
 
   const distributor = session
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
@@ -237,6 +248,79 @@ export default function DistributorCartPage() {
     } catch { toast.error('Failed to delete'); }
   };
 
+  // ── Voice-to-Order (Sprint 11a) ─────────────────────────────────────────
+  const startVoice = async () => {
+    if (!voiceSupported) {
+      toast.error('Voice not supported on this browser');
+      return;
+    }
+    setVoiceOpen(true);
+    setVoiceResult(null);
+    setListening(true);
+    try {
+      const transcript = await transcribeVoice('en-IN');
+      // [JWT] GET /api/inventory/items
+      const items = ls<InventoryItem>('erp_inventory_items');
+      const parsed = parseVoiceOrder(transcript, items);
+      setVoiceResult(parsed);
+      if (parsed.lines.length === 0) toast.message('Nothing recognised — try again');
+    } catch (e) {
+      toast.error('Voice failed', { description: e instanceof Error ? e.message : String(e) });
+      setVoiceOpen(false);
+    } finally {
+      setListening(false);
+    }
+  };
+
+  const handleApplyVoiceLines = async () => {
+    if (!voiceResult || !session) return;
+    const matched = voiceResult.lines.filter(l => l.item_id);
+    if (matched.length === 0) {
+      toast.error('No matched items to add');
+      return;
+    }
+    // [JWT] GET /api/inventory/items
+    const items = ls<InventoryItem>('erp_inventory_items');
+    const newLines: DistributorOrderLine[] = matched.map(vl => {
+      const it = items.find(i => i.id === vl.item_id);
+      const ratePaise = 0;
+      const taxable = ratePaise * vl.quantity;
+      return {
+        id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        item_id: vl.item_id ?? '',
+        item_code: it?.code ?? '',
+        item_name: vl.item_name_matched ?? it?.name ?? 'Unknown',
+        uom: it?.primary_uom_symbol ?? 'NOS',
+        qty: vl.quantity,
+        rate_paise: ratePaise,
+        discount_percent: 0,
+        taxable_paise: taxable,
+        cgst_paise: 0,
+        sgst_paise: 0,
+        igst_paise: 0,
+        total_paise: taxable,
+        hsn_sac: null,
+      };
+    });
+    const base: DistributorCartState = cart ?? {
+      id: session.distributor_id,
+      partner_id: session.distributor_id,
+      entity_code: session.entity_code,
+      lines: [],
+      notes: '',
+      delivery_address: '',
+      expected_delivery_date: null,
+      updated_at: new Date().toISOString(),
+    };
+    const next: DistributorCartState = { ...base, lines: [...base.lines, ...newLines] };
+    await setCart(next);
+    setLocalCart(next);
+    setVoiceOpen(false);
+    setVoiceResult(null);
+    toast.success(`${newLines.length} line(s) added from voice`);
+  };
+
+
   if (loading) {
     return (
       <DistributorLayout title="Cart">
@@ -346,6 +430,18 @@ export default function DistributorCartPage() {
           <ListChecks className="h-3.5 w-3.5 inline mr-1.5" />
           My Templates ({templates.length})
         </button>
+        {/* Sprint 11a — voice-to-order */}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void startVoice()}
+          disabled={!voiceSupported}
+          className="ml-auto gap-1.5 border-indigo-600/40 text-indigo-700 hover:bg-indigo-600/10"
+          title={voiceSupported ? 'Speak your order' : 'Voice not supported on this browser'}
+        >
+          {voiceSupported ? <Mic className="h-3.5 w-3.5" /> : <MicOff className="h-3.5 w-3.5" />}
+          Voice Order
+        </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
         {/* Lines */}
@@ -511,6 +607,69 @@ export default function DistributorCartPage() {
               className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               Save Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sprint 11a — Voice-to-Order preview */}
+      <Dialog open={voiceOpen} onOpenChange={(o) => { if (!listening) setVoiceOpen(o); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mic className="h-4 w-4 text-indigo-600" /> Voice Order
+            </DialogTitle>
+            <DialogDescription>
+              {listening
+                ? 'Listening… speak items and quantities, e.g. "20 pcs hammer, 5 boxes nails"'
+                : 'Review what we heard before adding to your cart.'}
+            </DialogDescription>
+          </DialogHeader>
+          {listening ? (
+            <div className="flex items-center justify-center py-6 text-indigo-600">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <span className="text-sm">Listening…</span>
+            </div>
+          ) : voiceResult ? (
+            <div className="space-y-3 max-h-72 overflow-y-auto">
+              <div className="rounded-md border border-border/50 bg-muted/30 p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Transcript</p>
+                <p className="text-xs text-foreground">{voiceResult.transcript || '(empty)'}</p>
+              </div>
+              {voiceResult.lines.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">Nothing recognised. Try again.</p>
+              ) : (
+                voiceResult.lines.map((l, i) => (
+                  <div
+                    key={`${l.raw_text}-${i}`}
+                    className="flex items-center justify-between rounded-lg border border-border/50 px-3 py-2 text-xs"
+                  >
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {l.item_name_matched ?? <span className="text-destructive">No match</span>}
+                      </p>
+                      <p className="text-muted-foreground">qty {l.quantity} · "{l.raw_text}"</p>
+                    </div>
+                    {l.item_id ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVoiceOpen(false)} disabled={listening}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => void handleApplyVoiceLines()}
+              disabled={listening || !voiceResult || voiceResult.lines.every(l => !l.item_id)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Add Matched Lines
             </Button>
           </DialogFooter>
         </DialogContent>

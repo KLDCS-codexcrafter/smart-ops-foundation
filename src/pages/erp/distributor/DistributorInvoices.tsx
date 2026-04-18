@@ -7,16 +7,29 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, Search, IndianRupee, Truck, ExternalLink, Download,
-  ChevronDown, ChevronRight, Sparkles,
+  ChevronDown, ChevronRight, Sparkles, AlertOctagon,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { toast } from 'sonner';
 import { getDistributorSession, scopeQueryToDistributor } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { InventoryItem } from '@/types/inventory-item';
+import {
+  disputesKey, DISPUTE_REASON_LABELS,
+  type DisputeReason, type InvoiceDispute,
+} from '@/types/invoice-dispute';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -41,6 +54,15 @@ export default function DistributorInvoices() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'open' | 'paid'>('all');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  // Sprint 11a — dispute dialog state
+  const [disputeOpen, setDisputeOpen] = useState(false);
+  const [disputeVoucher, setDisputeVoucher] = useState<Voucher | null>(null);
+  const [disputeLine, setDisputeLine] = useState<VoucherInventoryLine | null>(null);
+  const [disputeReason, setDisputeReason] = useState<DisputeReason>('short_supply');
+  const [receivedQty, setReceivedQty] = useState<string>('');
+  const [disputeRemarks, setDisputeRemarks] = useState('');
+  const [submittingDispute, setSubmittingDispute] = useState(false);
 
   // Item master so we can look up MRP for the tier-saving breakdown.
   const itemMrpMap = useMemo<Map<string, number>>(() => {
@@ -93,7 +115,77 @@ export default function DistributorInvoices() {
     });
   };
 
-  const renderBreakdown = (line: VoucherInventoryLine) => {
+  // Sprint 11a — open dispute dialog for a line
+  const openDispute = (v: Voucher, l: VoucherInventoryLine) => {
+    setDisputeVoucher(v);
+    setDisputeLine(l);
+    setDisputeReason('short_supply');
+    setReceivedQty(String(l.qty));
+    setDisputeRemarks('');
+    setDisputeOpen(true);
+  };
+
+  const submitDispute = () => {
+    if (!session || !disputeVoucher || !disputeLine) return;
+    const remarks = disputeRemarks.trim();
+    if (remarks.length < 20) {
+      toast.error('Remarks must be at least 20 characters');
+      return;
+    }
+    const recvQty = Number(receivedQty);
+    if (Number.isNaN(recvQty) || recvQty < 0) {
+      toast.error('Enter a valid received quantity');
+      return;
+    }
+    setSubmittingDispute(true);
+    try {
+      const billed = disputeLine.qty;
+      const shortQty = Math.max(0, billed - recvQty);
+      const disputed = Math.round(shortQty * disputeLine.rate * 100); // paise
+      const list = ls<InvoiceDispute>(disputesKey(session.entity_code));
+      const yr = new Date().getFullYear();
+      const yrCount = list.filter(d => d.dispute_no.includes(`/${yr}/`)).length + 1;
+      const dispute: InvoiceDispute = {
+        id: `dsp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        entity_id: session.entity_code,
+        dispute_no: `DSP/${yr}/${String(yrCount).padStart(4, '0')}`,
+        dispute_date: new Date().toISOString(),
+        distributor_id: session.distributor_id,
+        customer_id: session.customer_id,
+        voucher_id: disputeVoucher.id,
+        voucher_no: disputeVoucher.voucher_no,
+        line_id: disputeLine.id,
+        reason: disputeReason,
+        billed_quantity: billed,
+        received_quantity: recvQty,
+        disputed_amount_paise: disputed,
+        distributor_remarks: remarks,
+        photo_urls: [],
+        status: 'open',
+        reviewed_by: null,
+        reviewed_at: null,
+        resolution_type: null,
+        credit_note_voucher_id: null,
+        approved_amount_paise: null,
+        rejection_reason: null,
+        internal_remarks: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      // [JWT] POST /api/distributor/disputes
+      localStorage.setItem(disputesKey(session.entity_code), JSON.stringify([dispute, ...list]));
+      toast.success(`Dispute ${dispute.dispute_no} raised`, {
+        description: 'Our ops team will review shortly.',
+      });
+      setDisputeOpen(false);
+    } catch (e) {
+      toast.error('Failed to raise dispute', { description: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setSubmittingDispute(false);
+    }
+  };
+
+  const renderBreakdown = (v: Voucher, line: VoucherInventoryLine) => {
     const basePrice = itemMrpMap.get(line.item_id) ?? line.rate;
     const tierDiscount = Math.max(0, basePrice - line.rate);
     const volumeSlabSaving = 0; // Sprint 12 scheme engine
@@ -129,6 +221,17 @@ export default function DistributorInvoices() {
         <div className="flex justify-between font-bold text-foreground">
           <span>= Line total</span>
           <span>₹{fmt2(lineTotal)}</span>
+        </div>
+        <div className="pt-2 flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => openDispute(v, line)}
+            className="h-7 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 font-sans"
+          >
+            <AlertOctagon className="h-3.5 w-3.5" /> Raise Dispute
+          </Button>
         </div>
       </div>
     );
@@ -278,7 +381,7 @@ export default function DistributorInvoices() {
                                       <p className="text-xs font-medium text-foreground">
                                         {l.item_name} <span className="text-muted-foreground font-mono">· {l.item_code}</span>
                                       </p>
-                                      {renderBreakdown(l)}
+                                      {renderBreakdown(v, l)}
                                     </div>
                                   ))
                                 )}
@@ -295,6 +398,74 @@ export default function DistributorInvoices() {
           </div>
         )}
       </div>
+
+      {/* Sprint 11a — Raise dispute dialog */}
+      <Dialog open={disputeOpen} onOpenChange={setDisputeOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertOctagon className="h-4 w-4 text-destructive" /> Raise Dispute
+            </DialogTitle>
+            <DialogDescription>
+              {disputeVoucher && disputeLine && (
+                <>Invoice <span className="font-mono">{disputeVoucher.voucher_no}</span> · {disputeLine.item_name}</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reason</Label>
+              <Select value={disputeReason} onValueChange={(v) => setDisputeReason(v as DisputeReason)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(DISPUTE_REASON_LABELS) as DisputeReason[]).map(r => (
+                    <SelectItem key={r} value={r}>{DISPUTE_REASON_LABELS[r]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Billed Qty</Label>
+                <Input value={disputeLine?.qty ?? ''} disabled className="font-mono" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Received Qty</Label>
+                <Input
+                  type="number"
+                  value={receivedQty}
+                  onChange={e => setReceivedQty(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Remarks (min 20 characters)</Label>
+              <Textarea
+                rows={3}
+                value={disputeRemarks}
+                onChange={e => setDisputeRemarks(e.target.value)}
+                placeholder="Describe what went wrong…"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {disputeRemarks.trim().length}/20
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDisputeOpen(false)} disabled={submittingDispute}>
+              Cancel
+            </Button>
+            <Button
+              onClick={submitDispute}
+              disabled={submittingDispute || disputeRemarks.trim().length < 20}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Submit Dispute
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DistributorLayout>
   );
 }
