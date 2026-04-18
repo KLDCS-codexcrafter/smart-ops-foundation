@@ -132,6 +132,9 @@ interface CustomerMasterDefinition {
   beat_ids: string[];
   latitude: number | null;
   longitude: number | null;
+  // ── Sprint 8 — Credit Hold Override ──────────────────────────
+  credit_hold_mode: import('@/types/credit-hold').CreditHoldMode | null;
+  credit_hold_notes: string;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -151,6 +154,8 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
         beat_ids: c.beat_ids ?? [],
         latitude: c.latitude ?? null,
         longitude: c.longitude ?? null,
+        credit_hold_mode: c.credit_hold_mode ?? null,
+        credit_hold_notes: c.credit_hold_notes ?? '',
       }));
     }
   } catch {}
@@ -238,6 +243,8 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   beat_ids: [],
   latitude: null,
   longitude: null,
+  credit_hold_mode: null,
+  credit_hold_notes: '',
 };
 
 // ─── Panel Component ──────────────────────────────────────────
