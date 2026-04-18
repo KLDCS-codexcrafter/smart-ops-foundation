@@ -594,6 +594,11 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_total_commission)}</TableCell>
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.amount_received_to_date)}</TableCell>
                         <TableCell className="text-xs text-right font-mono">{inrFmt.format(e.net_paid_to_date)}</TableCell>
+                        <TableCell className="text-xs text-right font-mono text-amber-600">
+                          {(e.collection_bonus_amount ?? 0) > 0
+                            ? inrFmt.format(e.collection_bonus_amount ?? 0)
+                            : '—'}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={cn('text-[10px] capitalize', STATUS_COLOR[e.status])}>
                             {e.status}
