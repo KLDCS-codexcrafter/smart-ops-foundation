@@ -22,7 +22,7 @@ import {
 import {
   MapPin, LogIn, LogOut, CheckCircle2, AlertTriangle, Search, Navigation,
 } from 'lucide-react';
-import { onEnterNext } from '@/lib/keyboard';
+import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
   type VisitLog, type VisitOutcome, type VisitPurpose, type GeoPoint,
   visitLogsKey, VISIT_OUTCOME_LABELS, VISIT_PURPOSE_LABELS,
@@ -252,13 +252,22 @@ export function VisitTrackingPanel({ entityCode }: Props) {
     toast.success('Checked-out');
   }, [activeVisit, outcome, notes, orderValue, visits, entityCode]);
 
+  useCtrlS(() => {
+    if (activeVisit && !activeVisit.check_out_time) {
+      handleCheckOut();
+    }
+  });
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
       <Card className="border-orange-500/20">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-3 sticky top-0 z-10 bg-background md:static">
           <CardTitle className="text-base flex items-center gap-2">
             <Navigation className="h-4 w-4 text-orange-500" />
             Visit Tracking
+            <span className="ml-auto text-[11px] font-mono text-muted-foreground">
+              {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -345,9 +354,10 @@ export function VisitTrackingPanel({ entityCode }: Props) {
 
                 <div className="flex items-end">
                   <Button
+                    data-primary
                     onClick={handleCheckIn}
                     disabled={checkingIn || !activeSalesmanId || !selectedCustomerId}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                    className="w-full h-12 md:h-10 bg-orange-500 hover:bg-orange-600 text-white"
                   >
                     <LogIn className="h-3.5 w-3.5 mr-1" />
                     {checkingIn ? 'Capturing GPS...' : 'Check-In'}
@@ -420,10 +430,11 @@ export function VisitTrackingPanel({ entityCode }: Props) {
 
               <div className="flex justify-end">
                 <Button
+                  data-primary
                   onClick={handleCheckOut}
                   disabled={checkingIn}
                   variant="outline"
-                  className="border-orange-500 text-orange-700"
+                  className="w-full md:w-auto h-12 md:h-10 border-orange-500 text-orange-700"
                 >
                   <LogOut className="h-3.5 w-3.5 mr-1" />
                   {checkingIn ? 'Capturing GPS...' : 'Check-Out & Save'}
