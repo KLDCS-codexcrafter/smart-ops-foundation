@@ -144,6 +144,14 @@ const DistributorHub = lazy(() => import('./pages/erp/distributor/DistributorHub
 const DistributorBroadcast = lazy(() => import('./pages/erp/salesx/DistributorBroadcast'));
 const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
 const DistributorIntimationQueue = lazy(() => import('./pages/erp/finecore/DistributorIntimationQueue'));
+// Sprint 11a — hierarchy, CRM, credit, disputes
+const DistributorHierarchyMaster = lazy(() => import('./pages/erp/distributor/DistributorHierarchyMaster'));
+const DistributorDownstreamView = lazy(() => import('./pages/erp/distributor/DistributorDownstreamView'));
+const DistributorCRM = lazy(() => import('./pages/erp/distributor/DistributorCRM'));
+const DistributorVisitCapture = lazy(() => import('./pages/erp/distributor/DistributorVisitCapture'));
+const DistributorCreditRequest = lazy(() => import('./pages/erp/distributor/DistributorCreditRequest'));
+const CreditApprovalQueue = lazy(() => import('./pages/erp/distributor/CreditApprovalQueue'));
+const DistributorDisputeQueue = lazy(() => import('./pages/erp/distributor/DistributorDisputeQueue'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
@@ -341,6 +349,14 @@ const App = () => (
               <Route path="/erp/distributor/updates" element={<DistributorUpdates />} />
               <Route path="/erp/salesx/distributor-broadcast" element={<P><DistributorBroadcast /></P>} />
               <Route path="/erp/finecore/distributor-intimations" element={<P><DistributorIntimationQueue /></P>} />
+              {/* Sprint 11a — hierarchy, CRM, credit, disputes */}
+              <Route path="/erp/distributor/hierarchy" element={<P><DistributorHierarchyMaster /></P>} />
+              <Route path="/erp/distributor/downstream" element={<DistributorDownstreamView />} />
+              <Route path="/erp/distributor/crm" element={<DistributorCRM />} />
+              <Route path="/erp/distributor/visits/new" element={<DistributorVisitCapture />} />
+              <Route path="/erp/distributor/credit-request" element={<DistributorCreditRequest />} />
+              <Route path="/erp/distributor-hub/credit-approvals" element={<P><CreditApprovalQueue /></P>} />
+              <Route path="/erp/distributor-hub/disputes" element={<P><DistributorDisputeQueue /></P>} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />

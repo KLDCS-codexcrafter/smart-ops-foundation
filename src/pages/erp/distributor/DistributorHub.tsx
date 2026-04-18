@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users2, FileCheck, Megaphone, Layers, BarChart3, UserPlus,
   ArrowRight, IndianRupee, ShoppingBag, Palette, Copy, Save,
+  Network, TrendingUp, AlertOctagon,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -112,8 +113,18 @@ export default function DistributorHub() {
     { title: 'Catalog Layers', icon: Layers,
       description: 'Manage tier-priced item lists for distributors',
       route: '/erp/inventory-hub/price-lists' },
+    // Sprint 11a — hierarchy, credit, disputes
+    { title: 'Distribution Hierarchy', icon: Network,
+      description: 'Super Stockist → Distributor → Sub-Dealer → Retailer tree',
+      route: '/erp/distributor/hierarchy' },
+    { title: 'Credit Approvals', icon: TrendingUp,
+      description: 'Review credit-limit increase requests from distributors',
+      route: '/erp/distributor-hub/credit-approvals' },
+    { title: 'Dispute Queue', icon: AlertOctagon,
+      description: 'Short supply, damage and rate-mismatch claims',
+      route: '/erp/distributor-hub/disputes' },
     { title: 'Analytics', icon: BarChart3,
-      description: 'Distributor engagement, sentiment, mood-of-month — Sprint 11',
+      description: 'Distributor engagement, sentiment, mood-of-month — Sprint 12',
       route: '#',
       badge: 'Planned' },
   ];
