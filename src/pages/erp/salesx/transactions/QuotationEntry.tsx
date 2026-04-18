@@ -43,7 +43,10 @@ const STAGE_COLOR: Record<QuotationStage, string> = {
 };
 
 function loadCustomers(): Array<{ id: string; partyName: string }> {
-  try { return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]'); }
+  try {
+    // [JWT] GET /api/masters/customers
+    return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
+  }
   catch { return []; }
 }
 
