@@ -2,6 +2,10 @@
  * receivx.ts — ReceivX data model
  * [JWT] GET/POST/PUT/DELETE /api/receivx/*
  */
+import type { GatewayProvider, GatewayCredentials } from './payment-gateway';
+import type { CreditHoldMode } from './credit-hold';
+import type { DunningTemplate } from './dunning';
+import { DEFAULT_DUNNING_TEMPLATES } from './dunning';
 
 // ── OutstandingTask ─────────────────────────────────────────────
 export type TaskStatus =
@@ -215,8 +219,37 @@ export interface ReceivXConfig {
   // Credit risk thresholds:
   bad_debtor_age_days: number;
   credit_hold_ratio: number;
+  // ── Sprint 8 — Payment Gateway ──────────────────────────────
+  gateway_provider: GatewayProvider;
+  gateway_credentials: GatewayCredentials;
+  gateway_test_mode: boolean;
+  gateway_link_expiry_days: number;
+  // ── Sprint 8 — Credit Hold ──────────────────────────────────
+  credit_hold_mode: CreditHoldMode;             // entity default
+  credit_hold_block_on: ('sales_order' | 'sales_invoice')[];
+  credit_hold_require_supervisor: boolean;
+  // ── Sprint 8 — Dunning ──────────────────────────────────────
+  dunning_enabled: boolean;
+  dunning_templates: DunningTemplate[];
   created_at: string;
   updated_at: string;
 }
 
 export const receivxConfigKey = (e: string) => `erp_receivx_config_${e}`;
+
+/** Sprint 8 — defaults for the new ReceivXConfig fields. */
+export const RECEIVX_CONFIG_SPRINT8_DEFAULTS = {
+  gateway_provider: 'razorpay' as GatewayProvider,
+  gateway_credentials: {
+    provider: 'razorpay' as GatewayProvider,
+    key_id: '', key_secret: '', webhook_secret: '',
+    is_test_mode: true, merchant_vpa: null, merchant_name: null,
+  } as GatewayCredentials,
+  gateway_test_mode: true,
+  gateway_link_expiry_days: 7,
+  credit_hold_mode: 'soft_warn' as CreditHoldMode,
+  credit_hold_block_on: ['sales_invoice'] as ('sales_order' | 'sales_invoice')[],
+  credit_hold_require_supervisor: true,
+  dunning_enabled: true,
+  dunning_templates: DEFAULT_DUNNING_TEMPLATES,
+};
