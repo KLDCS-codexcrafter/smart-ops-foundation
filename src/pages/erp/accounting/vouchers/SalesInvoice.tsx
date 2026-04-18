@@ -4,7 +4,7 @@
  * Sprint 3 SalesX: SAM assignment + commission preview + commission-on-receipt register booking
  * [JWT] All storage via finecore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -48,6 +48,8 @@ import type { SAMPerson } from '@/types/sam-person';
 import { samPersonsKey } from '@/types/sam-person';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { resolveCustomerAddress } from '@/lib/customer-address-lookup';
+import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 
 interface CustomerRow {
   id: string;
@@ -278,6 +280,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
       const now = new Date().toISOString();
+      // Audit fix #3+#8: resolve real customer address + persist state codes
+      const cust = customers.find(c => c.id === customerId) ?? null;
+      const resolved = resolveCustomerAddress(customerId, partyName, placeOfSupply);
+      const customerGstinValue = (() => {
+        try {
+          const raw = localStorage.getItem('erp_group_customer_master');
+          const list: Array<{ id: string; gstin?: string }> = raw ? JSON.parse(raw) : [];
+          return list.find(x => x.id === customerId)?.gstin ?? '';
+        } catch { return ''; }
+      })();
       const voucher: Voucher = {
         id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
         voucher_type_name: 'Sales Invoice', base_voucher_type: 'Sales',
@@ -293,6 +305,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
         so_ref: againstSO ? openSOs.find(s => s.id === againstSO)?.order_no : undefined,
+        party_id: cust?.id,
+        party_gstin: customerGstinValue || undefined,
+        party_state_code: resolved.state_code || placeOfSupply || undefined,
+        customer_state_code: resolved.state_code || placeOfSupply || undefined,
+        place_of_supply: placeOfSupply || resolved.state_code || undefined,
         sam_salesman_id: samSalesmanId,
         sam_salesman_name: samSalesmanName,
         sam_agent_id: samAgentId,
@@ -521,17 +538,20 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setIrnBusy(true);
     try {
       const { buildIRNPayload, generateIRN } = await import('@/lib/irn-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { irnRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityCode };
       const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
       const v = allV.find(x => x.id === postedVoucherId);
       if (!v) { toast.error('Voucher not found'); return; }
+      // Audit fix #3: real customer address
+      const resolved = resolveCustomerAddress(v.party_id ?? null, v.party_name ?? null,
+        v.customer_state_code ?? v.party_state_code ?? null);
       const payload = buildIRNPayload(
         v, gst.gstin, gst.legal_name, gst.address_line_1, gst.city, gst.pincode, gst.state_code,
-        v.party_gstin ?? '', v.party_name ?? '', v.party_name ?? '', '', '',
-        v.customer_state_code ?? v.party_state_code ?? '',
+        v.party_gstin ?? '', resolved.legal_name || v.party_name || '', resolved.full_address || 'NA',
+        resolved.city, resolved.pincode,
+        resolved.state_code || v.customer_state_code || v.party_state_code || '',
       );
       const rec = await generateIRN(payload, {
         username: gst.irp_username, password: gst.irp_password,
@@ -561,7 +581,6 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setIrnBusy(true);
     try {
       const { cancelIRN } = await import('@/lib/irn-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { irnRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
@@ -585,20 +604,22 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setEwbBusy(true);
     try {
       const { buildEWBPayload, generateEWB } = await import('@/lib/ewb-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { ewbRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
       const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
       const v = allV.find(x => x.id === postedVoucherId);
       if (!v) return;
+      // Audit fix #3: real customer address (not party_name)
+      const resolved = resolveCustomerAddress(v.party_id ?? null, v.party_name ?? null,
+        v.customer_state_code ?? v.party_state_code ?? null);
       const ctx = {
         voucher: v, irn: currentIrn,
         supplier_gstin: gst.gstin, supplier_state_code: gst.state_code,
         supplier_address: gst.address_line_1,
         customer_gstin: v.party_gstin ?? '',
-        customer_state_code: v.customer_state_code ?? v.party_state_code ?? '',
-        customer_address: v.party_name ?? '',
+        customer_state_code: resolved.state_code || v.customer_state_code || v.party_state_code || '',
+        customer_address: resolved.full_address || 'NA',
         transporter_id: null, transporter_name: ewbTransporter || null,
         vehicle_no: ewbVehicleNo || null, vehicle_type: 'regular' as const,
         transport_mode: 'road' as const, transport_distance_km: ewbDistanceKm,
@@ -626,6 +647,32 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     if (!postedVoucherId) return;
     window.open(`/erp/finecore/invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`, '_blank');
   }, [postedVoucherId, entityCode]);
+
+  // ── Audit fix #1+#2: auto-generate IRN on post + auto-EWB above threshold ──
+  const autoFiredFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!postedVoucherId || autoFiredFor.current === postedVoucherId) return;
+    autoFiredFor.current = postedVoucherId;
+    try {
+      const gstRaw = localStorage.getItem(entityGstKey(entityCode));
+      const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : DEFAULT_ENTITY_GST_CONFIG;
+      const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
+      const v = allV.find(x => x.id === postedVoucherId);
+      if (!v) return;
+      // Auto IRN
+      if (gst.irp_api_enabled && gst.auto_generate_irn_on_post) {
+        toast.info('Auto-generating IRN as per Comply360 setting…');
+        void handleGenerateIRN();
+      }
+      // Auto EWB threshold check
+      if (gst.ewb_api_enabled && gst.auto_generate_ewb_above > 0
+        && v.net_amount > gst.auto_generate_ewb_above
+        && (v.customer_state_code ?? v.party_state_code) !== gst.state_code) {
+        toast.info(`Invoice exceeds ₹${gst.auto_generate_ewb_above.toLocaleString('en-IN')} interstate threshold — opening E-Way Bill dialog`);
+        setEwbDialogOpen(true);
+      }
+    } catch { /* noop */ }
+  }, [postedVoucherId, entityCode, handleGenerateIRN]);
 
   const showSamPanel = !!samCfg?.enableSalesActivityModule && (
     !!samSalesmanId || !!samAgentId || !!samCfg.enableCompanySalesMan || !!samCfg.enableAgentModule
@@ -917,7 +964,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
             </div>
             {irnAckDate && (
               <div className="text-[10px] text-muted-foreground">
-                Acknowledged at {irnAckDate.slice(0, 19).replace('T', ' ')} IST
+                Acknowledged at {(() => {
+                  const d = new Date(irnAckDate);
+                  if (Number.isNaN(d.getTime())) return irnAckDate;
+                  const ist = new Date(d.getTime() + 330 * 60 * 1000);
+                  const day = String(ist.getUTCDate()).padStart(2, '0');
+                  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                  const hh = String(ist.getUTCHours()).padStart(2, '0');
+                  const mm = String(ist.getUTCMinutes()).padStart(2, '0');
+                  return `${day} ${months[ist.getUTCMonth()]} ${ist.getUTCFullYear()} ${hh}:${mm} IST`;
+                })()}
               </div>
             )}
           </CardContent>

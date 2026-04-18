@@ -15,6 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -64,6 +65,7 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
   const [statusFilter, setStatusFilter] = useState<'all' | EWBRecord['status']>('all');
   const [cancelTarget, setCancelTarget] = useState<EWBRecord | null>(null);
   const [cancelReason, setCancelReason] = useState('1');
+  const [cancelRemarks, setCancelRemarks] = useState('');
   const [extendTarget, setExtendTarget] = useState<EWBRecord | null>(null);
   const [extendReason, setExtendReason] = useState('1');
   const [extendKm, setExtendKm] = useState<number>(50);
@@ -128,15 +130,21 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
 
   const submitCancel = useCallback(async () => {
     if (!cancelTarget?.ewb_no) return;
+    // Audit fix #6: mandatory user remarks
+    if (cancelRemarks.trim().length < 10) {
+      toast.error('Cancellation remarks must be at least 10 characters');
+      return;
+    }
     setBusy(true);
     try {
-      const patch = await cancelEWB(cancelTarget.ewb_no, cancelReason, 'Cancelled from register', credentials);
+      const patch = await cancelEWB(cancelTarget.ewb_no, cancelReason, cancelRemarks.trim(), credentials);
       const next = records.map(r => r.id === cancelTarget.id ? { ...r, ...patch } as EWBRecord : r);
       persist(next);
       toast.success('E-Way Bill cancelled');
       setCancelTarget(null);
+      setCancelRemarks('');
     } finally { setBusy(false); }
-  }, [cancelTarget, cancelReason, credentials, records, persist]);
+  }, [cancelTarget, cancelReason, cancelRemarks, credentials, records, persist]);
 
   const submitExtend = useCallback(async () => {
     if (!extendTarget?.ewb_no) return;
@@ -284,7 +292,7 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
                           {r.status === 'generated' && isWithinCancelWindow(r) && (
                             <Button
                               variant="outline" size="sm"
-                              onClick={() => { setCancelTarget(r); setCancelReason('1'); }}
+                              onClick={() => { setCancelTarget(r); setCancelReason('1'); setCancelRemarks(''); }}
                               className="h-7 text-[10px] text-destructive"
                             >
                               <X className="h-3 w-3 mr-1" /> Cancel
@@ -310,20 +318,33 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
               Cancellation allowed within {EWB_CANCELLATION_WINDOW_HOURS} hours of generation.
             </DialogDescription>
           </DialogHeader>
-          <div>
-            <Label className="text-xs">Reason</Label>
-            <Select value={cancelReason} onValueChange={setCancelReason}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {EWB_CANCEL_REASONS.map(r => (
-                  <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Reason</Label>
+              <Select value={cancelReason} onValueChange={setCancelReason}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {EWB_CANCEL_REASONS.map(r => (
+                    <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Remarks (min 10 chars)</Label>
+              <Textarea
+                rows={3}
+                value={cancelRemarks}
+                onChange={e => setCancelRemarks(e.target.value)}
+                placeholder="Reason for cancellation, audited per NIC"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">{cancelRemarks.trim().length}/10</p>
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelTarget(null)}>Close</Button>
-            <Button data-primary variant="destructive" onClick={submitCancel} disabled={busy}>
+            <Button variant="outline" onClick={() => { setCancelTarget(null); setCancelRemarks(''); }}>Close</Button>
+            <Button data-primary variant="destructive" onClick={submitCancel}
+              disabled={busy || cancelRemarks.trim().length < 10}>
               Cancel EWB
             </Button>
           </DialogFooter>
