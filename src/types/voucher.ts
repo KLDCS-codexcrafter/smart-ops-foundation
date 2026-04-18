@@ -143,7 +143,17 @@ export interface Voucher {
   transporter?: string;
   ewb_no?: string;
   irn?: string;
-  irn_status?: 'pending' | 'generated' | 'cancelled';
+  irn_status?: 'pending' | 'generated' | 'cancelled' | 'failed';
+  // Sprint 9 — IRN signed payload + EWB linkage
+  irn_ack_no?: string;
+  irn_ack_date?: string;
+  irn_signed_qr?: string;
+  ewb_status?: 'not_required' | 'pending' | 'generated' | 'expired' | 'extended' | 'cancelled';
+  ewb_valid_until?: string;
+  // Supplier/customer state for IRN engine + interstate detection
+  supplier_gstin?: string;
+  supplier_state_code?: string;
+  customer_state_code?: string;
   from_ledger_name?: string;
   to_ledger_name?: string;
   party_registration_type?: string;
