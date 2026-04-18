@@ -7,16 +7,29 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, Search, IndianRupee, Truck, ExternalLink, Download,
-  ChevronDown, ChevronRight, Sparkles,
+  ChevronDown, ChevronRight, Sparkles, AlertOctagon,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { toast } from 'sonner';
 import { getDistributorSession, scopeQueryToDistributor } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { InventoryItem } from '@/types/inventory-item';
+import {
+  disputesKey, DISPUTE_REASON_LABELS,
+  type DisputeReason, type InvoiceDispute,
+} from '@/types/invoice-dispute';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
