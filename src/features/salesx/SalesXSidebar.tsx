@@ -244,7 +244,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           </CollapsibleTrigger>
           <CollapsibleContent>
             <SidebarMenu className="px-1 space-y-0.5">
-              {reportItems.map(item => btn(item.id, item.label, item.icon, true))}
+              {reportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
             </SidebarMenu>
           </CollapsibleContent>
         </Collapsible>
