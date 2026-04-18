@@ -17,10 +17,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee } from 'lucide-react';
+import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee, FileText, Truck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityList } from '@/hooks/useEntityList';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import {
+  type EntityGSTConfig, DEFAULT_ENTITY_GST_CONFIG, GSP_PROVIDER_LABELS,
+  entityGstKey, type GSPProvider,
+} from '@/types/entity-gst';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
@@ -335,6 +339,8 @@ export const comply360OutstandingKey = (e: string) => `erp_comply360_outstanding
 // ─── Section Navigation ──────────────────────────────────────────────
 
 const SECTIONS = [
+  { id: 'gst-entity', label: 'Entity GST', toggle: 'enableAdvancedGST' as keyof GroupConfig },
+  { id: 'irn-ewb', label: 'IRN / E-Way Bill', toggle: 'enableAdvancedGST' as keyof GroupConfig },
   { id: 'rcm', label: 'RCM ledgers', toggle: 'enableAutoRCM' as keyof GroupConfig },
   { id: 'tdsp', label: 'TDS payable', toggle: 'enableAutoTDSPayable' as keyof GroupConfig },
   { id: 'tdsr', label: 'TDS receivable', toggle: 'enableAutoTDSReceivable' as keyof GroupConfig },
@@ -388,8 +394,9 @@ export function Comply360ConfigPanel() {
   const [waConfig, setWaConfig] = useState<WhatsAppConfig>(DEFAULT_WA);
   const [settlementConfig, setSettlementConfig] = useState<SettlementConfig>(DEFAULT_SETTLEMENT);
   const [outstandingConfig, setOutstandingConfig] = useState<OutstandingConfig>(DEFAULT_OUTSTANDING);
+  const [entityGst, setEntityGst] = useState<EntityGSTConfig>(DEFAULT_ENTITY_GST_CONFIG);
 
-  const [activeSection, setActiveSection] = useState('rcm');
+  const [activeSection, setActiveSection] = useState('gst-entity');
 
   // Entity change effect — reload all 7 entity-specific configs
   useEffect(() => {
@@ -405,6 +412,7 @@ export function Comply360ConfigPanel() {
     setWaConfig(loadOrDefault(comply360WAKey(entityId), DEFAULT_WA));
     setSettlementConfig(loadOrDefault(comply360SettlementKey(entityId), DEFAULT_SETTLEMENT));
     setOutstandingConfig(loadOrDefault(comply360OutstandingKey(entityId), DEFAULT_OUTSTANDING));
+    setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
