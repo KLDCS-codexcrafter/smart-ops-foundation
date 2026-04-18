@@ -278,6 +278,17 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
       const now = new Date().toISOString();
+      // Audit fix #3+#8: resolve real customer address + persist state codes
+      const { resolveCustomerAddress } = await import('@/lib/customer-address-lookup');
+      const cust = customers.find(c => c.id === customerId) ?? null;
+      const resolved = resolveCustomerAddress(customerId, partyName, placeOfSupply);
+      const customerGstinValue = (() => {
+        try {
+          const raw = localStorage.getItem('erp_group_customer_master');
+          const list: Array<{ id: string; gstin?: string }> = raw ? JSON.parse(raw) : [];
+          return list.find(x => x.id === customerId)?.gstin ?? '';
+        } catch { return ''; }
+      })();
       const voucher: Voucher = {
         id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
         voucher_type_name: 'Sales Invoice', base_voucher_type: 'Sales',
@@ -293,6 +304,11 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         created_by: 'current-user', created_at: now, updated_at: now,
         invoice_mode: invoiceMode,
         so_ref: againstSO ? openSOs.find(s => s.id === againstSO)?.order_no : undefined,
+        party_id: cust?.id,
+        party_gstin: customerGstinValue || undefined,
+        party_state_code: resolved.state_code || placeOfSupply || undefined,
+        customer_state_code: resolved.state_code || placeOfSupply || undefined,
+        place_of_supply: placeOfSupply || resolved.state_code || undefined,
         sam_salesman_id: samSalesmanId,
         sam_salesman_name: samSalesmanName,
         sam_agent_id: samAgentId,
