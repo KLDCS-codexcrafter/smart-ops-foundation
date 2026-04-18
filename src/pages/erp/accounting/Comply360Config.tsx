@@ -219,6 +219,7 @@ export interface SAMConfig {
   // Card 5 — Voucher Scope (purchase excluded by design)
   enableInSalesOrder: boolean;
   enableInDeliveryNote: boolean;
+  enableCommissionOnDeliveryNote: boolean; // book CommissionEntry at DN stage
   // Card 6 — Security
   hideCommissionInTransaction: boolean;
   slsmMandatoryOutward: boolean;
@@ -271,7 +272,7 @@ const DEFAULT_SAM: SAMConfig = {
   enableCRM: false, crmType: null, pipelineType: null, enableTelecalling: false,
   enableAgentModule: false, enableReceiver: false,
   commissionRateMethod: 'all_items', enableHierarchyMaster: false,
-  enableInSalesOrder: false, enableInDeliveryNote: false,
+  enableInSalesOrder: false, enableInDeliveryNote: false, enableCommissionOnDeliveryNote: false,
   hideCommissionInTransaction: false, slsmMandatoryOutward: false,
   slsmMandatoryInward: false, receiverMandatory: false,
   printAgentNameOnInvoice: false, agentPrintTitle: '',
@@ -1151,6 +1152,21 @@ export function Comply360ConfigPanel() {
             onCheckedChange={v => update('enableInDeliveryNote', v)}
           />
         </div>
+        {samConfig.enableInDeliveryNote && (
+          <div className="flex items-center justify-between pl-4">
+            <div className="space-y-1">
+              <Label className="text-sm">Book commission at Delivery Note</Label>
+              <p className="text-xs text-muted-foreground">
+                Creates pending CommissionEntry on DN post.
+                Sales Invoice will skip re-booking if DN commission exists.
+              </p>
+            </div>
+            <Switch
+              checked={samConfig.enableCommissionOnDeliveryNote}
+              onCheckedChange={v => update('enableCommissionOnDeliveryNote', v)}
+            />
+          </div>
+        )}
 
         {/* ─── Card 6: Security ─── */}
         <Separator />
