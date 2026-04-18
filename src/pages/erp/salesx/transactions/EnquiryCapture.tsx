@@ -17,6 +17,7 @@ import { Plus, Save, Trash2, ArrowLeft, Search, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
+import { useEnquirySources } from '@/hooks/useEnquirySources';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
@@ -140,6 +141,7 @@ const blankFollowUp = (): Omit<EnquiryFollowUp, 'id' | 'user_name'> => ({
 export function EnquiryCapturePanel({ entityCode }: Props) {
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
   const { enquiries, createEnquiry, updateEnquiry, addFollowUp } = useEnquiries(entityCode);
+  const { sources: enquirySources } = useEnquirySources(entityCode);
   const { findByCompanyName } = useProspects(entityCode);
 
   const samPersons = useMemo(() => loadSAMPersons(entityCode), [entityCode]);
@@ -540,12 +542,34 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
                 </div>
                 <div>
                   <label className="text-xs font-medium">Source</label>
-                  <Input
-                    value={form.enquiry_source_name ?? ''}
-                    onChange={e => update({ enquiry_source_name: e.target.value })}
-                    onKeyDown={onEnterNext}
-                    placeholder="Web / Referral / Walk-in"
-                  />
+                  <Select
+                    value={form.enquiry_source_id ?? ''}
+                    onValueChange={v => {
+                      const s = enquirySources.find(x => x.id === v);
+                      update({
+                        enquiry_source_id: v || null,
+                        enquiry_source_name: s?.source_name ?? null,
+                      });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={
+                        enquirySources.length === 0
+                          ? 'No sources — add in master'
+                          : 'Select source'
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {enquirySources.length === 0 && (
+                        <SelectItem value="none" disabled>No enquiry sources configured</SelectItem>
+                      )}
+                      {enquirySources.filter(s => s.is_active).map(s => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.source_name} ({s.source_code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <label className="text-xs font-medium">Campaign</label>
