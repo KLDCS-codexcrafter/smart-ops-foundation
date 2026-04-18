@@ -1,7 +1,7 @@
 /**
  * DistributorDashboard.tsx — Distributor home: credit, monthly target, activity.
  * Sprint 10. Indigo-600 accent. Reads partner from localStorage scoped by session.
- * [JWT] Replace localStorage with GET /api/partner/dashboard.
+ * [JWT] Replace localStorage with GET /api/erp/distributor/dashboard.
  */
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -27,15 +27,15 @@ export default function DistributorDashboard() {
   const navigate = useNavigate();
   const session = getDistributorSession();
 
-  const partner = useMemo(() => {
+  const distributor = useMemo(() => {
     if (!session) return null;
-    return loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null;
+    return loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null;
   }, [session]);
 
   const activity = useMemo<DistributorActivity[]>(() => {
     if (!session) return [];
     const all = ls<DistributorActivity>(distributorActivityKey(session.entity_code));
-    return all.filter(a => a.partner_id === session.partner_id)
+    return all.filter(a => a.partner_id === session.distributor_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 8);
   }, [session]);
 
@@ -49,33 +49,33 @@ export default function DistributorDashboard() {
     );
   }
 
-  const creditUsedPct = partner.credit_limit_paise > 0
-    ? Math.min(100, Math.round((partner.outstanding_paise / partner.credit_limit_paise) * 100))
+  const creditUsedPct = distributor.credit_limit_paise > 0
+    ? Math.min(100, Math.round((distributor.outstanding_paise / distributor.credit_limit_paise) * 100))
     : 0;
-  const targetPct = partner.monthly_target_paise > 0
-    ? Math.min(100, Math.round((partner.monthly_achieved_paise / partner.monthly_target_paise) * 100))
+  const targetPct = distributor.monthly_target_paise > 0
+    ? Math.min(100, Math.round((distributor.monthly_achieved_paise / distributor.monthly_target_paise) * 100))
     : 0;
-  const available = Math.max(0, partner.credit_limit_paise - partner.outstanding_paise);
-  const overdue = partner.overdue_paise;
+  const available = Math.max(0, distributor.credit_limit_paise - distributor.outstanding_paise);
+  const overdue = distributor.overdue_paise;
 
   const kpis = [
     { label: 'Available Credit', value: formatINR(available), icon: CircleDollarSign, accent: 'hsl(142 71% 45%)' },
-    { label: 'Outstanding', value: formatINR(partner.outstanding_paise), icon: IndianRupee, accent: INDIGO },
+    { label: 'Outstanding', value: formatINR(distributor.outstanding_paise), icon: IndianRupee, accent: INDIGO },
     { label: 'Overdue', value: formatINR(overdue), icon: AlertTriangle, accent: overdue > 0 ? 'hsl(0 72% 51%)' : 'hsl(215 16% 47%)' },
-    { label: 'MTD Achieved', value: formatINR(partner.monthly_achieved_paise), icon: TrendingUp, accent: 'hsl(38 92% 50%)' },
+    { label: 'MTD Achieved', value: formatINR(distributor.monthly_achieved_paise), icon: TrendingUp, accent: 'hsl(38 92% 50%)' },
   ];
 
   const quickActions = [
-    { label: 'Browse Catalog', icon: Package, url: '/partner/catalog' },
-    { label: 'View Cart', icon: ShoppingCart, url: '/partner/cart' },
-    { label: 'My Invoices', icon: FileText, url: '/partner/invoices' },
-    { label: 'Pay Now', icon: IndianRupee, url: '/partner/payments' },
+    { label: 'Browse Catalog', icon: Package, url: '/erp/distributor/catalog' },
+    { label: 'View Cart', icon: ShoppingCart, url: '/erp/distributor/cart' },
+    { label: 'My Invoices', icon: FileText, url: '/erp/distributor/invoices' },
+    { label: 'Pay Now', icon: IndianRupee, url: '/erp/distributor/payments' },
   ];
 
   return (
     <DistributorLayout
-      title={`Welcome, ${partner.legal_name.split(' ')[0]}`}
-      subtitle={`${partner.partner_code} • ${session.entity_code}`}
+      title={`Welcome, ${distributor.legal_name.split(' ')[0]}`}
+      subtitle={`${distributor.partner_code} • ${session.entity_code}`}
     >
       <div className="space-y-6 animate-fade-in">
         {/* KPI grid */}
@@ -110,7 +110,7 @@ export default function DistributorDashboard() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <p className="text-muted-foreground">Limit</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.credit_limit_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.credit_limit_paise)}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Available</p>
@@ -133,11 +133,11 @@ export default function DistributorDashboard() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <p className="text-muted-foreground">Target</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.monthly_target_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.monthly_target_paise)}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Achieved</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.monthly_achieved_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.monthly_achieved_paise)}</p>
               </div>
             </div>
           </div>

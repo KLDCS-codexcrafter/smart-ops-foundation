@@ -1,7 +1,7 @@
 /**
  * DistributorInvoices.tsx — Distributor's own SI list with EWB tracking + pay link.
- * Sprint 10. Scopes vouchers to partner.customer_id via scopeQueryToDistributor.
- * [JWT] GET /api/partner/invoices
+ * Sprint 10. Scopes vouchers to distributor.customer_id via scopeQueryToDistributor.
+ * [JWT] GET /api/erp/distributor/invoices
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -83,7 +83,7 @@ export default function DistributorInvoices() {
             ))}
           </div>
           <Button
-            onClick={() => navigate('/partner/payments')}
+            onClick={() => navigate('/erp/distributor/payments')}
             className="rounded-lg gap-2"
             style={{ background: INDIGO, color: 'white' }}
           >

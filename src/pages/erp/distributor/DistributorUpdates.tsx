@@ -22,8 +22,8 @@ export function DistributorUpdatesPanel() { return <DistributorUpdates />; }
 
 export default function DistributorUpdates() {
   const session = getDistributorSession();
-  const partner = session
-    ? loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null
+  const distributor = session
+    ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
 
   const broadcasts = useMemo<BroadcastMessage[]>(() => {
@@ -33,12 +33,12 @@ export default function DistributorUpdates() {
       .filter(b => b.status === 'sent')
       .filter(b => {
         if (b.audience.kind === 'all_partners') return true;
-        if (b.audience.kind === 'tier') return b.audience.tier === partner.tier;
-        if (b.audience.kind === 'partner_ids') return b.audience.ids.includes(partner.id);
+        if (b.audience.kind === 'tier') return b.audience.tier === distributor.tier;
+        if (b.audience.kind === 'partner_ids') return b.audience.ids.includes(distributor.id);
         return false;
       })
       .sort((a, b) => (b.sent_at ?? '').localeCompare(a.sent_at ?? ''));
-  }, [session, partner]);
+  }, [session, distributor]);
 
   if (!session || !partner) {
     return <DistributorLayout title="Updates"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;

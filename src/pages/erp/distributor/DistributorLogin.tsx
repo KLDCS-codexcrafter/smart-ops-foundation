@@ -6,7 +6,7 @@
  *
  * [JWT] On submit, calls partner-auth-engine.verifyDistributorCredential
  * (mocked to localStorage) → issueDistributorToken → persistDistributorSession.
- * Redirects to /partner/dashboard.
+ * Redirects to /erp/distributor/dashboard.
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,11 +51,11 @@ export function DistributorLoginPanel() {
       toast.error(res.error);
       return;
     }
-    const token = issueDistributorToken(res.partner, res.entityCode);
-    const session = createDistributorSession(res.partner, token, res.entityCode);
+    const token = issueDistributorToken(res.distributor, res.entityCode);
+    const session = createDistributorSession(res.distributor, token, res.entityCode);
     persistDistributorSession(session);
-    toast.success(`Welcome, ${res.partner.legal_name}`);
-    navigate('/partner/dashboard');
+    toast.success(`Welcome, ${res.distributor.legal_name}`);
+    navigate('/erp/distributor/dashboard');
   };
 
   return (

@@ -45,7 +45,7 @@ export interface Distributor {
  */
 export interface DistributorSession {
   token: string;
-  partner_id: string;
+  distributor_id: string;
   customer_id: string;
   legal_name: string;
   partner_code: string;
@@ -70,7 +70,7 @@ export type DistributorActivityKind =
 
 export interface DistributorActivity {
   id: string;
-  partner_id: string;
+  distributor_id: string;
   kind: DistributorActivityKind;
   title: string;
   detail: string;

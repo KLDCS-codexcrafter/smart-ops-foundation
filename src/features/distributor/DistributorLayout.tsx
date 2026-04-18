@@ -1,7 +1,7 @@
 /**
  * DistributorLayout.tsx — Distributor portal shell.
  * Sprint 10. Indigo-600 accent. Wraps all /partner/* pages.
- * Separate auth boundary: redirects to /partner/login when no session.
+ * Separate auth boundary: redirects to /erp/distributor/login when no session.
  */
 import { useState } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
@@ -16,12 +16,12 @@ import { getDistributorSession, clearDistributorSession } from '@/lib/distributo
 import { toast } from 'sonner';
 
 const navItems = [
-  { title: 'Dashboard', url: '/partner/dashboard', icon: LayoutDashboard },
-  { title: 'Catalog',   url: '/partner/catalog',   icon: Package },
-  { title: 'Cart',      url: '/partner/cart',      icon: ShoppingCart },
-  { title: 'Invoices',  url: '/partner/invoices',  icon: FileText },
-  { title: 'Payments',  url: '/partner/payments',  icon: IndianRupee },
-  { title: 'Updates',   url: '/partner/updates',   icon: Megaphone },
+  { title: 'Dashboard', url: '/erp/distributor/dashboard', icon: LayoutDashboard },
+  { title: 'Catalog',   url: '/erp/distributor/catalog',   icon: Package },
+  { title: 'Cart',      url: '/erp/distributor/cart',      icon: ShoppingCart },
+  { title: 'Invoices',  url: '/erp/distributor/invoices',  icon: FileText },
+  { title: 'Payments',  url: '/erp/distributor/payments',  icon: IndianRupee },
+  { title: 'Updates',   url: '/erp/distributor/updates',   icon: Megaphone },
 ];
 
 interface DistributorLayoutProps {
@@ -36,7 +36,7 @@ export function DistributorLayout({ children, title, subtitle }: DistributorLayo
   const navigate = useNavigate();
 
   const session = getDistributorSession();
-  if (!session) return <Navigate to="/partner/login" replace />;
+  if (!session) return <Navigate to="/erp/distributor/login" replace />;
 
   const initials = session.legal_name
     .split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase() || 'PR';
@@ -44,7 +44,7 @@ export function DistributorLayout({ children, title, subtitle }: DistributorLayo
   const handleLogout = () => {
     clearDistributorSession();
     toast.success('Signed out');
-    navigate('/partner/login');
+    navigate('/erp/distributor/login');
   };
 
   const tierBadge = {

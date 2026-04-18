@@ -65,14 +65,14 @@ export default function DistributorPayments() {
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
-  const partner = session
-    ? loadDistributors(session.entity_code).find(p => p.id === session.partner_id) ?? null
+  const distributor = session
+    ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
 
   const intimations = useMemo<DistributorPaymentIntimation[]>(() => {
     if (!session) return [];
     return ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code))
-      .filter(i => i.partner_id === session.partner_id)
+      .filter(i => i.partner_id === session.distributor_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
   }, [session, refresh]);
 
@@ -98,9 +98,9 @@ export default function DistributorPayments() {
       const now = new Date().toISOString();
       const intimation: DistributorPaymentIntimation = {
         id: `pi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-        partner_id: partner.id,
-        partner_code: partner.partner_code,
-        partner_name: partner.legal_name,
+        partner_id: distributor.id,
+        partner_code: distributor.partner_code,
+        partner_name: distributor.legal_name,
         entity_code: session.entity_code,
         amount_paise: Math.round(v.amount_rupees * 100),
         mode: v.mode as IntimationMode,

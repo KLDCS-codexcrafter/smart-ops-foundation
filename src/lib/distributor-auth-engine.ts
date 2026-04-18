@@ -45,7 +45,7 @@ export async function verifyDistributorCredential(
   credential: string,
   password: string,
   entityCode: string,
-): Promise<{ partner: Distributor; entityCode: string } | { error: string }> {
+): Promise<{ distributor: Distributor; entityCode: string } | { error: string }> {
   await new Promise(r => setTimeout(r, 1200));
   if (password.length < 6) return { error: 'Invalid credentials' };
   const list = loadDistributors(entityCode);
@@ -57,7 +57,7 @@ export async function verifyDistributorCredential(
   );
   if (!found) return { error: 'Distributor not found for this entity' };
   if (found.status !== 'active') return { error: `Account ${found.status}` };
-  return { partner: found, entityCode };
+  return { distributor: found, entityCode };
 }
 
 /**
@@ -91,7 +91,7 @@ export function scopeQueryToDistributor<T extends { party_id?: string | null; cu
   session: DistributorSession,
 ): T[] {
   return rows.filter(r =>
-    r.partner_id === session.partner_id ||
+    r.partner_id === session.distributor_id ||
     r.customer_id === session.customer_id ||
     r.party_id === session.customer_id,
   );
