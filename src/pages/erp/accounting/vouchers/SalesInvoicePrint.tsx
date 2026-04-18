@@ -20,6 +20,7 @@ import {
 } from '@/lib/invoice-print-engine';
 import { vouchersKey } from '@/lib/finecore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
+import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
@@ -64,15 +65,21 @@ export default function SalesInvoicePrint() {
           supplierGst.upi_payee_name || supplierGst.legal_name,
         )
       : null;
+    // Audit fix #4: real customer address (not party_name)
+    const resolved = resolveCustomerAddress(
+      v.party_id ?? null,
+      v.party_name ?? null,
+      v.customer_state_code ?? v.party_state_code ?? null,
+    );
     const built = buildInvoicePrintPayload(
       {
         voucher: v,
         irn,
         supplierGst,
-        customerName: v.party_name ?? '',
+        customerName: resolved.legal_name || v.party_name || '',
         customerGstin: v.party_gstin ?? null,
-        customerAddress: v.party_name ?? '',
-        customerStateCode: v.customer_state_code ?? v.party_state_code ?? '',
+        customerAddress: resolved.full_address || '—',
+        customerStateCode: resolved.state_code || v.customer_state_code || v.party_state_code || '',
         paymentUpiUri: upiUri,
       },
       copyType,
