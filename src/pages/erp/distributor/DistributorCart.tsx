@@ -326,6 +326,27 @@ export default function DistributorCartPage() {
 
   return (
     <DistributorLayout title="Cart" subtitle={`${cart.lines.length} item${cart.lines.length === 1 ? '' : 's'} • saved offline`}>
+      {/* Sprint 10 Part D · Feature #10 — view tabs */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => setView('cart')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+            view === 'cart'
+              ? 'border-indigo-600 bg-indigo-600/10 text-indigo-700 dark:text-indigo-300'
+              : 'border-border/50 text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <ShoppingCart className="h-3.5 w-3.5 inline mr-1.5" />
+          Current Cart
+        </button>
+        <button
+          onClick={() => setView('templates')}
+          className={'px-3 py-1.5 text-xs font-semibold rounded-lg border border-border/50 text-muted-foreground hover:text-foreground transition-colors'}
+        >
+          <ListChecks className="h-3.5 w-3.5 inline mr-1.5" />
+          My Templates ({templates.length})
+        </button>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
         {/* Lines */}
         <div className="lg:col-span-2 space-y-3">
@@ -436,18 +457,64 @@ export default function DistributorCartPage() {
               )}
             </div>
 
-            <Button
-              onClick={() => void handleSubmit()}
-              disabled={submitting || !credit.ok}
-              className="w-full mt-4 rounded-lg gap-2"
-              style={{ background: INDIGO, color: 'white' }}
-            >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Submit Order
-            </Button>
+            {hasRolePermission(CURRENT_ROLE, 'place_order') ? (
+              <div className="mt-4 space-y-2">
+                <Button
+                  onClick={() => void handleSubmit()}
+                  disabled={submitting || !credit.ok}
+                  className="w-full rounded-lg gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Place Order
+                </Button>
+                <Button
+                  onClick={() => { setTemplateName(''); setSaveOpen(true); }}
+                  variant="outline"
+                  className="w-full rounded-lg gap-2"
+                >
+                  <BookmarkPlus className="h-4 w-4" /> Save as Template
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center mt-4 py-2">
+                Your role does not have permission to place orders.
+              </p>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Save as Template dialog */}
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save cart as template</DialogTitle>
+            <DialogDescription>
+              Reuse this list of items later from the My Templates tab.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="tpl-name" className="text-xs">Template name</Label>
+            <Input
+              id="tpl-name"
+              autoFocus
+              value={templateName}
+              onChange={e => setTemplateName(e.target.value)}
+              placeholder="e.g. Monthly staples"
+              maxLength={60}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => void handleSaveTemplate()}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Save Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DistributorLayout>
   );
 }
