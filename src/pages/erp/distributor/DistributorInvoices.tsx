@@ -115,7 +115,77 @@ export default function DistributorInvoices() {
     });
   };
 
-  const renderBreakdown = (line: VoucherInventoryLine) => {
+  // Sprint 11a — open dispute dialog for a line
+  const openDispute = (v: Voucher, l: VoucherInventoryLine) => {
+    setDisputeVoucher(v);
+    setDisputeLine(l);
+    setDisputeReason('short_supply');
+    setReceivedQty(String(l.qty));
+    setDisputeRemarks('');
+    setDisputeOpen(true);
+  };
+
+  const submitDispute = () => {
+    if (!session || !disputeVoucher || !disputeLine) return;
+    const remarks = disputeRemarks.trim();
+    if (remarks.length < 20) {
+      toast.error('Remarks must be at least 20 characters');
+      return;
+    }
+    const recvQty = Number(receivedQty);
+    if (Number.isNaN(recvQty) || recvQty < 0) {
+      toast.error('Enter a valid received quantity');
+      return;
+    }
+    setSubmittingDispute(true);
+    try {
+      const billed = disputeLine.qty;
+      const shortQty = Math.max(0, billed - recvQty);
+      const disputed = Math.round(shortQty * disputeLine.rate * 100); // paise
+      const list = ls<InvoiceDispute>(disputesKey(session.entity_code));
+      const yr = new Date().getFullYear();
+      const yrCount = list.filter(d => d.dispute_no.includes(`/${yr}/`)).length + 1;
+      const dispute: InvoiceDispute = {
+        id: `dsp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        entity_id: session.entity_code,
+        dispute_no: `DSP/${yr}/${String(yrCount).padStart(4, '0')}`,
+        dispute_date: new Date().toISOString(),
+        distributor_id: session.distributor_id,
+        customer_id: session.customer_id,
+        voucher_id: disputeVoucher.id,
+        voucher_no: disputeVoucher.voucher_no,
+        line_id: disputeLine.id,
+        reason: disputeReason,
+        billed_quantity: billed,
+        received_quantity: recvQty,
+        disputed_amount_paise: disputed,
+        distributor_remarks: remarks,
+        photo_urls: [],
+        status: 'open',
+        reviewed_by: null,
+        reviewed_at: null,
+        resolution_type: null,
+        credit_note_voucher_id: null,
+        approved_amount_paise: null,
+        rejection_reason: null,
+        internal_remarks: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      // [JWT] POST /api/distributor/disputes
+      localStorage.setItem(disputesKey(session.entity_code), JSON.stringify([dispute, ...list]));
+      toast.success(`Dispute ${dispute.dispute_no} raised`, {
+        description: 'Our ops team will review shortly.',
+      });
+      setDisputeOpen(false);
+    } catch (e) {
+      toast.error('Failed to raise dispute', { description: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setSubmittingDispute(false);
+    }
+  };
+
+  const renderBreakdown = (v: Voucher, line: VoucherInventoryLine) => {
     const basePrice = itemMrpMap.get(line.item_id) ?? line.rate;
     const tierDiscount = Math.max(0, basePrice - line.rate);
     const volumeSlabSaving = 0; // Sprint 12 scheme engine
@@ -151,6 +221,17 @@ export default function DistributorInvoices() {
         <div className="flex justify-between font-bold text-foreground">
           <span>= Line total</span>
           <span>₹{fmt2(lineTotal)}</span>
+        </div>
+        <div className="pt-2 flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => openDispute(v, line)}
+            className="h-7 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 font-sans"
+          >
+            <AlertOctagon className="h-3.5 w-3.5" /> Raise Dispute
+          </Button>
         </div>
       </div>
     );
