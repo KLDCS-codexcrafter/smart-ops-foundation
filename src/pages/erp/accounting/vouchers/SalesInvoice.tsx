@@ -23,7 +23,7 @@ import {
 } from '@/types/credit-hold';
 import type { OutstandingEntry } from '@/types/voucher';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
+import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
 import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
