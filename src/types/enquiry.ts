@@ -37,6 +37,8 @@ export interface EnquiryItem {
   unit: string | null;
   rate: number | null;
   amount: number | null;
+  line_type: 'product' | 'service';
+  ledger_name?: string | null;
 }
 
 export interface Enquiry {

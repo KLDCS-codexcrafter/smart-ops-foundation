@@ -213,6 +213,15 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
       items: [...form.items, {
         id: `item-${Date.now()}`,
         product_name: '', quantity: 1, unit: null, rate: null, amount: null,
+        line_type: 'product',
+      }],
+    });
+  const addServiceLine = () =>
+    update({
+      items: [...form.items, {
+        id: `svc-${Date.now()}`,
+        product_name: '', quantity: 1, unit: null, rate: null, amount: 0,
+        line_type: 'service', ledger_name: '',
       }],
     });
   const updateItem = (idx: number, patch: Partial<EnquiryItem>) => {
