@@ -9,6 +9,7 @@ import {
   Network, Star, Target, Phone, FileText,
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
+  CalendarClock, Trophy,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
