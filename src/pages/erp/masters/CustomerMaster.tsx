@@ -22,7 +22,7 @@ import {
 import {
   Users, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
   ChevronDown, AlertTriangle, Info, Check, User, MapPin,
-  CreditCard, Shield, Building, Briefcase, X, Truck,
+  CreditCard, Shield, Building, Briefcase, X, Truck, Network,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState } from '@/data/india-geography';
@@ -890,7 +890,80 @@ export function CustomerMasterPanel() {
                   <SelectItem value="disabled">Disabled</SelectItem>
                 </SelectContent>
               </Select>
+          </div>
+
+          {/* ── Sprint 11a — Hierarchy Position ──────────────────── */}
+          <div className="space-y-3 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3 sm:col-span-2 lg:col-span-3">
+            <Label className="text-xs flex items-center gap-1.5 font-semibold text-indigo-700">
+              <Network className="h-3 w-3 text-indigo-600" />Hierarchy Position
+            </Label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-xs">Hierarchy Role</Label>
+                <Select
+                  value={form.hierarchy_role ?? '__none__'}
+                  onValueChange={v => setForm(f => ({
+                    ...f,
+                    hierarchy_role: v === '__none__' ? null : (v as 'super_stockist' | 'distributor' | 'sub_dealer' | 'retailer'),
+                  }))}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Not in hierarchy" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not in hierarchy</SelectItem>
+                    <SelectItem value="super_stockist">Super Stockist</SelectItem>
+                    <SelectItem value="distributor">Distributor</SelectItem>
+                    <SelectItem value="sub_dealer">Sub-Dealer</SelectItem>
+                    <SelectItem value="retailer">Retailer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Parent Customer ID</Label>
+                <Input
+                  className="text-xs"
+                  value={form.upstream_customer_id ?? ''}
+                  onKeyDown={onEnterNext}
+                  onChange={e => setForm(f => ({ ...f, upstream_customer_id: e.target.value || null }))}
+                  placeholder="Customer ID of upstream party"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Portal Enabled</Label>
+                <div className="h-9 flex items-center gap-2">
+                  <Switch
+                    checked={form.portal_enabled}
+                    onCheckedChange={v => setForm(f => ({ ...f, portal_enabled: v }))}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {form.portal_enabled ? 'Can log in to portal' : 'Disabled'}
+                  </span>
+                </div>
+              </div>
             </div>
+            {form.portal_enabled && !form.hierarchy_node_id && (
+              <div className="text-[11px] flex items-center gap-1.5 px-2 py-1 rounded bg-amber-500/10 text-amber-700 border border-amber-500/30">
+                <AlertTriangle className="h-3 w-3" />
+                Not in hierarchy — add position for downstream view
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs border-indigo-500/40 text-indigo-700 hover:bg-indigo-500/10"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.assign(form.hierarchy_node_id
+                      ? `/erp/distributor-hub/hierarchy?node_id=${form.hierarchy_node_id}`
+                      : '/erp/distributor-hub/hierarchy');
+                  }
+                }}
+              >
+                <Network className="h-3 w-3 mr-1" />View in Tree
+              </Button>
+            </div>
+          </div>
             <div>
               <Label className="text-xs">Override Notes</Label>
               <Input
