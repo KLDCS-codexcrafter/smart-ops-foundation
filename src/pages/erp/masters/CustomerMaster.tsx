@@ -127,6 +127,11 @@ interface CustomerMasterDefinition {
   lut_number: string;
   is_tds_deductor: boolean;  // UDF 29001. Enables 26AS reconciliation for this customer.
   tan_number: string;        // UDF 29000. Customer's TAN (they deduct TDS from our invoices).
+  // ── Sprint 7 — Field Force ────────────────────────────────────
+  territory_id: string | null;
+  beat_ids: string[];
+  latitude: number | null;
+  longitude: number | null;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -137,7 +142,17 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
   try {
     // [JWT] GET /api/masters/customers
     const r = localStorage.getItem(STORAGE_KEY);
-    if (r) return JSON.parse(r);
+    if (r) {
+      const parsed = JSON.parse(r) as CustomerMasterDefinition[];
+      // Sprint 7 — back-fill new field-force fields if missing
+      return parsed.map(c => ({
+        ...c,
+        territory_id: c.territory_id ?? null,
+        beat_ids: c.beat_ids ?? [],
+        latitude: c.latitude ?? null,
+        longitude: c.longitude ?? null,
+      }));
+    }
   } catch {}
   return [];
 };
@@ -218,6 +233,11 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   default_telecaller_id: null,
   default_telecaller_name: null,
   salesman_assignment_mode: 'fixed',
+  // Sprint 7 — Field Force
+  territory_id: null,
+  beat_ids: [],
+  latitude: null,
+  longitude: null,
 };
 
 // ─── Panel Component ──────────────────────────────────────────
