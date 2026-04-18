@@ -133,6 +133,7 @@ const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
 const ClientCustomizedPage = lazy(() => import('./pages/client-customized/ClientCustomizedPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/Dashboard'));
+const PartnerLogin = lazy(() => import('./pages/partner/PartnerLogin'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
@@ -316,6 +317,7 @@ const App = () => (
               <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
+              <Route path="/partner/login" element={<PartnerLogin />} />
               <Route path="/partner" element={<P><PartnerDashboard /></P>} />
               <Route path="/partner/dashboard" element={<P><PartnerDashboard /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
