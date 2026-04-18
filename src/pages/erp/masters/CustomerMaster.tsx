@@ -135,6 +135,11 @@ interface CustomerMasterDefinition {
   // ── Sprint 8 — Credit Hold Override ──────────────────────────
   credit_hold_mode: import('@/types/credit-hold').CreditHoldMode | null;
   credit_hold_notes: string;
+  // ── Sprint 11a — Hierarchy linkage ──────────────────────────
+  hierarchy_node_id: string | null;
+  upstream_customer_id: string | null;
+  hierarchy_role: import('@/types/distributor-hierarchy').HierarchyRole | null;
+  portal_enabled: boolean;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -156,6 +161,10 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
         longitude: c.longitude ?? null,
         credit_hold_mode: c.credit_hold_mode ?? null,
         credit_hold_notes: c.credit_hold_notes ?? '',
+        hierarchy_node_id: c.hierarchy_node_id ?? null,
+        upstream_customer_id: c.upstream_customer_id ?? null,
+        hierarchy_role: c.hierarchy_role ?? null,
+        portal_enabled: c.portal_enabled ?? false,
       }));
     }
   } catch {}
@@ -245,6 +254,10 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   longitude: null,
   credit_hold_mode: null,
   credit_hold_notes: '',
+  hierarchy_node_id: null,
+  upstream_customer_id: null,
+  hierarchy_role: null,
+  portal_enabled: false,
 };
 
 // ─── Panel Component ──────────────────────────────────────────
