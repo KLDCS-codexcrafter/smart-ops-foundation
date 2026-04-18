@@ -21,6 +21,9 @@ import { CommissionRegisterPanel } from '@/pages/erp/salesx/reports/CommissionRe
 import { EnquiryRegisterReportPanel } from '@/pages/erp/salesx/reports/EnquiryRegisterReport';
 import { PipelineSummaryPanel } from '@/pages/erp/salesx/reports/PipelineSummary';
 import { QuotationRegisterReportPanel } from '@/pages/erp/salesx/reports/QuotationRegisterReport';
+import { TargetMasterPanel } from '@/pages/erp/salesx/masters/TargetMaster';
+import { TargetVsAchievementPanel } from '@/pages/erp/salesx/reports/TargetVsAchievement';
+import { FollowUpRegisterReportPanel } from '@/pages/erp/salesx/reports/FollowUpRegisterReport';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
