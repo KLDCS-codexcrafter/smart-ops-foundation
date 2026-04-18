@@ -138,11 +138,13 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     },
   ];
 
-  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType }> = [
-    { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet },
-    { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks },
-    { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch },
-    { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart },
+  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = [
+    { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet,        live: true },
+    { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks,    live: true },
+    { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
+    { id: 'sx-r-quotation-register',  label: 'Quotation Register',   icon: FileBarChart,  live: true },
+    { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
+    { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
   ];
 
   const btn = (
