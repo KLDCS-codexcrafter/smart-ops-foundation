@@ -98,6 +98,14 @@ export interface CommissionEntry {
   catchup_tds_required: boolean;
   catchup_tds_amount: number;
 
+  // ── Sprint 5 — DN/SI source tracking + bank payout ────────────────
+  // Source document — tracks whether commission was booked at DN or SI stage
+  source_document: 'sales_invoice' | 'delivery_note';
+  // Bank payment voucher — set after Pay Agent bank payout is completed
+  bank_payment_voucher_id: string | null;
+  bank_payment_voucher_no: string | null;
+  bank_payment_date: string | null;
+
   status: 'pending' | 'partial' | 'paid' | 'reversed' | 'cancelled';
   created_at: string;
   updated_at: string;

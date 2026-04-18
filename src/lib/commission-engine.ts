@@ -452,3 +452,18 @@ export function computeCommissionGL(
     tdsPayableAmount: tdsAmount,
   };
 }
+
+/**
+ * Returns true if a CommissionEntry already exists for the given voucher number.
+ * Prevents double-booking when commission is enabled on both DN and Sales Invoice.
+ * @param voucherRef  The voucher_no to check (DN number or SI number)
+ * @param allEntries  Full erp_commission_register array
+ */
+export function isCommissionAlreadyBooked(
+  voucherRef: string,
+  allEntries: CommissionEntry[],
+): boolean {
+  return allEntries.some(
+    e => e.voucher_no === voucherRef && e.status !== 'cancelled',
+  );
+}
