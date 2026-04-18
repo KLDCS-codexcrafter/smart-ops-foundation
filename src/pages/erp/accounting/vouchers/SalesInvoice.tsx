@@ -23,7 +23,7 @@ import {
 } from '@/types/credit-hold';
 import type { OutstandingEntry } from '@/types/voucher';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
+import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
 import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
@@ -517,6 +517,9 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setCreditCheck(null);
     commitVoucher();
   }, [creditCheck, overrideReason, recordOverride, commitVoucher]);
+
+  // Sprint 9 polish: Ctrl+S triggers Post (unless override dialog is open)
+  useCtrlS(() => { if (!overrideOpen) handlePost(); });
 
 
   const handleSaveDraft = useCallback(() => {

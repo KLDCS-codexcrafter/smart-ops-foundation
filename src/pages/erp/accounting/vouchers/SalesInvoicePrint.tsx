@@ -35,7 +35,7 @@ function loadList<T>(key: string): T[] {
   } catch { return []; }
 }
 
-export default function SalesInvoicePrint() {
+export function SalesInvoicePrintPanel() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const voucherId = params.get('voucher_id') ?? '';
@@ -362,4 +362,8 @@ export default function SalesInvoicePrint() {
       </div>
     </div>
   );
+}
+
+export default function SalesInvoicePrint() {
+  return <SalesInvoicePrintPanel />;
 }
