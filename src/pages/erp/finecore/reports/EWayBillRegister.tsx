@@ -318,20 +318,33 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
               Cancellation allowed within {EWB_CANCELLATION_WINDOW_HOURS} hours of generation.
             </DialogDescription>
           </DialogHeader>
-          <div>
-            <Label className="text-xs">Reason</Label>
-            <Select value={cancelReason} onValueChange={setCancelReason}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {EWB_CANCEL_REASONS.map(r => (
-                  <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Reason</Label>
+              <Select value={cancelReason} onValueChange={setCancelReason}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {EWB_CANCEL_REASONS.map(r => (
+                    <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Remarks (min 10 chars)</Label>
+              <Textarea
+                rows={3}
+                value={cancelRemarks}
+                onChange={e => setCancelRemarks(e.target.value)}
+                placeholder="Reason for cancellation, audited per NIC"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">{cancelRemarks.trim().length}/10</p>
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelTarget(null)}>Close</Button>
-            <Button data-primary variant="destructive" onClick={submitCancel} disabled={busy}>
+            <Button variant="outline" onClick={() => { setCancelTarget(null); setCancelRemarks(''); }}>Close</Button>
+            <Button data-primary variant="destructive" onClick={submitCancel}
+              disabled={busy || cancelRemarks.trim().length < 10}>
               Cancel EWB
             </Button>
           </DialogFooter>
