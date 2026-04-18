@@ -47,6 +47,39 @@ export default function DistributorHub() {
   const orders = useMemo(() => ls<DistributorOrder>(distributorOrdersKey(entityCode)), [entityCode]);
   const intimations = useMemo(() => ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode)), [entityCode]);
 
+  // ── Portal Branding (Sprint 10 Part D · Feature #1) ──
+  interface BrandingState {
+    subdomain_enabled: boolean;
+    subdomain_prefix: string;
+    logo_url: string;
+    primary_colour: string;
+    contact_email: string;
+    support_whatsapp: string;
+  }
+  const brandingKey = `erp_distributor_portal_branding_${entityCode}`;
+  const [branding, setBranding] = useState<BrandingState>(() => {
+    try {
+      // [JWT] GET /api/distributor/portal-branding
+      const raw = localStorage.getItem(brandingKey);
+      if (raw) return JSON.parse(raw) as BrandingState;
+    } catch { /* noop */ }
+    return {
+      subdomain_enabled: false,
+      subdomain_prefix: '',
+      logo_url: '',
+      primary_colour: '#4F46E5',
+      contact_email: '',
+      support_whatsapp: '',
+    };
+  });
+  const saveBranding = () => {
+    try {
+      // [JWT] POST /api/distributor/portal-branding
+      localStorage.setItem(brandingKey, JSON.stringify(branding));
+      toast.success('Portal branding saved');
+    } catch { toast.error('Failed to save'); }
+  };
+
   const activeCount = distributors.filter(d => d.status === 'active').length;
   const monthOrders = useMemo(() => {
     const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
