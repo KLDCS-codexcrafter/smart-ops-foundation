@@ -190,6 +190,27 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
         }
       }
 
+      // Sprint 6B — flip memo to credit_note_posted
+      if (selectedMemoId) {
+        try {
+          const all = JSON.parse(localStorage.getItem(salesReturnMemosKey(entityCode)) || '[]') as SalesReturnMemo[];
+          const idx = all.findIndex(m => m.id === selectedMemoId);
+          if (idx >= 0) {
+            all[idx] = {
+              ...all[idx],
+              status: 'credit_note_posted',
+              credit_note_voucher_id: voucher.id,
+              credit_note_voucher_no: voucherNo,
+              credit_note_posted_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            // [JWT] PATCH /api/salesx/sales-return-memos/:id
+            localStorage.setItem(salesReturnMemosKey(entityCode), JSON.stringify(all));
+            toast.success(`Memo ${all[idx].memo_no} marked as CN posted`);
+          }
+        } catch { /* ignore */ }
+      }
+
       toast.success('Credit Note posted');
     } catch { toast.error('Failed to save'); }
   }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
