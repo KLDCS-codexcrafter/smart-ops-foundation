@@ -272,9 +272,20 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         fulfillOrderLine(againstSO, gstTotals.total);
       }
 
+      // Check if commission was already booked at Delivery Note stage
+      const allRegForGuard: CommissionEntry[] = (() => {
+        try {
+          // [JWT] GET /api/salesx/commission-register
+          return JSON.parse(localStorage.getItem(commissionRegisterKey(entityCode)) || '[]');
+        } catch { return []; }
+      })();
+      const commissionAlreadyAtDN = againstDN
+        ? isCommissionAlreadyBooked(againstDN, allRegForGuard)
+        : false;
+
       // Write pending CommissionEntry for each SAM result — NO GL POSTING
       // Commission is payable on receipt, not here.
-      if (commissionPreview.length > 0) {
+      if (commissionPreview.length > 0 && !commissionAlreadyAtDN) {
         const regStore: CommissionEntry[] = (() => {
           try {
             // [JWT] GET /api/salesx/commission-register?entityCode={entityCode}
@@ -357,6 +368,8 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         });
         // [JWT] POST /api/salesx/commission-register
         localStorage.setItem(commissionRegisterKey(entityCode), JSON.stringify(regStore));
+      } else if (commissionAlreadyAtDN) {
+        toast.info('Commission already recorded at Delivery Note stage — skipping.');
       }
 
       toast.success('Sales Invoice posted');

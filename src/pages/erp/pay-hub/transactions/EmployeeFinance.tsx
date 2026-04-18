@@ -355,7 +355,8 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
     if (flexiSheetOpen) { handleFlexiSave(); return; }
   }, [loanSheetOpen, advSheetOpen, expSheetOpen, flexiSheetOpen,
     handleLoanSave, handleAdvSave, handleExpSave, handleFlexiSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Approval helpers ──────────────────────────────────────────
   const approveLoan = (id: string) => {

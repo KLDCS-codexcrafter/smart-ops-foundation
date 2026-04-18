@@ -291,7 +291,8 @@ export function AttendanceEntryPanel() {
     if (regSheetOpen) { handleRegSave(); return; }
     saveDayAttendance();
   }, [gfSheetOpen, regSheetOpen, handleGfSave, handleRegSave, saveDayAttendance]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Department list for filter ─────────────────────────────────
   const departments = useMemo(() => {

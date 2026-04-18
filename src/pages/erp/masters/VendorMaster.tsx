@@ -340,7 +340,8 @@ export function VendorMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(handleSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const openEdit = (item: VendorMasterDefinition) => {
     const { id, partyCode, ...rest } = item;

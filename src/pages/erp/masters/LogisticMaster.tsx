@@ -297,7 +297,8 @@ export function LogisticMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(handleSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const openEdit = (item: LogisticMasterDefinition) => {
     const { id, partyCode, ...rest } = item;

@@ -152,7 +152,8 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [challanSheetOpen, challanForm, challanEditId, challans]);
 
-  useCtrlS(handleChallanSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleChallanSave : () => {});
 
   // ── Get payslips for selected period ─────────────────────────
   const periodPayslips = useMemo<EmployeePayslip[]>(() => {

@@ -173,7 +173,8 @@ export function OnboardingPanel() {
     if (journeySheetOpen) { handleJourneySave(); return; }
     if (taskSheetOpen) { handleTaskSave(); return; }
   }, [journeySheetOpen, taskSheetOpen, handleJourneySave, handleTaskSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Task status toggle ────────────────────────────────────────
   const toggleTask = (journeyId: string, taskId: string, newStatus: TaskStatus) => {

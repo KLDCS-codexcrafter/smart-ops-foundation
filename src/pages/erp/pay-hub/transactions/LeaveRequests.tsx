@@ -228,7 +228,8 @@ export function LeaveRequestsPanel() {
     if (delSheetOpen) { handleDelSave(); return; }
     if (coSheetOpen) { handleCoSave(); return; }
   }, [reqSheetOpen, delSheetOpen, coSheetOpen, handleReqSave, handleDelSave, handleCoSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Filtered requests ─────────────────────────────────────────
   const filteredRequests = useMemo(() => {

@@ -197,7 +197,8 @@ export function RecruitmentPanel() {
     if (jrSheetOpen) { handleJrSave(); return; }
     if (appSheetOpen) { handleAppSave(); return; }
   }, [jrSheetOpen, appSheetOpen, handleJrSave, handleAppSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Pipeline stats ────────────────────────────────────────────
   const stats = useMemo(() => ({

@@ -218,7 +218,8 @@ export function BusinessUnitMasterPanel() {
     setJustSaved(true); setTimeout(() => setJustSaved(false), 1500);
   };
 
-  useCtrlS(handleSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const openEdit = (unit: BusinessUnitMasterDefinition) => {
     const { id, partyCode, ...rest } = unit;
