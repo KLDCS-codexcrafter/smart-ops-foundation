@@ -176,10 +176,18 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
           (e.status === 'pending' || e.status === 'partial'),
         );
         if (hasPending) {
+          // Sprint 6B — load SAMConfig so engine can evaluate collection bonus
+          let samCfg: SAMConfig | undefined;
+          try {
+            // [JWT] GET /api/compliance/comply360/sam/:entityId
+            const raw = localStorage.getItem(comply360SAMKey(entityCode));
+            if (raw) samCfg = JSON.parse(raw) as SAMConfig;
+          } catch { /* ignore */ }
           const result = triggerCommissionOnReceipt(
             selectedCustomer.id, amount, date,
             voucher.id, voucher.voucher_no,
             allEntries, allTDS, entityCode,
+            samCfg,
           );
           if (result.paymentCount > 0) {
             // [JWT] PATCH /api/salesx/commission-register
