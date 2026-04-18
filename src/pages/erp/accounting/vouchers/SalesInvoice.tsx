@@ -538,17 +538,20 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     setIrnBusy(true);
     try {
       const { buildIRNPayload, generateIRN } = await import('@/lib/irn-engine');
-      const { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } = await import('@/types/entity-gst');
       const { irnRecordsKey } = await import('@/types/irn');
       const gstRaw = localStorage.getItem(entityGstKey(entityCode));
       const gst = gstRaw ? { ...DEFAULT_ENTITY_GST_CONFIG, ...JSON.parse(gstRaw) } : { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityCode };
       const allV: Voucher[] = JSON.parse(localStorage.getItem(vouchersKey(entityCode)) || '[]');
       const v = allV.find(x => x.id === postedVoucherId);
       if (!v) { toast.error('Voucher not found'); return; }
+      // Audit fix #3: real customer address
+      const resolved = resolveCustomerAddress(v.party_id ?? null, v.party_name ?? null,
+        v.customer_state_code ?? v.party_state_code ?? null);
       const payload = buildIRNPayload(
         v, gst.gstin, gst.legal_name, gst.address_line_1, gst.city, gst.pincode, gst.state_code,
-        v.party_gstin ?? '', v.party_name ?? '', v.party_name ?? '', '', '',
-        v.customer_state_code ?? v.party_state_code ?? '',
+        v.party_gstin ?? '', resolved.legal_name || v.party_name || '', resolved.full_address || 'NA',
+        resolved.city, resolved.pincode,
+        resolved.state_code || v.customer_state_code || v.party_state_code || '',
       );
       const rec = await generateIRN(payload, {
         username: gst.irp_username, password: gst.irp_password,
