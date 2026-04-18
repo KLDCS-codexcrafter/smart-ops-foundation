@@ -52,6 +52,10 @@ import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
 interface CustomerRow {
   id: string;
   partyName: string;
+  partyCode?: string;
+  creditLimit?: number;
+  warningLimit?: number;
+  credit_hold_mode?: import('@/types/credit-hold').CreditHoldMode | null;
   default_salesman_id?: string | null;
   default_salesman_name?: string | null;
   default_agent_id?: string | null;
