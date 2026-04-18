@@ -25,6 +25,9 @@ import {
   commissionRegisterKey,
 } from '@/types/commission-register';
 import type { CommissionEntry, CommissionPayment } from '@/types/commission-register';
+import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
+import type { TDSDeductionEntry } from '@/types/compliance';
+import { tdsDeductionsKey } from '@/types/compliance';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
@@ -132,6 +135,63 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     if (!previewPayment) return;
 
     const now = new Date().toISOString();
+    let tdsDeductionEntryId: string | null = null;
+
+    // Write TDSDeductionEntry if TDS is applicable and threshold crossed
+    if (active.tds_applicable && active.tds_section && previewPayment.tdsAmount > 0) {
+      // [JWT] GET /api/compliance/tds-deductions
+      const allTDS: TDSDeductionEntry[] = (() => {
+        try {
+          return JSON.parse(localStorage.getItem(tdsDeductionsKey(entityCode)) || '[]');
+        } catch { return []; }
+      })();
+
+      // Check YTD aggregate for this person+section+AY (194H threshold = ₹15,000)
+      const currentAY = getAssessmentYear(payDate);
+      const threshold = active.tds_section === '194H' ? 15000 : 30000;
+      const ytdGross = allTDS
+        .filter(t =>
+          t.party_id === active.person_id &&
+          t.tds_section === active.tds_section &&
+          t.assessment_year === currentAY &&
+          t.status !== 'cancelled'
+        )
+        .reduce((s, t) => s + t.gross_amount, 0);
+
+      if (ytdGross + previewPayment.commissionOnReceipt >= threshold) {
+        const tdsEntry: TDSDeductionEntry = {
+          id: `tds-comm-${Date.now()}`,
+          entity_id: entityCode,
+          source_voucher_id: active.voucher_id,
+          source_voucher_no: active.voucher_no,
+          source_voucher_type: 'Payment',
+          party_id: active.person_id,
+          party_name: active.person_name,
+          party_pan: active.person_pan ?? '',
+          deductee_type: active.deductee_type,
+          tds_section: active.tds_section,
+          nature_of_payment: active.tds_section === '194H'
+            ? 'Commission or brokerage'
+            : 'Fee for professional services',
+          tds_rate: active.tds_rate,
+          gross_amount: previewPayment.commissionOnReceipt,
+          advance_tds_already: 0,
+          net_tds_amount: previewPayment.tdsAmount,
+          date: payDate,
+          quarter: getQuarter(payDate),
+          assessment_year: currentAY,
+          status: 'open',
+          created_at: now,
+        };
+        // [JWT] POST /api/compliance/tds-deductions
+        localStorage.setItem(
+          tdsDeductionsKey(entityCode),
+          JSON.stringify([...allTDS, tdsEntry])
+        );
+        tdsDeductionEntryId = tdsEntry.id;
+      }
+    }
+
     const payment: CommissionPayment = {
       id: `cp-${Date.now()}`,
       payment_date: payDate,
@@ -142,7 +202,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       tds_rate: active.tds_rate,
       tds_amount: previewPayment.tdsAmount,
       net_commission_paid: previewPayment.netCommissionPaid,
-      tds_deduction_entry_id: null,
+      tds_deduction_entry_id: tdsDeductionEntryId,
       created_at: now,
     };
 
@@ -159,17 +219,15 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       +(updated.tds_deducted_to_date + previewPayment.tdsAmount).toFixed(2);
     updated.net_paid_to_date =
       +(updated.net_paid_to_date + previewPayment.netCommissionPaid).toFixed(2);
-
-    if (updated.amount_received_to_date >= updated.invoice_amount - 0.01) {
-      updated.status = 'paid';
-    } else {
-      updated.status = 'partial';
-    }
+    updated.status = updated.amount_received_to_date >= updated.invoice_amount - 0.01
+      ? 'paid' : 'partial';
     updated.updated_at = now;
-
     list[idx] = updated;
     saveRegister(entityCode, list);
-    toast.success('Payment recorded');
+
+    const tdsMsg = previewPayment.tdsAmount > 0
+      ? ` TDS ₹${previewPayment.tdsAmount} (${active.tds_section}) deducted.` : '';
+    toast.success(`Commission ₹${previewPayment.netCommissionPaid.toLocaleString('en-IN')} recorded.${tdsMsg}`);
     reload();
     closePay();
   }, [active, amountReceived, payDate, receiptNo, previewPayment, entityCode, reload]);

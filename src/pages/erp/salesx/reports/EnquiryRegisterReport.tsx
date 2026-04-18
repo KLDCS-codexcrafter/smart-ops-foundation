@@ -14,6 +14,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Search, Download } from 'lucide-react';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import type { EnquiryStatus } from '@/types/enquiry';
+import { onEnterNext } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }
@@ -85,7 +86,7 @@ export function EnquiryRegisterReportPanel({ entityCode }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Enquiry Register Report</h1>
@@ -115,6 +116,7 @@ export function EnquiryRegisterReportPanel({ entityCode }: Props) {
               <Input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                onKeyDown={onEnterNext}
                 placeholder="Search enquiry no / customer / contact"
                 className="pl-9"
               />
