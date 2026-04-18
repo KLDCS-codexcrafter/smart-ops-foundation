@@ -174,6 +174,95 @@ export default function DistributorHub() {
             );
           })}
         </div>
+
+        {/* ── Portal Branding (Sprint 10 Part D · Feature #1) ───────────────── */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Palette className="h-4 w-4 text-indigo-600" />
+              Portal Branding
+            </CardTitle>
+            <CardDescription>Customize how your distributors experience the portal</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-0.5">
+                <Label className="text-sm">Enable branded subdomain</Label>
+                <p className="text-xs text-muted-foreground">Your distributors get a dedicated URL</p>
+              </div>
+              <Switch
+                checked={branding.subdomain_enabled}
+                onCheckedChange={v => setBranding({ ...branding, subdomain_enabled: v })}
+              />
+            </div>
+
+            {branding.subdomain_enabled && (
+              <div className="space-y-2">
+                <Label className="text-xs">Subdomain Prefix</Label>
+                <Input
+                  value={branding.subdomain_prefix}
+                  onChange={e => setBranding({ ...branding, subdomain_prefix: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                  placeholder="distributors.sharma"
+                />
+                {branding.subdomain_prefix && (
+                  <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                    <span className="text-xs text-muted-foreground">Partner URL:</span>
+                    <span className="text-xs font-mono text-foreground flex-1 truncate">
+                      {branding.subdomain_prefix}.prudent360.net.in
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://${branding.subdomain_prefix}.prudent360.net.in`);
+                        toast.success('Copied');
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Primary Colour (hex)</Label>
+                <Input
+                  type="color"
+                  value={branding.primary_colour}
+                  onChange={e => setBranding({ ...branding, primary_colour: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Support WhatsApp</Label>
+                <Input
+                  value={branding.support_whatsapp}
+                  onChange={e => setBranding({ ...branding, support_whatsapp: e.target.value })}
+                  placeholder="9876543210"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Contact Email</Label>
+                <Input
+                  type="email"
+                  value={branding.contact_email}
+                  onChange={e => setBranding({ ...branding, contact_email: e.target.value })}
+                  placeholder="support@example.com"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={saveBranding}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
+            >
+              <Save className="h-4 w-4" /> Save Branding
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </AppLayout>
   );
