@@ -102,6 +102,10 @@ function renderModule(
       return <TelecallerPanel entityCode={entityCode} onNavigate={setActiveModule} />;
     case 'sx-t-quotation':
       return <QuotationEntryPanel entityCode={entityCode} />;
+    case 'sx-t-return-memo':
+      return <SalesReturnMemoPanel entityCode={entityCode} />;
+    case 'sx-r-return-memo-register':
+      return <SalesReturnMemoRegisterPanel entityCode={entityCode} />;
     case 'sx-r-commission':
       return <CommissionRegisterPanel entityCode={entityCode} />;
     case 'sx-r-enquiry-register':
