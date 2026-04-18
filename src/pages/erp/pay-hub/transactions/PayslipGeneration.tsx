@@ -192,7 +192,8 @@ export function PayslipGenerationPanel() {
     setDeclSheetOpen(false);
   }, [declSheetOpen, declForm, editDeclId, declarations]);
 
-  useCtrlS(handleDeclSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleDeclSave : () => {});
 
   // ── Derived data ─────────────────────────────────────────────
   const selectedRun = runs.find(r => r.payPeriod === selectedPeriod);

@@ -2977,7 +2977,8 @@ export const LedgerMasterPanel = React.memo(function LedgerMasterPanel() {
     handleCashSave, handleBankSave, handleLiabilitySave, handleCapitalSave, handleLoanRecSave,
     handleBorrowingSave, handleIncomeSave, handleExpenseSave, handleDutiesTaxSave,
     handlePayrollStatSave, handleAssetSave]);
-  useCtrlS(handleCtrlS);
+  const isConfigActive = true;
+  useCtrlS(isConfigActive ? handleCtrlS : () => {});
 
   const openDeleteFlow = (def: AnyLedgerDefinition) => {
     setDeleteTarget(def);

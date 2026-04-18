@@ -377,7 +377,8 @@ export function CustomerMasterPanel() {
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
-  useCtrlS(handleSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const openEdit = (item: CustomerMasterDefinition) => {
     const { id, partyCode, ...rest } = item;

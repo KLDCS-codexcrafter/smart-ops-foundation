@@ -267,7 +267,8 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
     if (compSheetOpen)   { handleCompSave(); return; }
   }, [cycleSheetOpen, reviewSheetOpen, succSheetOpen, compSheetOpen,
     handleCycleSave, handleReviewSave, handleSuccSave, handleCompSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Filters ───────────────────────────────────────────────────
   const [reviewStatusFilter, setReviewStatusFilter] = useState('all');

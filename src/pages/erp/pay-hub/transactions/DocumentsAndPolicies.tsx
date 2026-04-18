@@ -140,7 +140,8 @@ export function DocumentsAndPoliciesPanel() {
     if (docSheetOpen) { handleDocSave(); return; }
     if (polSheetOpen) { handlePolSave(); return; }
   }, [docSheetOpen, polSheetOpen, handleDocSave, handlePolSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Filtered lists ────────────────────────────────────────────
   const filteredDocs = useMemo(() => {

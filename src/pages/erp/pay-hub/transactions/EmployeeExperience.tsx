@@ -169,7 +169,8 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
     if (annSheetOpen) { handleAnnSave(); return; }
     if (recogSheetOpen) { handleRecogSave(); return; }
   }, [annSheetOpen, recogSheetOpen, handleAnnSave, handleRecogSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Directory state ───────────────────────────────────────────
   const [dirSearch, setDirSearch] = useState('');

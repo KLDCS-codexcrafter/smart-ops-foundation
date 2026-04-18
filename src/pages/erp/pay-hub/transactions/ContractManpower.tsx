@@ -278,7 +278,8 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     if (attendanceSheetOpen) { handleAttendanceSave(); return; }
   }, [agencySheetOpen, workerSheetOpen, orderSheetOpen, invoiceSheetOpen, attendanceSheetOpen,
     handleAgencySave, handleWorkerSave, handleOrderSave, handleInvoiceSave, handleAttendanceSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Compliance data ──────────────────────────────────────────
   const complianceData = useMemo(() => {

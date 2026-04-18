@@ -249,7 +249,8 @@ export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitori
     if (templateSheetOpen) { handleTemplateSave(); return; }
     if (activitySheetOpen) { handleActivitySave(); return; }
   }, [roleSheetOpen, templateSheetOpen, activitySheetOpen, handleRoleSave, handleTemplateSave, handleActivitySave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── ESS Preview state ────────────────────────────────────────
   const [essEmpId, setEssEmpId] = useState('');

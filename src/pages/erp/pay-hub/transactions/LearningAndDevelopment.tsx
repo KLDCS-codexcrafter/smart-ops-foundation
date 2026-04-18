@@ -234,7 +234,8 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
     if (certSheetOpen) { handleCertSave(); return; }
   }, [courseSheetOpen, enrollSheetOpen, skillSheetOpen, certSheetOpen,
     handleCourseSave, handleEnrollSave, handleSkillSave, handleCertSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Skill matrix computation ──────────────────────────────────
   const skillMatrix = useMemo(() => {

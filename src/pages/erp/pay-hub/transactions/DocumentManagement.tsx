@@ -236,7 +236,8 @@ export function DocumentManagementPanel({ defaultTab = 'vault' }: DocumentManage
     if (docSheetOpen) { handleDocSave(); return; }
     if (templateSheetOpen) { handleTemplateSave(); return; }
   }, [docSheetOpen, templateSheetOpen, handleDocSave, handleTemplateSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Template print ───────────────────────────────────────────
   const printTemplate = (tmpl: DocTemplate) => {

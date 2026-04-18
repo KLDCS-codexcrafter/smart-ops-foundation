@@ -350,7 +350,8 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
     if (exitSheetOpen) { handleExitSave(); return; }
     if (fnfSheetOpen) { handleFnfSave(); return; }
   }, [exitSheetOpen, fnfSheetOpen, handleExitSave, handleFnfSave]);
-  useCtrlS(masterSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? masterSave : () => {});
 
   // ── Print state ───────────────────────────────────────────────
   const [printExitId, setPrintExitId] = useState<string | null>(null);

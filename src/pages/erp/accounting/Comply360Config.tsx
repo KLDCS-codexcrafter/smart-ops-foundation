@@ -529,7 +529,8 @@ export function Comply360ConfigPanel() {
     }
   }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding]);
 
-  useCtrlS(handleCtrlS);
+  const isConfigActive = true;
+  useCtrlS(isConfigActive ? handleCtrlS : () => {});
 
   // ── Toggle helper ──
   const updateGroup = (key: keyof GroupConfig, value: boolean) => {

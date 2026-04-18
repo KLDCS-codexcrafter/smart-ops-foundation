@@ -73,7 +73,8 @@ export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel
     setHoldSheetOpen(false);
     setHoldForm(BLANK_HOLD);
   }, [holdSheetOpen, holdForm, createHold]);
-  useCtrlS(handleHoldSave);
+  const isFormActive = true;
+  useCtrlS(isFormActive ? handleHoldSave : () => {});
 
   // ── Active employees (for hold sheet + pre-run check)
   const activeEmployees = useMemo(() => {
