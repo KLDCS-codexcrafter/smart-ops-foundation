@@ -1,25 +1,25 @@
 /**
- * PartnerCatalog.tsx — Tier-priced item browser with smart reorder.
+ * DistributorCatalog.tsx — Tier-priced item browser with smart reorder.
  * Sprint 10. Reads InventoryItems + PriceListItems; adds to IndexedDB cart.
- * [JWT] GET /api/partner/catalog?tier={tier}
+ * [JWT] GET /api/erp/distributor/catalog?tier={tier}
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Package, Plus, Minus, ShoppingCart, Sparkles, Loader2 } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
 import {
   resolveTierPrice, calcLineTotals, suggestReorderQty, pickActivePriceList,
-} from '@/lib/partner-order-engine';
-import { upsertLine, getCart } from '@/lib/partner-cart-store';
+} from '@/lib/distributor-order-engine';
+import { upsertLine, getCart } from '@/lib/distributor-cart-store';
 import { formatINR } from '@/lib/india-validations';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { PriceList, PriceListItem } from '@/types/price-list';
 import type { Voucher } from '@/types/voucher';
-import type { PartnerOrderLine } from '@/types/partner-order';
+import type { DistributorOrderLine } from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -28,19 +28,19 @@ function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
 
-export function PartnerCatalogPanel() { return <PartnerCatalog />; }
+export function DistributorCatalogPanel() { return <DistributorCatalog />; }
 
-export default function PartnerCatalog() {
+export default function DistributorCatalog() {
   const navigate = useNavigate();
-  const session = getPartnerSession();
+  const session = getDistributorSession();
   const [search, setSearch] = useState('');
   const [qtyMap, setQtyMap] = useState<Record<string, number>>({});
   const [busyItem, setBusyItem] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
 
-  const partner = useMemo(() => {
+  const distributor = useMemo(() => {
     if (!session) return null;
-    return loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null;
+    return loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null;
   }, [session]);
 
   // Load all catalog data once.
@@ -53,13 +53,13 @@ export default function PartnerCatalog() {
   }, [session]);
 
   const activeListId = useMemo(
-    () => (partner ? pickActivePriceList(partner, priceLists) : null),
-    [partner, priceLists],
+    () => (distributor ? pickActivePriceList(distributor, priceLists) : null),
+    [distributor, priceLists],
   );
 
   useEffect(() => {
     if (!session) return;
-    void getCart(session.partner_id).then(c => setCartCount(c?.lines.length ?? 0));
+    void getCart(session.distributor_id).then(c => setCartCount(c?.lines.length ?? 0));
   }, [session]);
 
   const filteredItems = useMemo(() => {
@@ -72,13 +72,13 @@ export default function PartnerCatalog() {
     ).slice(0, 60);
   }, [items, search]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
-      <PartnerLayout title="Catalog">
+      <DistributorLayout title="Catalog">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
-          Partner profile unavailable.
+          Distributor profile unavailable.
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
@@ -91,11 +91,11 @@ export default function PartnerCatalog() {
       const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
       const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
       const qty = Math.max(tier.min_qty, qtyMap[item.id] ?? 1);
-      // Interstate detection: partner state vs entity state — defaults intra-state.
+      // Interstate detection: distributor state vs entity state — defaults intra-state.
       const interstate = false;
       const gstRate = (item.cgst_rate ?? 0) + (item.sgst_rate ?? 0) || (item.igst_rate ?? 18);
       const totals = calcLineTotals(qty, tier.rate_paise, tier.discount_percent, gstRate, interstate);
-      const line: PartnerOrderLine = {
+      const line: DistributorOrderLine = {
         id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         item_id: item.id,
         item_code: item.code,
@@ -107,7 +107,7 @@ export default function PartnerCatalog() {
         ...totals,
         hsn_sac: item.hsn_sac_code ?? null,
       };
-      const cart = await upsertLine(session.partner_id, session.entity_code, line);
+      const cart = await upsertLine(session.distributor_id, session.entity_code, line);
       setCartCount(cart.lines.length);
       toast.success(`${item.name} added`, { description: `${qty} ${line.uom} • ${formatINR(line.total_paise)}` });
     } catch (e) {
@@ -118,7 +118,7 @@ export default function PartnerCatalog() {
   };
 
   return (
-    <PartnerLayout title="Catalog" subtitle={`Tier-priced for ${partner.tier.toUpperCase()} partners`}>
+    <DistributorLayout title="Catalog" subtitle={`Tier-priced for ${distributor.tier.toUpperCase()} partners`}>
       <div className="space-y-4 animate-fade-in">
         {/* Search bar + cart pill */}
         <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export default function PartnerCatalog() {
           </div>
           <Button
             variant="outline"
-            onClick={() => navigate('/partner/cart')}
+            onClick={() => navigate('/erp/distributor/cart')}
             className="rounded-lg gap-2 shrink-0"
           >
             <ShoppingCart className="h-4 w-4" />
@@ -154,7 +154,7 @@ export default function PartnerCatalog() {
             {filteredItems.map(item => {
               const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
               const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
-              const reorder = suggestReorderQty(item.id, recentVouchers, partner.customer_id, 0, 30);
+              const reorder = suggestReorderQty(item.id, recentVouchers, distributor.customer_id, 0, 30);
               const qty = qtyMap[item.id] ?? Math.max(tier.min_qty, reorder.suggested || 1);
               return (
                 <div key={item.id} className="rounded-2xl border border-border/50 bg-card p-4 flex flex-col">
@@ -166,7 +166,7 @@ export default function PartnerCatalog() {
                     {tier.on_list && (
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
                         style={{ background: INDIGO_BG, color: INDIGO }}>
-                        {partner.tier.toUpperCase()}
+                        {distributor.tier.toUpperCase()}
                       </span>
                     )}
                   </div>
@@ -225,6 +225,6 @@ export default function PartnerCatalog() {
           </div>
         )}
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }

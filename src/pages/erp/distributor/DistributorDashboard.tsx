@@ -1,7 +1,7 @@
 /**
- * PartnerDashboard.tsx — Distributor home: credit, monthly target, activity.
- * Sprint 10. Indigo-600 accent. Reads partner from localStorage scoped by session.
- * [JWT] Replace localStorage with GET /api/partner/dashboard.
+ * DistributorDashboard.tsx — Distributor home: credit, monthly target, activity.
+ * Sprint 10. Indigo-600 accent. Reads distributor from localStorage scoped by session.
+ * [JWT] Replace localStorage with GET /api/erp/distributor/dashboard.
  */
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,9 +9,9 @@ import {
   IndianRupee, TrendingUp, AlertTriangle, ShoppingCart,
   Package, FileText, Megaphone, ArrowRight, CircleDollarSign,
 } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
-import { partnerActivityKey, type PartnerActivity } from '@/types/partner';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
+import { distributorActivityKey, type DistributorActivity } from '@/types/distributor';
 import { formatINR } from '@/lib/india-validations';
 
 const INDIGO = 'hsl(231 48% 58%)';
@@ -21,61 +21,61 @@ function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
 
-export function PartnerDashboardPanel() { return <PartnerDashboard />; }
+export function DistributorDashboardPanel() { return <DistributorDashboard />; }
 
-export default function PartnerDashboard() {
+export default function DistributorDashboard() {
   const navigate = useNavigate();
-  const session = getPartnerSession();
+  const session = getDistributorSession();
 
-  const partner = useMemo(() => {
+  const distributor = useMemo(() => {
     if (!session) return null;
-    return loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null;
+    return loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null;
   }, [session]);
 
-  const activity = useMemo<PartnerActivity[]>(() => {
+  const activity = useMemo<DistributorActivity[]>(() => {
     if (!session) return [];
-    const all = ls<PartnerActivity>(partnerActivityKey(session.entity_code));
-    return all.filter(a => a.partner_id === session.partner_id)
+    const all = ls<DistributorActivity>(distributorActivityKey(session.entity_code));
+    return all.filter(a => a.distributor_id === session.distributor_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 8);
   }, [session]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
-      <PartnerLayout title="Dashboard">
+      <DistributorLayout title="Dashboard">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
-          Partner profile unavailable. Please sign in again.
+          Distributor profile unavailable. Please sign in again.
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
-  const creditUsedPct = partner.credit_limit_paise > 0
-    ? Math.min(100, Math.round((partner.outstanding_paise / partner.credit_limit_paise) * 100))
+  const creditUsedPct = distributor.credit_limit_paise > 0
+    ? Math.min(100, Math.round((distributor.outstanding_paise / distributor.credit_limit_paise) * 100))
     : 0;
-  const targetPct = partner.monthly_target_paise > 0
-    ? Math.min(100, Math.round((partner.monthly_achieved_paise / partner.monthly_target_paise) * 100))
+  const targetPct = distributor.monthly_target_paise > 0
+    ? Math.min(100, Math.round((distributor.monthly_achieved_paise / distributor.monthly_target_paise) * 100))
     : 0;
-  const available = Math.max(0, partner.credit_limit_paise - partner.outstanding_paise);
-  const overdue = partner.overdue_paise;
+  const available = Math.max(0, distributor.credit_limit_paise - distributor.outstanding_paise);
+  const overdue = distributor.overdue_paise;
 
   const kpis = [
     { label: 'Available Credit', value: formatINR(available), icon: CircleDollarSign, accent: 'hsl(142 71% 45%)' },
-    { label: 'Outstanding', value: formatINR(partner.outstanding_paise), icon: IndianRupee, accent: INDIGO },
+    { label: 'Outstanding', value: formatINR(distributor.outstanding_paise), icon: IndianRupee, accent: INDIGO },
     { label: 'Overdue', value: formatINR(overdue), icon: AlertTriangle, accent: overdue > 0 ? 'hsl(0 72% 51%)' : 'hsl(215 16% 47%)' },
-    { label: 'MTD Achieved', value: formatINR(partner.monthly_achieved_paise), icon: TrendingUp, accent: 'hsl(38 92% 50%)' },
+    { label: 'MTD Achieved', value: formatINR(distributor.monthly_achieved_paise), icon: TrendingUp, accent: 'hsl(38 92% 50%)' },
   ];
 
   const quickActions = [
-    { label: 'Browse Catalog', icon: Package, url: '/partner/catalog' },
-    { label: 'View Cart', icon: ShoppingCart, url: '/partner/cart' },
-    { label: 'My Invoices', icon: FileText, url: '/partner/invoices' },
-    { label: 'Pay Now', icon: IndianRupee, url: '/partner/payments' },
+    { label: 'Browse Catalog', icon: Package, url: '/erp/distributor/catalog' },
+    { label: 'View Cart', icon: ShoppingCart, url: '/erp/distributor/cart' },
+    { label: 'My Invoices', icon: FileText, url: '/erp/distributor/invoices' },
+    { label: 'Pay Now', icon: IndianRupee, url: '/erp/distributor/payments' },
   ];
 
   return (
-    <PartnerLayout
-      title={`Welcome, ${partner.legal_name.split(' ')[0]}`}
-      subtitle={`${partner.partner_code} • ${session.entity_code}`}
+    <DistributorLayout
+      title={`Welcome, ${distributor.legal_name.split(' ')[0]}`}
+      subtitle={`${distributor.partner_code} • ${session.entity_code}`}
     >
       <div className="space-y-6 animate-fade-in">
         {/* KPI grid */}
@@ -110,7 +110,7 @@ export default function PartnerDashboard() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <p className="text-muted-foreground">Limit</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.credit_limit_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.credit_limit_paise)}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Available</p>
@@ -133,11 +133,11 @@ export default function PartnerDashboard() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <p className="text-muted-foreground">Target</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.monthly_target_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.monthly_target_paise)}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Achieved</p>
-                <p className="font-mono font-semibold text-foreground">{formatINR(partner.monthly_achieved_paise)}</p>
+                <p className="font-mono font-semibold text-foreground">{formatINR(distributor.monthly_achieved_paise)}</p>
               </div>
             </div>
           </div>
@@ -199,12 +199,12 @@ export default function PartnerDashboard() {
           )}
         </div>
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }
 
-function ActivityIcon({ kind }: { kind: PartnerActivity['kind'] }) {
-  const map: Record<PartnerActivity['kind'], typeof FileText> = {
+function ActivityIcon({ kind }: { kind: DistributorActivity['kind'] }) {
+  const map: Record<DistributorActivity['kind'], typeof FileText> = {
     invoice_posted: FileText,
     payment_received: IndianRupee,
     order_approved: ShoppingCart,

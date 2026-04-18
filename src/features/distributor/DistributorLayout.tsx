@@ -1,7 +1,7 @@
 /**
- * PartnerLayout.tsx — Distributor portal shell.
+ * DistributorLayout.tsx — Distributor portal shell.
  * Sprint 10. Indigo-600 accent. Wraps all /partner/* pages.
- * Separate auth boundary: redirects to /partner/login when no session.
+ * Separate auth boundary: redirects to /erp/distributor/login when no session.
  */
 import { useState } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
@@ -12,39 +12,39 @@ import {
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { getPartnerSession, clearPartnerSession } from '@/lib/partner-auth-engine';
+import { getDistributorSession, clearDistributorSession } from '@/lib/distributor-auth-engine';
 import { toast } from 'sonner';
 
 const navItems = [
-  { title: 'Dashboard', url: '/partner/dashboard', icon: LayoutDashboard },
-  { title: 'Catalog',   url: '/partner/catalog',   icon: Package },
-  { title: 'Cart',      url: '/partner/cart',      icon: ShoppingCart },
-  { title: 'Invoices',  url: '/partner/invoices',  icon: FileText },
-  { title: 'Payments',  url: '/partner/payments',  icon: IndianRupee },
-  { title: 'Updates',   url: '/partner/updates',   icon: Megaphone },
+  { title: 'Dashboard', url: '/erp/distributor/dashboard', icon: LayoutDashboard },
+  { title: 'Catalog',   url: '/erp/distributor/catalog',   icon: Package },
+  { title: 'Cart',      url: '/erp/distributor/cart',      icon: ShoppingCart },
+  { title: 'Invoices',  url: '/erp/distributor/invoices',  icon: FileText },
+  { title: 'Payments',  url: '/erp/distributor/payments',  icon: IndianRupee },
+  { title: 'Updates',   url: '/erp/distributor/updates',   icon: Megaphone },
 ];
 
-interface PartnerLayoutProps {
+interface DistributorLayoutProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
 }
 
-export function PartnerLayout({ children, title, subtitle }: PartnerLayoutProps) {
+export function DistributorLayout({ children, title, subtitle }: DistributorLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const session = getPartnerSession();
-  if (!session) return <Navigate to="/partner/login" replace />;
+  const session = getDistributorSession();
+  if (!session) return <Navigate to="/erp/distributor/login" replace />;
 
   const initials = session.legal_name
     .split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase() || 'PR';
 
   const handleLogout = () => {
-    clearPartnerSession();
+    clearDistributorSession();
     toast.success('Signed out');
-    navigate('/partner/login');
+    navigate('/erp/distributor/login');
   };
 
   const tierBadge = {

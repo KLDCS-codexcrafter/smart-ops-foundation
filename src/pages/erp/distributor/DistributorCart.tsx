@@ -1,29 +1,29 @@
 /**
- * PartnerCart.tsx — Offline IndexedDB cart, submit creates a PartnerOrder.
- * Sprint 10. Reads/writes via partner-cart-store (IndexedDB).
- * [JWT] On submit, POST /api/partner/orders + clear cart.
+ * DistributorCartState.tsx — Offline IndexedDB cart, submit creates a DistributorOrder.
+ * Sprint 10. Reads/writes via distributor-cart-store (IndexedDB).
+ * [JWT] On submit, POST /api/distributor/orders + clear cart.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { getPartnerSession, loadPartners } from '@/lib/partner-auth-engine';
+import { getDistributorSession, loadDistributors } from '@/lib/distributor-auth-engine';
 import {
   getCart, setCart, clearCart, removeLine, isAvailable,
-} from '@/lib/partner-cart-store';
+} from '@/lib/distributor-cart-store';
 import {
   cartToOrder, nextOrderNumber, checkCreditAvailable,
-} from '@/lib/partner-order-engine';
+} from '@/lib/distributor-order-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
-  partnerOrdersKey, type PartnerCart, type PartnerOrder,
-} from '@/types/partner-order';
+  distributorOrdersKey, type DistributorCartState, type DistributorOrder,
+} from '@/types/distributor-order';
 
 const INDIGO = 'hsl(231 48% 58%)';
 
@@ -32,17 +32,17 @@ function ls<T>(k: string): T[] {
 }
 function setLs<T>(k: string, v: T[]): void { localStorage.setItem(k, JSON.stringify(v)); }
 
-export function PartnerCartPanel() { return <PartnerCartPage />; }
+export function DistributorCartPanel() { return <DistributorCartPage />; }
 
-export default function PartnerCartPage() {
+export default function DistributorCartPage() {
   const navigate = useNavigate();
-  const session = getPartnerSession();
-  const [cart, setLocalCart] = useState<PartnerCart | null>(null);
+  const session = getDistributorSession();
+  const [cart, setLocalCart] = useState<DistributorCartState | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const partner = session
-    ? loadPartners(session.entity_code).find(p => p.id === session.partner_id) ?? null
+  const distributor = session
+    ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
 
   const refresh = useCallback(async () => {
@@ -53,7 +53,7 @@ export default function PartnerCartPage() {
         toast.error('Offline cart unavailable in this browser');
         setLocalCart(null);
       } else {
-        setLocalCart(await getCart(session.partner_id));
+        setLocalCart(await getCart(session.distributor_id));
       }
     } finally {
       setLoading(false);
@@ -62,13 +62,13 @@ export default function PartnerCartPage() {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  if (!session || !partner) {
+  if (!session || !distributor) {
     return (
-      <PartnerLayout title="Cart">
+      <DistributorLayout title="Cart">
         <div className="rounded-2xl border border-border/50 p-8 text-center text-sm text-muted-foreground">
-          Partner profile unavailable.
+          Distributor profile unavailable.
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
@@ -76,7 +76,7 @@ export default function PartnerCartPage() {
   const taxable = cart?.lines.reduce((s, l) => s + l.taxable_paise, 0) ?? 0;
   const tax = cart?.lines.reduce((s, l) => s + l.cgst_paise + l.sgst_paise + l.igst_paise, 0) ?? 0;
 
-  const credit = checkCreditAvailable(partner, grand);
+  const credit = checkCreditAvailable(distributor, grand);
 
   const handleQtyChange = async (lineId: string, qty: number) => {
     if (!cart) return;
@@ -99,7 +99,7 @@ export default function PartnerCartPage() {
   };
 
   const handleRemove = async (itemId: string) => {
-    const updated = await removeLine(session.partner_id, itemId);
+    const updated = await removeLine(session.distributor_id, itemId);
     setLocalCart(updated);
     toast.success('Line removed');
   };
@@ -128,16 +128,16 @@ export default function PartnerCartPage() {
     }
     setSubmitting(true);
     try {
-      const existing = ls<PartnerOrder>(partnerOrdersKey(session.entity_code));
+      const existing = ls<DistributorOrder>(distributorOrdersKey(session.entity_code));
       const orderNo = nextOrderNumber(existing);
-      const order = cartToOrder(cart, partner, orderNo);
-      // [JWT] POST /api/partner/orders
-      setLs(partnerOrdersKey(session.entity_code), [order, ...existing]);
-      await clearCart(session.partner_id);
+      const order = cartToOrder(cart, distributor, orderNo);
+      // [JWT] POST /api/distributor/orders
+      setLs(distributorOrdersKey(session.entity_code), [order, ...existing]);
+      await clearCart(session.distributor_id);
       toast.success(`Order ${orderNo} submitted`, {
         description: 'Awaiting accountant approval at the ERP.',
       });
-      navigate('/partner/dashboard');
+      navigate('/erp/distributor/dashboard');
     } catch (e) {
       toast.error('Could not submit order', { description: e instanceof Error ? e.message : 'Unknown error' });
     } finally {
@@ -147,31 +147,31 @@ export default function PartnerCartPage() {
 
   if (loading) {
     return (
-      <PartnerLayout title="Cart">
+      <DistributorLayout title="Cart">
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin" style={{ color: INDIGO }} />
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
   if (!cart || cart.lines.length === 0) {
     return (
-      <PartnerLayout title="Cart">
+      <DistributorLayout title="Cart">
         <div className="rounded-2xl border border-border/50 p-12 text-center animate-fade-in">
           <ShoppingCart className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
           <p className="text-sm text-foreground font-medium mb-1">Your cart is empty</p>
           <p className="text-xs text-muted-foreground mb-4">Browse the catalog to add tier-priced items.</p>
-          <Button onClick={() => navigate('/partner/catalog')} style={{ background: INDIGO, color: 'white' }}>
+          <Button onClick={() => navigate('/erp/distributor/catalog')} style={{ background: INDIGO, color: 'white' }}>
             <Package className="h-4 w-4 mr-2" /> Open Catalog
           </Button>
         </div>
-      </PartnerLayout>
+      </DistributorLayout>
     );
   }
 
   return (
-    <PartnerLayout title="Cart" subtitle={`${cart.lines.length} item${cart.lines.length === 1 ? '' : 's'} • saved offline`}>
+    <DistributorLayout title="Cart" subtitle={`${cart.lines.length} item${cart.lines.length === 1 ? '' : 's'} • saved offline`}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
         {/* Lines */}
         <div className="lg:col-span-2 space-y-3">
@@ -294,6 +294,6 @@ export default function PartnerCartPage() {
           </div>
         </div>
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }

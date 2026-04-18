@@ -17,13 +17,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { loadPartners } from '@/lib/partner-auth-engine';
+import { loadDistributors } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import {
-  partnerBroadcastsKey,
+  distributorBroadcastsKey,
   type BroadcastAudience, type BroadcastChannel, type BroadcastMessage,
-} from '@/types/partner-order';
-import type { Partner, PartnerTier } from '@/types/partner';
+} from '@/types/distributor-order';
+import type { Distributor, DistributorTier } from '@/types/distributor';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -61,12 +61,12 @@ export default function DistributorBroadcast() {
     return keys[0]?.replace('erp_partners_', '') ?? 'SMRT';
   }, []);
 
-  const partners = useMemo<Partner[]>(() => loadPartners(entityCode), [entityCode]);
+  const partners = useMemo<Distributor[]>(() => loadDistributors(entityCode), [entityCode]);
   const [submitting, setSubmitting] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
   const broadcasts = useMemo<BroadcastMessage[]>(
-    () => ls<BroadcastMessage>(partnerBroadcastsKey(entityCode))
+    () => ls<BroadcastMessage>(distributorBroadcastsKey(entityCode))
       .sort((a, b) => b.created_at.localeCompare(a.created_at)),
     [entityCode, refresh],
   );
@@ -104,7 +104,7 @@ export default function DistributorBroadcast() {
       const audience: BroadcastAudience =
         v.audience_kind === 'all_partners'
           ? { kind: 'all_partners' }
-          : { kind: 'tier', tier: (v.tier ?? 'gold') as PartnerTier };
+          : { kind: 'tier', tier: (v.tier ?? 'gold') as DistributorTier };
 
       const now = new Date().toISOString();
       const isScheduled = !!v.scheduled_for;
@@ -126,7 +126,7 @@ export default function DistributorBroadcast() {
         updated_at: now,
       };
       // [JWT] POST /api/sales/broadcasts
-      setLs(partnerBroadcastsKey(entityCode), [broadcast, ...broadcasts]);
+      setLs(distributorBroadcastsKey(entityCode), [broadcast, ...broadcasts]);
       toast.success(isScheduled ? 'Broadcast scheduled' : `Sent to ${recipientCount} partner${recipientCount === 1 ? '' : 's'}`);
       form.reset({ ...form.getValues(), title: '', body: '', scheduled_for: '' });
       setRefresh(x => x + 1);

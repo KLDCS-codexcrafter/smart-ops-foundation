@@ -1,15 +1,15 @@
 /**
- * PartnerInvoices.tsx — Distributor's own SI list with EWB tracking + pay link.
- * Sprint 10. Scopes vouchers to partner.customer_id via scopeQueryToPartner.
- * [JWT] GET /api/partner/invoices
+ * DistributorInvoices.tsx — Distributor's own SI list with EWB tracking + pay link.
+ * Sprint 10. Scopes vouchers to distributor.customer_id via scopeQueryToDistributor.
+ * [JWT] GET /api/erp/distributor/invoices
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Search, IndianRupee, Truck, ExternalLink, Download } from 'lucide-react';
-import { PartnerLayout } from '@/components/layout/PartnerLayout';
+import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { getPartnerSession, scopeQueryToPartner } from '@/lib/partner-auth-engine';
+import { getDistributorSession, scopeQueryToDistributor } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
 import type { Voucher } from '@/types/voucher';
 
@@ -25,11 +25,11 @@ const formatDate = (iso: string): string => {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
-export function PartnerInvoicesPanel() { return <PartnerInvoices />; }
+export function DistributorInvoicesPanel() { return <DistributorInvoices />; }
 
-export default function PartnerInvoices() {
+export default function DistributorInvoices() {
   const navigate = useNavigate();
-  const session = getPartnerSession();
+  const session = getDistributorSession();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'open' | 'paid'>('all');
 
@@ -37,7 +37,7 @@ export default function PartnerInvoices() {
     if (!session) return [];
     const all = ls<Voucher>(`erp_group_vouchers_${session.entity_code}`);
     const sales = all.filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted');
-    return scopeQueryToPartner(sales, session)
+    return scopeQueryToDistributor(sales, session)
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [session]);
 
@@ -52,13 +52,13 @@ export default function PartnerInvoices() {
   }, [invoices, search]);
 
   if (!session) {
-    return <PartnerLayout title="Invoices"><div className="text-sm text-muted-foreground">Sign in.</div></PartnerLayout>;
+    return <DistributorLayout title="Invoices"><div className="text-sm text-muted-foreground">Sign in.</div></DistributorLayout>;
   }
 
   const totalDue = invoices.reduce((s, v) => s + (v.net_amount ?? 0), 0);
 
   return (
-    <PartnerLayout title="My Invoices" subtitle={`${invoices.length} posted • Outstanding: ${formatINR(Math.round(totalDue * 100))}`}>
+    <DistributorLayout title="My Invoices" subtitle={`${invoices.length} posted • Outstanding: ${formatINR(Math.round(totalDue * 100))}`}>
       <div className="space-y-4 animate-fade-in">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
@@ -83,7 +83,7 @@ export default function PartnerInvoices() {
             ))}
           </div>
           <Button
-            onClick={() => navigate('/partner/payments')}
+            onClick={() => navigate('/erp/distributor/payments')}
             className="rounded-lg gap-2"
             style={{ background: INDIGO, color: 'white' }}
           >
@@ -162,6 +162,6 @@ export default function PartnerInvoices() {
           </div>
         )}
       </div>
-    </PartnerLayout>
+    </DistributorLayout>
   );
 }

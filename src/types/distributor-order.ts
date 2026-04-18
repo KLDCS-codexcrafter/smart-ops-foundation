@@ -4,7 +4,7 @@
  * once submitted (FineCore reads it as a Sales Order draft).
  */
 
-export type PartnerOrderStatus =
+export type DistributorOrderStatus =
   | 'draft'           // in cart, not yet submitted
   | 'submitted'       // sent to ERP, awaiting credit/inventory check
   | 'approved'        // ERP accountant approved
@@ -13,7 +13,7 @@ export type PartnerOrderStatus =
   | 'cancelled';      // distributor pulled it back before approval
 
 /** A single line within the cart or order */
-export interface PartnerOrderLine {
+export interface DistributorOrderLine {
   id: string;
   item_id: string;
   item_code: string;
@@ -31,14 +31,14 @@ export interface PartnerOrderLine {
 }
 
 /**
- * PartnerCart — IndexedDB-backed offline cart. ONE active cart per partner.
+ * DistributorCartState — IndexedDB-backed offline cart. ONE active cart per partner.
  * Auto-syncs to ERP on submit().
  */
-export interface PartnerCart {
+export interface DistributorCartState {
   id: string;                // = partner_id (one cart per partner)
   partner_id: string;
   entity_code: string;
-  lines: PartnerOrderLine[];
+  lines: DistributorOrderLine[];
   notes: string;
   delivery_address: string;
   expected_delivery_date: string | null;
@@ -46,18 +46,18 @@ export interface PartnerCart {
 }
 
 /**
- * PartnerOrder — submitted cart, persisted as `erp_partner_orders_{entityCode}`.
+ * DistributorOrder — submitted cart, persisted as `erp_distributor_orders_{entityCode}`.
  * ERP staff can approve/reject; SI is created on approval (Sprint 9 SalesInvoice).
  */
-export interface PartnerOrder {
+export interface DistributorOrder {
   id: string;
   order_no: string;             // PO/2026/00042 style
   partner_id: string;
   partner_code: string;
   partner_name: string;
   entity_code: string;
-  status: PartnerOrderStatus;
-  lines: PartnerOrderLine[];
+  status: DistributorOrderStatus;
+  lines: DistributorOrderLine[];
   total_taxable_paise: number;
   total_tax_paise: number;
   grand_total_paise: number;
@@ -74,10 +74,10 @@ export interface PartnerOrder {
 }
 
 /**
- * PartnerPaymentIntimation — distributor self-records 'I paid X by RTGS UTR Y'.
+ * DistributorPaymentIntimation — distributor self-records 'I paid X by RTGS UTR Y'.
  * NOT a posted Receipt. ERP accountant must verify bank and Convert.
  * Razorpay Capital / Kredx model.
- * Persisted as `erp_partner_payment_intimations_{entityCode}`.
+ * Persisted as `erp_distributor_payment_intimations_{entityCode}`.
  */
 export type IntimationStatus =
   | 'submitted'        // distributor created it
@@ -88,7 +88,7 @@ export type IntimationStatus =
 
 export type IntimationMode = 'rtgs' | 'neft' | 'imps' | 'upi' | 'cheque' | 'cash' | 'other';
 
-export interface PartnerPaymentIntimation {
+export interface DistributorPaymentIntimation {
   id: string;
   partner_id: string;
   partner_code: string;
@@ -114,7 +114,7 @@ export interface PartnerPaymentIntimation {
 /**
  * BroadcastMessage — sales team composes once, fires to a partner audience.
  * Reuses Sprint 6A MAS WhatsApp + email infrastructure.
- * Persisted as `erp_partner_broadcasts_{entityCode}`.
+ * Persisted as `erp_distributor_broadcasts_{entityCode}`.
  */
 export type BroadcastChannel = 'whatsapp' | 'email' | 'in_portal';
 export type BroadcastAudience =
@@ -142,11 +142,11 @@ export interface BroadcastMessage {
 }
 
 // ── Storage keys ──
-export const partnerOrdersKey = (e: string) => `erp_partner_orders_${e}`;
-export const partnerIntimationsKey = (e: string) => `erp_partner_payment_intimations_${e}`;
-export const partnerBroadcastsKey = (e: string) => `erp_partner_broadcasts_${e}`;
+export const distributorOrdersKey = (e: string) => `erp_distributor_orders_${e}`;
+export const distributorIntimationsKey = (e: string) => `erp_distributor_payment_intimations_${e}`;
+export const distributorBroadcastsKey = (e: string) => `erp_distributor_broadcasts_${e}`;
 
 // ── IndexedDB constants (cart store) ──
-export const CART_IDB_DB = 'operix_partner_cart';
+export const CART_IDB_DB = 'operix_distributor_cart';
 export const CART_IDB_STORE = 'carts';
 export const CART_IDB_VERSION = 1;

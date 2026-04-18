@@ -6,21 +6,21 @@
  * `is_distributor` flag on CustomerMaster gates portal login.
  */
 
-export type PartnerTier = 'gold' | 'silver' | 'bronze';
+export type DistributorTier = 'gold' | 'silver' | 'bronze';
 
-export type PartnerStatus = 'active' | 'suspended' | 'pending_kyc';
+export type DistributorStatus = 'active' | 'suspended' | 'pending_kyc';
 
 /**
- * Partner — extension of CustomerMaster for distributor portal access.
- * Persisted as `erp_partners_{entityCode}`.
+ * Distributor — extension of CustomerMaster for distributor portal access.
+ * Persisted as `erp_distributors_{entityCode}`.
  * Linked 1:1 with CustomerMaster row by `customer_id`.
  */
-export interface Partner {
+export interface Distributor {
   id: string;
   customer_id: string;       // FK -> erp_group_customer_master
   legal_name: string;
   partner_code: string;      // human-readable, e.g. PRT-MUM-0042
-  tier: PartnerTier;
+  tier: DistributorTier;
   price_list_id: string | null;
   territory_id: string | null;
   credit_limit_paise: number;
@@ -28,7 +28,7 @@ export interface Partner {
   overdue_paise: number;
   monthly_target_paise: number;
   monthly_achieved_paise: number;
-  status: PartnerStatus;
+  status: DistributorStatus;
   contact_email: string;
   contact_mobile: string;
   gstin: string | null;
@@ -40,16 +40,16 @@ export interface Partner {
 }
 
 /**
- * PartnerSession — distributor JWT session (separate scope from internal ERP).
- * Stored in localStorage under `4ds_partner_token`.
+ * DistributorSession — distributor JWT session (separate scope from internal ERP).
+ * Stored in localStorage under `4ds_distributor_token`.
  */
-export interface PartnerSession {
+export interface DistributorSession {
   token: string;
-  partner_id: string;
+  distributor_id: string;
   customer_id: string;
   legal_name: string;
   partner_code: string;
-  tier: PartnerTier;
+  tier: DistributorTier;
   price_list_id: string | null;
   entity_code: string;       // which company they purchase from
   email: string;
@@ -57,10 +57,10 @@ export interface PartnerSession {
 }
 
 /**
- * PartnerActivity — feed item rendered on the dashboard.
- * Persisted as `erp_partner_activity_{entityCode}`.
+ * DistributorActivity — feed item rendered on the dashboard.
+ * Persisted as `erp_distributor_activity_{entityCode}`.
  */
-export type PartnerActivityKind =
+export type DistributorActivityKind =
   | 'invoice_posted'
   | 'payment_received'
   | 'order_approved'
@@ -68,10 +68,10 @@ export type PartnerActivityKind =
   | 'broadcast_received'
   | 'credit_limit_changed';
 
-export interface PartnerActivity {
+export interface DistributorActivity {
   id: string;
-  partner_id: string;
-  kind: PartnerActivityKind;
+  distributor_id: string;
+  kind: DistributorActivityKind;
   title: string;
   detail: string;
   amount_paise?: number | null;
@@ -81,7 +81,7 @@ export interface PartnerActivity {
 }
 
 // ── Storage keys (entity-scoped) ──
-export const partnersKey = (e: string) => `erp_partners_${e}`;
-export const partnerActivityKey = (e: string) => `erp_partner_activity_${e}`;
-export const PARTNER_TOKEN_KEY = '4ds_partner_token';
-export const PARTNER_SESSION_KEY = '4ds_partner_session';
+export const distributorsKey = (e: string) => `erp_distributors_${e}`;
+export const distributorActivityKey = (e: string) => `erp_distributor_activity_${e}`;
+export const DISTRIBUTOR_TOKEN_KEY = '4ds_distributor_token';
+export const DISTRIBUTOR_SESSION_KEY = '4ds_distributor_session';
