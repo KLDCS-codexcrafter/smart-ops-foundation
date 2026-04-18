@@ -61,6 +61,12 @@ export default function DistributorCartPage() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [templateName, setTemplateName] = useState('');
 
+  // Sprint 11a — Voice-to-order state.
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceResult, setVoiceResult] = useState<VoiceOrderResult | null>(null);
+  const voiceSupported = isSpeechRecognitionSupported();
+
   const distributor = session
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
