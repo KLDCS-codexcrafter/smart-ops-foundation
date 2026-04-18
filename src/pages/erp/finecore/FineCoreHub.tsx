@@ -339,7 +339,52 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
         </Card>
       </div>
 
-      {/* SECTION 5 — GST snapshot + Aging */}
+      {/* SECTION 4.5 — Sales Performance (Sprint 5) */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Target className="h-4 w-4 text-orange-500" />
+              Sales Performance
+            </h3>
+            <button
+              onClick={() => onNavigate?.('sx-analytics')}
+              className="text-[10px] text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
+            >
+              Open SalesX Analytics <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Enquiries</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.enquiriesCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Opportunities</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.opportunitiesCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Quotations</p>
+              <p className="text-lg font-bold font-mono mt-1">{salesxKPIs.quotationsCount}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Open Pipeline</p>
+              <p className="text-lg font-bold font-mono mt-1">{inr(salesxKPIs.openOpportunityValue)}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Pending Comm.</p>
+              <p className="text-lg font-bold font-mono mt-1">{inr(salesxKPIs.pendingCommission)}</p>
+            </div>
+            <div className="rounded-lg border border-border p-3">
+              <p className="text-[10px] text-muted-foreground uppercase">Payouts Due</p>
+              <p className={`text-lg font-bold font-mono mt-1 ${salesxKPIs.pendingPayouts > 0 ? 'text-amber-600' : 'text-foreground'}`}>
+                {salesxKPIs.pendingPayouts}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4 space-y-3">
