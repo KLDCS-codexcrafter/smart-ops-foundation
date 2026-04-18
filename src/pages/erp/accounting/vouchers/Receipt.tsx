@@ -298,6 +298,14 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
       <SettlementPanel partyId={partyName} entityCode={entityCode} mode="debtor" />
 
+      {commissionBanner && (
+        <Alert className="border-orange-500/30 bg-orange-500/5">
+          <AlertDescription className="text-xs text-orange-700">
+            ✓ {commissionBanner}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* TDS Deducted by Customer — Sprint 3C */}
       {isDeductor && (
         <Card>
