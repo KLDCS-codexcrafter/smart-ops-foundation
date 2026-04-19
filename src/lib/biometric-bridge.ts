@@ -28,10 +28,11 @@ interface NativeBiometricLike {
 
 async function loadPlugin(): Promise<NativeBiometricLike | null> {
   try {
-    // [JWT] n/a — native biometric plugin
-    const mod = (await import(
-      /* @vite-ignore */ '@capacitor-community/biometric-auth' as unknown as string
-    )) as { NativeBiometric?: NativeBiometricLike };
+    // [JWT] n/a — native biometric plugin (loaded only on native builds)
+    const pkg = '@capacitor-community/biometric-auth';
+    const mod = (await import(/* @vite-ignore */ pkg)) as {
+      NativeBiometric?: NativeBiometricLike;
+    };
     return mod.NativeBiometric ?? null;
   } catch {
     return null;

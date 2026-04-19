@@ -13,9 +13,8 @@ interface BadgeLike {
 
 async function loadBadgePlugin(): Promise<BadgeLike | null> {
   try {
-    const mod = (await import(
-      /* @vite-ignore */ '@capacitor-community/badge' as unknown as string
-    )) as { Badge?: BadgeLike };
+    const pkg = '@capacitor-community/badge';
+    const mod = (await import(/* @vite-ignore */ pkg)) as { Badge?: BadgeLike };
     return mod.Badge ?? null;
   } catch {
     return null;
