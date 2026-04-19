@@ -20,6 +20,10 @@ import {
 } from '@/lib/offline-queue-engine';
 import { hideSplashScreen, onAppResume } from '@/lib/native-bridge';
 import { logMobileAudit } from '@/lib/mobile-audit';
+import { PushPermissionGate } from '@/components/mobile/PushPermissionGate';
+import { registerForPush, onPushTapped } from '@/lib/push-notification-bridge';
+import { setAppBadgeCount } from '@/lib/app-shortcut-bridge';
+import { getQueueSize } from '@/lib/offline-queue-engine';
 import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
 
