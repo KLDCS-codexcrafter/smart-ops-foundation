@@ -226,6 +226,34 @@ export default function CommandCenterPage() {
     return 'overview';
   });
 
+  const { entityCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'command-center',
+      action: 'card_open',
+    });
+  }, [entityCode, userId]);
+
+  useEffect(() => {
+    rememberModule('command-center', activeModule);
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'command-center',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entityCode, userId, {
+      card_id: 'command-center',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `Command Center · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/command-center#${activeModule}`,
+    });
+  }, [activeModule, entityCode, userId]);
+
   useEffect(() => {
     const hash = activeModule === 'overview' ? '' : `#${activeModule}`;
     window.history.replaceState(null, '', window.location.pathname + hash);
@@ -332,25 +360,28 @@ export default function CommandCenterPage() {
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-svh w-full bg-background">
-        <CommandCenterSidebar
-          activeModule={activeModule}
-          onModuleChange={setActiveModule}
-        />
-        <SidebarInset className="flex flex-col flex-1 min-w-0">
-          <CommandCenterHeader
+    <>
+      <GuidedTourOverlay cardId='command-center' />
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex min-h-svh w-full bg-background">
+          <CommandCenterSidebar
             activeModule={activeModule}
             onModuleChange={setActiveModule}
           />
-          <ScrollArea className="flex-1">
-            <div className="p-6 max-w-7xl mx-auto">
-              {renderModule()}
-            </div>
-          </ScrollArea>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+          <SidebarInset className="flex flex-col flex-1 min-w-0">
+            <CommandCenterHeader
+              activeModule={activeModule}
+              onModuleChange={setActiveModule}
+            />
+            <ScrollArea className="flex-1">
+              <div className="p-6 max-w-7xl mx-auto">
+                {renderModule()}
+              </div>
+            </ScrollArea>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </>
   );
 }
 
