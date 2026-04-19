@@ -592,6 +592,47 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                 <div className="font-bold">Total: ₹{form.total_amount.toLocaleString('en-IN')}</div>
               </div>
 
+              {/* Sprint 12 — Applicable scheme chips (customer audience) */}
+              {(() => {
+                const allSchemes: Scheme[] = (() => {
+                  try {
+                    // [JWT] GET /api/schemes
+                    return JSON.parse(localStorage.getItem(schemesKey(entityCode)) || '[]') as Scheme[];
+                  } catch { return []; }
+                })();
+                const schemeCart: SchemeCart = {
+                  audience: 'customer',
+                  order_value_paise: Math.round((form.total_amount || 0) * 100),
+                  lines: form.items.map(it => ({
+                    line_id: it.id,
+                    item_id: it.id,
+                    qty: it.qty,
+                    unit_price_paise: Math.round((it.rate || 0) * 100),
+                    line_total_paise: Math.round((it.sub_total || 0) * 100),
+                  })),
+                };
+                const applied = applySchemes(schemeCart, allSchemes);
+                const total = totalSchemeDiscountPaise(applied);
+                if (applied.length === 0) return null;
+                return (
+                  <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+                    <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                    <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Schemes</span>
+                    {applied.map(a => (
+                      <Badge key={a.scheme_id} variant="outline" className="text-[10px] bg-violet-500/10 text-violet-700 border-violet-500/30">
+                        {a.scheme_name}
+                        {a.discount_paise > 0 && <> · −₹{(a.discount_paise / 100).toLocaleString('en-IN')}</>}
+                      </Badge>
+                    ))}
+                    {total > 0 && (
+                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                        −₹{(total / 100).toLocaleString('en-IN')}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+
               <div className="grid grid-cols-2 gap-4 pt-4">
                 <div>
                   <label className="text-xs font-medium">Terms &amp; Conditions</label>
