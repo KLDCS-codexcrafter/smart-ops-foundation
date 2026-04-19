@@ -82,7 +82,11 @@ function tierBadgeClass(tier: CLVResult['clv_rank_tier']): string {
   }
 }
 
-export function CustomerHubWelcomePanel() {
+interface CustomerHubWelcomePanelProps {
+  onModuleChange?: (m: CustomerHubModule) => void;
+}
+
+export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePanelProps = {}) {
   const { entityCode, userId } = useCardEntitlement();
   const [now] = useState<Date>(() => new Date());
 
@@ -113,6 +117,32 @@ export function CustomerHubWelcomePanel() {
   }, [customers, orders]);
 
   const topClv = useMemo(() => topCLV(clvResults, 10), [clvResults]);
+
+  // G3: Churn computation for critical-risk banner
+  const churnResults = useMemo(() => {
+    return customers.map(c => {
+      const myOrders = orders
+        .filter(o => (o.customer_id ?? o.distributor_id) === c.id && o.placed_at)
+        .map(o => ({
+          placed_at: o.placed_at as string,
+          value_paise: (o.order_value_paise ?? o.total_paise ?? 0),
+        }));
+      const sorted = [...myOrders].sort((a, b) => a.placed_at.localeCompare(b.placed_at));
+      return computeChurn({
+        customer_id: c.id,
+        historical_orders: myOrders,
+        first_order_at: sorted[0]?.placed_at ?? null,
+        last_order_at: sorted[sorted.length - 1]?.placed_at ?? null,
+        open_complaints: 0,
+        recent_rating_avg: null,
+      });
+    });
+  }, [customers, orders]);
+
+  const critical = useMemo(
+    () => highestChurnRisk(churnResults, 5).filter(r => r.risk_tier === 'critical'),
+    [churnResults],
+  );
 
   // KPIs
   const kpis = useMemo(() => {
