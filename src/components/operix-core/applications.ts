@@ -170,6 +170,15 @@ export const applications: AppDefinition[] = [
     icon: 'Users',
   },
   {
+    id: 'dispatch-hub',
+    name: 'Dispatch Hub',
+    description: 'LR tracking, Proof of Delivery, packing slips, and transporter invoice reconciliation — Sprint 15a/b',
+    category: 'BackOffice Hub',
+    route: '/erp/backoffice/dispatch',
+    icon: 'Truck',
+    status: 'active',
+  },
+  {
     id: 'backoffice',
     name: 'Back Office Pro',
     description: 'Front desk — visitor check-in, room booking and desk reservation',
