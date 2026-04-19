@@ -187,12 +187,76 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
 // ─── Panel Component ──────────────────────────────────────────
 
 export function LogisticMasterPanel() {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+
   const [logistics, setLogistics] = useState<LogisticMasterDefinition[]>(() => loadLogistics());
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<LogisticMasterDefinition | null>(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<LogisticType | 'all'>('all');
   const [gstinFetching, setGstinFetching] = useState(false);
+
+  // Sprint 15a — Advanced rate cards
+  const [rateCards, setRateCards] = useState<TransporterRateCard[]>([]);
+  const [showRateCards, setShowRateCards] = useState(false);
+
+  useEffect(() => {
+    if (!editTarget) { setRateCards([]); return; }
+    try {
+      // [JWT] GET /api/masters/transporter-rate-cards?logistic_id=:id
+      const all: TransporterRateCard[] = JSON.parse(
+        localStorage.getItem(transporterRateCardsKey(entityCode)) ?? '[]',
+      );
+      setRateCards(all.filter(c => c.logistic_id === editTarget.id));
+    } catch { setRateCards([]); }
+  }, [editTarget, entityCode]);
+
+  const seedFromOM = () => {
+    if (!editTarget) return;
+    const now = new Date().toISOString();
+    const card: TransporterRateCard = {
+      id: `trc-${Date.now()}`,
+      logistic_id: editTarget.id,
+      entity_id: entityCode,
+      label: `${editTarget.partyName} — OM Logistics template`,
+      effective_from: now.split('T')[0],
+      effective_to: null,
+      zone_definitions: DEFAULT_ZONE_DEFINITIONS,
+      zone_rates: [],
+      collection_delivery: [],
+      oda_grid: [],
+      minimum_chargeable: { surface: 100, train: 75, air: 35 },
+      volumetric_divisor: 10,
+      surcharges: {
+        statistical_flat: 150,
+        fuel_pct_of_basic: 10,
+        fov_pct_of_invoice: 0.2,
+        cod_flat_if_applicable: 200,
+        demurrage_free_days: 10,
+        demurrage_per_kg_per_day: 0.20,
+      },
+      fuel_escalation: {
+        base_fuel_price: 0, current_fuel_price: 0,
+        ratio_numerator: 5.5, ratio_denominator: 10,
+      },
+      annual_hike_pct: 10,
+      contract_start: now.split('T')[0],
+      contract_end: '',
+      created_at: now, updated_at: now,
+      created_by: 'admin',
+    };
+    try {
+      const all: TransporterRateCard[] = JSON.parse(
+        localStorage.getItem(transporterRateCardsKey(entityCode)) ?? '[]',
+      );
+      all.push(card);
+      // [JWT] POST /api/masters/transporter-rate-cards
+      localStorage.setItem(transporterRateCardsKey(entityCode), JSON.stringify(all));
+      setRateCards([...rateCards, card]);
+      toast.success('Rate card seeded from OM Logistics template');
+    } catch { toast.error('Failed to seed rate card'); }
+  };
 
   // Form expansion toggles
   const [showContacts, setShowContacts] = useState(false);
