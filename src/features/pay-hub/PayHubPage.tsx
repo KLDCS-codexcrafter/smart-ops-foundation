@@ -8,6 +8,11 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { PayHubSidebar, type PayHubModule } from './PayHubSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { PayHubDashboardPanel } from '@/pages/erp/pay-hub/PayHubDashboard';
 import { PayHeadMasterPanel } from '@/pages/erp/pay-hub/masters/PayHeadMaster';
 import { SalaryStructureMasterPanel } from '@/pages/erp/pay-hub/masters/SalaryStructureMaster';
@@ -178,6 +183,7 @@ export default function PayHubPage() {
   const [activeModule, setActiveModule] = useState<PayHubModule>('ph-dashboard');
   const { entities, selectedEntityId, setSelectedEntityId,
     selectedEntity, isMultiEntity } = useEntityList();
+  const { entityCode, userId } = useCardEntitlement();
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -188,26 +194,55 @@ export default function PayHubPage() {
     return () => window.removeEventListener('ph-navigate', handler);
   }, []);
 
+  useEffect(() => {
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'peoplepay',
+      action: 'card_open',
+    });
+  }, [entityCode, userId]);
+
+  useEffect(() => {
+    rememberModule('peoplepay', activeModule);
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'peoplepay',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entityCode, userId, {
+      card_id: 'peoplepay',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `PeoplePay · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/pay-hub#${activeModule}`,
+    });
+  }, [activeModule, entityCode, userId]);
+
   return (
-    <SidebarProvider defaultOpen>
-      <PayHubSidebar activeModule={activeModule} onModuleChange={setActiveModule} />
-      <SidebarInset>
-        <ERPHeader
-          breadcrumbs={[
-            { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'Pay Hub' },
-            { label: breadcrumbLabels[activeModule] ?? activeModule },
-          ]}
-          showDatePicker={false}
-          showCompany={isMultiEntity}
-          companies={entities}
-        />
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-7xl mx-auto">
-            {renderModule(activeModule, selectedEntityId)}
-          </div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <GuidedTourOverlay cardId='peoplepay' />
+      <SidebarProvider defaultOpen>
+        <PayHubSidebar activeModule={activeModule} onModuleChange={setActiveModule} />
+        <SidebarInset>
+          <ERPHeader
+            breadcrumbs={[
+              { label: 'Operix Core', href: '/erp/dashboard' },
+              { label: 'Pay Hub' },
+              { label: breadcrumbLabels[activeModule] ?? activeModule },
+            ]}
+            showDatePicker={false}
+            showCompany={isMultiEntity}
+            companies={entities}
+          />
+          <ScrollArea className="flex-1">
+            <div className="p-6 max-w-7xl mx-auto">
+              {renderModule(activeModule, selectedEntityId)}
+            </div>
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }

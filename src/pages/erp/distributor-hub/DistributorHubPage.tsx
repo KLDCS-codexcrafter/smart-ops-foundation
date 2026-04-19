@@ -12,6 +12,11 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { DistributorHubSidebar, type DistributorHubModule } from './DistributorHubSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 
 // Welcome page
 import { DistributorHubWelcomePanel } from './DistributorHubWelcome';
@@ -70,6 +75,33 @@ export default function DistributorHubPage() {
     if (hash.startsWith('dh-')) return hash as DistributorHubModule;
     return 'dh-welcome';
   });
+  const { entityCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'distributor-hub',
+      action: 'card_open',
+    });
+  }, [entityCode, userId]);
+
+  useEffect(() => {
+    rememberModule('distributor-hub', activeModule);
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'distributor-hub',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entityCode, userId, {
+      card_id: 'distributor-hub',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `Distributor Hub · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/distributor-hub#${activeModule}`,
+    });
+  }, [activeModule, entityCode, userId]);
 
   useEffect(() => {
     if (activeModule !== 'dh-welcome') {
@@ -80,19 +112,22 @@ export default function DistributorHubPage() {
   }, [activeModule]);
 
   return (
-    <SidebarProvider defaultOpen>
-      <DistributorHubSidebar
-        activeModule={activeModule}
-        onModuleChange={setActiveModule}
-      />
-      <SidebarInset>
-        <ERPHeader />
-        <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
-          <div className="p-4 md:p-6 animate-fade-in">
-            {renderModule(activeModule)}
-          </div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <GuidedTourOverlay cardId='distributor-hub' />
+      <SidebarProvider defaultOpen>
+        <DistributorHubSidebar
+          activeModule={activeModule}
+          onModuleChange={setActiveModule}
+        />
+        <SidebarInset>
+          <ERPHeader />
+          <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
+            <div className="p-4 md:p-6 animate-fade-in">
+              {renderModule(activeModule)}
+            </div>
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }

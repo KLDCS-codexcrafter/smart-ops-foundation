@@ -3,12 +3,17 @@
  * Mirrors PayHubPage.tsx — SidebarProvider + FineCoreSidebar + content area.
  * [JWT] All data loaded via hooks
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { FineCoreSidebar } from './FineCoreSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { DraftTray, type FineCoreModule, type DraftEntry } from '@/components/finecore/DraftTray';
 import { ComingSoonPanel } from '@/components/finecore/ComingSoonPanel';
 import { FineCoreHubPanel } from './FineCoreHub';
@@ -115,6 +120,33 @@ export function FinCorePagePanel() {
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
   const [selectedCompany] = useERPCompany();
   const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode: entCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'finecore',
+      action: 'card_open',
+    });
+  }, [entCode, userId]);
+
+  useEffect(() => {
+    rememberModule('finecore', activeModule);
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'finecore',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entCode, userId, {
+      card_id: 'finecore',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `FineCore · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/finecore#${activeModule}`,
+    });
+  }, [activeModule, entCode, userId]);
 
   const addToDraftTray = useCallback((draft: DraftEntry) => {
     if (drafts.length >= 5) {
@@ -196,29 +228,32 @@ export function FinCorePagePanel() {
   };
 
   return (
-    <SidebarProvider defaultOpen>
-      <FineCoreSidebar active={activeModule} onNavigate={setActiveModule} />
-      <SidebarInset>
-        <ERPHeader
-          breadcrumbs={[
-            { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'Fin Core' },
-            { label: breadcrumbLabels[activeModule] ?? activeModule },
-          ]}
-          showDatePicker={false}
-          showCompany={false}
-        />
-        <DraftTray
-          drafts={drafts}
-          activeDraftId={activeDraftId}
-          onSwitch={handleSwitchDraft}
-          onClose={handleCloseDraft}
-        />
-        <ScrollArea className="flex-1">
-          <div className="p-0">{renderModule()}</div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <GuidedTourOverlay cardId='finecore' />
+      <SidebarProvider defaultOpen>
+        <FineCoreSidebar active={activeModule} onNavigate={setActiveModule} />
+        <SidebarInset>
+          <ERPHeader
+            breadcrumbs={[
+              { label: 'Operix Core', href: '/erp/dashboard' },
+              { label: 'Fin Core' },
+              { label: breadcrumbLabels[activeModule] ?? activeModule },
+            ]}
+            showDatePicker={false}
+            showCompany={false}
+          />
+          <DraftTray
+            drafts={drafts}
+            activeDraftId={activeDraftId}
+            onSwitch={handleSwitchDraft}
+            onClose={handleCloseDraft}
+          />
+          <ScrollArea className="flex-1">
+            <div className="p-0">{renderModule()}</div>
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }
 export default function FinCorePage() { return <FinCorePagePanel />; }
