@@ -1,13 +1,16 @@
 /**
- * PackingSlipPrint.tsx — A4 print preview. Sprint 15a.
+ * PackingSlipPrint.tsx — A4 print preview. Sprint 15a + 15b override section.
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Printer, Search } from 'lucide-react';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import { Printer, Search, Save } from 'lucide-react';
 import type { Voucher } from '@/types/voucher';
 import type { ItemPacking } from '@/types/item-packing';
 import type { PackingSlip } from '@/types/packing-slip';
@@ -16,10 +19,24 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { computePackingSlip } from '@/lib/packing-slip-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
+// Sprint 15b — override capture
+import {
+  type PackingBOM, type PackingBOMActual,
+  packingBOMsKey, packingBOMActualsKey,
+} from '@/types/packing-bom';
+import { expandDLN, computeActualVariance } from '@/lib/packing-bom-engine';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? JSON.parse(r) as T[] : []; }
   catch { return []; }
+}
+
+interface OverrideRow {
+  key: string; // item_id|material_id
+  item_id: string; item_code: string;
+  material_id: string; material_code: string; material_name: string; material_uom: string;
+  standard_qty: number;
+  actual_qty: number;
 }
 
 export function PackingSlipPrintPanel() {
@@ -63,6 +80,35 @@ export function PackingSlipPrintPanel() {
     setSlips(next); setActiveSlip(slip);
   };
 
+  // Sprint 15b — override capture state
+  const [overrideRows, setOverrideRows] = useState<OverrideRow[]>([]);
+  const [packerName, setPackerName] = useState('');
+  const [reason, setReason] = useState('');
+
+  // Build standard rows from active BOMs whenever activeSlip changes
+  useEffect(() => {
+    if (!activeSlip) { setOverrideRows([]); return; }
+    const dln = vouchers.find(v => v.id === activeSlip.dln_voucher_id);
+    if (!dln) { setOverrideRows([]); return; }
+    const boms = ls<PackingBOM>(packingBOMsKey(entityCode));
+    const { materials } = expandDLN(dln, boms);
+    // Aggregate by item+material
+    const map = new Map<string, OverrideRow>();
+    for (const m of materials) {
+      const key = `${m.source_item_id}|${m.material_id}`;
+      const ex = map.get(key);
+      if (ex) ex.standard_qty += m.qty;
+      else map.set(key, {
+        key,
+        item_id: m.source_item_id, item_code: m.source_item_code,
+        material_id: m.material_id, material_code: m.material_code,
+        material_name: m.material_name, material_uom: m.material_uom,
+        standard_qty: m.qty, actual_qty: m.qty,
+      });
+    }
+    setOverrideRows(Array.from(map.values()));
+  }, [activeSlip, vouchers, entityCode]);
+
   const printSlip = () => {
     if (!activeSlip) return;
     const updated = slips.map(s => s.id === activeSlip.id
@@ -72,6 +118,36 @@ export function PackingSlipPrintPanel() {
     setActiveSlip({ ...activeSlip, printed_count: activeSlip.printed_count + 1, status: 'printed' });
     window.print();
     toast.success('Sent to printer');
+  };
+
+  const saveOverrides = () => {
+    if (!activeSlip) return;
+    const changed = overrideRows.filter(r => r.actual_qty !== r.standard_qty);
+    if (changed.length === 0) { toast.info('No overrides to save'); return; }
+    const now = new Date().toISOString();
+    const allActuals = ls<PackingBOMActual>(packingBOMActualsKey(entityCode));
+    const newActuals: PackingBOMActual[] = changed.map((r, i) => {
+      const { variance_qty, variance_pct } = computeActualVariance(r.standard_qty, r.actual_qty);
+      return {
+        id: `pba-${Date.now()}-${i}`,
+        entity_id: entityCode,
+        dln_voucher_id: activeSlip.dln_voucher_id,
+        packing_slip_id: activeSlip.id,
+        item_id: r.item_id,
+        material_id: r.material_id,
+        standard_qty: r.standard_qty,
+        actual_qty: r.actual_qty,
+        variance_qty, variance_pct,
+        reason: reason || undefined,
+        packer_id: packerName || userId,
+        packer_name: packerName || userId,
+        captured_at: now,
+      };
+    });
+    allActuals.push(...newActuals);
+    // [JWT] POST /api/dispatch/packing-bom-actuals
+    localStorage.setItem(packingBOMActualsKey(entityCode), JSON.stringify(allActuals));
+    toast.success(`Saved ${newActuals.length} override(s)`);
   };
 
   return (
@@ -175,6 +251,58 @@ export function PackingSlipPrintPanel() {
           </CardContent>
         </Card>
       </div>
+
+      {activeSlip && overrideRows.length > 0 && (
+        <Card className="print:hidden">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Actual vs Standard — Packing Material Override</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Packer name</Label>
+                <Input value={packerName} onChange={e => setPackerName(e.target.value)} placeholder="Who packed this?" />
+              </div>
+              <div>
+                <Label className="text-xs">Reason for variance</Label>
+                <Input value={reason} onChange={e => setReason(e.target.value)} placeholder="Optional…" />
+              </div>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Item</TableHead>
+                  <TableHead>Material</TableHead>
+                  <TableHead>UOM</TableHead>
+                  <TableHead className="text-right">Standard</TableHead>
+                  <TableHead className="text-right w-[140px]">Actual</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {overrideRows.map(r => (
+                  <TableRow key={r.key}>
+                    <TableCell className="font-mono text-xs">{r.item_code}</TableCell>
+                    <TableCell className="text-xs">{r.material_code} · {r.material_name}</TableCell>
+                    <TableCell className="text-xs">{r.material_uom}</TableCell>
+                    <TableCell className="text-right font-mono">{r.standard_qty.toFixed(3)}</TableCell>
+                    <TableCell>
+                      <Input type="number" step="0.001" className="h-8 text-right font-mono"
+                        value={r.actual_qty}
+                        onChange={e => setOverrideRows(rows => rows.map(x =>
+                          x.key === r.key ? { ...x, actual_qty: parseFloat(e.target.value || '0') } : x))} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="flex justify-end">
+              <Button onClick={saveOverrides} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Save className="h-3.5 w-3.5 mr-1" /> Save Overrides
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

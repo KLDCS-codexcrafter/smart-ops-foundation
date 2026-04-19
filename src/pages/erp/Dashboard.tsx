@@ -83,7 +83,7 @@ const LANES: Array<{
     label: 'Support & back office',
     borderColor: 'border-l-slate-400',
     labelColor: 'text-slate-500 dark:text-slate-400',
-    ids: ['backoffice', 'servicedesk'],
+    ids: ['dispatch-hub', 'backoffice', 'servicedesk'],
   },
 ];
 
