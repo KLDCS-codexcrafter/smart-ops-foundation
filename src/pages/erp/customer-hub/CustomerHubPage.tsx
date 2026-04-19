@@ -28,13 +28,19 @@ import { CustomerCartPanel } from './transactions/CustomerCart';
 import { CustomerOrdersPanel } from './transactions/CustomerOrders';
 import { CustomerRewardsPanel } from './transactions/CustomerRewards';
 import { VoiceComplaintCapturePanel } from './transactions/VoiceComplaintCapture';
-// Sprint 13c will add family-wallet, sample-kits, and analytics reports.
+// Sprint 13c — closing layer
+import { FamilyWalletHubPanel } from './transactions/FamilyWalletHub';
+import { SampleKitsPanel } from './transactions/SampleKits';
+import { LoyaltyPerformanceReportPanel } from './reports/LoyaltyPerformanceReport';
+import { CLVRankingsReportPanel } from './reports/CLVRankingsReport';
+import { ChurnRiskReportPanel } from './reports/ChurnRiskReport';
+import { SocialProofReportPanel } from './reports/SocialProofReport';
 
 function ComingSoonPanel({ module }: { module: CustomerHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
       <p className="text-lg font-semibold">Coming Soon</p>
-      <p className="text-sm mt-1">{module} — Sprint 13b or 13c</p>
+      <p className="text-sm mt-1">{module}</p>
     </div>
   );
 }
@@ -49,7 +55,12 @@ function renderModule(mod: CustomerHubModule): React.ReactElement {
     case 'ch-t-orders':             return <CustomerOrdersPanel />;
     case 'ch-t-rewards':            return <CustomerRewardsPanel />;
     case 'ch-t-voice-complaint':    return <VoiceComplaintCapturePanel />;
-    // Sprint 13c modules still pending
+    case 'ch-t-family-wallet':      return <FamilyWalletHubPanel />;
+    case 'ch-t-sample-kits':        return <SampleKitsPanel />;
+    case 'ch-r-loyalty':            return <LoyaltyPerformanceReportPanel />;
+    case 'ch-r-clv':                return <CLVRankingsReportPanel />;
+    case 'ch-r-churn':              return <ChurnRiskReportPanel />;
+    case 'ch-r-social-proof':       return <SocialProofReportPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }

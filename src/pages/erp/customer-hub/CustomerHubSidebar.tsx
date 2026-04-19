@@ -57,15 +57,15 @@ const TRANSACTIONS_ITEMS: MenuItem[] = [
   { label: 'Orders',           module: 'ch-t-orders',          icon: History },
   { label: 'Loyalty Rewards',  module: 'ch-t-rewards',         icon: Gift },
   { label: 'Voice Complaint',  module: 'ch-t-voice-complaint', icon: Mic },
-  { label: 'Family Wallet',    module: 'ch-t-family-wallet',   icon: Repeat2,     badge: 'Sprint 13c' },
-  { label: 'Sample Kits',      module: 'ch-t-sample-kits',     icon: PackageOpen, badge: 'Sprint 13c' },
+  { label: 'Family Wallet',    module: 'ch-t-family-wallet',   icon: Repeat2 },
+  { label: 'Sample Kits',      module: 'ch-t-sample-kits',     icon: PackageOpen },
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Loyalty Performance',   module: 'ch-r-loyalty',      icon: Award,         badge: 'Sprint 13c' },
-  { label: 'CLV Rankings',          module: 'ch-r-clv',          icon: Trophy,        badge: 'Sprint 13c' },
-  { label: 'Churn Risk',            module: 'ch-r-churn',        icon: AlertTriangle, badge: 'Sprint 13c' },
-  { label: 'Social Proof Dashboard',module: 'ch-r-social-proof', icon: Sparkles,      badge: 'Sprint 13c' },
+  { label: 'Loyalty Performance',   module: 'ch-r-loyalty',      icon: Award },
+  { label: 'CLV Rankings',          module: 'ch-r-clv',          icon: Trophy },
+  { label: 'Churn Risk',            module: 'ch-r-churn',        icon: AlertTriangle },
+  { label: 'Social Proof Dashboard',module: 'ch-r-social-proof', icon: Sparkles },
 ];
 
 export function CustomerHubSidebar(props: CustomerHubSidebarProps) {
