@@ -333,25 +333,18 @@ const App = () => (
               <Route path="/partner" element={<PartnerDashboard />} />
               <Route path="/partner/dashboard" element={<PartnerDashboard />} />
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />
-              <Route path="/erp/distributor" element={<P><DistributorHub /></P>} />
-              <Route path="/erp/distributor/hub" element={<P><DistributorHub /></P>} />
-              <Route path="/erp/distributor-hub" element={<P><DistributorHub /></P>} />
+              <Route path="/erp/distributor-hub" element={<P><DistributorHubPage /></P>} />
               <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
               <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
               <Route path="/erp/distributor/cart" element={<DistributorCart />} />
               <Route path="/erp/distributor/invoices" element={<DistributorInvoices />} />
               <Route path="/erp/distributor/payments" element={<DistributorPayments />} />
               <Route path="/erp/distributor/updates" element={<DistributorUpdates />} />
-              <Route path="/erp/salesx/distributor-broadcast" element={<P><DistributorBroadcast /></P>} />
-              <Route path="/erp/finecore/distributor-intimations" element={<P><DistributorIntimationQueue /></P>} />
-              {/* Sprint 11a — hierarchy, CRM, credit, disputes */}
-              <Route path="/erp/distributor/hierarchy" element={<P><DistributorHierarchyMaster /></P>} />
+              {/* Sprint 11a — distributor PORTAL routes (external user, untouched) */}
               <Route path="/erp/distributor/downstream" element={<DistributorDownstreamView />} />
               <Route path="/erp/distributor/crm" element={<DistributorCRM />} />
               <Route path="/erp/distributor/visits/new" element={<DistributorVisitCapture />} />
               <Route path="/erp/distributor/credit-request" element={<DistributorCreditRequest />} />
-              <Route path="/erp/distributor-hub/credit-approvals" element={<P><CreditApprovalQueue /></P>} />
-              <Route path="/erp/distributor-hub/disputes" element={<P><DistributorDisputeQueue /></P>} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
