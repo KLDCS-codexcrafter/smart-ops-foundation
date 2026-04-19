@@ -549,6 +549,37 @@ export default function DistributorCartPage() {
               </div>
             </div>
 
+            {/* Sprint 12 — Applied schemes preview */}
+            {(appliedSchemes.length > 0 || unlockHints.length > 0) && (
+              <div className="mt-4 rounded-lg border border-violet-500/30 bg-violet-500/5 p-3 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 text-violet-700 dark:text-violet-300 font-semibold">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Schemes</span>
+                </div>
+                {appliedSchemes.map(a => (
+                  <div key={a.scheme_id} className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{a.scheme_name}</p>
+                      <p className="text-muted-foreground text-[10px]">{a.note}</p>
+                    </div>
+                    {a.discount_paise > 0 && (
+                      <span className="font-mono text-emerald-600 dark:text-emerald-400 shrink-0">
+                        −{formatINR(a.discount_paise)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+                {schemeDiscountPaise > 0 && (
+                  <div className="flex justify-between pt-1 border-t border-violet-500/20 font-semibold">
+                    <span className="text-foreground">Total scheme savings</span>
+                    <span className="font-mono text-emerald-600 dark:text-emerald-400">−{formatINR(schemeDiscountPaise)}</span>
+                  </div>
+                )}
+                {unlockHints.map((h, i) => (
+                  <p key={`hint-${i}`} className="text-[10px] text-muted-foreground italic">{h}</p>
+                ))}
+              </div>
+            )}
             {/* Credit gate */}
             <div className="mt-4 rounded-lg border border-border/50 p-3 text-xs">
               {credit.ok ? (
