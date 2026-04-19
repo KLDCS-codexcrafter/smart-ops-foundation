@@ -15,9 +15,11 @@ import { formatINR } from '@/lib/india-validations';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { computeCLV, topCLV } from '@/lib/customer-clv-engine';
+import { computeChurn, highestChurnRisk } from '@/lib/customer-churn-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import type { CustomerLoyaltyState, LoyaltyTier } from '@/types/customer-loyalty';
 import { loyaltyStateKey } from '@/types/customer-loyalty';
+import type { CustomerHubModule } from './CustomerHubSidebar';
 
 interface CustomerLite {
   id: string;
