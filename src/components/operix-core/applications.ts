@@ -1,4 +1,4 @@
-export type AppStatus = 'coming_soon' | 'wip';
+export type AppStatus = 'coming_soon' | 'wip' | 'active';
 
 export type AppCategory =
   | 'Ops Hub'
