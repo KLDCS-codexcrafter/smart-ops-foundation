@@ -5,7 +5,7 @@
  * [JWT] PATCH /api/distributor/disputes/{id}
  */
 import { useMemo, useState } from 'react';
-import { ERPLayout } from '@/components/layout/ERPLayout';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,14 +123,7 @@ export function DistributorDisputeQueuePanel({ entityCode = 'SMRT' }: PanelProps
   useCtrlS(reviewing ? () => decide('approve_full') : () => { /* noop */ });
 
   return (
-    <ERPLayout
-      title="Distributor Disputes"
-      breadcrumbs={[
-        { label: 'ERP', href: '/erp/dashboard' },
-        { label: 'Distributor Hub', href: '/erp/distributor-hub' },
-        { label: 'Disputes' },
-      ]}
-    >
+    <>
       <div className="space-y-4 animate-fade-in" data-keyboard-form>
         <div className="flex flex-wrap gap-1.5">
           {FILTERS.map(f => (
@@ -289,7 +282,7 @@ export function DistributorDisputeQueuePanel({ entityCode = 'SMRT' }: PanelProps
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </ERPLayout>
+    </>
   );
 }
 

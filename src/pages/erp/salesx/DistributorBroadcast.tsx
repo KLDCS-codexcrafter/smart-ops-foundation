@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Megaphone, Send, Loader2, MessageSquare, Mail, Bell, Users, CheckCircle2,
 } from 'lucide-react';
-import { ERPLayout } from '@/components/layout/ERPLayout';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -136,10 +136,7 @@ export default function DistributorBroadcast() {
   };
 
   return (
-    <ERPLayout
-      title="Distributor Broadcast"
-      breadcrumbs={[{ label: 'SalesX', href: '/erp/salesx' }, { label: 'Distributor Broadcast' }]}
-    >
+    <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in">
         {/* Composer */}
         <div className="rounded-2xl border border-border/50 bg-card p-5">
@@ -288,6 +285,6 @@ export default function DistributorBroadcast() {
           )}
         </div>
       </div>
-    </ERPLayout>
+    </>
   );
 }
