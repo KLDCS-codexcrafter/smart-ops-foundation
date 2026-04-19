@@ -80,7 +80,7 @@ export function LRUpdatePanel(_: Props) {
     logAudit({
       entityCode, userId, userName: userId,
       cardId: 'dispatch-hub' as never, moduleId: 'dh-t-lr-update',
-      action: 'lr_updated', refId: selected.id,
+      action: 'master_save', refId: selected.id,
     });
     toast.success(`LR ${lrNo} saved on ${selected.voucher_no}` + (copied ? ` · copied to ${copied} SI` : ''));
     setSelectedId(null); setLrNo(''); setLrDate(new Date().toISOString().slice(0, 10));
