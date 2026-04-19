@@ -28,6 +28,11 @@ import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+import {
+  DEFAULT_ZONE_DEFINITIONS, transporterRateCardsKey,
+  type TransporterRateCard,
+} from '@/types/transporter-rate';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
