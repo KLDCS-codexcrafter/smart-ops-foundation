@@ -74,6 +74,7 @@ import { DistributorMastersModule } from '../modules/DistributorMastersModule';
 
 // Stage 1 — Master Panel imports (CRM)
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
+import { CustomerSegmentMasterPanel } from '@/pages/erp/masters/CustomerSegmentMaster';
 import { VendorMasterPanel }   from '@/pages/erp/masters/VendorMaster';
 
 // Stage 1 — SalesX masters

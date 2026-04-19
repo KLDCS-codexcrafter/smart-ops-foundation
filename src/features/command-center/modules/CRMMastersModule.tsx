@@ -1,4 +1,4 @@
-import { Users, Truck, ArrowRight } from 'lucide-react';
+import { Users, Truck, Tag, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
 
@@ -41,6 +41,14 @@ const MASTER_CARDS: MasterCard[] = [
     icon: Truck,
     module: 'crm-vendor',
     storageKey: 'erp_group_vendor_master',
+    section: 'customer-vendor',
+  },
+  {
+    title: 'Customer Segments',
+    desc: 'Audience groupings for scheme targeting — VIP, festival buyers, new, at-risk.',
+    icon: Tag,
+    module: 'crm-customer-segments',
+    storageKey: 'erp_customer_segments_SMRT',
     section: 'customer-vendor',
   },
 ];
