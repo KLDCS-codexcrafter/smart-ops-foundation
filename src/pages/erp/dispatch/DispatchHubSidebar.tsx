@@ -61,7 +61,7 @@ const REPORTS_ITEMS: MenuItem[] = [
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   const navigate = useNavigate();
   const { activeModule, onModuleChange } = props;
-  const [mastersOpen, setMastersOpen] = useState(false);
+  const [mastersOpen, setMastersOpen] = useState(activeModule.startsWith('dh-m-'));
   const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
 
@@ -117,6 +117,18 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
                     <Badge variant="outline" className="ml-auto text-[9px] h-4 px-1">CC</Badge>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {MASTERS_INTERNAL.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </CollapsibleContent>
             </SidebarMenuItem>
           </SidebarMenu>

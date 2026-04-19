@@ -18,6 +18,11 @@ import { LRTrackerPanel } from './transactions/LRTracker';
 import { LRUpdatePanel } from './transactions/LRUpdate';
 import { DispatchExceptionsPanel } from './transactions/DispatchExceptions';
 import { PackingSlipPrintPanel } from './transactions/PackingSlipPrint';
+// Sprint 15b
+import { PackingMaterialMasterPanel } from './masters/PackingMaterialMaster';
+import { PackingBOMMasterPanel } from './masters/PackingBOMMaster';
+import { PackingConsumptionReportPanel } from './reports/PackingConsumptionReport';
+import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -34,10 +39,14 @@ function renderModule(
 ): React.ReactElement {
   switch (mod) {
     case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
+    case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
+    case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
     case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
     case 'dh-t-lr-update':          return <LRUpdatePanel onModuleChange={onModuleChange} />;
     case 'dh-t-packing-slip-print': return <PackingSlipPrintPanel />;
     case 'dh-t-exceptions':         return <DispatchExceptionsPanel />;
+    case 'dh-r-packing-consumption': return <PackingConsumptionReportPanel />;
+    case 'dh-r-packer-performance':  return <PackerPerformanceReportPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
