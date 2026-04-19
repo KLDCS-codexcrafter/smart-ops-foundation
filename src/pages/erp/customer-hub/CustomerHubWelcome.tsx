@@ -203,6 +203,33 @@ export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePa
         </Badge>
       </div>
 
+      {/* G3: Critical churn risk banner */}
+      {critical.length > 0 && (
+        <Card className="bg-red-500/5 border-red-500/30">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                {critical.length} customer(s) at critical churn risk
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                Top: {critical[0].customer_id} — {critical[0].signal}
+              </p>
+            </div>
+            {onModuleChange && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-500/40 hover:bg-red-500/10 text-red-600"
+                onClick={() => onModuleChange('ch-r-churn')}
+              >
+                View Dashboard
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* KPI CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="bg-card/60 backdrop-blur-xl border-teal-500/20">
