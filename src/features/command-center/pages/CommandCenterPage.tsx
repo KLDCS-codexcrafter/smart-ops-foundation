@@ -98,6 +98,9 @@ import { PriceListManagerPanel }           from '@/pages/erp/inventory/PriceList
 // Stage 1 — People Core (Employee Master registration)
 import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster';
 
+// Sprint 12 — Scheme Master
+import { SchemeMasterPanel } from '@/pages/erp/masters/SchemeMaster';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { getPrimaryEntity } from '@/data/mock-entities';
 
