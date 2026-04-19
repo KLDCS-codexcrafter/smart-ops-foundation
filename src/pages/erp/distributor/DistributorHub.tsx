@@ -9,7 +9,7 @@ import {
   ArrowRight, IndianRupee, ShoppingBag, Palette, Copy, Save,
   Network, TrendingUp, AlertOctagon,
 } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { ERPLayout } from '@/components/layout/ERPLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -130,7 +130,7 @@ export default function DistributorHub() {
   ];
 
   return (
-    <AppLayout
+    <ERPLayout
       title="Distributor Hub"
       breadcrumbs={[{ label: 'ERP', href: '/erp/dashboard' }, { label: 'Distributor Hub' }]}
     >
@@ -275,6 +275,6 @@ export default function DistributorHub() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </ERPLayout>
   );
 }
