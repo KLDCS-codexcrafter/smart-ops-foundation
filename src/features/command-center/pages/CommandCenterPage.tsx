@@ -298,7 +298,7 @@ export default function CommandCenterPage() {
       // Stage 1 — Sales
       case 'sales-hub':            return <SalesMastersModule onNavigate={handleNavigate} />;
       case 'sales-hierarchy':      return <HierarchyMasterPanel entityCode={getPrimaryEntity().shortCode} />;
-      case 'sales-sam-person':     return <SAMPersonMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-sam-person':     return <SAMPersonMasterPanel personType="salesman" entityCode={getPrimaryEntity().shortCode} />;
       case 'sales-enquiry-source': return <EnquirySourceMasterPanel entityCode={getPrimaryEntity().shortCode} />;
       case 'sales-campaign':       return <CampaignMasterPanel entityCode={getPrimaryEntity().shortCode} />;
       case 'sales-territory':      return <TerritoryMasterPanel entityCode={getPrimaryEntity().shortCode} />;
