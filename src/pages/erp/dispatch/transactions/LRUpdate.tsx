@@ -67,7 +67,7 @@ export function LRUpdatePanel(_: Props) {
     // Copy-forward to linked SI (any voucher referencing this DLN with blank LR)
     let copied = 0;
     const final = updated.map(v => {
-      if (v.base_voucher_type === 'Sales Invoice'
+      if (v.base_voucher_type === 'Sales'
         && v.ref_voucher_id === selected.id && !v.lr_no) {
         copied += 1;
         return { ...v, lr_no: lrNo.trim(), lr_date: lrDate, updated_at: new Date().toISOString() };
