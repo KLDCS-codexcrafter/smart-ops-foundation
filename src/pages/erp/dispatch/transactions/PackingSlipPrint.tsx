@@ -1,13 +1,16 @@
 /**
- * PackingSlipPrint.tsx — A4 print preview. Sprint 15a.
+ * PackingSlipPrint.tsx — A4 print preview. Sprint 15a + 15b override section.
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Printer, Search } from 'lucide-react';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import { Printer, Search, Save } from 'lucide-react';
 import type { Voucher } from '@/types/voucher';
 import type { ItemPacking } from '@/types/item-packing';
 import type { PackingSlip } from '@/types/packing-slip';
@@ -16,10 +19,24 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { computePackingSlip } from '@/lib/packing-slip-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
+// Sprint 15b — override capture
+import {
+  type PackingBOM, type PackingBOMActual,
+  packingBOMsKey, packingBOMActualsKey,
+} from '@/types/packing-bom';
+import { expandDLN, computeActualVariance } from '@/lib/packing-bom-engine';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? JSON.parse(r) as T[] : []; }
   catch { return []; }
+}
+
+interface OverrideRow {
+  key: string; // item_id|material_id
+  item_id: string; item_code: string;
+  material_id: string; material_code: string; material_name: string; material_uom: string;
+  standard_qty: number;
+  actual_qty: number;
 }
 
 export function PackingSlipPrintPanel() {
