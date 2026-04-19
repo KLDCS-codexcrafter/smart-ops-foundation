@@ -175,8 +175,17 @@ export default function ErpDashboard() {
   const navigate = useNavigate();
   const greeting = getGreeting();
   const userName = getUserName();
+  const { entityCode, userId, allowedCards } = useCardEntitlement();
 
   const [search, setSearch] = useState("");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useKeyboardShortcuts({
+    onPalette: () => setPaletteOpen(true),
+    onSearch: () => setSearchOpen(true),
+    onDashboard: () => navigate('/erp/dashboard'),
+  });
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -186,6 +195,16 @@ export default function ErpDashboard() {
       app.description.toLowerCase().includes(q)
     );
   }, [search]);
+
+  // Frequently used lane — top 4 cards by audit frequency
+  const frequentApps = useMemo(() => {
+    const allowedSet = new Set<string>(allowedCards);
+    const top = topCardsForUser(entityCode, userId, 4);
+    const map = new Map(applications.map(a => [a.id, a]));
+    return top
+      .map(id => map.get(id))
+      .filter((a): a is AppDefinition => !!a && allowedSet.has(a.id));
+  }, [entityCode, userId, allowedCards]);
 
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
