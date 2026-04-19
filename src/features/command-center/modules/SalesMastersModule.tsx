@@ -1,4 +1,4 @@
-import { Network, Users, Compass, Megaphone, MapPin, Route, Target, ArrowRight } from 'lucide-react';
+import { Network, Users, Compass, Megaphone, MapPin, Route, Target, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
 
@@ -34,6 +34,7 @@ const MASTER_CARDS: MasterCard[] = [
   { title: 'Territory',        desc: 'Geo territories for field sales. Nested hierarchies supported.', icon: MapPin, module: 'sales-territory', storageKey: 'erp_territories', section: 'sales-ops' },
   { title: 'Beat Routes',      desc: 'Daily field-visit routes — which salesman covers which customers on which day.', icon: Route, module: 'sales-beat-route', storageKey: 'erp_beat_routes', section: 'sales-ops' },
   { title: 'Targets',          desc: 'Monthly / quarterly targets per salesman — revenue, volume, visits, conversion.', icon: Target, module: 'sales-target', storageKey: 'erp_sales_targets', section: 'sales-ops' },
+  { title: 'Sales Schemes',    desc: 'Promotional schemes — slab discount, BNGM, QPS, bundle. Audience: distributor / customer / both.', icon: Sparkles, module: 'sales-schemes', storageKey: 'erp_schemes_SMRT', section: 'sales-ops' },
 ];
 
 const SECTION_META = {

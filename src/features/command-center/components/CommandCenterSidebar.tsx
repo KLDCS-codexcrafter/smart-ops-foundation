@@ -130,6 +130,7 @@ const SALES_ITEMS: { label: string; module: CommandCenterModule }[] = [
   { label: 'Territories',      module: 'sales-territory' },
   { label: 'Beat Routes',      module: 'sales-beat-route' },
   { label: 'Sales Targets',    module: 'sales-target' },
+  { label: 'Sales Schemes',    module: 'sales-schemes' },
 ];
 
 const COLLECTION_ITEMS: { label: string; module: CommandCenterModule }[] = [

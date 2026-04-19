@@ -10,7 +10,7 @@ import {
   TrendingUp, AlertOctagon, FileCheck, Megaphone,
   BarChart3, IndianRupee, PieChart, ChevronRight,
   Database, Truck, Home, ArrowLeft,
-  AlertTriangle, FileSpreadsheet, Star,
+  AlertTriangle, FileSpreadsheet, Star, Sparkles, LineChart,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -28,7 +28,9 @@ export type DistributorHubModule =
   | 'dh-t-credit-approvals' | 'dh-t-disputes' | 'dh-t-intimations'
   | 'dh-t-broadcast'
   | 'dh-t-stock-out' | 'dh-t-excel-sync' | 'dh-t-ratings'
-  | 'dh-r-engagement' | 'dh-r-credit-util' | 'dh-r-dispute-stats';
+  | 'dh-t-scheme-simulator'
+  | 'dh-r-engagement' | 'dh-r-credit-util' | 'dh-r-dispute-stats'
+  | 'dh-r-scheme-effectiveness';
 
 interface DistributorHubSidebarProps {
   activeModule: DistributorHubModule;
@@ -52,13 +54,15 @@ const TRANSACTIONS_ITEMS: { label: string; module: DistributorHubModule;
   { label: 'Stock-Out Warnings', module: 'dh-t-stock-out',        icon: AlertTriangle },
   { label: 'Excel / API Sync',   module: 'dh-t-excel-sync',       icon: FileSpreadsheet },
   { label: 'Ratings & Score',    module: 'dh-t-ratings',          icon: Star },
+  { label: 'Scheme Simulator',   module: 'dh-t-scheme-simulator', icon: Sparkles },
 ];
 
 const REPORTS_ITEMS: { label: string; module: DistributorHubModule;
   icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
-  { label: 'Engagement Analytics', module: 'dh-r-engagement',    icon: BarChart3 },
-  { label: 'Credit Utilisation',   module: 'dh-r-credit-util',   icon: IndianRupee },
-  { label: 'Dispute Statistics',   module: 'dh-r-dispute-stats', icon: PieChart },
+  { label: 'Engagement Analytics', module: 'dh-r-engagement',           icon: BarChart3 },
+  { label: 'Credit Utilisation',   module: 'dh-r-credit-util',          icon: IndianRupee },
+  { label: 'Dispute Statistics',   module: 'dh-r-dispute-stats',        icon: PieChart },
+  { label: 'Scheme Effectiveness', module: 'dh-r-scheme-effectiveness', icon: LineChart },
 ];
 
 export function DistributorHubSidebar(props: DistributorHubSidebarProps) {

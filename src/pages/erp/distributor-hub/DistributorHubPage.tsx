@@ -41,6 +41,10 @@ import { EngagementReportPanel } from './reports/EngagementReport';
 import { CreditUtilReportPanel } from './reports/CreditUtilReport';
 import { DisputeStatsReportPanel } from './reports/DisputeStatsReport';
 
+// Sprint 12 — Scheme simulator + effectiveness
+import { SchemeSimulatorPanel } from './transactions/SchemeSimulator';
+import { SchemeEffectivenessReportPanel } from './reports/SchemeEffectivenessReport';
+
 function ComingSoonPanel({ module }: { module: DistributorHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -70,11 +74,13 @@ function renderModule(mod: DistributorHubModule): React.ReactElement {
     case 'dh-t-stock-out':         return <StockOutWarningsPanel />;
     case 'dh-t-excel-sync':        return <DistributorExcelSyncPanel />;
     case 'dh-t-ratings':           return <DistributorRatingHubPanel />;
+    case 'dh-t-scheme-simulator':  return <SchemeSimulatorPanel />;
 
     // Reports section — populated in Sprint 11b
-    case 'dh-r-engagement':        return <EngagementReportPanel />;
-    case 'dh-r-credit-util':       return <CreditUtilReportPanel />;
-    case 'dh-r-dispute-stats':     return <DisputeStatsReportPanel />;
+    case 'dh-r-engagement':           return <EngagementReportPanel />;
+    case 'dh-r-credit-util':          return <CreditUtilReportPanel />;
+    case 'dh-r-dispute-stats':        return <DisputeStatsReportPanel />;
+    case 'dh-r-scheme-effectiveness': return <SchemeEffectivenessReportPanel />;
 
     default: return <ComingSoonPanel module={mod} />;
   }

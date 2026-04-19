@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Send, Loader2, Package, AlertTriangle, CheckCircle2,
-  Bookmark, BookmarkPlus, ListChecks, RotateCcw, Mic, MicOff,
+  Bookmark, BookmarkPlus, ListChecks, RotateCcw, Mic, MicOff, Sparkles,
 } from 'lucide-react';
 import { DistributorLayout } from '@/features/distributor/DistributorLayout';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,8 @@ import {
   type VoiceOrderResult,
 } from '@/lib/voice-to-order-engine';
 import type { InventoryItem } from '@/types/inventory-item';
+import { applySchemes, totalSchemeDiscountPaise, describeUnlockGap, type SchemeCart } from '@/lib/scheme-engine';
+import { schemesKey, type Scheme } from '@/types/scheme';
 
 const INDIGO = 'hsl(231 48% 58%)';
 // Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
@@ -111,6 +113,25 @@ export default function DistributorCartPage() {
   const tax = cart?.lines.reduce((s, l) => s + l.cgst_paise + l.sgst_paise + l.igst_paise, 0) ?? 0;
 
   const credit = checkCreditAvailable(distributor, grand);
+
+  // Sprint 12 — evaluate applicable promotional schemes
+  const allSchemes: Scheme[] = ls<Scheme>(schemesKey(session.entity_code));
+  const schemeCart: SchemeCart = {
+    audience: 'distributor',
+    distributor_tier: (distributor.tier as 'gold' | 'silver' | 'bronze' | undefined) ?? undefined,
+    territory_id: distributor.territory_id ?? null,
+    order_value_paise: grand,
+    lines: (cart?.lines ?? []).map(l => ({
+      line_id: l.id,
+      item_id: l.item_id,
+      qty: l.qty,
+      unit_price_paise: l.rate_paise,
+      line_total_paise: l.total_paise,
+    })),
+  };
+  const appliedSchemes = applySchemes(schemeCart, allSchemes);
+  const schemeDiscountPaise = totalSchemeDiscountPaise(appliedSchemes);
+  const unlockHints = describeUnlockGap(schemeCart, allSchemes);
 
   const handleQtyChange = async (lineId: string, qty: number) => {
     if (!cart) return;
@@ -528,6 +549,37 @@ export default function DistributorCartPage() {
               </div>
             </div>
 
+            {/* Sprint 12 — Applied schemes preview */}
+            {(appliedSchemes.length > 0 || unlockHints.length > 0) && (
+              <div className="mt-4 rounded-lg border border-violet-500/30 bg-violet-500/5 p-3 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 text-violet-700 dark:text-violet-300 font-semibold">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Schemes</span>
+                </div>
+                {appliedSchemes.map(a => (
+                  <div key={a.scheme_id} className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{a.scheme_name}</p>
+                      <p className="text-muted-foreground text-[10px]">{a.note}</p>
+                    </div>
+                    {a.discount_paise > 0 && (
+                      <span className="font-mono text-emerald-600 dark:text-emerald-400 shrink-0">
+                        −{formatINR(a.discount_paise)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+                {schemeDiscountPaise > 0 && (
+                  <div className="flex justify-between pt-1 border-t border-violet-500/20 font-semibold">
+                    <span className="text-foreground">Total scheme savings</span>
+                    <span className="font-mono text-emerald-600 dark:text-emerald-400">−{formatINR(schemeDiscountPaise)}</span>
+                  </div>
+                )}
+                {unlockHints.map((h, i) => (
+                  <p key={`hint-${i}`} className="text-[10px] text-muted-foreground italic">{h}</p>
+                ))}
+              </div>
+            )}
             {/* Credit gate */}
             <div className="mt-4 rounded-lg border border-border/50 p-3 text-xs">
               {credit.ok ? (
