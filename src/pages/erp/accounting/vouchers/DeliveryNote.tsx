@@ -78,6 +78,14 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     } catch { return []; }
   }, []);
 
+  const logistics = useMemo<LogisticMasterLite[]>(() => {
+    try {
+      // [JWT] GET /api/masters/logistics
+      const raw = localStorage.getItem('erp_group_logistic_master');
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, []);
+
   const samCfg = useMemo<SAMConfig | null>(() => {
     try {
       // [JWT] GET /api/compliance/comply360/sam/:entityCode
