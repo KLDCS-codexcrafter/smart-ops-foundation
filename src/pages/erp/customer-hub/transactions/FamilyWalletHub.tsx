@@ -178,7 +178,7 @@ export function FamilyWalletHubPanel() {
     const target = customers.find(c => c.id === linkPick);
     if (!target) return;
     const result = attemptLink(currentId, linkPick, customerLabel(target), linkRel, ENTITY, links, currentName);
-    if (!result.ok) {
+    if (result.ok === false) {
       toast.error(result.reason);
       return;
     }
@@ -235,7 +235,7 @@ export function FamilyWalletHubPanel() {
       transferPoints, transferMsg.slice(0, 140),
       ENTITY, links,
     );
-    if (!result.ok) {
+    if (result.ok === false) {
       toast.error(result.reason);
       return;
     }
@@ -264,7 +264,7 @@ export function FamilyWalletHubPanel() {
     logAudit({
       entityCode: ENTITY, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
-      action: 'adjustment',
+      action: 'voucher_post',
       refType: 'family_transfer', refId: result.transfer.id,
       refLabel: `${transferPoints} pts → ${recipientName}`,
     });
@@ -275,7 +275,7 @@ export function FamilyWalletHubPanel() {
 
   const handleUndo = (transferId: string) => {
     const result = attemptUndo(transferId, transfers);
-    if (!result.ok) {
+    if (result.ok === false) {
       toast.error(result.reason);
       return;
     }
@@ -302,7 +302,7 @@ export function FamilyWalletHubPanel() {
     logAudit({
       entityCode: ENTITY, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
-      action: 'adjustment',
+      action: 'voucher_cancel',
       refType: 'family_transfer_undo', refId: transferId,
       refLabel: `Undid ${result.reversedTransfer.points} pts`,
     });
