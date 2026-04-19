@@ -160,6 +160,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         total_cess: 0, total_tax: 0, round_off: 0, tds_applicable: false,
         status: 'posted', created_by: 'current-user', created_at: now, updated_at: now,
         so_ref: againstSI || undefined,
+        transporter: transporterName || undefined,
+        transporter_id: logisticId ?? undefined,
+        vehicle_no: vehicleNo || undefined,
       };
 
       // SAM fields on voucher
@@ -252,12 +255,42 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         }
       }
 
-      toast.success('Delivery Note posted');
+      // Sprint 15a — auto-generate packing slip
+      try {
+        const itemPackings: ItemPacking[] = JSON.parse(
+          localStorage.getItem('erp_item_packing_master') ?? '[]',
+        );
+        const customersAll = JSON.parse(
+          localStorage.getItem('erp_group_customer_master') ?? '[]',
+        );
+        const party = customersAll.find((c: { id: string }) => c.id === customerId);
+        const ps = computePackingSlip({
+          dln: voucher,
+          itemPackings,
+          shipToAddress: party?.addressLine ?? '',
+          shipToCity: party?.cityName ?? '',
+          shipToState: party?.stateName ?? '',
+          shipToPincode: party?.pinCode ?? '',
+          generatedBy: 'system',
+          entityCode,
+        });
+        const allPS: PackingSlip[] = JSON.parse(
+          localStorage.getItem(packingSlipsKey(entityCode)) ?? '[]',
+        );
+        allPS.push(ps);
+        // [JWT] POST /api/dispatch/packing-slips
+        localStorage.setItem(packingSlipsKey(entityCode), JSON.stringify(allPS));
+        toast.success('Delivery Note + Packing Slip generated');
+      } catch (err) {
+        console.warn('Packing slip generation failed:', err);
+        toast.success('Delivery Note posted');
+      }
     } catch { toast.error('Failed to save'); }
   }, [
     partyName, date, voucherNo, againstSI, inventoryLines, narration, entityCode,
     samCfg, samSalesmanId, samSalesmanName, samAgentId, samAgentName,
     commissionPreview, customerId, samPersons,
+    transporterName, logisticId, vehicleNo,
   ]);
 
   const handleSaveDraft = useCallback(() => {
