@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { InstallPromptBanner } from '@/components/mobile/InstallPromptBanner';
+import { UpdateAvailableBanner } from '@/components/mobile/UpdateAvailableBanner';
 import {
   registerServiceWorker,
   triggerQueueReplay,
@@ -17,6 +18,8 @@ import {
   replayableEntries,
   markRetryFailure,
 } from '@/lib/offline-queue-engine';
+import { hideSplashScreen, onAppResume } from '@/lib/native-bridge';
+import { logMobileAudit } from '@/lib/mobile-audit';
 import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
 
@@ -58,6 +61,32 @@ export default function MobileRouter() {
   useEffect(() => {
     void registerServiceWorker();
   }, []);
+
+  // Sprint 14b — Hide native splash + replay queue on app resume
+  useEffect(() => {
+    void hideSplashScreen();
+    const unsub = onAppResume(() => {
+      triggerQueueReplay();
+      replayQueueNow();
+    });
+    return unsub;
+  }, []);
+
+  // Sprint 14b — log mobile session_start once per session
+  useEffect(() => {
+    if (session && session.role !== 'unknown' && session.user_id) {
+      logMobileAudit({
+        entityCode: session.entity_code,
+        userId: session.user_id,
+        userName: session.display_name,
+        role: session.role,
+        action: 'card_open',
+        refType: 'mobile_session',
+        refLabel: `Mobile session started (${session.role})`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user_id]);
 
   // Listen for online events to trigger queue replay
   useEffect(() => {
@@ -104,6 +133,7 @@ export default function MobileRouter() {
       </main>
 
       <InstallPromptBanner />
+      <UpdateAvailableBanner />
     </div>
   );
 }
