@@ -28,6 +28,11 @@ import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+import {
+  DEFAULT_ZONE_DEFINITIONS, transporterRateCardsKey,
+  type TransporterRateCard,
+} from '@/types/transporter-rate';
+import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -182,12 +187,76 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
 // ─── Panel Component ──────────────────────────────────────────
 
 export function LogisticMasterPanel() {
+  const [selectedCompany] = useERPCompany();
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+
   const [logistics, setLogistics] = useState<LogisticMasterDefinition[]>(() => loadLogistics());
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<LogisticMasterDefinition | null>(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<LogisticType | 'all'>('all');
   const [gstinFetching, setGstinFetching] = useState(false);
+
+  // Sprint 15a — Advanced rate cards
+  const [rateCards, setRateCards] = useState<TransporterRateCard[]>([]);
+  const [showRateCards, setShowRateCards] = useState(false);
+
+  useEffect(() => {
+    if (!editTarget) { setRateCards([]); return; }
+    try {
+      // [JWT] GET /api/masters/transporter-rate-cards?logistic_id=:id
+      const all: TransporterRateCard[] = JSON.parse(
+        localStorage.getItem(transporterRateCardsKey(entityCode)) ?? '[]',
+      );
+      setRateCards(all.filter(c => c.logistic_id === editTarget.id));
+    } catch { setRateCards([]); }
+  }, [editTarget, entityCode]);
+
+  const seedFromOM = () => {
+    if (!editTarget) return;
+    const now = new Date().toISOString();
+    const card: TransporterRateCard = {
+      id: `trc-${Date.now()}`,
+      logistic_id: editTarget.id,
+      entity_id: entityCode,
+      label: `${editTarget.partyName} — OM Logistics template`,
+      effective_from: now.split('T')[0],
+      effective_to: null,
+      zone_definitions: DEFAULT_ZONE_DEFINITIONS,
+      zone_rates: [],
+      collection_delivery: [],
+      oda_grid: [],
+      minimum_chargeable: { surface: 100, train: 75, air: 35 },
+      volumetric_divisor: 10,
+      surcharges: {
+        statistical_flat: 150,
+        fuel_pct_of_basic: 10,
+        fov_pct_of_invoice: 0.2,
+        cod_flat_if_applicable: 200,
+        demurrage_free_days: 10,
+        demurrage_per_kg_per_day: 0.20,
+      },
+      fuel_escalation: {
+        base_fuel_price: 0, current_fuel_price: 0,
+        ratio_numerator: 5.5, ratio_denominator: 10,
+      },
+      annual_hike_pct: 10,
+      contract_start: now.split('T')[0],
+      contract_end: '',
+      created_at: now, updated_at: now,
+      created_by: 'admin',
+    };
+    try {
+      const all: TransporterRateCard[] = JSON.parse(
+        localStorage.getItem(transporterRateCardsKey(entityCode)) ?? '[]',
+      );
+      all.push(card);
+      // [JWT] POST /api/masters/transporter-rate-cards
+      localStorage.setItem(transporterRateCardsKey(entityCode), JSON.stringify(all));
+      setRateCards([...rateCards, card]);
+      toast.success('Rate card seeded from OM Logistics template');
+    } catch { toast.error('Failed to seed rate card'); }
+  };
 
   // Form expansion toggles
   const [showContacts, setShowContacts] = useState(false);
@@ -928,6 +997,53 @@ export function LogisticMasterPanel() {
           )}
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Sprint 15a — Advanced Rate Card (only when editing) */}
+      {editTarget && (
+        <Collapsible open={showRateCards} onOpenChange={setShowRateCards}>
+          <CollapsibleTrigger asChild>
+            <button type="button" className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <Truck className="h-3.5 w-3.5" />
+                Advanced Rate Card (Sprint 15)
+              </span>
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showRateCards ? 'rotate-180' : ''}`} />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-3 pt-3">
+            <p className="text-xs text-muted-foreground">
+              Multi-dimensional rate cards with zones, modes, surcharges, fuel
+              escalation, and ODA. Used by Sprint 15c freight reconciliation.
+            </p>
+            {rateCards.length === 0 ? (
+              <Button type="button" variant="outline" size="sm" onClick={seedFromOM} className="gap-1.5 text-xs">
+                <Plus className="h-3 w-3" /> Seed from OM Logistics template
+              </Button>
+            ) : (
+              <div className="space-y-2">
+                {rateCards.map(c => (
+                  <div key={c.id} className="flex items-center justify-between border border-border rounded-lg px-3 py-2">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-medium">{c.label}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {c.effective_from} → {c.effective_to ?? 'active'}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">
+                      {c.zone_rates.length} rates
+                    </Badge>
+                  </div>
+                ))}
+                <p className="text-[10px] text-muted-foreground">
+                  Full rate editor UI will be delivered in Sprint 15a patch 2
+                  or Sprint 15c. For now, rate cards can be edited directly in
+                  localStorage key: erp_transporter_rate_cards_{entityCode}
+                </p>
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
     </div>
   );
 

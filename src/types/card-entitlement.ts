@@ -10,7 +10,8 @@ export type CardId =
   | 'finecore' | 'receivx' | 'peoplepay' | 'payout' | 'insightx'
   | 'procure360' | 'inventory-hub' | 'qulicheak' | 'gateflow'
   | 'production' | 'maintainpro' | 'requestx' | 'backoffice'
-  | 'servicedesk';
+  | 'servicedesk'
+  | 'dispatch-hub';
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'trial';
 
@@ -38,7 +39,7 @@ export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   finance: ['finecore', 'receivx', 'payout', 'insightx', 'command-center'],
   sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx'],
   operations: ['procure360', 'inventory-hub', 'production', 'qulicheak', 'gateflow',
-    'maintainpro', 'requestx'],
+    'maintainpro', 'requestx', 'dispatch-hub'],
   hr: ['peoplepay', 'insightx'],
   support: ['servicedesk'],
   view_only: ['insightx'],

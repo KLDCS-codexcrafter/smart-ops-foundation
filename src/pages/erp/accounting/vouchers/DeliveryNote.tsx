@@ -31,6 +31,16 @@ import type { SAMPerson } from '@/types/sam-person';
 import { samPersonsKey } from '@/types/sam-person';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { computePackingSlip } from '@/lib/packing-slip-engine';
+import { packingSlipsKey, type PackingSlip } from '@/types/packing-slip';
+import type { ItemPacking } from '@/types/item-packing';
+
+interface LogisticMasterLite {
+  id: string;
+  partyName: string;
+  gstin: string;
+  logisticType: string;
+}
 
 interface DeliveryNotePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -46,6 +56,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   const [partyName, setPartyName] = useState('');
   const [againstSI, setAgainstSI] = useState('');
   const [transporterName, setTransporterName] = useState('');
+  const [logisticId, setLogisticId] = useState<string | null>(null);
   const [vehicleNo, setVehicleNo] = useState('');
   const [driverNo, setDriverNo] = useState('');
   const [distance, setDistance] = useState('');
@@ -64,6 +75,14 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     try {
       // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
+    } catch { return []; }
+  }, []);
+
+  const logistics = useMemo<LogisticMasterLite[]>(() => {
+    try {
+      // [JWT] GET /api/masters/logistics
+      const raw = localStorage.getItem('erp_group_logistic_master');
+      return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }, []);
 
@@ -141,6 +160,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         total_cess: 0, total_tax: 0, round_off: 0, tds_applicable: false,
         status: 'posted', created_by: 'current-user', created_at: now, updated_at: now,
         so_ref: againstSI || undefined,
+        transporter: transporterName || undefined,
+        transporter_id: logisticId ?? undefined,
+        vehicle_no: vehicleNo || undefined,
       };
 
       // SAM fields on voucher
@@ -233,12 +255,42 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         }
       }
 
-      toast.success('Delivery Note posted');
+      // Sprint 15a — auto-generate packing slip
+      try {
+        const itemPackings: ItemPacking[] = JSON.parse(
+          localStorage.getItem('erp_item_packing_master') ?? '[]',
+        );
+        const customersAll = JSON.parse(
+          localStorage.getItem('erp_group_customer_master') ?? '[]',
+        );
+        const party = customersAll.find((c: { id: string }) => c.id === customerId);
+        const ps = computePackingSlip({
+          dln: voucher,
+          itemPackings,
+          shipToAddress: party?.addressLine ?? '',
+          shipToCity: party?.cityName ?? '',
+          shipToState: party?.stateName ?? '',
+          shipToPincode: party?.pinCode ?? '',
+          generatedBy: 'system',
+          entityCode,
+        });
+        const allPS: PackingSlip[] = JSON.parse(
+          localStorage.getItem(packingSlipsKey(entityCode)) ?? '[]',
+        );
+        allPS.push(ps);
+        // [JWT] POST /api/dispatch/packing-slips
+        localStorage.setItem(packingSlipsKey(entityCode), JSON.stringify(allPS));
+        toast.success('Delivery Note + Packing Slip generated');
+      } catch (err) {
+        console.warn('Packing slip generation failed:', err);
+        toast.success('Delivery Note posted');
+      }
     } catch { toast.error('Failed to save'); }
   }, [
     partyName, date, voucherNo, againstSI, inventoryLines, narration, entityCode,
     samCfg, samSalesmanId, samSalesmanName, samAgentId, samAgentName,
     commissionPreview, customerId, samPersons,
+    transporterName, logisticId, vehicleNo,
   ]);
 
   const handleSaveDraft = useCallback(() => {
@@ -419,6 +471,28 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       <Card>
         <CardContent className="pt-5 space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Transport Details</h3>
+          <div>
+            <Label className="text-xs">Transporter (from Master)</Label>
+            <Select
+              value={logisticId ?? '__none__'}
+              onValueChange={v => {
+                if (v === '__none__') { setLogisticId(null); return; }
+                setLogisticId(v);
+                const selected = logistics.find(l => l.id === v);
+                if (selected) setTransporterName(selected.partyName);
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Select from LogisticMaster (optional)" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">— None / Free text below —</SelectItem>
+                {logistics.map(l => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.partyName} ({l.logisticType})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-xs">Transporter Name</Label>
