@@ -14,6 +14,8 @@ import { Card } from '@/components/ui/card';
 import { resolveIdentity, type CustomerLite } from '@/lib/mobile-role-resolver';
 import type { Distributor } from '@/types/distributor';
 import { logAudit } from '@/lib/card-audit-engine';
+import { QRLoginTrigger } from '@/components/mobile/QRLoginTrigger';
+import { logMobileLogin } from '@/lib/mobile-audit';
 
 const ENTITY_CODE = 'SMRT';
 const DEFAULT_PLAN = 'growth' as const;
