@@ -25,7 +25,7 @@ import { CrossCardSearch } from "@/components/layout/CrossCardSearch";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
-import type { CardId } from "@/types/card-entitlement";
+
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
