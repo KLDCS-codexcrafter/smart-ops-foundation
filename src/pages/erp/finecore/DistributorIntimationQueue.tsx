@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react';
 import {
   IndianRupee, CheckCircle2, XCircle, Clock, Search, FileCheck, Loader2,
 } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { ERPLayout } from '@/components/layout/ERPLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -131,7 +131,7 @@ export default function DistributorIntimationQueue() {
   };
 
   return (
-    <AppLayout
+    <ERPLayout
       title="Distributor Payment Intimations"
       breadcrumbs={[{ label: 'FineCore', href: '/erp/finecore' }, { label: 'Intimations' }]}
     >
@@ -288,7 +288,7 @@ export default function DistributorIntimationQueue() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </ERPLayout>
   );
 }
 
