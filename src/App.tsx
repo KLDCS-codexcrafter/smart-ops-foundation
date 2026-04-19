@@ -143,6 +143,8 @@ const DistributorUpdates = lazy(() => import('./pages/erp/distributor/Distributo
 const DistributorHubPage = lazy(() => import('./pages/erp/distributor-hub/DistributorHubPage'));
 const CustomerHubPage = lazy(() => import('./pages/erp/customer-hub/CustomerHubPage'));
 const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
+// Sprint 14a — OperixGo PWA shell
+const MobileRouter = lazy(() => import('./pages/mobile/MobileRouter'));
 // Sprint 11a — distributor portal (external user) routes only
 const DistributorDownstreamView = lazy(() => import('./pages/erp/distributor/DistributorDownstreamView'));
 const DistributorCRM = lazy(() => import('./pages/erp/distributor/DistributorCRM'));
@@ -189,6 +191,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Navigate to="/auth/login" replace />} />
               <Route path="/auth/login" element={<Login />} />
+              {/* Sprint 14a — OperixGo PWA (public; has its own login) */}
+              <Route path="/mobile/*" element={<MobileRouter />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
