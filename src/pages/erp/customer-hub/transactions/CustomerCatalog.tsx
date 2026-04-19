@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
+import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
