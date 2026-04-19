@@ -336,6 +336,10 @@ export function ERPHeader({
         </div>
       </div>
 
+      {/* Stage 3b — Universal palette + cross-card search overlays */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CrossCardSearch open={searchOpen} onOpenChange={setSearchOpen} />
+
       {/* Shortcuts help dialog */}
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className='max-w-lg'>
