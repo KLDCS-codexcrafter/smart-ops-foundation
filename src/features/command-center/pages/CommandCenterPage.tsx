@@ -74,6 +74,7 @@ import { DistributorMastersModule } from '../modules/DistributorMastersModule';
 
 // Stage 1 — Master Panel imports (CRM)
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
+import { CustomerSegmentMasterPanel } from '@/pages/erp/masters/CustomerSegmentMaster';
 import { VendorMasterPanel }   from '@/pages/erp/masters/VendorMaster';
 
 // Stage 1 — SalesX masters
@@ -192,7 +193,9 @@ export type CommandCenterModule =
   // Stage 1 — People Core (missing registration)
   | 'ph-employee'
   // Sprint 12 — Schemes
-  | 'sales-schemes';
+  | 'sales-schemes'
+  // Sprint 13a — CRM Customer Segments
+  | 'crm-customer-segments';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -219,7 +222,7 @@ export default function CommandCenterPage() {
       'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types', 'ph-overtime-rules',
       'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps', 'ph-asset-master', 'ph-employee',
       // Stage 1
-      'crm-hub', 'crm-customer', 'crm-vendor',
+      'crm-hub', 'crm-customer', 'crm-vendor', 'crm-customer-segments',
       'sales-hub', 'sales-hierarchy', 'sales-sam-person', 'sales-enquiry-source',
       'sales-campaign', 'sales-territory', 'sales-beat-route', 'sales-target',
       'sales-schemes',
@@ -332,6 +335,7 @@ export default function CommandCenterPage() {
       // Stage 1 — CRM
       case 'crm-hub':       return <CRMMastersModule onNavigate={handleNavigate} />;
       case 'crm-customer':  return <CustomerMasterPanel />;
+      case 'crm-customer-segments': return <CustomerSegmentMasterPanel />;
       case 'crm-vendor':    return <VendorMasterPanel />;
 
       // Stage 1 — Sales

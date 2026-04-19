@@ -1,4 +1,4 @@
-export type AppStatus = 'coming_soon' | 'wip';
+export type AppStatus = 'coming_soon' | 'wip' | 'active';
 
 export type AppCategory =
   | 'Ops Hub'
@@ -130,11 +130,11 @@ export const applications: AppDefinition[] = [
   {
     id: 'customer-hub',
     name: 'Customer Hub',
-    description: 'End-customer loyalty + cross-sell — coming Sprint 13',
+    description: 'End-customer loyalty, CLV projection, and cross-sell — Sprint 13a',
     category: 'Sales Hub',
-    route: '#',
+    route: '/erp/customer-hub',
     icon: 'Heart',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'finecore',
