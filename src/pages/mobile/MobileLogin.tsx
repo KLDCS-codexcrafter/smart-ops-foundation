@@ -131,7 +131,7 @@ export default function MobileLogin() {
     }
 
     // Sprint 14c — store credential for next biometric unlock (native only)
-    if (identity.role !== 'unknown' && identity.user_id) {
+    if (identity.user_id) {
       void setBiometricToken('opx_session_credential', credential);
     }
 
