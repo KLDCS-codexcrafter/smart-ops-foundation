@@ -26,6 +26,8 @@ import {
   type BundlePayload, type FreeSamplePayload,
 } from '@/types/scheme';
 import { seedDemoSchemes } from '@/lib/scheme-seed';
+import { logAudit } from '@/lib/card-audit-engine';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 
 const ENTITY = 'SMRT';
 
@@ -94,6 +96,7 @@ export function SchemeMasterPanel() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | SchemeType>('all');
+  const { entityCode, userId } = useCardEntitlement();
 
   // First-run seed
   useEffect(() => {
@@ -131,6 +134,15 @@ export function SchemeMasterPanel() {
       ? { ...selected, updated_at: new Date().toISOString() } : s);
     writeSchemes(next);
     setList(next);
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'command-center',
+      moduleId: 'sales-schemes',
+      action: 'master_save',
+      refType: 'scheme',
+      refId: selected.id,
+      refLabel: `${selected.code} — ${selected.name}`,
+    });
     toast.success(`Scheme ${selected.code} saved`);
   };
 

@@ -31,6 +31,7 @@ function readList<T>(key: string): T[] {
 
 export function SchemeSimulatorPanel() {
   const [selectedId, setSelectedId] = useState<string>('');
+  const { entityCode, userId } = useCardEntitlement();
 
   const schemes = useMemo(() => readList<Scheme>(schemesKey(ENTITY)), []);
   const distributors = useMemo(() => readList<Distributor>(distributorsKey(ENTITY)), []);
@@ -41,6 +42,21 @@ export function SchemeSimulatorPanel() {
     if (!scheme) return null;
     return simulateSchemeImpact(scheme, distributors, orders);
   }, [selectedId, schemes, distributors, orders]);
+
+  useEffect(() => {
+    if (summary && selectedId) {
+      logAudit({
+        entityCode, userId, userName: userId,
+        cardId: 'distributor-hub',
+        moduleId: 'dh-t-scheme-simulator',
+        action: 'report_run',
+        refType: 'scheme',
+        refId: summary.scheme_id,
+        refLabel: `Simulated ${summary.scheme_name} — eligible ${summary.eligible_count}`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [summary?.scheme_id, entityCode, userId]);
 
   return (
     <div className="p-4 md:p-6 space-y-4">
