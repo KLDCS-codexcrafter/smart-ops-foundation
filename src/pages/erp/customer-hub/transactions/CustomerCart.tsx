@@ -262,7 +262,7 @@ export function CustomerCartPanel() {
       });
       recordActivity(ENTITY, customerId, {
         card_id: 'customer-hub',
-        kind: 'transaction',
+        kind: 'voucher',
         ref_id: order.id,
         title: `Order ${orderNo}`,
         subtitle: `${formatINR(netPayable)} · ${cart.lines.length} item(s)`,
