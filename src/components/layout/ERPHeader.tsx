@@ -25,6 +25,8 @@ import {
 import { toast } from 'sonner';
 import { DepartmentSwitcher } from './DepartmentSwitcher';
 import { RecentActivityDrawer } from './RecentActivityDrawer';
+import { CommandPalette } from './CommandPalette';
+import { CrossCardSearch } from './CrossCardSearch';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { GLOBAL_SHORTCUTS } from '@/lib/keyboard-shortcut-registry';
 import {
@@ -88,14 +90,16 @@ export function ERPHeader({
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [selectedCompany, setSelectedCompany] = useERPCompany();
   const [helpOpen, setHelpOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useKeyboardShortcuts({
     onHelp: () => setHelpOpen(v => !v),
     onDashboard: () => navigate('/erp/dashboard'),
     onBack: () => window.history.back(),
     onHome: () => { /* card decides */ },
-    onPalette: () => toast.info('Command palette coming in Stage 3b'),
-    onSearch: () => toast.info('Cross-card search coming in Stage 3b'),
+    onPalette: () => setPaletteOpen(true),
+    onSearch: () => setSearchOpen(true),
     onSwitcher: () => {
       const btn = document.querySelector<HTMLButtonElement>('[aria-label="Switch department"]');
       btn?.click();
