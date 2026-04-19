@@ -471,6 +471,28 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       <Card>
         <CardContent className="pt-5 space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Transport Details</h3>
+          <div>
+            <Label className="text-xs">Transporter (from Master)</Label>
+            <Select
+              value={logisticId ?? '__none__'}
+              onValueChange={v => {
+                if (v === '__none__') { setLogisticId(null); return; }
+                setLogisticId(v);
+                const selected = logistics.find(l => l.id === v);
+                if (selected) setTransporterName(selected.partyName);
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Select from LogisticMaster (optional)" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">— None / Free text below —</SelectItem>
+                {logistics.map(l => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.partyName} ({l.logisticType})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-xs">Transporter Name</Label>
