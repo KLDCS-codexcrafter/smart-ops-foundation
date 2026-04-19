@@ -5,7 +5,7 @@
  * [JWT] GET/POST /api/erp/distributor/hierarchy
  */
 import { useEffect, useMemo, useState } from 'react';
-import { ERPLayout } from '@/components/layout/ERPLayout';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -216,14 +216,7 @@ export function DistributorHierarchyMasterPanel({ entityCode = 'SMRT' }: PanelPr
   );
 
   return (
-    <ERPLayout
-      title="Distributor Hierarchy"
-      breadcrumbs={[
-        { label: 'ERP', href: '/erp/dashboard' },
-        { label: 'Distributor Hub', href: '/erp/distributor-hub' },
-        { label: 'Hierarchy' },
-      ]}
-    >
+    <>
       <div className="space-y-4 animate-fade-in" data-keyboard-form>
         {/* Header band */}
         <div
@@ -479,7 +472,7 @@ export function DistributorHierarchyMasterPanel({ entityCode = 'SMRT' }: PanelPr
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </ERPLayout>
+    </>
   );
 }
 
