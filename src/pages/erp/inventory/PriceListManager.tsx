@@ -812,6 +812,11 @@ export function PriceListsPanel() {
   );
 }
 
+// Stage 1 — Command Center registration alias (panel naming convention)
+export function PriceListManagerPanel() {
+  return <PriceListsPanel />;
+}
+
 export default function PriceListManager() {
   return (
     <SidebarProvider>

@@ -61,6 +61,41 @@ import { BonusConfigMasterPanel }     from '@/pages/erp/pay-hub/masters/BonusCon
 import { GratuityNPSPanel }           from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
 import { AssetMasterPanel }           from '@/pages/erp/pay-hub/masters/AssetMaster';
 
+// Stage 1 — CRM, Sales, Collection, Distributor hub modules
+import { CRMMastersModule }         from '../modules/CRMMastersModule';
+import { SalesMastersModule }       from '../modules/SalesMastersModule';
+import { CollectionMastersModule }  from '../modules/CollectionMastersModule';
+import { DistributorMastersModule } from '../modules/DistributorMastersModule';
+
+// Stage 1 — Master Panel imports (CRM)
+import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
+import { VendorMasterPanel }   from '@/pages/erp/masters/VendorMaster';
+
+// Stage 1 — SalesX masters
+import { HierarchyMasterPanel }     from '@/pages/erp/salesx/masters/HierarchyMaster';
+import { SAMPersonMasterPanel }     from '@/pages/erp/salesx/masters/SAMPersonMaster';
+import { EnquirySourceMasterPanel } from '@/pages/erp/salesx/masters/EnquirySourceMaster';
+import { CampaignMasterPanel }      from '@/pages/erp/salesx/masters/CampaignMaster';
+import { TerritoryMasterPanel }     from '@/pages/erp/salesx/masters/TerritoryMaster';
+import { BeatRouteMasterPanel }     from '@/pages/erp/salesx/masters/BeatRouteMaster';
+import { TargetMasterPanel }        from '@/pages/erp/salesx/masters/TargetMaster';
+
+// Stage 1 — ReceivX masters
+import { CollectionExecMasterPanel }   from '@/pages/erp/receivx/masters/CollectionExecMaster';
+import { IncentiveSchemeMasterPanel }  from '@/pages/erp/receivx/masters/IncentiveSchemeMaster';
+import { ReminderTemplateMasterPanel } from '@/pages/erp/receivx/masters/ReminderTemplateMaster';
+import { ReceivXConfigPanel }          from '@/pages/erp/receivx/masters/ReceivXConfig';
+
+// Stage 1 — Distributor masters
+import { DistributorHierarchyMasterPanel } from '@/pages/erp/distributor/DistributorHierarchyMaster';
+import { PriceListManagerPanel }           from '@/pages/erp/inventory/PriceListManager';
+
+// Stage 1 — People Core (Employee Master registration)
+import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster';
+
+import { Card, CardContent } from '@/components/ui/card';
+import { getPrimaryEntity } from '@/data/mock-entities';
+
 export type CommandCenterModule =
   | 'overview'
   | 'foundation'
@@ -118,7 +153,36 @@ export type CommandCenterModule =
   | 'ph-loan-types'
   | 'ph-bonus-config'
   | 'ph-gratuity-nps'
-  | 'ph-asset-master';
+  | 'ph-asset-master'
+  // Stage 1 — CRM Masters
+  | 'crm-hub'
+  | 'crm-customer'
+  | 'crm-vendor'
+  // Stage 1 — Sales Masters
+  | 'sales-hub'
+  | 'sales-hierarchy'
+  | 'sales-sam-person'
+  | 'sales-enquiry-source'
+  | 'sales-campaign'
+  | 'sales-territory'
+  | 'sales-beat-route'
+  | 'sales-target'
+  // Stage 1 — Collection Masters
+  | 'collection-hub'
+  | 'collection-exec'
+  | 'collection-incentive'
+  | 'collection-reminder'
+  | 'collection-config'
+  // Stage 1 — Distributor Masters
+  // NOTE: 'distributor-hub' here is a CC-INTERNAL module ID and is NOT the
+  // /erp/distributor-hub URL route. Separate namespaces — no collision.
+  | 'distributor-hub'
+  | 'distributor-hierarchy'
+  | 'distributor-price-list'
+  | 'distributor-credit-refs'
+  | 'distributor-dispute-refs'
+  // Stage 1 — People Core (missing registration)
+  | 'ph-employee';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -143,7 +207,15 @@ export default function CommandCenterPage() {
       'opening-ledger-balances', 'opening-employee-loans', 'utility-import',
       'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-shifts',
       'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types', 'ph-overtime-rules',
-      'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps', 'ph-asset-master'].includes(hash)) {
+      'ph-loan-types', 'ph-bonus-config', 'ph-gratuity-nps', 'ph-asset-master', 'ph-employee',
+      // Stage 1
+      'crm-hub', 'crm-customer', 'crm-vendor',
+      'sales-hub', 'sales-hierarchy', 'sales-sam-person', 'sales-enquiry-source',
+      'sales-campaign', 'sales-territory', 'sales-beat-route', 'sales-target',
+      'collection-hub', 'collection-exec', 'collection-incentive', 'collection-reminder', 'collection-config',
+      'distributor-hub', 'distributor-hierarchy', 'distributor-price-list',
+      'distributor-credit-refs', 'distributor-dispute-refs',
+    ].includes(hash)) {
       return hash as CommandCenterModule;
     }
     return 'overview';
@@ -217,6 +289,39 @@ export default function CommandCenterPage() {
       case 'ph-bonus-config': return <BonusConfigMasterPanel />;
       case 'ph-gratuity-nps': return <GratuityNPSPanel />;
       case 'ph-asset-master': return <AssetMasterPanel />;
+
+      // Stage 1 — CRM
+      case 'crm-hub':       return <CRMMastersModule onNavigate={handleNavigate} />;
+      case 'crm-customer':  return <CustomerMasterPanel />;
+      case 'crm-vendor':    return <VendorMasterPanel />;
+
+      // Stage 1 — Sales
+      case 'sales-hub':            return <SalesMastersModule onNavigate={handleNavigate} />;
+      case 'sales-hierarchy':      return <HierarchyMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-sam-person':     return <SAMPersonMasterPanel personType="salesman" entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-enquiry-source': return <EnquirySourceMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-campaign':       return <CampaignMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-territory':      return <TerritoryMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-beat-route':     return <BeatRouteMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-target':         return <TargetMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+
+      // Stage 1 — Collection
+      case 'collection-hub':       return <CollectionMastersModule onNavigate={handleNavigate} />;
+      case 'collection-exec':      return <CollectionExecMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'collection-incentive': return <IncentiveSchemeMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'collection-reminder':  return <ReminderTemplateMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'collection-config':    return <ReceivXConfigPanel entityCode={getPrimaryEntity().shortCode} />;
+
+      // Stage 1 — Distributor
+      case 'distributor-hub':           return <DistributorMastersModule onNavigate={handleNavigate} />;
+      case 'distributor-hierarchy':     return <DistributorHierarchyMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'distributor-price-list':    return <PriceListManagerPanel />;
+      case 'distributor-credit-refs':   return <CreditRefDocPanel />;
+      case 'distributor-dispute-refs':  return <DisputeRefDocPanel />;
+
+      // Stage 1 — People Core
+      case 'ph-employee':   return <EmployeeMasterPanel />;
+
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
@@ -241,5 +346,73 @@ export default function CommandCenterPage() {
         </SidebarInset>
       </div>
     </SidebarProvider>
+  );
+}
+
+// ─── Stage 1 — Reference doc panels (read-only enum documentation) ────────
+function CreditRefDocPanel() {
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-foreground mb-1">Credit Request Reference</h2>
+        <p className="text-xs text-muted-foreground">
+          Reference documentation for credit-increase request enums. Type values are
+          defined in <code className="font-mono">src/types/credit-increase-request.ts</code>.
+        </p>
+      </div>
+      <Card><CardContent className="p-4">
+        <p className="font-semibold mb-2 text-sm">Urgency Levels</p>
+        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+          <li><span className="font-mono text-foreground">normal</span> — routine credit increase</li>
+          <li><span className="font-mono text-foreground">festival</span> — temporary festival-season credit</li>
+          <li><span className="font-mono text-foreground">emergency</span> — time-bound emergency credit line</li>
+        </ul>
+      </CardContent></Card>
+      <Card><CardContent className="p-4">
+        <p className="font-semibold mb-2 text-sm">Status Flow</p>
+        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+          <li><span className="font-mono text-foreground">submitted</span> → <span className="font-mono text-foreground">under_review</span> → <span className="font-mono text-foreground">approved / rejected / cancelled</span></li>
+        </ul>
+      </CardContent></Card>
+      <p className="text-xs text-muted-foreground">
+        Credit requests are created from <code className="font-mono">/erp/distributor/credit-request</code>{' '}
+        and reviewed at <code className="font-mono">/erp/distributor-hub/credit-approvals</code>.
+      </p>
+    </div>
+  );
+}
+
+function DisputeRefDocPanel() {
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-foreground mb-1">Invoice Dispute Reference</h2>
+        <p className="text-xs text-muted-foreground">
+          Reference documentation for invoice dispute enums. Type values are defined in{' '}
+          <code className="font-mono">src/types/invoice-dispute.ts</code>.
+        </p>
+      </div>
+      <Card><CardContent className="p-4">
+        <p className="font-semibold mb-2 text-sm">Dispute Reasons</p>
+        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+          <li><span className="font-mono text-foreground">short_supply</span> — quantity less than billed</li>
+          <li><span className="font-mono text-foreground">damaged</span> — physical damage on receipt</li>
+          <li><span className="font-mono text-foreground">wrong_item</span> — SKU mismatch</li>
+          <li><span className="font-mono text-foreground">rate_mismatch</span> — billed rate different from agreed</li>
+          <li><span className="font-mono text-foreground">quality</span> — quality not per spec</li>
+          <li><span className="font-mono text-foreground">other</span> — any other valid reason</li>
+        </ul>
+      </CardContent></Card>
+      <Card><CardContent className="p-4">
+        <p className="font-semibold mb-2 text-sm">Status Flow</p>
+        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+          <li><span className="font-mono text-foreground">open</span> → <span className="font-mono text-foreground">under_review</span> → <span className="font-mono text-foreground">resolved / rejected / closed</span></li>
+        </ul>
+      </CardContent></Card>
+      <p className="text-xs text-muted-foreground">
+        Disputes are raised from <code className="font-mono">/erp/distributor/invoices</code>{' '}
+        and processed at <code className="font-mono">/erp/distributor-hub/disputes</code>.
+      </p>
+    </div>
   );
 }
