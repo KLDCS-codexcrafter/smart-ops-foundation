@@ -119,7 +119,7 @@ export default function MobileLogin() {
     });
 
     // Sprint 14b — mobile-flavoured audit (Bell drawer surfaces this)
-    if (identity.user_id && identity.role !== 'unknown') {
+    if (identity.user_id) {
       logMobileLogin(
         identity.entity_code,
         identity.user_id,
