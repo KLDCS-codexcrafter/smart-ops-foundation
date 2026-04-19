@@ -31,6 +31,16 @@ import type { SAMPerson } from '@/types/sam-person';
 import { samPersonsKey } from '@/types/sam-person';
 import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
 import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { computePackingSlip } from '@/lib/packing-slip-engine';
+import { packingSlipsKey, type PackingSlip } from '@/types/packing-slip';
+import type { ItemPacking } from '@/types/item-packing';
+
+interface LogisticMasterLite {
+  id: string;
+  partyName: string;
+  gstin: string;
+  logisticType: string;
+}
 
 interface DeliveryNotePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -46,6 +56,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   const [partyName, setPartyName] = useState('');
   const [againstSI, setAgainstSI] = useState('');
   const [transporterName, setTransporterName] = useState('');
+  const [logisticId, setLogisticId] = useState<string | null>(null);
   const [vehicleNo, setVehicleNo] = useState('');
   const [driverNo, setDriverNo] = useState('');
   const [distance, setDistance] = useState('');
