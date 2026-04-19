@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Cpu, ArrowLeft, Home, Search, Clock, Wrench,
+  Cpu, ArrowLeft, Home, Search, Clock, Wrench, Sparkles,
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
@@ -18,6 +18,14 @@ import {
   type AppDefinition,
 } from "@/components/operix-core/applications";
 import { onEnterNext } from '@/lib/keyboard';
+import { CardTile } from "@/components/operix-core/CardTile";
+import { SuspendedSessionBanner } from "@/components/layout/SuspendedSessionBanner";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { CrossCardSearch } from "@/components/layout/CrossCardSearch";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useCardEntitlement } from "@/hooks/useCardEntitlement";
+import { topCardsForUser } from "@/lib/card-frequency-tracker";
+import type { CardId } from "@/types/card-entitlement";
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
