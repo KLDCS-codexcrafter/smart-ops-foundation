@@ -136,7 +136,7 @@ export function DistributorHubWelcomePanel() {
 
   const distributorNameById = useMemo(() => {
     const m = new Map<string, string>();
-    distributors.forEach(d => m.set(d.id, d.party_name));
+    distributors.forEach(d => m.set(d.id, d.legal_name));
     return m;
   }, [distributors]);
 
@@ -145,26 +145,26 @@ export function DistributorHubWelcomePanel() {
     orders.slice(-5).forEach(o => items.push({
       id: `ord-${o.id}`,
       title: `New order ${o.order_no}`,
-      sub: `by ${distributorNameById.get(o.distributor_id) ?? 'Distributor'}`,
+      sub: `by ${o.partner_name ?? distributorNameById.get(o.partner_id) ?? 'Distributor'}`,
       iso: o.created_at, icon: ShoppingBag, module: 'dh-hub',
     }));
     intimations.slice(-5).forEach(i => items.push({
       id: `int-${i.id}`,
       title: `Intimation ${formatINR(i.amount_paise)}`,
-      sub: `by ${distributorNameById.get(i.distributor_id) ?? 'Distributor'}`,
+      sub: `by ${i.partner_name ?? distributorNameById.get(i.partner_id) ?? 'Distributor'}`,
       iso: i.created_at, icon: FileCheck, module: 'dh-t-intimations',
     }));
     creditReqs.slice(-3).forEach(c => items.push({
       id: `cr-${c.id}`,
       title: `Credit request ${formatINR(c.requested_limit_paise)}`,
-      sub: `by ${c.customer_name}`,
-      iso: c.requested_at, icon: TrendingUp, module: 'dh-t-credit-approvals',
+      sub: `by ${distributorNameById.get(c.distributor_id) ?? 'Distributor'}`,
+      iso: c.created_at, icon: TrendingUp, module: 'dh-t-credit-approvals',
     }));
     disputes.slice(-3).forEach(d => items.push({
       id: `dp-${d.id}`,
-      title: `Dispute on ${d.invoice_no}`,
-      sub: `by ${d.customer_name}`,
-      iso: d.raised_at, icon: AlertOctagon, module: 'dh-t-disputes',
+      title: `Dispute on ${d.voucher_no}`,
+      sub: `Reason: ${d.reason}`,
+      iso: d.created_at, icon: AlertOctagon, module: 'dh-t-disputes',
     }));
     return items
       .sort((a, b) => new Date(b.iso).getTime() - new Date(a.iso).getTime())
