@@ -331,6 +331,39 @@ export function ERPHeader({
           </Badge>
         </div>
       </div>
+
+      {/* Shortcuts help dialog */}
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+        <DialogContent className='max-w-lg'>
+          <DialogHeader>
+            <DialogTitle>Keyboard Shortcuts</DialogTitle>
+          </DialogHeader>
+          <div className='space-y-3'>
+            <div>
+              <p className='text-xs uppercase tracking-wide text-muted-foreground mb-2'>Global</p>
+              <div className='space-y-1'>
+                {GLOBAL_SHORTCUTS.filter(s => s.scope === 'global').map(s => (
+                  <div key={s.id} className='flex items-center justify-between text-sm'>
+                    <span>{s.description}</span>
+                    <kbd className='px-1.5 py-0.5 text-[10px] rounded bg-muted border'>{s.combo}</kbd>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className='text-xs uppercase tracking-wide text-muted-foreground mb-2'>Inside a card</p>
+              <div className='space-y-1'>
+                {GLOBAL_SHORTCUTS.filter(s => s.scope === 'card').map(s => (
+                  <div key={s.id} className='flex items-center justify-between text-sm'>
+                    <span>{s.description}</span>
+                    <kbd className='px-1.5 py-0.5 text-[10px] rounded bg-muted border'>{s.combo}</kbd>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
