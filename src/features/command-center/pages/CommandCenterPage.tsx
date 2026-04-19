@@ -61,6 +61,41 @@ import { BonusConfigMasterPanel }     from '@/pages/erp/pay-hub/masters/BonusCon
 import { GratuityNPSPanel }           from '@/pages/erp/pay-hub/masters/GratuityNPSConfig';
 import { AssetMasterPanel }           from '@/pages/erp/pay-hub/masters/AssetMaster';
 
+// Stage 1 — CRM, Sales, Collection, Distributor hub modules
+import { CRMMastersModule }         from '../modules/CRMMastersModule';
+import { SalesMastersModule }       from '../modules/SalesMastersModule';
+import { CollectionMastersModule }  from '../modules/CollectionMastersModule';
+import { DistributorMastersModule } from '../modules/DistributorMastersModule';
+
+// Stage 1 — Master Panel imports (CRM)
+import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
+import { VendorMasterPanel }   from '@/pages/erp/masters/VendorMaster';
+
+// Stage 1 — SalesX masters
+import { HierarchyMasterPanel }     from '@/pages/erp/salesx/masters/HierarchyMaster';
+import { SAMPersonMasterPanel }     from '@/pages/erp/salesx/masters/SAMPersonMaster';
+import { EnquirySourceMasterPanel } from '@/pages/erp/salesx/masters/EnquirySourceMaster';
+import { CampaignMasterPanel }      from '@/pages/erp/salesx/masters/CampaignMaster';
+import { TerritoryMasterPanel }     from '@/pages/erp/salesx/masters/TerritoryMaster';
+import { BeatRouteMasterPanel }     from '@/pages/erp/salesx/masters/BeatRouteMaster';
+import { TargetMasterPanel }        from '@/pages/erp/salesx/masters/TargetMaster';
+
+// Stage 1 — ReceivX masters
+import { CollectionExecMasterPanel }   from '@/pages/erp/receivx/masters/CollectionExecMaster';
+import { IncentiveSchemeMasterPanel }  from '@/pages/erp/receivx/masters/IncentiveSchemeMaster';
+import { ReminderTemplateMasterPanel } from '@/pages/erp/receivx/masters/ReminderTemplateMaster';
+import { ReceivXConfigPanel }          from '@/pages/erp/receivx/masters/ReceivXConfig';
+
+// Stage 1 — Distributor masters
+import { DistributorHierarchyMasterPanel } from '@/pages/erp/distributor/DistributorHierarchyMaster';
+import { PriceListManagerPanel }           from '@/pages/erp/inventory/PriceListManager';
+
+// Stage 1 — People Core (Employee Master registration)
+import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster';
+
+import { Card, CardContent } from '@/components/ui/card';
+import { getPrimaryEntity } from '@/data/mock-entities';
+
 export type CommandCenterModule =
   | 'overview'
   | 'foundation'
@@ -118,7 +153,36 @@ export type CommandCenterModule =
   | 'ph-loan-types'
   | 'ph-bonus-config'
   | 'ph-gratuity-nps'
-  | 'ph-asset-master';
+  | 'ph-asset-master'
+  // Stage 1 — CRM Masters
+  | 'crm-hub'
+  | 'crm-customer'
+  | 'crm-vendor'
+  // Stage 1 — Sales Masters
+  | 'sales-hub'
+  | 'sales-hierarchy'
+  | 'sales-sam-person'
+  | 'sales-enquiry-source'
+  | 'sales-campaign'
+  | 'sales-territory'
+  | 'sales-beat-route'
+  | 'sales-target'
+  // Stage 1 — Collection Masters
+  | 'collection-hub'
+  | 'collection-exec'
+  | 'collection-incentive'
+  | 'collection-reminder'
+  | 'collection-config'
+  // Stage 1 — Distributor Masters
+  // NOTE: 'distributor-hub' here is a CC-INTERNAL module ID and is NOT the
+  // /erp/distributor-hub URL route. Separate namespaces — no collision.
+  | 'distributor-hub'
+  | 'distributor-hierarchy'
+  | 'distributor-price-list'
+  | 'distributor-credit-refs'
+  | 'distributor-dispute-refs'
+  // Stage 1 — People Core (missing registration)
+  | 'ph-employee';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
