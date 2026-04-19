@@ -21,6 +21,8 @@ import {
   customerCartKey, customerOrdersKey, customerCartActivityKey,
   type CustomerCart, type CustomerOrder,
 } from '@/types/customer-order';
+import { customerStreakKey, type CustomerStreakState } from '@/types/customer-streak';
+import { computeStreak } from '@/lib/customer-streak-engine';
 import {
   loyaltyLedgerKey, loyaltyStateKey, TIER_THRESHOLDS,
   type CustomerLoyaltyState, type LoyaltyLedgerEntry,
@@ -241,6 +243,24 @@ export function CustomerCartPanel() {
         });
       }
       setLs(loyaltyLedgerKey(ENTITY), ledger);
+
+      // G1: Recompute streak state when an order is placed
+      try {
+        const allOrders = ls<CustomerOrder>(customerOrdersKey(ENTITY));
+        const myOrders = allOrders.filter(o => o.customer_id === customerId && o.placed_at);
+        const streakLite = myOrders.map(o => ({ placed_at: o.placed_at as string }));
+        const existingStreaks = ls<CustomerStreakState>(customerStreakKey(ENTITY));
+        const mine = existingStreaks.find(s => s.customer_id === customerId) ?? null;
+        const updated = computeStreak(customerId, ENTITY, streakLite, mine);
+        const next = existingStreaks.filter(s => s.customer_id !== customerId);
+        next.push(updated);
+        setLs(customerStreakKey(ENTITY), next);
+        const prevCount = mine?.active_milestones.length ?? 0;
+        if (updated.active_milestones.length > prevCount) {
+          const newOnes = updated.active_milestones.slice(prevCount);
+          for (const m of newOnes) toast.success(`Milestone unlocked: ${m.title}`);
+        }
+      } catch { /* silent */ }
 
       // Clear cart
       const cleared: CustomerCart = { ...cart, lines: [], subtotal_paise: 0, updated_at: now };

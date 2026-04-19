@@ -45,9 +45,12 @@ function ComingSoonPanel({ module }: { module: CustomerHubModule }) {
   );
 }
 
-function renderModule(mod: CustomerHubModule): React.ReactElement {
+function renderModule(
+  mod: CustomerHubModule,
+  onModuleChange: (m: CustomerHubModule) => void,
+): React.ReactElement {
   switch (mod) {
-    case 'ch-welcome':              return <CustomerHubWelcomePanel />;
+    case 'ch-welcome':              return <CustomerHubWelcomePanel onModuleChange={onModuleChange} />;
     case 'ch-m-customer':           return <CustomerMasterPanel />;
     case 'ch-m-segment':            return <CustomerSegmentMasterPanel />;
     case 'ch-t-catalog':            return <CustomerCatalogPanel />;
@@ -120,7 +123,7 @@ export default function CustomerHubPage() {
           <ERPHeader />
           <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
             <div className="p-4 md:p-6 animate-fade-in">
-              {renderModule(activeModule)}
+              {renderModule(activeModule, setActiveModule)}
             </div>
           </ScrollArea>
         </SidebarInset>

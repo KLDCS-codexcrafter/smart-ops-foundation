@@ -15,9 +15,11 @@ import { formatINR } from '@/lib/india-validations';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { computeCLV, topCLV } from '@/lib/customer-clv-engine';
+import { computeChurn, highestChurnRisk } from '@/lib/customer-churn-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import type { CustomerLoyaltyState, LoyaltyTier } from '@/types/customer-loyalty';
 import { loyaltyStateKey } from '@/types/customer-loyalty';
+import type { CustomerHubModule } from './CustomerHubSidebar';
 
 interface CustomerLite {
   id: string;
@@ -80,7 +82,11 @@ function tierBadgeClass(tier: CLVResult['clv_rank_tier']): string {
   }
 }
 
-export function CustomerHubWelcomePanel() {
+interface CustomerHubWelcomePanelProps {
+  onModuleChange?: (m: CustomerHubModule) => void;
+}
+
+export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePanelProps = {}) {
   const { entityCode, userId } = useCardEntitlement();
   const [now] = useState<Date>(() => new Date());
 
@@ -111,6 +117,32 @@ export function CustomerHubWelcomePanel() {
   }, [customers, orders]);
 
   const topClv = useMemo(() => topCLV(clvResults, 10), [clvResults]);
+
+  // G3: Churn computation for critical-risk banner
+  const churnResults = useMemo(() => {
+    return customers.map(c => {
+      const myOrders = orders
+        .filter(o => (o.customer_id ?? o.distributor_id) === c.id && o.placed_at)
+        .map(o => ({
+          placed_at: o.placed_at as string,
+          value_paise: (o.order_value_paise ?? o.total_paise ?? 0),
+        }));
+      const sorted = [...myOrders].sort((a, b) => a.placed_at.localeCompare(b.placed_at));
+      return computeChurn({
+        customer_id: c.id,
+        historical_orders: myOrders,
+        first_order_at: sorted[0]?.placed_at ?? null,
+        last_order_at: sorted[sorted.length - 1]?.placed_at ?? null,
+        open_complaints: 0,
+        recent_rating_avg: null,
+      });
+    });
+  }, [customers, orders]);
+
+  const critical = useMemo(
+    () => highestChurnRisk(churnResults, 5).filter(r => r.risk_tier === 'critical'),
+    [churnResults],
+  );
 
   // KPIs
   const kpis = useMemo(() => {
@@ -170,6 +202,33 @@ export function CustomerHubWelcomePanel() {
           Sprint 13a · Foundation
         </Badge>
       </div>
+
+      {/* G3: Critical churn risk banner */}
+      {critical.length > 0 && (
+        <Card className="bg-red-500/5 border-red-500/30">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                {critical.length} customer(s) at critical churn risk
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                Top: {critical[0].customer_id} — {critical[0].signal}
+              </p>
+            </div>
+            {onModuleChange && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-500/40 hover:bg-red-500/10 text-red-600"
+                onClick={() => onModuleChange('ch-r-churn')}
+              >
+                View Dashboard
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* KPI CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

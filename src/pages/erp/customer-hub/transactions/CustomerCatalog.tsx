@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
+import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
@@ -141,6 +142,18 @@ export function CustomerCatalogPanel() {
   );
 
   const categories = useMemo(() => Array.from(new Set(items.map(i => i.category))).sort(), [items]);
+
+  // G2: "You may also like" recommendations from cart co-occurrence
+  const cartItemIds = cart.lines.map(l => l.item_id);
+  const cartItemIdsKey = cartItemIds.join(',');
+  const recommendations = useMemo(() => {
+    if (cartItemIds.length === 0) return [];
+    const itemNameLookup = new Map(items.map(i => [i.id, i.name]));
+    const orderHistory = allOrders.flatMap(o =>
+      o.lines.map(l => ({ customer_id: o.customer_id, item_id: l.item_id })));
+    return recommendForCart(cartItemIds, orderHistory, 4, itemNameLookup);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItemIdsKey, allOrders, items]);
 
   const filtered = useMemo(() => {
     let list = items;
@@ -370,6 +383,36 @@ export function CustomerCatalogPanel() {
           </Button>
         </Card>
       </div>
+
+      {/* G2: You may also like — recommendations from cart co-occurrence */}
+      {recommendations.length > 0 && (
+        <Card className="p-4">
+          <p className="text-xs font-semibold mb-3 flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-teal-500" />
+            You may also like
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {recommendations.map(rec => {
+              const item = items.find(i => i.id === rec.item_id);
+              if (!item) return null;
+              return (
+                <button
+                  key={`rec-${rec.item_id}`}
+                  type="button"
+                  onClick={() => updateQty(item, (cartQty(item.id) || 0) + 1)}
+                  className="text-left rounded-lg border border-border bg-card hover:border-teal-500/40 hover:bg-teal-500/5 transition-colors p-3"
+                >
+                  <p className="text-xs font-semibold leading-tight line-clamp-2">{item.name}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{rec.reason}</p>
+                  <p className="font-mono text-sm font-bold text-teal-600 mt-1.5">
+                    {formatINR(item.price_paise)}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
