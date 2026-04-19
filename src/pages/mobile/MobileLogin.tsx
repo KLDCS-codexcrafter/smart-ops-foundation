@@ -14,6 +14,8 @@ import { Card } from '@/components/ui/card';
 import { resolveIdentity, type CustomerLite } from '@/lib/mobile-role-resolver';
 import type { Distributor } from '@/types/distributor';
 import { logAudit } from '@/lib/card-audit-engine';
+import { QRLoginTrigger } from '@/components/mobile/QRLoginTrigger';
+import { logMobileLogin } from '@/lib/mobile-audit';
 
 const ENTITY_CODE = 'SMRT';
 const DEFAULT_PLAN = 'growth' as const;
@@ -116,8 +118,28 @@ export default function MobileLogin() {
       refLabel: `OperixGo login (${identity.role})`,
     });
 
+    // Sprint 14b — mobile-flavoured audit (Bell drawer surfaces this)
+    if (identity.user_id) {
+      logMobileLogin(
+        identity.entity_code,
+        identity.user_id,
+        identity.display_name,
+        identity.role,
+      );
+    }
+
     toast.success(`Welcome, ${identity.display_name}`);
     navigate('/mobile/home', { replace: true });
+  };
+
+  const handleQRPayload = (qrCredential: string, _qrToken: string) => {
+    // Pre-fill credential and trigger same submit flow.
+    // Admin-issued token is trusted (admin-panel model); password skipped.
+    setCredential(qrCredential);
+    setTimeout(() => {
+      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+      void onSubmit(fakeEvent);
+    }, 50);
   };
 
   return (
@@ -172,6 +194,14 @@ export default function MobileLogin() {
             )}
           </Button>
         </form>
+
+        <div className="flex items-center gap-3 my-3">
+          <div className="h-px bg-border flex-1" />
+          <span className="text-xs text-muted-foreground">or</span>
+          <div className="h-px bg-border flex-1" />
+        </div>
+
+        <QRLoginTrigger onPayload={handleQRPayload} />
 
         <div className="rounded-md border border-border bg-muted/30 p-3 text-[11px] text-muted-foreground leading-relaxed">
           <p className="font-semibold text-foreground mb-1">New to OperixGo?</p>

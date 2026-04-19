@@ -17,6 +17,7 @@ import { FeatureGate } from '@/components/layout/FeatureGate';
 import type { FeatureId } from '@/types/plan-features';
 import type { PlanTier } from '@/types/card-entitlement';
 import { PLAN_PRICING_INR_PER_MONTH } from '@/types/plan-features';
+import { logMobileTileClick } from '@/lib/mobile-audit';
 import type { MobileSession } from './MobileRouter';
 
 function readSession(): MobileSession | null {
@@ -112,6 +113,17 @@ export default function MobileHome() {
     navigate('/mobile/login', { replace: true });
   };
 
+  const handleTileClick = (tile: Tile) => {
+    logMobileTileClick(
+      session.entity_code,
+      session.user_id ?? 'unknown',
+      session.role,
+      tile.label,
+      tile.to,
+    );
+    navigate(tile.to);
+  };
+
   return (
     <div className="max-w-md mx-auto p-4 space-y-4">
       <div>
@@ -127,7 +139,7 @@ export default function MobileHome() {
           const TileBody = (
             <Card
               className="p-4 flex flex-col items-start gap-2 cursor-pointer hover:bg-teal-500/10 transition-colors"
-              onClick={() => navigate(t.to)}
+              onClick={() => handleTileClick(t)}
             >
               <t.icon className="h-5 w-5 text-slate-700" />
               <p className="text-sm font-semibold">{t.label}</p>
