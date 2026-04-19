@@ -25,6 +25,9 @@ import { useOrders } from '@/hooks/useOrders';
 import { generateDocNo } from '@/lib/finecore-engine';
 import type { OrderLine } from '@/types/order';
 import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/types/quotation';
+import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/scheme-engine';
+import { schemesKey, type Scheme } from '@/types/scheme';
+import { Sparkles } from 'lucide-react';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
