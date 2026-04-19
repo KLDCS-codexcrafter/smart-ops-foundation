@@ -134,6 +134,7 @@ export default function DistributorCartPage() {
   const schemeDiscountPaise = totalSchemeDiscountPaise(appliedSchemes);
   const netPayablePaise = Math.max(0, grand - schemeDiscountPaise);
   const unlockHints = describeUnlockGap(schemeCart, allSchemes);
+  const credit = checkCreditAvailable(distributor, netPayablePaise);
 
   const handleQtyChange = async (lineId: string, qty: number) => {
     if (!cart) return;
