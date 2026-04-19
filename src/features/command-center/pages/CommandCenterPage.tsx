@@ -190,7 +190,9 @@ export type CommandCenterModule =
   | 'distributor-credit-refs'
   | 'distributor-dispute-refs'
   // Stage 1 — People Core (missing registration)
-  | 'ph-employee';
+  | 'ph-employee'
+  // Sprint 12 — Schemes
+  | 'sales-schemes';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -220,6 +222,7 @@ export default function CommandCenterPage() {
       'crm-hub', 'crm-customer', 'crm-vendor',
       'sales-hub', 'sales-hierarchy', 'sales-sam-person', 'sales-enquiry-source',
       'sales-campaign', 'sales-territory', 'sales-beat-route', 'sales-target',
+      'sales-schemes',
       'collection-hub', 'collection-exec', 'collection-incentive', 'collection-reminder', 'collection-config',
       'distributor-hub', 'distributor-hierarchy', 'distributor-price-list',
       'distributor-credit-refs', 'distributor-dispute-refs',
@@ -340,6 +343,7 @@ export default function CommandCenterPage() {
       case 'sales-territory':      return <TerritoryMasterPanel entityCode={getPrimaryEntity().shortCode} />;
       case 'sales-beat-route':     return <BeatRouteMasterPanel entityCode={getPrimaryEntity().shortCode} />;
       case 'sales-target':         return <TargetMasterPanel entityCode={getPrimaryEntity().shortCode} />;
+      case 'sales-schemes':        return <SchemeMasterPanel />;
 
       // Stage 1 — Collection
       case 'collection-hub':       return <CollectionMastersModule onNavigate={handleNavigate} />;
