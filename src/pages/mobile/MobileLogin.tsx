@@ -14,7 +14,9 @@ import { Card } from '@/components/ui/card';
 import { resolveIdentity, type CustomerLite } from '@/lib/mobile-role-resolver';
 import type { Distributor } from '@/types/distributor';
 import { logAudit } from '@/lib/card-audit-engine';
-import { QRLoginTrigger } from '@/components/mobile/QRLoginTrigger';
+import { QRCameraScanner } from '@/components/mobile/QRCameraScanner';
+import { BiometricLoginPrompt } from '@/components/mobile/BiometricLoginPrompt';
+import { setBiometricToken } from '@/lib/biometric-bridge';
 import { logMobileLogin } from '@/lib/mobile-audit';
 
 const ENTITY_CODE = 'SMRT';
@@ -128,6 +130,11 @@ export default function MobileLogin() {
       );
     }
 
+    // Sprint 14c — store credential for next biometric unlock (native only)
+    if (identity.role !== 'unknown' && identity.user_id) {
+      void setBiometricToken('opx_session_credential', credential);
+    }
+
     toast.success(`Welcome, ${identity.display_name}`);
     navigate('/mobile/home', { replace: true });
   };
@@ -201,7 +208,17 @@ export default function MobileLogin() {
           <div className="h-px bg-border flex-1" />
         </div>
 
-        <QRLoginTrigger onPayload={handleQRPayload} />
+        <BiometricLoginPrompt
+          onAuthenticated={(token) => {
+            setCredential(token);
+            setTimeout(() => {
+              const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+              void onSubmit(fakeEvent);
+            }, 50);
+          }}
+        />
+
+        <QRCameraScanner onPayload={handleQRPayload} />
 
         <div className="rounded-md border border-border bg-muted/30 p-3 text-[11px] text-muted-foreground leading-relaxed">
           <p className="font-semibold text-foreground mb-1">New to OperixGo?</p>
