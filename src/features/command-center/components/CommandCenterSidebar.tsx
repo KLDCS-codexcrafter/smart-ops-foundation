@@ -116,9 +116,10 @@ const PEOPLE_CORE_ITEMS: { label: string; module: CommandCenterModule }[] = [
 
 // ── Stage 1 — CRM, Sales, Collection, Distributor master sections ──────────
 const CRM_ITEMS: { label: string; module: CommandCenterModule }[] = [
-  { label: 'Hub Overview',    module: 'crm-hub' },
-  { label: 'Customer Master', module: 'crm-customer' },
-  { label: 'Vendor Master',   module: 'crm-vendor' },
+  { label: 'Hub Overview',       module: 'crm-hub' },
+  { label: 'Customer Master',    module: 'crm-customer' },
+  { label: 'Customer Segments',  module: 'crm-customer-segments' },
+  { label: 'Vendor Master',      module: 'crm-vendor' },
 ];
 
 const SALES_ITEMS: { label: string; module: CommandCenterModule }[] = [

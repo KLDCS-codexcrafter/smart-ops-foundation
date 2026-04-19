@@ -141,6 +141,7 @@ const DistributorInvoices = lazy(() => import('./pages/erp/distributor/Distribut
 const DistributorPayments = lazy(() => import('./pages/erp/distributor/DistributorPayments'));
 const DistributorUpdates = lazy(() => import('./pages/erp/distributor/DistributorUpdates'));
 const DistributorHubPage = lazy(() => import('./pages/erp/distributor-hub/DistributorHubPage'));
+const CustomerHubPage = lazy(() => import('./pages/erp/customer-hub/CustomerHubPage'));
 const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
 // Sprint 11a — distributor portal (external user) routes only
 const DistributorDownstreamView = lazy(() => import('./pages/erp/distributor/DistributorDownstreamView'));
@@ -335,6 +336,8 @@ const App = () => (
               <Route path="/partner/dashboard" element={<PartnerDashboard />} />
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />
               <Route path="/erp/distributor-hub" element={<P><DistributorHubPage /></P>} />
+              <Route path="/erp/customer-hub" element={<P><CustomerHubPage /></P>} />
+              <Route path="/erp/customer-hub/*" element={<P><CustomerHubPage /></P>} />
               <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
               <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
               <Route path="/erp/distributor/cart" element={<DistributorCart />} />
