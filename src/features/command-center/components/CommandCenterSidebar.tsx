@@ -8,7 +8,7 @@ import {
   Boxes, Tags, Tag, Warehouse, Ruler, LayoutTemplate,
   QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
-  Zap, Upload, BookOpen, HandCoins,
+  Zap, Upload, BookOpen, HandCoins, Bell, Truck,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel,
@@ -99,6 +99,7 @@ const UTILITY_ITEMS: { label: string; module: CommandCenterModule; icon: any }[]
 ];
 
 const PEOPLE_CORE_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Employee Master',    module: 'ph-employee' },
   { label: 'Pay Heads',          module: 'ph-pay-heads' },
   { label: 'Salary Structures',  module: 'ph-salary-structures' },
   { label: 'Pay Grades',         module: 'ph-pay-grades' },
@@ -113,9 +114,42 @@ const PEOPLE_CORE_ITEMS: { label: string; module: CommandCenterModule }[] = [
   { label: 'Asset Master',       module: 'ph-asset-master' },
 ];
 
+// ── Stage 1 — CRM, Sales, Collection, Distributor master sections ──────────
+const CRM_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Hub Overview',    module: 'crm-hub' },
+  { label: 'Customer Master', module: 'crm-customer' },
+  { label: 'Vendor Master',   module: 'crm-vendor' },
+];
+
+const SALES_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Hub Overview',     module: 'sales-hub' },
+  { label: 'Sales Hierarchy',  module: 'sales-hierarchy' },
+  { label: 'SAM Persons',      module: 'sales-sam-person' },
+  { label: 'Enquiry Sources',  module: 'sales-enquiry-source' },
+  { label: 'Campaigns',        module: 'sales-campaign' },
+  { label: 'Territories',      module: 'sales-territory' },
+  { label: 'Beat Routes',      module: 'sales-beat-route' },
+  { label: 'Sales Targets',    module: 'sales-target' },
+];
+
+const COLLECTION_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Hub Overview',       module: 'collection-hub' },
+  { label: 'Collection Execs',   module: 'collection-exec' },
+  { label: 'Incentive Schemes',  module: 'collection-incentive' },
+  { label: 'Reminder Templates', module: 'collection-reminder' },
+  { label: 'ReceivX Config',     module: 'collection-config' },
+];
+
+const DISTRIBUTOR_ITEMS: { label: string; module: CommandCenterModule }[] = [
+  { label: 'Hub Overview',             module: 'distributor-hub' },
+  { label: 'Distribution Hierarchy',   module: 'distributor-hierarchy' },
+  { label: 'Price Lists',              module: 'distributor-price-list' },
+  { label: 'Credit Request Reference', module: 'distributor-credit-refs' },
+  { label: 'Dispute Reason Reference', module: 'distributor-dispute-refs' },
+];
+
 const COMING_SOON = [
   { label: 'Procure Masters', icon: ShoppingCart },
-  { label: 'Sales Masters', icon: TrendingUp },
 ];
 
 export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCenterSidebarProps) {
