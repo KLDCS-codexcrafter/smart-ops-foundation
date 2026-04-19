@@ -3,7 +3,7 @@
  * Sprint 12. Module id: dh-t-scheme-simulator. Violet-500 accent.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
@@ -16,6 +16,8 @@ import { distributorOrdersKey } from '@/types/distributor-order';
 import type { DistributorOrder } from '@/types/distributor-order';
 import { simulateSchemeImpact } from '@/lib/scheme-impact-engine';
 import { formatINR } from '@/lib/india-validations';
+import { logAudit } from '@/lib/card-audit-engine';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 
 const ENTITY = 'SMRT';
 
