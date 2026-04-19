@@ -143,6 +143,18 @@ export function CustomerCatalogPanel() {
 
   const categories = useMemo(() => Array.from(new Set(items.map(i => i.category))).sort(), [items]);
 
+  // G2: "You may also like" recommendations from cart co-occurrence
+  const cartItemIds = cart.lines.map(l => l.item_id);
+  const cartItemIdsKey = cartItemIds.join(',');
+  const recommendations = useMemo(() => {
+    if (cartItemIds.length === 0) return [];
+    const itemNameLookup = new Map(items.map(i => [i.id, i.name]));
+    const orderHistory = allOrders.flatMap(o =>
+      o.lines.map(l => ({ customer_id: o.customer_id, item_id: l.item_id })));
+    return recommendForCart(cartItemIds, orderHistory, 4, itemNameLookup);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItemIdsKey, allOrders, items]);
+
   const filtered = useMemo(() => {
     let list = items;
     if (search.trim().length >= 2) {
