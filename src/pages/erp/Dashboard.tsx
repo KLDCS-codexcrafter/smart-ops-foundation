@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Cpu, ArrowLeft, Home, Search, Clock, Wrench,
+  Cpu, ArrowLeft, Home, Search, Clock, Wrench, Sparkles,
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
@@ -18,6 +18,14 @@ import {
   type AppDefinition,
 } from "@/components/operix-core/applications";
 import { onEnterNext } from '@/lib/keyboard';
+import { CardTile } from "@/components/operix-core/CardTile";
+import { SuspendedSessionBanner } from "@/components/layout/SuspendedSessionBanner";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { CrossCardSearch } from "@/components/layout/CrossCardSearch";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useCardEntitlement } from "@/hooks/useCardEntitlement";
+import { topCardsForUser } from "@/lib/card-frequency-tracker";
+
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -167,8 +175,17 @@ export default function ErpDashboard() {
   const navigate = useNavigate();
   const greeting = getGreeting();
   const userName = getUserName();
+  const { entityCode, userId, allowedCards } = useCardEntitlement();
 
   const [search, setSearch] = useState("");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useKeyboardShortcuts({
+    onPalette: () => setPaletteOpen(true),
+    onSearch: () => setSearchOpen(true),
+    onDashboard: () => navigate('/erp/dashboard'),
+  });
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -178,6 +195,16 @@ export default function ErpDashboard() {
       app.description.toLowerCase().includes(q)
     );
   }, [search]);
+
+  // Frequently used lane — top 4 cards by audit frequency
+  const frequentApps = useMemo(() => {
+    const allowedSet = new Set<string>(allowedCards);
+    const top = topCardsForUser(entityCode, userId, 4);
+    const map = new Map(applications.map(a => [a.id, a]));
+    return top
+      .map(id => map.get(id))
+      .filter((a): a is AppDefinition => !!a && allowedSet.has(a.id));
+  }, [entityCode, userId, allowedCards]);
 
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
@@ -234,15 +261,41 @@ export default function ErpDashboard() {
           </p>
         </div>
 
+        {/* Stage 3b — Suspended sessions banner */}
+        <div className="mb-4">
+          <SuspendedSessionBanner />
+        </div>
+
         <div className="relative mb-6 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search modules..."
+            placeholder="Search modules... (Ctrl+K palette · Ctrl+Shift+F universal)"
             className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {/* Stage 3b — Frequently used lane (top 4 by audit frequency) */}
+        {!search && frequentApps.length > 0 && (
+          <section className="mb-8 pl-4 border-l-4 border-l-indigo-500">
+            <h2 className="text-xs font-semibold uppercase tracking-wider mb-3 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+              <Sparkles className="h-3 w-3" />
+              Frequently used
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {frequentApps.map((app, i) => (
+                <div
+                  key={`freq-${app.id}`}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                >
+                  <CardTile app={app} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {(() => {
           const appMap = new Map(filtered.map(a => [a.id, a]));
@@ -287,6 +340,10 @@ export default function ErpDashboard() {
           © 2026 4DSmartOps · Operix · Built for Indian SMEs
         </footer>
       </main>
+
+      {/* Stage 3b — global overlays */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CrossCardSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
