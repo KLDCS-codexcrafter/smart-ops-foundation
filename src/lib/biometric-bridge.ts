@@ -1,6 +1,6 @@
 /**
  * biometric-bridge.ts — Native biometric auth with password fallback
- * Uses @capacitor-community/biometric-auth on native; no-op on web.
+ * Uses capacitor-native-biometric on native; no-op on web.
  * Top-1%: always falls back to password flow if biometric fails/cancelled.
  */
 
@@ -29,7 +29,7 @@ interface NativeBiometricLike {
 async function loadPlugin(): Promise<NativeBiometricLike | null> {
   try {
     // [JWT] n/a — native biometric plugin (loaded only on native builds)
-    const pkg = '@capacitor-community/biometric-auth';
+    const pkg = 'capacitor-native-biometric';
     const mod = (await import(/* @vite-ignore */ pkg)) as {
       NativeBiometric?: NativeBiometricLike;
     };
