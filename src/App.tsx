@@ -147,6 +147,7 @@ const DistributorDownstreamView = lazy(() => import('./pages/erp/distributor/Dis
 const DistributorCRM = lazy(() => import('./pages/erp/distributor/DistributorCRM'));
 const DistributorVisitCapture = lazy(() => import('./pages/erp/distributor/DistributorVisitCapture'));
 const DistributorCreditRequest = lazy(() => import('./pages/erp/distributor/DistributorCreditRequest'));
+const DistributorRateUs = lazy(() => import('./pages/erp/distributor/DistributorRateUs'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
@@ -345,6 +346,7 @@ const App = () => (
               <Route path="/erp/distributor/crm" element={<DistributorCRM />} />
               <Route path="/erp/distributor/visits/new" element={<DistributorVisitCapture />} />
               <Route path="/erp/distributor/credit-request" element={<DistributorCreditRequest />} />
+              <Route path="/erp/distributor/rate-us" element={<DistributorRateUs />} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />

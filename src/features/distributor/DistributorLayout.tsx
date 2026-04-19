@@ -8,7 +8,7 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, FileText, IndianRupee,
   Megaphone, ChevronLeft, ChevronRight, Truck, Bell, LogOut,
-  Network, Users2, TrendingUp,
+  Network, Users2, TrendingUp, Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme';
@@ -27,6 +27,7 @@ const navItems = [
   { title: 'CRM',         url: '/erp/distributor/crm',            icon: Users2 },
   { title: 'Credit',      url: '/erp/distributor/credit-request', icon: TrendingUp },
   { title: 'Updates',     url: '/erp/distributor/updates',        icon: Megaphone },
+  { title: 'Rate us',     url: '/erp/distributor/rate-us',        icon: Star },
 ];
 
 interface DistributorLayoutProps {

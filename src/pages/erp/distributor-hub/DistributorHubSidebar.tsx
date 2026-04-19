@@ -10,6 +10,7 @@ import {
   TrendingUp, AlertOctagon, FileCheck, Megaphone,
   BarChart3, IndianRupee, PieChart, ChevronRight,
   Database, Truck, Home, ArrowLeft,
+  AlertTriangle, FileSpreadsheet, Star,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -26,6 +27,7 @@ export type DistributorHubModule =
   | 'dh-m-customer' | 'dh-m-price-list' | 'dh-m-hierarchy'
   | 'dh-t-credit-approvals' | 'dh-t-disputes' | 'dh-t-intimations'
   | 'dh-t-broadcast'
+  | 'dh-t-stock-out' | 'dh-t-excel-sync' | 'dh-t-ratings'
   | 'dh-r-engagement' | 'dh-r-credit-util' | 'dh-r-dispute-stats';
 
 interface DistributorHubSidebarProps {
@@ -47,13 +49,16 @@ const TRANSACTIONS_ITEMS: { label: string; module: DistributorHubModule;
   { label: 'Dispute Queue',      module: 'dh-t-disputes',         icon: AlertOctagon },
   { label: 'Intimation Queue',   module: 'dh-t-intimations',      icon: FileCheck },
   { label: 'Broadcast Console',  module: 'dh-t-broadcast',        icon: Megaphone },
+  { label: 'Stock-Out Warnings', module: 'dh-t-stock-out',        icon: AlertTriangle },
+  { label: 'Excel / API Sync',   module: 'dh-t-excel-sync',       icon: FileSpreadsheet },
+  { label: 'Ratings & Score',    module: 'dh-t-ratings',          icon: Star },
 ];
 
 const REPORTS_ITEMS: { label: string; module: DistributorHubModule;
   icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
-  { label: 'Engagement Analytics', module: 'dh-r-engagement',    icon: BarChart3,   badge: 'Sprint 11b' },
-  { label: 'Credit Utilisation',   module: 'dh-r-credit-util',   icon: IndianRupee, badge: 'Sprint 11b' },
-  { label: 'Dispute Statistics',   module: 'dh-r-dispute-stats', icon: PieChart,    badge: 'Sprint 11b' },
+  { label: 'Engagement Analytics', module: 'dh-r-engagement',    icon: BarChart3 },
+  { label: 'Credit Utilisation',   module: 'dh-r-credit-util',   icon: IndianRupee },
+  { label: 'Dispute Statistics',   module: 'dh-r-dispute-stats', icon: PieChart },
 ];
 
 export function DistributorHubSidebar(props: DistributorHubSidebarProps) {

@@ -33,6 +33,14 @@ import { DistributorBroadcastPanel } from '@/pages/erp/salesx/DistributorBroadca
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
 import { PriceListManagerPanel } from '@/pages/erp/inventory/PriceListManager';
 
+// Sprint 11b — new transaction modules + populated reports
+import { StockOutWarningsPanel } from './transactions/StockOutWarnings';
+import { DistributorExcelSyncPanel } from './transactions/DistributorExcelSync';
+import { DistributorRatingHubPanel } from './transactions/DistributorRatingHub';
+import { EngagementReportPanel } from './reports/EngagementReport';
+import { CreditUtilReportPanel } from './reports/CreditUtilReport';
+import { DisputeStatsReportPanel } from './reports/DisputeStatsReport';
+
 function ComingSoonPanel({ module }: { module: DistributorHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -58,11 +66,15 @@ function renderModule(mod: DistributorHubModule): React.ReactElement {
     case 'dh-t-intimations':       return <DistributorIntimationQueuePanel />;
     case 'dh-t-broadcast':         return <DistributorBroadcastPanel />;
 
-    // Reports section — planned for Sprint 11b
-    case 'dh-r-engagement':
-    case 'dh-r-credit-util':
-    case 'dh-r-dispute-stats':
-      return <ComingSoonPanel module={mod} />;
+    // Sprint 11b — new transactions
+    case 'dh-t-stock-out':         return <StockOutWarningsPanel />;
+    case 'dh-t-excel-sync':        return <DistributorExcelSyncPanel />;
+    case 'dh-t-ratings':           return <DistributorRatingHubPanel />;
+
+    // Reports section — populated in Sprint 11b
+    case 'dh-r-engagement':        return <EngagementReportPanel />;
+    case 'dh-r-credit-util':       return <CreditUtilReportPanel />;
+    case 'dh-r-dispute-stats':     return <DisputeStatsReportPanel />;
 
     default: return <ComingSoonPanel module={mod} />;
   }
