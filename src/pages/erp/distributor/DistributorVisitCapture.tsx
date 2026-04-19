@@ -21,6 +21,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { getDistributorSession } from '@/lib/distributor-auth-engine';
 import { getDescendants } from '@/lib/hierarchy-engine';
 import { hierarchyNodesKey, type HierarchyNode } from '@/types/distributor-hierarchy';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 const DEFAULT_CHECK_IN_RADIUS_METERS = 500;
 
@@ -99,29 +100,21 @@ export default function DistributorVisitCapture() {
     if (!customerId) { toast.error('Pick a sub-dealer first'); return; }
     setChecking(true);
     try {
-      if (!('geolocation' in navigator)) {
-        toast.warning('Geolocation unavailable — saving without radius check');
+      const reading = await getCurrentLocation(100);
+      if (!reading.ok) {
+        toast.error(reading.reason ?? 'Could not get location');
         setWithinRadius(null);
         return;
       }
-      await new Promise<void>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            setCoords({ lat, lng });
-            if (selectedCust?.latitude != null && selectedCust?.longitude != null) {
-              const d = distanceMeters(lat, lng, selectedCust.latitude, selectedCust.longitude);
-              setWithinRadius(d <= DEFAULT_CHECK_IN_RADIUS_METERS);
-            } else {
-              setWithinRadius(null);
-            }
-            resolve();
-          },
-          err => reject(err),
-          { enableHighAccuracy: true, timeout: 8000 },
-        );
-      });
+      const lat = reading.latitude!;
+      const lng = reading.longitude!;
+      setCoords({ lat, lng });
+      if (selectedCust?.latitude != null && selectedCust?.longitude != null) {
+        const d = distanceMeters(lat, lng, selectedCust.latitude, selectedCust.longitude);
+        setWithinRadius(d <= DEFAULT_CHECK_IN_RADIUS_METERS);
+      } else {
+        setWithinRadius(null);
+      }
       toast.success('Checked in');
     } catch {
       toast.error('Could not get location');

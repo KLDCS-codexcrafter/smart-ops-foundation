@@ -20,6 +20,10 @@ import {
 } from '@/lib/offline-queue-engine';
 import { hideSplashScreen, onAppResume } from '@/lib/native-bridge';
 import { logMobileAudit } from '@/lib/mobile-audit';
+import { PushPermissionGate } from '@/components/mobile/PushPermissionGate';
+import { registerForPush, onPushTapped } from '@/lib/push-notification-bridge';
+import { setAppBadgeCount } from '@/lib/app-shortcut-bridge';
+import { getQueueSize } from '@/lib/offline-queue-engine';
 import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
 
@@ -73,6 +77,7 @@ export default function MobileRouter() {
   }, []);
 
   // Sprint 14b — log mobile session_start once per session
+  // Sprint 14c — also register for push + handle deep-link taps
   useEffect(() => {
     if (session && session.role !== 'unknown' && session.user_id) {
       logMobileAudit({
@@ -84,9 +89,26 @@ export default function MobileRouter() {
         refType: 'mobile_session',
         refLabel: `Mobile session started (${session.role})`,
       });
+
+      void registerForPush();
+      const unsub = onPushTapped((payload) => {
+        if (payload.deep_link) navigate(payload.deep_link);
+        else if (payload.order_id) {
+          navigate(`/erp/distributor/orders/${payload.order_id}`);
+        }
+      });
+      return unsub;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user_id]);
+
+  // Sprint 14c — keep app icon badge in sync with offline queue size
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void setAppBadgeCount(getQueueSize());
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Listen for online events to trigger queue replay
   useEffect(() => {
@@ -134,6 +156,7 @@ export default function MobileRouter() {
 
       <InstallPromptBanner />
       <UpdateAvailableBanner />
+      <PushPermissionGate />
     </div>
   );
 }
