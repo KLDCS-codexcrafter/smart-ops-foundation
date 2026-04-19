@@ -162,12 +162,20 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
     activeModule.startsWith('inventory')
   );
   const [peopleOpen, setPeopleOpen] = useState(activeModule.startsWith('ph-'));
+  const [crmOpen, setCrmOpen]                 = useState(activeModule.startsWith('crm-'));
+  const [salesOpen, setSalesOpen]             = useState(activeModule.startsWith('sales-'));
+  const [collectionOpen, setCollectionOpen]   = useState(activeModule.startsWith('collection-'));
+  const [distributorOpen, setDistributorOpen] = useState(activeModule.startsWith('distributor-'));
 
   useEffect(() => {
     if (activeModule === 'foundation' || activeModule === 'geography' || activeModule === 'org-structure') setFoundationOpen(true);
     if (activeModule.startsWith('finecore') || activeModule.startsWith('masters-')) setFinecoreOpen(true);
     if (activeModule.startsWith('inventory')) setInventoryOpen(true);
     if (activeModule.startsWith('ph-')) setPeopleOpen(true);
+    if (activeModule.startsWith('crm-'))         setCrmOpen(true);
+    if (activeModule.startsWith('sales-'))       setSalesOpen(true);
+    if (activeModule.startsWith('collection-'))  setCollectionOpen(true);
+    if (activeModule.startsWith('distributor-')) setDistributorOpen(true);
   }, [activeModule]);
 
   const allFinecoreModules = [...STATUTORY_ITEMS, ...ENTITY_CONFIG_ITEMS, ...ACCOUNT_STRUCTURE_ITEMS, ...TRANSACTION_DEFAULTS_ITEMS].map(i => i.module);
@@ -279,6 +287,130 @@ export function CommandCenterSidebar({ activeModule, onModuleChange }: CommandCe
                       {renderSubSection('Account Structure', ACCOUNT_STRUCTURE_ITEMS)}
                       {renderSubSection('Transaction Defaults', TRANSACTION_DEFAULTS_ITEMS)}
                       
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* CRM MASTERS — Stage 1 */}
+        <SidebarGroup>
+          <SidebarGroupLabel>CRM Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={crmOpen} onOpenChange={setCrmOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('crm-')} tooltip="CRM Masters">
+                      <Users className="h-4 w-4 text-sky-400" />
+                      <span>CRM Masters</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${crmOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {CRM_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* SALES MASTERS — Stage 1 */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Sales Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={salesOpen} onOpenChange={setSalesOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('sales-')} tooltip="Sales Masters">
+                      <TrendingUp className="h-4 w-4 text-amber-400" />
+                      <span>Sales Masters</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${salesOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {SALES_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* COLLECTION MASTERS — Stage 1 */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Collection Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={collectionOpen} onOpenChange={setCollectionOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('collection-')} tooltip="Collection Masters">
+                      <Bell className="h-4 w-4 text-orange-400" />
+                      <span>Collection Masters</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${collectionOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {COLLECTION_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* DISTRIBUTOR MASTERS — Stage 1 */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Distributor Masters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <Collapsible open={distributorOpen} onOpenChange={setDistributorOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={activeModule.startsWith('distributor-')} tooltip="Distributor Masters">
+                      <Truck className="h-4 w-4 text-indigo-400" />
+                      <span>Distributor Masters</span>
+                      <ChevronRight className={`ml-auto h-4 w-4 transition-transform ${distributorOpen ? 'rotate-90' : ''}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {DISTRIBUTOR_ITEMS.map(item => (
+                        <SidebarMenuSubItem key={item.module}>
+                          <SidebarMenuSubButton isActive={activeModule === item.module} onClick={() => onModuleChange(item.module)}>
+                            <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
