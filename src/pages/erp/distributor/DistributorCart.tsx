@@ -114,6 +114,25 @@ export default function DistributorCartPage() {
 
   const credit = checkCreditAvailable(distributor, grand);
 
+  // Sprint 12 — evaluate applicable promotional schemes
+  const allSchemes: Scheme[] = ls<Scheme>(schemesKey(session.entity_code));
+  const schemeCart: SchemeCart = {
+    audience: 'distributor',
+    distributor_tier: (distributor.tier as 'gold' | 'silver' | 'bronze' | undefined) ?? undefined,
+    territory_id: distributor.territory_id ?? null,
+    order_value_paise: grand,
+    lines: (cart?.lines ?? []).map(l => ({
+      line_id: l.id,
+      item_id: l.item_id,
+      qty: l.qty,
+      unit_price_paise: l.rate_paise,
+      line_total_paise: l.total_paise,
+    })),
+  };
+  const appliedSchemes = applySchemes(schemeCart, allSchemes);
+  const schemeDiscountPaise = totalSchemeDiscountPaise(appliedSchemes);
+  const unlockHints = describeUnlockGap(schemeCart, allSchemes);
+
   const handleQtyChange = async (lineId: string, qty: number) => {
     if (!cart) return;
     const next = { ...cart, lines: cart.lines.map(l => {
