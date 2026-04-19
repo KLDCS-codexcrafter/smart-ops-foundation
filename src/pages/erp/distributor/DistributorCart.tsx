@@ -113,7 +113,7 @@ export default function DistributorCartPage() {
   const taxable = cart?.lines.reduce((s, l) => s + l.taxable_paise, 0) ?? 0;
   const tax = cart?.lines.reduce((s, l) => s + l.cgst_paise + l.sgst_paise + l.igst_paise, 0) ?? 0;
 
-  const credit = checkCreditAvailable(distributor, grand);
+  // credit check moved below scheme calc — see netPayablePaise
 
   // Sprint 12 — evaluate applicable promotional schemes
   const allSchemes: Scheme[] = ls<Scheme>(schemesKey(session.entity_code));
