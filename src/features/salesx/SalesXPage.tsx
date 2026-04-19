@@ -2,12 +2,17 @@
  * SalesXPage.tsx — Main SalesX Hub container
  * Mirrors PayHubPage.tsx. Orange-500 accent.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { SalesXSidebar, type SalesXModule } from './SalesXSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { SalesXHubPanel } from '@/pages/erp/salesx/SalesXHub';
 import { HierarchyMasterPanel } from '@/pages/erp/salesx/masters/HierarchyMaster';
 import { SAMPersonMasterPanel } from '@/pages/erp/salesx/masters/SAMPersonMaster';
@@ -164,6 +169,33 @@ export default function SalesXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
   const entityCode = selectedEntityId ?? 'SMRT';
   const [activeModule, setActiveModule] = useState<SalesXModule>('sx-hub');
+  const { entityCode: entCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'salesx',
+      action: 'card_open',
+    });
+  }, [entCode, userId]);
+
+  useEffect(() => {
+    rememberModule('salesx', activeModule);
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'salesx',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entCode, userId, {
+      card_id: 'salesx',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `SalesX · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/salesx#${activeModule}`,
+    });
+  }, [activeModule, entCode, userId]);
 
   const crumbs = [
     { label: 'Operix Core', href: '/erp/dashboard' },
@@ -172,26 +204,29 @@ export default function SalesXPage() {
   ];
 
   return (
-    <SidebarProvider defaultOpen>
-      <SalesXSidebar
-        activeModule={activeModule}
-        onModuleChange={setActiveModule}
-        entityCode={entityCode}
-      />
-      <SidebarInset>
-        <ERPHeader
-          breadcrumbs={crumbs}
-          companies={entities}
-          showDatePicker={false}
-          showCompany={isMultiEntity}
+    <>
+      <GuidedTourOverlay cardId='salesx' />
+      <SidebarProvider defaultOpen>
+        <SalesXSidebar
+          activeModule={activeModule}
+          onModuleChange={setActiveModule}
+          entityCode={entityCode}
         />
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-7xl mx-auto">
-            {renderModule(activeModule, entityCode, setActiveModule)}
-          </div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+        <SidebarInset>
+          <ERPHeader
+            breadcrumbs={crumbs}
+            companies={entities}
+            showDatePicker={false}
+            showCompany={isMultiEntity}
+          />
+          <ScrollArea className="flex-1">
+            <div className="p-6 max-w-7xl mx-auto">
+              {renderModule(activeModule, entityCode, setActiveModule)}
+            </div>
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }
 

@@ -2,12 +2,17 @@
  * ReceivXPage.tsx — Main ReceivX Hub container
  * Amber-500 accent. Mirrors SalesXPage pattern.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { ReceivXSidebar, type ReceivXModule } from './ReceivXSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { ReceivXHubPanel } from '@/pages/erp/receivx/ReceivXHub';
 import { ReminderTemplateMasterPanel } from '@/pages/erp/receivx/masters/ReminderTemplateMaster';
 import { CollectionExecMasterPanel } from '@/pages/erp/receivx/masters/CollectionExecMaster';
@@ -74,6 +79,33 @@ export default function ReceivXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
   const entityCode = selectedEntityId ?? 'SMRT';
   const [activeModule, setActiveModule] = useState<ReceivXModule>('rx-hub');
+  const { entityCode: entCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'receivx',
+      action: 'card_open',
+    });
+  }, [entCode, userId]);
+
+  useEffect(() => {
+    rememberModule('receivx', activeModule);
+    logAudit({
+      entityCode: entCode, userId, userName: userId,
+      cardId: 'receivx',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+    recordActivity(entCode, userId, {
+      card_id: 'receivx',
+      kind: 'module',
+      ref_id: activeModule,
+      title: `ReceivX · ${activeModule}`,
+      subtitle: null,
+      deep_link: `/erp/receivx#${activeModule}`,
+    });
+  }, [activeModule, entCode, userId]);
 
   const crumbs = [
     { label: 'Operix Core', href: '/erp/dashboard' },
@@ -82,26 +114,29 @@ export default function ReceivXPage() {
   ];
 
   return (
-    <SidebarProvider defaultOpen>
-      <ReceivXSidebar
-        activeModule={activeModule}
-        onModuleChange={setActiveModule}
-        entityCode={entityCode}
-      />
-      <SidebarInset>
-        <ERPHeader
-          breadcrumbs={crumbs}
-          companies={entities}
-          showDatePicker={false}
-          showCompany={isMultiEntity}
+    <>
+      <GuidedTourOverlay cardId='receivx' />
+      <SidebarProvider defaultOpen>
+        <ReceivXSidebar
+          activeModule={activeModule}
+          onModuleChange={setActiveModule}
+          entityCode={entityCode}
         />
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-7xl mx-auto">
-            {renderModule(activeModule, entityCode, setActiveModule)}
-          </div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+        <SidebarInset>
+          <ERPHeader
+            breadcrumbs={crumbs}
+            companies={entities}
+            showDatePicker={false}
+            showCompany={isMultiEntity}
+          />
+          <ScrollArea className="flex-1">
+            <div className="p-6 max-w-7xl mx-auto">
+              {renderModule(activeModule, entityCode, setActiveModule)}
+            </div>
+          </ScrollArea>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }
 
