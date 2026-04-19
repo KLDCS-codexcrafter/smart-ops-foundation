@@ -87,6 +87,23 @@ export function ERPHeader({
   const dr = useGlobalDateRange();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [selectedCompany, setSelectedCompany] = useERPCompany();
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useKeyboardShortcuts({
+    onHelp: () => setHelpOpen(v => !v),
+    onDashboard: () => navigate('/erp/dashboard'),
+    onBack: () => window.history.back(),
+    onHome: () => { /* card decides */ },
+    onPalette: () => toast.info('Command palette coming in Stage 3b'),
+    onSearch: () => toast.info('Cross-card search coming in Stage 3b'),
+    onSwitcher: () => {
+      const btn = document.querySelector<HTMLButtonElement>('[aria-label="Switch department"]');
+      btn?.click();
+    },
+    onMasters: () => { /* card handles internally */ },
+    onTransactions: () => { /* card handles internally */ },
+    onReports: () => { /* card handles internally */ },
+  });
 
   // Listen to online/offline events
   useState(() => {
@@ -191,16 +208,8 @@ export function ERPHeader({
         {/* Right: Action icons */}
         <div className='flex items-center gap-0.5 shrink-0'>
 
-          {/* App launcher */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='ghost' size='icon' className='h-8 w-8'
-                onClick={() => navigate('/erp/dashboard')}>
-                <Grid3X3 className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>App Launcher</TooltipContent>
-          </Tooltip>
+          {/* App launcher → Department switcher */}
+          <DepartmentSwitcher />
 
           {/* Refresh */}
           <Tooltip>
@@ -213,8 +222,7 @@ export function ERPHeader({
             <TooltipContent>Refresh (Ctrl+R)</TooltipContent>
           </Tooltip>
 
-          {/* Data currency dot — green=fresh, amber=stale, red=offline */}
-          {/* Phase 2: wire to Bridge Agent last heartbeat */}
+          {/* Data currency dot */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant='ghost' size='icon' className='h-8 w-8 hidden md:flex'>
@@ -224,16 +232,8 @@ export function ERPHeader({
             <TooltipContent>Data fresh — synced just now</TooltipContent>
           </Tooltip>
 
-          {/* Notification bell */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='ghost' size='icon' className='h-8 w-8 relative'>
-                <Bell className='h-4 w-4' />
-                {/* Phase 2: wire to real notification count */}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Notifications</TooltipContent>
-          </Tooltip>
+          {/* Notification bell → Recent activity drawer */}
+          <RecentActivityDrawer />
 
           {/* Ask Dishani */}
           <Tooltip>
@@ -246,6 +246,16 @@ export function ERPHeader({
             <TooltipContent>Ask Dishani</TooltipContent>
           </Tooltip>
 
+          {/* Shortcuts help */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='ghost' size='icon' className='h-8 w-8'
+                onClick={() => setHelpOpen(true)} aria-label='Shortcuts help'>
+                <HelpCircle className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Shortcuts (?)</TooltipContent>
+          </Tooltip>
 
           {/* Theme toggle */}
           <ThemeToggle />
