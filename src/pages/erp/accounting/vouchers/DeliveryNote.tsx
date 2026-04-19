@@ -34,6 +34,15 @@ import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
 import { computePackingSlip } from '@/lib/packing-slip-engine';
 import { packingSlipsKey, type PackingSlip } from '@/types/packing-slip';
 import type { ItemPacking } from '@/types/item-packing';
+// Sprint 15b — auto-deduct packing materials on DLN post
+import { buildDLNConsumptionMovements } from '@/lib/packing-bom-engine';
+import {
+  type PackingBOM, packingBOMsKey,
+} from '@/types/packing-bom';
+import {
+  type PackingMaterial, type MaterialMovement,
+  packingMaterialsKey, materialMovementsKey,
+} from '@/types/packing-material';
 
 interface LogisticMasterLite {
   id: string;
@@ -284,6 +293,50 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       } catch (err) {
         console.warn('Packing slip generation failed:', err);
         toast.success('Delivery Note posted');
+      }
+
+      // Sprint 15b — auto-deduct packing materials per BOM
+      try {
+        const boms: PackingBOM[] = JSON.parse(
+          localStorage.getItem(packingBOMsKey(entityCode)) ?? '[]',
+        );
+        const { movements, itemsWithoutBOM } = buildDLNConsumptionMovements(
+          voucher, boms, 'system',
+        );
+
+        if (movements.length > 0) {
+          // Apply movements to material stock
+          const materials: PackingMaterial[] = JSON.parse(
+            localStorage.getItem(packingMaterialsKey(entityCode)) ?? '[]',
+          );
+          const stockDelta = new Map<string, number>();
+          movements.forEach(m => {
+            stockDelta.set(m.material_id, (stockDelta.get(m.material_id) ?? 0) + m.qty);
+          });
+          const nextMats = materials.map(m =>
+            stockDelta.has(m.id)
+              ? { ...m, current_stock: m.current_stock + (stockDelta.get(m.id) ?? 0), updated_at: new Date().toISOString() }
+              : m,
+          );
+          // [JWT] PATCH /api/dispatch/packing-materials/stock
+          localStorage.setItem(packingMaterialsKey(entityCode), JSON.stringify(nextMats));
+
+          // Append movements ledger
+          const allMovements: MaterialMovement[] = JSON.parse(
+            localStorage.getItem(materialMovementsKey(entityCode)) ?? '[]',
+          );
+          allMovements.push(...movements);
+          // [JWT] POST /api/dispatch/material-movements
+          localStorage.setItem(materialMovementsKey(entityCode), JSON.stringify(allMovements));
+          toast.success(`Materials auto-deducted (${movements.length} item${movements.length === 1 ? '' : 's'})`);
+        }
+
+        if (itemsWithoutBOM.length > 0) {
+          toast.warning(`${itemsWithoutBOM.length} item(s) had no packing BOM — consumption unrecorded`);
+        }
+      } catch (err) {
+        // Graceful fallback — never block DLN post
+        console.warn('Packing material auto-deduction failed:', err);
       }
     } catch { toast.error('Failed to save'); }
   }, [

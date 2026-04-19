@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Home, Truck, Route, ClipboardEdit, Printer, AlertTriangle,
   BarChart3, Database, ChevronRight, ArrowLeft, Send,
+  Package, ListChecks, TrendingUp, Users,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -21,9 +22,11 @@ import { cn } from '@/lib/utils';
 
 export type DispatchHubModule =
   | 'dh-welcome'
+  | 'dh-m-packing-material' | 'dh-m-packing-bom'
   | 'dh-t-lr-tracker' | 'dh-t-lr-update' | 'dh-t-packing-slip-print'
   | 'dh-t-exceptions'
-  | 'dh-r-dispatch-summary';
+  | 'dh-r-dispatch-summary'
+  | 'dh-r-packing-consumption' | 'dh-r-packer-performance';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -44,8 +47,15 @@ const TRANSACTIONS_ITEMS: MenuItem[] = [
   { label: 'Dispatch Exceptions', module: 'dh-t-exceptions',         icon: AlertTriangle },
 ];
 
+const MASTERS_INTERNAL: MenuItem[] = [
+  { label: 'Packing Materials',  module: 'dh-m-packing-material', icon: Package },
+  { label: 'Packing BOM',        module: 'dh-m-packing-bom',      icon: ListChecks },
+];
+
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Dispatch Summary', module: 'dh-r-dispatch-summary', icon: BarChart3, badge: 'Soon' },
+  { label: 'Packing Consumption', module: 'dh-r-packing-consumption', icon: TrendingUp },
+  { label: 'Packer Performance',  module: 'dh-r-packer-performance',  icon: Users },
+  { label: 'Dispatch Summary',    module: 'dh-r-dispatch-summary',    icon: BarChart3, badge: 'Soon' },
 ];
 
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
