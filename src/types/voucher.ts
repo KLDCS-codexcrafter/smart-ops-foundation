@@ -47,6 +47,8 @@ export interface VoucherInventoryLine {
   total: number;
   gst_type: 'taxable' | 'exempt' | 'nil_rated' | 'non_gst' | 'zero_rated';
   gst_source: 'item' | 'stock_group' | 'ledger' | 'group' | 'none';
+  // Sprint 15a — Production module hook (Charis, future)
+  production_batch_id?: string | null;
 }
 
 export interface VoucherTaxLine {
@@ -141,6 +143,10 @@ export interface Voucher {
   so_ref?: string; // SO number that this Sales Invoice or Delivery Note fulfils
   vehicle_no?: string;
   transporter?: string;
+  // Sprint 15a — Dispatch Hub integration
+  transporter_id?: string;     // LogisticMaster.id
+  lr_no?: string;              // Lorry Receipt number from transporter
+  lr_date?: string;            // ISO date when transporter issued LR
   ewb_no?: string;
   irn?: string;
   irn_status?: 'pending' | 'generated' | 'cancelled' | 'failed';
