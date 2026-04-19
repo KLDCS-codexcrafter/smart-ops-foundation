@@ -22,9 +22,13 @@ import { CustomerHubWelcomePanel } from './CustomerHubWelcome';
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
 import { CustomerSegmentMasterPanel } from '@/pages/erp/masters/CustomerSegmentMaster';
 
-// Sprint 13b will add transaction panels (Catalog, Cart, Orders).
-// Sprint 13c will add reward + social proof + analytics panels.
-// All 'Sprint 13b' / 'Sprint 13c' badged entries render ComingSoonPanel for now.
+// Sprint 13b — transaction panels live
+import { CustomerCatalogPanel } from './transactions/CustomerCatalog';
+import { CustomerCartPanel } from './transactions/CustomerCart';
+import { CustomerOrdersPanel } from './transactions/CustomerOrders';
+import { CustomerRewardsPanel } from './transactions/CustomerRewards';
+import { VoiceComplaintCapturePanel } from './transactions/VoiceComplaintCapture';
+// Sprint 13c will add family-wallet, sample-kits, and analytics reports.
 
 function ComingSoonPanel({ module }: { module: CustomerHubModule }) {
   return (
@@ -40,7 +44,12 @@ function renderModule(mod: CustomerHubModule): React.ReactElement {
     case 'ch-welcome':              return <CustomerHubWelcomePanel />;
     case 'ch-m-customer':           return <CustomerMasterPanel />;
     case 'ch-m-segment':            return <CustomerSegmentMasterPanel />;
-    // Everything else is Sprint 13b / 13c
+    case 'ch-t-catalog':            return <CustomerCatalogPanel />;
+    case 'ch-t-cart':               return <CustomerCartPanel />;
+    case 'ch-t-orders':             return <CustomerOrdersPanel />;
+    case 'ch-t-rewards':            return <CustomerRewardsPanel />;
+    case 'ch-t-voice-complaint':    return <VoiceComplaintCapturePanel />;
+    // Sprint 13c modules still pending
     default: return <ComingSoonPanel module={mod} />;
   }
 }

@@ -52,11 +52,11 @@ const MASTERS_ITEMS: MenuItem[] = [
 ];
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'Catalog',          module: 'ch-t-catalog',         icon: ShoppingBag, badge: 'Sprint 13b' },
-  { label: 'Cart',             module: 'ch-t-cart',            icon: Package,     badge: 'Sprint 13b' },
-  { label: 'Orders',           module: 'ch-t-orders',          icon: History,     badge: 'Sprint 13b' },
-  { label: 'Loyalty Rewards',  module: 'ch-t-rewards',         icon: Gift,        badge: 'Sprint 13b' },
-  { label: 'Voice Complaint',  module: 'ch-t-voice-complaint', icon: Mic,         badge: 'Sprint 13b' },
+  { label: 'Catalog',          module: 'ch-t-catalog',         icon: ShoppingBag },
+  { label: 'Cart',             module: 'ch-t-cart',            icon: Package },
+  { label: 'Orders',           module: 'ch-t-orders',          icon: History },
+  { label: 'Loyalty Rewards',  module: 'ch-t-rewards',         icon: Gift },
+  { label: 'Voice Complaint',  module: 'ch-t-voice-complaint', icon: Mic },
   { label: 'Family Wallet',    module: 'ch-t-family-wallet',   icon: Repeat2,     badge: 'Sprint 13c' },
   { label: 'Sample Kits',      module: 'ch-t-sample-kits',     icon: PackageOpen, badge: 'Sprint 13c' },
 ];
