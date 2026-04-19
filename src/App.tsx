@@ -140,18 +140,13 @@ const DistributorCart = lazy(() => import('./pages/erp/distributor/DistributorCa
 const DistributorInvoices = lazy(() => import('./pages/erp/distributor/DistributorInvoices'));
 const DistributorPayments = lazy(() => import('./pages/erp/distributor/DistributorPayments'));
 const DistributorUpdates = lazy(() => import('./pages/erp/distributor/DistributorUpdates'));
-const DistributorHub = lazy(() => import('./pages/erp/distributor/DistributorHub'));
-const DistributorBroadcast = lazy(() => import('./pages/erp/salesx/DistributorBroadcast'));
+const DistributorHubPage = lazy(() => import('./pages/erp/distributor-hub/DistributorHubPage'));
 const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
-const DistributorIntimationQueue = lazy(() => import('./pages/erp/finecore/DistributorIntimationQueue'));
-// Sprint 11a — hierarchy, CRM, credit, disputes
-const DistributorHierarchyMaster = lazy(() => import('./pages/erp/distributor/DistributorHierarchyMaster'));
+// Sprint 11a — distributor portal (external user) routes only
 const DistributorDownstreamView = lazy(() => import('./pages/erp/distributor/DistributorDownstreamView'));
 const DistributorCRM = lazy(() => import('./pages/erp/distributor/DistributorCRM'));
 const DistributorVisitCapture = lazy(() => import('./pages/erp/distributor/DistributorVisitCapture'));
 const DistributorCreditRequest = lazy(() => import('./pages/erp/distributor/DistributorCreditRequest'));
-const CreditApprovalQueue = lazy(() => import('./pages/erp/distributor/CreditApprovalQueue'));
-const DistributorDisputeQueue = lazy(() => import('./pages/erp/distributor/DistributorDisputeQueue'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
