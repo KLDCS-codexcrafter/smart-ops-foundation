@@ -997,6 +997,53 @@ export function LogisticMasterPanel() {
           )}
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Sprint 15a — Advanced Rate Card (only when editing) */}
+      {editTarget && (
+        <Collapsible open={showRateCards} onOpenChange={setShowRateCards}>
+          <CollapsibleTrigger asChild>
+            <button type="button" className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <Truck className="h-3.5 w-3.5" />
+                Advanced Rate Card (Sprint 15)
+              </span>
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showRateCards ? 'rotate-180' : ''}`} />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-3 pt-3">
+            <p className="text-xs text-muted-foreground">
+              Multi-dimensional rate cards with zones, modes, surcharges, fuel
+              escalation, and ODA. Used by Sprint 15c freight reconciliation.
+            </p>
+            {rateCards.length === 0 ? (
+              <Button type="button" variant="outline" size="sm" onClick={seedFromOM} className="gap-1.5 text-xs">
+                <Plus className="h-3 w-3" /> Seed from OM Logistics template
+              </Button>
+            ) : (
+              <div className="space-y-2">
+                {rateCards.map(c => (
+                  <div key={c.id} className="flex items-center justify-between border border-border rounded-lg px-3 py-2">
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-medium">{c.label}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {c.effective_from} → {c.effective_to ?? 'active'}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">
+                      {c.zone_rates.length} rates
+                    </Badge>
+                  </div>
+                ))}
+                <p className="text-[10px] text-muted-foreground">
+                  Full rate editor UI will be delivered in Sprint 15a patch 2
+                  or Sprint 15c. For now, rate cards can be edited directly in
+                  localStorage key: erp_transporter_rate_cards_{entityCode}
+                </p>
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
     </div>
   );
 
