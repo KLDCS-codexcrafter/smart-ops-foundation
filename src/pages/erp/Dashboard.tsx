@@ -261,15 +261,41 @@ export default function ErpDashboard() {
           </p>
         </div>
 
+        {/* Stage 3b — Suspended sessions banner */}
+        <div className="mb-4">
+          <SuspendedSessionBanner />
+        </div>
+
         <div className="relative mb-6 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search modules..."
+            placeholder="Search modules... (Ctrl+K palette · Ctrl+Shift+F universal)"
             className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {/* Stage 3b — Frequently used lane (top 4 by audit frequency) */}
+        {!search && frequentApps.length > 0 && (
+          <section className="mb-8 pl-4 border-l-4 border-l-indigo-500">
+            <h2 className="text-xs font-semibold uppercase tracking-wider mb-3 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+              <Sparkles className="h-3 w-3" />
+              Frequently used
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {frequentApps.map((app, i) => (
+                <div
+                  key={`freq-${app.id}`}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                >
+                  <CardTile app={app} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {(() => {
           const appMap = new Map(filtered.map(a => [a.id, a]));
