@@ -340,6 +340,10 @@ export default function ErpDashboard() {
           © 2026 4DSmartOps · Operix · Built for Indian SMEs
         </footer>
       </main>
+
+      {/* Stage 3b — global overlays */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CrossCardSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
