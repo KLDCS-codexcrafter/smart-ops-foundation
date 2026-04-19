@@ -191,6 +191,39 @@ export default function DistributorCartPage() {
       const order = cartToOrder(cart, distributor, orderNo);
       // [JWT] POST /api/distributor/orders
       setLs(distributorOrdersKey(session.entity_code), [order, ...existing]);
+
+      // Persist applied schemes for SchemeEffectivenessReport
+      try {
+        const key = `erp_applied_schemes_${session.entity_code}`;
+        const raw = localStorage.getItem(key);
+        const history = raw ? JSON.parse(raw) : [];
+        history.push({
+          order_id: order.id,
+          order_date: order.submitted_at ?? new Date().toISOString(),
+          distributor_id: distributor.id,
+          distributor_name: distributor.legal_name,
+          order_value_paise: grand,
+          discount_paise: schemeDiscountPaise,
+          net_payable_paise: netPayablePaise,
+          applied: appliedSchemes,
+        });
+        localStorage.setItem(key, JSON.stringify(history));
+      } catch { /* ignore */ }
+
+      // Log audit event (Stage 3b pipeline)
+      if (appliedSchemes.length > 0) {
+        logAudit({
+          entityCode: session.entity_code,
+          userId: session.distributor_id,
+          userName: distributor.legal_name,
+          cardId: 'distributor-hub',
+          action: 'voucher_post',
+          refType: 'order_with_schemes',
+          refId: order.id,
+          refLabel: `${appliedSchemes.length} scheme(s) applied — saved ${formatINR(schemeDiscountPaise)}`,
+        });
+      }
+
       await clearCart(session.distributor_id);
       toast.success(`Order ${orderNo} submitted`, {
         description: 'Awaiting accountant approval at the ERP.',
@@ -546,10 +579,27 @@ export default function DistributorCartPage() {
                 <span className="font-mono">{formatINR(tax)}</span>
               </div>
               <div className="h-px bg-border/50 my-2" />
-              <div className="flex justify-between font-semibold text-foreground">
-                <span>Grand Total</span>
-                <span className="font-mono">{formatINR(grand)}</span>
-              </div>
+              {schemeDiscountPaise > 0 ? (
+                <>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span className="font-mono line-through">{formatINR(grand)}</span>
+                  </div>
+                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                    <span>Scheme savings</span>
+                    <span className="font-mono">−{formatINR(schemeDiscountPaise)}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-foreground">
+                    <span>Net payable</span>
+                    <span className="font-mono">{formatINR(netPayablePaise)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between font-semibold text-foreground">
+                  <span>Grand Total</span>
+                  <span className="font-mono">{formatINR(grand)}</span>
+                </div>
+              )}
             </div>
 
             {/* Sprint 12 — Applied schemes preview */}
@@ -591,7 +641,7 @@ export default function DistributorCartPage() {
                   <div>
                     <p className="font-medium">Within credit limit</p>
                     <p className="text-muted-foreground mt-0.5">
-                      Available after this order: <span className="font-mono">{formatINR(Math.max(0, credit.available_paise - grand))}</span>
+                      Available after this order: <span className="font-mono">{formatINR(Math.max(0, credit.available_paise - netPayablePaise))}</span>
                     </p>
                   </div>
                 </div>
