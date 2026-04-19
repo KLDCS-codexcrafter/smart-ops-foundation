@@ -19,9 +19,17 @@ import { useState } from 'react';
 import { onEnterNext } from '@/lib/keyboard';
 import { useNavigate } from 'react-router-dom';
 import {
-  Grid3X3, RefreshCw, Sparkles, Bell, ChevronRight,
-  Home, ArrowLeft, ArrowRight, Circle,
+  RefreshCw, Sparkles, ChevronRight,
+  Home, ArrowLeft, ArrowRight, Circle, HelpCircle,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { DepartmentSwitcher } from './DepartmentSwitcher';
+import { RecentActivityDrawer } from './RecentActivityDrawer';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { GLOBAL_SHORTCUTS } from '@/lib/keyboard-shortcut-registry';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
