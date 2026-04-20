@@ -21,7 +21,7 @@ import {
 import {
   Truck, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
   ChevronDown, AlertTriangle, Check, User, MapPin,
-  CreditCard, Shield, Building, Package, X, Globe,
+  CreditCard, Shield, Building, Package, X, Globe, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState } from '@/data/india-geography';
@@ -107,6 +107,13 @@ interface LogisticMasterDefinition {
   freightRates: FreightRate[];
   freightRateTolerance: number;
   status: 'active' | 'inactive';
+
+  // Sprint 15c-2 — Portal access fields
+  portal_enabled?: boolean;
+  password_hash?: string | null;
+  password_updated_at?: string | null;
+  last_login_at?: string | null;
+  must_change_password?: boolean;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
