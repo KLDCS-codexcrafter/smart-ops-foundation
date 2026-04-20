@@ -27,6 +27,10 @@ import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport'
 import { TransporterInvoiceInboxPanel } from './transactions/TransporterInvoiceInbox';
 import { DisputeQueuePanel } from './transactions/DisputeQueue';
 import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummaryReport';
+// Sprint 15c-3
+import { PDFInvoiceUploadPanel } from './transactions/PDFInvoiceUpload';
+import { TransporterScorecardPanel } from './reports/TransporterScorecard';
+import { SavingsROIDashboardPanel } from './reports/SavingsROIDashboard';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -54,6 +58,9 @@ function renderModule(
     case 'dh-t-transporter-invoice':    return <TransporterInvoiceInboxPanel />;
     case 'dh-t-dispute-queue':          return <DisputeQueuePanel />;
     case 'dh-r-reconciliation-summary': return <ReconciliationSummaryReportPanel />;
+    case 'dh-t-pdf-invoice-upload':     return <PDFInvoiceUploadPanel />;
+    case 'dh-r-transporter-scorecard':  return <TransporterScorecardPanel />;
+    case 'dh-r-savings-roi':            return <SavingsROIDashboardPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
