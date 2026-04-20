@@ -86,7 +86,8 @@ export default function LogisticDisputes() {
       resolution_amount: counterAmount ? parseFloat(counterAmount) : undefined,
     });
     if (!result.ok) return toast.error(result.reason);
-    const next = list.map(d => d.id === result.dispute.id ? result.dispute : d);
+    const updatedDispute = result.dispute;
+    const next = list.map(d => d.id === updatedDispute.id ? updatedDispute : d);
     persist(next);
     recordLogisticActivity(session.logistic_id, session.entity_code, 'dispute_response', {
       ref_type: 'dispute', ref_id: respondTarget.id, ref_label: respondTarget.lr_no,
