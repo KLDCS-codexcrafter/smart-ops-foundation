@@ -152,7 +152,7 @@ export function DisputeQueuePanel() {
       resolution_amount: resAmt ? Number(resAmt) : undefined,
       resolution_notes: resNotes || undefined,
     });
-    if (!result.ok) { toast.error(result.reason); return; }
+    if (result.ok === false) { toast.error(result.reason); return; }
     const next = disputes.map(d => d.id === activeDispute.id ? result.dispute : d);
     writeDisputes(next);
     logAudit({
