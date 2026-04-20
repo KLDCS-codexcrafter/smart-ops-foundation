@@ -152,6 +152,14 @@ const DistributorCRM = lazy(() => import('./pages/erp/distributor/DistributorCRM
 const DistributorVisitCapture = lazy(() => import('./pages/erp/distributor/DistributorVisitCapture'));
 const DistributorCreditRequest = lazy(() => import('./pages/erp/distributor/DistributorCreditRequest'));
 const DistributorRateUs = lazy(() => import('./pages/erp/distributor/DistributorRateUs'));
+// Sprint 15c-2 — Logistic Partner Portal (separate auth boundary)
+const LogisticLogin = lazy(() => import('./pages/erp/logistic/LogisticLogin'));
+const LogisticDashboard = lazy(() => import('./pages/erp/logistic/LogisticDashboard'));
+const LogisticInvoiceSubmit = lazy(() => import('./pages/erp/logistic/LogisticInvoiceSubmit'));
+const LogisticLRQueue = lazy(() => import('./pages/erp/logistic/LogisticLRQueue'));
+const LogisticPayments = lazy(() => import('./pages/erp/logistic/LogisticPayments'));
+const LogisticDisputes = lazy(() => import('./pages/erp/logistic/LogisticDisputes'));
+const LogisticProfile = lazy(() => import('./pages/erp/logistic/LogisticProfile'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
@@ -357,6 +365,14 @@ const App = () => (
               <Route path="/erp/distributor/visits/new" element={<DistributorVisitCapture />} />
               <Route path="/erp/distributor/credit-request" element={<DistributorCreditRequest />} />
               <Route path="/erp/distributor/rate-us" element={<DistributorRateUs />} />
+              {/* Sprint 15c-2 — Logistic portal (own auth boundary via LogisticLayout) */}
+              <Route path="/erp/logistic/login" element={<LogisticLogin />} />
+              <Route path="/erp/logistic/dashboard" element={<LogisticDashboard />} />
+              <Route path="/erp/logistic/invoices/new" element={<LogisticInvoiceSubmit />} />
+              <Route path="/erp/logistic/lr-queue" element={<LogisticLRQueue />} />
+              <Route path="/erp/logistic/payments" element={<LogisticPayments />} />
+              <Route path="/erp/logistic/disputes" element={<LogisticDisputes />} />
+              <Route path="/erp/logistic/profile" element={<LogisticProfile />} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
