@@ -156,6 +156,11 @@ export function matchInvoiceLine(
   });
 
   if (!calcResult.ok) {
+    const reason = calcResult.reason;
+    const failStatus: MatchStatus =
+      reason === 'no_rate_card' ? 'missing_rate_card' :
+      reason === 'invalid_weight' ? 'missing_weight' :
+      'rate_calc_failed';
     return {
       id: genId('mli'),
       entity_id: ctx.invoice.entity_id,
@@ -167,9 +172,7 @@ export function matchInvoiceLine(
       declared_amount: line.total,
       variance_amount: line.total,
       variance_pct: 0,
-      status: calcResult.reason === 'no_rate_card' ? 'missing_rate_card' :
-        calcResult.reason === 'invalid_weight' ? 'missing_weight' :
-        'rate_calc_failed',
+      status: failStatus,
       tolerance_used: tolerance,
       payer_model: payerModel,
       auto_decision: 'flag',
