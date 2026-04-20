@@ -5,9 +5,10 @@ import {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck,
+  Store, Heart, Truck, ShoppingBag, Network,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck,
+  Store, Heart, Truck, ShoppingBag, Network,
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
@@ -69,7 +70,7 @@ const LANES: Array<{
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx', 'distributor-hub', 'customer-hub'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub', 'storex', 'unicomm'],
   },
   {
     id: 'people',
@@ -123,7 +124,12 @@ function AppCard({ app }: { app: AppDefinition }) {
   const isLive = !app.status;
 
   function handleClick() {
-    if (app.status === 'coming_soon') return;
+    if (app.status === 'coming_soon') {
+      toast.info(`${app.name} — coming soon`, {
+        description: 'This module is in development and will be available in a future release.',
+      });
+      return;
+    }
     navigate(app.route);
   }
 
@@ -135,7 +141,7 @@ function AppCard({ app }: { app: AppDefinition }) {
         "group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-300",
         "bg-card/60 backdrop-blur-xl border border-border",
         app.status === "coming_soon"
-          ? "opacity-60 cursor-default"
+          ? "opacity-70 cursor-pointer hover:opacity-90"
           : "hover:scale-[1.02] hover:border-primary/40 cursor-pointer",
       ].join(" ")}
     >
