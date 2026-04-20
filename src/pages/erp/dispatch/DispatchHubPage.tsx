@@ -23,6 +23,10 @@ import { PackingMaterialMasterPanel } from './masters/PackingMaterialMaster';
 import { PackingBOMMasterPanel } from './masters/PackingBOMMaster';
 import { PackingConsumptionReportPanel } from './reports/PackingConsumptionReport';
 import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport';
+// Sprint 15c-1
+import { TransporterInvoiceInboxPanel } from './transactions/TransporterInvoiceInbox';
+import { DisputeQueuePanel } from './transactions/DisputeQueue';
+import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummaryReport';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -47,6 +51,9 @@ function renderModule(
     case 'dh-t-exceptions':         return <DispatchExceptionsPanel />;
     case 'dh-r-packing-consumption': return <PackingConsumptionReportPanel />;
     case 'dh-r-packer-performance':  return <PackerPerformanceReportPanel />;
+    case 'dh-t-transporter-invoice':    return <TransporterInvoiceInboxPanel />;
+    case 'dh-t-dispute-queue':          return <DisputeQueuePanel />;
+    case 'dh-r-reconciliation-summary': return <ReconciliationSummaryReportPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
