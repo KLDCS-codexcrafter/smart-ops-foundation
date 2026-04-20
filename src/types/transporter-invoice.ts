@@ -69,7 +69,7 @@ export interface TransporterInvoice {
   status: InvoiceStatus;
   uploaded_at: string;
   uploaded_by: string;
-  upload_source: 'csv' | 'xlsx' | 'manual' | 'portal';
+  upload_source: 'csv' | 'xlsx' | 'manual' | 'portal' | 'pdf';
   original_filename?: string;
 
   reconciled_at?: string | null;
