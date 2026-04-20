@@ -8,7 +8,27 @@ import {
   Store, Heart, Truck, ShoppingBag, Network, Globe, FileText,
   type LucideIcon,
 } from "lucide-react";
-...
+import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
+import { ThemeToggle } from "@/components/theme";
+import {
+  applications,
+  type AppDefinition,
+} from "@/components/operix-core/applications";
+import { onEnterNext } from '@/lib/keyboard';
+import { CardTile } from "@/components/operix-core/CardTile";
+import { SuspendedSessionBanner } from "@/components/layout/SuspendedSessionBanner";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { CrossCardSearch } from "@/components/layout/CrossCardSearch";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useCardEntitlement } from "@/hooks/useCardEntitlement";
+import { topCardsForUser } from "@/lib/card-frequency-tracker";
+
+
+// ── Icon lookup map ──────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
