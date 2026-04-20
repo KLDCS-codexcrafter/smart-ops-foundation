@@ -123,7 +123,7 @@ export function PDFInvoiceUploadPanel() {
     try {
       const buf = await file.arrayBuffer();
       const result = await extractInvoiceFromPDF(buf);
-      if (!result.ok) {
+      if (result.ok === false) {
         switch (result.reason) {
           case 'scanned_pdf_not_supported':
             setError('This PDF appears to be scanned (no text layer). Use the CSV upload or manual entry option instead. Scanned-PDF OCR is coming soon.');

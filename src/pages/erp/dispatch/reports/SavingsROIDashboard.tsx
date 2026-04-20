@@ -182,16 +182,17 @@ export function SavingsROIDashboardPanel() {
 
   const opportunities = useMemo<SavingsOpportunity[]>(() => {
     const flagged = matches.filter(m => m.status === 'over_billed' || m.status === 'ghost_lr');
-    const list: SavingsOpportunity[] = flagged.map(m => {
+    const list: SavingsOpportunity[] = [];
+    for (const m of flagged) {
       const dsp = disputes.find(d => d.match_line_id === m.id);
       const isResolved = dsp && (dsp.status === 'resolved_in_favor_of_us'
         || dsp.status === 'resolved_in_favor_of_transporter'
         || dsp.status === 'resolved_split'
         || dsp.status === 'withdrawn');
-      if (isResolved) return null;
+      if (isResolved) continue;
       const inv = invoices.find(i => i.id === m.invoice_id);
       const ageD = ageDays(m.computed_at);
-      return {
+      list.push({
         match_line_id: m.id,
         lr_no: m.lr_no,
         logistic_id: inv?.logistic_id ?? '',
@@ -202,8 +203,8 @@ export function SavingsROIDashboardPanel() {
         dispute_status: dsp?.status ?? null,
         age_days: ageD,
         resolution_potential: resolutionPotential(ageD, Math.max(0, m.variance_amount)),
-      };
-    }).filter((x): x is SavingsOpportunity => x !== null);
+      });
+    }
     return list.sort((a, b) => b.variance_amount - a.variance_amount).slice(0, 3);
   }, [matches, invoices, disputes]);
 
