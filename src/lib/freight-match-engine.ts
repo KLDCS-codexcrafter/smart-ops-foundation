@@ -155,12 +155,29 @@ export function matchInvoiceLine(
     all_rate_cards: ctx.rate_cards,
   });
 
-  if (!calcResult.ok) {
-    const reason = calcResult.reason;
+  if (calcResult.ok === false) {
     const failStatus: MatchStatus =
-      reason === 'no_rate_card' ? 'missing_rate_card' :
-      reason === 'invalid_weight' ? 'missing_weight' :
+      calcResult.reason === 'no_rate_card' ? 'missing_rate_card' :
+      calcResult.reason === 'invalid_weight' ? 'missing_weight' :
       'rate_calc_failed';
+    return {
+      id: genId('mli'),
+      entity_id: ctx.invoice.entity_id,
+      invoice_id: ctx.invoice.id,
+      invoice_line_id: line.id,
+      lr_no: line.lr_no,
+      dln_voucher_id: dln.id, dln_voucher_no: dln.voucher_no,
+      expected_amount: 0,
+      declared_amount: line.total,
+      variance_amount: line.total,
+      variance_pct: 0,
+      status: failStatus,
+      tolerance_used: tolerance,
+      payer_model: payerModel,
+      auto_decision: 'flag',
+      computed_at: now,
+    };
+  }
     return {
       id: genId('mli'),
       entity_id: ctx.invoice.entity_id,
