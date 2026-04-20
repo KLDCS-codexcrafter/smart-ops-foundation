@@ -85,7 +85,7 @@ export default function LogisticDisputes() {
       response_from: session.party_name,
       resolution_amount: counterAmount ? parseFloat(counterAmount) : undefined,
     });
-    if (!result.ok) {
+    if (result.ok === false) {
       toast.error(result.reason);
       return;
     }
