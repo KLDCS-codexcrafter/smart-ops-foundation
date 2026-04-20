@@ -21,7 +21,7 @@ import {
 import {
   Truck, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
   ChevronDown, AlertTriangle, Check, User, MapPin,
-  CreditCard, Shield, Building, Package, X, Globe,
+  CreditCard, Shield, Building, Package, X, Globe, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState } from '@/data/india-geography';
@@ -107,6 +107,13 @@ interface LogisticMasterDefinition {
   freightRates: FreightRate[];
   freightRateTolerance: number;
   status: 'active' | 'inactive';
+
+  // Sprint 15c-2 — Portal access fields
+  portal_enabled?: boolean;
+  password_hash?: string | null;
+  password_updated_at?: string | null;
+  last_login_at?: string | null;
+  must_change_password?: boolean;
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -182,6 +189,11 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
   natureOfBusiness: '', businessActivity: '', otherReference: '',
   freightRates: [], freightRateTolerance: 5,
   status: 'active',
+  portal_enabled: false,
+  password_hash: null,
+  password_updated_at: null,
+  last_login_at: null,
+  must_change_password: false,
 };
 
 // ─── Panel Component ──────────────────────────────────────────
@@ -276,6 +288,10 @@ export function LogisticMasterPanel() {
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
 
+  // Sprint 15c-2 — Portal access UI state
+  const [showPortal, setShowPortal] = useState(false);
+  const [tempPassword, setTempPassword] = useState('');
+
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/logistics
     try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
@@ -341,9 +357,23 @@ export function LogisticMasterPanel() {
     if (!addOpen && !editTarget) return;
     if (!form.partyName.trim()) return toast.error('Party Name is required');
     if (!form.logisticType) return toast.error('Logistic Type is required');
+
+    // Sprint 15c-2 — when portal_enabled and a temp password supplied, hash it
+    let portalPatch: Partial<LogisticMasterDefinition> = {};
+    if (form.portal_enabled && tempPassword.trim()) {
+      if (tempPassword.trim().length < 8) {
+        return toast.error('Temporary password must be at least 8 characters');
+      }
+      portalPatch = {
+        password_hash: btoa(tempPassword.trim()), // [JWT] Mock — replace with bcrypt server-side
+        password_updated_at: new Date().toISOString(),
+        must_change_password: true,
+      };
+    }
+
     const all = loadLogistics();
     if (editTarget) {
-      const updated = all.map(l => l.id === editTarget.id ? { ...l, ...form } : l);
+      const updated = all.map(l => l.id === editTarget.id ? { ...l, ...form, ...portalPatch } : l);
       saveLogistics(updated); setLogistics(updated);
       toast.success(`${form.partyName} updated`);
       setJustSaved(true);
@@ -351,6 +381,7 @@ export function LogisticMasterPanel() {
     } else {
       const def: LogisticMasterDefinition = {
         ...form,
+        ...portalPatch,
         id: crypto.randomUUID(),
         partyCode: genPartyCode(all),
         mailingName: form.mailingName.trim() || form.partyName.trim(),
@@ -363,6 +394,8 @@ export function LogisticMasterPanel() {
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
     }
+    setTempPassword('');
+    setShowPortal(false);
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
@@ -994,6 +1027,62 @@ export function LogisticMasterPanel() {
             <Button type="button" variant="outline" size="sm" onClick={() => setShowRateForm(true)} className="gap-1.5 text-xs">
               <Plus className="h-3 w-3" /> Add Route
             </Button>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Sprint 15c-2 — Portal Access */}
+      <Collapsible open={showPortal} onOpenChange={setShowPortal}>
+        <CollapsibleTrigger asChild>
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            Portal Access (Sprint 15c-2)
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-3 pt-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-xs">Enable portal login</Label>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                Lets this transporter sign in at /erp/logistic/login to submit invoices,
+                accept LRs, and view payments.
+              </p>
+            </div>
+            <Switch
+              checked={form.portal_enabled ?? false}
+              onCheckedChange={v => setForm(f => ({ ...f, portal_enabled: v }))}
+            />
+          </div>
+          {form.portal_enabled && (
+            <>
+              <div>
+                <Label className="text-xs">
+                  Temporary password {editTarget?.password_hash ? '(leave blank to keep current)' : '*'}
+                </Label>
+                <Input
+                  type="text"
+                  value={tempPassword}
+                  onChange={e => setTempPassword(e.target.value)}
+                  placeholder="Welcome@123"
+                  className="font-mono text-xs"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Min 8 chars. Share securely with the transporter contact person —
+                  they will be forced to change it on first login.
+                </p>
+              </div>
+              {form.last_login_at && (
+                <p className="text-[10px] text-muted-foreground">
+                  Last login: {new Date(form.last_login_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </p>
+              )}
+              {form.password_updated_at && (
+                <p className="text-[10px] text-muted-foreground">
+                  Password updated: {new Date(form.password_updated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </p>
+              )}
+            </>
           )}
         </CollapsibleContent>
       </Collapsible>
