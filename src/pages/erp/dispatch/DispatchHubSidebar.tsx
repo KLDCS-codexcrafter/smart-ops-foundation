@@ -9,6 +9,7 @@ import {
   Home, Truck, Route, ClipboardEdit, Printer, AlertTriangle,
   BarChart3, Database, ChevronRight, ArrowLeft, Send,
   Package, ListChecks, TrendingUp, Users,
+  FileSpreadsheet, AlertCircle, Scale,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -26,7 +27,11 @@ export type DispatchHubModule =
   | 'dh-t-lr-tracker' | 'dh-t-lr-update' | 'dh-t-packing-slip-print'
   | 'dh-t-exceptions'
   | 'dh-r-dispatch-summary'
-  | 'dh-r-packing-consumption' | 'dh-r-packer-performance';
+  | 'dh-r-packing-consumption' | 'dh-r-packer-performance'
+  // Sprint 15c-1
+  | 'dh-t-transporter-invoice'
+  | 'dh-t-dispute-queue'
+  | 'dh-r-reconciliation-summary';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -41,10 +46,12 @@ interface MenuItem {
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'LR Tracker',          module: 'dh-t-lr-tracker',         icon: Route },
-  { label: 'LR Update',           module: 'dh-t-lr-update',          icon: ClipboardEdit },
-  { label: 'Packing Slip Print',  module: 'dh-t-packing-slip-print', icon: Printer },
-  { label: 'Dispatch Exceptions', module: 'dh-t-exceptions',         icon: AlertTriangle },
+  { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
+  { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
+  { label: 'Packing Slip Print',   module: 'dh-t-packing-slip-print',  icon: Printer },
+  { label: 'Transporter Invoices', module: 'dh-t-transporter-invoice', icon: FileSpreadsheet },
+  { label: 'Dispute Queue',        module: 'dh-t-dispute-queue',       icon: AlertCircle },
+  { label: 'Dispatch Exceptions',  module: 'dh-t-exceptions',          icon: AlertTriangle },
 ];
 
 const MASTERS_INTERNAL: MenuItem[] = [
@@ -53,9 +60,10 @@ const MASTERS_INTERNAL: MenuItem[] = [
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Packing Consumption', module: 'dh-r-packing-consumption', icon: TrendingUp },
-  { label: 'Packer Performance',  module: 'dh-r-packer-performance',  icon: Users },
-  { label: 'Dispatch Summary',    module: 'dh-r-dispatch-summary',    icon: BarChart3, badge: 'Soon' },
+  { label: 'Packing Consumption',    module: 'dh-r-packing-consumption',    icon: TrendingUp },
+  { label: 'Packer Performance',     module: 'dh-r-packer-performance',     icon: Users },
+  { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale },
+  { label: 'Dispatch Summary',       module: 'dh-r-dispatch-summary',       icon: BarChart3, badge: 'Soon' },
 ];
 
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
