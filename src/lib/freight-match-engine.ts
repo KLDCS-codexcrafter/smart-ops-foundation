@@ -178,24 +178,7 @@ export function matchInvoiceLine(
       computed_at: now,
     };
   }
-    return {
-      id: genId('mli'),
-      entity_id: ctx.invoice.entity_id,
-      invoice_id: ctx.invoice.id,
-      invoice_line_id: line.id,
-      lr_no: line.lr_no,
-      dln_voucher_id: dln.id, dln_voucher_no: dln.voucher_no,
-      expected_amount: 0,
-      declared_amount: line.total,
-      variance_amount: line.total,
-      variance_pct: 0,
-      status: failStatus,
-      tolerance_used: tolerance,
-      payer_model: payerModel,
-      auto_decision: 'flag',
-      computed_at: now,
-    };
-  }
+
 
   const expected = calcResult.breakdown.grand_total;
   const declared = line.total;
