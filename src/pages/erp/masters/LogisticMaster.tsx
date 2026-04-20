@@ -189,6 +189,11 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
   natureOfBusiness: '', businessActivity: '', otherReference: '',
   freightRates: [], freightRateTolerance: 5,
   status: 'active',
+  portal_enabled: false,
+  password_hash: null,
+  password_updated_at: null,
+  last_login_at: null,
+  must_change_password: false,
 };
 
 // ─── Panel Component ──────────────────────────────────────────
@@ -282,6 +287,10 @@ export function LogisticMasterPanel() {
 
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
+
+  // Sprint 15c-2 — Portal access UI state
+  const [showPortal, setShowPortal] = useState(false);
+  const [tempPassword, setTempPassword] = useState('');
 
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/logistics
