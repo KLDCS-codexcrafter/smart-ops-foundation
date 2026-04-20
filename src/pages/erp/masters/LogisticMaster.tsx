@@ -357,9 +357,23 @@ export function LogisticMasterPanel() {
     if (!addOpen && !editTarget) return;
     if (!form.partyName.trim()) return toast.error('Party Name is required');
     if (!form.logisticType) return toast.error('Logistic Type is required');
+
+    // Sprint 15c-2 — when portal_enabled and a temp password supplied, hash it
+    let portalPatch: Partial<LogisticMasterDefinition> = {};
+    if (form.portal_enabled && tempPassword.trim()) {
+      if (tempPassword.trim().length < 8) {
+        return toast.error('Temporary password must be at least 8 characters');
+      }
+      portalPatch = {
+        password_hash: btoa(tempPassword.trim()), // [JWT] Mock — replace with bcrypt server-side
+        password_updated_at: new Date().toISOString(),
+        must_change_password: true,
+      };
+    }
+
     const all = loadLogistics();
     if (editTarget) {
-      const updated = all.map(l => l.id === editTarget.id ? { ...l, ...form } : l);
+      const updated = all.map(l => l.id === editTarget.id ? { ...l, ...form, ...portalPatch } : l);
       saveLogistics(updated); setLogistics(updated);
       toast.success(`${form.partyName} updated`);
       setJustSaved(true);
@@ -367,6 +381,7 @@ export function LogisticMasterPanel() {
     } else {
       const def: LogisticMasterDefinition = {
         ...form,
+        ...portalPatch,
         id: crypto.randomUUID(),
         partyCode: genPartyCode(all),
         mailingName: form.mailingName.trim() || form.partyName.trim(),
@@ -379,6 +394,8 @@ export function LogisticMasterPanel() {
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
     }
+    setTempPassword('');
+    setShowPortal(false);
     setAddOpen(false); setEditTarget(null); setForm(defaultForm);
   };
 
