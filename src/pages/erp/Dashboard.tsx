@@ -5,9 +5,10 @@ import {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck,
+  Store, Heart, Truck, ShoppingBag, Network,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
