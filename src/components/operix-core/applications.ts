@@ -7,7 +7,8 @@ export type AppCategory =
   | 'Pay Hub'
   | 'BackOffice Hub'
   | 'Support Hub'
-  | 'InsightX';
+  | 'InsightX'
+  | 'International Trade';
 
 export interface AppDefinition {
   id: string;
@@ -20,13 +21,14 @@ export interface AppDefinition {
 }
 
 export const CATEGORY_COLORS: Record<AppCategory, string> = {
-  'Ops Hub':        'bg-cyan-500/15 text-cyan-400',
-  'Sales Hub':      'bg-amber-500/15 text-amber-400',
-  'Fin Hub':        'bg-indigo-500/15 text-indigo-400',
-  'Pay Hub':        'bg-violet-500/15 text-violet-400',
-  'BackOffice Hub': 'bg-purple-500/15 text-purple-400',
-  'Support Hub':    'bg-teal-500/15 text-teal-400',
-  'InsightX':       'bg-sky-500/15 text-sky-400',
+  'Ops Hub':            'bg-cyan-500/15 text-cyan-400',
+  'Sales Hub':          'bg-amber-500/15 text-amber-400',
+  'Fin Hub':            'bg-indigo-500/15 text-indigo-400',
+  'Pay Hub':            'bg-violet-500/15 text-violet-400',
+  'BackOffice Hub':     'bg-purple-500/15 text-purple-400',
+  'Support Hub':        'bg-teal-500/15 text-teal-400',
+  'InsightX':           'bg-sky-500/15 text-sky-400',
+  'International Trade':'bg-rose-500/15 text-rose-400',
 };
 
 export const ALL_CATEGORIES: AppCategory[] = [
@@ -37,6 +39,7 @@ export const ALL_CATEGORIES: AppCategory[] = [
   'BackOffice Hub',
   'Support Hub',
   'InsightX',
+  'International Trade',
 ];
 
 export const applications: AppDefinition[] = [
@@ -112,6 +115,15 @@ export const applications: AppDefinition[] = [
     status: 'coming_soon',
   },
   {
+    id: 'supplyx',
+    name: 'SupplyX',
+    description: 'Vendor relationship hub — supplier onboarding, performance tracking, ratings, payments status, documents. Mirror of Distributor Hub for inbound.',
+    category: 'Ops Hub',
+    route: '/erp/supplyx',
+    icon: 'Truck',
+    status: 'coming_soon',
+  },
+  {
     id: 'salesx',
     name: 'SalesX Hub',
     description: 'Sales, CRM, telecaller and field force with geo-tracking',
@@ -135,6 +147,15 @@ export const applications: AppDefinition[] = [
     route: '/erp/customer-hub',
     icon: 'Heart',
     status: 'active',
+  },
+  {
+    id: 'projx',
+    name: 'ProjX',
+    description: 'Project management — plan, schedule, track, and deliver client-facing projects with milestones, resource allocation, and profitability tracking.',
+    category: 'Sales Hub',
+    route: '/erp/projx',
+    icon: 'ClipboardList',
+    status: 'coming_soon',
   },
   {
     id: 'storex',
@@ -180,6 +201,15 @@ export const applications: AppDefinition[] = [
     icon: 'TrendingUp',
   },
   {
+    id: 'eximx',
+    name: 'EximX',
+    description: 'International trade management — export/import documentation, DGFT integration, e-BRC, shipping bills, landed cost, buyer/supplier risk scoring, FEMA tracker, Treasury.',
+    category: 'International Trade',
+    route: '/erp/eximx',
+    icon: 'Globe',
+    status: 'coming_soon',
+  },
+  {
     id: 'peoplepay',
     name: 'PeoplePay',
     description: 'Full HR and payroll — attendance, leaves, payroll and compliance',
@@ -189,9 +219,9 @@ export const applications: AppDefinition[] = [
   },
   {
     id: 'dispatch-hub',
-    name: 'Dispatch Hub',
-    description: 'LR tracking, Proof of Delivery, packing slips, and transporter invoice reconciliation — Sprint 15a/b',
-    category: 'BackOffice Hub',
+    name: 'Logistics Hub',
+    description: 'Inward + outward freight management — transporter master, LR, POD, courier, freight reconciliation, packing consumables, and logistic partner portal',
+    category: 'Ops Hub',
     route: '/erp/backoffice/dispatch',
     icon: 'Truck',
     status: 'active',
@@ -212,6 +242,24 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/servicedesk',
     icon: 'Headphones',
+    status: 'coming_soon',
+  },
+  {
+    id: 'taskflow',
+    name: 'TaskFlow',
+    description: 'Task management — assignments, approvals, SLAs, priority queues, department routing. Unified work management across teams.',
+    category: 'Support Hub',
+    route: '/erp/taskflow',
+    icon: 'CheckSquare',
+    status: 'coming_soon',
+  },
+  {
+    id: 'docvault',
+    name: 'DocVault',
+    description: 'Document management — registry, upload, approvals, search, sharing, audit trail, compliance checks, retention policies.',
+    category: 'Support Hub',
+    route: '/erp/docvault',
+    icon: 'FileText',
     status: 'coming_soon',
   },
   // ─── INSIGHTX ARCHITECTURAL RULE — LOCKED BEFORE BUILD ──────────────────────

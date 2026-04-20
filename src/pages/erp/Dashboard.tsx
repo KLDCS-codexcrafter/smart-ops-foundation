@@ -5,7 +5,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck, ShoppingBag, Network,
+  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText,
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck, ShoppingBag, Network,
+  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText,
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ const LANES: Array<{
     label: 'Operations',
     borderColor: 'border-l-cyan-500',
     labelColor: 'text-cyan-600 dark:text-cyan-400',
-    ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx'],
+    ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx', 'supplyx', 'dispatch-hub'],
   },
   {
     id: 'finance',
@@ -66,11 +66,18 @@ const LANES: Array<{
     ids: ['finecore', 'payout', 'receivx'],
   },
   {
+    id: 'international-trade',
+    label: 'International Trade',
+    borderColor: 'border-l-rose-500',
+    labelColor: 'text-rose-600 dark:text-rose-400',
+    ids: ['eximx'],
+  },
+  {
     id: 'sales',
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx', 'distributor-hub', 'customer-hub', 'storex', 'unicomm'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub', 'projx', 'storex', 'unicomm'],
   },
   {
     id: 'people',
@@ -84,7 +91,7 @@ const LANES: Array<{
     label: 'Support & back office',
     borderColor: 'border-l-slate-400',
     labelColor: 'text-slate-500 dark:text-slate-400',
-    ids: ['dispatch-hub', 'backoffice', 'servicedesk'],
+    ids: ['backoffice', 'servicedesk', 'taskflow', 'docvault'],
   },
 ];
 
