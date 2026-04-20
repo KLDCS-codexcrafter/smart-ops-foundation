@@ -70,7 +70,7 @@ const LANES: Array<{
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx', 'distributor-hub', 'customer-hub'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub', 'storex', 'unicomm'],
   },
   {
     id: 'people',
