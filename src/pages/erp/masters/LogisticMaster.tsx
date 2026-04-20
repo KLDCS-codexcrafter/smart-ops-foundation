@@ -1031,6 +1031,62 @@ export function LogisticMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
+      {/* Sprint 15c-2 — Portal Access */}
+      <Collapsible open={showPortal} onOpenChange={setShowPortal}>
+        <CollapsibleTrigger asChild>
+          <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            Portal Access (Sprint 15c-2)
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/trigger:rotate-180 ml-auto" />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-3 pt-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-xs">Enable portal login</Label>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                Lets this transporter sign in at /erp/logistic/login to submit invoices,
+                accept LRs, and view payments.
+              </p>
+            </div>
+            <Switch
+              checked={form.portal_enabled ?? false}
+              onCheckedChange={v => setForm(f => ({ ...f, portal_enabled: v }))}
+            />
+          </div>
+          {form.portal_enabled && (
+            <>
+              <div>
+                <Label className="text-xs">
+                  Temporary password {editTarget?.password_hash ? '(leave blank to keep current)' : '*'}
+                </Label>
+                <Input
+                  type="text"
+                  value={tempPassword}
+                  onChange={e => setTempPassword(e.target.value)}
+                  placeholder="Welcome@123"
+                  className="font-mono text-xs"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Min 8 chars. Share securely with the transporter contact person —
+                  they will be forced to change it on first login.
+                </p>
+              </div>
+              {form.last_login_at && (
+                <p className="text-[10px] text-muted-foreground">
+                  Last login: {new Date(form.last_login_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </p>
+              )}
+              {form.password_updated_at && (
+                <p className="text-[10px] text-muted-foreground">
+                  Password updated: {new Date(form.password_updated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </p>
+              )}
+            </>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+
       {/* Sprint 15a — Advanced Rate Card (only when editing) */}
       {editTarget && (
         <Collapsible open={showRateCards} onOpenChange={setShowRateCards}>
