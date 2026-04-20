@@ -33,7 +33,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck,
+  Store, Heart, Truck, ShoppingBag, Network,
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
