@@ -95,8 +95,19 @@ export function InventoryLineGrid({ lines, onChange, mode, showTax = true, isInt
               <TableRow key={line.id} className="text-xs" onFocus={() => setFocusedIdx(idx)}>
                 <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
                 <TableCell>
-                  <Input value={line.item_name} onChange={e => updateLine(idx, 'item_name', e.target.value)}
-                    onKeyDown={onEnterNext} className="h-7 text-xs" placeholder="Item name" />
+                  <div className="flex items-center gap-1">
+                    <Input value={line.item_name} onChange={e => updateLine(idx, 'item_name', e.target.value)}
+                      onKeyDown={onEnterNext} className="h-7 text-xs" placeholder="Item name" />
+                    {/* TODO (Sprint T10-pre.0 Phase 3): wire ItemAllocationDialog here */}
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer text-[10px] gap-0.5 px-1.5"
+                      onClick={() => toast.info('Allocations dialog wiring lands in voucher-level rewires (Phase 3 of T10-pre.0)')}
+                      title="Open allocations sub-form"
+                    >
+                      <Layers className="h-3 w-3" /> {(line.allocations?.length ?? 0)}
+                    </Badge>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Input value={line.hsn_sac_code} onChange={e => updateLine(idx, 'hsn_sac_code', e.target.value)}
