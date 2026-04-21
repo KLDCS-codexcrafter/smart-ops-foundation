@@ -84,7 +84,7 @@ export function ShellSidebar({ items, onItemClick }: Props) {
                                   </Badge>
                                 )}
                                 {child.newBadge && (
-                                  <span className="ml-auto text-[10px] font-medium text-emerald-600">
+                                  <span className="ml-auto text-[10px] font-medium text-success">
                                     NEW
                                   </span>
                                 )}
