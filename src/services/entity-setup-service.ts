@@ -10,6 +10,7 @@ import {
   MODE_OF_PAYMENT_SEED, TERMS_OF_PAYMENT_SEED, TERMS_OF_DELIVERY_SEED,
   type ModeOfPayment, type TermsOfPayment, type TermsOfDelivery,
 } from '@/data/masters-seed-data';
+import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -169,6 +170,22 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     { ledgerType: 'payroll_statutory', name: 'ESI Employer Contribution', code: 'ESIER-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'esi_employer', statutoryRate: 3.25, calculationBase: 'gross', wageCeiling: 21000, maxAmount: null, alias: 'ESI Emplr', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'payroll_statutory', name: 'LWF Employer Contribution', code: 'LWF-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'lwf_employer', statutoryRate: 0, calculationBase: 'state_specific', wageCeiling: null, maxAmount: null, alias: 'LWF', entityId: null, entityShortCode: null, status: 'active' },
     { ledgerType: 'payroll_statutory', name: 'Gratuity Provision', code: 'GRAT-000001', parentGroupCode: 'EMPL', parentGroupName: l3Name('EMPL'), payrollCategory: 'employer_contribution', payrollComponent: 'gratuity_provision', statutoryRate: 0, calculationBase: '15/26 x basic x years', wageCeiling: null, maxAmount: 2000000, alias: 'Gratuity', entityId: null, entityShortCode: null, status: 'active' },
+
+    // NEW (Sprint T10-pre.1a) — Stock adjustment pair (per owner directive Q5)
+    { ledgerType: 'expense', name: 'Stock Adjustment — Write Off', code: 'STADJWO-000001', parentGroupCode: 'ADMIN', parentGroupName: l3Name('ADMIN'), alias: 'Stk WO', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'income',  name: 'Stock Adjustment — Write On',  code: 'STADJWN-000001', parentGroupCode: 'OTHI',  parentGroupName: l3Name('OTHI'),  alias: 'Stk WN', entityId: null, entityShortCode: null, status: 'active' },
+
+    // NEW — Forex ledgers (relevant when multi-currency lands in Polish 1.5)
+    { ledgerType: 'income',  name: 'Forex Gain', code: 'FXGAIN-000001', parentGroupCode: 'OTHI',  parentGroupName: l3Name('OTHI'),  alias: 'Fx Gain', entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'expense', name: 'Forex Loss', code: 'FXLOSS-000001', parentGroupCode: 'ADMIN', parentGroupName: l3Name('ADMIN'), alias: 'Fx Loss', entityId: null, entityShortCode: null, status: 'active' },
+
+    // NEW — Discount pair (for SI/PI header-level discount in T10-pre.3+)
+    { ledgerType: 'expense', name: 'Discount Allowed',  code: 'DISCA-000001', parentGroupCode: 'ADMIN', parentGroupName: l3Name('ADMIN'), alias: 'Disc Allowed',  entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'income',  name: 'Discount Received', code: 'DISCR-000001', parentGroupCode: 'OTHI',  parentGroupName: l3Name('OTHI'),  alias: 'Disc Received', entityId: null, entityShortCode: null, status: 'active' },
+
+    // NEW — Freight pair (inward capitalised / outward expensed)
+    { ledgerType: 'expense', name: 'Freight Inward',  code: 'FRTIN-000001',  parentGroupCode: 'ADMIN', parentGroupName: l3Name('ADMIN'), alias: 'Frt In',  entityId: null, entityShortCode: null, status: 'active' },
+    { ledgerType: 'expense', name: 'Freight Outward', code: 'FRTOUT-000001', parentGroupCode: 'ADMIN', parentGroupName: l3Name('ADMIN'), alias: 'Frt Out', entityId: null, entityShortCode: null, status: 'active' },
   ];
 
   // Conditional: Service Revenue

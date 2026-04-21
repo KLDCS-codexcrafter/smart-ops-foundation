@@ -189,6 +189,21 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     allow_line_narration: false,
     numbering_prefix: 'SJ-', numbering_width: 4, current_sequence: 1,
   }),
+  seed('vt-stock-transfer', {
+    name: 'Stock Transfer', abbreviation: 'ST', base_voucher_type: 'Stock Transfer', family: 'Inventory',
+    is_active: true, activation_type: 'active',
+    accounting_impact: false, inventory_impact: true,   // stock moves between godowns; no GL hit
+    use_effective_date: true,                            // in_transit → received uses effective date
+    allow_zero_value: true,
+    numbering_prefix: 'ST-', numbering_width: 4, current_sequence: 1,
+    behaviour_rules: [
+      validationRule(false),   // party not required — department is
+      { id: 'rule-st-dept', rule_type: 'validation',
+        label: 'Require dispatch and receive department',
+        is_active: true, sequence: 2,
+        config: { require_party: false, require_narration: false, block_future_date: false, require_cost_centre: false } },
+    ],
+  }),
   seed('vt-physical-stock', {
     name: 'Physical Stock', abbreviation: 'PSV', base_voucher_type: 'Physical Stock', family: 'Inventory',
     is_active: false, activation_type: 'on_use',

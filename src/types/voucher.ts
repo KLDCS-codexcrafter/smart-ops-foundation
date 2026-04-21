@@ -198,8 +198,17 @@ export interface Voucher {
   party_lut_number?: string;
   from_godown_name?: string;
   to_godown_name?: string;
-  status: 'draft' | 'posted' | 'cancelled';
+  status: 'draft' | 'posted' | 'cancelled' | 'in_transit' | 'received';
   cancel_reason?: string;
+  /** NEW (Sprint T10-pre.1a) — source department for Stock Transfer (replaces party for this base type). */
+  dispatch_dept_id?: string;
+  dispatch_dept_name?: string;
+  /** NEW (Sprint T10-pre.1a) — destination department for Stock Transfer. */
+  receive_dept_id?: string;
+  receive_dept_name?: string;
+  /** NEW — receiving confirmation; set when ST moves in_transit → received. */
+  received_at?: string;
+  received_by?: string;
   is_cancelled?: boolean;
   created_by: string;
   created_at: string;
