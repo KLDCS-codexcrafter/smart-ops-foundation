@@ -8,6 +8,8 @@ import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_RATES } from '@/types/fixed-asset';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
+import { eventBus } from './event-bus';
+import { loadTenantConfig } from './tenant-config-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -511,6 +513,27 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     // [JWT] POST /api/fixed-assets/units
     ss(faUnitsKey(entityCode), units);
   }
+
+  // 10. Emit voucher.posted event (Sprint T10-pre.1a) — non-fatal
+  try {
+    const config = loadTenantConfig(entityCode);
+    eventBus.emit('voucher.posted', {
+      voucher_id: voucher.id,
+      voucher_no: voucher.voucher_no,
+      voucher_type: voucher.base_voucher_type,
+      entity_code: entityCode,
+      accounting_mode: config.accounting_mode,
+      actor_id: voucher.created_by || 'system',
+      timestamp: new Date().toISOString(),
+      amount: voucher.net_amount,
+      meta: {
+        party_name: voucher.party_name,
+        party_id: voucher.party_id,
+      },
+    });
+  } catch (err) {
+    console.error('[finecore-engine] event emit failed (non-fatal):', err);
+  }
 }
 
 // ── Cancel Voucher — reversal entries ────────────────────────────────
@@ -624,6 +647,26 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
       // [JWT] PATCH /api/fixed-assets/units
       ss(faUnitsKey(entityCode), faUnits);
     }
+  }
+
+  // Emit voucher.cancelled event (Sprint T10-pre.1a) — non-fatal
+  try {
+    const config = loadTenantConfig(entityCode);
+    const cancelled = vouchers[idx];
+    eventBus.emit('voucher.cancelled', {
+      voucher_id: cancelled.id,
+      voucher_no: cancelled.voucher_no,
+      voucher_type: cancelled.base_voucher_type,
+      entity_code: entityCode,
+      accounting_mode: config.accounting_mode,
+      actor_id: 'system',
+      timestamp: now,
+      amount: cancelled.net_amount,
+      reason,
+      meta: {},
+    });
+  } catch (err) {
+    console.error('[finecore-engine] cancel event emit failed (non-fatal):', err);
   }
 }
 

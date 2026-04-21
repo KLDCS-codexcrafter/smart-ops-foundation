@@ -11,7 +11,7 @@ export type VoucherBaseType =
   | 'Memorandum' | 'Reversing Journal'
   | 'Delivery Note' | 'Receipt Note'
   | 'Rejections In' | 'Rejections Out'
-  | 'Stock Journal' | 'Physical Stock'
+  | 'Stock Journal' | 'Stock Transfer' | 'Physical Stock'
   | 'Sales Order' | 'Purchase Order'
   | 'Job Work In Order' | 'Job Work Out Order'
   | 'Material In' | 'Material Out'
