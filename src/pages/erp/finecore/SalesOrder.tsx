@@ -27,6 +27,13 @@ import type { Order, OrderLine } from '@/types/order';
 import { indianStates } from '@/data/india-geography';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import {
+  PartyDispatchDialog, ItemAllocationDialog,
+} from '@/components/finecore/dialogs';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
+import { eventBus } from '@/lib/event-bus';
+import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface SalesOrderPanelProps {
   entityCode?: string;
@@ -60,6 +67,16 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
   const [terms, setTerms] = useState('');
   const [paymentEnforcement, setPaymentEnforcement] = useState('');
   const [lines, setLines] = useState<OrderLine[]>([]);
+
+  // ── Tally header + dispatch + allocations (Sprint T10-pre.0) ──
+  const { accountingMode } = useTenantConfig(entityCode);
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [dispatchDialogOpen, setDispatchDialogOpen] = useState(false);
+  const [dispatchDetails, setDispatchDetails] = useState<VoucherDispatchDetails | undefined>(undefined);
+  const [allocationDialogState, setAllocationDialogState] = useState<{
+    open: boolean; lineIdx: number;
+  }>({ open: false, lineIdx: -1 });
 
   // ── Order Book State ──
   const [statusFilter, setStatusFilter] = useState<string>('all');
