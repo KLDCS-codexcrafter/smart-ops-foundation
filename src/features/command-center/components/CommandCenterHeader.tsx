@@ -1,3 +1,8 @@
+/**
+ * @deprecated Sprint A-3.1 — replaced by Shell + ShellHeader + buildBreadcrumbs() helper in CommandCenterPage.
+ * This file is scheduled for deletion once grep confirms zero imports.
+ * DO NOT use in new code.
+ */
 import { useMemo } from 'react';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { journalKey } from '@/lib/finecore-engine';

@@ -1,3 +1,8 @@
+/**
+ * @deprecated Sprint A-3.1 — replaced by command-center-shell-config.ts + @/shell/
+ * This file is scheduled for deletion once grep confirms zero imports.
+ * DO NOT use in new code.
+ */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Network } from 'lucide-react';
