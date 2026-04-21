@@ -5,7 +5,7 @@
 
 import type {
   CardId, CardEntitlement, UserEntitlementProfile, UserRole,
-  EntitlementStatus,
+  EntitlementStatus, ActionVerb, AuthScope,
 } from '@/types/card-entitlement';
 import { ROLE_DEFAULT_CARDS } from '@/types/card-entitlement';
 
@@ -95,4 +95,34 @@ export function seedDemoProfile(tenantId: string, userId: string): UserEntitleme
     explicit_allow: [], explicit_deny: [],
     updated_at: now,
   };
+}
+
+/**
+ * canPerformAction — Phase 1 skeleton. Returns role-based boolean.
+ * Full rule logic (maker-checker, scope, policy) arrives in Sprint A-4.
+ *
+ * For Sprint A-3.1 this is a light wrapper around canAccessCard + role category.
+ */
+export function canPerformAction(
+  profile: UserEntitlementProfile,
+  action: ActionVerb,
+  resource: { cardId: CardId },
+  _scope?: AuthScope,
+): { allowed: boolean; reason: string | null } {
+  const cardAccess = canAccessCard(resource.cardId, profile, []);
+  if (!cardAccess.allowed) return cardAccess;
+
+  // Super admins can do anything
+  if (isSuperAdminRole(profile.role)) return { allowed: true, reason: null };
+
+  // view_only auditor: read actions only
+  const readOnlyActions: ActionVerb[] = [
+    'view', 'list', 'export', 'report.view', 'audit.view', 'master.view',
+  ];
+  if (profile.role === 'view_only' && !readOnlyActions.includes(action)) {
+    return { allowed: false, reason: 'View-only role' };
+  }
+
+  // Phase 1: all other roles pass if they have card access
+  return { allowed: true, reason: null };
 }

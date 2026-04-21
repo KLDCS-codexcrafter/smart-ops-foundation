@@ -1,4 +1,9 @@
 /**
+ * @deprecated Sprint A-3.1 — ERPHeader is being phased out in favour of ShellHeader (@/shell/header/ShellHeader.tsx).
+ * Command Center migrated first. Other cards migrate in Sprints A-3.2 through A-3.9.
+ * DO NOT use this in new code.
+ */
+/**
  * ERPHeader.tsx — Universal 2-row ERP header
  * Used by: Command Center and all future ERP modules.
  * NOT used by: Tower, Bridge, Customer (they have their own layout headers).
