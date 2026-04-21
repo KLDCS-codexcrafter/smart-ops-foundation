@@ -206,6 +206,40 @@ export interface Voucher {
   updated_at: string;
   posted_at?: string;
   asset_unit_lines?: AssetUnitLine[];
+
+  /** NEW (Sprint T10-pre.0) — Reference document
+      (e.g. customer PO, vendor invoice, original invoice for CN) */
+  ref_no?: string;
+  ref_date?: string;               // YYYY-MM-DD
+
+  /** NEW (Sprint T10-pre.0) — Accounting effective date
+      (may differ from document date — for accrual entries) */
+  effective_date?: string;         // YYYY-MM-DD, defaults to voucher.date
+
+  /** NEW (Sprint T10-pre.0) — Tally-Prime-style dispatch + addressing block */
+  dispatch_details?: VoucherDispatchDetails;
+}
+
+/**
+ * Tally-Prime-style dispatch + addressing block for a voucher.
+ * Captured from <PartyDispatchDialog> after party selection.
+ */
+export interface VoucherDispatchDetails {
+  // Dispatch
+  tracking_no?: string;
+  dispatch_doc_no?: string;
+  dispatch_doc_date?: string;      // YYYY-MM-DD
+  dispatch_through?: string;       // transporter name / courier
+  vehicle_no?: string;
+  destination?: string;
+
+  // Addressing (IDs refer to addresses[] on the party master)
+  bill_to_address_id?: string;
+  ship_to_address_id?: string;
+
+  // Snapshotted address text so voucher prints survive address edits later
+  bill_to_snapshot?: string;
+  ship_to_snapshot?: string;
 }
 
 // Journal entry line — stored in erp_journal_{e}
