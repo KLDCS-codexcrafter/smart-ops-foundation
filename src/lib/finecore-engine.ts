@@ -37,6 +37,20 @@ export interface ValidationResult {
   errors: string[];
 }
 
+/**
+ * Narrow projection of a ledger definition row used by the engine when
+ * resolving GST / RCM / TDS attributes. Real LedgerDefinition lives in
+ * the masters layer; we only need this subset here.
+ */
+interface LedgerDefRef {
+  id: string;
+  name?: string;
+  isItcEligible?: boolean;
+  isRcmApplicable?: boolean;
+  rcmSection?: string;
+  isTdsApplicable?: boolean;
+}
+
 export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
   const errors: string[] = [];
   if (!voucher.date) errors.push('Date is required');
@@ -52,6 +66,32 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
     }
   }
 
+  // Allocation qty integrity (Sprint T10-pre.0)
+  const allocCheck = validateAllocations(voucher);
+  errors.push(...allocCheck.errors);
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Validates that the sum of allocations equals the line qty for every
+ * inventory line that has populated allocations[]. Lines without
+ * allocations[] are skipped (legacy / single-allocation lines).
+ */
+export function validateAllocations(voucher: Partial<Voucher>): ValidationResult {
+  const errors: string[] = [];
+  if (!voucher.inventory_lines || voucher.inventory_lines.length === 0) {
+    return { valid: true, errors: [] };
+  }
+  for (const line of voucher.inventory_lines) {
+    if (!line.allocations || line.allocations.length === 0) continue;
+    const sum = line.allocations.reduce((s, a) => s + a.qty, 0);
+    if (Math.abs(sum - line.qty) > 0.001) {
+      errors.push(
+        `Line "${line.item_name}": allocation qty ${sum.toFixed(3)} ≠ line qty ${line.qty.toFixed(3)}`,
+      );
+    }
+  }
   return { valid: errors.length === 0, errors };
 }
 
