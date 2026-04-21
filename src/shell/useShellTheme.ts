@@ -4,12 +4,12 @@
  * PURPOSE       Read current accent / mode / tenantBrand from ShellThemeProvider.
  * INPUT         none (uses React context)
  * OUTPUT        ThemeContextValue
- * DEPENDENCIES  ./ShellThemeProvider (ThemeContext)
+ * DEPENDENCIES  ./ShellThemeContext
  * TALLY-ON-TOP BEHAVIOR  none
  * SPEC DOC      Operix_ONE_Shell_Specification.xlsx
  */
 import { useContext } from 'react';
-import { ThemeContext } from './ShellThemeProvider';
+import { ThemeContext } from './ShellThemeContext';
 
 export function useShellTheme() {
   const ctx = useContext(ThemeContext);

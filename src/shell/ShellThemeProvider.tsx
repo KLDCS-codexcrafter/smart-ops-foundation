@@ -4,21 +4,13 @@
  * PURPOSE  Apply --shell-accent / --shell-accent-foreground per product.
  * INPUT    accent, mode, tenantBrand, children
  * OUTPUT   Themed React subtree
- * DEPENDENCIES  ./types, ./theme/accents
+ * DEPENDENCIES  ./types, ./theme/accents, ./ShellThemeContext
  * TALLY-ON-TOP BEHAVIOR  none
  * SPEC DOC  Operix_ONE_Shell_Specification.xlsx
  */
-import { createContext, useEffect, type ReactNode } from 'react';
-import type { ThemeAccent, TenantBrand } from './types';
+import { useEffect, type ReactNode } from 'react';
 import { ACCENTS } from './theme/accents';
-
-interface ThemeContextValue {
-  accent: ThemeAccent;
-  mode: 'light' | 'dark' | 'auto';
-  tenantBrand?: TenantBrand;
-}
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+import { ThemeContext, type ThemeContextValue } from './ShellThemeContext';
 
 interface Props extends ThemeContextValue {
   children: ReactNode;
