@@ -235,7 +235,7 @@ export default function CommandCenterPage() {
     return 'overview';
   });
 
-  const { entityCode, userId } = useCardEntitlement();
+  const { entityCode, userId, profile, entitlements } = useCardEntitlement();
 
   useEffect(() => {
     logAudit({
@@ -370,30 +370,103 @@ export default function CommandCenterPage() {
     }
   };
 
+  const lastEntryLabel = computeLastEntryLabel(entityCode);
+
   return (
     <>
       <GuidedTourOverlay cardId='command-center' />
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex min-h-svh w-full bg-background">
-          <CommandCenterSidebar
-            activeModule={activeModule}
-            onModuleChange={setActiveModule}
-          />
-          <SidebarInset className="flex flex-col flex-1 min-w-0">
-            <CommandCenterHeader
-              activeModule={activeModule}
-              onModuleChange={setActiveModule}
-            />
-            <ScrollArea className="flex-1">
-              <div className="p-6 max-w-7xl mx-auto">
-                {renderModule()}
-              </div>
-            </ScrollArea>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
+      <Shell
+        config={commandCenterShellConfig}
+        userProfile={profile}
+        tenantEntitlements={entitlements}
+        breadcrumbs={buildBreadcrumbs(activeModule)}
+        lastEntryLabel={lastEntryLabel}
+        contextFlags={{ accounting_mode: 'standalone' /* TODO wire from tenant config */ }}
+        onSidebarItemClick={(item) => {
+          if (item.moduleId) setActiveModule(item.moduleId as CommandCenterModule);
+        }}
+      >
+        {renderModule()}
+      </Shell>
     </>
   );
+}
+
+// ───── Helpers extracted from the legacy CommandCenterHeader ─────
+
+const GROUP_LABELS: Partial<Record<CommandCenterModule, string>> = {
+  overview: 'Overview',
+  foundation: 'Foundation & Core',
+  geography: 'Geography',
+  'org-structure': 'Organisation Structure',
+  'finecore-hub': 'Finance & Compliance',
+  console: 'Security Console',
+  'utility-import': 'Utilities',
+  'opening-ledger-balances': 'Opening Balances',
+  'opening-employee-loans': 'Opening Balances',
+};
+
+function getGroupLabel(m: CommandCenterModule): string {
+  if (m.startsWith('finecore-')) return 'Finance & Compliance';
+  if (m.startsWith('inventory-')) return 'Inventory Masters';
+  if (m.startsWith('ph-')) return 'People Core';
+  if (m.startsWith('opening-')) return 'Opening Balances';
+  if (m.startsWith('utility-')) return 'Utilities';
+  if (m.startsWith('crm-')) return 'CRM Masters';
+  if (m.startsWith('sales-')) return 'Sales Masters';
+  if (m.startsWith('collection-')) return 'Collection Masters';
+  if (m.startsWith('distributor-')) return 'Distributor Masters';
+  return GROUP_LABELS[m] ?? '';
+}
+
+function getModuleLabel(m: CommandCenterModule): string {
+  const known: Partial<Record<CommandCenterModule, string>> = {
+    overview: 'Overview',
+    foundation: 'Entity Management',
+    geography: 'Geography',
+    'org-structure': 'Business Units',
+    console: 'Security Console',
+    'finecore-hub': 'Finance & Compliance Hub',
+    'finecore-ledgers': 'Ledger Master',
+    'finecore-finframe': 'FinFrame',
+    'finecore-gst-config': 'GST Config',
+    'finecore-comply360': 'Comply360',
+    'ph-pay-heads': 'Pay Heads',
+    'ph-salary-structures': 'Salary Structures',
+    'opening-ledger-balances': 'Opening Ledger Balances',
+    'utility-import': 'Import Hub',
+  };
+  return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function buildBreadcrumbs(activeModule: CommandCenterModule): BreadcrumbEntry[] {
+  const group = getGroupLabel(activeModule);
+  const moduleLabel = getModuleLabel(activeModule);
+  const crumbs: BreadcrumbEntry[] = [
+    { label: 'Operix Core', href: '/erp/dashboard' },
+    { label: 'Command Centre', href: '/erp/command-center' },
+  ];
+  if (group && group !== moduleLabel) crumbs.push({ label: group });
+  if (moduleLabel) crumbs.push({ label: moduleLabel });
+  return crumbs;
+}
+
+function computeLastEntryLabel(entityCode: string): string | undefined {
+  try {
+    // [JWT] GET /api/accounting/journal/last-entry?entityCode={entityCode}
+    const raw = localStorage.getItem(journalKey(entityCode));
+    if (!raw) return undefined;
+    const entries: Array<{ created_at: string }> = JSON.parse(raw);
+    if (!entries.length) return undefined;
+    const latest = entries.reduce((a, b) => (a.created_at > b.created_at ? a : b));
+    const d = new Date(latest.created_at);
+    return 'Last entry: ' +
+      d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) +
+      ' ' +
+      d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+  } catch {
+    return undefined;
+  }
 }
 
 // ─── Stage 1 — Reference doc panels (read-only enum documentation) ────────
