@@ -1,4 +1,10 @@
 /**
+ * TODO (T10-pre.1+): Integrate TallyVoucherHeader + PartyDispatchDialog +
+ * ItemAllocationDialog + ItemParametersDialog into this shared shell so
+ * subsequent voucher types (Receipt, Payment, JV, etc.) inherit the pattern
+ * without re-wiring.
+ */
+/**
  * VoucherFormShell.tsx — Shared voucher entry form shell
  * Renders narration + optional terms/payment template fields in a collapsible section
  * [JWT] Voucher CRUD will move to /api/accounting/vouchers

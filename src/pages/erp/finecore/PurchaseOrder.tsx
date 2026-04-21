@@ -26,6 +26,13 @@ import { useItemVendors } from '@/hooks/useItemVendors';
 import type { Order, OrderLine } from '@/types/order';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import {
+  PartyDispatchDialog, ItemAllocationDialog,
+} from '@/components/finecore/dialogs';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
+import { eventBus } from '@/lib/event-bus';
+import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface PurchaseOrderPanelProps {
   entityCode?: string;
@@ -56,6 +63,16 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
   const [narration, setNarration] = useState('');
   const [terms, setTerms] = useState('');
   const [lines, setLines] = useState<OrderLine[]>([]);
+
+  // ── Tally header + dispatch + allocations (Sprint T10-pre.0) ──
+  const { accountingMode } = useTenantConfig(entityCode);
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [dispatchDialogOpen, setDispatchDialogOpen] = useState(false);
+  const [dispatchDetails, setDispatchDetails] = useState<VoucherDispatchDetails | undefined>(undefined);
+  const [allocationDialogState, setAllocationDialogState] = useState<{
+    open: boolean; lineIdx: number;
+  }>({ open: false, lineIdx: -1 });
 
   // ── Order Book State ──
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -130,17 +147,32 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
       valid_till: validTill || undefined,
       party_id: vendorId, party_name: vendorName,
       ref_no: vendorRef || undefined,
+      ref_date: refDate || undefined,
+      effective_date: effectiveDate || date,
+      dispatch_details: dispatchDetails,
       lines,
       gross_amount: totals.gross, total_tax: totals.tax, net_amount: totals.net,
       narration, terms_conditions: terms,
     });
     if (result) {
       toast.success(`Purchase Order ${result.order_no} created`);
+      // [JWT] replace 'demo-user' with real user id from auth context
+      eventBus.emit('order.placed', {
+        voucher_id: result.id,
+        voucher_no: result.order_no,
+        voucher_type: 'Purchase Order',
+        entity_code: entityCode,
+        accounting_mode: accountingMode,
+        actor_id: 'demo-user',
+        timestamp: new Date().toISOString(),
+        amount: result.net_amount,
+      });
       setLines([]); setVendorName(''); setVendorId(''); setVendorRef('');
       setNarration(''); setTerms(''); setValidTill('');
+      setRefDate(''); setEffectiveDate(''); setDispatchDetails(undefined);
       reload();
     }
-  }, [vendorName, vendorId, vendorRef, lines, date, validTill, narration, terms, totals, entityCode, createOrder, reload]);
+  }, [vendorName, vendorId, vendorRef, refDate, effectiveDate, dispatchDetails, lines, date, validTill, narration, terms, totals, entityCode, createOrder, reload, accountingMode]);
 
   const handlePreClose = () => {
     if (!preCloseSheet || !preCloseReason.trim()) { toast.error('Reason is required'); return; }
@@ -186,23 +218,26 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
 
         {/* ── Tab 1: New PO Form ── */}
         <TabsContent value="new-po" className="space-y-4">
+          {/* Tally-style voucher header */}
+          <TallyVoucherHeader
+            voucherTypeName="Purchase Order"
+            baseVoucherType="Purchase Order"
+            voucherFamily="Order"
+            voucherNo={poNo}
+            refNo={vendorRef}
+            refDate={refDate}
+            voucherDate={date}
+            effectiveDate={effectiveDate}
+            status="draft"
+            onRefNoChange={setVendorRef}
+            onRefDateChange={setRefDate}
+            onVoucherDateChange={setDate}
+            onEffectiveDateChange={setEffectiveDate}
+          />
+
           <Card>
             <CardContent className="pt-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-xs">PO No</Label>
-                  <Input value={poNo} disabled className="font-mono" />
-                </div>
-                <div>
-                  <Label className="text-xs">Date</Label>
-                  <SmartDateInput value={date} onChange={setDate} />
-                </div>
-                <div>
-                  <Label className="text-xs">Valid Till</Label>
-                  <SmartDateInput value={validTill} onChange={setValidTill} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs">Vendor</Label>
                   <Select value={vendorId} onValueChange={v => {
@@ -219,10 +254,27 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-xs">Vendor Ref No</Label>
-                  <Input value={vendorRef} onChange={e => setVendorRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Quotation / RFQ reference" />
+                  <Label className="text-xs">Valid Till</Label>
+                  <SmartDateInput value={validTill} onChange={setValidTill} />
                 </div>
               </div>
+
+              {vendorId && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDispatchDialogOpen(true)}
+                  >
+                    {dispatchDetails ? 'Edit Dispatch Details' : 'Add Dispatch Details'}
+                  </Button>
+                  {dispatchDetails?.tracking_no && (
+                    <Badge variant="outline" className="text-xs font-mono">
+                      Tracking: {dispatchDetails.tracking_no}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -459,6 +511,48 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Dispatch dialog (T10-pre.0) */}
+      <PartyDispatchDialog
+        open={dispatchDialogOpen}
+        onOpenChange={setDispatchDialogOpen}
+        partyName={vendorName}
+        addresses={(() => {
+          // [JWT] GET /api/masters/vendors/:id/addresses
+          try {
+            const raw = localStorage.getItem('erp_group_vendor_master');
+            const vendors = raw ? JSON.parse(raw) : [];
+            const v = vendors.find((x: { id: string }) => x.id === vendorId);
+            return v?.addresses ?? [];
+          } catch { return []; }
+        })()}
+        initial={dispatchDetails}
+        onSave={setDispatchDetails}
+      />
+
+      {/* Allocation dialog (T10-pre.0) — godowns/batches/serials wired in T10-pre.2 */}
+      {allocationDialogState.open && lines[allocationDialogState.lineIdx] && (
+        <ItemAllocationDialog
+          open={allocationDialogState.open}
+          onOpenChange={(open) => setAllocationDialogState(s => ({ ...s, open }))}
+          itemName={lines[allocationDialogState.lineIdx].item_name}
+          lineQty={lines[allocationDialogState.lineIdx].qty}
+          lineRate={lines[allocationDialogState.lineIdx].rate}
+          lineDiscountAmount={0}
+          godowns={[]}
+          batches={[]}
+          serials={[]}
+          isBatchTracked={false}
+          isSerialTracked={false}
+          initial={lines[allocationDialogState.lineIdx].allocations ?? []}
+          onSave={(allocations) => {
+            setLines(prev => prev.map((l, i) =>
+              i === allocationDialogState.lineIdx ? { ...l, allocations } : l
+            ));
+            setAllocationDialogState({ open: false, lineIdx: -1 });
+          }}
+        />
+      )}
     </div>
   );
 }

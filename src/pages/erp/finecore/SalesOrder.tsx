@@ -27,6 +27,13 @@ import type { Order, OrderLine } from '@/types/order';
 import { indianStates } from '@/data/india-geography';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import {
+  PartyDispatchDialog, ItemAllocationDialog,
+} from '@/components/finecore/dialogs';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
+import { eventBus } from '@/lib/event-bus';
+import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface SalesOrderPanelProps {
   entityCode?: string;
@@ -60,6 +67,16 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
   const [terms, setTerms] = useState('');
   const [paymentEnforcement, setPaymentEnforcement] = useState('');
   const [lines, setLines] = useState<OrderLine[]>([]);
+
+  // ── Tally header + dispatch + allocations (Sprint T10-pre.0) ──
+  const { accountingMode } = useTenantConfig(entityCode);
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [dispatchDialogOpen, setDispatchDialogOpen] = useState(false);
+  const [dispatchDetails, setDispatchDetails] = useState<VoucherDispatchDetails | undefined>(undefined);
+  const [allocationDialogState, setAllocationDialogState] = useState<{
+    open: boolean; lineIdx: number;
+  }>({ open: false, lineIdx: -1 });
 
   // ── Order Book State ──
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -133,18 +150,33 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
       party_id: customerId, party_name: customerName,
       place_of_supply: placeOfSupply || undefined,
       ref_no: customerPORef || undefined,
+      ref_date: refDate || undefined,
+      effective_date: effectiveDate || date,
+      dispatch_details: dispatchDetails,
       lines,
       gross_amount: totals.gross, total_tax: totals.tax, net_amount: totals.net,
       narration, terms_conditions: terms,
     });
     if (result) {
       toast.success(`Sales Order ${result.order_no} created`);
+      // [JWT] replace 'demo-user' with real user id from auth context
+      eventBus.emit('order.placed', {
+        voucher_id: result.id,
+        voucher_no: result.order_no,
+        voucher_type: 'Sales Order',
+        entity_code: entityCode,
+        accounting_mode: accountingMode,
+        actor_id: 'demo-user',
+        timestamp: new Date().toISOString(),
+        amount: result.net_amount,
+      });
       setLines([]); setCustomerName(''); setCustomerId(''); setCustomerPORef('');
       setNarration(''); setTerms(''); setPaymentEnforcement(''); setValidTill('');
       setPriceListId(''); setPlaceOfSupply('');
+      setRefDate(''); setEffectiveDate(''); setDispatchDetails(undefined);
       reload();
     }
-  }, [customerName, customerId, customerPORef, lines, date, validTill, placeOfSupply, narration, terms, totals, entityCode, createOrder, reload]);
+  }, [customerName, customerId, customerPORef, refDate, effectiveDate, dispatchDetails, lines, date, validTill, placeOfSupply, narration, terms, totals, entityCode, createOrder, reload, accountingMode]);
 
   const handlePreClose = () => {
     if (!preCloseSheet || !preCloseReason.trim()) { toast.error('Reason is required'); return; }
@@ -189,22 +221,25 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
 
         {/* ── Tab 1: New SO Form ── */}
         <TabsContent value="new-so" className="space-y-4">
+          {/* Tally-style voucher header */}
+          <TallyVoucherHeader
+            voucherTypeName="Sales Order"
+            baseVoucherType="Sales Order"
+            voucherFamily="Order"
+            voucherNo={soNo}
+            refNo={customerPORef}
+            refDate={refDate}
+            voucherDate={date}
+            effectiveDate={effectiveDate}
+            status="draft"
+            onRefNoChange={setCustomerPORef}
+            onRefDateChange={setRefDate}
+            onVoucherDateChange={setDate}
+            onEffectiveDateChange={setEffectiveDate}
+          />
+
           <Card>
             <CardContent className="pt-5 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-xs">SO No</Label>
-                  <Input value={soNo} disabled className="font-mono" />
-                </div>
-                <div>
-                  <Label className="text-xs">Date</Label>
-                  <SmartDateInput value={date} onChange={setDate} />
-                </div>
-                <div>
-                  <Label className="text-xs">Valid Till</Label>
-                  <SmartDateInput value={validTill} onChange={setValidTill} />
-                </div>
-              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-xs">Customer</Label>
@@ -225,10 +260,6 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-xs">Customer PO Ref No</Label>
-                  <Input value={customerPORef} onChange={e => setCustomerPORef(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer's PO number" />
-                </div>
-                <div>
                   <Label className="text-xs">Price List</Label>
                   <Select value={priceListId} onValueChange={setPriceListId}>
                     <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
@@ -238,6 +269,10 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Valid Till</Label>
+                  <SmartDateInput value={validTill} onChange={setValidTill} />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,6 +288,23 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                   </Select>
                 </div>
               </div>
+
+              {customerId && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDispatchDialogOpen(true)}
+                  >
+                    {dispatchDetails ? 'Edit Dispatch Details' : 'Add Dispatch Details'}
+                  </Button>
+                  {dispatchDetails?.tracking_no && (
+                    <Badge variant="outline" className="text-xs font-mono">
+                      Tracking: {dispatchDetails.tracking_no}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -492,6 +544,48 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Dispatch dialog (T10-pre.0) */}
+      <PartyDispatchDialog
+        open={dispatchDialogOpen}
+        onOpenChange={setDispatchDialogOpen}
+        partyName={customerName}
+        addresses={(() => {
+          // [JWT] GET /api/masters/customers/:id/addresses
+          try {
+            const raw = localStorage.getItem('erp_group_customer_master');
+            const customers = raw ? JSON.parse(raw) : [];
+            const c = customers.find((x: { id: string }) => x.id === customerId);
+            return c?.addresses ?? [];
+          } catch { return []; }
+        })()}
+        initial={dispatchDetails}
+        onSave={setDispatchDetails}
+      />
+
+      {/* Allocation dialog (T10-pre.0) — godowns/batches/serials wired in T10-pre.2 */}
+      {allocationDialogState.open && lines[allocationDialogState.lineIdx] && (
+        <ItemAllocationDialog
+          open={allocationDialogState.open}
+          onOpenChange={(open) => setAllocationDialogState(s => ({ ...s, open }))}
+          itemName={lines[allocationDialogState.lineIdx].item_name}
+          lineQty={lines[allocationDialogState.lineIdx].qty}
+          lineRate={lines[allocationDialogState.lineIdx].rate}
+          lineDiscountAmount={0}
+          godowns={[]}
+          batches={[]}
+          serials={[]}
+          isBatchTracked={false}
+          isSerialTracked={false}
+          initial={lines[allocationDialogState.lineIdx].allocations ?? []}
+          onSave={(allocations) => {
+            setLines(prev => prev.map((l, i) =>
+              i === allocationDialogState.lineIdx ? { ...l, allocations } : l
+            ));
+            setAllocationDialogState({ open: false, lineIdx: -1 });
+          }}
+        />
+      )}
     </div>
   );
 }

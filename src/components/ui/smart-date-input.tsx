@@ -10,6 +10,7 @@ interface SmartDateInputProps {
   placeholder?: string; // default: DD/MM/YYYY
   disabled?: boolean;
   className?: string;
+  id?: string; // optional DOM id for label association
 }
 
 // Parse DD/MM/YYYY display string → Date object (null if invalid)
@@ -46,7 +47,7 @@ function addDays(iso: string, n: number): string {
 }
 
 export function SmartDateInput({
-  value, onChange, placeholder = 'DD/MM/YYYY', disabled, className
+  value, onChange, placeholder = 'DD/MM/YYYY', disabled, className, id,
 }: SmartDateInputProps) {
   const [raw, setRaw] = useState(isoToDisplay(value));
   const [error, setError] = useState('');
@@ -114,6 +115,7 @@ export function SmartDateInput({
         px-3 h-10">
         <input
           ref={inputRef}
+          id={id}
           type="text"
           inputMode="numeric"
           className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
