@@ -58,9 +58,14 @@ type Listener<K extends EventName> = (payload: EventMap[K]) => void;
 const listeners: { [K in EventName]?: Set<Listener<K>> } = {};
 
 export function on<K extends EventName>(event: K, listener: Listener<K>): () => void {
-  if (!listeners[event]) listeners[event] = new Set() as Set<Listener<K>>;
-  (listeners[event] as Set<Listener<K>>).add(listener);
-  return () => (listeners[event] as Set<Listener<K>>).delete(listener);
+  let set = listeners[event] as Set<Listener<K>> | undefined;
+  if (!set) {
+    set = new Set<Listener<K>>();
+    (listeners as Record<string, Set<Listener<EventName>> | undefined>)[event as string] =
+      set as unknown as Set<Listener<EventName>>;
+  }
+  set.add(listener);
+  return () => { set!.delete(listener); };
 }
 
 export function emit<K extends EventName>(event: K, payload: EventMap[K]): void {
