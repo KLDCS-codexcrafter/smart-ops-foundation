@@ -71,3 +71,34 @@ export interface UserEntitlementProfile {
 export const cardEntitlementsKey = (e: string) => `erp_card_entitlements_${e}`;
 export const userEntitlementProfileKey = (e: string, uid: string) =>
   `erp_user_entitlement_${e}_${uid}`;
+
+/**
+ * Stage 4 — Action-level authorization (from Authorization Matrix Sheet 3).
+ * Used by canPerformAction() and Shell item filtering.
+ */
+export type ActionVerb =
+  // CRUD
+  | 'view' | 'list' | 'create' | 'edit' | 'delete' | 'export' | 'import'
+  // Voucher
+  | 'voucher.draft' | 'voucher.post' | 'voucher.approve' | 'voucher.reject'
+  | 'voucher.reverse' | 'voucher.amend' | 'voucher.lock_period'
+  | 'voucher.unlock' | 'voucher.export_tally'
+  // Master
+  | 'master.view' | 'master.create' | 'master.edit' | 'master.deactivate'
+  | 'master.merge' | 'master.opening_balance'
+  // Admin
+  | 'user.create' | 'user.edit_role' | 'user.deactivate' | 'user.reset_password'
+  | 'user.impersonate' | 'tenant.config' | 'tenant.suspend' | 'policy.edit'
+  | 'audit.view' | 'audit.export'
+  // Report
+  | 'report.view' | 'report.export' | 'report.schedule'
+  | 'report.share' | 'report.share_external';
+
+/** Scope context passed with every authorization check. */
+export interface AuthScope {
+  tenant_id: string;
+  company_id?: string;
+  branch_id?: string;
+  territory_id?: string;
+  godown_id?: string;
+}
