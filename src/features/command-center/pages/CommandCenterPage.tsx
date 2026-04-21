@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { CommandCenterSidebar } from '../components/CommandCenterSidebar';
-import { CommandCenterHeader } from '../components/CommandCenterHeader';
+import { Shell } from '@/shell';
+import { commandCenterShellConfig } from '@/apps/erp/configs/command-center-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
+import { journalKey } from '@/lib/finecore-engine';
+import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
 import { FoundationModule } from '../modules/FoundationModule';
 import { SecurityModule } from '../modules/SecurityModule';
 import { OverviewModule } from '../modules/OverviewModule';
