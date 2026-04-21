@@ -3,7 +3,8 @@
  * All products import from here. Internal files are implementation details.
  */
 export { Shell } from './Shell';
-export { ShellThemeProvider, useShellTheme } from './ShellThemeProvider';
+export { ShellThemeProvider } from './ShellThemeProvider';
+export { useShellTheme } from './useShellTheme';
 export type {
   ShellConfig, SidebarItem, SidebarItemType, HeaderChip, HeaderChipType,
   ProductId, ThemeAccent, LogoConfig, TenantBrand,
