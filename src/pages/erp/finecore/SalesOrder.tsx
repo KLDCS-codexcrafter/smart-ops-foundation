@@ -544,6 +544,48 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Dispatch dialog (T10-pre.0) */}
+      <PartyDispatchDialog
+        open={dispatchDialogOpen}
+        onOpenChange={setDispatchDialogOpen}
+        partyName={customerName}
+        addresses={(() => {
+          // [JWT] GET /api/masters/customers/:id/addresses
+          try {
+            const raw = localStorage.getItem('erp_group_customer_master');
+            const customers = raw ? JSON.parse(raw) : [];
+            const c = customers.find((x: { id: string }) => x.id === customerId);
+            return c?.addresses ?? [];
+          } catch { return []; }
+        })()}
+        initial={dispatchDetails}
+        onSave={setDispatchDetails}
+      />
+
+      {/* Allocation dialog (T10-pre.0) — godowns/batches/serials wired in T10-pre.2 */}
+      {allocationDialogState.open && lines[allocationDialogState.lineIdx] && (
+        <ItemAllocationDialog
+          open={allocationDialogState.open}
+          onOpenChange={(open) => setAllocationDialogState(s => ({ ...s, open }))}
+          itemName={lines[allocationDialogState.lineIdx].item_name}
+          lineQty={lines[allocationDialogState.lineIdx].qty}
+          lineRate={lines[allocationDialogState.lineIdx].rate}
+          lineDiscountAmount={0}
+          godowns={[]}
+          batches={[]}
+          serials={[]}
+          isBatchTracked={false}
+          isSerialTracked={false}
+          initial={lines[allocationDialogState.lineIdx].allocations ?? []}
+          onSave={(allocations) => {
+            setLines(prev => prev.map((l, i) =>
+              i === allocationDialogState.lineIdx ? { ...l, allocations } : l
+            ));
+            setAllocationDialogState({ open: false, lineIdx: -1 });
+          }}
+        />
+      )}
     </div>
   );
 }
