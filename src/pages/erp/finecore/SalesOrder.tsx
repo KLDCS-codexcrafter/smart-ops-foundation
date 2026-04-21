@@ -150,18 +150,33 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
       party_id: customerId, party_name: customerName,
       place_of_supply: placeOfSupply || undefined,
       ref_no: customerPORef || undefined,
+      ref_date: refDate || undefined,
+      effective_date: effectiveDate || date,
+      dispatch_details: dispatchDetails,
       lines,
       gross_amount: totals.gross, total_tax: totals.tax, net_amount: totals.net,
       narration, terms_conditions: terms,
     });
     if (result) {
       toast.success(`Sales Order ${result.order_no} created`);
+      // [JWT] replace 'demo-user' with real user id from auth context
+      eventBus.emit('order.placed', {
+        voucher_id: result.id,
+        voucher_no: result.order_no,
+        voucher_type: 'Sales Order',
+        entity_code: entityCode,
+        accounting_mode: accountingMode,
+        actor_id: 'demo-user',
+        timestamp: new Date().toISOString(),
+        amount: result.net_amount,
+      });
       setLines([]); setCustomerName(''); setCustomerId(''); setCustomerPORef('');
       setNarration(''); setTerms(''); setPaymentEnforcement(''); setValidTill('');
       setPriceListId(''); setPlaceOfSupply('');
+      setRefDate(''); setEffectiveDate(''); setDispatchDetails(undefined);
       reload();
     }
-  }, [customerName, customerId, customerPORef, lines, date, validTill, placeOfSupply, narration, terms, totals, entityCode, createOrder, reload]);
+  }, [customerName, customerId, customerPORef, refDate, effectiveDate, dispatchDetails, lines, date, validTill, placeOfSupply, narration, terms, totals, entityCode, createOrder, reload, accountingMode]);
 
   const handlePreClose = () => {
     if (!preCloseSheet || !preCloseReason.trim()) { toast.error('Reason is required'); return; }
@@ -206,22 +221,25 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
 
         {/* ── Tab 1: New SO Form ── */}
         <TabsContent value="new-so" className="space-y-4">
+          {/* Tally-style voucher header */}
+          <TallyVoucherHeader
+            voucherTypeName="Sales Order"
+            baseVoucherType="Sales Order"
+            voucherFamily="Order"
+            voucherNo={soNo}
+            refNo={customerPORef}
+            refDate={refDate}
+            voucherDate={date}
+            effectiveDate={effectiveDate}
+            status="draft"
+            onRefNoChange={setCustomerPORef}
+            onRefDateChange={setRefDate}
+            onVoucherDateChange={setDate}
+            onEffectiveDateChange={setEffectiveDate}
+          />
+
           <Card>
             <CardContent className="pt-5 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-xs">SO No</Label>
-                  <Input value={soNo} disabled className="font-mono" />
-                </div>
-                <div>
-                  <Label className="text-xs">Date</Label>
-                  <SmartDateInput value={date} onChange={setDate} />
-                </div>
-                <div>
-                  <Label className="text-xs">Valid Till</Label>
-                  <SmartDateInput value={validTill} onChange={setValidTill} />
-                </div>
-              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-xs">Customer</Label>
@@ -242,10 +260,6 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-xs">Customer PO Ref No</Label>
-                  <Input value={customerPORef} onChange={e => setCustomerPORef(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer's PO number" />
-                </div>
-                <div>
                   <Label className="text-xs">Price List</Label>
                   <Select value={priceListId} onValueChange={setPriceListId}>
                     <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
@@ -255,6 +269,10 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Valid Till</Label>
+                  <SmartDateInput value={validTill} onChange={setValidTill} />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -270,6 +288,23 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
                   </Select>
                 </div>
               </div>
+
+              {customerId && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDispatchDialogOpen(true)}
+                  >
+                    {dispatchDetails ? 'Edit Dispatch Details' : 'Add Dispatch Details'}
+                  </Button>
+                  {dispatchDetails?.tracking_no && (
+                    <Badge variant="outline" className="text-xs font-mono">
+                      Tracking: {dispatchDetails.tracking_no}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
