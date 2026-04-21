@@ -147,17 +147,32 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
       valid_till: validTill || undefined,
       party_id: vendorId, party_name: vendorName,
       ref_no: vendorRef || undefined,
+      ref_date: refDate || undefined,
+      effective_date: effectiveDate || date,
+      dispatch_details: dispatchDetails,
       lines,
       gross_amount: totals.gross, total_tax: totals.tax, net_amount: totals.net,
       narration, terms_conditions: terms,
     });
     if (result) {
       toast.success(`Purchase Order ${result.order_no} created`);
+      // [JWT] replace 'demo-user' with real user id from auth context
+      eventBus.emit('order.placed', {
+        voucher_id: result.id,
+        voucher_no: result.order_no,
+        voucher_type: 'Purchase Order',
+        entity_code: entityCode,
+        accounting_mode: accountingMode,
+        actor_id: 'demo-user',
+        timestamp: new Date().toISOString(),
+        amount: result.net_amount,
+      });
       setLines([]); setVendorName(''); setVendorId(''); setVendorRef('');
       setNarration(''); setTerms(''); setValidTill('');
+      setRefDate(''); setEffectiveDate(''); setDispatchDetails(undefined);
       reload();
     }
-  }, [vendorName, vendorId, vendorRef, lines, date, validTill, narration, terms, totals, entityCode, createOrder, reload]);
+  }, [vendorName, vendorId, vendorRef, refDate, effectiveDate, dispatchDetails, lines, date, validTill, narration, terms, totals, entityCode, createOrder, reload, accountingMode]);
 
   const handlePreClose = () => {
     if (!preCloseSheet || !preCloseReason.trim()) { toast.error('Reason is required'); return; }
@@ -203,23 +218,26 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
 
         {/* ── Tab 1: New PO Form ── */}
         <TabsContent value="new-po" className="space-y-4">
+          {/* Tally-style voucher header */}
+          <TallyVoucherHeader
+            voucherTypeName="Purchase Order"
+            baseVoucherType="Purchase Order"
+            voucherFamily="Order"
+            voucherNo={poNo}
+            refNo={vendorRef}
+            refDate={refDate}
+            voucherDate={date}
+            effectiveDate={effectiveDate}
+            status="draft"
+            onRefNoChange={setVendorRef}
+            onRefDateChange={setRefDate}
+            onVoucherDateChange={setDate}
+            onEffectiveDateChange={setEffectiveDate}
+          />
+
           <Card>
             <CardContent className="pt-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label className="text-xs">PO No</Label>
-                  <Input value={poNo} disabled className="font-mono" />
-                </div>
-                <div>
-                  <Label className="text-xs">Date</Label>
-                  <SmartDateInput value={date} onChange={setDate} />
-                </div>
-                <div>
-                  <Label className="text-xs">Valid Till</Label>
-                  <SmartDateInput value={validTill} onChange={setValidTill} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs">Vendor</Label>
                   <Select value={vendorId} onValueChange={v => {
@@ -236,10 +254,27 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-xs">Vendor Ref No</Label>
-                  <Input value={vendorRef} onChange={e => setVendorRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Quotation / RFQ reference" />
+                  <Label className="text-xs">Valid Till</Label>
+                  <SmartDateInput value={validTill} onChange={setValidTill} />
                 </div>
               </div>
+
+              {vendorId && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDispatchDialogOpen(true)}
+                  >
+                    {dispatchDetails ? 'Edit Dispatch Details' : 'Add Dispatch Details'}
+                  </Button>
+                  {dispatchDetails?.tracking_no && (
+                    <Badge variant="outline" className="text-xs font-mono">
+                      Tracking: {dispatchDetails.tracking_no}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
