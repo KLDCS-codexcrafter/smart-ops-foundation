@@ -3,6 +3,9 @@
  * Orders are pure commitment documents — zero GL, zero stock, zero GST impact.
  * [JWT] Replace with GET/POST /api/orders
  */
+import type { ItemAllocation, VoucherDispatchDetails } from './voucher';
+
+export type OrderDispatchDetails = VoucherDispatchDetails;
 
 export interface OrderLine {
   id: string;
@@ -17,6 +20,13 @@ export interface OrderLine {
   pending_qty: number; // qty - fulfilled_qty
   fulfilled_qty: number; // incremented on each DN/GRN/Invoice
   status: 'open' | 'partial' | 'closed' | 'preclosed';
+
+  /** NEW (Sprint T10-pre.0) — Multi-godown / batch / serial allocations
+      captured via <ItemAllocationDialog>. Required from this sprint forward. */
+  allocations?: ItemAllocation[];
+
+  /** NEW (Sprint T10-pre.0) — Parametric Hub values captured at entry time. */
+  parameter_values?: Record<string, string>;
 }
 
 export interface Order {
@@ -28,6 +38,9 @@ export interface Order {
   party_id: string; party_name: string; party_gstin?: string;
   place_of_supply?: string; is_inter_state?: boolean;
   ref_no?: string; // SO: customer PO ref. PO: indent/RFQ ref
+  ref_date?: string;
+  effective_date?: string;
+  dispatch_details?: OrderDispatchDetails;
   lines: OrderLine[];
   gross_amount: number; total_tax: number; net_amount: number;
   narration: string; terms_conditions: string;

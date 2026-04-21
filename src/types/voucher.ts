@@ -19,6 +19,27 @@ export interface VoucherLedgerLine {
   cost_centre_id?: string;
 }
 
+/**
+ * Per-line item allocation when the line has multi-godown / batch / serial split.
+ * Tally-Prime equivalent: "Stock Item Allocations" sub-screen rows.
+ *
+ * Rule: sum(allocations[].qty) MUST equal VoucherInventoryLine.qty.
+ * Even simple single-godown lines should populate one allocation entry so that
+ * downstream engines can read allocations[] as the source of truth.
+ */
+export interface ItemAllocation {
+  id: string;
+  godown_id: string;
+  godown_name: string;
+  batch_id?: string;
+  batch_no?: string;
+  serial_ids?: string[];       // multiple serials per allocation (bulk scan OK)
+  qty: number;
+  rate: number;
+  discount_amount: number;     // absolute, after applying discount_percent of parent line
+  taxable_value: number;       // = qty × rate − discount_amount
+}
+
 export interface VoucherInventoryLine {
   id: string;
   item_id: string;
@@ -49,6 +70,16 @@ export interface VoucherInventoryLine {
   gst_source: 'item' | 'stock_group' | 'ledger' | 'group' | 'none';
   // Sprint 15a — Production module hook (Charis, future)
   production_batch_id?: string | null;
+
+  /** NEW (Sprint T10-pre.0) — Multi-allocation support. The legacy single-value
+      godown_id/batch_id/serial_id fields above STAY for backwards compatibility
+      but are derived from allocations[0] when there is exactly one allocation.
+      Engines SHOULD treat allocations[] as the source of truth. */
+  allocations?: ItemAllocation[];
+
+  /** NEW (Sprint T10-pre.0) — Parametric Hub values captured at entry time.
+      Keys are parameter_code from the ParameterEntry on the linked template. */
+  parameter_values?: Record<string, string>;
 }
 
 export interface VoucherTaxLine {
@@ -175,6 +206,40 @@ export interface Voucher {
   updated_at: string;
   posted_at?: string;
   asset_unit_lines?: AssetUnitLine[];
+
+  /** NEW (Sprint T10-pre.0) — Reference document
+      (e.g. customer PO, vendor invoice, original invoice for CN) */
+  ref_no?: string;
+  ref_date?: string;               // YYYY-MM-DD
+
+  /** NEW (Sprint T10-pre.0) — Accounting effective date
+      (may differ from document date — for accrual entries) */
+  effective_date?: string;         // YYYY-MM-DD, defaults to voucher.date
+
+  /** NEW (Sprint T10-pre.0) — Tally-Prime-style dispatch + addressing block */
+  dispatch_details?: VoucherDispatchDetails;
+}
+
+/**
+ * Tally-Prime-style dispatch + addressing block for a voucher.
+ * Captured from <PartyDispatchDialog> after party selection.
+ */
+export interface VoucherDispatchDetails {
+  // Dispatch
+  tracking_no?: string;
+  dispatch_doc_no?: string;
+  dispatch_doc_date?: string;      // YYYY-MM-DD
+  dispatch_through?: string;       // transporter name / courier
+  vehicle_no?: string;
+  destination?: string;
+
+  // Addressing (IDs refer to addresses[] on the party master)
+  bill_to_address_id?: string;
+  ship_to_address_id?: string;
+
+  // Snapshotted address text so voucher prints survive address edits later
+  bill_to_snapshot?: string;
+  ship_to_snapshot?: string;
 }
 
 // Journal entry line — stored in erp_journal_{e}
