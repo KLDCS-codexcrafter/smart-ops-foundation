@@ -405,6 +405,15 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   // 2. Create default ledgers (+ auto-create instances for all entities)
   const ledgersCreated = createDefaultLedgers(opts);
 
+  // 2b. Seed voucher types (tenant-global; idempotent — only seeds if key absent)
+  try {
+    // [JWT] POST /api/accounting/voucher-types/bulk-seed
+    const existingVT = localStorage.getItem('erp_voucher_types');
+    if (!existingVT) {
+      localStorage.setItem('erp_voucher_types', JSON.stringify(VOUCHER_TYPE_SEEDS));
+    }
+  } catch { /* ignore */ }
+
   // 3. Load industry L4 groups into FinFrame
   const l4GroupsCreated = opts.loadIndustryPack ? loadIndustryPack(opts.businessActivity) : 0;
 
