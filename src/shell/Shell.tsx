@@ -95,9 +95,7 @@ export function Shell({
               lastEntryLabel={lastEntryLabel}
             />
             <ScrollArea className="flex-1">
-              <div className="p-6 max-w-7xl mx-auto">
-                {children}
-              </div>
+              {children}
             </ScrollArea>
           </SidebarInset>
         </div>

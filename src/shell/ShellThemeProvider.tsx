@@ -8,7 +8,7 @@
  * TALLY-ON-TOP BEHAVIOR  none
  * SPEC DOC  Operix_ONE_Shell_Specification.xlsx
  */
-import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, useEffect, type ReactNode } from 'react';
 import type { ThemeAccent, TenantBrand } from './types';
 import { ACCENTS } from './theme/accents';
 
@@ -18,13 +18,7 @@ interface ThemeContextValue {
   tenantBrand?: TenantBrand;
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null);
-
-export function useShellTheme() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useShellTheme must be used inside ShellThemeProvider');
-  return ctx;
-}
+export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 interface Props extends ThemeContextValue {
   children: ReactNode;
