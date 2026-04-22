@@ -137,4 +137,12 @@ export interface InventoryItem {
   effective_to?: string | null;
   created_at: string;
   updated_at: string;
+
+  /** NEW (Sprint T10-pre.1b) — Item's default storage godown.
+      Used by Stock Transfer / GRN / DLN to auto-fill godown in allocation dialog. */
+  preferred_godown_id?: string;
+
+  /** NEW (Sprint T10-pre.1b) — Item's default bin within preferred_godown_id.
+      Resolved from BinLabel.items_assigned[] when available. User can override. */
+  preferred_bin_id?: string;
 }
