@@ -3,7 +3,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import {
   PackageOpen, ArrowRight, Warehouse, Truck,
-  ScanLine, GitBranch, LayoutGrid, Clock,
+  ScanLine, GitBranch, LayoutGrid, Clock, Network,
 } from 'lucide-react';
 
 const COMING_FEATURES = [
