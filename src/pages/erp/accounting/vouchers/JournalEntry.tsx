@@ -278,7 +278,6 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
             onChange={e => setNarration(e.target.value)}
             placeholder="Journal narration"
             rows={2}
-            onKeyDown={onEnterNext}
           />
         </CardContent>
       </Card>
