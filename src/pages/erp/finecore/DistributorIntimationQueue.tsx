@@ -20,6 +20,8 @@ import {
   distributorIntimationsKey,
   type IntimationStatus, type DistributorPaymentIntimation,
 } from '@/types/distributor-order';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -43,11 +45,7 @@ const statusBadge: Record<IntimationStatus, { bg: string; fg: string; label: str
 export function DistributorIntimationQueuePanel() { return <DistributorIntimationQueue />; }
 
 export default function DistributorIntimationQueue() {
-  // Auto-detect entity (FineCore is per-entity).
-  const entityCode = useMemo(() => {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_distributor_payment_intimations_'));
-    return keys[0]?.replace('erp_distributor_payment_intimations_', '') ?? 'SMRT';
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const [refresh, setRefresh] = useState(0);
   const [search, setSearch] = useState('');
@@ -55,6 +53,10 @@ export default function DistributorIntimationQueue() {
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
+
+  if (!entityCode) {
+    return <SelectCompanyGate />;
+  }
 
   const all = useMemo<DistributorPaymentIntimation[]>(
     () => ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode))
