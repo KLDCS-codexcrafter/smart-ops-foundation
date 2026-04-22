@@ -27,6 +27,7 @@ import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
 import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
@@ -279,12 +280,31 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
     if (lastSavedRef.current) clearForm();
   }, [handlePost, clearForm]);
 
+  const isDirty = useCallback(
+    () => amount > 0 || narration.length > 0 || partyName.length > 0 || bankCashLedgerId.length > 0,
+    [amount, narration, partyName, bankCashLedgerId],
+  );
+
   const handleCancel = useCallback(() => {
-    const dirty = amount > 0 || narration.length > 0 || partyName.length > 0 || bankCashLedgerId.length > 0;
-    if (dirty && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
-  }, [amount, narration, partyName, bankCashLedgerId, clearForm]);
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({ party_name: partyName, date, net_amount: amount }),
+    [partyName, date, amount],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty,
+    serializeFormState,
+    onSaveDraft,
+    clearForm,
+    voucherTypeName: 'Receipt',
+    fineCoreModule: 'fc-txn-receipt',
+    currentEntityCode: entityCode,
+  });
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -292,14 +312,15 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
         id: `draft-${Date.now()}`, module: 'fc-txn-receipt',
         label: `RV ${partyName || 'New'}`, voucherTypeName: 'Receipt',
         savedAt: new Date().toISOString(),
-        formState: { party_name: partyName, date, net_amount: amount } as Partial<Voucher>,
+        formState: serializeFormState(),
       });
     }
-  }, [onSaveDraft, partyName, date, amount]);
+  }, [onSaveDraft, partyName, serializeFormState]);
 
   const activeTdsSections = TDS_SECTIONS.filter(t => t.status === 'active' && incomeTdsSections.includes(t.sectionCode));
 
   return (
+    <>
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <TallyVoucherHeader
         voucherTypeName="Receipt"
@@ -529,6 +550,8 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
         status="draft"
       />
     </div>
+    {GuardDialog}
+    </>
   );
 }
 
