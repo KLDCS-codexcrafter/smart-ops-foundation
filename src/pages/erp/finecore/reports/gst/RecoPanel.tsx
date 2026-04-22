@@ -251,4 +251,11 @@ export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
   );
 }
 
-export default function RecoPanel() { return <RecoPanelGST entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function RecoPanel() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view GST Reconciliation" />;
+  return <RecoPanelGST entityCode={entityCode} />;
+}

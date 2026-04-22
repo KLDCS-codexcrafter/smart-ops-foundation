@@ -263,4 +263,11 @@ export function Clause44ReportPanel({ entityCode }: Clause44ReportPanelProps) {
   );
 }
 
-export default function Clause44Report() { return <Clause44ReportPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function Clause44Report() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view Clause 44 Report" />;
+  return <Clause44ReportPanel entityCode={entityCode} />;
+}

@@ -246,4 +246,11 @@ export function RCMRegisterPanel({ entityCode }: RCMRegisterPanelProps) {
   );
 }
 
-export default function RCMRegister() { return <RCMRegisterPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function RCMRegister() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view RCM Register" />;
+  return <RCMRegisterPanel entityCode={entityCode} />;
+}

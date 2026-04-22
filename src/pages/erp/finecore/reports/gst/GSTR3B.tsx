@@ -191,4 +191,11 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
   );
 }
 
-export default function GSTR3B() { return <GSTR3BPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function GSTR3B() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view GSTR-3B" />;
+  return <GSTR3BPanel entityCode={entityCode} />;
+}

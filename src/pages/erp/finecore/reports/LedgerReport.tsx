@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useJournal } from '@/hooks/useJournal';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, fyStart, today, exportCSV } from './reportUtils';
@@ -199,11 +201,20 @@ export function LedgerReportPanel({ entityCode }: LedgerReportPanelProps) {
 }
 
 export default function LedgerReport() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Ledger Report' }]} showDatePicker={false} showCompany={false} />
-        <main><LedgerReportPanel entityCode="SMRT" /></main>
+        <ERPHeader
+          breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Ledger Report' }]}
+          showDatePicker={false}
+        />
+        <main>
+          {entityCode
+            ? <LedgerReportPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Ledger Report" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );
