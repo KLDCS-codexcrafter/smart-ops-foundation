@@ -13,7 +13,9 @@ export type CardAuditAction =
   | 'voucher_cancel'
   | 'report_run'
   | 'export'
-  | 'permission_denied';
+  | 'permission_denied'
+  // Sprint T10-pre.1c Session A — entity selector switch audit (Q4)
+  | 'entity.switched';
 
 export interface CardAuditEntry {
   id: string;

@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
 import { Building2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useERPCompanyContext } from '@/components/layout/ERPCompanyProvider';
 
 export interface ERPCompany {
   id: string;
@@ -14,17 +14,21 @@ interface ERPCompanySelectorProps {
   onChange: (id: string) => void;
 }
 
-// Persists company selection across sessions
-const STORAGE_KEY = 'erp-selected-company';
-
+/**
+ * Legacy hook — thin adapter over the new ERPCompanyProvider Context.
+ *
+ * Sprint T10-pre.1c Session A: this used to read localStorage on every render
+ * and never triggered re-renders on switch. It now consumes the Context so all
+ * 19 direct callers (migrated in B.1 + B.2) get reactive updates for free.
+ *
+ * Signature preserved: tuple [value, setter]. Setter return value is dropped
+ * for backward compatibility — callers that need the async result should use
+ * useERPCompanyContext directly.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useERPCompany(): [string, (id: string) => void] {
-  // [JWT] GET /api/user/company-selection
-  const stored = localStorage.getItem(STORAGE_KEY) ?? 'all';
-  const set = useCallback((id: string) => {
-    // [JWT] PATCH /api/user/company-selection
-    localStorage.setItem(STORAGE_KEY, id);
-  }, []);
-  return [stored, set];
+  const [val, setVal] = useERPCompanyContext();
+  return [val, (id: string) => { void setVal(id); }];
 }
 
 export function ERPCompanySelector({ companies = [], value, onChange }: ERPCompanySelectorProps) {

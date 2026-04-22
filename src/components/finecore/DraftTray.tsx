@@ -6,6 +6,7 @@
 import { X, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Voucher } from '@/types/voucher';
+import { useERPCompanyContext } from '@/components/layout/ERPCompanyProvider';
 
 export type FineCoreModule =
   | 'fc-hub'
@@ -36,6 +37,12 @@ export interface DraftEntry {
   voucherTypeName: string;
   formState: Partial<Voucher>;
   savedAt: string;
+  /**
+   * NEW (Sprint T10-pre.1c) — Entity the draft belongs to. The tray filters
+   * to drafts matching the currently-selected company. Optional so legacy
+   * drafts (created before this field existed) remain visible.
+   */
+  entityId?: string;
 }
 
 interface DraftTrayProps {
@@ -47,11 +54,18 @@ interface DraftTrayProps {
 }
 
 export function DraftTray({ drafts, activeDraftId, onSwitch, onClose, onNew }: DraftTrayProps) {
-  if (drafts.length === 0) return null;
+  const [selectedCompany] = useERPCompanyContext();
+
+  // Entity-scope drafts (Sprint T10-pre.1c). Legacy drafts without entityId stay visible.
+  const visibleDrafts = drafts.filter(
+    d => !d.entityId || d.entityId === selectedCompany,
+  );
+
+  if (visibleDrafts.length === 0) return null;
 
   return (
     <div className="h-9 border-b border-border/50 bg-muted/30 flex items-center gap-1 px-3 overflow-x-auto shrink-0">
-      {drafts.map(d => (
+      {visibleDrafts.map(d => (
         <button
           key={d.id}
           onClick={() => onSwitch(d.id)}

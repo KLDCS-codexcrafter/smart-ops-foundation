@@ -49,6 +49,35 @@ export interface EventMap {
   'order.fulfilled': VoucherEventPayload & { fulfilled_by_voucher_no: string };
   'order.cancelled': VoucherEventPayload & { reason: string };
 
+  /**
+   * Entity-switch lifecycle (Sprint T10-pre.1c Session A).
+   *
+   * 'entity.beforeChange' fires BEFORE a switch commits. Subscribers (typically
+   * voucher forms with unsaved work) may call payload.prevent() synchronously to
+   * abort the switch. The provider checks the prevent flag right after emit()
+   * returns; if any subscriber prevented, the switch is aborted and the dropdown
+   * reverts.
+   *
+   * 'entity.changed' fires AFTER a switch successfully commits (or after a
+   * forced switch from the guard's discard / save-as-draft path). Consumers
+   * should re-fetch entity-scoped data on this event.
+   */
+  'entity.beforeChange': {
+    fromEntityCode: string;
+    toEntityCode: string;
+    /** Subscriber calls this to abort the switch. */
+    prevent: () => void;
+    /** Optional id for debugging which subscriber prevented. */
+    subscriberId?: string;
+  };
+  'entity.changed': {
+    fromEntityCode: string;
+    toEntityCode: string;
+    userId: string;
+    /** ISO timestamp */
+    timestamp: string;
+  };
+
   // Extend-as-you-go — adding new event keys is a non-breaking change
 }
 
