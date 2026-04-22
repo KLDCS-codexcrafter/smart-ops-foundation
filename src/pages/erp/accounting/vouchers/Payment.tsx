@@ -178,23 +178,42 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const todayStr = new Date().toISOString().split('T')[0];
   const hasLowerCert = selectedVendor?.lower_deduction_cert && selectedVendor.lower_deduction_expiry > todayStr;
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Vendor name is required'); return; }
-    if (!bankCashLedger) { toast.error('Bank/Cash ledger is required'); return; }
+  const clearForm = useCallback(() => {
+    setVoucherNo(generateVoucherNo('PV', entityCode));
+    setDate(new Date().toISOString().split('T')[0]);
+    setRefNo(''); setRefDate(''); setEffectiveDate('');
+    setPartyId(''); setPartyName('');
+    setBankCashLedgerId(''); setBankCashLedgerName('');
+    setPaymentMode('bank'); setInstrumentRef(''); setInstrumentType('NEFT');
+    setChequeDate(''); setBankName('');
+    setAmount(0); setNarration('');
+    setPaymentPurpose('regular'); setAdvancePORef('');
+    setTdsSection(''); setTdsRate(0); setTdsAmount(0);
+    lastSavedRef.current = false;
+  }, [entityCode]);
+
+  const handlePost = useCallback(async () => {
+    if (!partyName) { toast.error('Vendor is required'); return; }
+    if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
+    setSaving(true);
     const now = new Date().toISOString();
     const billRefs: BillReference[] = paymentPurpose === 'advance'
       ? [{ voucher_id: '', voucher_no: '', voucher_date: date, amount, type: 'advance' }]
       : [];
+    const isCheque = instrumentType === 'Cheque';
     const voucher: Voucher = {
       id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
       voucher_type_name: 'Payment', base_voucher_type: 'Payment',
-      entity_id: entityCode, date, party_id: selectedVendor?.id ?? '',
+      entity_id: entityCode, date,
+      effective_date: effectiveDate || date,
+      ref_no: refNo || undefined, ref_date: refDate || undefined,
+      party_id: selectedVendor?.id ?? '',
       party_name: partyName, ref_voucher_no: '',
       vendor_bill_no: '', net_amount: netPayment, narration,
       terms_conditions: '', payment_enforcement: '',
       payment_instrument: `${paymentMode === 'bank' ? 'Bank' : 'Cash'}: ${instrumentRef}`,
-      from_ledger_name: bankCashLedger, to_ledger_name: partyName,
+      from_ledger_name: bankCashLedgerName, to_ledger_name: partyName,
       from_godown_name: '', to_godown_name: '',
       ledger_lines: [], gross_amount: amount, total_discount: 0,
       total_taxable: 0, total_cgst: 0, total_sgst: 0, total_igst: 0,
@@ -205,13 +224,35 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       deductee_type: deducteeType,
       bill_references: billRefs,
       po_ref: advancePORef,
+      instrument_type: instrumentType,
+      instrument_ref_no: instrumentRef || undefined,
+      cheque_date: isCheque ? (chequeDate || undefined) : undefined,
+      bank_name: isCheque ? (bankName || undefined) : undefined,
       status: 'draft', created_by: 'current-user', created_at: now, updated_at: now,
     };
     try {
       postVoucher(voucher, entityCode);
-      toast.success('Payment voucher posted');
-    } catch { toast.error('Failed to save'); }
-  }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment]);
+      toast.success(`Payment ${voucher.voucher_no} posted`);
+      lastSavedRef.current = true;
+    } catch {
+      toast.error('Failed to save');
+      lastSavedRef.current = false;
+    } finally {
+      setSaving(false);
+    }
+  }, [partyName, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
+  const handleCancel = useCallback(() => {
+    const dirty = amount > 0 || narration.length > 0 || partyName.length > 0 || bankCashLedgerId.length > 0;
+    if (dirty && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [amount, narration, partyName, bankCashLedgerId, clearForm]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -223,6 +264,11 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       });
     }
   }, [onSaveDraft, partyName, date, amount]);
+
+  const applyAdvance = useCallback((adv: AdvanceEntry) => {
+    setAmount(prev => prev + (adv.balance_amount ?? 0));
+    toast.success(`Applied advance ${adv.advance_ref_no} (₹${(adv.balance_amount ?? 0).toLocaleString('en-IN')})`);
+  }, []);
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
