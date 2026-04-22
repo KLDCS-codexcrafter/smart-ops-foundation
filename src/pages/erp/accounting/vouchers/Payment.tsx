@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -106,8 +107,8 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   }, []);
 
   const selectedVendor = useMemo(() =>
-    vendors.find(v => v.partyName === partyName) ?? null,
-  [vendors, partyName]);
+    vendors.find(v => v.id === partyId) ?? null,
+  [vendors, partyId]);
 
   const isTdsApplicable = selectedVendor?.tdsApplicable ?? false;
 
@@ -132,8 +133,8 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     // Priority 2: PO line SAC codes
     if (poRef) {
       // [JWT] GET /api/procurement/purchase-orders
-      const pos = ls<any>(`erp_purchase_orders_${entityCode}`);
-      const po = pos.find((p: any) => p.po_no === poRef);
+      const pos = ls<PORef>(`erp_purchase_orders_${entityCode}`);
+      const po = pos.find((p) => p.po_no === poRef);
       if (po) {
         for (const line of po.lines ?? []) {
           const sec = mapSACtoTDSSection(line.hsn_sac_code ?? '');
