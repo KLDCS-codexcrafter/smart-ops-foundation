@@ -11,7 +11,8 @@ import { PackageOpen, CheckCircle2, Info, Upload, ChevronDown, ChevronRight, Plu
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { stockLedgerKey } from '@/lib/finecore-engine';
 import { onEnterNext } from '@/lib/keyboard';
 
@@ -40,8 +41,7 @@ interface RowState {
 type GridState = Record<string, RowState>;
 
 export function OpeningStockPanel() {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   // [JWT] GET /api/inventory/opening-stock?entity={entityCode}
   const osKey = `erp_item_opening_stock_${entityCode}`;
@@ -712,10 +712,14 @@ export function OpeningStockPanel() {
 }
 
 export default function OpeningStockEntry() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex flex-col w-full bg-background">
-        <ERPHeader /><main className="flex-1 overflow-x-auto"><OpeningStockPanel /></main>
+        <ERPHeader />
+        <main className="flex-1 overflow-x-auto">
+          {entityCode ? <OpeningStockPanel /> : <SelectCompanyGate />}
+        </main>
       </div>
     </SidebarProvider>
   );
