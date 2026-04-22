@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
 import { L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
@@ -136,11 +138,17 @@ export function ProfitLossPanel({ entityCode }: ProfitLossPanelProps) {
 }
 
 export default function ProfitLoss() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Profit & Loss' }]} showDatePicker={false} showCompany={false} />
-        <main><ProfitLossPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Profit & Loss' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <ProfitLossPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Profit & Loss" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useStockLedger } from '@/hooks/useStockLedger';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today, exportCSV } from './reportUtils';
@@ -136,11 +138,17 @@ export function StockSummaryPanel({ entityCode }: StockSummaryPanelProps) {
 }
 
 export default function StockSummary() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Summary' }]} showDatePicker={false} showCompany={false} />
-        <main><StockSummaryPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Summary' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <StockSummaryPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Stock Summary" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

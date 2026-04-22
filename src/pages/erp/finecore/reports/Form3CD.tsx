@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import {
   computeClause9, computeClause26, computeClause34, computeClause44,
   runCrossValidations, type CrossValidationResult,
@@ -636,4 +638,9 @@ export function Form3CDPanel({ entityCode }: Form3CDPanelProps) {
   );
 }
 
-export default function Form3CD() { return <Form3CDPanel entityCode="SMRT" />; }
+export default function Form3CD() {
+  const { entityCode } = useEntityCode();
+  return entityCode
+    ? <Form3CDPanel entityCode={entityCode} />
+    : <SelectCompanyGate title="Select a company to view Form 3CD" />;
+}

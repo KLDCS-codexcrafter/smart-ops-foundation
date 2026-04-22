@@ -24,6 +24,8 @@ import type { TDSReceivableEntry } from '@/types/compliance';
 import { tdsReceivableKey } from '@/types/compliance';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 function ls<T>(key: string): T[] { try {
   // [JWT] GET /api/compliance/tds-receivable/:key
@@ -548,4 +550,9 @@ export function Form26ASPanel({ entityCode }: Props) {
   );
 }
 
-export default function Form26AS() { return <Form26ASPanel entityCode="SMRT" />; }
+export default function Form26AS() {
+  const { entityCode } = useEntityCode();
+  return entityCode
+    ? <Form26ASPanel entityCode={entityCode} />
+    : <SelectCompanyGate title="Select a company to view Form 26AS" />;
+}

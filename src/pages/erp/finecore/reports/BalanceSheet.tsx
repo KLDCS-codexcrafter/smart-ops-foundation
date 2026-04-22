@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
 import { L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
@@ -165,11 +167,17 @@ export function BalanceSheetPanel({ entityCode }: BalanceSheetPanelProps) {
 }
 
 export default function BalanceSheet() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Balance Sheet' }]} showDatePicker={false} showCompany={false} />
-        <main><BalanceSheetPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Balance Sheet' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <BalanceSheetPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Balance Sheet" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

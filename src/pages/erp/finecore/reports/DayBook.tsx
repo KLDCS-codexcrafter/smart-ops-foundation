@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVouchers } from '@/hooks/useVouchers';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today, exportCSV } from './reportUtils';
@@ -167,11 +169,17 @@ export function DayBookPanel({ entityCode, onNavigate }: DayBookPanelProps) {
 }
 
 export default function DayBook() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Day Book' }]} showDatePicker={false} showCompany={false} />
-        <main><DayBookPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Day Book' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <DayBookPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Day Book" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

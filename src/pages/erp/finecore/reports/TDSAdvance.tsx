@@ -15,6 +15,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVouchers } from '@/hooks/useVouchers';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
@@ -218,11 +220,17 @@ export function TDSAdvancePanel({ entityCode }: TDSAdvancePanelProps) {
 }
 
 export default function TDSAdvance() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'TDS Advance' }]} showDatePicker={false} showCompany={false} />
-        <main><TDSAdvancePanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'TDS Advance' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <TDSAdvancePanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view TDS Advance" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

@@ -20,6 +20,8 @@ import { onEnterNext } from '@/lib/keyboard';
 import { inr, today } from './reportUtils';
 import type { ChallanEntry, TDSDeductionEntry } from '@/types/compliance';
 import { challansKey, tdsDeductionsKey } from '@/types/compliance';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 function ls<T>(key: string): T[] { try {
   // [JWT] GET /api/compliance/challans/:key
@@ -211,4 +213,9 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
     </div>
   );
 }
-export default function ChallanRegister() { return <ChallanRegisterPanel entityCode="SMRT" />; }
+export default function ChallanRegister() {
+  const { entityCode } = useEntityCode();
+  return entityCode
+    ? <ChallanRegisterPanel entityCode={entityCode} />
+    : <SelectCompanyGate title="Select a company to view Challan Register" />;
+}
