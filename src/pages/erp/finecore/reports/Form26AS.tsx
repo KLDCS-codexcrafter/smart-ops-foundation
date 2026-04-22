@@ -3,7 +3,7 @@
  * Sprint 3C: TRACES 26AS text import, 5-state reconciliation, auto-JV, merge bills, letter generator
  * [JWT] All data via localStorage
  */
-import { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { onEnterNext } from '@/lib/keyboard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -358,8 +358,8 @@ export function Form26ASPanel({ entityCode }: Props) {
               const amtDiff = s.tallyAmount - s.portalAmount;
               const tdsDiff = s.tallyTds - s.portalTds;
               return (
-                <>{/* eslint-disable-next-line react/jsx-key */}
-                  <TableRow key={`summary-${s.tan}`} className="cursor-pointer hover:bg-muted/30" onClick={() => setExpandedTAN(isExpanded ? null : s.tan)}>
+                <React.Fragment key={s.tan}>
+                  <TableRow className="cursor-pointer hover:bg-muted/30" onClick={() => setExpandedTAN(isExpanded ? null : s.tan)}>
                     <TableCell>{isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}</TableCell>
                     <TableCell className="text-xs font-mono">{s.tan}</TableCell>
                     <TableCell className="text-xs">{s.name}</TableCell>
@@ -371,7 +371,7 @@ export function Form26ASPanel({ entityCode }: Props) {
                     <TableCell className={`text-xs text-right font-mono font-bold ${tdsDiff !== 0 ? 'text-destructive' : 'text-success'}`}>{tdsDiff === 0 ? '-' : inr(tdsDiff)}</TableCell>
                   </TableRow>
                   {isExpanded && (
-                    <TableRow key={`detail-${s.tan}`}>
+                    <TableRow>
                       <TableCell colSpan={9} className="p-0">
                         <div className="bg-muted/20 p-3 space-y-2">
                           <p className="text-[10px] font-semibold text-muted-foreground uppercase">Bill-level Detail</p>
@@ -424,7 +424,7 @@ export function Form26ASPanel({ entityCode }: Props) {
                                       <Checkbox checked={selectedNIT.has(p.sr_no)}
                                         onCheckedChange={v => {
                                           const next = new Set(selectedNIT);
-                                          v ? next.add(p.sr_no) : next.delete(p.sr_no);
+                                          if (v) next.add(p.sr_no); else next.delete(p.sr_no);
                                           setSelectedNIT(next);
                                         }} />
                                     </TableCell>
@@ -437,7 +437,7 @@ export function Form26ASPanel({ entityCode }: Props) {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
             {/* Totals */}

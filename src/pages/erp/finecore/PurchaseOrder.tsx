@@ -565,7 +565,7 @@ export default function PurchaseOrder() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Order' }]} showDatePicker={false} />
-        <main>{entityCode ? <PurchaseOrderPanel entityCode={entityCode} /> : <SelectCompanyGate />}</main>
+        <main>{entityCode ? <PurchaseOrderPanel entityCode={entityCode} /> : <SelectCompanyGate title="Select a company to manage Purchase Orders" />}</main>
       </div>
     </SidebarProvider>
   );

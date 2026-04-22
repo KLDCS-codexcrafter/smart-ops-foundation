@@ -39,7 +39,7 @@ const newId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toStr
 export function EmployeeOpeningLoansModule() {
   const { entityCode } = useEntityCode();
   if (!entityCode) {
-    return <SelectCompanyGate />;
+    return <SelectCompanyGate title="Select a company to enter employee opening loans" />;
   }
   return <EmployeeOpeningLoansInner entityCode={entityCode} />;
 }

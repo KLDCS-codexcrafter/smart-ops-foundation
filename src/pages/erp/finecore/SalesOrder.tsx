@@ -598,7 +598,7 @@ export default function SalesOrder() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Order' }]} showDatePicker={false} />
-        <main>{entityCode ? <SalesOrderPanel entityCode={entityCode} /> : <SelectCompanyGate />}</main>
+        <main>{entityCode ? <SalesOrderPanel entityCode={entityCode} /> : <SelectCompanyGate title="Select a company to manage Sales Orders" />}</main>
       </div>
     </SidebarProvider>
   );

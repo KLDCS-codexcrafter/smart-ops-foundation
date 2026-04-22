@@ -493,7 +493,7 @@ export function ImportHubModule() {
   const [mastersOpen, setMastersOpen] = useState(false);
 
   if (!entityCode) {
-    return <SelectCompanyGate />;
+    return <SelectCompanyGate title="Select a company to use Import Hub" />;
   }
 
   // ── Custom importers for opening balance bills / loans ───────────

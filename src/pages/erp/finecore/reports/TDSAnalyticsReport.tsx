@@ -51,7 +51,11 @@ export function TDSAnalyticsPanel({ entityCode }: Props) {
   }), [entries]);
 
   const toggleSelect = (id: string) => {
-    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    setSelected(prev => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
   };
 
   const handlePostJournal = useCallback(() => {
@@ -121,7 +125,7 @@ export function TDSAnalyticsPanel({ entityCode }: Props) {
       <div className="flex gap-3 items-end">
         <div><Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} onKeyDown={onEnterNext} className="h-8 text-xs" /></div>
         <div><Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} onKeyDown={onEnterNext} className="h-8 text-xs" /></div>
-        <Select value={statusFilter} onValueChange={v => setStatusFilter(v as any)}>
+        <Select value={statusFilter} onValueChange={v => setStatusFilter(v as 'all' | 'open' | 'posted')}>
           <SelectTrigger className="h-8 text-xs w-32"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>

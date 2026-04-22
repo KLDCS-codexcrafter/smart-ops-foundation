@@ -64,8 +64,8 @@ export function BankReconciliationPanel({ entityCode }: BankReconciliationPanelP
     return journalEntries.filter(e => e.ledger_id === selectedBank && !e.is_cancelled && e.date >= monthStart && e.date <= monthEnd);
   }, [journalEntries, selectedBank, monthStart, monthEnd]);
 
-  const matchedBookIds = new Set(matches.map(m => m.bookEntryId));
-  const matchedStmtIds = new Set(matches.map(m => m.statementLineId));
+  const matchedBookIds = useMemo(() => new Set(matches.map(m => m.bookEntryId)), [matches]);
+  const matchedStmtIds = useMemo(() => new Set(matches.map(m => m.statementLineId)), [matches]);
 
   const parseStatement = useCallback(() => {
     const lines = statementText.split('\n').filter(l => l.trim());

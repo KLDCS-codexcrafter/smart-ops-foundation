@@ -65,12 +65,12 @@ export function Clause44ReportPanel({ entityCode }: Clause44ReportPanelProps) {
 
   const toggleGroup = (g: string) => {
     const s = new Set(expandedGroups);
-    s.has(g) ? s.delete(g) : s.add(g);
+    if (s.has(g)) s.delete(g); else s.add(g);
     setExpandedGroups(s);
   };
   const toggleLedger = (id: string) => {
     const s = new Set(expandedLedgers);
-    s.has(id) ? s.delete(id) : s.add(id);
+    if (s.has(id)) s.delete(id); else s.add(id);
     setExpandedLedgers(s);
   };
 

@@ -47,7 +47,7 @@ export function DistributorIntimationQueuePanel() { return <DistributorIntimatio
 export default function DistributorIntimationQueue() {
   const { entityCode } = useEntityCode();
   if (!entityCode) {
-    return <SelectCompanyGate />;
+    return <SelectCompanyGate title="Select a company to view Distributor Intimations" />;
   }
   return <DistributorIntimationQueueInner entityCode={entityCode} />;
 }

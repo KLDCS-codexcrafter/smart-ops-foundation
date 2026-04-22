@@ -1657,7 +1657,7 @@ export default function CustomerMaster() {
         <div className="flex-1">
           <ERPHeader breadcrumbs={[{ label: 'Masters' }, { label: 'Customer Master' }]} />
           <div className="p-6 max-w-7xl mx-auto">
-            {entityCode ? <CustomerMasterPanel /> : <SelectCompanyGate />}
+            {entityCode ? <CustomerMasterPanel /> : <SelectCompanyGate title="Select a company to manage customers" />}
           </div>
         </div>
       </div>
