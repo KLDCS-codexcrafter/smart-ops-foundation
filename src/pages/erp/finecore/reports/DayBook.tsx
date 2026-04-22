@@ -72,6 +72,8 @@ export function DayBookPanel({ entityCode, onNavigate }: DayBookPanelProps) {
   const statusBadge = (s: string) => {
     if (s === 'posted') return <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-[10px]">Posted</Badge>;
     if (s === 'cancelled') return <Badge variant="destructive" className="text-[10px]">Cancelled</Badge>;
+    if (s === 'in_transit') return <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-[10px]">In Transit</Badge>;
+    if (s === 'received') return <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-[10px]">Received</Badge>;
     return <Badge variant="outline" className="text-[10px]">Draft</Badge>;
   };
 
