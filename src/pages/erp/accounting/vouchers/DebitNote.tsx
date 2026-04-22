@@ -99,7 +99,31 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
     }
   }, [onSaveDraft, partyName, date, againstBill, reasonCode, inventoryLines]);
 
+  const isDirty = useCallback(
+    () => !!partyName || !!againstBill || !!reasonCode || !!narration || inventoryLines.length > 0 || ledgerLines.length > 0,
+    [partyName, againstBill, reasonCode, narration, inventoryLines, ledgerLines],
+  );
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      party_name: partyName, date, ref_voucher_no: againstBill, narration,
+      inventory_lines: inventoryLines, ledger_lines: ledgerLines,
+    }),
+    [partyName, date, againstBill, narration, inventoryLines, ledgerLines],
+  );
+  const clearForm = useCallback(() => {
+    setPartyName(''); setAgainstBill(''); setReasonCode('');
+    setInventoryLines([]); setLedgerLines([]); setNarration('');
+  }, []);
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Debit Note',
+    fineCoreModule: 'fc-txn-debit-note',
+    currentEntityCode: entityCode,
+  });
+
   return (
+    <>
+    {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -163,15 +187,17 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
     </div>
+    </>
   );
 }
 
 export default function DebitNote() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Debit Note' }]} showDatePicker={false} showCompany={false} />
-        <main><DebitNotePanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Debit Note' }]} showDatePicker={false} />
+        <main>{entityCode ? <DebitNotePanel /> : <SelectCompanyGate title="Select a company to create a Debit Note" />}</main>
       </div>
     </SidebarProvider>
   );
