@@ -109,7 +109,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   [customers, partyId]);
 
   const isDeductor = selectedCustomer?.is_tds_deductor === true;
-  const customerTAN = selectedCustomer?.tan_number || '';
+  
 
   const addTdsLine = useCallback(() => {
     setTdsLines(prev => [...prev, {
@@ -301,61 +301,66 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Receipt Voucher</h2>
-          <p className="text-xs text-muted-foreground">Record money received from customer</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Receipt"
+        baseVoucherType="Receipt"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        refNo={refNo} onRefNoChange={setRefNo}
+        refDate={refDate} onRefDateChange={setRefDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        effectiveDate={effectiveDate || date} onEffectiveDateChange={setEffectiveDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
+              <Label className="text-xs">Party (Customer) *</Label>
+              <PartyPicker
+                value={partyId}
+                onChange={(row) => {
+                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                  else { setPartyId(''); setPartyName(''); }
+                }}
+                entityCode={entityCode}
+                mode="customer"
+                compact
+              />
             </div>
             <div>
-              <Label className="text-xs">Party (Customer)</Label>
-              <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer name" />
-            </div>
-            <div>
-              <Label className="text-xs">Amount (₹)</Label>
+              <Label className="text-xs">Amount (₹) *</Label>
               <Input type="number" value={amount || ''} onChange={e => setAmount(Number(e.target.value))} onKeyDown={onEnterNext} />
             </div>
-          </div>
-
-          {/* Receipt Purpose */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Receipt Purpose</Label>
-            <div className="flex gap-4">
-              {(['regular', 'advance'] as const).map(mode => (
-                <label key={mode} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="receiptPurpose" checked={receiptPurpose === mode}
-                    onChange={() => setReceiptPurpose(mode)}
-                    className="accent-teal-500" />
-                  <span className="text-xs capitalize">{mode === 'regular' ? 'Regular Receipt' : 'Advance Receipt'}</span>
-                </label>
-              ))}
+            <div>
+              <Label className="text-xs">Receipt Purpose</Label>
+              <Select value={receiptPurpose} onValueChange={v => setReceiptPurpose(v as 'regular' | 'advance')}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="regular">Regular Receipt</SelectItem>
+                  <SelectItem value="advance">Advance Receipt</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            {receiptPurpose === 'advance' && (
-              <div className="border-t pt-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Against Sales Order?</Label>
-                      <Input disabled placeholder="Available Sprint 27" className="opacity-50 mt-1" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>Sales Order integration available in Sprint 27</TooltipContent>
-                </Tooltip>
-                <p className="text-[10px] text-muted-foreground mt-1">This advance will generate ref ADVR/FY/XXXX on save.</p>
-              </div>
-            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {receiptPurpose === 'advance' && (
+            <div className="border-t pt-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Against Sales Order?</Label>
+                    <Input disabled placeholder="Available Sprint 27" className="opacity-50 mt-1" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Sales Order integration available in Sprint 27</TooltipContent>
+              </Tooltip>
+              <p className="text-[10px] text-muted-foreground mt-1">This advance will generate ref ADVR/FY/XXXX on save.</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-xs">Payment Mode</Label>
               <Select value={paymentMode} onValueChange={v => setPaymentMode(v as 'bank' | 'cash')}>
@@ -367,16 +372,53 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Bank / Cash Ledger</Label>
-              <Input value={bankCashLedger} onChange={e => setBankCashLedger(e.target.value)} onKeyDown={onEnterNext} placeholder="Ledger name" />
+              <Label className="text-xs">Bank / Cash Ledger *</Label>
+              <LedgerPicker
+                value={bankCashLedgerId}
+                onChange={(id, name) => { setBankCashLedgerId(id); setBankCashLedgerName(name); }}
+                entityCode={entityCode}
+                allowedGroups={['CASH', 'BANK']}
+                placeholder="Select bank/cash ledger"
+                compact
+              />
             </div>
-            {paymentMode === 'bank' && (
-              <div>
-                <Label className="text-xs">Cheque / NEFT / RTGS Ref</Label>
-                <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs">Instrument Type</Label>
+              <Select value={instrumentType} onValueChange={v => setInstrumentType(v as typeof instrumentType)}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NEFT">NEFT</SelectItem>
+                  <SelectItem value="RTGS">RTGS</SelectItem>
+                  <SelectItem value="IMPS">IMPS</SelectItem>
+                  <SelectItem value="UPI">UPI</SelectItem>
+                  <SelectItem value="Cheque">Cheque</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{instrumentType === 'Cheque' ? 'Cheque No' : 'UTR / Ref No'}</Label>
+              <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder={instrumentType === 'Cheque' ? 'Cheque number' : 'Reference number'} />
+            </div>
           </div>
+
+          {instrumentType === 'Cheque' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label className="text-xs">Cheque Date</Label>
+                <Input type="date" value={chequeDate} onChange={e => setChequeDate(e.target.value)} onKeyDown={onEnterNext} />
+              </div>
+              <div>
+                <Label className="text-xs">Bank Name</Label>
+                <Input value={bankName} onChange={e => setBankName(e.target.value)} onKeyDown={onEnterNext} placeholder="Drawee bank" />
+              </div>
+              <div>
+                <Label className="text-xs">Deposit Date (optional)</Label>
+                <Input type="date" value={depositDate} onChange={e => setDepositDate(e.target.value)} onKeyDown={onEnterNext} />
+                <p className="text-[10px] text-muted-foreground mt-0.5">Blank = "in hand", filled = "deposited"</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -470,15 +512,22 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       <Card>
         <CardContent className="pt-5">
           <Label className="text-xs">Narration</Label>
-          <Input value={narration} onChange={e => setNarration(e.target.value)} onKeyDown={onEnterNext} placeholder="Receipt narration" />
+          <Textarea value={narration} onChange={e => setNarration(e.target.value)} placeholder="Receipt narration" rows={2} />
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+      <div className="flex justify-end">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
   );
 }
