@@ -212,4 +212,11 @@ export function ITCRegisterPanel({ entityCode }: ITCRegisterPanelProps) {
   );
 }
 
-export default function ITCRegister() { return <ITCRegisterPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function ITCRegister() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view ITC Register" />;
+  return <ITCRegisterPanel entityCode={entityCode} />;
+}

@@ -167,4 +167,11 @@ export function TDSAnalyticsPanel({ entityCode }: Props) {
     </div>
   );
 }
-export default function TDSAnalyticsReport() { return <TDSAnalyticsPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function TDSAnalyticsReport() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view TDS Analytics" />;
+  return <TDSAnalyticsPanel entityCode={entityCode} />;
+}

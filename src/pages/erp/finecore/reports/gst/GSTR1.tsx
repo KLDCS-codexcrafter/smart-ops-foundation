@@ -231,4 +231,11 @@ export function GSTR1Panel({ entityCode }: GSTR1PanelProps) {
   );
 }
 
-export default function GSTR1() { return <GSTR1Panel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function GSTR1() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view GSTR-1" />;
+  return <GSTR1Panel entityCode={entityCode} />;
+}

@@ -66,7 +66,8 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-hub': 'Hub Overview',
@@ -122,19 +123,20 @@ export function FinCorePagePanel() {
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
   const { entityCode: entCode, userId } = useCardEntitlement();
 
   useEffect(() => {
+    if (!entityCode) return;
     logAudit({
       entityCode: entCode, userId, userName: userId,
       cardId: 'finecore',
       action: 'card_open',
     });
-  }, [entCode, userId]);
+  }, [entCode, userId, entityCode]);
 
   useEffect(() => {
+    if (!entityCode) return;
     rememberModule('finecore', activeModule);
     logAudit({
       entityCode: entCode, userId, userName: userId,
@@ -150,7 +152,7 @@ export function FinCorePagePanel() {
       subtitle: null,
       deep_link: `/erp/finecore#${activeModule}`,
     });
-  }, [activeModule, entCode, userId]);
+  }, [activeModule, entCode, userId, entityCode]);
 
   const addToDraftTray = useCallback((draft: DraftEntry) => {
     if (drafts.length >= 5) {
@@ -232,6 +234,25 @@ export function FinCorePagePanel() {
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
+
+  if (!entityCode) {
+    return (
+      <SidebarProvider defaultOpen={false}>
+        <div className="min-h-screen bg-background flex flex-col">
+          <ERPHeader
+            breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }]}
+            showDatePicker={false}
+          />
+          <main className="flex-1">
+            <SelectCompanyGate
+              title="Select a company to use Fin Core"
+              description="Fin Core vouchers and reports are scoped to a specific company. Consolidated multi-company reports arrive in Horizon 1.5."
+            />
+          </main>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <>

@@ -204,4 +204,11 @@ export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
   );
 }
 
-export default function GSTR2Register() { return <GSTR2RegisterPanel entityCode="SMRT" />; }
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+
+export default function GSTR2Register() {
+  const { entityCode } = useEntityCode();
+  if (!entityCode) return <SelectCompanyGate title="Select a company to view GSTR-2 Register" />;
+  return <GSTR2RegisterPanel entityCode={entityCode} />;
+}
