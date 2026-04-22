@@ -21,6 +21,7 @@ import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, Command
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronsUpDown, Check, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { InlineMasterCreate } from '@/components/finecore/InlineMasterCreate';
 
 export interface PartyPickerRow {
@@ -155,7 +156,12 @@ export function PartyPicker({
                 No matching party.
                 {allowCreate && (
                   <Button variant="link" size="sm" className="ml-1 h-6"
-                    onClick={() => { setOpen(false); setCreateOpen(true); }}>
+                    onClick={() => {
+                      setOpen(false);
+                      // TODO (Polish 1.5): remove this toast once InlineMasterCreate ships its real form.
+                      toast.info('Party creation form coming soon. For now, please create from Customer/Vendor Master.');
+                      setCreateOpen(true);
+                    }}>
                     Create "{search}"
                   </Button>
                 )}
@@ -178,7 +184,12 @@ export function PartyPicker({
               {allowCreate && filtered.length > 0 && (
                 <div className="p-1 border-t">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs"
-                    onClick={() => { setOpen(false); setCreateOpen(true); }}>
+                    onClick={() => {
+                      setOpen(false);
+                      // TODO (Polish 1.5): remove this toast once InlineMasterCreate ships its real form.
+                      toast.info('Party creation form coming soon. For now, please create from Customer/Vendor Master.');
+                      setCreateOpen(true);
+                    }}>
                     <Plus className="h-3.5 w-3.5 mr-1" /> Create new {createType}
                   </Button>
                 </div>
