@@ -33,6 +33,7 @@ import { DepartmentPicker } from '@/components/finecore/pickers/DepartmentPicker
 import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
 import { StockTransferLineGrid, type StockTransferLine } from '@/components/finecore/StockTransferLineGrid';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
@@ -42,7 +43,7 @@ interface StockTransferDispatchPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
 }
 
-export function StockTransferDispatchPanel({ onSaveDraft: _onSaveDraft }: StockTransferDispatchPanelProps) {
+export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatchPanelProps) {
   const { entityCode } = useEntityCode();
   // accountingMode reserved for future Tally-bridge routing decision
   useTenantConfig(entityCode);
@@ -72,13 +73,41 @@ export function StockTransferDispatchPanel({ onSaveDraft: _onSaveDraft }: StockT
     lastSavedRef.current = false;
   }, []);
 
+  const isDirty = useCallback(
+    () => lines.length > 0 || narration.length > 0 || !!fromDeptId || !!toDeptId,
+    [lines.length, narration.length, fromDeptId, toDeptId],
+  );
+
   const handleCancel = useCallback(() => {
-    if (lines.length > 0 || narration.length > 0 || fromDeptId || toDeptId) {
-      if (!window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
-    }
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
-  }, [lines.length, narration.length, fromDeptId, toDeptId, clearForm]);
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({ date, narration }),
+    [date, narration],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Stock Transfer Dispatch',
+    fineCoreModule: 'fc-inv-stock-transfer-dispatch',
+    currentEntityCode: entityCode,
+  });
+
+  const handleSaveDraft = useCallback(() => {
+    if (onSaveDraft) {
+      onSaveDraft({
+        id: `draft-${Date.now()}`,
+        module: 'fc-inv-stock-transfer-dispatch',
+        label: `ST ${fromDeptName || 'New'}`,
+        voucherTypeName: 'Stock Transfer Dispatch',
+        savedAt: new Date().toISOString(),
+        formState: serializeFormState(),
+      });
+    }
+  }, [onSaveDraft, fromDeptName, serializeFormState]);
 
   const handlePost = useCallback(async () => {
     if (!fromDeptId) { toast.error('Select From Department'); return; }
@@ -162,6 +191,7 @@ export function StockTransferDispatchPanel({ onSaveDraft: _onSaveDraft }: StockT
   }, [handlePost, clearForm]);
 
   return (
+    <>
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <main className="flex-1">
@@ -235,7 +265,12 @@ export function StockTransferDispatchPanel({ onSaveDraft: _onSaveDraft }: StockT
                 </div>
               </CardContent>
 
-              <div className="px-5 pb-5">
+              <div className="px-5 pb-5 space-y-3">
+                {onSaveDraft && (
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                  </div>
+                )}
                 <VoucherFormFooter
                   onPost={handlePost}
                   onSaveAndNew={handleSaveAndNew}
@@ -251,6 +286,8 @@ export function StockTransferDispatchPanel({ onSaveDraft: _onSaveDraft }: StockT
         </main>
       </div>
     </SidebarProvider>
+    {GuardDialog}
+    </>
   );
 }
 

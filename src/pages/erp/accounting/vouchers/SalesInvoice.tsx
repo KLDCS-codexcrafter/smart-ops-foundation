@@ -38,7 +38,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { calculateInvoiceCommission } from '@/lib/sam-engine';
 import { isCommissionAlreadyBooked } from '@/lib/commission-engine';
 import type { CommissionResult } from '@/lib/sam-engine';
@@ -82,8 +83,7 @@ interface SalesInvoicePanelProps {
 }
 
 export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('SI', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
@@ -539,6 +539,56 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   useCtrlS(() => { if (!overrideOpen) handlePost(); });
 
 
+  const clearForm = useCallback(() => {
+    setDate(new Date().toISOString().split('T')[0]);
+    setPartyName('');
+    setPlaceOfSupply('');
+    setAgainstDN('');
+    setInvoiceMode('item');
+    setInventoryLines([]);
+    setLedgerLines([]);
+    setNarration('');
+    setTermsConditions('');
+    setPaymentTerms('');
+    setCollapseOpen(false);
+    setLinkedAdvance(null);
+    setAgainstSO('');
+    setCustomerId(null);
+    setSamSalesmanId(null); setSamSalesmanName(null);
+    setSamAgentId(null); setSamAgentName(null);
+    setSamReferenceId(null); setSamReferenceName(null);
+    setCreditCheck(null);
+    setOverrideOpen(false); setOverrideReason('');
+    setPostedVoucherId(null); setPostedVoucherNo('');
+    setIrnStatus('pending'); setCurrentIrn(null); setIrnAckDate(null);
+    setEwbBusy(false); setIrnBusy(false);
+    setIrnCancelOpen(false); setIrnCancelReason('1'); setIrnCancelRemarks('');
+    setEwbDialogOpen(false); setEwbVehicleNo(''); setEwbTransporter(''); setEwbDistanceKm(100);
+  }, []);
+
+  const isDirty = useCallback(
+    () => partyName.length > 0 || inventoryLines.length > 0 || ledgerLines.length > 0 || narration.length > 0,
+    [partyName.length, inventoryLines.length, ledgerLines.length, narration.length],
+  );
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({ party_name: partyName, date, narration }),
+    [partyName, date, narration],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Sales Invoice',
+    fineCoreModule: 'fc-txn-sales-invoice',
+    currentEntityCode: entityCode,
+  });
+
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
       onSaveDraft({
@@ -547,10 +597,10 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         label: `SI ${partyName || 'New'}`,
         voucherTypeName: 'Sales Invoice',
         savedAt: new Date().toISOString(),
-        formState: { party_name: partyName, date, narration } as Partial<Voucher>,
+        formState: serializeFormState(),
       });
     }
-  }, [onSaveDraft, partyName, date, narration]);
+  }, [onSaveDraft, partyName, serializeFormState]);
 
   // ── Sprint 9 — IRN / EWB action handlers ────────────────────────
   const handleGenerateIRN = useCallback(async () => {
@@ -699,6 +749,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   );
 
   return (
+    <>
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -1141,6 +1192,8 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         </DialogContent>
       </Dialog>
     </div>
+    {GuardDialog}
+    </>
   );
 }
 

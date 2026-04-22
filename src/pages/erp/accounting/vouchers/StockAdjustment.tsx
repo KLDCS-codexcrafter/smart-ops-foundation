@@ -36,10 +36,12 @@ import { DepartmentPicker } from '@/components/finecore/pickers/DepartmentPicker
 import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
 import { StockAdjustmentLineGrid, type StockAdjustmentLine } from '@/components/finecore/StockAdjustmentLineGrid';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
+import { Button } from '@/components/ui/button';
 
 interface LedgerDef { id: string; name: string; }
 
@@ -47,7 +49,7 @@ interface StockAdjustmentPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
 }
 
-export function StockAdjustmentPanel({ onSaveDraft: _onSaveDraft }: StockAdjustmentPanelProps) {
+export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps) {
   const { entityCode } = useEntityCode();
   // accountingMode reserved for future Tally-bridge routing decision
   useTenantConfig(entityCode);
@@ -93,13 +95,41 @@ export function StockAdjustmentPanel({ onSaveDraft: _onSaveDraft }: StockAdjustm
     lastSavedRef.current = false;
   }, []);
 
+  const isDirty = useCallback(
+    () => lines.length > 0 || narration.length > 0,
+    [lines.length, narration.length],
+  );
+
   const handleCancel = useCallback(() => {
-    if (lines.length > 0 || narration.length > 0) {
-      if (!window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
-    }
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
-  }, [lines.length, narration.length, clearForm]);
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({ date, narration }),
+    [date, narration],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Stock Adjustment',
+    fineCoreModule: 'fc-inv-stock-adjustment',
+    currentEntityCode: entityCode,
+  });
+
+  const handleSaveDraft = useCallback(() => {
+    if (onSaveDraft) {
+      onSaveDraft({
+        id: `draft-${Date.now()}`,
+        module: 'fc-inv-stock-adjustment',
+        label: `SA ${departmentName || 'New'}`,
+        voucherTypeName: 'Stock Adjustment',
+        savedAt: new Date().toISOString(),
+        formState: serializeFormState(),
+      });
+    }
+  }, [onSaveDraft, departmentName, serializeFormState]);
 
   const handlePost = useCallback(async () => {
     if (lines.length === 0) { toast.error('At least one line is required'); return; }
@@ -210,6 +240,7 @@ export function StockAdjustmentPanel({ onSaveDraft: _onSaveDraft }: StockAdjustm
   }, [handlePost, clearForm]);
 
   return (
+    <>
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <main className="flex-1">
@@ -277,7 +308,12 @@ export function StockAdjustmentPanel({ onSaveDraft: _onSaveDraft }: StockAdjustm
                 </div>
               </CardContent>
 
-              <div className="px-5 pb-5">
+              <div className="px-5 pb-5 space-y-3">
+                {onSaveDraft && (
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                  </div>
+                )}
                 <VoucherFormFooter
                   onPost={handlePost}
                   onSaveAndNew={handleSaveAndNew}
@@ -292,6 +328,8 @@ export function StockAdjustmentPanel({ onSaveDraft: _onSaveDraft }: StockAdjustm
         </main>
       </div>
     </SidebarProvider>
+    {GuardDialog}
+    </>
   );
 }
 

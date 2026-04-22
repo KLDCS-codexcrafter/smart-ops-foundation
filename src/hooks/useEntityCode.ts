@@ -31,7 +31,7 @@ export function useEntityCode(): { entityCode: string; entityId: string } {
       e => e.id === selectedCompany || e.shortCode === selectedCompany,
     ) ?? selectedEntity;
     return {
-      entityCode: entity?.shortCode ?? selectedCompany ?? 'SMRT',
+      entityCode: entity?.shortCode ?? selectedCompany ?? '',
       entityId: entity?.id ?? selectedCompany ?? '',
     };
   }, [selectedCompany, entities, selectedEntity]);

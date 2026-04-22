@@ -30,6 +30,7 @@ import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
 import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
@@ -176,13 +177,34 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
     }
   }, [handlePost, clearForm]);
 
+  const isDirty = useCallback(
+    () => amount > 0 || narration.length > 0 || !!fromLedgerId || !!toLedgerId,
+    [amount, narration, fromLedgerId, toLedgerId],
+  );
+
   const handleCancel = useCallback(() => {
-    if (amount > 0 || narration.length > 0 || fromLedgerId || toLedgerId) {
-      if (!window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
-    }
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
-  }, [amount, narration, fromLedgerId, toLedgerId, clearForm]);
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      date,
+      from_ledger_name: fromLedgerName,
+      to_ledger_name: toLedgerName,
+      net_amount: amount,
+      narration,
+    }),
+    [date, fromLedgerName, toLedgerName, amount, narration],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Contra',
+    fineCoreModule: 'fc-txn-contra',
+    currentEntityCode: entityCode,
+  });
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -192,15 +214,10 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
         label: `CT ${fromLedgerName || 'New'}`,
         voucherTypeName: 'Contra',
         savedAt: new Date().toISOString(),
-        formState: {
-          date,
-          from_ledger_name: fromLedgerName,
-          to_ledger_name: toLedgerName,
-          net_amount: amount,
-        } as Partial<Voucher>,
+        formState: serializeFormState(),
       });
     }
-  }, [onSaveDraft, date, fromLedgerName, toLedgerName, amount]);
+  }, [onSaveDraft, fromLedgerName, serializeFormState]);
 
   const refPlaceholder = instrumentType === 'Cheque Deposit' || instrumentType === 'Cheque Withdrawal'
     ? 'Cheque No'
@@ -211,6 +228,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
         : 'UTR / Transaction ID';
 
   return (
+    <>
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
       <TallyVoucherHeader
         voucherTypeName="Contra"
@@ -327,6 +345,8 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
         status="draft"
       />
     </div>
+    {GuardDialog}
+    </>
   );
 }
 

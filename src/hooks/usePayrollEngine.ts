@@ -457,7 +457,7 @@ export function computeEmployeePayslip(
 }
 
 // ── Main hook ─────────────────────────────────────────────────────
-export function usePayrollEngine(entityCode: string = 'SMRT') {
+export function usePayrollEngine(entityCode: string) {
   const loadRuns = (): PayrollRun[] => {
     try {
       // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
