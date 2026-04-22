@@ -240,6 +240,7 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
   }, [handlePost, clearForm]);
 
   return (
+    <>
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <main className="flex-1">
@@ -307,7 +308,12 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
                 </div>
               </CardContent>
 
-              <div className="px-5 pb-5">
+              <div className="px-5 pb-5 space-y-3">
+                {onSaveDraft && (
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                  </div>
+                )}
                 <VoucherFormFooter
                   onPost={handlePost}
                   onSaveAndNew={handleSaveAndNew}
@@ -322,6 +328,8 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
         </main>
       </div>
     </SidebarProvider>
+    {GuardDialog}
+    </>
   );
 }
 
