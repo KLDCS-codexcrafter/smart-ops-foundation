@@ -20,7 +20,9 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOrders } from '@/hooks/useOrders';
 import { calculateInvoiceCommission } from '@/lib/sam-engine';
 import type { CommissionResult } from '@/lib/sam-engine';
@@ -57,8 +59,7 @@ interface DeliveryNotePanelProps {
 }
 
 export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const [voucherNo] = useState(() => generateVoucherNo('DLN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -357,7 +358,35 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     }
   }, [onSaveDraft, partyName, date]);
 
+  const isDirty = useCallback(
+    () => !!partyName || !!againstSI || !!narration || !!transporterName || !!vehicleNo || inventoryLines.length > 0,
+    [partyName, againstSI, narration, transporterName, vehicleNo, inventoryLines],
+  );
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      party_name: partyName, date, ref_voucher_no: againstSI, narration,
+      transporter: transporterName, vehicle_no: vehicleNo,
+      inventory_lines: inventoryLines,
+    }),
+    [partyName, date, againstSI, narration, transporterName, vehicleNo, inventoryLines],
+  );
+  const clearForm = useCallback(() => {
+    setPartyName(''); setAgainstSI(''); setTransporterName(''); setLogisticId(null);
+    setVehicleNo(''); setDriverNo(''); setDistance('');
+    setInventoryLines([]); setNarration('');
+    setCustomerId(null); setSamSalesmanId(null); setSamSalesmanName(null);
+    setSamAgentId(null); setSamAgentName(null); setCommissionBanner(null);
+  }, []);
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Delivery Note',
+    fineCoreModule: 'fc-txn-delivery-note',
+    currentEntityCode: entityCode,
+  });
+
   return (
+    <>
+    {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -580,15 +609,17 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
     </div>
+    </>
   );
 }
 
 export default function DeliveryNote() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Delivery Note' }]} showDatePicker={false} showCompany={false} />
-        <main><DeliveryNotePanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Delivery Note' }]} showDatePicker={false} />
+        <main>{entityCode ? <DeliveryNotePanel /> : <SelectCompanyGate title="Select a company to create a Delivery Note" />}</main>
       </div>
     </SidebarProvider>
   );

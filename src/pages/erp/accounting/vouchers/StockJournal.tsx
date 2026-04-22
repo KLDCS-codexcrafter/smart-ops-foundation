@@ -18,6 +18,9 @@ import type { Voucher } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const PURPOSES = ['Store Transfer', 'Production Issue', 'Scrap', 'Sample', 'Other'];
 
@@ -27,7 +30,7 @@ interface StockJournalPanelProps {
 }
 
 export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
-  const entityCode = 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('SJ', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [purpose, setPurpose] = useState('Store Transfer');
@@ -74,9 +77,32 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         formState: { date, narration } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, date, purpose, consumptionLines, productionLines]);
+  }, [onSaveDraft, date, purpose, consumptionLines, productionLines, narration]);
+
+  const isDirty = useCallback(
+    () => !!department || !!referenceNo || !!narration || consumptionLines.length > 0 || productionLines.length > 0,
+    [department, referenceNo, narration, consumptionLines, productionLines],
+  );
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      date, ref_voucher_no: referenceNo, narration,
+    }),
+    [date, referenceNo, narration],
+  );
+  const clearForm = useCallback(() => {
+    setPurpose('Store Transfer'); setDepartment(''); setReferenceNo('');
+    setConsumptionLines([]); setProductionLines([]); setNarration('');
+  }, []);
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Stock Journal',
+    fineCoreModule: 'fc-inv-stock-journal',
+    currentEntityCode: entityCode,
+  });
 
   return (
+    <>
+    {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -142,15 +168,17 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
     </div>
+    </>
   );
 }
 
 export default function StockJournal() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Journal' }]} showDatePicker={false} showCompany={false} />
-        <main><StockJournalPanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Journal' }]} showDatePicker={false} />
+        <main>{entityCode ? <StockJournalPanel /> : <SelectCompanyGate title="Select a company to create a Stock Journal" />}</main>
       </div>
     </SidebarProvider>
   );

@@ -18,6 +18,9 @@ import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 interface ReceiptNotePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -25,7 +28,7 @@ interface ReceiptNotePanelProps {
 }
 
 export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
-  const entityCode = 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('GRN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
@@ -77,7 +80,32 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
     }
   }, [onSaveDraft, partyName, date, vendorChallanNo, inventoryLines]);
 
+  const isDirty = useCallback(
+    () => !!partyName || !!vendorChallanNo || !!receiveGodown || !!narration || inventoryLines.length > 0,
+    [partyName, vendorChallanNo, receiveGodown, narration, inventoryLines],
+  );
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      party_name: partyName, date, ref_voucher_no: vendorChallanNo,
+      to_godown_name: receiveGodown, narration, inventory_lines: inventoryLines,
+    }),
+    [partyName, date, vendorChallanNo, receiveGodown, narration, inventoryLines],
+  );
+  const clearForm = useCallback(() => {
+    setPartyName(''); setVendorChallanNo(''); setVendorChallanDate('');
+    setReceiveGodown(''); setVehicleNo(''); setTransporterName('');
+    setInventoryLines([]); setNarration('');
+  }, []);
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Receipt Note',
+    fineCoreModule: 'fc-txn-receipt-note',
+    currentEntityCode: entityCode,
+  });
+
   return (
+    <>
+    {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -158,15 +186,17 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
     </div>
+    </>
   );
 }
 
 export default function ReceiptNote() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Receipt Note (GRN)' }]} showDatePicker={false} showCompany={false} />
-        <main><ReceiptNotePanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Receipt Note (GRN)' }]} showDatePicker={false} />
+        <main>{entityCode ? <ReceiptNotePanel /> : <SelectCompanyGate title="Select a company to create a Receipt Note" />}</main>
       </div>
     </SidebarProvider>
   );
