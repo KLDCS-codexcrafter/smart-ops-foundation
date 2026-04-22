@@ -18,7 +18,7 @@
  *
  * TALLY-ON-TOP Neutral. BOM is master data, not a voucher.
  */
-import React, { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   Plus, Save, Trash2, Copy, Search, Edit2, Network,
   ChevronDown, X, AlertTriangle, Check, Layers,
