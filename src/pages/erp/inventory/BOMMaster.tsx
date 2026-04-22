@@ -469,19 +469,9 @@ export function BOMMasterPanel({ entityCode }: BOMMasterPanelProps) {
     });
   };
 
-  // Re-sync form when the current edited BOM changes underneath us
-  // (e.g. after toggling is_active causing siblings to flip)
-  React.useEffect(() => {
-    if (!editingId) return;
-    const fresh = boms.find(b => b.id === editingId);
-    if (fresh) {
-      // Only refresh if the active flag drifted (a save just happened)
-      if (fresh.is_active !== form.is_active && !creatingNew) {
-        setForm(bomToForm(fresh));
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boms, editingId]);
+  // Note: after toggling is_active and saving, sibling BOMs are flipped to
+  // inactive inside useBOM. The left list re-renders to show the new badges.
+  // Re-selecting from the list refreshes the form if needed.
 
   const showingForm = creatingNew || editingId !== null;
   const subBomCandidates = useMemo(() => {
