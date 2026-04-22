@@ -1,22 +1,29 @@
 /**
  * Payment.tsx — Full Payment Voucher form
  * Sprint 3B: TDS Auto-Intelligence Enhancement
+ * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
+ * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Send, Info, AlertTriangle, ChevronDown } from 'lucide-react';
+import { Info, AlertTriangle, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
-import { generateVoucherNo, vouchersKey, postVoucher } from '@/lib/finecore-engine';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
+import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { mapSACtoTDSSection } from '@/lib/sacTdsMap';
 import { computeTDS } from '@/lib/tds-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
@@ -42,6 +49,14 @@ interface VendorRef {
   lower_deduction_cert: string; lower_deduction_rate: number; lower_deduction_expiry: string;
 }
 
+interface POLineRef {
+  hsn_sac_code?: string;
+}
+interface PORef {
+  po_no?: string;
+  lines?: POLineRef[];
+}
+
 function mapBusinessEntityToDeducteeType(entity: string): 'individual' | 'company' | 'huf' | 'no_pan' {
   if (['private_limited', 'public_limited', 'llp', 'opc'].includes(entity)) return 'company';
   if (entity === 'huf') return 'huf';
@@ -54,15 +69,26 @@ interface PaymentPanelProps {
 }
 
 export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
-  const entityCode = 'SMRT';
-  const [voucherNo] = useState(() => generateVoucherNo('PV', entityCode));
+  const { entityCode } = useEntityCode();
+  useTenantConfig(entityCode);
+  const [voucherNo, setVoucherNo] = useState(() => generateVoucherNo('PV', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [refNo, setRefNo] = useState('');
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [partyName, setPartyName] = useState('');
-  const [bankCashLedger, setBankCashLedger] = useState('');
+  const [bankCashLedgerId, setBankCashLedgerId] = useState('');
+  const [bankCashLedgerName, setBankCashLedgerName] = useState('');
   const [paymentMode, setPaymentMode] = useState<'bank' | 'cash'>('bank');
   const [instrumentRef, setInstrumentRef] = useState('');
+  const [instrumentType, setInstrumentType] = useState<'NEFT' | 'RTGS' | 'IMPS' | 'UPI' | 'Cheque' | 'Cash' | 'DD'>('NEFT');
+  const [chequeDate, setChequeDate] = useState('');
+  const [bankName, setBankName] = useState('');
   const [amount, setAmount] = useState(0);
   const [narration, setNarration] = useState('');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // Sprint 3B state
   const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
