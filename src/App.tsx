@@ -111,6 +111,7 @@ const BrandMatrix = lazy(() => import('./pages/erp/inventory/BrandMatrix'));
 const StorageMatrix = lazy(() => import('./pages/erp/inventory/StorageMatrix'));
 const MeasureX = lazy(() => import('./pages/erp/inventory/MeasureX'));
 const ItemCraft = lazy(() => import('./pages/erp/inventory/ItemCraft'));
+const BOMMaster = lazy(() => import('./pages/erp/inventory/BOMMaster'));
 const CodeMatrix = lazy(() => import('./pages/erp/inventory/CodeMatrix'));
 const ItemTemplates = lazy(() => import('./pages/erp/inventory/ItemTemplates'));
 const LabelTemplates = lazy(() => import('./pages/erp/inventory/LabelTemplates'));
@@ -327,6 +328,7 @@ const App = () => (
               <Route path="/erp/inventory-hub/storage-matrix" element={<P><StorageMatrix /></P>} />
               <Route path="/erp/inventory-hub/measure-x" element={<P><MeasureX /></P>} />
               <Route path="/erp/inventory-hub/item-craft" element={<P><ItemCraft /></P>} />
+              <Route path="/erp/inventory/bom-master" element={<P><BOMMaster /></P>} />
               <Route path="/erp/inventory-hub/code-matrix" element={<P><CodeMatrix /></P>} />
               <Route path="/erp/inventory-hub/item-templates" element={<P><ItemTemplates /></P>} />
               <Route path="/erp/inventory-hub/label-templates" element={<P><LabelTemplates /></P>} />
