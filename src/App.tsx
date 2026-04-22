@@ -328,7 +328,7 @@ const App = () => (
               <Route path="/erp/inventory-hub/storage-matrix" element={<P><StorageMatrix /></P>} />
               <Route path="/erp/inventory-hub/measure-x" element={<P><MeasureX /></P>} />
               <Route path="/erp/inventory-hub/item-craft" element={<P><ItemCraft /></P>} />
-              <Route path="/erp/inventory/bom-master" element={<P><BOMMaster /></P>} />
+              <Route path="/erp/inventory-hub/bom-master" element={<P><BOMMaster /></P>} />
               <Route path="/erp/inventory-hub/code-matrix" element={<P><CodeMatrix /></P>} />
               <Route path="/erp/inventory-hub/item-templates" element={<P><ItemTemplates /></P>} />
               <Route path="/erp/inventory-hub/label-templates" element={<P><LabelTemplates /></P>} />

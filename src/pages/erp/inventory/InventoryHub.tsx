@@ -78,7 +78,7 @@ export function InventoryHubPanel() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div
-                  onClick={() => navigate('/erp/inventory/bom-master')}
+                  onClick={() => navigate('/erp/inventory-hub/bom-master')}
                   className="flex items-center justify-between p-4 rounded-xl
                     border border-border bg-card hover:bg-accent cursor-pointer
                     transition-colors"
