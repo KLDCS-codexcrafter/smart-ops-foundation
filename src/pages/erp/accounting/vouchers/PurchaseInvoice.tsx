@@ -31,7 +31,9 @@ import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/finecore/SelectCompanyGate';
 
 function ls<T>(key: string): T[] {
   try {
@@ -47,8 +49,7 @@ interface PurchaseInvoicePanelProps {
 }
 
 export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('PI', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
@@ -167,7 +168,35 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     }
   }, [onSaveDraft, partyName, date, vendorBillNo, narration]);
 
+  const isDirty = useCallback(
+    () => !!partyName || !!vendorBillNo || !!narration || inventoryLines.length > 0 || ledgerLines.length > 0,
+    [partyName, vendorBillNo, narration, inventoryLines, ledgerLines],
+  );
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({
+      party_name: partyName, date, vendor_bill_no: vendorBillNo, narration,
+      inventory_lines: inventoryLines, ledger_lines: ledgerLines,
+    }),
+    [partyName, date, vendorBillNo, narration, inventoryLines, ledgerLines],
+  );
+
+  const clearForm = useCallback(() => {
+    setPartyName(''); setVendorBillNo(''); setVendorBillDate('');
+    setInventoryLines([]); setLedgerLines([]); setNarration('');
+    setLinkedAdvance(null); setAgainstPO('');
+  }, []);
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Purchase Invoice',
+    fineCoreModule: 'fc-txn-purchase-invoice',
+    currentEntityCode: entityCode,
+  });
+
   return (
+    <>
+    {GuardDialog}
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -311,15 +340,17 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
       </div>
     </div>
+    </>
   );
 }
 
 export default function PurchaseInvoice() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Invoice' }]} showDatePicker={false} showCompany={false} />
-        <main><PurchaseInvoicePanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Invoice' }]} showDatePicker={false} />
+        <main>{entityCode ? <PurchaseInvoicePanel /> : <SelectCompanyGate title="Select a company to create a Purchase Invoice" />}</main>
       </div>
     </SidebarProvider>
   );
