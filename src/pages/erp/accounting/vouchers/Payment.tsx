@@ -1,22 +1,30 @@
 /**
  * Payment.tsx — Full Payment Voucher form
  * Sprint 3B: TDS Auto-Intelligence Enhancement
+ * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
+ * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Send, Info, AlertTriangle, ChevronDown } from 'lucide-react';
+import { Info, AlertTriangle, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
-import { generateVoucherNo, vouchersKey, postVoucher } from '@/lib/finecore-engine';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
+import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { mapSACtoTDSSection } from '@/lib/sacTdsMap';
 import { computeTDS } from '@/lib/tds-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
@@ -42,6 +50,14 @@ interface VendorRef {
   lower_deduction_cert: string; lower_deduction_rate: number; lower_deduction_expiry: string;
 }
 
+interface POLineRef {
+  hsn_sac_code?: string;
+}
+interface PORef {
+  po_no?: string;
+  lines?: POLineRef[];
+}
+
 function mapBusinessEntityToDeducteeType(entity: string): 'individual' | 'company' | 'huf' | 'no_pan' {
   if (['private_limited', 'public_limited', 'llp', 'opc'].includes(entity)) return 'company';
   if (entity === 'huf') return 'huf';
@@ -54,15 +70,26 @@ interface PaymentPanelProps {
 }
 
 export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
-  const entityCode = 'SMRT';
-  const [voucherNo] = useState(() => generateVoucherNo('PV', entityCode));
+  const { entityCode } = useEntityCode();
+  useTenantConfig(entityCode);
+  const [voucherNo, setVoucherNo] = useState(() => generateVoucherNo('PV', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [refNo, setRefNo] = useState('');
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [partyName, setPartyName] = useState('');
-  const [bankCashLedger, setBankCashLedger] = useState('');
+  const [bankCashLedgerId, setBankCashLedgerId] = useState('');
+  const [bankCashLedgerName, setBankCashLedgerName] = useState('');
   const [paymentMode, setPaymentMode] = useState<'bank' | 'cash'>('bank');
   const [instrumentRef, setInstrumentRef] = useState('');
+  const [instrumentType, setInstrumentType] = useState<'NEFT' | 'RTGS' | 'IMPS' | 'UPI' | 'Cheque' | 'Cash' | 'DD'>('NEFT');
+  const [chequeDate, setChequeDate] = useState('');
+  const [bankName, setBankName] = useState('');
   const [amount, setAmount] = useState(0);
   const [narration, setNarration] = useState('');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // Sprint 3B state
   const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
@@ -80,8 +107,8 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   }, []);
 
   const selectedVendor = useMemo(() =>
-    vendors.find(v => v.partyName === partyName) ?? null,
-  [vendors, partyName]);
+    vendors.find(v => v.id === partyId) ?? null,
+  [vendors, partyId]);
 
   const isTdsApplicable = selectedVendor?.tdsApplicable ?? false;
 
@@ -106,8 +133,8 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     // Priority 2: PO line SAC codes
     if (poRef) {
       // [JWT] GET /api/procurement/purchase-orders
-      const pos = ls<any>(`erp_purchase_orders_${entityCode}`);
-      const po = pos.find((p: any) => p.po_no === poRef);
+      const pos = ls<PORef>(`erp_purchase_orders_${entityCode}`);
+      const po = pos.find((p) => p.po_no === poRef);
       if (po) {
         for (const line of po.lines ?? []) {
           const sec = mapSACtoTDSSection(line.hsn_sac_code ?? '');
@@ -151,23 +178,42 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const todayStr = new Date().toISOString().split('T')[0];
   const hasLowerCert = selectedVendor?.lower_deduction_cert && selectedVendor.lower_deduction_expiry > todayStr;
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Vendor name is required'); return; }
-    if (!bankCashLedger) { toast.error('Bank/Cash ledger is required'); return; }
+  const clearForm = useCallback(() => {
+    setVoucherNo(generateVoucherNo('PV', entityCode));
+    setDate(new Date().toISOString().split('T')[0]);
+    setRefNo(''); setRefDate(''); setEffectiveDate('');
+    setPartyId(''); setPartyName('');
+    setBankCashLedgerId(''); setBankCashLedgerName('');
+    setPaymentMode('bank'); setInstrumentRef(''); setInstrumentType('NEFT');
+    setChequeDate(''); setBankName('');
+    setAmount(0); setNarration('');
+    setPaymentPurpose('regular'); setAdvancePORef('');
+    setTdsSection(''); setTdsRate(0); setTdsAmount(0);
+    lastSavedRef.current = false;
+  }, [entityCode]);
+
+  const handlePost = useCallback(async () => {
+    if (!partyName) { toast.error('Vendor is required'); return; }
+    if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
+    setSaving(true);
     const now = new Date().toISOString();
     const billRefs: BillReference[] = paymentPurpose === 'advance'
       ? [{ voucher_id: '', voucher_no: '', voucher_date: date, amount, type: 'advance' }]
       : [];
+    const isCheque = instrumentType === 'Cheque';
     const voucher: Voucher = {
       id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
       voucher_type_name: 'Payment', base_voucher_type: 'Payment',
-      entity_id: entityCode, date, party_id: selectedVendor?.id ?? '',
+      entity_id: entityCode, date,
+      effective_date: effectiveDate || date,
+      ref_no: refNo || undefined, ref_date: refDate || undefined,
+      party_id: selectedVendor?.id ?? '',
       party_name: partyName, ref_voucher_no: '',
       vendor_bill_no: '', net_amount: netPayment, narration,
       terms_conditions: '', payment_enforcement: '',
       payment_instrument: `${paymentMode === 'bank' ? 'Bank' : 'Cash'}: ${instrumentRef}`,
-      from_ledger_name: bankCashLedger, to_ledger_name: partyName,
+      from_ledger_name: bankCashLedgerName, to_ledger_name: partyName,
       from_godown_name: '', to_godown_name: '',
       ledger_lines: [], gross_amount: amount, total_discount: 0,
       total_taxable: 0, total_cgst: 0, total_sgst: 0, total_igst: 0,
@@ -178,13 +224,35 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       deductee_type: deducteeType,
       bill_references: billRefs,
       po_ref: advancePORef,
+      instrument_type: instrumentType,
+      instrument_ref_no: instrumentRef || undefined,
+      cheque_date: isCheque ? (chequeDate || undefined) : undefined,
+      bank_name: isCheque ? (bankName || undefined) : undefined,
       status: 'draft', created_by: 'current-user', created_at: now, updated_at: now,
     };
     try {
       postVoucher(voucher, entityCode);
-      toast.success('Payment voucher posted');
-    } catch { toast.error('Failed to save'); }
-  }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment]);
+      toast.success(`Payment ${voucher.voucher_no} posted`);
+      lastSavedRef.current = true;
+    } catch {
+      toast.error('Failed to save');
+      lastSavedRef.current = false;
+    } finally {
+      setSaving(false);
+    }
+  }, [partyName, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
+  const handleCancel = useCallback(() => {
+    const dirty = amount > 0 || narration.length > 0 || partyName.length > 0 || bankCashLedgerId.length > 0;
+    if (dirty && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [amount, narration, partyName, bankCashLedgerId, clearForm]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -197,33 +265,45 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     }
   }, [onSaveDraft, partyName, date, amount]);
 
+  const applyAdvance = useCallback((adv: AdvanceEntry) => {
+    setAmount(prev => prev + (adv.balance_amount ?? 0));
+    toast.success(`Applied advance ${adv.advance_ref_no} (₹${(adv.balance_amount ?? 0).toLocaleString('en-IN')})`);
+  }, []);
+
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Payment Voucher</h2>
-          <p className="text-xs text-muted-foreground">Record payment to vendor</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Payment"
+        baseVoucherType="Payment"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        refNo={refNo} onRefNoChange={setRefNo}
+        refDate={refDate} onRefDateChange={setRefDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        effectiveDate={effectiveDate || date} onEffectiveDateChange={setEffectiveDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
+              <Label className="text-xs">Party (Vendor) *</Label>
+              <PartyPicker
+                value={partyId}
+                onChange={(row) => {
+                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                  else { setPartyId(''); setPartyName(''); }
+                }}
+                entityCode={entityCode}
+                mode="vendor"
+                compact
+              />
             </div>
             <div>
-              <Label className="text-xs">Party (Vendor)</Label>
-              <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
-            </div>
-            <div>
-              <Label className="text-xs">Amount (₹)</Label>
+              <Label className="text-xs">Amount (₹) *</Label>
               <Input type="number" value={amount || ''} onChange={e => setAmount(Number(e.target.value))} onKeyDown={onEnterNext} />
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs">Payment Mode</Label>
               <Select value={paymentMode} onValueChange={v => setPaymentMode(v as 'bank' | 'cash')}>
@@ -234,17 +314,51 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs">Bank / Cash Ledger</Label>
-              <Input value={bankCashLedger} onChange={e => setBankCashLedger(e.target.value)} onKeyDown={onEnterNext} placeholder="Ledger name" />
-            </div>
-            {paymentMode === 'bank' && (
-              <div>
-                <Label className="text-xs">Cheque / UTR / NEFT Ref</Label>
-                <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
-              </div>
-            )}
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label className="text-xs">Bank / Cash Ledger *</Label>
+              <LedgerPicker
+                value={bankCashLedgerId}
+                onChange={(id, name) => { setBankCashLedgerId(id); setBankCashLedgerName(name); }}
+                entityCode={entityCode}
+                allowedGroups={['CASH', 'BANK']}
+                placeholder="Select bank/cash ledger"
+                compact
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Instrument Type</Label>
+              <Select value={instrumentType} onValueChange={v => setInstrumentType(v as typeof instrumentType)}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NEFT">NEFT</SelectItem>
+                  <SelectItem value="RTGS">RTGS</SelectItem>
+                  <SelectItem value="IMPS">IMPS</SelectItem>
+                  <SelectItem value="UPI">UPI</SelectItem>
+                  <SelectItem value="Cheque">Cheque</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="DD">Demand Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{instrumentType === 'Cheque' ? 'Cheque No' : instrumentType === 'DD' ? 'DD No' : 'UTR / Ref No'}</Label>
+              <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
+            </div>
+          </div>
+          {instrumentType === 'Cheque' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs">Cheque Date</Label>
+                <Input type="date" value={chequeDate} onChange={e => setChequeDate(e.target.value)} onKeyDown={onEnterNext} />
+              </div>
+              <div>
+                <Label className="text-xs">Bank Name</Label>
+                <Input value={bankName} onChange={e => setBankName(e.target.value)} onKeyDown={onEnterNext} placeholder="Drawee bank" />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -364,7 +478,17 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
         <Alert className="border-blue-500/30 bg-blue-500/5">
           <Info className="h-4 w-4 text-blue-500" />
           <AlertDescription className="text-xs text-blue-700">
-            This vendor has {openAdvances.length} open advance(s) totalling ₹{openAdvances.reduce((s, a) => s + a.balance_amount, 0).toLocaleString('en-IN')} (Ref: {openAdvances.map(a => a.advance_ref_no).join(', ')}). If settling against an invoice, use the Settlement Panel to link these advances.
+            <div className="mb-2">This vendor has {openAdvances.length} open advance(s) totalling ₹{openAdvances.reduce((s, a) => s + a.balance_amount, 0).toLocaleString('en-IN')}.</div>
+            <div className="space-y-1">
+              {openAdvances.map(a => (
+                <div key={a.id} className="flex items-center justify-between gap-2 bg-background/60 rounded px-2 py-1">
+                  <span className="font-mono text-[11px]">{a.advance_ref_no} — ₹{a.balance_amount.toLocaleString('en-IN')}</span>
+                  <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => applyAdvance(a)}>
+                    <Plus className="h-3 w-3 mr-1" /> Apply
+                  </Button>
+                </div>
+              ))}
+            </div>
           </AlertDescription>
         </Alert>
       )}
@@ -374,16 +498,34 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       <Card>
         <CardContent className="pt-5">
           <Label className="text-xs">Narration</Label>
-          <Input value={narration} onChange={e => setNarration(e.target.value)} onKeyDown={onEnterNext} placeholder="Payment narration" />
+          <Textarea value={narration} onChange={e => setNarration(e.target.value)} placeholder="Payment narration" rows={2} />
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+      <div className="flex justify-end">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
+  );
+
+
+export default function Payment() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
+        <main><PaymentPanel /></main>
+      </div>
+    </SidebarProvider>
   );
 }
 

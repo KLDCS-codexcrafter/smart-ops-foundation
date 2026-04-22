@@ -1,24 +1,33 @@
 /**
  * Receipt.tsx — Full Receipt Voucher form
  * Sprint 3C: TDS Deducted by Customer (26AS)
+ * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
+ * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
 import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -44,30 +53,51 @@ interface TDSLineRow {
 
 const incomeTdsSections = ['194J', '194C', '194A', '194H', '194I', '194Q', '194R', '194S'];
 
+interface CustomerRef {
+  id: string;
+  partyName: string;
+  pan?: string;
+  is_tds_deductor?: boolean;
+  tan_number?: string;
+}
+
 interface ReceiptPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
   initialState?: Record<string, unknown>;
 }
 
 export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
-  const entityCode = 'SMRT';
-  const [voucherNo] = useState(() => generateVoucherNo('RV', entityCode));
+  const { entityCode } = useEntityCode();
+  // accountingMode read so engine.postVoucher emits voucher.posted with the correct routing tag.
+  useTenantConfig(entityCode);
+  const [voucherNo, setVoucherNo] = useState(() => generateVoucherNo('RV', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [refNo, setRefNo] = useState('');
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [partyName, setPartyName] = useState('');
-  const [bankCashLedger, setBankCashLedger] = useState('');
+  const [bankCashLedgerId, setBankCashLedgerId] = useState('');
+  const [bankCashLedgerName, setBankCashLedgerName] = useState('');
   const [paymentMode, setPaymentMode] = useState<'bank' | 'cash'>('bank');
   const [instrumentRef, setInstrumentRef] = useState('');
+  const [instrumentType, setInstrumentType] = useState<'NEFT' | 'RTGS' | 'IMPS' | 'UPI' | 'Cheque' | 'Cash'>('NEFT');
+  const [chequeDate, setChequeDate] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [depositDate, setDepositDate] = useState('');
   const [amount, setAmount] = useState(0);
   const [narration, setNarration] = useState('');
   const [receiptPurpose, setReceiptPurpose] = useState<'regular' | 'advance'>('regular');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // TDS Receivable state
   const [tdsEnabled, setTdsEnabled] = useState(false);
   const [tdsLines, setTdsLines] = useState<TDSLineRow[]>([]);
   const [commissionBanner, setCommissionBanner] = useState<string | null>(null);
 
-  // Load customers for party lookup
-  const customers = useMemo((): any[] => {
+  // Load customers for party lookup (used for TDS deductor flag + TAN resolution)
+  const customers = useMemo((): CustomerRef[] => {
     try {
       // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
@@ -75,11 +105,11 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   }, []);
 
   const selectedCustomer = useMemo(() =>
-    customers.find((c: any) => c.partyName === partyName) ?? null,
-  [customers, partyName]);
+    customers.find(c => c.id === partyId) ?? null,
+  [customers, partyId]);
 
   const isDeductor = selectedCustomer?.is_tds_deductor === true;
-  const customerTAN = selectedCustomer?.tan_number || '';
+  
 
   const addTdsLine = useCallback(() => {
     setTdsLines(prev => [...prev, {
@@ -113,14 +143,32 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
   const totalTds = tdsLines.reduce((s, l) => s + l.tds_amount, 0);
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Party name is required'); return; }
-    if (!bankCashLedger) { toast.error('Bank/Cash ledger is required'); return; }
+  const customerTAN = selectedCustomer?.tan_number ?? '';
+
+  const clearForm = useCallback(() => {
+    setVoucherNo(generateVoucherNo('RV', entityCode));
+    setDate(new Date().toISOString().split('T')[0]);
+    setRefNo(''); setRefDate(''); setEffectiveDate('');
+    setPartyId(''); setPartyName('');
+    setBankCashLedgerId(''); setBankCashLedgerName('');
+    setPaymentMode('bank'); setInstrumentRef(''); setInstrumentType('NEFT');
+    setChequeDate(''); setBankName(''); setDepositDate('');
+    setAmount(0); setNarration('');
+    setReceiptPurpose('regular');
+    setTdsEnabled(false); setTdsLines([]);
+    setCommissionBanner(null);
+    lastSavedRef.current = false;
+  }, [entityCode]);
+
+  const handlePost = useCallback(async () => {
+    if (!partyName) { toast.error('Customer is required'); return; }
+    if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
     if (tdsEnabled && tdsLines.length > 0 && !customerTAN) {
       toast.error('Customer TAN is required for TDS receivable. Configure in CustomerMaster.');
       return;
     }
+    setSaving(true);
     const now = new Date().toISOString();
     const billRefs: BillReference[] = receiptPurpose === 'advance'
       ? [{ voucher_id: '', voucher_no: '', voucher_date: date, amount, type: 'advance' }]
@@ -136,15 +184,19 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       net_amount: l.net_received,
     })) : [];
 
+    const isCheque = instrumentType === 'Cheque';
     const voucher: Voucher = {
       id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
       voucher_type_name: 'Receipt', base_voucher_type: 'Receipt',
-      entity_id: entityCode, date, party_id: selectedCustomer?.id ?? '',
+      entity_id: entityCode, date,
+      effective_date: effectiveDate || date,
+      ref_no: refNo || undefined, ref_date: refDate || undefined,
+      party_id: selectedCustomer?.id ?? '',
       party_name: partyName, ref_voucher_no: '',
       vendor_bill_no: '', net_amount: amount, narration,
       terms_conditions: '', payment_enforcement: '',
       payment_instrument: `${paymentMode === 'bank' ? 'Bank' : 'Cash'}: ${instrumentRef}`,
-      from_ledger_name: partyName, to_ledger_name: bankCashLedger,
+      from_ledger_name: partyName, to_ledger_name: bankCashLedgerName,
       from_godown_name: '', to_godown_name: '',
       ledger_lines: [], gross_amount: amount, total_discount: 0,
       total_taxable: 0, total_cgst: 0, total_sgst: 0, total_igst: 0,
@@ -152,6 +204,11 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       bill_references: billRefs,
       tds_receivable_lines: tdsReceivableLines.length > 0 ? tdsReceivableLines : undefined,
       deductee_pan: selectedCustomer?.pan ?? '',
+      instrument_type: instrumentType,
+      instrument_ref_no: instrumentRef || undefined,
+      cheque_date: isCheque ? (chequeDate || undefined) : undefined,
+      bank_name: isCheque ? (bankName || undefined) : undefined,
+      deposit_date: depositDate || undefined,
       status: 'draft', created_by: 'current-user', created_at: now, updated_at: now,
     };
     try {
@@ -207,9 +264,27 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
         }
       }
 
-      toast.success('Receipt voucher posted');
-    } catch { toast.error('Failed to save'); }
-  }, [partyName, bankCashLedger, amount, date, voucherNo, paymentMode, instrumentRef, narration, entityCode, selectedCustomer, receiptPurpose, tdsEnabled, tdsLines, customerTAN]);
+      toast.success(`Receipt ${voucher.voucher_no} posted`);
+      lastSavedRef.current = true;
+    } catch {
+      toast.error('Failed to save');
+      lastSavedRef.current = false;
+    } finally {
+      setSaving(false);
+    }
+  }, [partyName, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, depositDate, narration, entityCode, selectedCustomer, receiptPurpose, tdsEnabled, tdsLines, customerTAN, refNo, refDate, effectiveDate]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
+  const handleCancel = useCallback(() => {
+    const dirty = amount > 0 || narration.length > 0 || partyName.length > 0 || bankCashLedgerId.length > 0;
+    if (dirty && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [amount, narration, partyName, bankCashLedgerId, clearForm]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -226,61 +301,66 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Receipt Voucher</h2>
-          <p className="text-xs text-muted-foreground">Record money received from customer</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Receipt"
+        baseVoucherType="Receipt"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        refNo={refNo} onRefNoChange={setRefNo}
+        refDate={refDate} onRefDateChange={setRefDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        effectiveDate={effectiveDate || date} onEffectiveDateChange={setEffectiveDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
+              <Label className="text-xs">Party (Customer) *</Label>
+              <PartyPicker
+                value={partyId}
+                onChange={(row) => {
+                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                  else { setPartyId(''); setPartyName(''); }
+                }}
+                entityCode={entityCode}
+                mode="customer"
+                compact
+              />
             </div>
             <div>
-              <Label className="text-xs">Party (Customer)</Label>
-              <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer name" />
-            </div>
-            <div>
-              <Label className="text-xs">Amount (₹)</Label>
+              <Label className="text-xs">Amount (₹) *</Label>
               <Input type="number" value={amount || ''} onChange={e => setAmount(Number(e.target.value))} onKeyDown={onEnterNext} />
             </div>
-          </div>
-
-          {/* Receipt Purpose */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Receipt Purpose</Label>
-            <div className="flex gap-4">
-              {(['regular', 'advance'] as const).map(mode => (
-                <label key={mode} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="receiptPurpose" checked={receiptPurpose === mode}
-                    onChange={() => setReceiptPurpose(mode)}
-                    className="accent-teal-500" />
-                  <span className="text-xs capitalize">{mode === 'regular' ? 'Regular Receipt' : 'Advance Receipt'}</span>
-                </label>
-              ))}
+            <div>
+              <Label className="text-xs">Receipt Purpose</Label>
+              <Select value={receiptPurpose} onValueChange={v => setReceiptPurpose(v as 'regular' | 'advance')}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="regular">Regular Receipt</SelectItem>
+                  <SelectItem value="advance">Advance Receipt</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            {receiptPurpose === 'advance' && (
-              <div className="border-t pt-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Against Sales Order?</Label>
-                      <Input disabled placeholder="Available Sprint 27" className="opacity-50 mt-1" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>Sales Order integration available in Sprint 27</TooltipContent>
-                </Tooltip>
-                <p className="text-[10px] text-muted-foreground mt-1">This advance will generate ref ADVR/FY/XXXX on save.</p>
-              </div>
-            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {receiptPurpose === 'advance' && (
+            <div className="border-t pt-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Against Sales Order?</Label>
+                    <Input disabled placeholder="Available Sprint 27" className="opacity-50 mt-1" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Sales Order integration available in Sprint 27</TooltipContent>
+              </Tooltip>
+              <p className="text-[10px] text-muted-foreground mt-1">This advance will generate ref ADVR/FY/XXXX on save.</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-xs">Payment Mode</Label>
               <Select value={paymentMode} onValueChange={v => setPaymentMode(v as 'bank' | 'cash')}>
@@ -292,16 +372,53 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Bank / Cash Ledger</Label>
-              <Input value={bankCashLedger} onChange={e => setBankCashLedger(e.target.value)} onKeyDown={onEnterNext} placeholder="Ledger name" />
+              <Label className="text-xs">Bank / Cash Ledger *</Label>
+              <LedgerPicker
+                value={bankCashLedgerId}
+                onChange={(id, name) => { setBankCashLedgerId(id); setBankCashLedgerName(name); }}
+                entityCode={entityCode}
+                allowedGroups={['CASH', 'BANK']}
+                placeholder="Select bank/cash ledger"
+                compact
+              />
             </div>
-            {paymentMode === 'bank' && (
-              <div>
-                <Label className="text-xs">Cheque / NEFT / RTGS Ref</Label>
-                <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs">Instrument Type</Label>
+              <Select value={instrumentType} onValueChange={v => setInstrumentType(v as typeof instrumentType)}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NEFT">NEFT</SelectItem>
+                  <SelectItem value="RTGS">RTGS</SelectItem>
+                  <SelectItem value="IMPS">IMPS</SelectItem>
+                  <SelectItem value="UPI">UPI</SelectItem>
+                  <SelectItem value="Cheque">Cheque</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{instrumentType === 'Cheque' ? 'Cheque No' : 'UTR / Ref No'}</Label>
+              <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder={instrumentType === 'Cheque' ? 'Cheque number' : 'Reference number'} />
+            </div>
           </div>
+
+          {instrumentType === 'Cheque' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label className="text-xs">Cheque Date</Label>
+                <Input type="date" value={chequeDate} onChange={e => setChequeDate(e.target.value)} onKeyDown={onEnterNext} />
+              </div>
+              <div>
+                <Label className="text-xs">Bank Name</Label>
+                <Input value={bankName} onChange={e => setBankName(e.target.value)} onKeyDown={onEnterNext} placeholder="Drawee bank" />
+              </div>
+              <div>
+                <Label className="text-xs">Deposit Date (optional)</Label>
+                <Input type="date" value={depositDate} onChange={e => setDepositDate(e.target.value)} onKeyDown={onEnterNext} />
+                <p className="text-[10px] text-muted-foreground mt-0.5">Blank = "in hand", filled = "deposited"</p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -395,15 +512,22 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       <Card>
         <CardContent className="pt-5">
           <Label className="text-xs">Narration</Label>
-          <Input value={narration} onChange={e => setNarration(e.target.value)} onKeyDown={onEnterNext} placeholder="Receipt narration" />
+          <Textarea value={narration} onChange={e => setNarration(e.target.value)} placeholder="Receipt narration" rows={2} />
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+      <div className="flex justify-end">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
   );
 }
