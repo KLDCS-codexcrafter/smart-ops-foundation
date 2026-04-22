@@ -27,6 +27,8 @@ import type { Order, OrderLine } from '@/types/order';
 import { indianStates } from '@/data/india-geography';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import {
   PartyDispatchDialog, ItemAllocationDialog,
@@ -591,11 +593,12 @@ export function SalesOrderPanel({ entityCode }: SalesOrderPanelProps) {
 }
 
 export default function SalesOrder() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Order' }]} showDatePicker={false} showCompany={false} />
-        <main><SalesOrderPanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Order' }]} showDatePicker={false} />
+        <main>{entityCode ? <SalesOrderPanel entityCode={entityCode} /> : <SelectCompanyGate />}</main>
       </div>
     </SidebarProvider>
   );
