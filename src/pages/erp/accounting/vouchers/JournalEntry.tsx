@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
+
 import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
