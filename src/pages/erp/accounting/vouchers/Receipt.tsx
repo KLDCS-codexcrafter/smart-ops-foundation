@@ -550,6 +550,8 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
         status="draft"
       />
     </div>
+    {GuardDialog}
+    </>
   );
 }
 
