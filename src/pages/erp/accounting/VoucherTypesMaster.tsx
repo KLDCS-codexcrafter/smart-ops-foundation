@@ -40,6 +40,9 @@ import { useVoucherTypes } from '@/hooks/useVoucherTypes';
 import type {
   VoucherType, VoucherFamily, VoucherBaseType, ActivationType,
   BehaviourRule, BehaviourRuleType, NumberingMethod,
+  AutoPostConfig, ApprovalGateConfig, NarrationTemplateConfig,
+  ValidationConfig, SettlementConfig, TaxTriggerConfig,
+  AutoReversalConfig, ForexCaptureConfig, ForexSettlementConfig,
 } from '@/types/voucher-type';
 import {
   FAMILY_COLORS, NO_LINE_NARRATION_TYPES,
@@ -226,17 +229,17 @@ function RuleCard({ rule, inherited = false, onToggle, onRemove }:
         <span className="font-medium text-foreground">{rule.label}</span>
         {rule.rule_type === 'auto_post' && (
           <p className="text-muted-foreground font-mono text-[10px] mt-0.5">
-            Dr {(rule.config as any).debit_ledger_name} / Cr {(rule.config as any).credit_ledger_name}
+            Dr {(rule.config as AutoPostConfig).debit_ledger_name} / Cr {(rule.config as AutoPostConfig).credit_ledger_name}
           </p>
         )}
         {rule.rule_type === 'approval_gate' && (
           <p className="text-muted-foreground text-[10px] mt-0.5">
-            Above ₹{Number((rule.config as any).threshold_amount || 0).toLocaleString('en-IN')} → {(rule.config as any).approver_role}
+            Above ₹{Number((rule.config as ApprovalGateConfig).threshold_amount || 0).toLocaleString('en-IN')} → {(rule.config as ApprovalGateConfig).approver_role}
           </p>
         )}
         {rule.rule_type === 'narration_template' && (
           <p className="text-muted-foreground font-mono text-[10px] mt-0.5 truncate">
-            {(rule.config as any).template}
+            {(rule.config as NarrationTemplateConfig).template}
           </p>
         )}
       </div>
@@ -316,7 +319,8 @@ function VoucherSheet({
       if (!editVt && !freshForm.default_jurisdiction) {
         try {
           // [JWT] GET /api/foundation/companies
-          const companies: any[] = JSON.parse(localStorage.getItem('erp_companies') || '[]');
+          interface CompanyRef { hqCity?: string; hqState?: string; jurisdiction?: string }
+          const companies: CompanyRef[] = JSON.parse(localStorage.getItem('erp_companies') || '[]');
           const co = companies[0];
           if (co) {
             const parts = [co.hqCity, co.hqState].filter(Boolean);
@@ -366,7 +370,7 @@ function VoucherSheet({
 
   const addNew = (rt: BehaviourRuleType) => {
     if (!editVt) return;
-    const cfgs: Record<BehaviourRuleType, any> = {
+    const cfgs: Record<BehaviourRuleType, AutoPostConfig | ValidationConfig | SettlementConfig | TaxTriggerConfig | ApprovalGateConfig | AutoReversalConfig | NarrationTemplateConfig | ForexCaptureConfig | ForexSettlementConfig> = {
       auto_post:          { debit_ledger_code:'', debit_ledger_name:'Select ledger', credit_ledger_code:'', credit_ledger_name:'Select ledger', amount_mode:'full' },
       validation:         { require_party:true, require_narration:false, block_future_date:false, require_cost_centre:false },
       settlement:         { auto_settle:true, settle_against:'invoices', method:'fifo', show_bill_by_bill:true },

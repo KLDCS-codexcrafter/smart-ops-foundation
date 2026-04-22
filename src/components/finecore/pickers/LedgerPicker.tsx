@@ -27,6 +27,7 @@ import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, Command
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { InlineMasterCreate } from '@/components/finecore/InlineMasterCreate';
 
 /** Minimal projection of a ledger row — works with the existing
@@ -160,7 +161,12 @@ export function LedgerPicker({
                 No matching ledger.
                 {allowCreate && (
                   <Button variant="link" size="sm" className="ml-1 h-6"
-                    onClick={() => { setOpen(false); setCreateOpen(true); }}>
+                    onClick={() => {
+                      setOpen(false);
+                      // TODO (Polish 1.5): remove this toast once InlineMasterCreate ships its real form.
+                      toast.info('Ledger creation form coming soon. For now, please create from Ledger Master.');
+                      setCreateOpen(true);
+                    }}>
                     Create "{search}"
                   </Button>
                 )}
@@ -181,7 +187,12 @@ export function LedgerPicker({
               {allowCreate && filtered.length > 0 && (
                 <div className="p-1 border-t">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs"
-                    onClick={() => { setOpen(false); setCreateOpen(true); }}>
+                    onClick={() => {
+                      setOpen(false);
+                      // TODO (Polish 1.5): remove this toast once InlineMasterCreate ships its real form.
+                      toast.info('Ledger creation form coming soon. For now, please create from Ledger Master.');
+                      setCreateOpen(true);
+                    }}>
                     <Plus className="h-3.5 w-3.5 mr-1" /> Create new ledger
                   </Button>
                 </div>

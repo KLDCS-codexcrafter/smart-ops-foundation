@@ -112,7 +112,7 @@ const l3Name = (code: string): string => {
 const isCompany = (e: string) => ['Private Limited', 'Public Limited', 'OPC'].includes(e);
 const isPartnershipOrLLP = (e: string) => ['LLP', 'Partnership'].includes(e);
 const isProprietorshipOrHUF = (e: string) => ['Sole Proprietorship', 'HUF'].includes(e);
-const isExportEntity = (o: SetupOptions) => o.businessActivity === 'Import / Export' || (o as any).specialZone === 'SEZ';
+const isExportEntity = (o: SetupOptions) => o.businessActivity === 'Import / Export' || (o as SetupOptions & { specialZone?: string }).specialZone === 'SEZ';
 
 const createDefaultLedgers = (opts: SetupOptions): number => {
   const isMfg = opts.businessActivity === 'Manufacturing';
@@ -248,8 +248,9 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     entities.forEach(entity => {
       const key = `erp_entity_${entity.id}_ledger_instances`;
       // [JWT] GET /api/entities/setup/:entityId
-      const inst = JSON.parse(localStorage.getItem(key) || '[]');
-      if (!inst.find((i: any) => i.ledgerDefinitionId === def.id)) {
+      type LedgerInstanceRef = { id: string; ledgerDefinitionId: string; [k: string]: unknown };
+      const inst: LedgerInstanceRef[] = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!inst.find((i) => i.ledgerDefinitionId === def.id)) {
         inst.push({
           id: crypto.randomUUID(),
           ledgerDefinitionId: def.id,
@@ -282,8 +283,9 @@ const loadIndustryPack = (businessActivity: string): number => {
 
   // [JWT] GET /api/entities/setup/:entityId
   const raw = localStorage.getItem('erp_group_finframe_l4_groups');
-  const existing = raw ? JSON.parse(raw) : [];
-  const existingNames = new Set(existing.map((g: any) => g.name.toLowerCase()));
+  interface L4GroupRef { name: string; parentL3Code: string; }
+  const existing: L4GroupRef[] = raw ? JSON.parse(raw) : [];
+  const existingNames = new Set(existing.map((g) => g.name.toLowerCase()));
 
   // Always load common pack
   const packs = [
@@ -295,7 +297,7 @@ const loadIndustryPack = (businessActivity: string): number => {
   const toCreate = packs
     .filter(g => !existingNames.has(g.name.toLowerCase()))
     .map(g => {
-      const existingCount = existing.filter((e: any) => e.parentL3Code === g.l3Code).length;
+      const existingCount = existing.filter((e) => e.parentL3Code === g.l3Code).length;
       l3Counters[g.l3Code] = (l3Counters[g.l3Code] ?? 0) + 1;
       return {
         id: crypto.randomUUID(),
@@ -460,7 +462,8 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
 export const createDefaultBusinessUnit = (entityId: string, entityName: string, entityShortCode: string): void => {
   const BU_KEY = 'erp_group_business_unit_master';
   // [JWT] GET /api/entities/setup/:entityId
-  const existing: any[] = JSON.parse(localStorage.getItem(BU_KEY) || '[]');
+  interface BusinessUnitRef { id: string; name: string; entityId?: string; parentEntityId?: string; unitType?: string }
+  const existing: BusinessUnitRef[] = JSON.parse(localStorage.getItem(BU_KEY) || '[]');
   // Don't create if already exists for this entity
   if (existing.some(u => u.parentEntityId === entityId && u.unitType === 'branch_office')) return;
   const defaultUnit = {
@@ -599,8 +602,9 @@ const UOM_SEED_DATA=[
 const createDefaultUOMs=():number=>{
     const key='erp_uom';
     // [JWT] GET /api/entities/setup/:entityId
-    const existing:any[]=JSON.parse(localStorage.getItem(key)||'[]');
-    const existingSymbols=new Set(existing.map((u:any)=>u.symbol));
+    interface UOMRef { id?: string; symbol: string }
+    const existing: UOMRef[] = JSON.parse(localStorage.getItem(key)||'[]');
+    const existingSymbols = new Set(existing.map((u) => u.symbol));
     const toCreate=UOM_SEED_DATA.filter(u=>!existingSymbols.has(u.symbol))
         .map(u=>({...u,id:crypto.randomUUID(),status:'active',is_active:true,
             created_at:new Date().toISOString(),updated_at:new Date().toISOString()}));
