@@ -36,7 +36,7 @@ import { eventBus } from '@/lib/event-bus';
 import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface SalesOrderPanelProps {
-  entityCode?: string;
+  entityCode: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -49,7 +49,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_TABS = ['all', 'open', 'partial', 'closed', 'preclosed', 'cancelled'] as const;
 
-export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
+export function SalesOrderPanel({ entityCode }: SalesOrderPanelProps) {
   const { orders, createOrder, preCloseOrder, cancelOrder, reload } = useOrders(entityCode);
   const { items } = useInventoryItems();
   const { lists: priceLists, items: priceListItems } = usePriceLists();

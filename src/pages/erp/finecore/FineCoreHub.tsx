@@ -6,7 +6,8 @@
 import { useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useVouchers } from '@/hooks/useVouchers';
 import { useJournal } from '@/hooks/useJournal';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
@@ -84,8 +85,7 @@ const QUICK_ENTRIES: Array<{
 ];
 
 export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const { vouchers } = useVouchers(entityCode);
   const { getTrialBalanceAsOf, getLedgerBalance } = useJournal(entityCode);
@@ -469,14 +469,15 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
 }
 
 export default function FineCoreHub() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[
           { label: 'Fin Core', href: '/erp/finecore' },
-        ]} showDatePicker={false} showCompany={false} />
+        ]} showDatePicker={false} />
         <main>
-          <FineCoreHubPanel />
+          {entityCode ? <FineCoreHubPanel /> : <SelectCompanyGate />}
         </main>
       </div>
     </SidebarProvider>
