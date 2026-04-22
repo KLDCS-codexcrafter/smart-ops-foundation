@@ -1192,6 +1192,8 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         </DialogContent>
       </Dialog>
     </div>
+    {GuardDialog}
+    </>
   );
 }
 
