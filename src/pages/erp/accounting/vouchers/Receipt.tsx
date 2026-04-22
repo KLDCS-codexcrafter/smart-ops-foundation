@@ -1,24 +1,33 @@
 /**
  * Receipt.tsx — Full Receipt Voucher form
  * Sprint 3C: TDS Deducted by Customer (26AS)
+ * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
+ * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
+import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useTenantConfig } from '@/hooks/useTenantConfig';
 import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -44,30 +53,51 @@ interface TDSLineRow {
 
 const incomeTdsSections = ['194J', '194C', '194A', '194H', '194I', '194Q', '194R', '194S'];
 
+interface CustomerRef {
+  id: string;
+  partyName: string;
+  pan?: string;
+  is_tds_deductor?: boolean;
+  tan_number?: string;
+}
+
 interface ReceiptPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
   initialState?: Record<string, unknown>;
 }
 
 export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
-  const entityCode = 'SMRT';
-  const [voucherNo] = useState(() => generateVoucherNo('RV', entityCode));
+  const { entityCode } = useEntityCode();
+  // accountingMode read so engine.postVoucher emits voucher.posted with the correct routing tag.
+  useTenantConfig(entityCode);
+  const [voucherNo, setVoucherNo] = useState(() => generateVoucherNo('RV', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [refNo, setRefNo] = useState('');
+  const [refDate, setRefDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [partyId, setPartyId] = useState('');
   const [partyName, setPartyName] = useState('');
-  const [bankCashLedger, setBankCashLedger] = useState('');
+  const [bankCashLedgerId, setBankCashLedgerId] = useState('');
+  const [bankCashLedgerName, setBankCashLedgerName] = useState('');
   const [paymentMode, setPaymentMode] = useState<'bank' | 'cash'>('bank');
   const [instrumentRef, setInstrumentRef] = useState('');
+  const [instrumentType, setInstrumentType] = useState<'NEFT' | 'RTGS' | 'IMPS' | 'UPI' | 'Cheque' | 'Cash'>('NEFT');
+  const [chequeDate, setChequeDate] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [depositDate, setDepositDate] = useState('');
   const [amount, setAmount] = useState(0);
   const [narration, setNarration] = useState('');
   const [receiptPurpose, setReceiptPurpose] = useState<'regular' | 'advance'>('regular');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // TDS Receivable state
   const [tdsEnabled, setTdsEnabled] = useState(false);
   const [tdsLines, setTdsLines] = useState<TDSLineRow[]>([]);
   const [commissionBanner, setCommissionBanner] = useState<string | null>(null);
 
-  // Load customers for party lookup
-  const customers = useMemo((): any[] => {
+  // Load customers for party lookup (used for TDS deductor flag + TAN resolution)
+  const customers = useMemo((): CustomerRef[] => {
     try {
       // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_customer_master') || '[]');
@@ -75,8 +105,8 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   }, []);
 
   const selectedCustomer = useMemo(() =>
-    customers.find((c: any) => c.partyName === partyName) ?? null,
-  [customers, partyName]);
+    customers.find(c => c.id === partyId) ?? null,
+  [customers, partyId]);
 
   const isDeductor = selectedCustomer?.is_tds_deductor === true;
   const customerTAN = selectedCustomer?.tan_number || '';
