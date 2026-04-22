@@ -46,17 +46,19 @@ export function DistributorIntimationQueuePanel() { return <DistributorIntimatio
 
 export default function DistributorIntimationQueue() {
   const { entityCode } = useEntityCode();
+  if (!entityCode) {
+    return <SelectCompanyGate />;
+  }
+  return <DistributorIntimationQueueInner entityCode={entityCode} />;
+}
 
+function DistributorIntimationQueueInner({ entityCode }: { entityCode: string }) {
   const [refresh, setRefresh] = useState(0);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<IntimationStatus | 'all'>('all');
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
-
-  if (!entityCode) {
-    return <SelectCompanyGate />;
-  }
 
   const all = useMemo<DistributorPaymentIntimation[]>(
     () => ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode))
