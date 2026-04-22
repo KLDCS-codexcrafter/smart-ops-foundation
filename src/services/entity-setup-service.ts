@@ -248,7 +248,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
     entities.forEach(entity => {
       const key = `erp_entity_${entity.id}_ledger_instances`;
       // [JWT] GET /api/entities/setup/:entityId
-      interface LedgerInstanceRef { id: string; ledgerDefinitionId: string; }
+      type LedgerInstanceRef = { id: string; ledgerDefinitionId: string; [k: string]: unknown };
       const inst: LedgerInstanceRef[] = JSON.parse(localStorage.getItem(key) || '[]');
       if (!inst.find((i) => i.ledgerDefinitionId === def.id)) {
         inst.push({
