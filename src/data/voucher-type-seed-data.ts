@@ -189,6 +189,13 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     allow_line_narration: false,
     numbering_prefix: 'SJ-', numbering_width: 4, current_sequence: 1,
   }),
+  seed('vt-manufacturing-journal', {
+    name: 'Manufacturing Journal', abbreviation: 'MJ', base_voucher_type: 'Manufacturing Journal', family: 'Inventory',
+    is_active: false, activation_type: 'on_use',
+    accounting_impact: true, inventory_impact: true,
+    allow_line_narration: false,
+    numbering_prefix: 'MJ-', numbering_width: 4, current_sequence: 1,
+  }),
   seed('vt-stock-transfer', {
     name: 'Stock Transfer', abbreviation: 'ST', base_voucher_type: 'Stock Transfer', family: 'Inventory',
     is_active: true, activation_type: 'active',
