@@ -44,7 +44,7 @@ const PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
 export function OpeningLedgerBalanceModule() {
   const { entityCode } = useEntityCode();
   if (!entityCode) {
-    return <SelectCompanyGate />;
+    return <SelectCompanyGate title="Select a company to enter opening ledger balances" />;
   }
   return <OpeningLedgerBalanceInner entityCode={entityCode} />;
 }

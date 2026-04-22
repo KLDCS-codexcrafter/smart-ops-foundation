@@ -1271,7 +1271,7 @@ export default function LogisticMaster() {
         <div className="flex-1">
           <ERPHeader breadcrumbs={[{ label: 'Masters' }, { label: 'Logistic Master' }]} />
           <div className="p-6 max-w-7xl mx-auto">
-            {entityCode ? <LogisticMasterPanel /> : <SelectCompanyGate />}
+            {entityCode ? <LogisticMasterPanel /> : <SelectCompanyGate title="Select a company to manage logistics" />}
           </div>
         </div>
       </div>

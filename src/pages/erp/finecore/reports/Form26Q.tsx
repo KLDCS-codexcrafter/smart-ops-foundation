@@ -87,7 +87,7 @@ export function Form26QPanel({ entityCode }: Props) {
           <div><span className="text-muted-foreground">TAN:</span> <span className="font-mono">{gstConfig.tan_number || 'Not set'}</span></div>
           <div><span className="text-muted-foreground">Name:</span> {gstConfig.entityName || '4DSmartOps Pvt Ltd'}</div>
           <div className="flex gap-2">
-            <Select value={quarter} onValueChange={v => setQuarter(v as any)}>
+            <Select value={quarter} onValueChange={v => setQuarter(v as 'Q1' | 'Q2' | 'Q3' | 'Q4')}>
               <SelectTrigger className="h-7 text-xs w-20"><SelectValue /></SelectTrigger>
               <SelectContent>{['Q1','Q2','Q3','Q4'].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}</SelectContent>
             </Select>

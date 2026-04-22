@@ -718,7 +718,7 @@ export default function OpeningStockEntry() {
       <div className="min-h-screen flex flex-col w-full bg-background">
         <ERPHeader />
         <main className="flex-1 overflow-x-auto">
-          {entityCode ? <OpeningStockPanel /> : <SelectCompanyGate />}
+          {entityCode ? <OpeningStockPanel /> : <SelectCompanyGate title="Select a company to enter opening stock" />}
         </main>
       </div>
     </SidebarProvider>

@@ -187,7 +187,7 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
             <div><Label className="text-xs">Penalty</Label><Input type="number" value={form.penalty || ''} onChange={e => setForm(f => ({ ...f, penalty: Number(e.target.value) }))} onKeyDown={onEnterNext} /></div>
             <div><Label className="text-xs">Assessment Year</Label><Input value={form.assessment_year} onChange={e => setForm(f => ({ ...f, assessment_year: e.target.value }))} onKeyDown={onEnterNext} /></div>
             <div><Label className="text-xs">Quarter</Label>
-              <Select value={form.quarter} onValueChange={v => setForm(f => ({ ...f, quarter: v as any }))}>
+              <Select value={form.quarter} onValueChange={v => setForm(f => ({ ...f, quarter: v as 'Q1' | 'Q2' | 'Q3' | 'Q4' }))}>
                 <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>{['Q1','Q2','Q3','Q4'].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}</SelectContent>
               </Select></div>

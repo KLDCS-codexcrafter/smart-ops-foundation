@@ -477,7 +477,7 @@ export default function FineCoreHub() {
           { label: 'Fin Core', href: '/erp/finecore' },
         ]} showDatePicker={false} />
         <main>
-          {entityCode ? <FineCoreHubPanel /> : <SelectCompanyGate />}
+          {entityCode ? <FineCoreHubPanel /> : <SelectCompanyGate title="Select a company to view Fin Core Hub" />}
         </main>
       </div>
     </SidebarProvider>
