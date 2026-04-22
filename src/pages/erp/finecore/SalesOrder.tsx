@@ -27,6 +27,8 @@ import type { Order, OrderLine } from '@/types/order';
 import { indianStates } from '@/data/india-geography';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import {
   PartyDispatchDialog, ItemAllocationDialog,
@@ -36,7 +38,7 @@ import { eventBus } from '@/lib/event-bus';
 import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface SalesOrderPanelProps {
-  entityCode?: string;
+  entityCode: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -49,7 +51,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_TABS = ['all', 'open', 'partial', 'closed', 'preclosed', 'cancelled'] as const;
 
-export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
+export function SalesOrderPanel({ entityCode }: SalesOrderPanelProps) {
   const { orders, createOrder, preCloseOrder, cancelOrder, reload } = useOrders(entityCode);
   const { items } = useInventoryItems();
   const { lists: priceLists, items: priceListItems } = usePriceLists();
@@ -591,11 +593,12 @@ export function SalesOrderPanel({ entityCode = 'SMRT' }: SalesOrderPanelProps) {
 }
 
 export default function SalesOrder() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Order' }]} showDatePicker={false} showCompany={false} />
-        <main><SalesOrderPanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Order' }]} showDatePicker={false} />
+        <main>{entityCode ? <SalesOrderPanel entityCode={entityCode} /> : <SelectCompanyGate />}</main>
       </div>
     </SidebarProvider>
   );

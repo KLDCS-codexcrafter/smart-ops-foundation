@@ -14,7 +14,8 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Plus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOpeningBalances } from '@/hooks/useOpeningBalances';
 import { onEnterNext, toIndianFormat, amountInputProps } from '@/lib/keyboard';
 import type { OpeningBillEntry } from '@/types/opening-balance';
@@ -41,8 +42,14 @@ interface LedgerDef {
 const PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
 
 export function OpeningLedgerBalanceModule() {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
+  if (!entityCode) {
+    return <SelectCompanyGate />;
+  }
+  return <OpeningLedgerBalanceInner entityCode={entityCode} />;
+}
+
+function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
   const ob = useOpeningBalances(entityCode);
 
   const [tab, setTab] = useState<'ledgers' | 'bills'>('ledgers');

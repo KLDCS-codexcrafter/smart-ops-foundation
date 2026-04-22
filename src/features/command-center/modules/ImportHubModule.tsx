@@ -20,7 +20,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import {
   openingBillsKey, openingLoansKey,
   type OpeningBillEntry, type OpeningLoanEntry,
@@ -486,11 +487,14 @@ function makeAppender(storageKey: string) {
 
 // ───────────────────────── Module shell ─────────────────────────
 export function ImportHubModule() {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const [openingOpen, setOpeningOpen] = useState(true);
   const [mastersOpen, setMastersOpen] = useState(false);
+
+  if (!entityCode) {
+    return <SelectCompanyGate />;
+  }
 
   // ── Custom importers for opening balance bills / loans ───────────
   const importBills = (rows: Record<string, unknown>[], startTime: string): number => {

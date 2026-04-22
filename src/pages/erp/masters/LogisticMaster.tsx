@@ -32,7 +32,8 @@ import {
   DEFAULT_ZONE_DEFINITIONS, transporterRateCardsKey,
   type TransporterRateCard,
 } from '@/types/transporter-rate';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -199,8 +200,7 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
 // ─── Panel Component ──────────────────────────────────────────
 
 export function LogisticMasterPanel() {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const [logistics, setLogistics] = useState<LogisticMasterDefinition[]>(() => loadLogistics());
   const [addOpen, setAddOpen] = useState(false);
@@ -1264,13 +1264,14 @@ export function LogisticMasterPanel() {
 // ─── Page Wrapper ─────────────────────────────────────────────
 
 export default function LogisticMaster() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider>
       <div className="flex min-h-svh w-full">
         <div className="flex-1">
           <ERPHeader breadcrumbs={[{ label: 'Masters' }, { label: 'Logistic Master' }]} />
           <div className="p-6 max-w-7xl mx-auto">
-            <LogisticMasterPanel />
+            {entityCode ? <LogisticMasterPanel /> : <SelectCompanyGate />}
           </div>
         </div>
       </div>

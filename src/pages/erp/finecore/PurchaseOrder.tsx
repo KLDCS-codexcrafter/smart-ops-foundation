@@ -26,6 +26,8 @@ import { useItemVendors } from '@/hooks/useItemVendors';
 import type { Order, OrderLine } from '@/types/order';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import {
   PartyDispatchDialog, ItemAllocationDialog,
@@ -35,7 +37,7 @@ import { eventBus } from '@/lib/event-bus';
 import type { VoucherDispatchDetails } from '@/types/voucher';
 
 interface PurchaseOrderPanelProps {
-  entityCode?: string;
+  entityCode: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -48,7 +50,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_TABS = ['all', 'open', 'partial', 'closed', 'preclosed', 'cancelled'] as const;
 
-export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelProps) {
+export function PurchaseOrderPanel({ entityCode }: PurchaseOrderPanelProps) {
   const { orders, createOrder, preCloseOrder, cancelOrder, reload } = useOrders(entityCode);
   const { items } = useInventoryItems();
   const { vendors: itemVendors } = useItemVendors();
@@ -558,11 +560,12 @@ export function PurchaseOrderPanel({ entityCode = 'SMRT' }: PurchaseOrderPanelPr
 }
 
 export default function PurchaseOrder() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Order' }]} showDatePicker={false} showCompany={false} />
-        <main><PurchaseOrderPanel /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Order' }]} showDatePicker={false} />
+        <main>{entityCode ? <PurchaseOrderPanel entityCode={entityCode} /> : <SelectCompanyGate />}</main>
       </div>
     </SidebarProvider>
   );
