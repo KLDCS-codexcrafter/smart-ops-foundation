@@ -33,7 +33,9 @@ import type { CommissionEntry } from '@/types/commission-register';
 import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { salesReturnMemosKey, type SalesReturnMemo } from '@/types/sales-return-memo';
 
 const REASON_CODES = [
@@ -47,8 +49,7 @@ interface CreditNotePanelProps {
 }
 
 export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
   const [searchParams] = useSearchParams();
   const fromMemoId = searchParams.get('from_memo');
 

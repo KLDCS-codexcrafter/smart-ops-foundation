@@ -33,7 +33,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
-import { SelectCompanyGate } from '@/components/finecore/SelectCompanyGate';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 function ls<T>(key: string): T[] {
   try {

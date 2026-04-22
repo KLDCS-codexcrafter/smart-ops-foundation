@@ -18,6 +18,9 @@ import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 interface ReceiptNotePanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -25,7 +28,7 @@ interface ReceiptNotePanelProps {
 }
 
 export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
-  const entityCode = 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('GRN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');

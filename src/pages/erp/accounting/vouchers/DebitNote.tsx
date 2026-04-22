@@ -21,6 +21,9 @@ import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/v
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const REASON_CODES = [
   'Goods Return', 'Short Supply', 'Overcharge',
@@ -33,7 +36,7 @@ interface DebitNotePanelProps {
 }
 
 export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
-  const entityCode = 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('DN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');

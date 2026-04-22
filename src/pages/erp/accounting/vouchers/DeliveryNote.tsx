@@ -20,7 +20,9 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOrders } from '@/hooks/useOrders';
 import { calculateInvoiceCommission } from '@/lib/sam-engine';
 import type { CommissionResult } from '@/lib/sam-engine';
@@ -57,8 +59,7 @@ interface DeliveryNotePanelProps {
 }
 
 export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const [voucherNo] = useState(() => generateVoucherNo('DLN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);

@@ -18,6 +18,9 @@ import type { Voucher } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const PURPOSES = ['Store Transfer', 'Production Issue', 'Scrap', 'Sample', 'Other'];
 
@@ -27,7 +30,7 @@ interface StockJournalPanelProps {
 }
 
 export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
-  const entityCode = 'SMRT';
+  const { entityCode } = useEntityCode();
   const [voucherNo] = useState(() => generateVoucherNo('SJ', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [purpose, setPurpose] = useState('Store Transfer');
