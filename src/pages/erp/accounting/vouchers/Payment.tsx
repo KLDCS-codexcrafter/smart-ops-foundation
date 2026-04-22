@@ -516,23 +516,16 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       />
     </div>
   );
-}
 
-      <SettlementPanel partyId={partyName} entityCode={entityCode} mode="creditor" />
 
-      <Card>
-        <CardContent className="pt-5">
-          <Label className="text-xs">Narration</Label>
-          <Input value={narration} onChange={e => setNarration(e.target.value)} onKeyDown={onEnterNext} placeholder="Payment narration" />
-        </CardContent>
-      </Card>
-
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+export default function Payment() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen bg-background">
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
+        <main><PaymentPanel /></main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
 
