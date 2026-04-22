@@ -227,6 +227,18 @@ export interface Voucher {
 
   /** NEW (Sprint T10-pre.0) — Tally-Prime-style dispatch + addressing block */
   dispatch_details?: VoucherDispatchDetails;
+
+  /** NEW (Sprint T10-pre.1a Session B) — Contra/Receipt/Payment instrument metadata. */
+  instrument_type?: string;       // e.g. NEFT, RTGS, IMPS, UPI, Cheque Deposit, Cash Deposit, DD
+  instrument_ref_no?: string;     // UTR / cheque no / DD no / slip no
+  /** Cheque-specific fields, surfaced only when instrument is a cheque. */
+  cheque_date?: string;           // YYYY-MM-DD
+  bank_name?: string;
+  /** Bank reconciliation hint — blank = "in hand", filled = "deposited". */
+  deposit_date?: string;          // YYYY-MM-DD
+
+  /** NEW (Session B) — JV-style party type tag (when JV references a customer/vendor). */
+  party_type?: 'customer' | 'vendor';
 }
 
 /**
