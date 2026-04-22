@@ -8,6 +8,7 @@ import { GlobalDateRangeProvider } from '@/hooks/useGlobalDateRange';
 import { LanguageProvider } from '@/hooks/useLanguage';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ERPCompanyProvider } from '@/components/layout/ERPCompanyProvider';
 
 const DevNavPanel = import.meta.env.DEV
   ? React.lazy(() => import('@/components/dev/DevNavPanel').then(m => ({ default: m.DevNavPanel })))
@@ -196,6 +197,7 @@ const App = () => (
         <Sonner />
         <ErrorBoundary>
         <BrowserRouter>
+          <ERPCompanyProvider>
           <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
             <Routes>
               <Route path="/" element={<Navigate to="/auth/login" replace />} />
@@ -392,6 +394,7 @@ const App = () => (
           </Suspense>
           <ConditionalDishani />
           {import.meta.env.DEV && DevNavPanel && <React.Suspense fallback={null}><DevNavPanel /></React.Suspense>}
+          </ERPCompanyProvider>
         </BrowserRouter>
         </ErrorBoundary>
       </DishaniProvider>
