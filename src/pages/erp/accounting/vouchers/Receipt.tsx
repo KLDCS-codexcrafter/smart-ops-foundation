@@ -27,6 +27,7 @@ import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
 import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
