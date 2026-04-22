@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useOutstanding } from '@/hooks/useOutstanding';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today, exportCSV } from './reportUtils';
@@ -164,11 +166,17 @@ export function OutstandingAgingPanel({ entityCode, type: initialType }: Outstan
 }
 
 export default function OutstandingAging() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Outstanding Aging' }]} showDatePicker={false} showCompany={false} />
-        <main><OutstandingAgingPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Outstanding Aging' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <OutstandingAgingPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Outstanding Aging" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

@@ -14,6 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
 import { L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 import { toast } from 'sonner';
@@ -251,11 +253,17 @@ export function BankReconciliationPanel({ entityCode }: BankReconciliationPanelP
 }
 
 export default function BankReconciliation() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Bank Reconciliation' }]} showDatePicker={false} showCompany={false} />
-        <main><BankReconciliationPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Bank Reconciliation' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <BankReconciliationPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to run Bank Reconciliation" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

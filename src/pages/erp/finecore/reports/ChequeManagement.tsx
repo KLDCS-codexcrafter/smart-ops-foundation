@@ -15,6 +15,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVouchers } from '@/hooks/useVouchers';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
@@ -193,11 +195,17 @@ export function ChequeManagementPanel({ entityCode }: ChequeManagementPanelProps
 }
 
 export default function ChequeManagement() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Cheque Management' }]} showDatePicker={false} showCompany={false} />
-        <main><ChequeManagementPanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Cheque Management' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <ChequeManagementPanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to manage Cheques" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

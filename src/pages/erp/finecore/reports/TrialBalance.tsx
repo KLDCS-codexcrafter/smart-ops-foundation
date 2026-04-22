@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
 import { L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
@@ -142,11 +144,17 @@ export function TrialBalancePanel({ entityCode }: TrialBalancePanelProps) {
 }
 
 export default function TrialBalance() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Trial Balance' }]} showDatePicker={false} showCompany={false} />
-        <main><TrialBalancePanel entityCode="SMRT" /></main>
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Trial Balance' }]} showDatePicker={false} />
+        <main>
+          {entityCode
+            ? <TrialBalancePanel entityCode={entityCode} />
+            : <SelectCompanyGate title="Select a company to view Trial Balance" />
+          }
+        </main>
       </div>
     </SidebarProvider>
   );

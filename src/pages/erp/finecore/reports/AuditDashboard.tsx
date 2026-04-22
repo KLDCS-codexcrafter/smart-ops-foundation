@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { computeAuditScore, runCrossValidations, type AuditCheckpoint, type CrossValidationResult } from '@/lib/auditEngine';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 const HEALTH_QUICK_ACTIONS: Record<string, { label: string; module: string }> = {
   'Trial Balance Balanced': { label: 'Open Day Book', module: 'fc-rpt-daybook' },
@@ -222,4 +224,9 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
   );
 }
 
-export default function AuditDashboard() { return <AuditDashboardPanel entityCode="SMRT" />; }
+export default function AuditDashboard() {
+  const { entityCode } = useEntityCode();
+  return entityCode
+    ? <AuditDashboardPanel entityCode={entityCode} />
+    : <SelectCompanyGate title="Select a company to view Audit Dashboard" />;
+}

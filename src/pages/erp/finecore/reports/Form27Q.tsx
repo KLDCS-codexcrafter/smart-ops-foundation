@@ -16,6 +16,8 @@ import { inr, exportCSV } from './reportUtils';
 import { onEnterNext } from '@/lib/keyboard';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
 function ls<T>(key: string): T[] { try {
   // [JWT] GET /api/compliance/storage/:key
@@ -115,4 +117,9 @@ export function Form27QPanel({ entityCode }: Props) {
     </div>
   );
 }
-export default function Form27Q() { return <Form27QPanel entityCode="SMRT" />; }
+export default function Form27Q() {
+  const { entityCode } = useEntityCode();
+  return entityCode
+    ? <Form27QPanel entityCode={entityCode} />
+    : <SelectCompanyGate title="Select a company to view Form 27Q" />;
+}
