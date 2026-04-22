@@ -33,6 +33,7 @@ import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
 import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
 import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
@@ -172,13 +173,28 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
     }
   }, [handlePost, clearForm]);
 
+  const isDirty = useCallback(
+    () => ledgerLines.length > 0 || narration.length > 0,
+    [ledgerLines.length, narration],
+  );
+
   const handleCancel = useCallback(() => {
-    if (ledgerLines.length > 0 || narration.length > 0) {
-      if (!window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
-    }
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
-  }, [ledgerLines, narration, clearForm]);
+  }, [isDirty, clearForm]);
+
+  const serializeFormState = useCallback(
+    (): Partial<Voucher> => ({ date, narration }),
+    [date, narration],
+  );
+
+  const { GuardDialog } = useVoucherEntityGuard({
+    isDirty, serializeFormState, onSaveDraft, clearForm,
+    voucherTypeName: 'Journal Voucher',
+    fineCoreModule: 'fc-txn-journal',
+    currentEntityCode: entityCode,
+  });
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
@@ -188,12 +204,13 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
         label: `JV ${date}`,
         voucherTypeName: 'Journal Voucher',
         savedAt: new Date().toISOString(),
-        formState: { date, narration } as Partial<Voucher>,
+        formState: serializeFormState(),
       });
     }
-  }, [onSaveDraft, date, narration]);
+  }, [onSaveDraft, date, serializeFormState]);
 
   return (
+    <>
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <TallyVoucherHeader
         voucherTypeName="Journal Voucher"
@@ -297,6 +314,8 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
         status="draft"
       />
     </div>
+    {GuardDialog}
+    </>
   );
 }
 
