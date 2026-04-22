@@ -15,7 +15,8 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Plus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOpeningBalances } from '@/hooks/useOpeningBalances';
 import { onEnterNext, toIndianFormat, amountInputProps } from '@/lib/keyboard';
 import type { OpeningLoanEntry } from '@/types/opening-balance';
@@ -36,8 +37,14 @@ interface LedgerDef {
 const newId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
 export function EmployeeOpeningLoansModule() {
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
+  if (!entityCode) {
+    return <SelectCompanyGate />;
+  }
+  return <EmployeeOpeningLoansInner entityCode={entityCode} />;
+}
+
+function EmployeeOpeningLoansInner({ entityCode }: { entityCode: string }) {
   const ob = useOpeningBalances(entityCode);
   const [tab, setTab] = useState<'recv' | 'adv' | 'pay'>('recv');
 
