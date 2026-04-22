@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -281,9 +282,7 @@ export function CustomerMasterPanel() {
   const [justSaved, setJustSaved] = useState(false);
 
   // ─── SAM context ─────────────────────────────────────────────
-  const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all'
-    ? selectedCompany : 'SMRT';
+  const { entityCode } = useEntityCode();
 
   const samCfg = useMemo(() => {
     try {
@@ -1651,13 +1650,14 @@ export function CustomerMasterPanel() {
 // ─── Page Wrapper ─────────────────────────────────────────────
 
 export default function CustomerMaster() {
+  const { entityCode } = useEntityCode();
   return (
     <SidebarProvider>
       <div className="flex min-h-svh w-full">
         <div className="flex-1">
           <ERPHeader breadcrumbs={[{ label: 'Masters' }, { label: 'Customer Master' }]} />
           <div className="p-6 max-w-7xl mx-auto">
-            <CustomerMasterPanel />
+            {entityCode ? <CustomerMasterPanel /> : <SelectCompanyGate />}
           </div>
         </div>
       </div>
