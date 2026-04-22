@@ -74,6 +74,35 @@ export function InventoryHubPanel() {
 
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-3">
+                Available now
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div
+                  onClick={() => navigate('/erp/inventory/bom-master')}
+                  className="flex items-center justify-between p-4 rounded-xl
+                    border border-border bg-card hover:bg-accent cursor-pointer
+                    transition-colors"
+                >
+                  <div className="flex gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Network className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        BOM Master
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Bill of Materials for manufactured items — multi-level, versioned.
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-2" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold text-foreground mb-3">
                 What&apos;s coming in Store Hub
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
