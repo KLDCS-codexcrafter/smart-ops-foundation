@@ -20,7 +20,7 @@ function readList<T = Record<string, unknown>>(key: string): T[] {
   } catch { return []; }
 }
 
-export function computeCardPulse(cardId: CardId, entityCode: string = 'SMRT'): CardPulse {
+export function computeCardPulse(cardId: CardId, entityCode: string): CardPulse {
   switch (cardId) {
     case 'distributor-hub': {
       const distributors = readList<{ status?: string }>(`erp_distributors_${entityCode}`);

@@ -29,8 +29,8 @@ function getCurrentUserId(): string {
 function getActiveEntityCode(): string {
   try {
     const raw = localStorage.getItem('active_entity_code');
-    return raw ?? 'SMRT';
-  } catch { return 'SMRT'; }
+    return raw ?? '';
+  } catch { return ''; }
 }
 
 export function useCardEntitlement() {
