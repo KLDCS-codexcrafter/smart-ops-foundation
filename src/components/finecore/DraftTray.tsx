@@ -14,7 +14,7 @@ export type FineCoreModule =
   | 'fc-txn-journal' | 'fc-txn-contra'
   | 'fc-txn-credit-note' | 'fc-txn-debit-note'
   | 'fc-txn-delivery-note' | 'fc-txn-receipt-note'
-  | 'fc-inv-stock-journal'
+  | 'fc-inv-stock-adjustment' | 'fc-inv-stock-transfer-dispatch' | 'fc-inv-stock-journal'
   | 'fc-ord-purchase-order' | 'fc-ord-sales-order'
   | 'fc-bnk-reconciliation' | 'fc-bnk-cheque'
   | 'fc-out-receivables' | 'fc-out-payables'

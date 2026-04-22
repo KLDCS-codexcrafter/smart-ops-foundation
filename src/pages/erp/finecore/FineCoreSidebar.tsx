@@ -11,6 +11,7 @@ import {
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
   Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2,
 } from 'lucide-react';
+// Scale and Truck already imported above (re-used for new INV entries).
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -27,7 +28,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-txn-journal', 'fc-txn-contra',
   'fc-txn-credit-note', 'fc-txn-debit-note',
   'fc-txn-delivery-note', 'fc-txn-receipt-note',
-  'fc-inv-stock-journal',
+  'fc-inv-stock-adjustment', 'fc-inv-stock-transfer-dispatch', 'fc-inv-stock-journal',
   'fc-ord-purchase-order', 'fc-ord-sales-order',
   'fc-rpt-daybook', 'fc-rpt-ledger', 'fc-rpt-trial-balance',
   'fc-rpt-pl', 'fc-rpt-bs', 'fc-rpt-stock-summary', 'fc-rpt-outstanding',
@@ -78,7 +79,9 @@ const TXN_ITEMS: SidebarItem[] = [
 ];
 
 const INV_ITEMS: SidebarItem[] = [
-  { id: 'fc-inv-stock-journal', label: 'Stock Journal', icon: Package },
+  { id: 'fc-inv-stock-adjustment', label: 'Stock Adjustment', icon: Scale },
+  { id: 'fc-inv-stock-transfer-dispatch', label: 'Stock Transfer — Dispatch', icon: Truck },
+  { id: 'fc-inv-stock-journal', label: 'Stock Journal (legacy)', icon: Package },
 ];
 
 const ORDER_ITEMS: SidebarItem[] = [
@@ -166,7 +169,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
       'fc-txn-payment','fc-txn-journal','fc-txn-contra','fc-txn-credit-note',
       'fc-txn-debit-note','fc-txn-delivery-note','fc-txn-receipt-note'];
-    const inv = ['fc-inv-stock-journal'];
+    const inv = ['fc-inv-stock-adjustment', 'fc-inv-stock-transfer-dispatch', 'fc-inv-stock-journal'];
     const ord = ['fc-ord-purchase-order','fc-ord-sales-order'];
     const bank = ['fc-bnk-reconciliation','fc-bnk-cheque'];
     const out = ['fc-out-receivables','fc-out-payables'];

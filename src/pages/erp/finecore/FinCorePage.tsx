@@ -28,6 +28,8 @@ import { DebitNotePanel } from '@/pages/erp/accounting/vouchers/DebitNote';
 import { DeliveryNotePanel } from '@/pages/erp/accounting/vouchers/DeliveryNote';
 import { ReceiptNotePanel } from '@/pages/erp/accounting/vouchers/ReceiptNote';
 import { StockJournalPanel } from '@/pages/erp/accounting/vouchers/StockJournal';
+import { StockAdjustmentPanel } from '@/pages/erp/accounting/vouchers/StockAdjustment';
+import { StockTransferDispatchPanel } from '@/pages/erp/accounting/vouchers/StockTransferDispatch';
 import { PurchaseOrderPanel } from '@/pages/erp/finecore/PurchaseOrder';
 import { SalesOrderPanel } from '@/pages/erp/finecore/SalesOrder';
 import { DayBookPanel } from './reports/DayBook';
@@ -78,7 +80,9 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-txn-debit-note': 'Debit Note',
   'fc-txn-delivery-note': 'Delivery Note',
   'fc-txn-receipt-note': 'Receipt Note (GRN)',
-  'fc-inv-stock-journal': 'Stock Journal',
+  'fc-inv-stock-adjustment': 'Stock Adjustment',
+  'fc-inv-stock-transfer-dispatch': 'Stock Transfer — Dispatch',
+  'fc-inv-stock-journal': 'Stock Journal (legacy)',
   'fc-ord-purchase-order': 'Purchase Order',
   'fc-ord-sales-order': 'Sales Order',
   'fc-rpt-daybook': 'Day Book',
@@ -184,6 +188,8 @@ export function FinCorePagePanel() {
       case 'fc-txn-debit-note': return <DebitNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-delivery-note': return <DeliveryNotePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt-note': return <ReceiptNotePanel onSaveDraft={addToDraftTray} />;
+      case 'fc-inv-stock-adjustment': return <StockAdjustmentPanel onSaveDraft={addToDraftTray} />;
+      case 'fc-inv-stock-transfer-dispatch': return <StockTransferDispatchPanel onSaveDraft={addToDraftTray} />;
       case 'fc-inv-stock-journal': return <StockJournalPanel onSaveDraft={addToDraftTray} />;
       case 'fc-ord-purchase-order': return <PurchaseOrderPanel entityCode={entityCode} />;
       case 'fc-ord-sales-order': return <SalesOrderPanel entityCode={entityCode} />;
