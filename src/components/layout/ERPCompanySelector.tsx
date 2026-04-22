@@ -25,6 +25,7 @@ interface ERPCompanySelectorProps {
  * for backward compatibility — callers that need the async result should use
  * useERPCompanyContext directly.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useERPCompany(): [string, (id: string) => void] {
   const [val, setVal] = useERPCompanyContext();
   return [val, (id: string) => { void setVal(id); }];

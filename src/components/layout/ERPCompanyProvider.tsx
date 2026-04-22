@@ -143,6 +143,7 @@ export function ERPCompanyProvider({ children }: { children: ReactNode }) {
  * falls back to localStorage read; setter writes to localStorage but does NOT
  * trigger re-renders. Logs a one-time warning.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useERPCompanyContext(): [string, (id: string) => Promise<boolean>] {
   const ctx = useContext(ERPCompanyContext);
   if (ctx) return [ctx.selectedCompany, ctx.setSelectedCompany];
@@ -171,6 +172,7 @@ export function useERPCompanyContext(): [string, (id: string) => Promise<boolean
  * provider is not mounted (force switch only makes sense inside the guard flow,
  * which itself only operates inside the provider tree).
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useForceSwitchEntity(): (newId: string) => void {
   const ctx = useContext(ERPCompanyContext);
   if (!ctx) {
