@@ -272,31 +272,38 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Payment Voucher</h2>
-          <p className="text-xs text-muted-foreground">Record payment to vendor</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Payment"
+        baseVoucherType="Payment"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        refNo={refNo} onRefNoChange={setRefNo}
+        refDate={refDate} onRefDateChange={setRefDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        effectiveDate={effectiveDate || date} onEffectiveDateChange={setEffectiveDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
+              <Label className="text-xs">Party (Vendor) *</Label>
+              <PartyPicker
+                value={partyId}
+                onChange={(row) => {
+                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                  else { setPartyId(''); setPartyName(''); }
+                }}
+                entityCode={entityCode}
+                mode="vendor"
+                compact
+              />
             </div>
             <div>
-              <Label className="text-xs">Party (Vendor)</Label>
-              <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
-            </div>
-            <div>
-              <Label className="text-xs">Amount (₹)</Label>
+              <Label className="text-xs">Amount (₹) *</Label>
               <Input type="number" value={amount || ''} onChange={e => setAmount(Number(e.target.value))} onKeyDown={onEnterNext} />
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs">Payment Mode</Label>
               <Select value={paymentMode} onValueChange={v => setPaymentMode(v as 'bank' | 'cash')}>
@@ -307,17 +314,51 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs">Bank / Cash Ledger</Label>
-              <Input value={bankCashLedger} onChange={e => setBankCashLedger(e.target.value)} onKeyDown={onEnterNext} placeholder="Ledger name" />
-            </div>
-            {paymentMode === 'bank' && (
-              <div>
-                <Label className="text-xs">Cheque / UTR / NEFT Ref</Label>
-                <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
-              </div>
-            )}
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label className="text-xs">Bank / Cash Ledger *</Label>
+              <LedgerPicker
+                value={bankCashLedgerId}
+                onChange={(id, name) => { setBankCashLedgerId(id); setBankCashLedgerName(name); }}
+                entityCode={entityCode}
+                allowedGroups={['CASH', 'BANK']}
+                placeholder="Select bank/cash ledger"
+                compact
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Instrument Type</Label>
+              <Select value={instrumentType} onValueChange={v => setInstrumentType(v as typeof instrumentType)}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NEFT">NEFT</SelectItem>
+                  <SelectItem value="RTGS">RTGS</SelectItem>
+                  <SelectItem value="IMPS">IMPS</SelectItem>
+                  <SelectItem value="UPI">UPI</SelectItem>
+                  <SelectItem value="Cheque">Cheque</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="DD">Demand Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">{instrumentType === 'Cheque' ? 'Cheque No' : instrumentType === 'DD' ? 'DD No' : 'UTR / Ref No'}</Label>
+              <Input value={instrumentRef} onChange={e => setInstrumentRef(e.target.value)} onKeyDown={onEnterNext} placeholder="Reference number" />
+            </div>
+          </div>
+          {instrumentType === 'Cheque' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs">Cheque Date</Label>
+                <Input type="date" value={chequeDate} onChange={e => setChequeDate(e.target.value)} onKeyDown={onEnterNext} />
+              </div>
+              <div>
+                <Label className="text-xs">Bank Name</Label>
+                <Input value={bankName} onChange={e => setBankName(e.target.value)} onKeyDown={onEnterNext} placeholder="Drawee bank" />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -437,10 +478,45 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
         <Alert className="border-blue-500/30 bg-blue-500/5">
           <Info className="h-4 w-4 text-blue-500" />
           <AlertDescription className="text-xs text-blue-700">
-            This vendor has {openAdvances.length} open advance(s) totalling ₹{openAdvances.reduce((s, a) => s + a.balance_amount, 0).toLocaleString('en-IN')} (Ref: {openAdvances.map(a => a.advance_ref_no).join(', ')}). If settling against an invoice, use the Settlement Panel to link these advances.
+            <div className="mb-2">This vendor has {openAdvances.length} open advance(s) totalling ₹{openAdvances.reduce((s, a) => s + a.balance_amount, 0).toLocaleString('en-IN')}.</div>
+            <div className="space-y-1">
+              {openAdvances.map(a => (
+                <div key={a.id} className="flex items-center justify-between gap-2 bg-background/60 rounded px-2 py-1">
+                  <span className="font-mono text-[11px]">{a.advance_ref_no} — ₹{a.balance_amount.toLocaleString('en-IN')}</span>
+                  <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => applyAdvance(a)}>
+                    <Plus className="h-3 w-3 mr-1" /> Apply
+                  </Button>
+                </div>
+              ))}
+            </div>
           </AlertDescription>
         </Alert>
       )}
+
+      <SettlementPanel partyId={partyName} entityCode={entityCode} mode="creditor" />
+
+      <Card>
+        <CardContent className="pt-5">
+          <Label className="text-xs">Narration</Label>
+          <Textarea value={narration} onChange={e => setNarration(e.target.value)} placeholder="Payment narration" rows={2} />
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
+      </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
+    </div>
+  );
+}
 
       <SettlementPanel partyId={partyName} entityCode={entityCode} mode="creditor" />
 
