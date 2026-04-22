@@ -602,8 +602,9 @@ const UOM_SEED_DATA=[
 const createDefaultUOMs=():number=>{
     const key='erp_uom';
     // [JWT] GET /api/entities/setup/:entityId
-    const existing:any[]=JSON.parse(localStorage.getItem(key)||'[]');
-    const existingSymbols=new Set(existing.map((u:any)=>u.symbol));
+    interface UOMRef { id?: string; symbol: string }
+    const existing: UOMRef[] = JSON.parse(localStorage.getItem(key)||'[]');
+    const existingSymbols = new Set(existing.map((u) => u.symbol));
     const toCreate=UOM_SEED_DATA.filter(u=>!existingSymbols.has(u.symbol))
         .map(u=>({...u,id:crypto.randomUUID(),status:'active',is_active:true,
             created_at:new Date().toISOString(),updated_at:new Date().toISOString()}));
