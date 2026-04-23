@@ -12,6 +12,7 @@ import {
 import { Shield } from 'lucide-react';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -131,4 +132,4 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
   );
 }
 
-export default function AMCWarrantyTracker() { return <AMCWarrantyTrackerPanel entityCode="SMRT" />; }
+export default function AMCWarrantyTracker() { return <AMCWarrantyTrackerPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

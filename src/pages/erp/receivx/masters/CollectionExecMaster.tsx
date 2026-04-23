@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { receivxExecsKey, type CollectionExec } from '@/types/receivx';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string }
 
@@ -119,5 +120,5 @@ export function CollectionExecMasterPanel({ entityCode }: Props) {
 }
 
 export default function CollectionExecMaster() {
-  return <CollectionExecMasterPanel entityCode="SMRT" />;
+  return <CollectionExecMasterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

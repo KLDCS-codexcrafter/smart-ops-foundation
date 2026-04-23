@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   verifyLogisticCredential, issueLogisticToken, createLogisticSession,
   persistLogisticSession, recordLogisticActivity, touchLastLogin, loadLogistics,
   type LogisticMasterLite,
@@ -40,13 +41,13 @@ export default function LogisticLogin() {
 
   useEffect(() => {
     if (!isLocalhost) return;
-    const list = loadLogistics('SMRT').filter(l => l.portal_enabled && l.password_hash);
+    const list = loadLogistics(DEFAULT_ENTITY_SHORTCODE).filter(l => l.portal_enabled && l.password_hash);
     setDevOptions(list);
   }, [isLocalhost]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { credential: '', password: '', entity_code: 'SMRT' },
+    defaultValues: { credential: '', password: '', entity_code: DEFAULT_ENTITY_SHORTCODE },
   });
 
   const onSubmit = async (values: FormValues) => {

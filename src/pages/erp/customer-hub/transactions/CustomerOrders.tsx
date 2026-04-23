@@ -12,11 +12,12 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { formatINR, formatIndianDate } from '@/lib/india-validations';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   customerOrdersKey, customerCartKey,
   type CustomerOrder, type CustomerOrderStatus, type CustomerCart, type CustomerCartLine,
 } from '@/types/customer-order';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const STATUS_FILTERS: { id: 'all' | CustomerOrderStatus; label: string }[] = [
   { id: 'all',       label: 'All' },
   { id: 'placed',    label: 'Placed' },

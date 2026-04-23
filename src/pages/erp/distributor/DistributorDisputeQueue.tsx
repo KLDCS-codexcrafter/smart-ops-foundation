@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   disputesKey, DISPUTE_REASON_LABELS, DISPUTE_STATUS_COLOURS, DISPUTE_STATUS_LABELS,
   type InvoiceDispute, type DisputeStatus,
 } from '@/types/invoice-dispute';
@@ -48,7 +49,7 @@ function setLs<T>(k: string, v: T[]): void {
 
 interface PanelProps { entityCode?: string; }
 
-export function DistributorDisputeQueuePanel({ entityCode = 'SMRT' }: PanelProps) {
+export function DistributorDisputeQueuePanel({ entityCode = DEFAULT_ENTITY_SHORTCODE }: PanelProps) {
   const [disputes, setDisputes] = useState<InvoiceDispute[]>(
     () => ls<InvoiceDispute>(disputesKey(entityCode)),
   );
@@ -287,5 +288,5 @@ export function DistributorDisputeQueuePanel({ entityCode = 'SMRT' }: PanelProps
 }
 
 export default function DistributorDisputeQueue() {
-  return <DistributorDisputeQueuePanel entityCode="SMRT" />;
+  return <DistributorDisputeQueuePanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

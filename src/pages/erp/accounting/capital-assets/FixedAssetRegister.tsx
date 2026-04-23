@@ -19,6 +19,7 @@ import { Search, Download, Layers } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord, AssetUnitStatus, ITActBlock } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -166,4 +167,4 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
   );
 }
 
-export default function FixedAssetRegister() { return <FixedAssetRegisterPanel entityCode="SMRT" />; }
+export default function FixedAssetRegister() { return <FixedAssetRegisterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

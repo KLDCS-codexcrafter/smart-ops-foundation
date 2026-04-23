@@ -18,8 +18,9 @@ import {
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 type Step = 1 | 2 | 3 | 4 | 5;
 

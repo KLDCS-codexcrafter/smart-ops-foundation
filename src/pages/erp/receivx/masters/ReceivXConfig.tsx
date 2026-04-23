@@ -30,6 +30,7 @@ import {
 } from '@/types/dunning';
 import { createPaymentRequest } from '@/lib/payment-gateway-engine';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 
@@ -343,5 +344,5 @@ export function ReceivXConfigPanel({ entityCode }: Props) {
 }
 
 export default function ReceivXConfigPage() {
-  return <ReceivXConfigPanel entityCode="SMRT" />;
+  return <ReceivXConfigPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

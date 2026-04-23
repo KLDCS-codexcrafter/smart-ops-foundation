@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { quotationsKey, type Quotation } from '@/types/quotation';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode?: string }
 
@@ -19,7 +20,7 @@ function loadQuotation(entityCode: string, id: string): Quotation | null {
   } catch { return null; }
 }
 
-export function ProformaInvoicePrintPanel({ entityCode = 'SMRT' }: Props) {
+export function ProformaInvoicePrintPanel({ entityCode = DEFAULT_ENTITY_SHORTCODE }: Props) {
   const { quotationId } = useParams<{ quotationId: string }>();
   const navigate = useNavigate();
   const q = useMemo(

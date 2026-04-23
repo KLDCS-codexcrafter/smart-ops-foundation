@@ -18,6 +18,7 @@ import { Package, CheckCircle2 } from 'lucide-react';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -121,4 +122,4 @@ export function CWIPRegisterPanel({ entityCode }: Props) {
   );
 }
 
-export default function CWIPRegister() { return <CWIPRegisterPanel entityCode="SMRT" />; }
+export default function CWIPRegister() { return <CWIPRegisterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

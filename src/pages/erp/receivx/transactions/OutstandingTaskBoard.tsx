@@ -24,6 +24,7 @@ import {
 } from '@/types/receivx';
 import type { OutstandingEntry } from '@/types/voucher';
 import { reconcileTasks } from '@/lib/receivx-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -270,7 +271,7 @@ export function OutstandingTaskBoardPanel({ entityCode, onNavigate: _onNavigate 
 export default function OutstandingTaskBoard() {
   return (
     <SidebarProvider>
-      <OutstandingTaskBoardPanel entityCode="SMRT" />
+      <OutstandingTaskBoardPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

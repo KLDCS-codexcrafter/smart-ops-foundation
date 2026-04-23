@@ -16,8 +16,9 @@ import {
   type CustomerLoyaltyState, type LoyaltyLedgerEntry, type LoyaltyTier,
 } from '@/types/customer-loyalty';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite { id: string; legalName?: string; partyName?: string }
 

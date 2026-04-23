@@ -23,8 +23,9 @@ import {
   findExpiredRequests, transitionStatus,
 } from '@/lib/sample-kit-engine';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }

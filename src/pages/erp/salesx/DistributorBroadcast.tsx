@@ -24,6 +24,7 @@ import {
   type BroadcastAudience, type BroadcastChannel, type BroadcastMessage,
 } from '@/types/distributor-order';
 import type { Distributor, DistributorTier } from '@/types/distributor';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -58,7 +59,7 @@ export default function DistributorBroadcast() {
   // Default to first known entity (sales rep is multi-entity — keep simple here).
   const entityCode = useMemo(() => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_partners_'));
-    return keys[0]?.replace('erp_partners_', '') ?? 'SMRT';
+    return keys[0]?.replace('erp_partners_', '') ?? DEFAULT_ENTITY_SHORTCODE;
   }, []);
 
   const partners = useMemo<Distributor[]>(() => loadDistributors(entityCode), [entityCode]);

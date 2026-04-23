@@ -13,8 +13,9 @@ import { computeChurn, highestChurnRisk } from '@/lib/customer-churn-engine';
 import type { ChurnResult, ChurnRiskTier } from '@/lib/customer-churn-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { toast } from 'sonner';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite { id: string; legalName?: string; partyName?: string; city?: string }
 interface OrderLite {

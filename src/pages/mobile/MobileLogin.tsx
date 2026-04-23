@@ -18,8 +18,9 @@ import { QRCameraScanner } from '@/components/mobile/QRCameraScanner';
 import { BiometricLoginPrompt } from '@/components/mobile/BiometricLoginPrompt';
 import { setBiometricToken } from '@/lib/biometric-bridge';
 import { logMobileLogin } from '@/lib/mobile-audit';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY_CODE = 'SMRT';
+const ENTITY_CODE = DEFAULT_ENTITY_SHORTCODE;
 const DEFAULT_PLAN = 'growth' as const;
 
 function readDistributors(): Distributor[] {

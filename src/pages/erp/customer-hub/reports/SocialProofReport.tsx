@@ -11,8 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { signalsForCatalog, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface ItemLite { id: string; name?: string; itemName?: string; category?: string }
 interface OrderRowLite {

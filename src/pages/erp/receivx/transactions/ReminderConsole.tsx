@@ -23,6 +23,7 @@ import {
   receivxTasksKey, receivxTemplatesKey, receivxCommLogKey, receivxConfigKey,
 } from '@/types/receivx';
 import { computeCadenceStep, renderTemplate, sendWhatsApp, sendEmail } from '@/lib/receivx-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -258,7 +259,7 @@ export function ReminderConsolePanel({ entityCode, onNavigate: _onNavigate }: Pr
 export default function ReminderConsole() {
   return (
     <SidebarProvider>
-      <ReminderConsolePanel entityCode="SMRT" />
+      <ReminderConsolePanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

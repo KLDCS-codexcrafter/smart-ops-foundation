@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   distributorOrdersKey, distributorIntimationsKey,
   type DistributorOrder, type DistributorPaymentIntimation,
 } from '@/types/distributor-order';
@@ -41,7 +42,7 @@ export default function DistributorHub() {
 
   const entityCode = useMemo(() => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_distributors_'));
-    return keys[0]?.replace('erp_distributors_', '') ?? 'SMRT';
+    return keys[0]?.replace('erp_distributors_', '') ?? DEFAULT_ENTITY_SHORTCODE;
   }, []);
 
   const distributors = useMemo(() => ls<Distributor>(distributorsKey(entityCode)), [entityCode]);

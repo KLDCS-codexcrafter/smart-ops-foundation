@@ -55,7 +55,7 @@ export function encodeQRPayload(payload: QRLoginPayload): string {
 }
 
 /** Generate a demo QR for testing — tenant admin would issue via UI. */
-export function generateDemoQR(credential: string, entity: string = 'SMRT'): string {
+export function generateDemoQR(credential: string, entity: string = DEFAULT_ENTITY_SHORTCODE): string {
   const payload: QRLoginPayload = {
     v: 1,
     entity,

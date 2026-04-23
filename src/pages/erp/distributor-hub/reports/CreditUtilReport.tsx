@@ -10,8 +10,9 @@ import { distributorsKey, type Distributor } from '@/types/distributor';
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
 import { computeComposite } from '@/lib/distributor-rating-engine';
 import { formatINR } from '@/lib/india-validations';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function readList<T>(key: string): T[] {
   try {

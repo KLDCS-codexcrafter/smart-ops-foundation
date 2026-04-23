@@ -40,6 +40,7 @@ import { SecondarySalesPanel } from '@/pages/erp/salesx/transactions/SecondarySa
 import { BeatProductivityReportPanel } from '@/pages/erp/salesx/reports/BeatProductivityReport';
 import { CoverageReportPanel } from '@/pages/erp/salesx/reports/CoverageReport';
 import { SecondarySalesReportPanel } from '@/pages/erp/salesx/reports/SecondarySalesReport';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -167,7 +168,7 @@ function renderModule(
 
 export default function SalesXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
-  const entityCode = selectedEntityId ?? 'SMRT';
+  const entityCode = selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE;
   const [activeModule, setActiveModule] = useState<SalesXModule>('sx-hub');
   const { entityCode: entCode, userId } = useCardEntitlement();
 

@@ -26,6 +26,7 @@ import {
 import { creditRequestsKey, type CreditIncreaseRequest } from '@/types/credit-increase-request';
 import { disputesKey, type InvoiceDispute } from '@/types/invoice-dispute';
 import type { DistributorHubModule } from './DistributorHubSidebar';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 function ls<T>(k: string): T[] {
   try {
@@ -85,7 +86,7 @@ export function DistributorHubWelcomePanel() {
 
   const entityCode = useMemo(() => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith('erp_distributors_'));
-    return keys[0]?.replace('erp_distributors_', '') ?? 'SMRT';
+    return keys[0]?.replace('erp_distributors_', '') ?? DEFAULT_ENTITY_SHORTCODE;
   }, []);
 
   const distributors = useMemo(() => ls<Distributor>(distributorsKey(entityCode)), [entityCode]);

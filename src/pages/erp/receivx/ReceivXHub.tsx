@@ -12,6 +12,7 @@ import {
   type OutstandingTask, type PTP, type CommunicationLog,
 } from '@/types/receivx';
 import type { OutstandingEntry } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate: (m: string) => void }
 
@@ -158,4 +159,4 @@ export function ReceivXHubPanel({ entityCode, onNavigate }: Props) {
   );
 }
 
-export default function ReceivXHub() { return <ReceivXHubPanel entityCode="SMRT" onNavigate={() => {}} />; }
+export default function ReceivXHub() { return <ReceivXHubPanel entityCode={DEFAULT_ENTITY_SHORTCODE} onNavigate={() => {}} />; }

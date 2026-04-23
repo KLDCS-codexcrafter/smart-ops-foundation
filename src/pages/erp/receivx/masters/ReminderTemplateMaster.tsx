@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   receivxTemplatesKey, type ReminderTemplate, type CadenceMessage, type CadenceStep,
 } from '@/types/receivx';
 
@@ -176,5 +177,5 @@ export function ReminderTemplateMasterPanel({ entityCode }: Props) {
 }
 
 export default function ReminderTemplateMaster() {
-  return <ReminderTemplateMasterPanel entityCode="SMRT" />;
+  return <ReminderTemplateMasterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

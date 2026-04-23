@@ -13,8 +13,9 @@ import { formatINR } from '@/lib/india-validations';
 import { computeCLV } from '@/lib/customer-clv-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite { id: string; legalName?: string; partyName?: string; city?: string }
 interface OrderLite {

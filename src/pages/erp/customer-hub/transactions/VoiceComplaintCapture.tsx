@@ -16,10 +16,11 @@ import {
 } from '@/lib/voice-to-order-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const COMPLAINTS_KEY = `erp_customer_complaints_${ENTITY}`;
 const DISPUTES_KEY   = `erp_invoice_disputes_${ENTITY}`;
 const CONTEXT_KEY    = 'erp_complaint_context';

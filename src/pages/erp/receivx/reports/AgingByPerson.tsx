@@ -19,6 +19,7 @@ import {
   receivxTasksKey, receivxPTPsKey,
 } from '@/types/receivx';
 import { computeDSO, computePTPKeptRatio } from '@/lib/receivx-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props {
   entityCode: string;
@@ -212,7 +213,7 @@ export function AgingByPersonPanel({ entityCode, personType, onNavigate: _onNavi
 export default function AgingByPerson() {
   return (
     <SidebarProvider>
-      <AgingByPersonPanel entityCode="SMRT" personType="salesman" />
+      <AgingByPersonPanel entityCode={DEFAULT_ENTITY_SHORTCODE} personType="salesman" />
     </SidebarProvider>
   );
 }

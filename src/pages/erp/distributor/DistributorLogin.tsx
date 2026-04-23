@@ -20,6 +20,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   verifyDistributorCredential,
   issueDistributorToken,
   createDistributorSession,
@@ -39,7 +40,7 @@ export function DistributorLoginPanel() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { credential: '', password: '', entity_code: 'SMRT' },
+    defaultValues: { credential: '', password: '', entity_code: DEFAULT_ENTITY_SHORTCODE },
   });
 
   // [JWT] Replace with: POST /api/partner/auth/login

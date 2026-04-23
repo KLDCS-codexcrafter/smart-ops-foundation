@@ -28,6 +28,7 @@ import {
   type HierarchyNode, type HierarchyRole,
 } from '@/types/distributor-hierarchy';
 import {
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
   buildTree, canAssignParent, wouldCreateCycle, computeNodePath, computeDepth,
   type HierarchyTreeNode,
 } from '@/lib/hierarchy-engine';
@@ -69,7 +70,7 @@ function persistNodes(entityCode: string, nodes: HierarchyNode[]): void {
 
 interface PanelProps { entityCode?: string; }
 
-export function DistributorHierarchyMasterPanel({ entityCode = 'SMRT' }: PanelProps) {
+export function DistributorHierarchyMasterPanel({ entityCode = DEFAULT_ENTITY_SHORTCODE }: PanelProps) {
   const customers = useMemo(() => loadCustomers(), []);
   const [nodes, setNodes] = useState<HierarchyNode[]>(() => loadNodes(entityCode));
   const [search, setSearch] = useState('');
@@ -477,5 +478,5 @@ export function DistributorHierarchyMasterPanel({ entityCode = 'SMRT' }: PanelPr
 }
 
 export default function DistributorHierarchyMaster() {
-  return <DistributorHierarchyMasterPanel entityCode="SMRT" />;
+  return <DistributorHierarchyMasterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

@@ -37,6 +37,7 @@ import { JOB_REQUISITIONS_KEY, JOB_APPLICATIONS_KEY } from '@/types/recruitment'
 import { CERTIFICATIONS_KEY } from '@/types/learning';
 import { STATUTORY_CHALLANS_KEY } from '@/types/statutory-returns';
 import { HOLIDAY_CALENDARS_KEY } from '@/types/payroll-masters';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // ── Safe data reads ─────────────────────────────────────────────────────
 
@@ -116,7 +117,7 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
     window.dispatchEvent(new CustomEvent('ph-navigate', { detail: module }));
   });
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
 
   // ── MASTER DATA READS ────────────────────────────────────────
   const employees = useMemo(() => {
