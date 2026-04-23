@@ -26,7 +26,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Scale } from 'lucide-react';
+import { Scale, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -71,6 +71,7 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
   const [lines, setLines] = useState<StockAdjustmentLine[]>([]);
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   // Auto-resolve Write-Off + Write-On ledgers by exact name on mount (Q2 decision).
@@ -92,8 +93,16 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
     setRefNo(''); setRefDate(''); setEffectiveDate('');
     setDepartmentId(''); setDepartmentName('');
     setLines([]); setNarration('');
+    setPostedVoucherId(null);
     lastSavedRef.current = false;
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/stock-adjustment-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
 
   const isDirty = useCallback(
     () => lines.length > 0 || narration.length > 0,
@@ -220,6 +229,7 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
       };
 
       postVoucher(voucher, entityCode);
+      setPostedVoucherId(voucher.id);
       toast.success(`Stock Adjustment ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
     } catch (err) {
@@ -310,9 +320,15 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
               </CardContent>
 
               <div className="px-5 pb-5 space-y-3">
-                {onSaveDraft && (
-                  <div className="flex justify-end">
-                    <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                {(onSaveDraft || postedVoucherId) && (
+                  <div className="flex justify-end gap-2">
+                    {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
+                    {postedVoucherId && (
+                      <Button variant="outline" onClick={handlePrint}>
+                        <Printer className="h-4 w-4 mr-2" />
+                        Print
+                      </Button>
+                    )}
                   </div>
                 )}
                 <VoucherFormFooter
