@@ -1,0 +1,118 @@
+/**
+ * delivery-note-print-engine.ts — Build payload for Delivery Note print.
+ *
+ * DLN is goods-movement doc issued to customer via transporter. NO tax on the
+ * print itself (tax lives on the follow-up Sales Invoice). Shows rupee values
+ * as a goods-handover record (Rate + Value default ON per Tally convention).
+ *
+ * Copy config: 3 copies — Consignee / Transporter / Consignor.
+ */
+
+import type { Voucher } from '@/types/voucher';
+import {
+  buildSupplierBlock, formatSupplierAddress,
+  formatINR, formatDDMMMYYYY,
+  type PrintSupplierBlock, type PrintCopyConfig,
+} from '@/lib/voucher-print-shared';
+import type { EntityGSTConfig } from '@/types/entity-gst';
+
+export const DELIVERY_NOTE_COPY_CONFIG: PrintCopyConfig = {
+  keys: ['consignee', 'transporter', 'consignor'],
+  labels: {
+    consignee: 'CONSIGNEE COPY',
+    transporter: 'TRANSPORTER COPY',
+    consignor: 'CONSIGNOR COPY',
+  },
+  default: 'consignee',
+};
+
+export interface DeliveryNotePrintLine {
+  sl_no: number;
+  item_code: string;
+  item_description: string;
+  qty: number;
+  uom: string;
+  rate: number;
+  value: number;
+  godown: string;
+  batch: string;
+}
+
+export interface DeliveryNotePrintPayload {
+  copy_key: string;
+  copy_label: string;
+
+  consignor: PrintSupplierBlock;
+  consignor_address: string;
+
+  consignee_name: string;
+  consignee_gstin: string | null;
+
+  voucher_no: string;
+  voucher_date: string;
+  against_invoice: string;
+
+  transporter: string;
+  vehicle_no: string;
+  distance: string | null;
+  lr_no: string | null;
+
+  lines: DeliveryNotePrintLine[];
+  total_qty: number;
+  total_value: number;
+
+  narration: string;
+  authorised_signatory: string;
+}
+
+export function buildDeliveryNotePrintPayload(
+  voucher: Voucher,
+  consignorGst: EntityGSTConfig,
+  copyKey: string = DELIVERY_NOTE_COPY_CONFIG.default,
+): DeliveryNotePrintPayload {
+  const consignor = buildSupplierBlock(consignorGst);
+
+  const lines: DeliveryNotePrintLine[] = (voucher.inventory_lines ?? []).map((l, i) => ({
+    sl_no: i + 1,
+    item_code: l.item_code || '',
+    item_description: l.item_name || '',
+    qty: l.qty || 0,
+    uom: l.uom || '',
+    rate: l.rate || 0,
+    value: (l.qty || 0) * (l.rate || 0),
+    godown: l.godown_name || '',
+    batch: l.batch_id || '',
+  }));
+
+  const total_qty = lines.reduce((s, l) => s + l.qty, 0);
+  const total_value = lines.reduce((s, l) => s + l.value, 0);
+
+  return {
+    copy_key: copyKey,
+    copy_label: DELIVERY_NOTE_COPY_CONFIG.labels[copyKey] ?? DELIVERY_NOTE_COPY_CONFIG.labels[DELIVERY_NOTE_COPY_CONFIG.default],
+
+    consignor,
+    consignor_address: formatSupplierAddress(consignor),
+
+    consignee_name: voucher.party_name || '',
+    consignee_gstin: voucher.party_gstin ?? null,
+
+    voucher_no: voucher.voucher_no,
+    voucher_date: voucher.date,
+    against_invoice: voucher.ref_voucher_no || '',
+
+    transporter: voucher.transporter || '',
+    vehicle_no: voucher.vehicle_no || '',
+    distance: null,
+    lr_no: voucher.lr_no ?? null,
+
+    lines,
+    total_qty,
+    total_value,
+
+    narration: voucher.narration || '',
+    authorised_signatory: 'For ' + (consignor.legal_name || consignor.trade_name),
+  };
+}
+
+export { formatINR, formatDDMMMYYYY };
