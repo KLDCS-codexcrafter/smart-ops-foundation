@@ -50,6 +50,14 @@ export interface VoucherInventoryLine {
   godown_name: string;
   batch_id?: string;
   serial_id?: string;
+
+  /** Reason code for this line (used by Stock Adjustment + future Credit/Debit Note line-level reasons). Added T10-pre.2b.3a. */
+  reason_code?: string;
+
+  /** For Manufacturing Journal lines: tags each line as consumption/production/byproduct
+   *  to enable semantic print reconstruction. Added T10-pre.2b.3a. */
+  mfg_line_type?: 'consumption' | 'production' | 'byproduct';
+
   qty: number;
   uom: string;
   rate: number;
@@ -130,7 +138,16 @@ export interface Voucher {
   is_inter_state?: boolean;
   department_id?: string;
   department_name?: string;
+  /** Stock Journal purpose (e.g. 'Store Transfer', 'Manufacturing', 'Other'). Existing field; reaffirmed T10-pre.2b.3a. */
   purpose?: string;
+
+  /** Manufacturing Journal — BOM reference + batch size + overhead. Added T10-pre.2b.3a. */
+  bom_id?: string;
+  bom_version_no?: number;
+  batch_multiple?: number;
+  overhead_ledger_id?: string;
+  overhead_ledger_name?: string;
+
   ledger_lines: VoucherLedgerLine[];
   inventory_lines?: VoucherInventoryLine[];
   tax_lines?: VoucherTaxLine[];
