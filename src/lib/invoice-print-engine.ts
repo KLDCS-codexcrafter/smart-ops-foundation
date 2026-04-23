@@ -280,5 +280,7 @@ export function buildInvoicePrintPayload(
     bank_branch: ctx.supplierGst.bank_branch,
     terms: 'Goods once sold cannot be returned. Subject to local jurisdiction.',
     authorised_signatory: ctx.supplierGst.legal_name || 'Authorised Signatory',
+
+    resolved_toggles,
   };
 }
