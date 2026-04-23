@@ -1,12 +1,13 @@
 /**
- * receipt-note-print-engine.ts — Build payload for GRN (Receipt Note) print.
- *
- * GRN is the inward equivalent of the DLN. Records goods received from a
- * vendor (with their challan ref) into a receiving godown. Tax is settled on
- * the follow-up Purchase Invoice — this print shows Rate/Value as a record
- * only (full Tally-default field set per spec 2b.3a).
- *
- * Copy config: 2 copies — Stores / Accounts.
+ * @file     receipt-note-print-engine.ts
+ * @purpose  Build print payload for GRN (Receipt Note) · 2-copy (Stores / Accounts).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Stores (receiving) · Accountant (audit)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers ReceiptNotePrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -16,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const RECEIPT_NOTE_COPY_CONFIG: PrintCopyConfig = {
   keys: ['stores', 'accounts'],
@@ -67,12 +71,16 @@ export interface ReceiptNotePrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildReceiptNotePrintPayload(
   voucher: Voucher,
   buyerGst: EntityGSTConfig,
   copyKey: string = RECEIPT_NOTE_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): ReceiptNotePrintPayload {
   const buyer = buildSupplierBlock(buyerGst);
 
@@ -90,6 +98,10 @@ export function buildReceiptNotePrintPayload(
 
   const total_qty = lines.reduce((s, l) => s + l.qty, 0);
   const total_value = lines.reduce((s, l) => s + l.value, 0);
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'receipt_note');
 
   return {
     copy_key: copyKey,
@@ -116,6 +128,8 @@ export function buildReceiptNotePrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (buyer.legal_name || buyer.trade_name),
+
+    resolved_toggles,
   };
 }
 
