@@ -118,6 +118,15 @@ export function SalesInvoicePrintPanel() {
   );
   const ewb = ewbList.find(e => e.voucher_id === voucherId && e.ewb_no);
 
+  // [Convergent] Resolved toggles drive all visibility decisions below.
+  const t = payload.resolved_toggles;
+  // [Analytical] tfoot Total label colSpan = 3 fixed (#, Desc, Qty) + each toggleable col present.
+  const totalLabelColSpan =
+    3 +
+    (t.showHsnSac ? 1 : 0) +
+    (t.showRate ? 1 : 0) +
+    (t.showDiscountColumn ? 1 : 0);
+
   return (
     <div className="min-h-screen bg-muted/40 print:bg-white">
       <style>{`
