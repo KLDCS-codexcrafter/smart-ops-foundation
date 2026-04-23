@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle, Printer } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
@@ -90,6 +90,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   const [narration, setNarration] = useState('');
   const [receiptPurpose, setReceiptPurpose] = useState<'regular' | 'advance'>('regular');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   // TDS Receivable state
@@ -159,6 +160,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
     setTdsEnabled(false); setTdsLines([]);
     setCommissionBanner(null);
     lastSavedRef.current = false;
+    setPostedVoucherId(null);
   }, [entityCode]);
 
   const handlePost = useCallback(async () => {
@@ -267,6 +269,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
 
       toast.success(`Receipt ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
+      setPostedVoucherId(voucher.id);
     } catch {
       toast.error('Failed to save');
       lastSavedRef.current = false;
@@ -316,6 +319,14 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       });
     }
   }, [onSaveDraft, partyName, serializeFormState]);
+
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/receipt-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
 
   const activeTdsSections = TDS_SECTIONS.filter(t => t.status === 'active' && incomeTdsSections.includes(t.sectionCode));
 
@@ -537,8 +548,13 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
+      <div className="flex justify-end gap-2">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Receipt
+          </Button>
+        )}
       </div>
 
       <VoucherFormFooter
