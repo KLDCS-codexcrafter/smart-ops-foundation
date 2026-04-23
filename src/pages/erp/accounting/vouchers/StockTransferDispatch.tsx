@@ -24,7 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { Link2, Truck } from 'lucide-react';
+import { Link2, Truck, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -62,6 +62,7 @@ export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatc
   const [lines, setLines] = useState<StockTransferLine[]>([]);
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   const clearForm = useCallback(() => {
@@ -70,8 +71,16 @@ export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatc
     setFromDeptId(''); setFromDeptName('');
     setToDeptId(''); setToDeptName('');
     setLines([]); setNarration('');
+    setPostedVoucherId(null);
     lastSavedRef.current = false;
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/stock-transfer-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=dispatch`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
 
   const isDirty = useCallback(
     () => lines.length > 0 || narration.length > 0 || !!fromDeptId || !!toDeptId,
@@ -170,6 +179,7 @@ export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatc
       };
 
       postVoucher(voucher, entityCode);
+      setPostedVoucherId(voucher.id);
       toast.success(`Stock Transfer ${voucher.voucher_no} dispatched — awaiting receive confirmation`);
       lastSavedRef.current = true;
     } catch (err) {
@@ -266,9 +276,15 @@ export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatc
               </CardContent>
 
               <div className="px-5 pb-5 space-y-3">
-                {onSaveDraft && (
-                  <div className="flex justify-end">
-                    <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                {(onSaveDraft || postedVoucherId) && (
+                  <div className="flex justify-end gap-2">
+                    {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
+                    {postedVoucherId && (
+                      <Button variant="outline" onClick={handlePrint}>
+                        <Printer className="h-4 w-4 mr-2" />
+                        Print
+                      </Button>
+                    )}
                   </div>
                 )}
                 <VoucherFormFooter
