@@ -275,7 +275,7 @@ export function SalesInvoicePrintPanel() {
         </table>
 
         {/* HSN Summary */}
-        {payload.hsn_summary.length > 0 && (
+        {t.showHsnSummary && payload.hsn_summary.length > 0 && (
           <div className="mt-4">
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">HSN Summary</div>
             <table className="w-full text-[10px] border-collapse">
