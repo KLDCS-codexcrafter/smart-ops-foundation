@@ -5,7 +5,7 @@
  *           and DayBook drill-down. Config-driven columns for 2d-C future customization.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created Apr-2026 · T10-pre.2d-B
- * @sprint   T10-pre.2d-B
+ * @sprint   T10-pre.2d-B (original), T10-pre.2d-C (RegisterConfig consumption + grouping)
  * @iso      Performance Efficiency (HIGH — pagination 50/page, useMemo)
  *           Functional Suitability (HIGH — all register concerns in one place)
  *           Maintainability (HIGH — column array driven)
@@ -40,6 +40,10 @@ import {
   type ExportRows, type ExportSheet,
 } from '@/lib/voucher-export-engine';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
+import {
+  loadRegisterConfig, resolveToggles, resolveDefaultGroup,
+} from '@/lib/register-config-storage';
+import { resolveGroupValue } from './RegisterGroupResolver';
 
 export interface RegisterGridProps {
   /** Active entity code — passed from FinCorePage. */
@@ -73,6 +77,25 @@ export function RegisterGrid({
 }: RegisterGridProps) {
   const { vouchers } = useVouchers(entityCode);
 
+  // [T10-pre.2d-C] D-137/138: Load RegisterConfig and resolve toggles + group.
+  // Re-reads on every mount — users re-open the register after config change to see updates.
+  const config = useMemo(() => loadRegisterConfig(entityCode), [entityCode]);
+  const effectiveToggles = useMemo(
+    () => resolveToggles(config, meta.registerCode),
+    [config, meta.registerCode]
+  );
+  const effectiveGroup = useMemo(
+    () => resolveDefaultGroup(config, meta.registerCode),
+    [config, meta.registerCode]
+  );
+
+  // [T10-pre.2d-C] D-138: Filter columns by toggleKey — applies to BOTH display and export.
+  // Columns with no toggleKey are always shown (always-on columns like Date, Voucher No, Total).
+  const visibleColumns = useMemo(
+    () => columns.filter(c => !c.toggleKey || effectiveToggles[c.toggleKey]),
+    [columns, effectiveToggles]
+  );
+
   const t = today();
   const monthStart = t.slice(0, 8) + '01';
   const [filters, setFilters] = useState<RegisterFilters>({
@@ -98,8 +121,15 @@ export function RegisterGrid({
         || (v.narration?.toLowerCase().includes(s) ?? false)
       );
     }
-    return result.sort((a, b) => a.date.localeCompare(b.date));
-  }, [vouchers, meta, filters]);
+    // [T10-pre.2d-C] D-137: Sort by group key (primary) then date (secondary).
+    // When effectiveGroup === 'none', group key is empty string for all rows — date sort wins.
+    return result.sort((a, b) => {
+      const ga = resolveGroupValue(a, effectiveGroup);
+      const gb = resolveGroupValue(b, effectiveGroup);
+      if (ga !== gb) return ga.localeCompare(gb);
+      return a.date.localeCompare(b.date);
+    });
+  }, [vouchers, meta, filters, effectiveGroup]);
 
   // [Concrete] Summary cards
   const summaryCards = useMemo(
@@ -124,7 +154,8 @@ export function RegisterGrid({
       // [Convergent] D-128: reuse 2c's voucher-export-engine.
       // A register export is a single-sheet "register summary" — one row per voucher.
       // Exported cells come from columns[].exportKey; columns without exportKey are skipped.
-      const exportable = columns.filter(c => c.exportKey !== undefined);
+      // [T10-pre.2d-C] D-138: Export honors column-visibility toggles — hidden columns don't appear in Excel.
+      const exportable = visibleColumns.filter(c => c.exportKey !== undefined);
       const headers = exportable.map(c => c.exportLabel ?? c.label);
       const rows: (string | number | null)[][] = filtered.map(v =>
         exportable.map(c => {
@@ -240,7 +271,7 @@ export function RegisterGrid({
             <Table>
               <TableHeader>
                 <TableRow>
-                  {columns.map(col => (
+                  {visibleColumns.map(col => (
                     <TableHead key={col.key}
                       className={`text-xs ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''} ${col.width ?? ''}`}>
                       {col.label}
@@ -253,7 +284,7 @@ export function RegisterGrid({
                   <TableRow key={v.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleRowClick(v)}>
-                    {columns.map(col => (
+                    {visibleColumns.map(col => (
                       <TableCell key={col.key}
                         className={`text-xs ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''}`}>
                         {col.render(v)}
