@@ -165,8 +165,12 @@ export function SalesInvoicePrintPanel() {
           <div className="text-right">
             <div className="text-base font-bold">{payload.supplier_name}</div>
             <div className="text-[10px] text-muted-foreground">{payload.supplier_address}</div>
-            <div className="text-[10px] font-mono">GSTIN: {payload.supplier_gstin || '—'}</div>
-            <div className="text-[10px] font-mono">PAN: {payload.supplier_pan || '—'}</div>
+            {t.showHeaderGstin && (
+              <div className="text-[10px] font-mono">GSTIN: {payload.supplier_gstin || '—'}</div>
+            )}
+            {t.showHeaderPan && (
+              <div className="text-[10px] font-mono">PAN: {payload.supplier_pan || '—'}</div>
+            )}
           </div>
         </div>
 
