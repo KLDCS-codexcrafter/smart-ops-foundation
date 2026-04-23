@@ -84,6 +84,10 @@ const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
 const FinCorePage = lazy(() => import('./pages/erp/finecore/FinCorePage'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
+const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
+const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
+const ContraEntryPrint = lazy(() => import('./pages/erp/accounting/vouchers/ContraEntryPrint').then(m => ({ default: m.ContraEntryPrintPanel })));
+const JournalEntryPrint = lazy(() => import('./pages/erp/accounting/vouchers/JournalEntryPrint').then(m => ({ default: m.JournalEntryPrintPanel })));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -300,6 +304,10 @@ const App = () => (
               <Route path="/erp/accounting/transaction-templates" element={<P><TransactionTemplates /></P>} />
               <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
+              <Route path="/erp/finecore/receipt-print" element={<P><ReceiptPrint /></P>} />
+              <Route path="/erp/finecore/payment-print" element={<P><PaymentPrint /></P>} />
+              <Route path="/erp/finecore/contra-print" element={<P><ContraEntryPrint /></P>} />
+              <Route path="/erp/finecore/journal-print" element={<P><JournalEntryPrint /></P>} />
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/receipt" element={<P><ReceiptVoucher /></P>} />
