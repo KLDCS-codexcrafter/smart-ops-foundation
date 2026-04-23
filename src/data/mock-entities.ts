@@ -1,3 +1,5 @@
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 export interface MockEntity {
   id: string;
   name: string;
@@ -7,7 +9,7 @@ export interface MockEntity {
 
 // [JWT] Replace with: const MOCK_ENTITIES = await fetch('/api/foundation/entities')
 export const MOCK_ENTITIES: MockEntity[] = [
-  { id: 'e1', name: '4DSmartOps Pvt Ltd',   shortCode: 'SMRT', type: 'parent' },
+  { id: 'e1', name: '4DSmartOps Pvt Ltd',   shortCode: DEFAULT_ENTITY_SHORTCODE, type: 'parent' },
   { id: 'e2', name: 'SmartOps Digital LLP',  shortCode: 'DGTL', type: 'subsidiary' },
   { id: 'e3', name: '4D Exports SEZ Unit',   shortCode: 'EXPT', type: 'branch' },
 ];

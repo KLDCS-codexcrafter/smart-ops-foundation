@@ -24,6 +24,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
 import { loadPrintConfig } from '@/lib/print-config-storage';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
@@ -42,7 +43,7 @@ export function SalesInvoicePrintPanel() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const voucherId = params.get('voucher_id') ?? '';
-  const entityCode = params.get('entity') ?? 'SMRT';
+  const entityCode = params.get('entity') ?? DEFAULT_ENTITY_SHORTCODE;
   const copyType = (params.get('copy') ?? 'original') as 'original' | 'duplicate' | 'triplicate';
 
   const [payload, setPayload] = useState<InvoicePrintPayload | null>(null);

@@ -12,6 +12,7 @@ import type { SAMPerson, SAMPersonType } from '@/types/sam-person';
 import type { Enquiry, EnquiryStatus, EnquiryPriority } from '@/types/enquiry';
 import type { Quotation, QuotationStage } from '@/types/quotation';
 import type { CommissionEntry } from '@/types/commission-register';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type Tagged<T> = T & { _archetype: DemoArchetype };
 
@@ -77,7 +78,7 @@ const SEED_ROWS: SeedRow[] = [
 
 export const DEMO_SAM_PERSONS: DemoSamPerson[] = SEED_ROWS.map(r => ({
   id: r.id,
-  entity_id: 'SMRT',
+  entity_id: DEFAULT_ENTITY_SHORTCODE,
   person_type: r.person_type,
   person_code: r.person_code,
   display_name: r.display_name,
@@ -165,7 +166,7 @@ function makeEnquiries(arche: DemoArchetype, count: number, prefix: string): Dem
 
     return {
       id: `enq-${prefix}-${i+1}`,
-      entity_id: 'SMRT',
+      entity_id: DEFAULT_ENTITY_SHORTCODE,
       enquiry_no: `ENQ-${prefix}-${String(i+1).padStart(4, '0')}`,
       enquiry_date: enquiryDate,
       enquiry_time: '10:00',
@@ -236,7 +237,7 @@ function makeQuotations(arche: DemoArchetype, count: number, prefix: string): De
 
     return {
       id: `qt-${prefix}-${i+1}`,
-      entity_id: 'SMRT',
+      entity_id: DEFAULT_ENTITY_SHORTCODE,
       quotation_no: `QT-${prefix}-${String(i+1).padStart(4, '0')}`,
       quotation_date: qDate,
       quotation_type: 'original',
@@ -335,7 +336,7 @@ function makeCommissions(
 
       return {
         id: `cm-${prefix}-${status}-${i+1}`,
-        entity_id: 'SMRT',
+        entity_id: DEFAULT_ENTITY_SHORTCODE,
         voucher_id: `inv-demo-${prefix}-${offset + i + 1}`,
         voucher_no: `SI/${prefix}/${String(offset + i + 1).padStart(4, '0')}`,
         voucher_date: vDate,

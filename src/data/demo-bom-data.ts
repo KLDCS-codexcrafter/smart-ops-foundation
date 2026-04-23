@@ -16,12 +16,13 @@
  */
 
 import type { Bom } from '@/types/bom';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 /** Happy path — a simple FG made from 2 raw materials, no byproduct, no overhead. */
 export const DEMO_BOM_HAPPY_PATH: Bom[] = [
   {
     id: 'bom-demo-hp-001',
-    entity_id: 'SMRT',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
     product_item_id: 'item-demo-fg-tablet-pack',
     product_item_code: 'FG-TAB-001',
     product_item_name: 'Paracetamol 500mg — 10-Tab Pack',
@@ -71,7 +72,7 @@ export const DEMO_BOM_EDGE_CASE: Bom[] = [
   // First the sub-BOM for the Semi-Finished item
   {
     id: 'bom-demo-edge-sub-001',
-    entity_id: 'SMRT',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
     product_item_id: 'item-demo-sf-granulate',
     product_item_code: 'SF-GRAN-001',
     product_item_name: 'Paracetamol Granulate',
@@ -116,7 +117,7 @@ export const DEMO_BOM_EDGE_CASE: Bom[] = [
   // Now the parent BOM that references it
   {
     id: 'bom-demo-edge-main-001',
-    entity_id: 'SMRT',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
     product_item_id: 'item-demo-fg-tablet-bulk',
     product_item_code: 'FG-TAB-BULK-001',
     product_item_name: 'Paracetamol 500mg — Bulk Tablets (per 100k)',
