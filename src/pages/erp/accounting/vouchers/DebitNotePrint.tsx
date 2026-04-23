@@ -3,7 +3,7 @@
  * @purpose  A4 Debit Note (purchase-side) print panel — tri-copy GST.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH — 13 applicable toggles honored) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Vendor (recipient) · Accountant (issuer)
  * @depends  debit-note-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildDebitNotePrintPayload, DEBIT_NOTE_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildDebitNoteExportRows,
   type DebitNotePrintPayload,
 } from '@/lib/debit-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -233,6 +234,7 @@ export function DebitNotePrintPanel() {
       documentTitle="DEBIT NOTE"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildDebitNoteExportRows(p as DebitNotePrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

@@ -3,7 +3,7 @@
  * @purpose  A4 printable Journal voucher — 1-copy (Accounts).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Accountant (accounts copy)
  * @depends  journal-print-engine.ts · print-config-storage.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildJournalPrintPayload, JOURNAL_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildJournalExportRows,
   type JournalPrintPayload,
 } from '@/lib/journal-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -133,6 +134,7 @@ export function JournalEntryPrintPanel() {
       documentTitle="JOURNAL VOUCHER"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildJournalExportRows(p as JournalPrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>
