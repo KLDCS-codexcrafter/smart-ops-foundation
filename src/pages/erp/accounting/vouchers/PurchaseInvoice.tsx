@@ -14,7 +14,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
+import { ChevronDown, Send, Info, Link2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
