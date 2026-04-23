@@ -126,6 +126,20 @@ const panelCards = [
     badge: "wip",
   },
   {
+    title: "Client Blueprints",
+    icon: Building,
+    route: "/welcome/scenarios",
+    description: "Seven design-partner client scenarios — Abdos · Cherise · BCPL · Smartpower · Amith · Shankar Pharma · Sinha Industries ★. Reference templates that validate universal ERP patterns across industries.",
+    badge: "wip",
+  },
+  {
+    title: "Engineering Console",
+    icon: FlaskConical,
+    route: "/welcome/dev-tools",
+    description: "Developer & QA utilities — Seed & Mock Data Lab · Fixture Coverage Heatmap · Future: Time-Travel, Reset controls, Feature Flags, Migration Wizard, API Playground.",
+    badge: "wip",
+  },
+  {
     title: "Prudent 360",
     icon: Compass,
     route: "/prudent360",
