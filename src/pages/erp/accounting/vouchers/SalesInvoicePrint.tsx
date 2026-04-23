@@ -74,6 +74,8 @@ export function SalesInvoicePrintPanel() {
       v.party_name ?? null,
       v.customer_state_code ?? v.party_state_code ?? null,
     );
+    // [Convergent] Load print config; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
     const built = buildInvoicePrintPayload(
       {
         voucher: v,
@@ -86,6 +88,7 @@ export function SalesInvoicePrintPanel() {
         paymentUpiUri: upiUri,
       },
       copyType,
+      printConfig,
     );
     setPayload(built);
   }, [voucherId, entityCode, copyType]);
