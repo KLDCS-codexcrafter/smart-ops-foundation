@@ -183,24 +183,34 @@ export function SalesInvoicePrintPanel() {
             {payload.bill_to_gstin && (
               <div className="font-mono">GSTIN: {payload.bill_to_gstin}</div>
             )}
-            <div>State Code: <span className="font-mono">{payload.bill_to_state}</span></div>
+            {t.showHeaderStateCode && (
+              <div>State Code: <span className="font-mono">{payload.bill_to_state}</span></div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
             <div className="text-muted-foreground">Invoice No</div>
             <div className="font-mono text-right">{payload.voucher_no}</div>
             <div className="text-muted-foreground">Invoice Date</div>
             <div className="font-mono text-right">{formatDDMMMYYYY(payload.voucher_date)}</div>
-            <div className="text-muted-foreground">Place of Supply</div>
-            <div className="font-mono text-right">{payload.place_of_supply}</div>
-            <div className="text-muted-foreground">Reverse Charge</div>
-            <div className="text-right">{payload.reverse_charge}</div>
-            {payload.transporter && (
+            {t.showPlaceOfSupply && (
+              <>
+                <div className="text-muted-foreground">Place of Supply</div>
+                <div className="font-mono text-right">{payload.place_of_supply}</div>
+              </>
+            )}
+            {t.showReverseChargeFlag && (
+              <>
+                <div className="text-muted-foreground">Reverse Charge</div>
+                <div className="text-right">{payload.reverse_charge}</div>
+              </>
+            )}
+            {t.showTransporterDetails && payload.transporter && (
               <>
                 <div className="text-muted-foreground">Transporter</div>
                 <div className="text-right">{payload.transporter}</div>
               </>
             )}
-            {payload.vehicle_number && (
+            {t.showTransporterDetails && payload.vehicle_number && (
               <>
                 <div className="text-muted-foreground">Vehicle</div>
                 <div className="font-mono text-right">{payload.vehicle_number}</div>
