@@ -151,7 +151,7 @@ export function buildPurchasePrintPayload(
     vendor_bill_date: voucher.vendor_bill_date ?? voucher.date,
     po_ref: voucher.po_ref ?? null,
     place_of_supply: voucher.place_of_supply ?? buyer.state_code,
-    is_rcm: voucher.is_rcm ?? false,
+    is_rcm: false,
 
     lines,
     hsn_summary: Array.from(hsnMap.values()),
