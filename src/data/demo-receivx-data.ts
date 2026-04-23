@@ -14,7 +14,7 @@ function nowIso(): string { return new Date().toISOString(); }
 
 // ─── ReceivX Config ─────────────────────────────────────────────────────
 export const DEMO_RECEIVX_CONFIG = {
-  entity_id: 'SMRT',
+  entity_id: DEFAULT_ENTITY_SHORTCODE,
   wa_provider: 'wa_me_fallback' as const,
   wa_api_endpoint: 'https://app.messageautosender.com/api/send-message',
   wa_api_key: '',
@@ -38,7 +38,7 @@ export const DEMO_RECEIVX_CONFIG = {
 // ─── Reminder Templates ─────────────────────────────────────────────────
 export const DEMO_REMINDER_TEMPLATES = [
   {
-    id: 'tpl-1', entity_id: 'SMRT',
+    id: 'tpl-1', entity_id: DEFAULT_ENTITY_SHORTCODE,
     template_code: 'STANDARD-30', template_name: 'Standard 30-day Cadence',
     description: 'Professional reminders for B2B customers on net-30 terms',
     messages: [
@@ -52,7 +52,7 @@ export const DEMO_REMINDER_TEMPLATES = [
     created_at: nowIso(), updated_at: nowIso(),
   },
   {
-    id: 'tpl-2', entity_id: 'SMRT',
+    id: 'tpl-2', entity_id: DEFAULT_ENTITY_SHORTCODE,
     template_code: 'AGGRESSIVE-15', template_name: 'Aggressive 15-day Cycle',
     description: 'Tighter cycle for risky customers',
     messages: [
@@ -65,7 +65,7 @@ export const DEMO_REMINDER_TEMPLATES = [
     created_at: nowIso(), updated_at: nowIso(),
   },
   {
-    id: 'tpl-3', entity_id: 'SMRT',
+    id: 'tpl-3', entity_id: DEFAULT_ENTITY_SHORTCODE,
     template_code: 'SERVICE-NET-45', template_name: 'Services Net-45',
     description: 'Professional services default cadence',
     messages: [
@@ -81,19 +81,19 @@ export const DEMO_REMINDER_TEMPLATES = [
 
 // ─── Collection Execs ───────────────────────────────────────────────────
 export const DEMO_COLLECTION_EXECS = [
-  { id: 'ce-1', entity_id: 'SMRT', exec_code: 'CE-T01', exec_name: 'Vinod Patil',     phone: '+919900100001', email: 'vinod@op.in',    territory_ids: ['TR-WEST'],  customer_category_ids: [], manager_id: null, max_active_tasks: 50, is_active: true, created_at: nowIso(), updated_at: nowIso() },
-  { id: 'ce-2', entity_id: 'SMRT', exec_code: 'CE-T02', exec_name: 'Sangeeta Pawar',  phone: '+919900100002', email: 'sangeeta@op.in', territory_ids: ['TR-NORTH'], customer_category_ids: [], manager_id: null, max_active_tasks: 40, is_active: true, created_at: nowIso(), updated_at: nowIso() },
-  { id: 'ce-3', entity_id: 'SMRT', exec_code: 'CE-T03', exec_name: 'Manoj Agarwal',   phone: '+919900100003', email: 'manoj@op.in',    territory_ids: ['TR-SOUTH'], customer_category_ids: [], manager_id: null, max_active_tasks: 45, is_active: true, created_at: nowIso(), updated_at: nowIso() },
+  { id: 'ce-1', entity_id: DEFAULT_ENTITY_SHORTCODE, exec_code: 'CE-T01', exec_name: 'Vinod Patil',     phone: '+919900100001', email: 'vinod@op.in',    territory_ids: ['TR-WEST'],  customer_category_ids: [], manager_id: null, max_active_tasks: 50, is_active: true, created_at: nowIso(), updated_at: nowIso() },
+  { id: 'ce-2', entity_id: DEFAULT_ENTITY_SHORTCODE, exec_code: 'CE-T02', exec_name: 'Sangeeta Pawar',  phone: '+919900100002', email: 'sangeeta@op.in', territory_ids: ['TR-NORTH'], customer_category_ids: [], manager_id: null, max_active_tasks: 40, is_active: true, created_at: nowIso(), updated_at: nowIso() },
+  { id: 'ce-3', entity_id: DEFAULT_ENTITY_SHORTCODE, exec_code: 'CE-T03', exec_name: 'Manoj Agarwal',   phone: '+919900100003', email: 'manoj@op.in',    territory_ids: ['TR-SOUTH'], customer_category_ids: [], manager_id: null, max_active_tasks: 45, is_active: true, created_at: nowIso(), updated_at: nowIso() },
 ];
 
 // ─── Incentive Schemes ──────────────────────────────────────────────────
 export const DEMO_INCENTIVE_SCHEMES = [
-  { id: 'is-1', entity_id: 'SMRT', scheme_code: 'EARLY-PAY-2PCT', scheme_name: 'Early Payment 2%',
+  { id: 'is-1', entity_id: DEFAULT_ENTITY_SHORTCODE, scheme_code: 'EARLY-PAY-2PCT', scheme_name: 'Early Payment 2%',
     applicable_to: 'all_customers' as const, customer_category_ids: [], specific_customer_ids: [],
     tiers: [{ pay_within_days: 5, discount_pct: 2 }, { pay_within_days: 10, discount_pct: 1 }],
     valid_from: daysFromNow(-90), valid_until: daysFromNow(180), is_active: true,
     created_at: nowIso(), updated_at: nowIso() },
-  { id: 'is-2', entity_id: 'SMRT', scheme_code: 'QUICK-CLEAR-5PCT', scheme_name: 'Quick Clear 5%',
+  { id: 'is-2', entity_id: DEFAULT_ENTITY_SHORTCODE, scheme_code: 'QUICK-CLEAR-5PCT', scheme_name: 'Quick Clear 5%',
     applicable_to: 'all_customers' as const, customer_category_ids: [], specific_customer_ids: [],
     tiers: [{ pay_within_days: 3, discount_pct: 5 }],
     valid_from: daysFromNow(-30), valid_until: daysFromNow(60), is_active: true,
@@ -108,7 +108,7 @@ function basePtp(idx: number): {
   actual_receipt_voucher_no: string | null;
 } {
   return {
-    id: `ptp-${idx}`, entity_id: 'SMRT', task_id: `task-${idx}`,
+    id: `ptp-${idx}`, entity_id: DEFAULT_ENTITY_SHORTCODE, task_id: `task-${idx}`,
     party_id: `cust-${idx}`, party_name: `Customer ${idx}`,
     voucher_no: `SI-${String(idx).padStart(4,'0')}`,
     recorded_by: 'collections', recorded_via: 'call', notes: '',
@@ -151,7 +151,7 @@ function makeCommLog(prefix: string, count: number) {
   const statuses = ['sent', 'delivered', 'read', 'replied', 'failed'] as const;
   const steps = ['D-3', 'D+0', 'D+7', 'D+15', 'D+30'] as const;
   return Array.from({ length: count }, (_, i) => ({
-    id: `cl-${prefix}-${i+1}`, entity_id: 'SMRT',
+    id: `cl-${prefix}-${i+1}`, entity_id: DEFAULT_ENTITY_SHORTCODE,
     task_id: `task-${i+1}`, party_id: `cust-${i+1}`,
     party_name: `Customer ${prefix}${i+1}`,
     voucher_no: `SI-${prefix}-${String(i+1).padStart(4,'0')}`,
