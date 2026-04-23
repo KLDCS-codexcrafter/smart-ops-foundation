@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Tax Invoice · 3-copy (Original / Duplicate / Triplicate) · GST + IRN/QR + UPI.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created Sprint 9 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   Sprint 9 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   Sprint 9 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Customer (recipient) · Transporter · Supplier (us)
  * @depends  Voucher · EntityGSTConfig · IRNRecord · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import type { EntityGSTConfig } from '@/types/entity-gst';
 import type { IRNRecord } from '@/types/irn';
 import type { PrintConfig, PrintToggles } from '@/types/print-config';
