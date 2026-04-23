@@ -1,10 +1,12 @@
 /**
- * SalesInvoicePrint.tsx — A4 Tax Invoice with IRN + UPI QR
- * Sprint 9. Reads voucher_id from query string, looks up IRN from
- * erp_irn_records_{entityCode}, builds print payload via invoice-print-engine.
- *
- * Triggers window.print(); .no-print elements hidden via @media print CSS.
- * [JWT] GET /api/accounting/vouchers/:id, GET /api/finecore/irn/:voucher_id
+ * @file     SalesInvoicePrint.tsx
+ * @purpose  A4 Tax Invoice — 3-copy (Original/Duplicate/Triplicate) · GST + IRN QR + UPI.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created Sprint 9 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   Sprint 9 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH — all 15 applicable toggles honored) · Usability (HIGH — Tally F12 parity) · Maintainability (HIGH)
+ * @whom     Customer (recipient) · Transporter · Supplier (us) · Accountant
+ * @depends  invoice-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -21,6 +23,7 @@ import {
 import { vouchersKey } from '@/lib/finecore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
@@ -71,6 +74,8 @@ export function SalesInvoicePrintPanel() {
       v.party_name ?? null,
       v.customer_state_code ?? v.party_state_code ?? null,
     );
+    // [Convergent] Load print config; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
     const built = buildInvoicePrintPayload(
       {
         voucher: v,
@@ -83,6 +88,7 @@ export function SalesInvoicePrintPanel() {
         paymentUpiUri: upiUri,
       },
       copyType,
+      printConfig,
     );
     setPayload(built);
   }, [voucherId, entityCode, copyType]);
@@ -111,6 +117,15 @@ export function SalesInvoicePrintPanel() {
     ewbRecordsKey(entityCode),
   );
   const ewb = ewbList.find(e => e.voucher_id === voucherId && e.ewb_no);
+
+  // [Convergent] Resolved toggles drive all visibility decisions below.
+  const t = payload.resolved_toggles;
+  // [Analytical] tfoot Total label colSpan = 3 fixed (#, Desc, Qty) + each toggleable col present.
+  const totalLabelColSpan =
+    3 +
+    (t.showHsnSac ? 1 : 0) +
+    (t.showRate ? 1 : 0) +
+    (t.showDiscountColumn ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-muted/40 print:bg-white">
@@ -150,8 +165,12 @@ export function SalesInvoicePrintPanel() {
           <div className="text-right">
             <div className="text-base font-bold">{payload.supplier_name}</div>
             <div className="text-[10px] text-muted-foreground">{payload.supplier_address}</div>
-            <div className="text-[10px] font-mono">GSTIN: {payload.supplier_gstin || '—'}</div>
-            <div className="text-[10px] font-mono">PAN: {payload.supplier_pan || '—'}</div>
+            {t.showHeaderGstin && (
+              <div className="text-[10px] font-mono">GSTIN: {payload.supplier_gstin || '—'}</div>
+            )}
+            {t.showHeaderPan && (
+              <div className="text-[10px] font-mono">PAN: {payload.supplier_pan || '—'}</div>
+            )}
           </div>
         </div>
 
@@ -164,24 +183,34 @@ export function SalesInvoicePrintPanel() {
             {payload.bill_to_gstin && (
               <div className="font-mono">GSTIN: {payload.bill_to_gstin}</div>
             )}
-            <div>State Code: <span className="font-mono">{payload.bill_to_state}</span></div>
+            {t.showHeaderStateCode && (
+              <div>State Code: <span className="font-mono">{payload.bill_to_state}</span></div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
             <div className="text-muted-foreground">Invoice No</div>
             <div className="font-mono text-right">{payload.voucher_no}</div>
             <div className="text-muted-foreground">Invoice Date</div>
             <div className="font-mono text-right">{formatDDMMMYYYY(payload.voucher_date)}</div>
-            <div className="text-muted-foreground">Place of Supply</div>
-            <div className="font-mono text-right">{payload.place_of_supply}</div>
-            <div className="text-muted-foreground">Reverse Charge</div>
-            <div className="text-right">{payload.reverse_charge}</div>
-            {payload.transporter && (
+            {t.showPlaceOfSupply && (
+              <>
+                <div className="text-muted-foreground">Place of Supply</div>
+                <div className="font-mono text-right">{payload.place_of_supply}</div>
+              </>
+            )}
+            {t.showReverseChargeFlag && (
+              <>
+                <div className="text-muted-foreground">Reverse Charge</div>
+                <div className="text-right">{payload.reverse_charge}</div>
+              </>
+            )}
+            {t.showTransporterDetails && payload.transporter && (
               <>
                 <div className="text-muted-foreground">Transporter</div>
                 <div className="text-right">{payload.transporter}</div>
               </>
             )}
-            {payload.vehicle_number && (
+            {t.showTransporterDetails && payload.vehicle_number && (
               <>
                 <div className="text-muted-foreground">Vehicle</div>
                 <div className="font-mono text-right">{payload.vehicle_number}</div>
@@ -196,10 +225,16 @@ export function SalesInvoicePrintPanel() {
             <tr className="bg-muted/50">
               <th className="border border-border p-1.5 text-left">#</th>
               <th className="border border-border p-1.5 text-left">Description</th>
-              <th className="border border-border p-1.5 text-left">HSN</th>
+              {t.showHsnSac && (
+                <th className="border border-border p-1.5 text-left">HSN</th>
+              )}
               <th className="border border-border p-1.5 text-right">Qty</th>
-              <th className="border border-border p-1.5 text-right">Rate</th>
-              <th className="border border-border p-1.5 text-right">Disc</th>
+              {t.showRate && (
+                <th className="border border-border p-1.5 text-right">Rate</th>
+              )}
+              {t.showDiscountColumn && (
+                <th className="border border-border p-1.5 text-right">Disc</th>
+              )}
               <th className="border border-border p-1.5 text-right">Taxable</th>
               <th className="border border-border p-1.5 text-right">CGST</th>
               <th className="border border-border p-1.5 text-right">SGST</th>
@@ -211,10 +246,16 @@ export function SalesInvoicePrintPanel() {
               <tr key={`line-${l.sl_no}`}>
                 <td className="border border-border p-1.5">{l.sl_no}</td>
                 <td className="border border-border p-1.5">{l.item_description}</td>
-                <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                {t.showHsnSac && (
+                  <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                )}
                 <td className="border border-border p-1.5 text-right font-mono">{l.qty} {l.uom}</td>
-                <td className="border border-border p-1.5 text-right font-mono">₹{l.rate.toLocaleString('en-IN')}</td>
-                <td className="border border-border p-1.5 text-right font-mono">₹{l.discount.toLocaleString('en-IN')}</td>
+                {t.showRate && (
+                  <td className="border border-border p-1.5 text-right font-mono">₹{l.rate.toLocaleString('en-IN')}</td>
+                )}
+                {t.showDiscountColumn && (
+                  <td className="border border-border p-1.5 text-right font-mono">₹{l.discount.toLocaleString('en-IN')}</td>
+                )}
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.taxable_value.toLocaleString('en-IN')}</td>
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.cgst_amount.toLocaleString('en-IN')}</td>
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.sgst_amount.toLocaleString('en-IN')}</td>
@@ -224,7 +265,7 @@ export function SalesInvoicePrintPanel() {
           </tbody>
           <tfoot>
             <tr className="bg-muted/40 font-semibold">
-              <td className="border border-border p-1.5" colSpan={6}>Total</td>
+              <td className="border border-border p-1.5" colSpan={totalLabelColSpan}>Total</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_taxable.toLocaleString('en-IN')}</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_cgst.toLocaleString('en-IN')}</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_sgst.toLocaleString('en-IN')}</td>
@@ -234,7 +275,7 @@ export function SalesInvoicePrintPanel() {
         </table>
 
         {/* HSN Summary */}
-        {payload.hsn_summary.length > 0 && (
+        {t.showHsnSummary && payload.hsn_summary.length > 0 && (
           <div className="mt-4">
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">HSN Summary</div>
             <table className="w-full text-[10px] border-collapse">
@@ -267,8 +308,12 @@ export function SalesInvoicePrintPanel() {
         {/* Totals + amount in words */}
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="text-[10px] space-y-1">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in Words</div>
-            <div className="italic">{payload.amount_in_words}</div>
+            {t.showAmountInWords && (
+              <>
+                <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in Words</div>
+                <div className="italic">{payload.amount_in_words}</div>
+              </>
+            )}
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mt-3">Bank</div>
             <div>{payload.bank_name || '—'}</div>
             <div className="font-mono">A/C: {payload.bank_account_no || '—'}</div>
@@ -284,8 +329,12 @@ export function SalesInvoicePrintPanel() {
               <div className="font-mono text-right">₹{payload.total_sgst.toLocaleString('en-IN')}</div>
               <div className="text-muted-foreground">IGST</div>
               <div className="font-mono text-right">₹{payload.total_igst.toLocaleString('en-IN')}</div>
-              <div className="text-muted-foreground">Round Off</div>
-              <div className="font-mono text-right">₹{payload.round_off.toLocaleString('en-IN')}</div>
+              {t.showRoundOff && (
+                <>
+                  <div className="text-muted-foreground">Round Off</div>
+                  <div className="font-mono text-right">₹{payload.round_off.toLocaleString('en-IN')}</div>
+                </>
+              )}
               <div className="font-bold pt-2 border-t border-border">Grand Total</div>
               <div className="font-bold font-mono text-right pt-2 border-t border-border">
                 ₹{payload.grand_total.toLocaleString('en-IN')}
@@ -296,38 +345,42 @@ export function SalesInvoicePrintPanel() {
 
         {/* QR codes + IRN block */}
         <div className="grid grid-cols-3 gap-4 mt-5 pt-4 border-t border-border">
-          <div className="text-[10px]">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">e-Invoice IRN</div>
-            {payload.irn ? (
-              <>
-                <div className="font-mono break-all">{payload.irn}</div>
-                <div>Ack No: <span className="font-mono">{payload.irn_ack_no}</span></div>
-                <div>Ack Date: <span className="font-mono">{formatDateTimeIST(payload.irn_ack_date)}</span></div>
-                {ewb && (
-                  <div className="mt-1">EWB: <span className="font-mono">{ewb.ewb_no}</span></div>
-                )}
-                {ewb?.valid_until && (
-                  <div>Valid Until: <span className="font-mono">{formatDDMMMYYYY(ewb.valid_until)}</span></div>
-                )}
-              </>
-            ) : (
-              <div className="text-muted-foreground italic">Not generated</div>
-            )}
-          </div>
-          <div className="flex flex-col items-center text-[10px]">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Signed QR</div>
-            {payload.signed_qr_url ? (
-              <img
-                src={payload.signed_qr_url}
-                alt="IRN signed QR"
-                className="w-[120px] h-[120px] border border-border"
-              />
-            ) : (
-              <div className="w-[120px] h-[120px] border border-dashed border-border flex items-center justify-center text-[9px] text-muted-foreground text-center">
-                IRN not<br />generated
-              </div>
-            )}
-          </div>
+          {t.showEInvoiceQr && (
+            <div className="text-[10px]">
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">e-Invoice IRN</div>
+              {payload.irn ? (
+                <>
+                  <div className="font-mono break-all">{payload.irn}</div>
+                  <div>Ack No: <span className="font-mono">{payload.irn_ack_no}</span></div>
+                  <div>Ack Date: <span className="font-mono">{formatDateTimeIST(payload.irn_ack_date)}</span></div>
+                  {t.showEwayBillInfo && ewb && (
+                    <div className="mt-1">EWB: <span className="font-mono">{ewb.ewb_no}</span></div>
+                  )}
+                  {t.showEwayBillInfo && ewb?.valid_until && (
+                    <div>Valid Until: <span className="font-mono">{formatDDMMMYYYY(ewb.valid_until)}</span></div>
+                  )}
+                </>
+              ) : (
+                <div className="text-muted-foreground italic">Not generated</div>
+              )}
+            </div>
+          )}
+          {t.showEInvoiceQr && (
+            <div className="flex flex-col items-center text-[10px]">
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Signed QR</div>
+              {payload.signed_qr_url ? (
+                <img
+                  src={payload.signed_qr_url}
+                  alt="IRN signed QR"
+                  className="w-[120px] h-[120px] border border-border"
+                />
+              ) : (
+                <div className="w-[120px] h-[120px] border border-dashed border-border flex items-center justify-center text-[9px] text-muted-foreground text-center">
+                  IRN not<br />generated
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex flex-col items-center text-[10px]">
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Pay via UPI</div>
             {payload.payment_qr_url ? (
@@ -349,15 +402,23 @@ export function SalesInvoicePrintPanel() {
 
         {/* Footer */}
         <div className="grid grid-cols-2 gap-4 mt-6 text-[10px]">
-          <div>
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
-            <div className="text-muted-foreground mt-1">{payload.terms}</div>
-          </div>
-          <div className="text-right flex flex-col justify-end">
-            <div className="font-semibold">For {payload.supplier_name}</div>
-            <div className="mt-12 border-t border-border pt-1">{payload.authorised_signatory}</div>
-            <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
-          </div>
+          {t.showTermsAndConditions ? (
+            <div>
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
+              <div className="text-muted-foreground mt-1">{payload.terms}</div>
+            </div>
+          ) : (
+            <div />
+          )}
+          {t.showAuthorisedSignatory ? (
+            <div className="text-right flex flex-col justify-end">
+              <div className="font-semibold">For {payload.supplier_name}</div>
+              <div className="mt-12 border-t border-border pt-1">{payload.authorised_signatory}</div>
+              <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
+            </div>
+          ) : (
+            <div />
+          )}
         </div>
       </div>
     </div>
