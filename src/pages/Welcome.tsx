@@ -13,6 +13,7 @@ import {
   Clock, Search, Plus, Wifi, WifiOff, Activity,
   XCircle, AlertCircle,
   Grid3X3, Bell, RefreshCw, Circle, Boxes, Wrench,
+  Building, FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
