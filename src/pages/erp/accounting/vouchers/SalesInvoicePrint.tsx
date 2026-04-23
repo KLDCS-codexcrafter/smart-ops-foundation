@@ -329,8 +329,12 @@ export function SalesInvoicePrintPanel() {
               <div className="font-mono text-right">₹{payload.total_sgst.toLocaleString('en-IN')}</div>
               <div className="text-muted-foreground">IGST</div>
               <div className="font-mono text-right">₹{payload.total_igst.toLocaleString('en-IN')}</div>
-              <div className="text-muted-foreground">Round Off</div>
-              <div className="font-mono text-right">₹{payload.round_off.toLocaleString('en-IN')}</div>
+              {t.showRoundOff && (
+                <>
+                  <div className="text-muted-foreground">Round Off</div>
+                  <div className="font-mono text-right">₹{payload.round_off.toLocaleString('en-IN')}</div>
+                </>
+              )}
               <div className="font-bold pt-2 border-t border-border">Grand Total</div>
               <div className="font-bold font-mono text-right pt-2 border-t border-border">
                 ₹{payload.grand_total.toLocaleString('en-IN')}
