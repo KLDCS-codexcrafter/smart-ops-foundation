@@ -288,6 +288,14 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     }
   }, [onSaveDraft, partyName, serializeFormState]);
 
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/payment-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
+
   const applyAdvance = useCallback((adv: AdvanceEntry) => {
     setAmount(prev => prev + (adv.balance_amount ?? 0));
     toast.success(`Applied advance ${adv.advance_ref_no} (₹${(adv.balance_amount ?? 0).toLocaleString('en-IN')})`);
