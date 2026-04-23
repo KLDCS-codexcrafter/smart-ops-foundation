@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronDown } from 'lucide-react';
+import { Send, ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
@@ -72,6 +72,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   const [distance, setDistance] = useState('');
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   // SAM state
   const [customerId, setCustomerId] = useState<string | null>(null);
@@ -186,6 +187,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+      setPostedVoucherId(voucher.id);
 
       // Commission booking at DN stage (if configured)
       if (
@@ -376,7 +378,14 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     setInventoryLines([]); setNarration('');
     setCustomerId(null); setSamSalesmanId(null); setSamSalesmanName(null);
     setSamAgentId(null); setSamAgentName(null); setCommissionBanner(null);
+    setPostedVoucherId(null);
   }, []);
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/delivery-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=consignee`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Delivery Note',
@@ -607,6 +616,12 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button variant="outline" onClick={handlePrint}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+        )}
       </div>
     </div>
     </>

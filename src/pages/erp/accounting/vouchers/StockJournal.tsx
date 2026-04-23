@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send } from 'lucide-react';
+import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { StockJournalLineGrid } from '@/components/finecore/StockJournalLineGrid';
@@ -39,6 +39,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const [consumptionLines, setConsumptionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [productionLines, setProductionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   const handlePost = useCallback(() => {
     if (consumptionLines.length === 0) { toast.error('At least one consumption line is required'); return; }
@@ -101,6 +102,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+      setPostedVoucherId(voucher.id);
       toast.success('Stock Journal posted');
     } catch { toast.error('Failed to save'); }
   }, [consumptionLines, productionLines, purpose, referenceNo, date, voucherNo, narration, entityCode, department]);
@@ -129,7 +131,14 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const clearForm = useCallback(() => {
     setPurpose('Store Transfer'); setDepartment(''); setReferenceNo('');
     setConsumptionLines([]); setProductionLines([]); setNarration('');
+    setPostedVoucherId(null);
   }, []);
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Stock Journal',
@@ -203,6 +212,12 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button variant="outline" onClick={handlePrint}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+        )}
       </div>
     </div>
     </>

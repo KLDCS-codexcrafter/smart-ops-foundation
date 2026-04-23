@@ -91,6 +91,12 @@ const JournalEntryPrint = lazy(() => import('./pages/erp/accounting/vouchers/Jou
 const PurchaseInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoicePrint').then(m => ({ default: m.PurchaseInvoicePrintPanel })));
 const CreditNotePrint = lazy(() => import('./pages/erp/accounting/vouchers/CreditNotePrint').then(m => ({ default: m.CreditNotePrintPanel })));
 const DebitNotePrint = lazy(() => import('./pages/erp/accounting/vouchers/DebitNotePrint').then(m => ({ default: m.DebitNotePrintPanel })));
+const DeliveryNotePrint = lazy(() => import('./pages/erp/accounting/vouchers/DeliveryNotePrint'));
+const ReceiptNotePrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptNotePrint'));
+const StockAdjustmentPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockAdjustmentPrint'));
+const StockJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockJournalPrint'));
+const StockTransferPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockTransferPrint'));
+const ManufacturingJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/ManufacturingJournalPrint'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -314,6 +320,12 @@ const App = () => (
               <Route path="/erp/finecore/purchase-invoice-print" element={<P><PurchaseInvoicePrint /></P>} />
               <Route path="/erp/finecore/credit-note-print" element={<P><CreditNotePrint /></P>} />
               <Route path="/erp/finecore/debit-note-print" element={<P><DebitNotePrint /></P>} />
+              <Route path="/erp/finecore/delivery-note-print" element={<P><DeliveryNotePrint /></P>} />
+              <Route path="/erp/finecore/receipt-note-print" element={<P><ReceiptNotePrint /></P>} />
+              <Route path="/erp/finecore/stock-adjustment-print" element={<P><StockAdjustmentPrint /></P>} />
+              <Route path="/erp/finecore/stock-journal-print" element={<P><StockJournalPrint /></P>} />
+              <Route path="/erp/finecore/stock-transfer-print" element={<P><StockTransferPrint /></P>} />
+              <Route path="/erp/finecore/mfg-journal-print" element={<P><ManufacturingJournalPrint /></P>} />
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/receipt" element={<P><ReceiptVoucher /></P>} />

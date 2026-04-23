@@ -29,7 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Factory, Layers } from 'lucide-react';
+import { Factory, Layers, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -82,6 +82,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
   const [overheadLedgerName, setOverheadLedgerName] = useState('');
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   const lastSavedRef = useRef(false);
 
@@ -211,8 +212,16 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
     setByproductLines([]);
     setOverheadLedgerId(''); setOverheadLedgerName('');
     setNarration('');
+    setPostedVoucherId(null);
     lastSavedRef.current = false;
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/mfg-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
 
   const isDirty = useCallback(
     () => consumptionLines.length > 0 || productionLines.length > 0 || byproductLines.length > 0 || narration.length > 0,
@@ -396,6 +405,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
       };
 
       postVoucher(voucher, entityCode);
+      setPostedVoucherId(voucher.id);
       lastSavedRef.current = true;
       toast.success(`Manufacturing Journal ${voucherNo} posted`);
     } catch (err) {
@@ -532,9 +542,15 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
                 </CardContent>
 
                 <div className="px-5 pb-5 space-y-3">
-                  {onSaveDraft && (
-                    <div className="flex justify-end">
-                      <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+                  {(onSaveDraft || postedVoucherId) && (
+                    <div className="flex justify-end gap-2">
+                      {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
+                      {postedVoucherId && (
+                        <Button variant="outline" onClick={handlePrint}>
+                          <Printer className="h-4 w-4 mr-2" />
+                          Print
+                        </Button>
+                      )}
                     </div>
                   )}
                   <VoucherFormFooter
