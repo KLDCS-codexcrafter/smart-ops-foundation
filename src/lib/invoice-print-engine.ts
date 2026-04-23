@@ -1,12 +1,21 @@
 /**
- * invoice-print-engine.ts — Pure helpers for Tax Invoice print
- * Sprint 9. Builds the flat print payload, number-to-words (Indian),
- * QR URL builder.
+ * @file     invoice-print-engine.ts
+ * @purpose  Build print payload for Tax Invoice · 3-copy (Original / Duplicate / Triplicate) · GST + IRN/QR + UPI.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created Sprint 9 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   Sprint 9 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Customer (recipient) · Transporter · Supplier (us)
+ * @depends  Voucher · EntityGSTConfig · IRNRecord · print-config.ts · print-config-storage.ts
+ * @consumers InvoicePrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
 import type { EntityGSTConfig } from '@/types/entity-gst';
 import type { IRNRecord } from '@/types/irn';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export interface InvoicePrintContext {
   voucher: Voucher;
@@ -99,6 +108,9 @@ export interface InvoicePrintPayload {
   bank_branch: string;
   terms: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 const COPY_LABELS: Record<'original' | 'duplicate' | 'triplicate', string> = {
@@ -167,6 +179,7 @@ export function buildQRImageUrl(data: string, sizePx: number = 160): string {
 export function buildInvoicePrintPayload(
   ctx: InvoicePrintContext,
   copyType: 'original' | 'duplicate' | 'triplicate' = 'original',
+  config?: PrintConfig,
 ): InvoicePrintPayload {
   const v = ctx.voucher;
   const lines: InvoicePrintLine[] = (v.inventory_lines ?? []).map((l, i) => ({
@@ -206,6 +219,10 @@ export function buildInvoicePrintPayload(
     ? buildQRImageUrl(ctx.irn.signed_qr_code, 160)
     : null;
   const paymentQrUrl = ctx.paymentUpiUri ? buildQRImageUrl(ctx.paymentUpiUri, 160) : null;
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'invoice');
 
   return {
     title: 'TAX INVOICE',
