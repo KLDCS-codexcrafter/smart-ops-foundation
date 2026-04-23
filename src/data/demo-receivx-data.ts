@@ -2,6 +2,7 @@
  * demo-receivx-data.ts — Full ReceivX story (templates, execs, PTPs, comm log, config)
  * [JWT] Read by orchestrator → POST /api/receivx/*
  */
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // Relative dates make the demo evergreen
 function today(): Date { return new Date(); }
