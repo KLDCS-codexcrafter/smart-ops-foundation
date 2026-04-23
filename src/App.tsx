@@ -97,6 +97,7 @@ const StockAdjustmentPrint = lazy(() => import('./pages/erp/accounting/vouchers/
 const StockJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockJournalPrint'));
 const StockTransferPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockTransferPrint'));
 const ManufacturingJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/ManufacturingJournalPrint'));
+const PrintConfigPage = lazy(() => import('./pages/erp/finecore/settings/PrintConfigPage'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -332,6 +333,7 @@ const App = () => (
               <Route path="/erp/finecore/stock-journal-print" element={<P><StockJournalPrint /></P>} />
               <Route path="/erp/finecore/stock-transfer-print" element={<P><StockTransferPrint /></P>} />
               <Route path="/erp/finecore/mfg-journal-print" element={<P><ManufacturingJournalPrint /></P>} />
+              <Route path="/erp/finecore/settings/print-config" element={<P><PrintConfigPage /></P>} />
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/receipt" element={<P><ReceiptVoucher /></P>} />
