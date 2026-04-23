@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, AlertTriangle, Plus } from 'lucide-react';
+import { Info, AlertTriangle, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SettlementPanel } from '@/components/finecore/SettlementPanel';
@@ -90,6 +90,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const [amount, setAmount] = useState(0);
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   // Sprint 3B state
@@ -191,6 +192,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     setPaymentPurpose('regular'); setAdvancePORef('');
     setTdsSection(''); setTdsRate(0); setTdsAmount(0);
     lastSavedRef.current = false;
+    setPostedVoucherId(null);
   }, [entityCode]);
 
   const handlePost = useCallback(async () => {
@@ -235,6 +237,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       postVoucher(voucher, entityCode);
       toast.success(`Payment ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
+      setPostedVoucherId(voucher.id);
     } catch {
       toast.error('Failed to save');
       lastSavedRef.current = false;
@@ -523,8 +526,13 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft} className="mr-2">Save to Draft Tray</Button>}
+      <div className="flex justify-end gap-2">
+        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Payment
+          </Button>
+        )}
       </div>
 
       <VoucherFormFooter
