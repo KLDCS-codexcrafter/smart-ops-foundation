@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Stock Transfer voucher · 2-copy (Dispatch / Receive) · qty-only.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Dispatch dept · Receive dept
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   formatDDMMMYYYY,
@@ -116,3 +117,49 @@ export function buildStockTransferPrintPayload(
 }
 
 export { formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Stock Transfer payload into tabular ExportRows for CSV/XLSX export.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 1 sheet (meta + line items + totals)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildStockTransferExportRows(payload: StockTransferPrintPayload): ExportRows {
+  const metaRows: (string | number | null)[][] = [
+    ['Transfer No', payload.voucher_no],
+    ['Date',        payload.voucher_date],
+    ['Ref No',      payload.ref_no],
+    ['From Dept',   payload.from_dept],
+    ['To Dept',     payload.to_dept],
+    ['Status',      payload.status],
+  ];
+
+  const lineRows = payload.lines.map(l => [
+    l.sl_no,
+    l.item_name,
+    l.qty,
+    l.uom,
+    l.godown,
+    l.batch,
+  ]);
+
+  const headers = ['#', 'Item', 'Qty', 'UOM', 'Godown', 'Batch'];
+  const sheet: ExportSheet = {
+    name: 'Stock Transfer',
+    headers,
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], null, null, null, null]),
+      [null, null, null, null, null, null],
+      ['— Line Items —', null, null, null, null, null],
+      ...lineRows,
+      [null, null, null, null, null, null],
+      ['TOTAL', null, payload.total_qty, null, null, null],
+    ],
+  };
+
+  return {
+    voucherType: 'Stock Transfer',
+    voucherNo: payload.voucher_no,
+    sheets: [sheet],
+  };
+}
