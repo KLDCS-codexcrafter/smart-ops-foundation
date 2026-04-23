@@ -114,7 +114,7 @@ function RegisterConfigPanel({ entityCode }: { entityCode: string }) {
     <div className="p-6 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Settings className="h-5 w-5 text-teal-500" />
+          <Settings className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-bold">Register Configuration</h2>
           <Badge variant="outline" className="text-[10px]">Entity: {entityCode}</Badge>
         </div>
