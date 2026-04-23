@@ -153,8 +153,15 @@ export function FinCorePagePanel() {
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
+  // [T10-pre.2d-B] Pre-filter passed to DayBookPanel when arriving via register drill-down.
+  const [dayBookInitialFilters, setDayBookInitialFilters] = useState<Record<string, unknown> | undefined>(undefined);
   const { entityCode } = useEntityCode();
   const { entityCode: entCode, userId } = useCardEntitlement();
+
+  // [T10-pre.2d-B] Clear DayBook drill-down filters when leaving the DayBook module.
+  useEffect(() => {
+    if (activeModule !== 'fc-rpt-daybook') setDayBookInitialFilters(undefined);
+  }, [activeModule]);
 
   useEffect(() => {
     if (!entityCode) return;
@@ -226,7 +233,7 @@ export function FinCorePagePanel() {
       case 'fc-inv-mfg-journal': return <ManufacturingJournalPanel onSaveDraft={addToDraftTray} />;
       case 'fc-ord-purchase-order': return <PurchaseOrderPanel entityCode={entityCode} />;
       case 'fc-ord-sales-order': return <SalesOrderPanel entityCode={entityCode} />;
-      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
+      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} initialFilters={dayBookInitialFilters as { dateFrom?: string; dateTo?: string; typeFilter?: string; search?: string } | undefined} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
       case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
       case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;
       case 'fc-rpt-pl': return <ProfitLossPanel entityCode={entityCode} />;
