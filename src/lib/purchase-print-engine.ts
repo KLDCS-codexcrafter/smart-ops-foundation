@@ -3,7 +3,7 @@
  * @purpose  Build internal-copy print payload for Purchase Invoice (vendor-issued bill, our audit-trail copy).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Accountant (internal copy — NOT a legal tax invoice)
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   amountInWords, formatINR, formatDDMMMYYYY,
@@ -178,3 +179,82 @@ export function buildPurchasePrintPayload(
 }
 
 export { formatINR, formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Purchase Invoice payload into tabular ExportRows for CSV/XLSX export.
+ *            Multi-sheet: Purchase (lines) + HSN Summary.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 2 sheets
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildPurchaseExportRows(payload: PurchasePrintPayload): ExportRows {
+  const metaRows: (string | number | null)[][] = [
+    ['Purchase No',      payload.voucher_no],
+    ['Date',             payload.voucher_date],
+    ['Vendor Bill No',   payload.vendor_bill_no],
+    ['Vendor Bill Date', payload.vendor_bill_date],
+    ['PO Ref',           payload.po_ref ?? ''],
+    ['Buyer',            payload.buyer.legal_name],
+    ['Buyer GSTIN',      payload.buyer.gstin ?? ''],
+    ['Vendor',           payload.vendor_name],
+    ['Vendor GSTIN',     payload.vendor_gstin ?? ''],
+    ['Vendor State',     payload.vendor_state],
+    ['Place of Supply',  payload.place_of_supply],
+    ['RCM',              payload.is_rcm ? 'Yes' : 'No'],
+  ];
+
+  const lineHeaders = ['#', 'Description', 'HSN', 'Qty', 'UOM', 'Rate', 'Discount', 'Taxable', 'CGST', 'SGST', 'IGST', 'Total'];
+  const lineRows = payload.lines.map(l => [
+    l.sl_no,
+    l.item_description,
+    l.hsn_sac,
+    l.qty,
+    l.uom,
+    l.rate,
+    l.discount,
+    l.taxable_value,
+    l.cgst_amount,
+    l.sgst_amount,
+    l.igst_amount,
+    l.taxable_value + l.cgst_amount + l.sgst_amount + l.igst_amount,
+  ]);
+
+  const blank = (): (string | number | null)[] => Array(lineHeaders.length).fill(null);
+
+  const purchaseSheet: ExportSheet = {
+    name: 'Purchase',
+    headers: lineHeaders,
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], ...Array(lineHeaders.length - 2).fill(null)]),
+      blank(),
+      ['— Line Items —', ...Array(lineHeaders.length - 1).fill(null)],
+      ...lineRows,
+      blank(),
+      ['TOTALS', null, null, null, null, null, null,
+        payload.total_taxable, payload.total_cgst, payload.total_sgst, payload.total_igst,
+        payload.grand_total],
+      ['Round Off',  null, null, null, null, null, null, null, null, null, null, payload.round_off],
+      ['Grand Total', null, null, null, null, null, null, null, null, null, null, payload.grand_total],
+      ['Amount in Words', payload.amount_in_words, ...Array(lineHeaders.length - 2).fill(null)],
+    ],
+  };
+
+  const hsnSheet: ExportSheet = {
+    name: 'HSN Summary',
+    headers: ['HSN', 'Taxable', 'CGST', 'SGST', 'IGST', 'Total'],
+    rows: payload.hsn_summary.map(h => [
+      h.hsn_sac || '',
+      h.taxable,
+      h.cgst,
+      h.sgst,
+      h.igst,
+      h.total,
+    ]),
+  };
+
+  return {
+    voucherType: 'Purchase Invoice',
+    voucherNo: payload.voucher_no,
+    sheets: [purchaseSheet, hsnSheet],
+  };
+}

@@ -285,3 +285,84 @@ export function buildInvoicePrintPayload(
     resolved_toggles,
   };
 }
+
+/**
+ * @purpose   Transform Sales Invoice payload into tabular ExportRows for CSV/XLSX export.
+ *            Multi-sheet: Invoice (lines) + HSN Summary.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 2 sheets (Invoice / HSN Summary)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildInvoiceExportRows(payload: InvoicePrintPayload): ExportRows {
+  const metaRows: (string | number | null)[][] = [
+    ['Invoice No',     payload.voucher_no],
+    ['Date',           payload.voucher_date],
+    ['Copy',           payload.copy_label],
+    ['Supplier',       payload.supplier_name],
+    ['Supplier GSTIN', payload.supplier_gstin],
+    ['Supplier PAN',   payload.supplier_pan],
+    ['Bill To',        payload.bill_to_name],
+    ['Bill To GSTIN',  payload.bill_to_gstin ?? ''],
+    ['Place of Supply', payload.place_of_supply],
+    ['Reverse Charge', payload.reverse_charge],
+    ['Transporter',    payload.transporter ?? ''],
+    ['Vehicle',        payload.vehicle_number ?? ''],
+    ['IRN',            payload.irn ?? ''],
+    ['EWB No',         payload.ewb_no ?? ''],
+  ];
+
+  const lineHeaders = ['#', 'Description', 'HSN', 'Qty', 'UOM', 'Rate', 'Discount', 'Taxable', 'CGST', 'SGST', 'IGST', 'Total'];
+  const lineRows = payload.lines.map(l => [
+    l.sl_no,
+    l.item_description,
+    l.hsn_sac,
+    l.qty,
+    l.uom,
+    l.rate,
+    l.discount,
+    l.taxable_value,
+    l.cgst_amount,
+    l.sgst_amount,
+    l.igst_amount,
+    l.taxable_value + l.cgst_amount + l.sgst_amount + l.igst_amount,
+  ]);
+
+  const blank = (): (string | number | null)[] => Array(lineHeaders.length).fill(null);
+
+  const invoiceSheet: ExportSheet = {
+    name: 'Invoice',
+    headers: lineHeaders,
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], ...Array(lineHeaders.length - 2).fill(null)]),
+      blank(),
+      ['— Line Items —', ...Array(lineHeaders.length - 1).fill(null)],
+      ...lineRows,
+      blank(),
+      ['TOTALS', null, null, null, null, null, null,
+        payload.total_taxable, payload.total_cgst, payload.total_sgst, payload.total_igst,
+        payload.grand_total],
+      ['Round Off',  null, null, null, null, null, null, null, null, null, null, payload.round_off],
+      ['Grand Total', null, null, null, null, null, null, null, null, null, null, payload.grand_total],
+      ['Amount in Words', payload.amount_in_words, ...Array(lineHeaders.length - 2).fill(null)],
+    ],
+  };
+
+  const hsnSheet: ExportSheet = {
+    name: 'HSN Summary',
+    headers: ['HSN', 'Taxable', 'CGST', 'SGST', 'IGST', 'Total'],
+    rows: payload.hsn_summary.map(h => [
+      h.hsn_sac || '',
+      h.taxable,
+      h.cgst,
+      h.sgst,
+      h.igst,
+      h.total,
+    ]),
+  };
+
+  return {
+    voucherType: 'Sales Invoice',
+    voucherNo: payload.voucher_no,
+    sheets: [invoiceSheet, hsnSheet],
+  };
+}
