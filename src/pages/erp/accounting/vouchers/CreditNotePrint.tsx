@@ -1,10 +1,12 @@
 /**
- * CreditNotePrint.tsx — A4 Credit Note (sales-side) print panel.
- *
- * Tri-copy GST document we issue to a customer to reduce their liability
- * (returns, price corrections, post-sale discounts). CGST Rule 46 layout
- * with HSN summary; reason_code rendered as "—" until Voucher type
- * is extended in a future sprint.
+ * @file     CreditNotePrint.tsx
+ * @purpose  A4 Credit Note (sales-side) print panel — tri-copy GST.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH — 13 applicable toggles honored) · Usability (HIGH) · Maintainability (HIGH)
+ * @whom     Customer (recipient) · Accountant (issuer)
+ * @depends  credit-note-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -16,6 +18,7 @@ import {
   type CreditNotePrintPayload,
 } from '@/lib/credit-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 export function CreditNotePrintPanel() {
   const [params] = useSearchParams();
@@ -30,13 +33,16 @@ export function CreditNotePrintPanel() {
     const voucher = loadVoucher(entityCode, voucherId);
     if (!voucher) return;
     const gst = loadEntityGst(entityCode);
-    setPayload(buildCreditNotePrintPayload(voucher, gst, copyKey));
+    // [Convergent] Load print config for this entity; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
+    setPayload(buildCreditNotePrintPayload(voucher, gst, copyKey, printConfig));
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
     if (!payload) return (
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     );
+    const t = payload.resolved_toggles;
 
     return (
       <>
@@ -45,8 +51,11 @@ export function CreditNotePrintPanel() {
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Issuer (Supplier)</div>
             <div className="font-semibold text-[13px]">{payload.issuer.legal_name}</div>
             <div className="text-muted-foreground text-[10px]">{payload.issuer_address}</div>
-            {payload.issuer.gstin && (
+            {t.showHeaderGstin && payload.issuer.gstin && (
               <div className="font-mono text-[10px]">GSTIN: {payload.issuer.gstin}</div>
+            )}
+            {t.showHeaderPan && payload.issuer.pan && (
+              <div className="font-mono text-[10px]">PAN: {payload.issuer.pan}</div>
             )}
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
@@ -58,18 +67,22 @@ export function CreditNotePrintPanel() {
             <div className="font-mono text-right">{payload.against_invoice_no || '—'}</div>
             <div className="text-muted-foreground">Reason</div>
             <div className="text-right">{payload.reason_code}</div>
-            <div className="text-muted-foreground">Place of Supply</div>
-            <div className="font-mono text-right">{payload.place_of_supply || '—'}</div>
+            {t.showPlaceOfSupply && (
+              <>
+                <div className="text-muted-foreground">Place of Supply</div>
+                <div className="font-mono text-right">{payload.place_of_supply || '—'}</div>
+              </>
+            )}
           </div>
         </div>
 
         <div className="mt-3 border-t border-border pt-3 text-[11px]">
           <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Recipient (Customer)</div>
           <div className="font-semibold text-[13px]">{payload.recipient_name || '—'}</div>
-          {payload.recipient_gstin && (
+          {t.showHeaderGstin && payload.recipient_gstin && (
             <div className="font-mono text-[10px]">GSTIN: {payload.recipient_gstin}</div>
           )}
-          {payload.recipient_state && (
+          {t.showHeaderStateCode && payload.recipient_state && (
             <div className="text-[10px]">State Code: <span className="font-mono">{payload.recipient_state}</span></div>
           )}
         </div>
@@ -79,9 +92,10 @@ export function CreditNotePrintPanel() {
             <tr className="bg-muted/50">
               <th className="border border-border p-1.5 text-left">#</th>
               <th className="border border-border p-1.5 text-left">Description</th>
-              <th className="border border-border p-1.5 text-left">HSN</th>
+              {t.showHsnSac && <th className="border border-border p-1.5 text-left">HSN</th>}
               <th className="border border-border p-1.5 text-right">Qty</th>
-              <th className="border border-border p-1.5 text-right">Rate</th>
+              {t.showRate && <th className="border border-border p-1.5 text-right">Rate</th>}
+              {t.showDiscountColumn && <th className="border border-border p-1.5 text-right">Disc</th>}
               <th className="border border-border p-1.5 text-right">Taxable</th>
               <th className="border border-border p-1.5 text-right">CGST</th>
               <th className="border border-border p-1.5 text-right">SGST</th>
@@ -94,9 +108,10 @@ export function CreditNotePrintPanel() {
               <tr key={`cn-l-${l.sl_no}`}>
                 <td className="border border-border p-1.5">{l.sl_no}</td>
                 <td className="border border-border p-1.5">{l.item_description}</td>
-                <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                {t.showHsnSac && <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>}
                 <td className="border border-border p-1.5 text-right font-mono">{l.qty} {l.uom}</td>
-                <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.rate)}</td>
+                {t.showRate && <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.rate)}</td>}
+                {t.showDiscountColumn && <td className="border border-border p-1.5 text-right font-mono">—</td>}
                 <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.taxable_value)}</td>
                 <td className="border border-border p-1.5 text-right font-mono">
                   {l.cgst_amount > 0 ? `${l.cgst_rate}% ${formatINR(l.cgst_amount)}` : '—'}
@@ -115,7 +130,7 @@ export function CreditNotePrintPanel() {
           </tbody>
         </table>
 
-        {payload.hsn_summary.length > 0 && (
+        {t.showHsnSummary && payload.hsn_summary.length > 0 && (
           <>
             <div className="mt-4 text-[9px] uppercase tracking-wider text-muted-foreground">
               HSN / SAC Summary
@@ -149,9 +164,13 @@ export function CreditNotePrintPanel() {
 
         <div className="mt-4 border-t border-border pt-2 grid grid-cols-2 gap-4 text-[11px]">
           <div className="flex-1">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
-            <div className="italic">{payload.amount_in_words}</div>
-            {payload.narration && (
+            {t.showAmountInWords && (
+              <>
+                <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
+                <div className="italic">{payload.amount_in_words}</div>
+              </>
+            )}
+            {t.showNarration && payload.narration && (
               <div className="mt-2 text-[10px]">
                 <span className="text-muted-foreground uppercase tracking-wider text-[9px]">Narration: </span>
                 {payload.narration}
@@ -175,7 +194,7 @@ export function CreditNotePrintPanel() {
               <span className="text-muted-foreground">IGST</span>
               <span className="font-mono">{formatINR(payload.total_igst)}</span>
             </div>
-            {payload.round_off !== 0 && (
+            {t.showRoundOff && payload.round_off !== 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Round Off</span>
                 <span className="font-mono">{formatINR(payload.round_off)}</span>
@@ -188,14 +207,23 @@ export function CreditNotePrintPanel() {
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end text-[10px]">
-          <div className="text-right">
-            <div className="border-t border-border pt-1 w-48">
-              {payload.authorised_signatory}
-            </div>
-            <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+        {t.showTermsAndConditions && (
+          <div className="mt-4 text-[10px]">
+            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
+            <div className="text-muted-foreground mt-1">Subject to jurisdiction. E.&amp;O.E.</div>
           </div>
-        </div>
+        )}
+
+        {t.showAuthorisedSignatory && (
+          <div className="mt-10 flex justify-end text-[10px]">
+            <div className="text-right">
+              <div className="border-t border-border pt-1 w-48">
+                {payload.authorised_signatory}
+              </div>
+              <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+            </div>
+          </div>
+        )}
       </>
     );
   }, [payload]);
