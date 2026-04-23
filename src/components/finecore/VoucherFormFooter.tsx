@@ -7,22 +7,22 @@
  * Keeps UX consistent across Receipt, Payment, Contra, JV, SI, PI, CN, DN, and
  * all inventory vouchers added in later sub-sprints.
  *
- * INPUT        onPost, onSaveAndNew, onCancel, disabled flags, status
+ * INPUT        onPost, onSaveAndNew, onCancel, disabled flags, status, exportData
  * OUTPUT       UI — fires the appropriate handler on button click
  *
- * DEPENDENCIES shadcn Button + DropdownMenu + sonner toast
+ * DEPENDENCIES shadcn Button + DropdownMenu + sonner toast + voucher-export-engine
  *
  * TALLY-ON-TOP BEHAVIOR
  * Footer is agnostic. Consuming voucher reads tenantConfig.accountingMode and
  * decides what happens inside its own onPost handler.
  *
  * SPEC DOC     FinCore Voucher Deep Audit (Apr 2026) — cross-cutting gaps section
- *              Sprint T10-pre.1a Session B scope
+ *              Sprint T10-pre.1a Session B scope · T10-pre.2c (Export Triad wired)
  *
- * PHASE 2 NOTE
- * Print + Export remain stubs. Real handlers arrive in:
- *   - T10-pre.4: Invoice print layouts via pdfmake (D-035)
- *   - T10-pre.5: Export triad (Excel / Word / PDF) reusable hooks
+ * EXPORT (T10-pre.2c)
+ * Export → Excel/CSV downloads via voucher-export-engine when `exportData` is
+ * provided by the parent voucher form. Export → PDF reuses window.print()
+ * (D-127). When `exportData` is absent, Excel/CSV show a toast prompting save.
  */
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +32,9 @@ import {
   Printer, Download, Save, SaveAll, X, Loader2, FileText, FileSpreadsheet, File,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  exportVoucherAsCSV, exportVoucherAsXLSX, type ExportRows,
+} from '@/lib/voucher-export-engine';
 
 interface VoucherFormFooterProps {
   /** Fires when user clicks "Post". */
@@ -52,12 +55,24 @@ interface VoucherFormFooterProps {
   showExport?: boolean;
   /** Custom label for Post button. */
   postLabel?: string;
+  /**
+   * [T10-pre.2c] Optional export wiring. When provided, the "Export → Excel/CSV"
+   * dropdown items trigger real downloads via voucher-export-engine. When absent,
+   * the dropdown still renders but the click shows a toast (save-first hint).
+   * `unknown` here because the footer is voucher-agnostic; types are enforced
+   * at the call-site in each voucher form.
+   */
+  exportData?: {
+    payload: unknown;
+    buildRows: (payload: unknown) => ExportRows;
+  };
 }
 
 export function VoucherFormFooter({
   onPost, onSaveAndNew, onCancel,
   isSaving = false, canPost = true, status = 'draft',
   showPrint = true, showExport = true, postLabel,
+  exportData,
 }: VoucherFormFooterProps) {
   const resolvedPostLabel = postLabel
     ?? (status === 'posted' ? 'Amend'
@@ -65,11 +80,33 @@ export function VoucherFormFooter({
       : 'Post');
 
   const handlePrint = () => {
-    toast.info('Print preview arrives with Sprint T10-pre.4 (pdfmake invoice layouts).');
+    // [Convergent] D-127: reuse browser print pipeline.
+    window.print();
   };
 
-  const handleExport = (fmt: 'excel' | 'word' | 'pdf') => {
-    toast.info(`Export to ${fmt.toUpperCase()} arrives with Sprint T10-pre.5 (reusable export triad).`);
+  const handleExport = (fmt: 'excel' | 'csv' | 'pdf') => {
+    if (fmt === 'pdf') {
+      // [Convergent] D-127: reuse window.print(). User selects "Save as PDF" in the dialog.
+      window.print();
+      return;
+    }
+    if (!exportData) {
+      toast.info(`Export to ${fmt.toUpperCase()} requires the voucher to be saved first.`);
+      return;
+    }
+    try {
+      const rows = exportData.buildRows(exportData.payload);
+      if (fmt === 'excel') {
+        exportVoucherAsXLSX(rows);
+      } else {
+        exportVoucherAsCSV(rows);
+      }
+      toast.success(`Exported as ${fmt === 'excel' ? 'Excel' : 'CSV'}`);
+    } catch (err) {
+      // [Analytical] Diagnostic-only console.error (banned-pattern targets console.log, not console.error).
+      toast.error('Export failed. Check console for details.');
+      console.error('Voucher export error:', err);
+    }
   };
 
   return (
@@ -101,8 +138,8 @@ export function VoucherFormFooter({
               <DropdownMenuItem onClick={() => handleExport('excel')}>
                 <FileSpreadsheet className="h-4 w-4 mr-2" /> Excel (.xlsx)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('word')}>
-                <FileText className="h-4 w-4 mr-2" /> Word (.docx)
+              <DropdownMenuItem onClick={() => handleExport('csv')}>
+                <FileText className="h-4 w-4 mr-2" /> CSV (.csv)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport('pdf')}>
                 <File className="h-4 w-4 mr-2" /> PDF (.pdf)

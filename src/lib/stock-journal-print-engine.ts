@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Stock Journal voucher · 1-copy (Stores) · qty-only · consumption / production split.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Stores (consumption/production audit trail)
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   formatDDMMMYYYY,
@@ -115,3 +116,52 @@ export function buildStockJournalPrintPayload(
 }
 
 export { formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Stock Journal payload into tabular ExportRows for CSV/XLSX export.
+ *            Multi-sheet: Consumption + Production for clarity in Excel.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 2 sheets (Consumption / Production)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildStockJournalExportRows(payload: StockJournalPrintPayload): ExportRows {
+  const metaRows: (string | number | null)[][] = [
+    ['Stock Journal No', payload.voucher_no],
+    ['Date',             payload.voucher_date],
+    ['Purpose',          payload.purpose],
+    ['Department',       payload.department],
+    ['Reference No',     payload.reference_no],
+  ];
+
+  const headers = ['#', 'Item', 'Godown', 'Qty', 'UOM'];
+
+  const consumptionSheet: ExportSheet = {
+    name: 'Consumption',
+    headers,
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], null, null, null]),
+      [null, null, null, null, null],
+      ['— Consumption Lines —', null, null, null, null],
+      ...payload.consumption_lines.map(l => [l.sl_no, l.item_name, l.godown, l.qty, l.uom]),
+      [null, null, null, null, null],
+      ['TOTAL', null, null, payload.total_consumption_qty, null],
+    ],
+  };
+
+  const productionSheet: ExportSheet = {
+    name: 'Production',
+    headers,
+    rows: [
+      ['— Production Lines —', null, null, null, null],
+      ...payload.production_lines.map(l => [l.sl_no, l.item_name, l.godown, l.qty, l.uom]),
+      [null, null, null, null, null],
+      ['TOTAL', null, null, payload.total_production_qty, null],
+    ],
+  };
+
+  return {
+    voucherType: 'Stock Journal',
+    voucherNo: payload.voucher_no,
+    sheets: [consumptionSheet, productionSheet],
+  };
+}

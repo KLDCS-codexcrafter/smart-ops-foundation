@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Delivery Note · 3-copy (Consignee / Transporter / Consignor).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Consignee (customer) · Transporter · Consignor (us)
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   formatINR, formatDDMMMYYYY,
@@ -131,3 +132,55 @@ export function buildDeliveryNotePrintPayload(
 }
 
 export { formatINR, formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Delivery Note print payload into tabular ExportRows for CSV/XLSX export.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 1 sheet (meta + line items + totals)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildDeliveryNoteExportRows(payload: DeliveryNotePrintPayload): ExportRows {
+  const metaRows: (string | number | null)[][] = [
+    ['DLN No',          payload.voucher_no],
+    ['Date',            payload.voucher_date],
+    ['Against Invoice', payload.against_invoice],
+    ['Consignor',       payload.consignor.legal_name],
+    ['Consignor GSTIN', payload.consignor.gstin ?? ''],
+    ['Consignee',       payload.consignee_name],
+    ['Consignee GSTIN', payload.consignee_gstin ?? ''],
+    ['Transporter',     payload.transporter ?? ''],
+    ['Vehicle No',      payload.vehicle_no ?? ''],
+    ['LR No',           payload.lr_no ?? ''],
+  ];
+
+  const lineRows = payload.lines.map(l => [
+    l.sl_no,
+    l.item_description,
+    l.qty,
+    l.uom,
+    l.rate ?? null,
+    l.value ?? null,
+    l.godown ?? '',
+    l.batch ?? '',
+  ]);
+
+  const headers = ['#', 'Description', 'Qty', 'UOM', 'Rate', 'Value', 'Godown', 'Batch'];
+  const sheet: ExportSheet = {
+    name: 'Delivery Note',
+    headers,
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], null, null, null, null, null, null]),
+      [null, null, null, null, null, null, null, null],
+      ['— Line Items —', null, null, null, null, null, null, null],
+      ...lineRows,
+      [null, null, null, null, null, null, null, null],
+      ['TOTALS', null, payload.total_qty, null, null, payload.total_value, null, null],
+    ],
+  };
+
+  return {
+    voucherType: 'Delivery Note',
+    voucherNo: payload.voucher_no,
+    sheets: [sheet],
+  };
+}

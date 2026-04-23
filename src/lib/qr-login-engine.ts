@@ -54,6 +54,8 @@ export function encodeQRPayload(payload: QRLoginPayload): string {
   return btoa(JSON.stringify(payload));
 }
 
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 /** Generate a demo QR for testing — tenant admin would issue via UI. */
 export function generateDemoQR(credential: string, entity: string = DEFAULT_ENTITY_SHORTCODE): string {
   const payload: QRLoginPayload = {

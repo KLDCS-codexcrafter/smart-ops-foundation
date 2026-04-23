@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Receipt voucher · 2-copy (Accounts / Party) · GL-style print.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Accountant (accounts copy) · Party (party copy)
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   amountInWords, formatINR, formatDDMMMYYYY,
@@ -129,3 +130,65 @@ export function buildReceiptPrintPayload(
 
 // Re-export formatters for the print panel
 export { formatINR, formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Receipt print payload into tabular ExportRows for CSV/XLSX export.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 1 sheet (meta + ledger lines + settlement lines)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildReceiptExportRows(payload: ReceiptPrintPayload): ExportRows {
+  // [Concrete] Receipt is header + ledger lines + optional settlement lines.
+  const metaRows: (string | number | null)[][] = [
+    ['Receipt No',        payload.voucher_no],
+    ['Date',              payload.voucher_date],
+    ['Party',             payload.party_name],
+    ['Party GSTIN',       payload.party_gstin ?? ''],
+    ['Instrument',        payload.instrument],
+    ['Instrument Ref No', payload.instrument_ref_no],
+    ['Cheque Date',       payload.cheque_date ?? ''],
+    ['Bank',              payload.bank_name ?? ''],
+    ['Total Amount',      payload.total_amount],
+    ['Amount in Words',   payload.amount_in_words],
+    ['Narration',         payload.narration],
+  ];
+
+  const ledgerRows = payload.ledger_lines.map(l => [
+    l.ledger_name,
+    l.dr_amount || null,
+    l.cr_amount || null,
+    l.narration || '',
+  ]);
+
+  const settlementRows = payload.settlement_lines.map(s => [
+    `Bill ${s.bill_no} (${s.bill_date})`,
+    s.bill_amount,
+    s.settled_amount,
+    null,
+  ]);
+
+  // [Analytical] Single sheet: meta + ledger + settlement sections.
+  const sheet: ExportSheet = {
+    name: 'Receipt',
+    headers: ['Field / Ledger', 'Value / Debit', 'Credit', 'Narration'],
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], null, null]),
+      [null, null, null, null],
+      ['— Ledger Lines —', null, null, null],
+      ...ledgerRows,
+      ...(settlementRows.length > 0
+        ? [
+            [null, null, null, null] as (string | number | null)[],
+            ['— Settlements (Bill / Amount / Settled) —', null, null, null] as (string | number | null)[],
+            ...settlementRows,
+          ]
+        : []),
+    ],
+  };
+
+  return {
+    voucherType: 'Receipt',
+    voucherNo: payload.voucher_no,
+    sheets: [sheet],
+  };
+}

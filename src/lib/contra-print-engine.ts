@@ -3,7 +3,7 @@
  * @purpose  Build print payload for Contra voucher (cash↔bank, bank↔bank) · 1-copy (Accounts).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
- * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles), T10-pre.2c (exportRows)
  * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
  * @whom     Accountant (accounts copy)
  * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
@@ -11,6 +11,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import type { ExportRows, ExportSheet } from '@/lib/voucher-export-engine';
 import {
   buildSupplierBlock, formatSupplierAddress,
   amountInWords, formatINR, formatDDMMMYYYY,
@@ -107,3 +108,49 @@ export function buildContraPrintPayload(
 }
 
 export { formatINR, formatDDMMMYYYY };
+
+/**
+ * @purpose   Transform Contra print payload into tabular ExportRows for CSV/XLSX export.
+ * @param     payload — already-built print payload
+ * @returns   ExportRows with 1 sheet (meta + ledger lines)
+ * @iso       Functional Suitability (HIGH) · Maintainability (HIGH — single source for "what cells")
+ */
+export function buildContraExportRows(payload: ContraPrintPayload): ExportRows {
+  // [Concrete] Contra is header + ledger lines (cash↔bank, bank↔bank).
+  const metaRows: (string | number | null)[][] = [
+    ['Contra No',        payload.voucher_no],
+    ['Date',             payload.voucher_date],
+    ['From Ledger',      payload.from_ledger],
+    ['To Ledger',        payload.to_ledger],
+    ['Instrument',       payload.instrument],
+    ['Instrument Ref No', payload.instrument_ref_no],
+    ['Total Amount',     payload.total_amount],
+    ['Amount in Words',  payload.amount_in_words],
+    ['Narration',        payload.narration],
+  ];
+
+  const ledgerRows = payload.ledger_lines.map(l => [
+    l.ledger_name,
+    l.dr_amount || null,
+    l.cr_amount || null,
+    l.narration || '',
+  ]);
+
+  // [Analytical] Single sheet: meta rows + blank + labeled ledger section.
+  const sheet: ExportSheet = {
+    name: 'Contra',
+    headers: ['Field / Ledger', 'Value / Debit', 'Credit', 'Narration'],
+    rows: [
+      ...metaRows.map(r => [r[0], r[1], null, null]),
+      [null, null, null, null],
+      ['— Ledger Lines —', null, null, null],
+      ...ledgerRows,
+    ],
+  };
+
+  return {
+    voucherType: 'Contra',
+    voucherNo: payload.voucher_no,
+    sheets: [sheet],
+  };
+}
