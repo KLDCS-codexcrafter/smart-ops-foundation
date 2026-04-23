@@ -22,6 +22,13 @@ import { inr, fmtDate, today, exportCSV } from './reportUtils';
 interface DayBookPanelProps {
   entityCode: string;
   onNavigate?: (module: string) => void;
+  /** [T10-pre.2d-B] Optional pre-filter when arriving via register drill-down. */
+  initialFilters?: {
+    dateFrom?: string;
+    dateTo?: string;
+    typeFilter?: string;
+    search?: string;
+  };
 }
 
 const VOUCHER_TYPES = ['All', 'Sales', 'Purchase', 'Receipt', 'Payment', 'Journal', 'Contra', 'Credit Note', 'Debit Note', 'Delivery Note', 'Receipt Note', 'Stock Journal'];
@@ -40,14 +47,14 @@ const typeToModule: Record<string, string> = {
   'Stock Journal': 'fc-inv-stock-journal',
 };
 
-export function DayBookPanel({ entityCode, onNavigate }: DayBookPanelProps) {
+export function DayBookPanel({ entityCode, onNavigate, initialFilters }: DayBookPanelProps) {
   const { vouchers } = useVouchers(entityCode);
   const t = today();
   const monthStart = t.slice(0, 8) + '01';
-  const [dateFrom, setDateFrom] = useState(monthStart);
-  const [dateTo, setDateTo] = useState(t);
-  const [typeFilter, setTypeFilter] = useState('All');
-  const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState(initialFilters?.dateFrom ?? monthStart);
+  const [dateTo, setDateTo] = useState(initialFilters?.dateTo ?? t);
+  const [typeFilter, setTypeFilter] = useState(initialFilters?.typeFilter ?? 'All');
+  const [search, setSearch] = useState(initialFilters?.search ?? '');
 
   const filtered = useMemo(() => {
     let result = vouchers.filter(v => v.date >= dateFrom && v.date <= dateTo);

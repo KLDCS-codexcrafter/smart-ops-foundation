@@ -42,6 +42,14 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
   'fc-fa-register', 'fc-fa-master', 'fc-fa-depreciation',
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
+  // [T10-pre.2d-B] 13 voucher-type registers
+  'fc-rpt-sales-register', 'fc-rpt-purchase-register',
+  'fc-rpt-receipt-register', 'fc-rpt-payment-register',
+  'fc-rpt-contra-register', 'fc-rpt-journal-register',
+  'fc-rpt-credit-note-register', 'fc-rpt-debit-note-register',
+  'fc-rpt-delivery-note-register', 'fc-rpt-receipt-note-register',
+  'fc-rpt-stock-adjustment-register', 'fc-rpt-stock-journal-register',
+  'fc-rpt-stock-transfer-register',
 ];
 
 interface SidebarItem {
@@ -114,6 +122,23 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
 ];
 
+// [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
+const REGISTER_ITEMS: SidebarItem[] = [
+  { id: 'fc-rpt-sales-register',            label: 'Sales Register',           icon: Receipt },
+  { id: 'fc-rpt-purchase-register',         label: 'Purchase Register',        icon: Truck },
+  { id: 'fc-rpt-receipt-register',          label: 'Receipt Register',         icon: Wallet },
+  { id: 'fc-rpt-payment-register',          label: 'Payment Register',         icon: CreditCard },
+  { id: 'fc-rpt-contra-register',           label: 'Contra Register',          icon: ArrowLeftRight },
+  { id: 'fc-rpt-journal-register',          label: 'Journal Register',         icon: BookOpen },
+  { id: 'fc-rpt-credit-note-register',      label: 'Credit Note Register',     icon: FileMinus },
+  { id: 'fc-rpt-debit-note-register',       label: 'Debit Note Register',      icon: FileCheck },
+  { id: 'fc-rpt-delivery-note-register',    label: 'Delivery Note Register',   icon: Truck },
+  { id: 'fc-rpt-receipt-note-register',     label: 'Receipt Note Register',    icon: PackageOpen },
+  { id: 'fc-rpt-stock-adjustment-register', label: 'Stock Adjustment Register',icon: Package },
+  { id: 'fc-rpt-stock-journal-register',    label: 'Stock Journal Register',   icon: ClipboardList },
+  { id: 'fc-rpt-stock-transfer-register',   label: 'Stock Transfer Register',  icon: ArrowLeftRight },
+];
+
 const GST_ITEMS: SidebarItem[] = [
   { id: 'fc-gst-gstr1', label: 'GSTR-1', icon: FileText },
   { id: 'fc-gst-gstr3b', label: 'GSTR-3B', icon: FileText },
@@ -160,6 +185,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
   const [bankOpen, setBankOpen] = useState(false);
   const [outOpen, setOutOpen] = useState(false);
   const [rptOpen, setRptOpen] = useState(false);
+  const [regOpen, setRegOpen] = useState(false);
   const [gstOpen, setGstOpen] = useState(false);
   const [tdsOpen, setTdsOpen] = useState(false);
   const [faOpen, setFaOpen] = useState(false);
@@ -182,11 +208,17 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     const fa = ['fc-fa-register','fc-fa-master','fc-fa-depreciation','fc-fa-amc',
       'fc-fa-disposal','fc-fa-cwip','fc-fa-reports'];
     const aud = ['fc-audit-dashboard','fc-audit-3cd','fc-audit-clause44'];
+    const reg = ['fc-rpt-sales-register','fc-rpt-purchase-register','fc-rpt-receipt-register',
+      'fc-rpt-payment-register','fc-rpt-contra-register','fc-rpt-journal-register',
+      'fc-rpt-credit-note-register','fc-rpt-debit-note-register','fc-rpt-delivery-note-register',
+      'fc-rpt-receipt-note-register','fc-rpt-stock-adjustment-register',
+      'fc-rpt-stock-journal-register','fc-rpt-stock-transfer-register'];
     if (txn.includes(active)) setTxnOpen(true);
     else if (inv.includes(active)) setInvOpen(true);
     else if (ord.includes(active)) setOrderOpen(true);
     else if (bank.includes(active)) setBankOpen(true);
     else if (out.includes(active)) setOutOpen(true);
+    else if (reg.includes(active)) setRegOpen(true);
     else if (rpt.includes(active)) setRptOpen(true);
     else if (gst.includes(active)) setGstOpen(true);
     else if (tds.includes(active)) setTdsOpen(true);
@@ -300,6 +332,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
         {renderSection('Banking', BANKING_ITEMS, bankOpen, setBankOpen)}
         {renderSection('Outstanding', OUTSTANDING_ITEMS, outOpen, setOutOpen)}
         {renderSection('Reports', REPORT_ITEMS, rptOpen, setRptOpen)}
+        {renderSection('Registers', REGISTER_ITEMS, regOpen, setRegOpen)}
         {renderSection('GST', GST_ITEMS, gstOpen, setGstOpen)}
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}

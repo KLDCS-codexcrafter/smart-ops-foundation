@@ -28,7 +28,15 @@ export type FineCoreModule =
   | 'fc-tds-advance'
   | 'fc-audit-dashboard' | 'fc-audit-3cd' | 'fc-audit-clause44'
   | 'fc-fa-register' | 'fc-fa-master' | 'fc-fa-depreciation'
-  | 'fc-fa-amc' | 'fc-fa-disposal' | 'fc-fa-cwip' | 'fc-fa-reports';
+  | 'fc-fa-amc' | 'fc-fa-disposal' | 'fc-fa-cwip' | 'fc-fa-reports'
+  // [T10-pre.2d-B] 13 voucher-type registers
+  | 'fc-rpt-sales-register' | 'fc-rpt-purchase-register'
+  | 'fc-rpt-receipt-register' | 'fc-rpt-payment-register'
+  | 'fc-rpt-contra-register' | 'fc-rpt-journal-register'
+  | 'fc-rpt-credit-note-register' | 'fc-rpt-debit-note-register'
+  | 'fc-rpt-delivery-note-register' | 'fc-rpt-receipt-note-register'
+  | 'fc-rpt-stock-adjustment-register' | 'fc-rpt-stock-journal-register'
+  | 'fc-rpt-stock-transfer-register';
 
 export interface DraftEntry {
   id: string;

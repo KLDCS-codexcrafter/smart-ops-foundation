@@ -67,6 +67,20 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
+// [T10-pre.2d-B] 13 voucher-type register panels
+import { SalesRegisterPanel } from './registers/SalesRegister';
+import { PurchaseRegisterPanel } from './registers/PurchaseRegister';
+import { ReceiptRegisterPanel } from './registers/ReceiptRegister';
+import { PaymentRegisterPanel } from './registers/PaymentRegister';
+import { ContraRegisterPanel } from './registers/ContraRegister';
+import { JournalRegisterPanel } from './registers/JournalRegister';
+import { CreditNoteRegisterPanel } from './registers/CreditNoteRegister';
+import { DebitNoteRegisterPanel } from './registers/DebitNoteRegister';
+import { DeliveryNoteRegisterPanel } from './registers/DeliveryNoteRegister';
+import { ReceiptNoteRegisterPanel } from './registers/ReceiptNoteRegister';
+import { StockAdjustmentRegisterPanel } from './registers/StockAdjustmentRegister';
+import { StockJournalRegisterPanel } from './registers/StockJournalRegister';
+import { StockTransferRegisterPanel } from './registers/StockTransferRegister';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
@@ -119,14 +133,35 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-fa-disposal':     'Asset Disposal',
   'fc-fa-cwip':         'Capital WIP',
   'fc-fa-reports':      'FA Reports',
+  // [T10-pre.2d-B] 13 voucher-type registers
+  'fc-rpt-sales-register':            'Sales Register',
+  'fc-rpt-purchase-register':         'Purchase Register',
+  'fc-rpt-receipt-register':          'Receipt Register',
+  'fc-rpt-payment-register':          'Payment Register',
+  'fc-rpt-contra-register':           'Contra Register',
+  'fc-rpt-journal-register':          'Journal Register',
+  'fc-rpt-credit-note-register':      'Credit Note Register',
+  'fc-rpt-debit-note-register':       'Debit Note Register',
+  'fc-rpt-delivery-note-register':    'Delivery Note Register',
+  'fc-rpt-receipt-note-register':     'Receipt Note Register',
+  'fc-rpt-stock-adjustment-register': 'Stock Adjustment Register',
+  'fc-rpt-stock-journal-register':    'Stock Journal Register',
+  'fc-rpt-stock-transfer-register':   'Stock Transfer Register',
 };
 
 export function FinCorePagePanel() {
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
+  // [T10-pre.2d-B] Pre-filter passed to DayBookPanel when arriving via register drill-down.
+  const [dayBookInitialFilters, setDayBookInitialFilters] = useState<Record<string, unknown> | undefined>(undefined);
   const { entityCode } = useEntityCode();
   const { entityCode: entCode, userId } = useCardEntitlement();
+
+  // [T10-pre.2d-B] Clear DayBook drill-down filters when leaving the DayBook module.
+  useEffect(() => {
+    if (activeModule !== 'fc-rpt-daybook') setDayBookInitialFilters(undefined);
+  }, [activeModule]);
 
   useEffect(() => {
     if (!entityCode) return;
@@ -198,7 +233,7 @@ export function FinCorePagePanel() {
       case 'fc-inv-mfg-journal': return <ManufacturingJournalPanel onSaveDraft={addToDraftTray} />;
       case 'fc-ord-purchase-order': return <PurchaseOrderPanel entityCode={entityCode} />;
       case 'fc-ord-sales-order': return <SalesOrderPanel entityCode={entityCode} />;
-      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
+      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} initialFilters={dayBookInitialFilters as { dateFrom?: string; dateTo?: string; typeFilter?: string; search?: string } | undefined} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
       case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
       case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;
       case 'fc-rpt-pl': return <ProfitLossPanel entityCode={entityCode} />;
@@ -234,6 +269,20 @@ export function FinCorePagePanel() {
       case 'fc-fa-disposal':    return <AssetDisposalPanel entityCode={entityCode} />;
       case 'fc-fa-cwip':        return <CWIPRegisterPanel entityCode={entityCode} />;
       case 'fc-fa-reports':     return <FAReportsPanel entityCode={entityCode} />;
+      // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
+      case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-receipt-register':          return <ReceiptRegisterPanel          entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-payment-register':          return <PaymentRegisterPanel          entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-contra-register':           return <ContraRegisterPanel           entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-journal-register':          return <JournalRegisterPanel          entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-credit-note-register':      return <CreditNoteRegisterPanel       entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-debit-note-register':       return <DebitNoteRegisterPanel        entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-delivery-note-register':    return <DeliveryNoteRegisterPanel     entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-receipt-note-register':     return <ReceiptNoteRegisterPanel      entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-stock-adjustment-register': return <StockAdjustmentRegisterPanel  entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-stock-journal-register':    return <StockJournalRegisterPanel     entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-stock-transfer-register':   return <StockTransferRegisterPanel    entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
