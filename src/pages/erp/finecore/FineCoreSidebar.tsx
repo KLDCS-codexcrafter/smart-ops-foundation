@@ -185,6 +185,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
   const [bankOpen, setBankOpen] = useState(false);
   const [outOpen, setOutOpen] = useState(false);
   const [rptOpen, setRptOpen] = useState(false);
+  const [regOpen, setRegOpen] = useState(false);
   const [gstOpen, setGstOpen] = useState(false);
   const [tdsOpen, setTdsOpen] = useState(false);
   const [faOpen, setFaOpen] = useState(false);
@@ -207,11 +208,17 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     const fa = ['fc-fa-register','fc-fa-master','fc-fa-depreciation','fc-fa-amc',
       'fc-fa-disposal','fc-fa-cwip','fc-fa-reports'];
     const aud = ['fc-audit-dashboard','fc-audit-3cd','fc-audit-clause44'];
+    const reg = ['fc-rpt-sales-register','fc-rpt-purchase-register','fc-rpt-receipt-register',
+      'fc-rpt-payment-register','fc-rpt-contra-register','fc-rpt-journal-register',
+      'fc-rpt-credit-note-register','fc-rpt-debit-note-register','fc-rpt-delivery-note-register',
+      'fc-rpt-receipt-note-register','fc-rpt-stock-adjustment-register',
+      'fc-rpt-stock-journal-register','fc-rpt-stock-transfer-register'];
     if (txn.includes(active)) setTxnOpen(true);
     else if (inv.includes(active)) setInvOpen(true);
     else if (ord.includes(active)) setOrderOpen(true);
     else if (bank.includes(active)) setBankOpen(true);
     else if (out.includes(active)) setOutOpen(true);
+    else if (reg.includes(active)) setRegOpen(true);
     else if (rpt.includes(active)) setRptOpen(true);
     else if (gst.includes(active)) setGstOpen(true);
     else if (tds.includes(active)) setTdsOpen(true);
