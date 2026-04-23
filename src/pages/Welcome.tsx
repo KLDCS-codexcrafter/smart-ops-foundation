@@ -13,6 +13,7 @@ import {
   Clock, Search, Plus, Wifi, WifiOff, Activity,
   XCircle, AlertCircle,
   Grid3X3, Bell, RefreshCw, Circle, Boxes, Wrench,
+  Building, FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -122,6 +123,20 @@ const panelCards = [
     icon: Wrench,
     route: "/client-customized",
     description: "Products built specifically for individual clients per their unique requirements. These are bespoke builds — not available in the general catalogue. Each entry is a dedicated client project.",
+    badge: "wip",
+  },
+  {
+    title: "Client Blueprints",
+    icon: Building,
+    route: "/welcome/scenarios",
+    description: "Seven design-partner client scenarios — Abdos · Cherise · BCPL · Smartpower · Amith · Shankar Pharma · Sinha Industries ★. Reference templates that validate universal ERP patterns across industries.",
+    badge: "wip",
+  },
+  {
+    title: "Engineering Console",
+    icon: FlaskConical,
+    route: "/welcome/dev-tools",
+    description: "Developer & QA utilities — Seed & Mock Data Lab · Fixture Coverage Heatmap · Future: Time-Travel, Reset controls, Feature Flags, Migration Wizard, API Playground.",
     badge: "wip",
   },
   {

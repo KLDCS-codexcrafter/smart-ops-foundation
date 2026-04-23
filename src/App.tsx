@@ -147,6 +147,9 @@ const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
 const ClientCustomizedPage = lazy(() => import('./pages/client-customized/ClientCustomizedPage'));
+const ClientBlueprintsPage = lazy(() => import('./pages/welcome/scenarios/ClientBlueprintsPage'));
+const EngineeringConsolePage = lazy(() => import('./pages/welcome/dev-tools/EngineeringConsolePage'));
+const SeedLabPage = lazy(() => import('./pages/welcome/dev-tools/SeedLabPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/PartnerDashboard'));
 const DistributorLogin = lazy(() => import('./pages/erp/distributor/DistributorLogin'));
 const DistributorDashboard = lazy(() => import('./pages/erp/distributor/DistributorDashboard'));
@@ -228,6 +231,9 @@ const App = () => (
               <Route path="/modules" element={<P><ModulesPage /></P>} />
               <Route path="/modules/vetan-nidhi" element={<P><VetanNidhi /></P>} />
               <Route path="/client-customized" element={<P><ClientCustomizedPage /></P>} />
+              <Route path="/welcome/scenarios" element={<P><ClientBlueprintsPage /></P>} />
+              <Route path="/welcome/dev-tools" element={<P><EngineeringConsolePage /></P>} />
+              <Route path="/welcome/dev-tools/seed-lab" element={<P><SeedLabPage /></P>} />
               <Route path="/add-ons" element={<P><AddOnsPage /></P>} />
               <Route path="/add-ons/barcode" element={<P><AddonsBarcode /></P>} />
               <Route path="/operix-go" element={<P><OperixGoPage /></P>} />
