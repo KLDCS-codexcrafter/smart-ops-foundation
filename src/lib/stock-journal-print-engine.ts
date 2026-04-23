@@ -1,9 +1,13 @@
 /**
- * stock-journal-print-engine.ts — Build payload for SJ print.
- *
- * Copy: 1 — Stores. Qty-only. Purpose from voucher.purpose header.
- * Side-by-side Consumption (qty<0) vs Production (qty>0) tables.
- * mfg_line_type flag now present (2b.3a) enables semantic rendering.
+ * @file     stock-journal-print-engine.ts
+ * @purpose  Build print payload for Stock Journal voucher · 1-copy (Stores) · qty-only · consumption / production split.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Stores (consumption/production audit trail)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers StockJournalPrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
@@ -13,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const STOCK_JOURNAL_COPY_CONFIG: PrintCopyConfig = {
   keys: ['stores'],
@@ -48,12 +55,16 @@ export interface StockJournalPrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildStockJournalPrintPayload(
   voucher: Voucher,
   supplierGst: EntityGSTConfig,
   copyKey: string = STOCK_JOURNAL_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): StockJournalPrintPayload {
   const supplier = buildSupplierBlock(supplierGst);
 
@@ -73,6 +84,10 @@ export function buildStockJournalPrintPayload(
     sl_no: i + 1, item_name: l.item_name || '', godown: l.godown_name || '',
     qty: Math.abs(l.qty || 0), uom: l.uom || '',
   }));
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'stock_journal');
 
   return {
     copy_key: copyKey,
@@ -94,6 +109,8 @@ export function buildStockJournalPrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (supplier.legal_name || supplier.trade_name),
+
+    resolved_toggles,
   };
 }
 

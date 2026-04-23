@@ -1,9 +1,13 @@
 /**
- * stock-adjustment-print-engine.ts — Build payload for SA print.
- *
- * Copy: 1 — Stores. Qty-only (Rate/Value default OFF per D-087).
- * Direction derived from qty sign (negative = write_off, positive = write_on).
- * Reason read from voucher.inventory_lines[].reason_code (new field, T10-pre.2b.3a).
+ * @file     stock-adjustment-print-engine.ts
+ * @purpose  Build print payload for Stock Adjustment voucher · 1-copy (Stores) · qty-only.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Stores (write-on / write-off audit trail)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers StockAdjustmentPrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -13,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const STOCK_ADJUSTMENT_COPY_CONFIG: PrintCopyConfig = {
   keys: ['stores'],
@@ -48,12 +55,16 @@ export interface StockAdjustmentPrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildStockAdjustmentPrintPayload(
   voucher: Voucher,
   supplierGst: EntityGSTConfig,
   copyKey: string = STOCK_ADJUSTMENT_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): StockAdjustmentPrintPayload {
   const supplier = buildSupplierBlock(supplierGst);
 
@@ -69,6 +80,10 @@ export function buildStockAdjustmentPrintPayload(
 
   const total_write_off_qty = lines.filter(l => l.direction === 'Write-Off').reduce((s, l) => s + l.qty, 0);
   const total_write_on_qty = lines.filter(l => l.direction === 'Write-On').reduce((s, l) => s + l.qty, 0);
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'stock_adjustment');
 
   return {
     copy_key: copyKey,
@@ -88,6 +103,8 @@ export function buildStockAdjustmentPrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (supplier.legal_name || supplier.trade_name),
+
+    resolved_toggles,
   };
 }
 

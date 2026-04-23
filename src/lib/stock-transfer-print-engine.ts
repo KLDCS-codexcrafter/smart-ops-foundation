@@ -1,9 +1,13 @@
 /**
- * stock-transfer-print-engine.ts — Build payload for ST print.
- *
- * Copy: 2 — Dispatch Dept / Receive Dept. Qty-only.
- * Status badge (IN TRANSIT / RECEIVED) is the prominent UI element.
- * From Dept → To Dept band uses dispatch_dept_name / receive_dept_name.
+ * @file     stock-transfer-print-engine.ts
+ * @purpose  Build print payload for Stock Transfer voucher · 2-copy (Dispatch / Receive) · qty-only.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Dispatch dept · Receive dept
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers StockTransferPrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -13,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const STOCK_TRANSFER_COPY_CONFIG: PrintCopyConfig = {
   keys: ['dispatch', 'receive'],
@@ -52,12 +59,16 @@ export interface StockTransferPrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildStockTransferPrintPayload(
   voucher: Voucher,
   supplierGst: EntityGSTConfig,
   copyKey: string = STOCK_TRANSFER_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): StockTransferPrintPayload {
   const supplier = buildSupplierBlock(supplierGst);
 
@@ -74,6 +85,10 @@ export function buildStockTransferPrintPayload(
 
   const status: 'IN TRANSIT' | 'RECEIVED' =
     voucher.status === 'in_transit' ? 'IN TRANSIT' : 'RECEIVED';
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'stock_transfer');
 
   return {
     copy_key: copyKey,
@@ -95,6 +110,8 @@ export function buildStockTransferPrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (supplier.legal_name || supplier.trade_name),
+
+    resolved_toggles,
   };
 }
 

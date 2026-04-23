@@ -1,9 +1,13 @@
 /**
- * manufacturing-journal-print-engine.ts — Build payload for Mfg JV print.
- *
- * Copy: 1 — Stores. Qty-only. 3 sections: Consumption, Production, Byproducts.
- * Header shows BOM ref, batch multiple, overhead ledger (all new 2b.3a fields).
- * mfg_line_type flag (2b.3a) drives section routing; qty sign is fallback.
+ * @file     manufacturing-journal-print-engine.ts
+ * @purpose  Build print payload for Manufacturing Journal voucher · 1-copy (Stores) · 3-section (Consumption / Production / Byproduct).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Stores (BOM execution audit trail)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers ManufacturingJournalPrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
@@ -13,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const MFG_JOURNAL_COPY_CONFIG: PrintCopyConfig = {
   keys: ['stores'],
@@ -56,12 +63,16 @@ export interface MfgJournalPrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildMfgJournalPrintPayload(
   voucher: Voucher,
   supplierGst: EntityGSTConfig,
   copyKey: string = MFG_JOURNAL_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): MfgJournalPrintPayload {
   const supplier = buildSupplierBlock(supplierGst);
 
@@ -95,6 +106,10 @@ export function buildMfgJournalPrintPayload(
   const production_lines = all.filter(l => classify(l) === 'production').map(mapLine);
   const byproduct_lines = all.filter(l => classify(l) === 'byproduct').map(mapLine);
 
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'mfg_journal');
+
   return {
     copy_key: copyKey,
     copy_label: MFG_JOURNAL_COPY_CONFIG.labels[copyKey] ?? MFG_JOURNAL_COPY_CONFIG.labels.stores,
@@ -121,6 +136,8 @@ export function buildMfgJournalPrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (supplier.legal_name || supplier.trade_name),
+
+    resolved_toggles,
   };
 }
 
