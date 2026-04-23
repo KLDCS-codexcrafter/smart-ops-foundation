@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send } from 'lucide-react';
+import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
@@ -39,6 +39,7 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
   const [transporterName, setTransporterName] = useState('');
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   const handlePost = useCallback(() => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
@@ -65,6 +66,7 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
       existing.push(voucher);
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
+      setPostedVoucherId(voucher.id);
       toast.success('Receipt Note (GRN) posted');
     } catch { toast.error('Failed to save'); }
   }, [partyName, vendorChallanNo, date, voucherNo, receiveGodown, inventoryLines, narration, entityCode]);
@@ -95,7 +97,14 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
     setPartyName(''); setVendorChallanNo(''); setVendorChallanDate('');
     setReceiveGodown(''); setVehicleNo(''); setTransporterName('');
     setInventoryLines([]); setNarration('');
+    setPostedVoucherId(null);
   }, []);
+  const handlePrint = useCallback(() => {
+    if (postedVoucherId && entityCode) {
+      const url = `/erp/finecore/receipt-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      window.open(url, '_blank');
+    }
+  }, [postedVoucherId, entityCode]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Receipt Note',
@@ -184,6 +193,12 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button variant="outline" onClick={handlePrint}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+        )}
       </div>
     </div>
     </>
