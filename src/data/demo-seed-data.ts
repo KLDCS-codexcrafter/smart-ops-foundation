@@ -9,6 +9,7 @@ import type { Employee } from '@/types/employee';
 import type { SalaryStructure, SalaryStructureComponent, PayGrade } from '@/types/pay-hub';
 import type { Shift, LeaveType, HolidayCalendar, Holiday, AttendanceType,
   OvertimeRule, LoanType, BonusConfig, GratuityNPSSettings } from '@/types/payroll-masters';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // ── 3.1 Company Profiles ────────────────────────────────────────────────
 
@@ -51,7 +52,7 @@ export interface DemoCompanyProfile {
 
 export const DEMO_COMPANY_PROFILES: DemoCompanyProfile[] = [
   {
-    id: 'e1', entityCode: 'SMRT', type: 'parent',
+    id: 'e1', entityCode: DEFAULT_ENTITY_SHORTCODE, type: 'parent',
     legalEntityName: 'Aryan Metals & Alloys Pvt Ltd',
     tradingBrandName: 'Aryan Metals',
     businessEntity: 'Private Limited',

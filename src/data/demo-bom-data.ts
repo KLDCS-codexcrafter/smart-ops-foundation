@@ -16,6 +16,7 @@
  */
 
 import type { Bom } from '@/types/bom';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 /** Happy path — a simple FG made from 2 raw materials, no byproduct, no overhead. */
 export const DEMO_BOM_HAPPY_PATH: Bom[] = [
