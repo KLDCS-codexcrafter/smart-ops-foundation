@@ -3,7 +3,7 @@
  * @purpose  Sales Register — per-voucher sales invoices with GST breakdown columns.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created Apr-2026 · T10-pre.2d-B
- * @sprint   T10-pre.2d-B
+ * @sprint   T10-pre.2d-B (original), T10-pre.2d-C (RegisterConfig now active)
  * @iso      Functional Suitability (HIGH — all Sales vouchers in one view with GST)
  *           Performance Efficiency (HIGH — grid paginates at 50/page)
  * @whom     Accountants · auditors · GST-filing teams
