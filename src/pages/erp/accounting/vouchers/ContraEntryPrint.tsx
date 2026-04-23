@@ -3,7 +3,7 @@
  * @purpose  A4 printable Contra voucher (cash/bank transfer) — 1-copy (Accounts).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH — applicable header/footer toggles honored) · Usability (HIGH — Tally F12 parity) · Maintainability (HIGH — uniform gating pattern)
  * @whom     Accountant (accounts copy)
  * @depends  contra-print-engine.ts · print-config-storage.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildContraPrintPayload, CONTRA_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildContraExportRows,
   type ContraPrintPayload,
 } from '@/lib/contra-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -154,6 +155,7 @@ export function ContraEntryPrintPanel() {
       documentTitle="CONTRA VOUCHER"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildContraExportRows(p as ContraPrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

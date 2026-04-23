@@ -3,7 +3,7 @@
  * @purpose  A4 printable Delivery Note voucher — 3-copy (Consignee / Transporter / Consignor).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH — all 9 applicable toggles honored) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Consignee (customer) · Transporter · Consignor (us)
  * @depends  delivery-note-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildDeliveryNotePrintPayload, DELIVERY_NOTE_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildDeliveryNoteExportRows,
   type DeliveryNotePrintPayload,
 } from '@/lib/delivery-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -167,6 +168,7 @@ export function DeliveryNotePrintPanel() {
       documentTitle="DELIVERY NOTE"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildDeliveryNoteExportRows(p as DeliveryNotePrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

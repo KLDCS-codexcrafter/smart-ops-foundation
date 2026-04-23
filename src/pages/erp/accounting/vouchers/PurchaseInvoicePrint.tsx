@@ -3,7 +3,7 @@
  * @purpose  A4 internal copy of Purchase Invoice (audit trail of vendor bill posting).
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH — 14 applicable toggles honored) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Accountant (internal copy)
  * @depends  purchase-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildPurchasePrintPayload, PURCHASE_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildPurchaseExportRows,
   type PurchasePrintPayload,
 } from '@/lib/purchase-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -245,6 +246,7 @@ export function PurchaseInvoicePrintPanel() {
       documentTitle="PURCHASE INVOICE — INTERNAL COPY"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildPurchaseExportRows(p as PurchasePrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

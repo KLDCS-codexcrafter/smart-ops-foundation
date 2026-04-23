@@ -3,7 +3,7 @@
  * @purpose  A4 printable GRN voucher — multi-copy.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Buyer (us) · Vendor (supplier)
  * @depends  receipt-note-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildReceiptNotePrintPayload, RECEIPT_NOTE_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,
+  buildReceiptNoteExportRows,
   type ReceiptNotePrintPayload,
 } from '@/lib/receipt-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -166,6 +167,7 @@ export function ReceiptNotePrintPanel() {
       documentTitle="RECEIPT NOTE (GRN)"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildReceiptNoteExportRows(p as ReceiptNotePrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

@@ -3,7 +3,7 @@
  * @purpose  A4 printable Stock Adjustment voucher.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Stores (warehouse adjustment trail)
  * @depends  stock-adjustment-print-engine.ts · print-config-storage.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildStockAdjustmentPrintPayload, STOCK_ADJUSTMENT_COPY_CONFIG,
   formatDDMMMYYYY,
+  buildStockAdjustmentExportRows,
   type StockAdjustmentPrintPayload,
 } from '@/lib/stock-adjustment-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -139,6 +140,7 @@ export function StockAdjustmentPrintPanel() {
       documentTitle="STOCK ADJUSTMENT"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildStockAdjustmentExportRows(p as StockAdjustmentPrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>

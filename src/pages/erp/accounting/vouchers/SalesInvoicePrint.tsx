@@ -3,8 +3,8 @@
  * @purpose  A4 Tax Invoice — 3-copy (Original/Duplicate/Triplicate) · GST + IRN QR + UPI.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created Sprint 9 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   Sprint 9 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
- * @iso      Functional Suitability (HIGH — all 15 applicable toggles honored) · Usability (HIGH — Tally F12 parity) · Maintainability (HIGH)
+ * @sprint   Sprint 9 (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (bespoke-toolbar export wiring)
+ * @iso      Functional Suitability (HIGH — 15 toggles + export) · Usability (HIGH — Tally F12 parity + Excel) · Maintainability (HIGH)
  * @whom     Customer (recipient) · Transporter · Supplier (us) · Accountant
  * @depends  invoice-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
@@ -18,8 +18,9 @@ import { irnRecordsKey, ewbRecordsKey } from '@/types/irn';
 import type { EntityGSTConfig } from '@/types/entity-gst';
 import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 import {
-  buildInvoicePrintPayload, type InvoicePrintPayload,
+  buildInvoicePrintPayload, buildInvoiceExportRows, type InvoicePrintPayload,
 } from '@/lib/invoice-print-engine';
+import PrintToolbarExport from '@/components/finecore/print/PrintToolbarExport';
 import { vouchersKey } from '@/lib/finecore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
@@ -145,6 +146,8 @@ export function SalesInvoicePrintPanel() {
           <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Back
         </Button>
         <div className="flex-1 text-sm font-semibold">{payload.title} · {payload.voucher_no}</div>
+        {/* [Convergent] D-129: Excel export alongside Print button. */}
+        <PrintToolbarExport payload={payload} buildRows={(p) => buildInvoiceExportRows(p as InvoicePrintPayload)} />
         <Button data-primary size="sm" onClick={() => window.print()}>
           <Printer className="h-3.5 w-3.5 mr-1" /> Print
         </Button>

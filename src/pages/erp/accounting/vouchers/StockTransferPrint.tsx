@@ -3,7 +3,7 @@
  * @purpose  A4 printable Stock Transfer voucher.
  * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
  * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
- * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating), T10-pre.2c-mop (export wiring)
  * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
  * @whom     Stores (inter-godown / inter-department transfer trail)
  * @depends  stock-transfer-print-engine.ts · print-config-storage.ts · PrintSheetFrame
@@ -15,6 +15,7 @@ import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
 import {
   buildStockTransferPrintPayload, STOCK_TRANSFER_COPY_CONFIG,
   formatDDMMMYYYY,
+  buildStockTransferExportRows,
   type StockTransferPrintPayload,
 } from '@/lib/stock-transfer-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
@@ -146,6 +147,7 @@ export function StockTransferPrintPanel() {
       documentTitle="STOCK TRANSFER"
       documentNumber={payload?.voucher_no ?? ''}
       copyLabel={payload?.copy_label ?? ''}
+      exportData={payload ? { payload, buildRows: (p) => buildStockTransferExportRows(p as StockTransferPrintPayload) } : undefined}
     >
       {content}
     </PrintSheetFrame>
