@@ -225,10 +225,16 @@ export function SalesInvoicePrintPanel() {
             <tr className="bg-muted/50">
               <th className="border border-border p-1.5 text-left">#</th>
               <th className="border border-border p-1.5 text-left">Description</th>
-              <th className="border border-border p-1.5 text-left">HSN</th>
+              {t.showHsnSac && (
+                <th className="border border-border p-1.5 text-left">HSN</th>
+              )}
               <th className="border border-border p-1.5 text-right">Qty</th>
-              <th className="border border-border p-1.5 text-right">Rate</th>
-              <th className="border border-border p-1.5 text-right">Disc</th>
+              {t.showRate && (
+                <th className="border border-border p-1.5 text-right">Rate</th>
+              )}
+              {t.showDiscountColumn && (
+                <th className="border border-border p-1.5 text-right">Disc</th>
+              )}
               <th className="border border-border p-1.5 text-right">Taxable</th>
               <th className="border border-border p-1.5 text-right">CGST</th>
               <th className="border border-border p-1.5 text-right">SGST</th>
@@ -240,10 +246,16 @@ export function SalesInvoicePrintPanel() {
               <tr key={`line-${l.sl_no}`}>
                 <td className="border border-border p-1.5">{l.sl_no}</td>
                 <td className="border border-border p-1.5">{l.item_description}</td>
-                <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                {t.showHsnSac && (
+                  <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                )}
                 <td className="border border-border p-1.5 text-right font-mono">{l.qty} {l.uom}</td>
-                <td className="border border-border p-1.5 text-right font-mono">₹{l.rate.toLocaleString('en-IN')}</td>
-                <td className="border border-border p-1.5 text-right font-mono">₹{l.discount.toLocaleString('en-IN')}</td>
+                {t.showRate && (
+                  <td className="border border-border p-1.5 text-right font-mono">₹{l.rate.toLocaleString('en-IN')}</td>
+                )}
+                {t.showDiscountColumn && (
+                  <td className="border border-border p-1.5 text-right font-mono">₹{l.discount.toLocaleString('en-IN')}</td>
+                )}
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.taxable_value.toLocaleString('en-IN')}</td>
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.cgst_amount.toLocaleString('en-IN')}</td>
                 <td className="border border-border p-1.5 text-right font-mono">₹{l.sgst_amount.toLocaleString('en-IN')}</td>
@@ -253,7 +265,7 @@ export function SalesInvoicePrintPanel() {
           </tbody>
           <tfoot>
             <tr className="bg-muted/40 font-semibold">
-              <td className="border border-border p-1.5" colSpan={6}>Total</td>
+              <td className="border border-border p-1.5" colSpan={totalLabelColSpan}>Total</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_taxable.toLocaleString('en-IN')}</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_cgst.toLocaleString('en-IN')}</td>
               <td className="border border-border p-1.5 text-right font-mono">₹{payload.total_sgst.toLocaleString('en-IN')}</td>
