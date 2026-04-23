@@ -1,0 +1,67 @@
+/**
+ * @file     PrintToolbarExport.tsx
+ * @purpose  Reusable Excel-export button for print-page toolbars. Leverages the
+ *           voucher-export-engine shipped in T10-pre.2c. Downloads .xlsx when clicked.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created Apr-2026 · T10-pre.2c-mop
+ * @sprint   T10-pre.2c-mop
+ * @iso      Functional Suitability (HIGH — single action) · Usability (HIGH — compact toolbar fit) · Maintainability (HIGH — one component, 14 consumers)
+ * @whom     Accountants (Excel export) · auditors · (future) voucher register pages
+ * @depends  voucher-export-engine.ts · sonner toast · lucide-react
+ * @consumers PrintSheetFrame.tsx · SalesInvoicePrint.tsx (bespoke toolbar)
+ */
+
+import { Button } from '@/components/ui/button';
+import { FileSpreadsheet } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  exportVoucherAsXLSX, type ExportRows,
+} from '@/lib/voucher-export-engine';
+
+export interface PrintToolbarExportProps {
+  /**
+   * The voucher payload (shape varies per voucher type; unknown here because
+   * this component is voucher-agnostic — types are enforced at the call-site).
+   */
+  payload: unknown;
+  /**
+   * The per-voucher row-builder function (e.g. `buildInvoiceExportRows`).
+   * Returns ExportRows consumed by the shared XLSX serializer.
+   */
+  buildRows: (payload: unknown) => ExportRows;
+  /** Optional override for button label. Default: "Excel". */
+  label?: string;
+}
+
+/**
+ * @purpose   Render an "Excel" button that exports the given payload to .xlsx on click.
+ * @param     props.payload      — voucher payload (already built by parent)
+ * @param     props.buildRows    — per-voucher row-builder (e.g. buildInvoiceExportRows)
+ * @param     props.label        — optional button label, default "Excel"
+ * @why-this-approach  [Convergent] D-129: export belongs where payload lives (print page),
+ *                     not where forms live (voucher entry). Shared component keeps
+ *                     PrintSheetFrame lean and allows SalesInvoicePrint's bespoke toolbar
+ *                     to drop it in without duplicating logic.
+ * @iso       Reliability (HIGH — try/catch with toast fallback) · Maintainability (HIGH)
+ */
+export function PrintToolbarExport({ payload, buildRows, label = 'Excel' }: PrintToolbarExportProps) {
+  const handleClick = () => {
+    try {
+      const rows = buildRows(payload);
+      exportVoucherAsXLSX(rows);
+      toast.success('Exported as Excel');
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern rule targets console.log, not console.error.
+      toast.error('Export failed. Check console for details.');
+      console.error('Print-toolbar export error:', err);
+    }
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleClick}>
+      <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> {label}
+    </Button>
+  );
+}
+
+export default PrintToolbarExport;
