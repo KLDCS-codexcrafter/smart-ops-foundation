@@ -1,5 +1,12 @@
 /**
- * StockTransferPrint.tsx — A4 printable Stock Transfer voucher.
+ * @file     StockTransferPrint.tsx
+ * @purpose  A4 printable Stock Transfer voucher.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
+ * @whom     Stores (inter-godown / inter-department transfer trail)
+ * @depends  stock-transfer-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -11,6 +18,7 @@ import {
   type StockTransferPrintPayload,
 } from '@/lib/stock-transfer-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 export function StockTransferPrintPanel() {
   const [params] = useSearchParams();
@@ -25,11 +33,14 @@ export function StockTransferPrintPanel() {
     const voucher = loadVoucher(entityCode, voucherId);
     if (!voucher) return;
     const gst = loadEntityGst(entityCode);
-    setPayload(buildStockTransferPrintPayload(voucher, gst, copyKey));
+    // [Convergent] Load print config for this entity; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
+    setPayload(buildStockTransferPrintPayload(voucher, gst, copyKey, printConfig));
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
     if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
+    const t = payload.resolved_toggles;
     const isInTransit = payload.status === 'IN TRANSIT';
     return (
       <>
@@ -38,6 +49,12 @@ export function StockTransferPrintPanel() {
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Entity</div>
             <div className="font-semibold text-[13px]">{payload.supplier.legal_name}</div>
             <div className="text-muted-foreground text-[10px]">{payload.supplier_address}</div>
+            {t.showHeaderGstin && payload.supplier.gstin && (
+              <div className="font-mono text-[10px]">GSTIN: {payload.supplier.gstin}</div>
+            )}
+            {t.showHeaderPan && payload.supplier.pan && (
+              <div className="font-mono text-[10px]">PAN: {payload.supplier.pan}</div>
+            )}
           </div>
           <div className="flex flex-col items-end gap-2">
             <div className={`px-3 py-1 rounded font-bold text-[12px] ${
@@ -78,8 +95,8 @@ export function StockTransferPrintPanel() {
               <th className="border border-border p-1.5 text-left">Item</th>
               <th className="border border-border p-1.5 text-right">Qty</th>
               <th className="border border-border p-1.5 text-left">UOM</th>
-              <th className="border border-border p-1.5 text-left">Godown</th>
-              <th className="border border-border p-1.5 text-left">Batch</th>
+              {t.showGodown && <th className="border border-border p-1.5 text-left">Godown</th>}
+              {t.showBatch && <th className="border border-border p-1.5 text-left">Batch</th>}
             </tr>
           </thead>
           <tbody>
@@ -89,31 +106,37 @@ export function StockTransferPrintPanel() {
                 <td className="border border-border p-1.5">{l.item_name}</td>
                 <td className="border border-border p-1.5 text-right font-mono">{l.qty}</td>
                 <td className="border border-border p-1.5">{l.uom}</td>
-                <td className="border border-border p-1.5">{l.godown}</td>
-                <td className="border border-border p-1.5 font-mono">{l.batch || '—'}</td>
+                {t.showGodown && <td className="border border-border p-1.5">{l.godown}</td>}
+                {t.showBatch && <td className="border border-border p-1.5 font-mono">{l.batch || '—'}</td>}
               </tr>
             ))}
+            {/* [Analytical] Total row: # + Item span 2; Qty filled; remainder = UOM + optional Godown + Batch. */}
             <tr className="bg-muted/30 font-semibold">
               <td className="border border-border p-1.5" colSpan={2}>Total</td>
               <td className="border border-border p-1.5 text-right font-mono">{payload.total_qty}</td>
-              <td className="border border-border p-1.5" colSpan={3}></td>
+              <td
+                className="border border-border p-1.5"
+                colSpan={1 + (t.showGodown ? 1 : 0) + (t.showBatch ? 1 : 0)}
+              ></td>
             </tr>
           </tbody>
         </table>
 
-        {payload.narration && (
+        {t.showNarration && payload.narration && (
           <div className="mt-3 text-[10px]">
             <span className="text-muted-foreground uppercase tracking-wider text-[9px]">Narration: </span>
             {payload.narration}
           </div>
         )}
 
-        <div className="mt-10 flex justify-end text-[10px]">
-          <div className="text-right">
-            <div className="border-t border-border pt-1 w-48">{payload.authorised_signatory}</div>
-            <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+        {t.showAuthorisedSignatory && (
+          <div className="mt-10 flex justify-end text-[10px]">
+            <div className="text-right">
+              <div className="border-t border-border pt-1 w-48">{payload.authorised_signatory}</div>
+              <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+            </div>
           </div>
-        </div>
+        )}
       </>
     );
   }, [payload]);
