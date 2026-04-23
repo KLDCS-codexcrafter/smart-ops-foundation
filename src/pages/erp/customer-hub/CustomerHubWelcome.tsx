@@ -20,6 +20,7 @@ import type { CLVResult } from '@/types/customer-clv';
 import type { CustomerLoyaltyState, LoyaltyTier } from '@/types/customer-loyalty';
 import { loyaltyStateKey } from '@/types/customer-loyalty';
 import type { CustomerHubModule } from './CustomerHubSidebar';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface CustomerLite {
   id: string;
@@ -36,7 +37,7 @@ interface OrderLite {
   total_paise?: number;
 }
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function loadCustomers(): CustomerLite[] {
   try {

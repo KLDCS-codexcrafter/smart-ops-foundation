@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   ratingsKey, type RatingEntry, type RatingDimension,
 } from '@/types/distributor-rating';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const DIMENSIONS: { id: RatingDimension; label: string }[] = [
   { id: 'fulfilment_speed', label: 'How fast do we ship your orders?' },

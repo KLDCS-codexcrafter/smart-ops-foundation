@@ -35,6 +35,7 @@ import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { IT_DECLARATIONS_KEY } from '@/types/it-declaration';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 void PAYROLL_RUNS_KEY;
 
 /* ── helpers ─────────────────────────────────────────────────────── */
@@ -51,7 +52,7 @@ interface AdminAndMonitoringPanelProps { defaultTab?: AdminTab; }
 
 export function AdminAndMonitoringPanel({ defaultTab = 'ess' }: AdminAndMonitoringPanelProps) {
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
 
   // ── Cross-module reads ───────────────────────────────────────
   const activeEmployees = useMemo<Employee[]>(() => {

@@ -23,6 +23,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   salesReturnMemosKey,
   SALES_RETURN_REASON_LABELS,
@@ -442,5 +443,5 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
 }
 
 export default function SalesReturnMemoPage() {
-  return <SalesReturnMemoPanel entityCode="SMRT" />;
+  return <SalesReturnMemoPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

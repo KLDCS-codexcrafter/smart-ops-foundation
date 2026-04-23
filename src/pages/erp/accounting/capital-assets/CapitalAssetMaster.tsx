@@ -31,6 +31,7 @@ import type { AssetUnitRecord, AssetUnitLine, ITActBlock } from '@/types/fixed-a
 import { faUnitsKey, IT_ACT_RATES, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -471,4 +472,4 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
   );
 }
 
-export default function CapitalAssetMaster() { return <CapitalAssetMasterPanel entityCode="SMRT" />; }
+export default function CapitalAssetMaster() { return <CapitalAssetMasterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

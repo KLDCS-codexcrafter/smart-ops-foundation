@@ -28,6 +28,7 @@ import { BLANK_EMPLOYEE, DOC_TYPE_LABELS, EMPLOYEE_STATUS_COLORS } from '@/types
 import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/india-geography';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
@@ -85,7 +86,7 @@ export function EmployeeMasterPanel() {
   // ── SAM context ─────────────────────────────────────────────────────
   const [selectedCompany] = useERPCompany();
   const entityCode = selectedCompany && selectedCompany !== 'all'
-    ? selectedCompany : 'SMRT';
+    ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
 
   const samCfg = useMemo(() => {
     try {

@@ -32,8 +32,9 @@ import {
 } from '@/lib/loyalty-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const MAX_REDEEM_PCT = 0.3;   // anti-abuse: cap loyalty discount at 30% of subtotal
 
 function ls<T>(k: string): T[] {

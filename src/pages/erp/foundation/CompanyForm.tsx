@@ -38,6 +38,7 @@ import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import type { SetupResult } from '@/services/entity-setup-service';
 import { onEnterNext } from '@/lib/keyboard';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 
@@ -225,7 +226,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       if (s.id) options.push({ id: s.id, name: s.legalEntityName || s.name || '', shortCode: s.shortCode || '', entity_type: 'Subsidiary' });
     });
     if (options.length === 0) {
-      options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd', shortCode: 'SMRT', entity_type: 'Parent Company' });
+      options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd', shortCode: DEFAULT_ENTITY_SHORTCODE, entity_type: 'Parent Company' });
     }
     return options;
   }, []); // reads on mount

@@ -18,8 +18,9 @@ import { Badge } from '@/components/ui/badge';
 import { customerSegmentsKey } from '@/types/customer-loyalty';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 export interface CustomerSegment {
   id: string;

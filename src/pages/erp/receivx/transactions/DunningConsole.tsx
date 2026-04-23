@@ -32,6 +32,7 @@ import {
   type PartyOverdueAggregate,
 } from '@/lib/dunning-engine';
 import type { OutstandingEntry } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string }
 
@@ -332,5 +333,5 @@ export function DunningConsolePanel({ entityCode }: Props) {
 }
 
 export default function DunningConsolePage() {
-  return <DunningConsolePanel entityCode="SMRT" />;
+  return <DunningConsolePanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

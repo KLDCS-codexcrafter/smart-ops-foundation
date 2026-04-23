@@ -13,6 +13,7 @@ import {
 } from '@/types/stock-out';
 import { computeStockOutAlerts, seedDemoStockLevels } from '@/lib/stock-out-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   critical: 'bg-red-500/15 text-red-700 border-red-500/30',
@@ -20,7 +21,7 @@ const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   info:     'bg-slate-500/15 text-slate-600 border-slate-400/30',
 };
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function readSnapshots(): StockLevelSnapshot[] {
   try {

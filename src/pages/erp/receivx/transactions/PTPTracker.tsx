@@ -23,6 +23,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { type PTP, type PTPStatus, receivxPTPsKey } from '@/types/receivx';
 import type { Voucher } from '@/types/voucher';
 import { evaluatePTPs, computePTPKeptRatio } from '@/lib/receivx-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -240,7 +241,7 @@ export function PTPTrackerPanel({ entityCode, onNavigate: _onNavigate }: Props) 
 export default function PTPTracker() {
   return (
     <SidebarProvider>
-      <PTPTrackerPanel entityCode="SMRT" />
+      <PTPTrackerPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

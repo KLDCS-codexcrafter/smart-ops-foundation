@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { receivxSchemesKey, type IncentiveScheme } from '@/types/receivx';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string }
 
@@ -134,5 +135,5 @@ export function IncentiveSchemeMasterPanel({ entityCode }: Props) {
 }
 
 export default function IncentiveSchemeMaster() {
-  return <IncentiveSchemeMasterPanel entityCode="SMRT" />;
+  return <IncentiveSchemeMasterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

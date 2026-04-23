@@ -32,6 +32,7 @@ import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 void PAYROLL_RUNS_KEY;
 
 // ── Helper: next Form 24Q due date ───────────────────────────────
@@ -86,7 +87,7 @@ function ChallanBadge({ challan, onEdit }: ChallanBadgeProps) {
 
 export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryReturnsPanelProps) {
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
   // ── Cross-module reads ───────────────────────────────────────
   const payrollRuns = useMemo<PayrollRun[]>(() => {
     try {

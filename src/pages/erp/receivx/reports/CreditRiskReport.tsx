@@ -19,6 +19,7 @@ import {
   receivxPTPsKey, receivxConfigKey,
 } from '@/types/receivx';
 import type { OutstandingEntry } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -186,7 +187,7 @@ export function CreditRiskReportPanel({ entityCode, onNavigate: _onNavigate }: P
 export default function CreditRiskReport() {
   return (
     <SidebarProvider>
-      <CreditRiskReportPanel entityCode="SMRT" />
+      <CreditRiskReportPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

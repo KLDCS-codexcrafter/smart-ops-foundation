@@ -26,6 +26,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import { DEDUCTION_LIMITS } from '@/data/payroll-statutory-seed-data';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 void PAYROLL_RUNS_KEY;
 
 // ── numberToWords helper (inline, no library) ──────────────────
@@ -50,7 +51,7 @@ function numberToWords(num: number): string {
 // ── Main Panel ─────────────────────────────────────────────────────
 export function PayslipGenerationPanel() {
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
 
   // ── Cross-module reads ───────────────────────────────────────
   const runs = useMemo<PayrollRun[]>(() => {

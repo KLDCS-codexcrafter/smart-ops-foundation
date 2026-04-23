@@ -14,11 +14,12 @@ import {
 import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { distributorsKey, type Distributor } from '@/types/distributor';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   distributorsToRows, mergeDistributorRows, type ExcelScope, type ExcelRow,
 } from '@/lib/distributor-excel-engine';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function readDistributors(): Distributor[] {
   try {

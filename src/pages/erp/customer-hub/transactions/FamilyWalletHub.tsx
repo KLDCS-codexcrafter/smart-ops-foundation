@@ -35,8 +35,9 @@ import {
 } from '@/types/customer-loyalty';
 import { rebuildState } from '@/lib/loyalty-engine';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite {
   id: string;

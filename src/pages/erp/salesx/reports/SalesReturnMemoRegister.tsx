@@ -21,6 +21,7 @@ import { Eye, Check, X, FileMinus, Send } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   salesReturnMemosKey,
   type SalesReturnMemo,
@@ -393,5 +394,5 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
 }
 
 export default function SalesReturnMemoRegisterPage() {
-  return <SalesReturnMemoRegisterPanel entityCode="SMRT" />;
+  return <SalesReturnMemoRegisterPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

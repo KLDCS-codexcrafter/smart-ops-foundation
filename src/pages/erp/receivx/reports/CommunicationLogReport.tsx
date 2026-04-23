@@ -20,6 +20,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Download, MessageCircle, Mail, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   type CommunicationLog, type CommStatus,
   receivxCommLogKey,
@@ -178,7 +179,7 @@ export function CommunicationLogReportPanel({ entityCode, onNavigate: _onNavigat
 export default function CommunicationLogReport() {
   return (
     <SidebarProvider>
-      <CommunicationLogReportPanel entityCode="SMRT" />
+      <CommunicationLogReportPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from '@/types/receivx';
 import type { Voucher } from '@/types/voucher';
 import { computeDSO, computePTPKeptRatio } from '@/lib/receivx-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -176,7 +177,7 @@ export function CollectionEfficiencyPanel({ entityCode, onNavigate: _onNavigate 
 export default function CollectionEfficiency() {
   return (
     <SidebarProvider>
-      <CollectionEfficiencyPanel entityCode="SMRT" />
+      <CollectionEfficiencyPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />
     </SidebarProvider>
   );
 }

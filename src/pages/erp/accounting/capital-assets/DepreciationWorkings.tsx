@@ -19,6 +19,7 @@ import { faUnitsKey, faDeprKey } from '@/types/fixed-asset';
 import { computeDepreciationForUnits } from '@/lib/depreciationEngine';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -173,4 +174,4 @@ export function DepreciationWorkingsPanel({ entityCode }: Props) {
   );
 }
 
-export default function DepreciationWorkings() { return <DepreciationWorkingsPanel entityCode="SMRT" />; }
+export default function DepreciationWorkings() { return <DepreciationWorkingsPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

@@ -29,6 +29,7 @@ import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 void PAYROLL_RUNS_KEY;
 
 /* ── helpers ─────────────────────────────────────────────────────── */
@@ -59,7 +60,7 @@ interface EmployeeExperiencePanelProps { defaultTab?: ExperienceTab; }
 
 export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeExperiencePanelProps) {
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
 
   // ── Cross-module reads ───────────────────────────────────────
   const allEmployees = useMemo<Employee[]>(() => {

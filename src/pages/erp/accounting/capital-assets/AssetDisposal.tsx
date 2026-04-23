@@ -22,6 +22,7 @@ import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -194,4 +195,4 @@ export function AssetDisposalPanel({ entityCode }: Props) {
   );
 }
 
-export default function AssetDisposal() { return <AssetDisposalPanel entityCode="SMRT" />; }
+export default function AssetDisposal() { return <AssetDisposalPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

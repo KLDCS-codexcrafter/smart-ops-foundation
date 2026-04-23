@@ -29,6 +29,7 @@ import {
   DEFAULT_DUNNING_TEMPLATES, STAGE_LABELS, type DunningStage, type DunningTemplate,
 } from '@/types/dunning';
 import { createPaymentRequest } from '@/lib/payment-gateway-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -343,5 +344,5 @@ export function ReceivXConfigPanel({ entityCode }: Props) {
 }
 
 export default function ReceivXConfigPage() {
-  return <ReceivXConfigPanel entityCode="SMRT" />;
+  return <ReceivXConfigPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

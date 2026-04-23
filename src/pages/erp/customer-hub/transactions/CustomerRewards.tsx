@@ -30,8 +30,9 @@ import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 import { logAudit } from '@/lib/card-audit-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const DEMO_REWARDS: LoyaltyReward[] = [
   { id: 'rw-100',  code: 'V100', title: '₹100 off voucher',     description: 'Apply on next order',  points_cost: 1000, reward_type: 'discount_voucher', value_paise: 10000, min_tier: 'bronze',   max_redeems_per_customer: null, active: true },

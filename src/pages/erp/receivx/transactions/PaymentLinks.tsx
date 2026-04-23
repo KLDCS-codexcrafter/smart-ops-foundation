@@ -32,6 +32,7 @@ import {
   createPaymentRequest, buildWaMePaymentMessage,
 } from '@/lib/payment-gateway-engine';
 import type { OutstandingEntry } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface Props { entityCode: string }
 
@@ -315,5 +316,5 @@ export function PaymentLinksPanel({ entityCode }: Props) {
 }
 
 export default function PaymentLinksPage() {
-  return <PaymentLinksPanel entityCode="SMRT" />;
+  return <PaymentLinksPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }

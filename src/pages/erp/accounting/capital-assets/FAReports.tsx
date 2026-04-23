@@ -15,6 +15,7 @@ import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
 import { computeITActReport, computeCompaniesActReport } from '@/lib/depreciationEngine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -162,4 +163,4 @@ export function FAReportsPanel({ entityCode }: Props) {
   );
 }
 
-export default function FAReports() { return <FAReportsPanel entityCode="SMRT" />; }
+export default function FAReports() { return <FAReportsPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />; }

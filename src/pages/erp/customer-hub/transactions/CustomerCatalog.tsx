@@ -18,6 +18,7 @@ import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
   type CustomerCart, type CustomerCartLine, type CustomerOrder,
@@ -33,7 +34,7 @@ interface CatalogItem {
   uom: string;
 }
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const CATALOG_KEY = 'erp_inventory_items';
 
 // ---------- Demo seed: 12 FMCG items ----------

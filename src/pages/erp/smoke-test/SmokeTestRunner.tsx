@@ -15,6 +15,7 @@ import {
   seedEntityDemoData, detectArchetype,
 } from '@/lib/demo-seed-orchestrator';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -180,7 +181,7 @@ export function SmokeTestRunnerPanel() { return <SmokeTestRunner />; }
 export default function SmokeTestRunner() {
   const [results, setResults] = useState<CheckResult[]>([]);
   const [running, setRunning] = useState(false);
-  const [entityCode, setEntityCode] = useState('SMRT');
+  const [entityCode, setEntityCode] = useState(DEFAULT_ENTITY_SHORTCODE);
   const [archetype, setArchetype] = useState<DemoArchetype>('trading');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -268,7 +269,7 @@ export default function SmokeTestRunner() {
             <SelectContent>
               {(readArray('erp_group_entities') as Array<{ shortCode: string; name: string }>)
                 .map(e => <SelectItem key={e.shortCode} value={e.shortCode}>{e.shortCode}</SelectItem>)}
-              {readArray('erp_group_entities').length === 0 && <SelectItem value="SMRT">SMRT</SelectItem>}
+              {readArray('erp_group_entities').length === 0 && <SelectItem value={DEFAULT_ENTITY_SHORTCODE}>{DEFAULT_ENTITY_SHORTCODE}</SelectItem>}
             </SelectContent>
           </Select>
           <Select value={archetype} onValueChange={(v) => setArchetype(v as DemoArchetype)}>

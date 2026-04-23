@@ -17,6 +17,7 @@ import type { Voucher } from '@/types/voucher';
 import {
   createPaymentRequest, buildUpiIntent, buildWaMePaymentMessage,
 } from '@/lib/payment-gateway-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   paymentLinksKey, PROVIDER_LABELS,
   type PaymentLinkRecord, type GatewayProvider,
@@ -57,7 +58,7 @@ export default function Statement() {
   const [toDate, setToDate] = useState("");
 
   const customerId = 'demo-customer-1'; // [JWT] derived from customer auth context
-  const entityCode = 'SMRT';             // [JWT] derived from customer's entity assignment
+  const entityCode = DEFAULT_ENTITY_SHORTCODE;             // [JWT] derived from customer's entity assignment
   const customerName = 'Demo Customer';
 
   const [payOpen, setPayOpen] = useState(false);

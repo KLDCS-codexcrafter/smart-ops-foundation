@@ -32,6 +32,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
@@ -41,7 +42,7 @@ const STEP_LABELS = [
 
 export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel() {
   const [selectedCompany] = useERPCompany();
-  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : 'SMRT';
+  const entityCode = selectedCompany && selectedCompany !== 'all' ? selectedCompany : DEFAULT_ENTITY_SHORTCODE;
   const { runs, holds, calculatePayroll, approveRun, postRun, lockRun,
     createHold, releaseHold } = usePayrollEngine(entityCode);
 

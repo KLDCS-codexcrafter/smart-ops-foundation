@@ -13,8 +13,9 @@ import {
 } from 'recharts';
 import { schemesKey, appliedSchemesKey, type Scheme, type AppliedScheme } from '@/types/scheme';
 import { formatINR } from '@/lib/india-validations';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface AppliedRecord {
   order_id: string;

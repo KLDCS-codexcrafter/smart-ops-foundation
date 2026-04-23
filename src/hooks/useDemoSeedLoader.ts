@@ -17,6 +17,7 @@ import {
   DEMO_LOAN_APPLICATIONS, DEMO_SALARY_ADVANCES, generateAttendanceRecords,
 } from '@/data/demo-transactions-pay-hub';
 import { payrollRunsKey } from '@/types/payroll-run';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
@@ -123,7 +124,7 @@ function loadPayHubMasters(): void {
 // ── Pay Hub transaction loader ──────────────────────────────────────────
 
 function loadPayHubTransactions(): void {
-  safeSet(payrollRunsKey('SMRT'), DEMO_PAYROLL_RUNS);
+  safeSet(payrollRunsKey(DEFAULT_ENTITY_SHORTCODE), DEMO_PAYROLL_RUNS);
   safeSet('erp_leave_requests', DEMO_LEAVE_REQUESTS);
   safeSet('erp_it_declarations', DEMO_IT_DECLARATIONS);
   safeSet('erp_loan_applications', DEMO_LOAN_APPLICATIONS);
@@ -181,7 +182,7 @@ export const DEMO_MODULES: DemoModule[] = [
     loadMasters: () => {
       try {
         const { loadFineCoreTransactions } = require('@/data/demo-transactions-finecore');
-        loadFineCoreTransactions('SMRT');
+        loadFineCoreTransactions(DEFAULT_ENTITY_SHORTCODE);
       } catch { /* seed data module not yet loaded */ }
     },
     loadTransactions: () => {},
@@ -200,7 +201,7 @@ export const DEMO_MODULES: DemoModule[] = [
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
-        mod.seedEntityDemoData('SMRT', 'trading');
+        mod.seedEntityDemoData(DEFAULT_ENTITY_SHORTCODE, 'trading');
       } catch { /* not yet loaded */ }
     },
     loadTransactions: () => { /* handled inside seedEntityDemoData */ },
@@ -220,7 +221,7 @@ export const DEMO_MODULES: DemoModule[] = [
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
-        mod.seedEntityDemoData('SMRT', 'trading');
+        mod.seedEntityDemoData(DEFAULT_ENTITY_SHORTCODE, 'trading');
       } catch { /* not yet loaded */ }
     },
     getCount: (key: string) => getStoredCount(key),

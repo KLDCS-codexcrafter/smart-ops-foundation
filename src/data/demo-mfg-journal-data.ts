@@ -18,6 +18,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 /** Happy path — Mfg JV against demo-bom-hp-001 (single-level Paracetamol pack) */
 export const DEMO_MFG_JV_HAPPY_PATH: Voucher[] = [
@@ -27,7 +28,7 @@ export const DEMO_MFG_JV_HAPPY_PATH: Voucher[] = [
     voucher_type_id: 'vt-manufacturing-journal',
     voucher_type_name: 'Manufacturing Journal',
     base_voucher_type: 'Manufacturing Journal',
-    entity_id: 'SMRT',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
     date: '2025-04-10',
     effective_date: '2025-04-10',
     ref_no: 'BATCH-2025-04-A',
@@ -103,7 +104,7 @@ export const DEMO_MFG_JV_EDGE_CASE: Voucher[] = [
     voucher_type_id: 'vt-manufacturing-journal',
     voucher_type_name: 'Manufacturing Journal',
     base_voucher_type: 'Manufacturing Journal',
-    entity_id: 'SMRT',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
     date: '2025-04-15',
     effective_date: '2025-04-15',
     ref_no: 'BATCH-2025-04-BULK',

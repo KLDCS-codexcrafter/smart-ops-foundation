@@ -7,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
 } from 'recharts';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   disputesKey, DISPUTE_REASON_LABELS,
   type InvoiceDispute,
 } from '@/types/invoice-dispute';
 
-const ENTITY = 'SMRT';
+const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const COLOURS = ['#4F46E5', '#F59E0B', '#EF4444', '#10B981', '#8B5CF6', '#64748B'];
 

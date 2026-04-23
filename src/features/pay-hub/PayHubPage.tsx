@@ -44,6 +44,7 @@ import { AdminAndMonitoringPanel } from '@/pages/erp/pay-hub/transactions/AdminA
 import { ExitAndFnFPanel } from '@/pages/erp/pay-hub/transactions/ExitAndFnF';
 import { ContractManpowerPanel } from '@/pages/erp/pay-hub/transactions/ContractManpower';
 import { PayHubDayBookPanel } from '@/pages/erp/pay-hub/transactions/PayHubDayBook';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
@@ -74,7 +75,7 @@ function renderModule(mod: PayHubModule, selectedEntityId?: string): React.React
     case 'ph-leave-requests': return <LeaveRequestsPanel />;
     case 'ph-payroll-processing': return <PayrollProcessingPanel />;
     case 'ph-payslip-gen': return <PayslipGenerationPanel />;
-    case 'ph-daybook': return <PayHubDayBookPanel entityCode={selectedEntityId ?? 'SMRT'} onNavigate={mod => window.dispatchEvent(new CustomEvent('ph-navigate', { detail: mod }))} />;
+    case 'ph-daybook': return <PayHubDayBookPanel entityCode={selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE} onNavigate={mod => window.dispatchEvent(new CustomEvent('ph-navigate', { detail: mod }))} />;
     case 'ph-pf-ecr':              return <StatutoryReturnsPanel defaultTab="pf-ecr" />;
     case 'ph-esi-returns':         return <StatutoryReturnsPanel defaultTab="esi" />;
     case 'ph-pt-returns':          return <StatutoryReturnsPanel defaultTab="pt" />;

@@ -27,6 +27,7 @@ import { AgingByPersonPanel } from '@/pages/erp/receivx/reports/AgingByPerson';
 import { CollectionEfficiencyPanel } from '@/pages/erp/receivx/reports/CollectionEfficiency';
 import { CommunicationLogReportPanel } from '@/pages/erp/receivx/reports/CommunicationLogReport';
 import { CreditRiskReportPanel } from '@/pages/erp/receivx/reports/CreditRiskReport';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-hub':                  'Hub Overview',
@@ -77,7 +78,7 @@ function renderModule(
 
 export default function ReceivXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
-  const entityCode = selectedEntityId ?? 'SMRT';
+  const entityCode = selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE;
   const [activeModule, setActiveModule] = useState<ReceivXModule>('rx-hub');
   const { entityCode: entCode, userId } = useCardEntitlement();
 
