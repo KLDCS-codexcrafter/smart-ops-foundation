@@ -410,6 +410,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
     overheadLedgerId, overheadLedgerName,
     voucherNo, date, effectiveDate, refNo, refDate,
     departmentId, departmentName, entityCode, narration,
+    boms, selectedBomId, batchMultiple,
   ]);
 
   const handleSaveAndNew = useCallback(async () => {
