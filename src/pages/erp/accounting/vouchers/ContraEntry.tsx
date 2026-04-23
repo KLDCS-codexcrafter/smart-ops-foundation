@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
@@ -73,6 +74,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
   const [instrumentRef, setInstrumentRef] = useState('');
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   const clearForm = useCallback(() => {
@@ -87,6 +89,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
     setInstrumentType('NEFT');
     setInstrumentRef('');
     setNarration('');
+    setPostedVoucherId(null);
   }, [entityCode, today]);
 
   const handlePost = useCallback(async () => {
@@ -158,6 +161,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
       postVoucher(voucher, entityCode);
       toast.success(`Contra ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
+      setPostedVoucherId(voucher.id);
     } catch (err) {
       console.error('Contra post failed:', err);
       toast.error('Failed to post Contra');
@@ -218,6 +222,14 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
       });
     }
   }, [onSaveDraft, fromLedgerName, serializeFormState]);
+
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/contra-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
 
   const refPlaceholder = instrumentType === 'Cheque Deposit' || instrumentType === 'Cheque Withdrawal'
     ? 'Cheque No'
@@ -330,11 +342,16 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
         </CardContent>
       </Card>
 
-      {onSaveDraft && (
-        <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {onSaveDraft && (
           <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
-        </div>
-      )}
+        )}
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Contra
+          </Button>
+        )}
+      </div>
 
       <VoucherFormFooter
         onPost={handlePost}
