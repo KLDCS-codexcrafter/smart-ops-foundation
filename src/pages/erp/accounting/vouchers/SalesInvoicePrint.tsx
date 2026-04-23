@@ -402,15 +402,23 @@ export function SalesInvoicePrintPanel() {
 
         {/* Footer */}
         <div className="grid grid-cols-2 gap-4 mt-6 text-[10px]">
-          <div>
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
-            <div className="text-muted-foreground mt-1">{payload.terms}</div>
-          </div>
-          <div className="text-right flex flex-col justify-end">
-            <div className="font-semibold">For {payload.supplier_name}</div>
-            <div className="mt-12 border-t border-border pt-1">{payload.authorised_signatory}</div>
-            <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
-          </div>
+          {t.showTermsAndConditions ? (
+            <div>
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
+              <div className="text-muted-foreground mt-1">{payload.terms}</div>
+            </div>
+          ) : (
+            <div />
+          )}
+          {t.showAuthorisedSignatory ? (
+            <div className="text-right flex flex-col justify-end">
+              <div className="font-semibold">For {payload.supplier_name}</div>
+              <div className="mt-12 border-t border-border pt-1">{payload.authorised_signatory}</div>
+              <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
+            </div>
+          ) : (
+            <div />
+          )}
         </div>
       </div>
     </div>
