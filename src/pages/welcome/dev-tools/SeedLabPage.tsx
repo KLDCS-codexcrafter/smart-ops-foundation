@@ -33,7 +33,7 @@ const STAKEHOLDER_MODES: StakeholderMode[] = [
     icon: User,
     audience: 'Founder, executive team',
     seesDescription:
-      'Full ERP with realistic data · all dashboards populated · Leak Register with planted leaks visible · top-level MIS cubes · bird\u2019s-eye across all 12 departments.',
+      'Full ERP with realistic data · all dashboards populated · Leak Register with planted leaks visible · top-level MIS cubes · bird\'s-eye across all 12 departments.',
     canDescription:
       'Explore anywhere · time-travel to any date · switch scenarios · craft narratives for board meetings.',
     phase: 'planned',

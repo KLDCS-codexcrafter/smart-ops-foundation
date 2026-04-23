@@ -38,7 +38,7 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     description:
       'Diversified 5-BU group: Life Sciences, Contract Manufacturing, Packaging, Distribution, Hygiene & Homecare. Validates multi-BU, contract mfg, export, multi-channel.',
     details:
-      '1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy\u2019s. Pattern: large diversified conglomerate.',
+      '1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy\'s. Pattern: large diversified conglomerate.',
     pattern: 'Multi-BU Conglomerate + Contract Mfg + Export + FMCG',
     phase: 'planned',
     fixtureCoverage: 0,
@@ -62,7 +62,7 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     subtitle: 'PSU + Pharma + Chemical',
     icon: Landmark,
     description:
-      'Government PSU under Ministry of Chemicals & Fertilizers. India\u2019s first pharma company (1901, Acharya P.C. Ray). 3 divisions: Industrial Chemicals, Pharmaceuticals, Home Products.',
+      'Government PSU under Ministry of Chemicals & Fertilizers. India\'s first pharma company (1901, Acharya P.C. Ray). 3 divisions: Industrial Chemicals, Pharmaceuticals, Home Products.',
     details:
       'Kolkata HQ · Central PSU · Privatisation ongoing. Validates PSU procurement (GeM), CAG audit, tender lifecycle, parliamentary scrutiny. Needs PSU Pack.',
     pattern: 'PSU / Regulated Entity + Pharma + Heavy Chemicals + FMCG',
@@ -148,7 +148,7 @@ export function ClientBlueprintsPagePanel() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Client Blueprints</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Seven design-partner client scenarios that anchor Operix\u2019s universal ERP architecture.
+              Seven design-partner client scenarios that anchor Operix's universal ERP architecture.
               If Operix serves all seven cleanly, it serves 80%+ of the Indian mid-market.
               These are reference templates — not delivery targets.
             </p>
