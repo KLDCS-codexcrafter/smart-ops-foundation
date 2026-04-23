@@ -19,8 +19,8 @@ import { AlertTriangle, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   disputesKey, DISPUTE_REASON_LABELS, DISPUTE_STATUS_COLOURS, DISPUTE_STATUS_LABELS,
   type InvoiceDispute, type DisputeStatus,
 } from '@/types/invoice-dispute';

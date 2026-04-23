@@ -23,8 +23,8 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   salesReturnMemosKey,
   SALES_RETURN_REASON_LABELS,
   type SalesReturnMemo,

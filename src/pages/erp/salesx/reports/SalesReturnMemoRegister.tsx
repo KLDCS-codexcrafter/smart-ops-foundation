@@ -21,8 +21,8 @@ import { Eye, Check, X, FileMinus, Send } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   salesReturnMemosKey,
   type SalesReturnMemo,
   type SalesReturnMemoStatus,

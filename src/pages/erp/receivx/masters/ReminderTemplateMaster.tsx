@@ -11,8 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   receivxTemplatesKey, type ReminderTemplate, type CadenceMessage, type CadenceStep,
 } from '@/types/receivx';
 

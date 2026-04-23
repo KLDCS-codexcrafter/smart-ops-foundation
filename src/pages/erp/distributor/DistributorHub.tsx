@@ -18,8 +18,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { formatINR } from '@/lib/india-validations';
 import { distributorsKey, type Distributor } from '@/types/distributor';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   distributorOrdersKey, distributorIntimationsKey,
   type DistributorOrder, type DistributorPaymentIntimation,
 } from '@/types/distributor-order';

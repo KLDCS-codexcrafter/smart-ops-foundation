@@ -19,8 +19,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   verifyDistributorCredential,
   issueDistributorToken,
   createDistributorSession,

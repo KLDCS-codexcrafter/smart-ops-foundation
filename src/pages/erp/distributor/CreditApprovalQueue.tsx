@@ -19,8 +19,8 @@ import { CheckCircle2, XCircle, IndianRupee, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   creditRequestsKey, CREDIT_REQUEST_STATUS_COLOURS,
   type CreditIncreaseRequest,
 } from '@/types/credit-increase-request';

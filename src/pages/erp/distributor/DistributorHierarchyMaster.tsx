@@ -27,8 +27,8 @@ import {
   hierarchyNodesKey, HIERARCHY_ROLE_LABELS, HIERARCHY_ROLE_COLOURS,
   type HierarchyNode, type HierarchyRole,
 } from '@/types/distributor-hierarchy';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   buildTree, canAssignParent, wouldCreateCycle, computeNodePath, computeDepth,
   type HierarchyTreeNode,
 } from '@/lib/hierarchy-engine';

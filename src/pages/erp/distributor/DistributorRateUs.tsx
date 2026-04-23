@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   ratingsKey, type RatingEntry, type RatingDimension,
 } from '@/types/distributor-rating';
 

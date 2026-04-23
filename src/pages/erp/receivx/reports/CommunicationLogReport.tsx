@@ -20,8 +20,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Download, MessageCircle, Mail, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   type CommunicationLog, type CommStatus,
   receivxCommLogKey,
 } from '@/types/receivx';

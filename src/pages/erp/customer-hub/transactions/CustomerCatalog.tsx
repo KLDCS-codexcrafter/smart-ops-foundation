@@ -18,8 +18,8 @@ import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
   type CustomerCart, type CustomerCartLine, type CustomerOrder,
 } from '@/types/customer-order';

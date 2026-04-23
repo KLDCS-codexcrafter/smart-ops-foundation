@@ -15,8 +15,8 @@ import {
   isSpeechRecognitionSupported, transcribeVoice,
 } from '@/lib/voice-to-order-engine';
 import { logAudit } from '@/lib/card-audit-engine';
-import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 
