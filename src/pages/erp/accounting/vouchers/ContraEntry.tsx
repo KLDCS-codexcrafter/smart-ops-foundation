@@ -223,6 +223,14 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
     }
   }, [onSaveDraft, fromLedgerName, serializeFormState]);
 
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/contra-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
+
   const refPlaceholder = instrumentType === 'Cheque Deposit' || instrumentType === 'Cheque Withdrawal'
     ? 'Cheque No'
     : instrumentType === 'DD'
@@ -334,11 +342,16 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
         </CardContent>
       </Card>
 
-      {onSaveDraft && (
-        <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {onSaveDraft && (
           <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
-        </div>
-      )}
+        )}
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Contra
+          </Button>
+        )}
+      </div>
 
       <VoucherFormFooter
         onPost={handlePost}

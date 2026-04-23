@@ -213,6 +213,14 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
     }
   }, [onSaveDraft, date, serializeFormState]);
 
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
+
   return (
     <>
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
@@ -303,11 +311,16 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
         </CardContent>
       </Card>
 
-      {onSaveDraft && (
-        <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {onSaveDraft && (
           <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
-        </div>
-      )}
+        )}
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Journal
+          </Button>
+        )}
+      </div>
 
       <VoucherFormFooter
         onPost={handlePost}
