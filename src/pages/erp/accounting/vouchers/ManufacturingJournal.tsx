@@ -271,6 +271,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
           total: 0,
           gst_type: 'non_gst' as const,
           gst_source: 'none' as const,
+          mfg_line_type: 'consumption' as const,
         })),
         ...productionLines.map(l => ({
           id: l.id,
@@ -285,6 +286,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
           total: 0,
           gst_type: 'non_gst' as const,
           gst_source: 'none' as const,
+          mfg_line_type: 'production' as const,
         })),
         ...byproductLines.map(l => ({
           id: l.id,
@@ -299,6 +301,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
           total: 0,
           gst_type: 'non_gst' as const,
           gst_source: 'none' as const,
+          mfg_line_type: 'byproduct' as const,
         })),
       ];
 
@@ -356,6 +359,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
       }
 
       const now = new Date().toISOString();
+      const selectedBomForVoucher = boms.find(b => b.id === selectedBomId);
       const voucher: Voucher = {
         id: crypto.randomUUID(),
         voucher_no: voucherNo,
@@ -371,6 +375,12 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
         dispatch_dept_name: departmentName || undefined,
         department_id: departmentId || undefined,
         department_name: departmentName || undefined,
+        purpose: 'Manufacturing',
+        bom_id: selectedBomId || undefined,
+        bom_version_no: selectedBomForVoucher?.version_no,
+        batch_multiple: batchMultiple || 1,
+        overhead_ledger_id: overheadLedgerId || undefined,
+        overhead_ledger_name: overheadLedgerName || undefined,
         inventory_lines: inventoryLines,
         ledger_lines: ledgerLines,
         gross_amount: 0, total_discount: 0, total_taxable: 0,
@@ -400,6 +410,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
     overheadLedgerId, overheadLedgerName,
     voucherNo, date, effectiveDate, refNo, refDate,
     departmentId, departmentName, entityCode, narration,
+    boms, selectedBomId, batchMultiple,
   ]);
 
   const handleSaveAndNew = useCallback(async () => {

@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { StockJournalLineGrid } from '@/components/finecore/StockJournalLineGrid';
 import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
-import type { Voucher } from '@/types/voucher';
+import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -48,15 +48,52 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
       const now = new Date().toISOString();
+
+      const inventoryLines: VoucherInventoryLine[] = [
+        ...consumptionLines.map(l => ({
+          id: l.id, item_id: l.item_id, item_code: '', item_name: l.item_name,
+          hsn_sac_code: '',
+          godown_id: l.godown_id, godown_name: l.godown_name,
+          batch_id: l.batch_id || undefined,
+          qty: -Math.abs(l.qty),
+          uom: l.uom, rate: 0,
+          discount_percent: 0, discount_amount: 0, taxable_value: 0,
+          gst_rate: 0, cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
+          cgst_amount: 0, sgst_amount: 0, igst_amount: 0, cess_amount: 0,
+          total: 0,
+          gst_type: 'non_gst' as const,
+          gst_source: 'none' as const,
+          mfg_line_type: 'consumption' as const,
+        })),
+        ...productionLines.map(l => ({
+          id: l.id, item_id: l.item_id, item_code: '', item_name: l.item_name,
+          hsn_sac_code: '',
+          godown_id: l.godown_id, godown_name: l.godown_name,
+          batch_id: l.batch_id || undefined,
+          qty: Math.abs(l.qty),
+          uom: l.uom, rate: 0,
+          discount_percent: 0, discount_amount: 0, taxable_value: 0,
+          gst_rate: 0, cgst_rate: 0, sgst_rate: 0, igst_rate: 0, cess_rate: 0,
+          cgst_amount: 0, sgst_amount: 0, igst_amount: 0, cess_amount: 0,
+          total: 0,
+          gst_type: 'non_gst' as const,
+          gst_source: 'none' as const,
+          mfg_line_type: 'production' as const,
+        })),
+      ];
+
       const voucher: Voucher = {
         id: `v-${Date.now()}`, voucher_no: voucherNo, voucher_type_id: '',
         voucher_type_name: 'Stock Journal', base_voucher_type: 'Stock Journal',
-        entity_id: '', date, party_name: '', ref_voucher_no: referenceNo,
+        entity_id: entityCode, date, party_name: '', ref_voucher_no: referenceNo,
         vendor_bill_no: '', net_amount: 0, narration,
+        purpose,
+        department_name: department || undefined,
         terms_conditions: '', payment_enforcement: '', payment_instrument: '',
         from_ledger_name: '', to_ledger_name: '',
         from_godown_name: '', to_godown_name: '',
-        ledger_lines: [], gross_amount: 0, total_discount: 0, total_taxable: 0,
+        ledger_lines: [], inventory_lines: inventoryLines,
+        gross_amount: 0, total_discount: 0, total_taxable: 0,
         total_cgst: 0, total_sgst: 0, total_igst: 0,
         total_cess: 0, total_tax: 0, round_off: 0, tds_applicable: false,
         status: 'posted', created_by: 'current-user', created_at: now, updated_at: now,
@@ -66,7 +103,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       toast.success('Stock Journal posted');
     } catch { toast.error('Failed to save'); }
-  }, [consumptionLines, purpose, referenceNo, date, voucherNo, narration, entityCode]);
+  }, [consumptionLines, productionLines, purpose, referenceNo, date, voucherNo, narration, entityCode, department]);
 
   const handleSaveDraft = useCallback(() => {
     if (onSaveDraft) {
