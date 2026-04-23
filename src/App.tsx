@@ -231,6 +231,9 @@ const App = () => (
               <Route path="/modules" element={<P><ModulesPage /></P>} />
               <Route path="/modules/vetan-nidhi" element={<P><VetanNidhi /></P>} />
               <Route path="/client-customized" element={<P><ClientCustomizedPage /></P>} />
+              <Route path="/welcome/scenarios" element={<P><ClientBlueprintsPage /></P>} />
+              <Route path="/welcome/dev-tools" element={<P><EngineeringConsolePage /></P>} />
+              <Route path="/welcome/dev-tools/seed-lab" element={<P><SeedLabPage /></P>} />
               <Route path="/add-ons" element={<P><AddOnsPage /></P>} />
               <Route path="/add-ons/barcode" element={<P><AddonsBarcode /></P>} />
               <Route path="/operix-go" element={<P><OperixGoPage /></P>} />
