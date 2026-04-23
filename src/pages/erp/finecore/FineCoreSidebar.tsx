@@ -332,6 +332,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
         {renderSection('Banking', BANKING_ITEMS, bankOpen, setBankOpen)}
         {renderSection('Outstanding', OUTSTANDING_ITEMS, outOpen, setOutOpen)}
         {renderSection('Reports', REPORT_ITEMS, rptOpen, setRptOpen)}
+        {renderSection('Registers', REGISTER_ITEMS, regOpen, setRegOpen)}
         {renderSection('GST', GST_ITEMS, gstOpen, setGstOpen)}
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
