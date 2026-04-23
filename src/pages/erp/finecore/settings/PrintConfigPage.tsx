@@ -12,7 +12,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, Save, X, Settings2 } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Save, X, Settings2, FileSpreadsheet } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -187,6 +188,11 @@ export function PrintConfigPagePanel() {
           </Select>
 
           <div className="ml-auto flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/erp/finecore/settings/register-config">
+                <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Register Config
+              </Link>
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
