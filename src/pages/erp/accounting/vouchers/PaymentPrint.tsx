@@ -1,6 +1,12 @@
 /**
- * PaymentPrint.tsx — A4 printable Payment voucher.
- * Mirrors ReceiptPrint with vendor-facing labels.
+ * @file     PaymentPrint.tsx
+ * @purpose  A4 printable Payment voucher — 1-copy (Accounts).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
+ * @whom     Accountant (accounts copy)
+ * @depends  payment-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -12,6 +18,7 @@ import {
   type PaymentPrintPayload,
 } from '@/lib/payment-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 export function PaymentPrintPanel() {
   const [params] = useSearchParams();
@@ -26,13 +33,16 @@ export function PaymentPrintPanel() {
     const voucher = loadVoucher(entityCode, voucherId);
     if (!voucher) return;
     const gst = loadEntityGst(entityCode);
-    setPayload(buildPaymentPrintPayload(voucher, gst, copyKey));
+    // [Convergent] Load print config for this entity; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
+    setPayload(buildPaymentPrintPayload(voucher, gst, copyKey, printConfig));
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
     if (!payload) return (
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     );
+    const t = payload.resolved_toggles;
 
     return (
       <>
@@ -41,10 +51,10 @@ export function PaymentPrintPanel() {
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">From</div>
             <div className="font-semibold text-[13px]">{payload.supplier.legal_name}</div>
             <div className="text-muted-foreground text-[10px]">{payload.supplier_address}</div>
-            {payload.supplier.gstin && (
+            {t.showHeaderGstin && payload.supplier.gstin && (
               <div className="font-mono text-[10px]">GSTIN: {payload.supplier.gstin}</div>
             )}
-            {payload.supplier.pan && (
+            {t.showHeaderPan && payload.supplier.pan && (
               <div className="font-mono text-[10px]">PAN: {payload.supplier.pan}</div>
             )}
           </div>
@@ -79,7 +89,7 @@ export function PaymentPrintPanel() {
         <div className="mt-3 border-t border-border pt-3 text-[11px]">
           <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Paid To</div>
           <div className="font-semibold text-[13px]">{payload.party_name || '—'}</div>
-          {payload.party_gstin && (
+          {t.showHeaderGstin && payload.party_gstin && (
             <div className="font-mono text-[10px]">GSTIN: {payload.party_gstin}</div>
           )}
         </div>
@@ -140,31 +150,35 @@ export function PaymentPrintPanel() {
         )}
 
         <div className="mt-4 border-t border-border pt-2 flex items-end justify-between text-[11px]">
-          <div className="flex-1 pr-4">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
-            <div className="italic">{payload.amount_in_words}</div>
-          </div>
+          {t.showAmountInWords ? (
+            <div className="flex-1 pr-4">
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
+              <div className="italic">{payload.amount_in_words}</div>
+            </div>
+          ) : <div className="flex-1 pr-4" />}
           <div className="text-right">
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Total Paid</div>
             <div className="text-lg font-bold font-mono">₹{formatINR(payload.total_amount)}</div>
           </div>
         </div>
 
-        {payload.narration && (
+        {t.showNarration && payload.narration && (
           <div className="mt-3 text-[10px]">
             <span className="text-muted-foreground uppercase tracking-wider text-[9px]">Narration: </span>
             {payload.narration}
           </div>
         )}
 
-        <div className="mt-10 flex justify-end text-[10px]">
-          <div className="text-right">
-            <div className="border-t border-border pt-1 w-48">
-              {payload.authorised_signatory}
+        {t.showAuthorisedSignatory && (
+          <div className="mt-10 flex justify-end text-[10px]">
+            <div className="text-right">
+              <div className="border-t border-border pt-1 w-48">
+                {payload.authorised_signatory}
+              </div>
+              <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
             </div>
-            <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
           </div>
-        </div>
+        )}
       </>
     );
   }, [payload]);
