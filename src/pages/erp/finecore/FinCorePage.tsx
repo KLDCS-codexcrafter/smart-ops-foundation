@@ -67,6 +67,20 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
+// [T10-pre.2d-B] 13 voucher-type register panels
+import { SalesRegisterPanel } from './registers/SalesRegister';
+import { PurchaseRegisterPanel } from './registers/PurchaseRegister';
+import { ReceiptRegisterPanel } from './registers/ReceiptRegister';
+import { PaymentRegisterPanel } from './registers/PaymentRegister';
+import { ContraRegisterPanel } from './registers/ContraRegister';
+import { JournalRegisterPanel } from './registers/JournalRegister';
+import { CreditNoteRegisterPanel } from './registers/CreditNoteRegister';
+import { DebitNoteRegisterPanel } from './registers/DebitNoteRegister';
+import { DeliveryNoteRegisterPanel } from './registers/DeliveryNoteRegister';
+import { ReceiptNoteRegisterPanel } from './registers/ReceiptNoteRegister';
+import { StockAdjustmentRegisterPanel } from './registers/StockAdjustmentRegister';
+import { StockJournalRegisterPanel } from './registers/StockJournalRegister';
+import { StockTransferRegisterPanel } from './registers/StockTransferRegister';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
@@ -119,6 +133,20 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-fa-disposal':     'Asset Disposal',
   'fc-fa-cwip':         'Capital WIP',
   'fc-fa-reports':      'FA Reports',
+  // [T10-pre.2d-B] 13 voucher-type registers
+  'fc-rpt-sales-register':            'Sales Register',
+  'fc-rpt-purchase-register':         'Purchase Register',
+  'fc-rpt-receipt-register':          'Receipt Register',
+  'fc-rpt-payment-register':          'Payment Register',
+  'fc-rpt-contra-register':           'Contra Register',
+  'fc-rpt-journal-register':          'Journal Register',
+  'fc-rpt-credit-note-register':      'Credit Note Register',
+  'fc-rpt-debit-note-register':       'Debit Note Register',
+  'fc-rpt-delivery-note-register':    'Delivery Note Register',
+  'fc-rpt-receipt-note-register':     'Receipt Note Register',
+  'fc-rpt-stock-adjustment-register': 'Stock Adjustment Register',
+  'fc-rpt-stock-journal-register':    'Stock Journal Register',
+  'fc-rpt-stock-transfer-register':   'Stock Transfer Register',
 };
 
 export function FinCorePagePanel() {
