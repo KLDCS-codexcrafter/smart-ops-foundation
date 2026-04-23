@@ -181,7 +181,7 @@ export function SmokeTestRunnerPanel() { return <SmokeTestRunner />; }
 export default function SmokeTestRunner() {
   const [results, setResults] = useState<CheckResult[]>([]);
   const [running, setRunning] = useState(false);
-  const [entityCode, setEntityCode] = useState(DEFAULT_ENTITY_SHORTCODE);
+  const [entityCode, setEntityCode] = useState<string>(DEFAULT_ENTITY_SHORTCODE);
   const [archetype, setArchetype] = useState<DemoArchetype>('trading');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
