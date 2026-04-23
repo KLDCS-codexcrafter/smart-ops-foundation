@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
@@ -73,6 +74,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
   const [instrumentRef, setInstrumentRef] = useState('');
   const [narration, setNarration] = useState('');
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   const clearForm = useCallback(() => {
@@ -87,6 +89,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
     setInstrumentType('NEFT');
     setInstrumentRef('');
     setNarration('');
+    setPostedVoucherId(null);
   }, [entityCode, today]);
 
   const handlePost = useCallback(async () => {
@@ -158,6 +161,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
       postVoucher(voucher, entityCode);
       toast.success(`Contra ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
+      setPostedVoucherId(voucher.id);
     } catch (err) {
       console.error('Contra post failed:', err);
       toast.error('Failed to post Contra');

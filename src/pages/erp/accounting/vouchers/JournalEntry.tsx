@@ -26,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
@@ -74,6 +75,7 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
   const [departmentName, setDepartmentName] = useState('');
 
   const [saving, setSaving] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
   useEffect(() => {
@@ -103,6 +105,7 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
     setNarration('');
     setPartyId(''); setPartyName(''); setPartyType(undefined);
     setDepartmentId(''); setDepartmentName('');
+    setPostedVoucherId(null);
   }, [entityCode, today]);
 
   const handlePost = useCallback(async () => {
@@ -155,6 +158,7 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
       postVoucher(voucher, entityCode);
       toast.success(`Journal Voucher ${voucher.voucher_no} posted`);
       lastSavedRef.current = true;
+      setPostedVoucherId(voucher.id);
     } catch (err) {
       console.error('JV post failed:', err);
       toast.error('Failed to post Journal Voucher');
