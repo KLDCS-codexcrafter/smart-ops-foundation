@@ -46,6 +46,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
@@ -85,6 +86,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
       toast.success('Debit Note posted');
+      setPostedVoucherId(voucher.id);
     } catch { toast.error('Failed to save'); }
   }, [partyName, againstBill, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
 
@@ -113,7 +115,16 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
   const clearForm = useCallback(() => {
     setPartyName(''); setAgainstBill(''); setReasonCode('');
     setInventoryLines([]); setLedgerLines([]); setNarration('');
+    setPostedVoucherId(null);
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/debit-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Debit Note',
@@ -185,6 +196,11 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Debit Note
+          </Button>
+        )}
       </div>
     </div>
     </>
