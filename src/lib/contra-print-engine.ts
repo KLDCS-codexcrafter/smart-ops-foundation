@@ -1,6 +1,13 @@
 /**
- * contra-print-engine.ts — Contra voucher (cash↔bank, bank↔bank).
- * Single "ACCOUNTS COPY" only — internal fund movement.
+ * @file     contra-print-engine.ts
+ * @purpose  Build print payload for Contra voucher (cash↔bank, bank↔bank) · 1-copy (Accounts).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.1 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.1 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Accountant (accounts copy)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers ContraPrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -10,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const CONTRA_COPY_CONFIG: PrintCopyConfig = {
   keys: ['accounts'],
@@ -45,15 +55,23 @@ export interface ContraPrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildContraPrintPayload(
   voucher: Voucher,
   supplierGst: EntityGSTConfig,
   copyKey: string = CONTRA_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): ContraPrintPayload {
   const supplier = buildSupplierBlock(supplierGst);
   const total = voucher.net_amount || 0;
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'contra');
 
   return {
     copy_key: copyKey,
@@ -83,6 +101,8 @@ export function buildContraPrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (supplier.legal_name || supplier.trade_name),
+
+    resolved_toggles,
   };
 }
 

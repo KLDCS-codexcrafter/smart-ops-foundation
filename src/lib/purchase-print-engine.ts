@@ -1,19 +1,13 @@
 /**
- * purchase-print-engine.ts — Build payload for Purchase Invoice internal copy.
- *
- * A Purchase Invoice is issued BY the vendor, received BY us. We don't print
- * it as a tax invoice — the vendor already did that. This engine produces
- * an INTERNAL COPY for our accounts / audit trail that captures:
- *
- *   - Our entity as the "Buyer"
- *   - Vendor block (party) as the "Seller"
- *   - Vendor bill number (vendor's invoice no) + vendor bill date
- *   - GL + Inventory line breakdown as we've posted them
- *   - GST we're claiming as ITC
- *   - PO reference (if matched via po_ref)
- *
- * Copy config: 1 copy — 'INTERNAL COPY — NOT A LEGAL TAX INVOICE'.
- * No IRN, no EWB, no UPI QR (those are Sales Invoice concerns).
+ * @file     purchase-print-engine.ts
+ * @purpose  Build internal-copy print payload for Purchase Invoice (vendor-issued bill, our audit-trail copy).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Accountant (internal copy — NOT a legal tax invoice)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers PurchaseInvoicePrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -23,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const PURCHASE_COPY_CONFIG: PrintCopyConfig = {
   keys: ['internal'],
@@ -95,12 +92,16 @@ export interface PurchasePrintPayload {
   // Narration + signatory
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildPurchasePrintPayload(
   voucher: Voucher,
   buyerGst: EntityGSTConfig,
   copyKey: string = PURCHASE_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): PurchasePrintPayload {
   const buyer = buildSupplierBlock(buyerGst);
 
@@ -132,6 +133,10 @@ export function buildPurchasePrintPayload(
     ex.total += l.taxable_value + l.cgst_amount + l.sgst_amount + l.igst_amount;
     hsnMap.set(l.hsn_sac, ex);
   }
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'purchase_invoice');
 
   return {
     copy_key: copyKey,
@@ -167,6 +172,8 @@ export function buildPurchasePrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (buyer.legal_name || buyer.trade_name),
+
+    resolved_toggles,
   };
 }
 

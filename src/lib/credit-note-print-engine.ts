@@ -1,17 +1,13 @@
 /**
- * credit-note-print-engine.ts — Build payload for Credit Note (sales-side).
- *
- * Credit Note is a GST document WE issue when we reduce a customer's
- * liability (goods return, price correction, quality issue, post-sale
- * discount). Under CGST Rule 46, follows same tri-copy convention as
- * Tax Invoice: Original for Recipient, Duplicate for Transporter, Triplicate
- * for Supplier.
- *
- * Reason code: CN captures reasonCode in form state but this is NOT currently
- * persisted to the Voucher (separate sprint needed to extend Voucher type
- * with reason_code). Print shows "—" in Reason field until that ships.
- *
- * Against-invoice reference: stored as voucher.ref_voucher_no.
+ * @file     credit-note-print-engine.ts
+ * @purpose  Build print payload for sales-side Credit Note · 3-copy (Original / Duplicate / Triplicate).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Customer (recipient) · Transporter · Supplier (us)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers CreditNotePrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -21,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const CREDIT_NOTE_COPY_CONFIG: PrintCopyConfig = {
   keys: ['original', 'duplicate', 'triplicate'],
@@ -91,12 +90,16 @@ export interface CreditNotePrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildCreditNotePrintPayload(
   voucher: Voucher,
   issuerGst: EntityGSTConfig,
   copyKey: string = CREDIT_NOTE_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): CreditNotePrintPayload {
   const issuer = buildSupplierBlock(issuerGst);
 
@@ -128,6 +131,10 @@ export function buildCreditNotePrintPayload(
     ex.total += l.taxable_value + l.cgst_amount + l.sgst_amount + l.igst_amount;
     hsnMap.set(l.hsn_sac, ex);
   }
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'credit_note');
 
   return {
     copy_key: copyKey,
@@ -161,6 +168,8 @@ export function buildCreditNotePrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (issuer.legal_name || issuer.trade_name),
+
+    resolved_toggles,
   };
 }
 

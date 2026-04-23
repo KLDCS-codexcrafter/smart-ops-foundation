@@ -1,11 +1,13 @@
 /**
- * delivery-note-print-engine.ts — Build payload for Delivery Note print.
- *
- * DLN is goods-movement doc issued to customer via transporter. NO tax on the
- * print itself (tax lives on the follow-up Sales Invoice). Shows rupee values
- * as a goods-handover record (Rate + Value default ON per Tally convention).
- *
- * Copy config: 3 copies — Consignee / Transporter / Consignor.
+ * @file     delivery-note-print-engine.ts
+ * @purpose  Build print payload for Delivery Note · 3-copy (Consignee / Transporter / Consignor).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B1 — resolved_toggles added)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B1 (config param + resolved_toggles)
+ * @iso      Maintainability (HIGH) · Functional Suitability (HIGH) · Reliability (HIGH backward-compat) · Compatibility (HIGH — purely additive)
+ * @whom     Consignee (customer) · Transporter · Consignor (us)
+ * @depends  voucher-print-shared.ts · Voucher · EntityGSTConfig · print-config.ts · print-config-storage.ts
+ * @consumers DeliveryNotePrint.tsx panel (2b.3b-B2 wires toggle-gating)
  */
 
 import type { Voucher } from '@/types/voucher';
@@ -15,6 +17,9 @@ import {
   type PrintSupplierBlock, type PrintCopyConfig,
 } from '@/lib/voucher-print-shared';
 import type { EntityGSTConfig } from '@/types/entity-gst';
+import type { PrintConfig, PrintToggles } from '@/types/print-config';
+import { DEFAULT_PRINT_CONFIG } from '@/types/print-config';
+import { resolveToggles } from '@/lib/print-config-storage';
 
 export const DELIVERY_NOTE_COPY_CONFIG: PrintCopyConfig = {
   keys: ['consignee', 'transporter', 'consignor'],
@@ -63,12 +68,16 @@ export interface DeliveryNotePrintPayload {
 
   narration: string;
   authorised_signatory: string;
+
+  /** Resolved print toggles for renderer use. Populated by engine from optional PrintConfig; falls back to DEFAULT_TOGGLES when config absent. */
+  resolved_toggles: PrintToggles;
 }
 
 export function buildDeliveryNotePrintPayload(
   voucher: Voucher,
   consignorGst: EntityGSTConfig,
   copyKey: string = DELIVERY_NOTE_COPY_CONFIG.default,
+  config?: PrintConfig,
 ): DeliveryNotePrintPayload {
   const consignor = buildSupplierBlock(consignorGst);
 
@@ -86,6 +95,10 @@ export function buildDeliveryNotePrintPayload(
 
   const total_qty = lines.reduce((s, l) => s + l.qty, 0);
   const total_value = lines.reduce((s, l) => s + l.value, 0);
+
+  // [Convergent] Resolve toggles via single source: DEFAULT_TOGGLES + per-voucher overrides.
+  // Config absent → DEFAULT_TOGGLES for this voucher type (100% backward compat).
+  const resolved_toggles = resolveToggles(config ?? DEFAULT_PRINT_CONFIG, 'delivery_note');
 
   return {
     copy_key: copyKey,
@@ -112,6 +125,8 @@ export function buildDeliveryNotePrintPayload(
 
     narration: voucher.narration || '',
     authorised_signatory: 'For ' + (consignor.legal_name || consignor.trade_name),
+
+    resolved_toggles,
   };
 }
 
