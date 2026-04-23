@@ -308,8 +308,12 @@ export function SalesInvoicePrintPanel() {
         {/* Totals + amount in words */}
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="text-[10px] space-y-1">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in Words</div>
-            <div className="italic">{payload.amount_in_words}</div>
+            {t.showAmountInWords && (
+              <>
+                <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in Words</div>
+                <div className="italic">{payload.amount_in_words}</div>
+              </>
+            )}
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mt-3">Bank</div>
             <div>{payload.bank_name || '—'}</div>
             <div className="font-mono">A/C: {payload.bank_account_no || '—'}</div>
