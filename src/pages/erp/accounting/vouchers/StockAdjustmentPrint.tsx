@@ -1,5 +1,12 @@
 /**
- * StockAdjustmentPrint.tsx — A4 printable Stock Adjustment voucher.
+ * @file     StockAdjustmentPrint.tsx
+ * @purpose  A4 printable Stock Adjustment voucher.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.3a · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   T10-pre.2b.3a (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH) · Usability (HIGH) · Maintainability (HIGH)
+ * @whom     Stores (warehouse adjustment trail)
+ * @depends  stock-adjustment-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -11,6 +18,7 @@ import {
   type StockAdjustmentPrintPayload,
 } from '@/lib/stock-adjustment-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 export function StockAdjustmentPrintPanel() {
   const [params] = useSearchParams();
@@ -25,11 +33,14 @@ export function StockAdjustmentPrintPanel() {
     const voucher = loadVoucher(entityCode, voucherId);
     if (!voucher) return;
     const gst = loadEntityGst(entityCode);
-    setPayload(buildStockAdjustmentPrintPayload(voucher, gst, copyKey));
+    // [Convergent] Load print config for this entity; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
+    setPayload(buildStockAdjustmentPrintPayload(voucher, gst, copyKey, printConfig));
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
     if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
+    const t = payload.resolved_toggles;
     return (
       <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">
@@ -37,6 +48,12 @@ export function StockAdjustmentPrintPanel() {
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Entity</div>
             <div className="font-semibold text-[13px]">{payload.supplier.legal_name}</div>
             <div className="text-muted-foreground text-[10px]">{payload.supplier_address}</div>
+            {t.showHeaderGstin && payload.supplier.gstin && (
+              <div className="font-mono text-[10px]">GSTIN: {payload.supplier.gstin}</div>
+            )}
+            {t.showHeaderPan && payload.supplier.pan && (
+              <div className="font-mono text-[10px]">PAN: {payload.supplier.pan}</div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
             <div className="text-muted-foreground">SA No</div>
@@ -63,7 +80,7 @@ export function StockAdjustmentPrintPanel() {
             <tr className="bg-muted/50">
               <th className="border border-border p-1.5 text-left">#</th>
               <th className="border border-border p-1.5 text-left">Item</th>
-              <th className="border border-border p-1.5 text-left">Godown</th>
+              {t.showGodown && <th className="border border-border p-1.5 text-left">Godown</th>}
               <th className="border border-border p-1.5 text-left">Direction</th>
               <th className="border border-border p-1.5 text-right">Qty</th>
               <th className="border border-border p-1.5 text-left">UOM</th>
@@ -75,7 +92,7 @@ export function StockAdjustmentPrintPanel() {
               <tr key={`sa-${l.sl_no}`}>
                 <td className="border border-border p-1.5">{l.sl_no}</td>
                 <td className="border border-border p-1.5">{l.item_name}</td>
-                <td className="border border-border p-1.5">{l.godown}</td>
+                {t.showGodown && <td className="border border-border p-1.5">{l.godown}</td>}
                 <td className="border border-border p-1.5">
                   <span className={l.direction === 'Write-Off' ? 'text-destructive font-semibold' : 'text-success font-semibold'}>
                     {l.direction}
@@ -98,19 +115,21 @@ export function StockAdjustmentPrintPanel() {
           </div>
         </div>
 
-        {payload.narration && (
+        {t.showNarration && payload.narration && (
           <div className="mt-3 text-[10px]">
             <span className="text-muted-foreground uppercase tracking-wider text-[9px]">Narration: </span>
             {payload.narration}
           </div>
         )}
 
-        <div className="mt-10 flex justify-end text-[10px]">
-          <div className="text-right">
-            <div className="border-t border-border pt-1 w-48">{payload.authorised_signatory}</div>
-            <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+        {t.showAuthorisedSignatory && (
+          <div className="mt-10 flex justify-end text-[10px]">
+            <div className="text-right">
+              <div className="border-t border-border pt-1 w-48">{payload.authorised_signatory}</div>
+              <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+            </div>
           </div>
-        </div>
+        )}
       </>
     );
   }, [payload]);

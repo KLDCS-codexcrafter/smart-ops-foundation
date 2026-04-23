@@ -1,9 +1,12 @@
 /**
- * PurchaseInvoicePrint.tsx — A4 internal copy of Purchase Invoice.
- *
- * This is NOT a legal tax invoice — that's the vendor's doc. This is an
- * internal accounts/audit trail copy showing our posting of the vendor's
- * bill (including ITC claim, PO match, RCM flag).
+ * @file     PurchaseInvoicePrint.tsx
+ * @purpose  A4 internal copy of Purchase Invoice (audit trail of vendor bill posting).
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created T10-pre.2b.2 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   T10-pre.2b.2 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH — 14 applicable toggles honored) · Usability (HIGH) · Maintainability (HIGH)
+ * @whom     Accountant (internal copy)
+ * @depends  purchase-print-engine.ts · print-config-storage.ts · print-render-helpers.ts · PrintSheetFrame
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -15,6 +18,7 @@ import {
   type PurchasePrintPayload,
 } from '@/lib/purchase-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 export function PurchaseInvoicePrintPanel() {
   const [params] = useSearchParams();
@@ -29,13 +33,16 @@ export function PurchaseInvoicePrintPanel() {
     const voucher = loadVoucher(entityCode, voucherId);
     if (!voucher) return;
     const gst = loadEntityGst(entityCode);
-    setPayload(buildPurchasePrintPayload(voucher, gst, copyKey));
+    // [Convergent] Load print config for this entity; engine resolves toggles into payload.resolved_toggles.
+    const printConfig = loadPrintConfig(entityCode);
+    setPayload(buildPurchasePrintPayload(voucher, gst, copyKey, printConfig));
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
     if (!payload) return (
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     );
+    const t = payload.resolved_toggles;
 
     return (
       <>
@@ -44,8 +51,11 @@ export function PurchaseInvoicePrintPanel() {
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Buyer</div>
             <div className="font-semibold text-[13px]">{payload.buyer.legal_name}</div>
             <div className="text-muted-foreground text-[10px]">{payload.buyer_address}</div>
-            {payload.buyer.gstin && (
+            {t.showHeaderGstin && payload.buyer.gstin && (
               <div className="font-mono text-[10px]">GSTIN: {payload.buyer.gstin}</div>
+            )}
+            {t.showHeaderPan && payload.buyer.pan && (
+              <div className="font-mono text-[10px]">PAN: {payload.buyer.pan}</div>
             )}
           </div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
@@ -63,20 +73,28 @@ export function PurchaseInvoicePrintPanel() {
                 <div className="font-mono text-right">{payload.po_ref}</div>
               </>
             )}
-            <div className="text-muted-foreground">Place of Supply</div>
-            <div className="font-mono text-right">{payload.place_of_supply}</div>
-            <div className="text-muted-foreground">RCM Applicable</div>
-            <div className="text-right">{payload.is_rcm ? 'Yes' : 'No'}</div>
+            {t.showPlaceOfSupply && (
+              <>
+                <div className="text-muted-foreground">Place of Supply</div>
+                <div className="font-mono text-right">{payload.place_of_supply}</div>
+              </>
+            )}
+            {t.showReverseChargeFlag && (
+              <>
+                <div className="text-muted-foreground">RCM Applicable</div>
+                <div className="text-right">{payload.is_rcm ? 'Yes' : 'No'}</div>
+              </>
+            )}
           </div>
         </div>
 
         <div className="mt-3 border-t border-border pt-3 text-[11px]">
           <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Vendor (Supplier)</div>
           <div className="font-semibold text-[13px]">{payload.vendor_name || '—'}</div>
-          {payload.vendor_gstin && (
+          {t.showHeaderGstin && payload.vendor_gstin && (
             <div className="font-mono text-[10px]">GSTIN: {payload.vendor_gstin}</div>
           )}
-          {payload.vendor_state && (
+          {t.showHeaderStateCode && payload.vendor_state && (
             <div className="text-[10px]">State Code: <span className="font-mono">{payload.vendor_state}</span></div>
           )}
         </div>
@@ -86,9 +104,10 @@ export function PurchaseInvoicePrintPanel() {
             <tr className="bg-muted/50">
               <th className="border border-border p-1.5 text-left">#</th>
               <th className="border border-border p-1.5 text-left">Description</th>
-              <th className="border border-border p-1.5 text-left">HSN</th>
+              {t.showHsnSac && <th className="border border-border p-1.5 text-left">HSN</th>}
               <th className="border border-border p-1.5 text-right">Qty</th>
-              <th className="border border-border p-1.5 text-right">Rate</th>
+              {t.showRate && <th className="border border-border p-1.5 text-right">Rate</th>}
+              {t.showDiscountColumn && <th className="border border-border p-1.5 text-right">Disc</th>}
               <th className="border border-border p-1.5 text-right">Taxable</th>
               <th className="border border-border p-1.5 text-right">CGST</th>
               <th className="border border-border p-1.5 text-right">SGST</th>
@@ -101,9 +120,10 @@ export function PurchaseInvoicePrintPanel() {
               <tr key={`pi-l-${l.sl_no}`}>
                 <td className="border border-border p-1.5">{l.sl_no}</td>
                 <td className="border border-border p-1.5">{l.item_description}</td>
-                <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>
+                {t.showHsnSac && <td className="border border-border p-1.5 font-mono">{l.hsn_sac}</td>}
                 <td className="border border-border p-1.5 text-right font-mono">{l.qty} {l.uom}</td>
-                <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.rate)}</td>
+                {t.showRate && <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.rate)}</td>}
+                {t.showDiscountColumn && <td className="border border-border p-1.5 text-right font-mono">—</td>}
                 <td className="border border-border p-1.5 text-right font-mono">{formatINR(l.taxable_value)}</td>
                 <td className="border border-border p-1.5 text-right font-mono">
                   {l.cgst_amount > 0 ? `${l.cgst_rate}% ${formatINR(l.cgst_amount)}` : '—'}
@@ -122,7 +142,7 @@ export function PurchaseInvoicePrintPanel() {
           </tbody>
         </table>
 
-        {payload.hsn_summary.length > 0 && (
+        {t.showHsnSummary && payload.hsn_summary.length > 0 && (
           <>
             <div className="mt-4 text-[9px] uppercase tracking-wider text-muted-foreground">
               HSN / SAC Summary
@@ -156,9 +176,13 @@ export function PurchaseInvoicePrintPanel() {
 
         <div className="mt-4 border-t border-border pt-2 grid grid-cols-2 gap-4 text-[11px]">
           <div className="flex-1">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
-            <div className="italic">{payload.amount_in_words}</div>
-            {payload.narration && (
+            {t.showAmountInWords && (
+              <>
+                <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Amount in words</div>
+                <div className="italic">{payload.amount_in_words}</div>
+              </>
+            )}
+            {t.showNarration && payload.narration && (
               <div className="mt-2 text-[10px]">
                 <span className="text-muted-foreground uppercase tracking-wider text-[9px]">Narration: </span>
                 {payload.narration}
@@ -182,7 +206,7 @@ export function PurchaseInvoicePrintPanel() {
               <span className="text-muted-foreground">IGST</span>
               <span className="font-mono">{formatINR(payload.total_igst)}</span>
             </div>
-            {payload.round_off !== 0 && (
+            {t.showRoundOff && payload.round_off !== 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Round Off</span>
                 <span className="font-mono">{formatINR(payload.round_off)}</span>
@@ -195,14 +219,23 @@ export function PurchaseInvoicePrintPanel() {
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end text-[10px]">
-          <div className="text-right">
-            <div className="border-t border-border pt-1 w-48">
-              {payload.authorised_signatory}
-            </div>
-            <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+        {t.showTermsAndConditions && (
+          <div className="mt-4 text-[10px]">
+            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Terms &amp; Conditions</div>
+            <div className="text-muted-foreground mt-1">Internal copy. Subject to PO match and ITC eligibility.</div>
           </div>
-        </div>
+        )}
+
+        {t.showAuthorisedSignatory && (
+          <div className="mt-10 flex justify-end text-[10px]">
+            <div className="text-right">
+              <div className="border-t border-border pt-1 w-48">
+                {payload.authorised_signatory}
+              </div>
+              <div className="text-muted-foreground mt-0.5">Authorised Signatory</div>
+            </div>
+          </div>
+        )}
       </>
     );
   }, [payload]);
