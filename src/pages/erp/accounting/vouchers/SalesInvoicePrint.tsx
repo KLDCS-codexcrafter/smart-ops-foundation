@@ -1,10 +1,12 @@
 /**
- * SalesInvoicePrint.tsx — A4 Tax Invoice with IRN + UPI QR
- * Sprint 9. Reads voucher_id from query string, looks up IRN from
- * erp_irn_records_{entityCode}, builds print payload via invoice-print-engine.
- *
- * Triggers window.print(); .no-print elements hidden via @media print CSS.
- * [JWT] GET /api/accounting/vouchers/:id, GET /api/finecore/irn/:voucher_id
+ * @file     SalesInvoicePrint.tsx
+ * @purpose  A4 Tax Invoice — 3-copy (Original/Duplicate/Triplicate) · GST + IRN QR + UPI.
+ * @who      Operix Engineering (Lovable-generated, Claude-audited, Founder-owned)
+ * @when     Created Sprint 9 · Last updated Apr-2026 (T10-pre.2b.3b-B2 — toggle-gating)
+ * @sprint   Sprint 9 (original), T10-pre.2b.3b-B2 (resolved_toggles gating)
+ * @iso      Functional Suitability (HIGH — all 15 applicable toggles honored) · Usability (HIGH — Tally F12 parity) · Maintainability (HIGH)
+ * @whom     Customer (recipient) · Transporter · Supplier (us) · Accountant
+ * @depends  invoice-print-engine.ts · print-config-storage.ts · PrintSheetFrame
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -21,6 +23,7 @@ import {
 import { vouchersKey } from '@/lib/finecore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
