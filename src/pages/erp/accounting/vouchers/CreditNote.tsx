@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send, FileMinus } from 'lucide-react';
+import { Send, FileMinus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
@@ -64,6 +64,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
   const [selectedMemoId, setSelectedMemoId] = useState<string>(fromMemoId ?? '');
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   const [reversalBanner, setReversalBanner] = useState<string | null>(null);
   const [pendingReversalJV, setPendingReversalJV] = useState<{
@@ -213,6 +214,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
       }
 
       toast.success('Credit Note posted');
+      setPostedVoucherId(voucher.id);
     } catch { toast.error('Failed to save'); }
   }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, selectedMemoId]);
 
@@ -242,7 +244,16 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
     setPartyName(''); setPartyId(''); setAgainstInvoice(''); setReasonCode('');
     setInventoryLines([]); setLedgerLines([]); setNarration(''); setSelectedMemoId('');
     setReversalBanner(null); setPendingReversalJV(null);
+    setPostedVoucherId(null);
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/credit-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Credit Note',
@@ -397,6 +408,11 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Credit Note
+          </Button>
+        )}
       </div>
     </div>
     </>

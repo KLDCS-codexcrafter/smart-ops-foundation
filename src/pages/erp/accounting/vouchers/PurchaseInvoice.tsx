@@ -14,7 +14,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronDown, Send, Info, Link2 } from 'lucide-react';
+import { ChevronDown, Send, Info, Link2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
@@ -60,6 +60,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
   const [collapseOpen, setCollapseOpen] = useState(false);
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [advancesOpen, setAdvancesOpen] = useState(false);
   const [againstPO, setAgainstPO] = useState('');
@@ -154,6 +155,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         fulfillOrderLine(againstPO, gstTotals.total);
       }
       toast.success('Purchase Invoice posted');
+      setPostedVoucherId(voucher.id);
     } catch { toast.error('Failed to save'); }
   }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstPO, openPOs, fulfillOrderLine]);
 
@@ -185,7 +187,16 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     setPartyName(''); setVendorBillNo(''); setVendorBillDate('');
     setInventoryLines([]); setLedgerLines([]); setNarration('');
     setLinkedAdvance(null); setAgainstPO('');
+    setPostedVoucherId(null);
   }, []);
+
+  const handlePrint = useCallback(() => {
+    if (!postedVoucherId) return;
+    window.open(
+      `/erp/finecore/purchase-invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      '_blank',
+    );
+  }, [postedVoucherId, entityCode]);
 
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
@@ -338,6 +349,11 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
         <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
         <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
+        {postedVoucherId && (
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Purchase Invoice
+          </Button>
+        )}
       </div>
     </div>
     </>
