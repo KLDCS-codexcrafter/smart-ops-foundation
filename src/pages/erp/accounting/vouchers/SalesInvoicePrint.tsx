@@ -345,38 +345,42 @@ export function SalesInvoicePrintPanel() {
 
         {/* QR codes + IRN block */}
         <div className="grid grid-cols-3 gap-4 mt-5 pt-4 border-t border-border">
-          <div className="text-[10px]">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">e-Invoice IRN</div>
-            {payload.irn ? (
-              <>
-                <div className="font-mono break-all">{payload.irn}</div>
-                <div>Ack No: <span className="font-mono">{payload.irn_ack_no}</span></div>
-                <div>Ack Date: <span className="font-mono">{formatDateTimeIST(payload.irn_ack_date)}</span></div>
-                {ewb && (
-                  <div className="mt-1">EWB: <span className="font-mono">{ewb.ewb_no}</span></div>
-                )}
-                {ewb?.valid_until && (
-                  <div>Valid Until: <span className="font-mono">{formatDDMMMYYYY(ewb.valid_until)}</span></div>
-                )}
-              </>
-            ) : (
-              <div className="text-muted-foreground italic">Not generated</div>
-            )}
-          </div>
-          <div className="flex flex-col items-center text-[10px]">
-            <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Signed QR</div>
-            {payload.signed_qr_url ? (
-              <img
-                src={payload.signed_qr_url}
-                alt="IRN signed QR"
-                className="w-[120px] h-[120px] border border-border"
-              />
-            ) : (
-              <div className="w-[120px] h-[120px] border border-dashed border-border flex items-center justify-center text-[9px] text-muted-foreground text-center">
-                IRN not<br />generated
-              </div>
-            )}
-          </div>
+          {t.showEInvoiceQr && (
+            <div className="text-[10px]">
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">e-Invoice IRN</div>
+              {payload.irn ? (
+                <>
+                  <div className="font-mono break-all">{payload.irn}</div>
+                  <div>Ack No: <span className="font-mono">{payload.irn_ack_no}</span></div>
+                  <div>Ack Date: <span className="font-mono">{formatDateTimeIST(payload.irn_ack_date)}</span></div>
+                  {t.showEwayBillInfo && ewb && (
+                    <div className="mt-1">EWB: <span className="font-mono">{ewb.ewb_no}</span></div>
+                  )}
+                  {t.showEwayBillInfo && ewb?.valid_until && (
+                    <div>Valid Until: <span className="font-mono">{formatDDMMMYYYY(ewb.valid_until)}</span></div>
+                  )}
+                </>
+              ) : (
+                <div className="text-muted-foreground italic">Not generated</div>
+              )}
+            </div>
+          )}
+          {t.showEInvoiceQr && (
+            <div className="flex flex-col items-center text-[10px]">
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Signed QR</div>
+              {payload.signed_qr_url ? (
+                <img
+                  src={payload.signed_qr_url}
+                  alt="IRN signed QR"
+                  className="w-[120px] h-[120px] border border-border"
+                />
+              ) : (
+                <div className="w-[120px] h-[120px] border border-dashed border-border flex items-center justify-center text-[9px] text-muted-foreground text-center">
+                  IRN not<br />generated
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex flex-col items-center text-[10px]">
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">Pay via UPI</div>
             {payload.payment_qr_url ? (
