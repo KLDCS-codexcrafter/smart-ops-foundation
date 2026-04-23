@@ -162,6 +162,7 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
         total: 0,
         gst_type: 'non_gst',
         gst_source: 'none',
+        reason_code: l.reason,
       }));
 
       const ledgerLines: VoucherLedgerLine[] = [];
