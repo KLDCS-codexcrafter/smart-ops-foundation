@@ -42,6 +42,14 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
   'fc-fa-register', 'fc-fa-master', 'fc-fa-depreciation',
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
+  // [T10-pre.2d-B] 13 voucher-type registers
+  'fc-rpt-sales-register', 'fc-rpt-purchase-register',
+  'fc-rpt-receipt-register', 'fc-rpt-payment-register',
+  'fc-rpt-contra-register', 'fc-rpt-journal-register',
+  'fc-rpt-credit-note-register', 'fc-rpt-debit-note-register',
+  'fc-rpt-delivery-note-register', 'fc-rpt-receipt-note-register',
+  'fc-rpt-stock-adjustment-register', 'fc-rpt-stock-journal-register',
+  'fc-rpt-stock-transfer-register',
 ];
 
 interface SidebarItem {
@@ -112,6 +120,23 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-26q', label: 'Form 26Q (Non-salary)', icon: FileText },
   { id: 'fc-rpt-27q', label: 'Form 27Q (NRI)', icon: Globe },
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
+];
+
+// [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
+const REGISTER_ITEMS: SidebarItem[] = [
+  { id: 'fc-rpt-sales-register',            label: 'Sales Register',           icon: Receipt },
+  { id: 'fc-rpt-purchase-register',         label: 'Purchase Register',        icon: Truck },
+  { id: 'fc-rpt-receipt-register',          label: 'Receipt Register',         icon: Wallet },
+  { id: 'fc-rpt-payment-register',          label: 'Payment Register',         icon: CreditCard },
+  { id: 'fc-rpt-contra-register',           label: 'Contra Register',          icon: ArrowLeftRight },
+  { id: 'fc-rpt-journal-register',          label: 'Journal Register',         icon: BookOpen },
+  { id: 'fc-rpt-credit-note-register',      label: 'Credit Note Register',     icon: FileMinus },
+  { id: 'fc-rpt-debit-note-register',       label: 'Debit Note Register',      icon: FileCheck },
+  { id: 'fc-rpt-delivery-note-register',    label: 'Delivery Note Register',   icon: Truck },
+  { id: 'fc-rpt-receipt-note-register',     label: 'Receipt Note Register',    icon: PackageOpen },
+  { id: 'fc-rpt-stock-adjustment-register', label: 'Stock Adjustment Register',icon: Package },
+  { id: 'fc-rpt-stock-journal-register',    label: 'Stock Journal Register',   icon: ClipboardList },
+  { id: 'fc-rpt-stock-transfer-register',   label: 'Stock Transfer Register',  icon: ArrowLeftRight },
 ];
 
 const GST_ITEMS: SidebarItem[] = [
