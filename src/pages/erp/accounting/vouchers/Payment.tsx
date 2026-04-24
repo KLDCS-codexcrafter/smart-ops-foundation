@@ -212,6 +212,26 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     if (!partyName) { toast.error('Vendor is required'); return; }
     if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
+
+    // T-H1.5-D-D3: Pre-post duplicate detection.
+    // Heuristic: same party + amount ±₹0.50 + date ±3 days.
+    // Override flag is set ONLY by explicit "Post Anyway" click and resets on
+    // amount/party change (see useEffect above).
+    const partyIdResolved = selectedVendor?.id ?? partyId;
+    if (partyIdResolved && !dupOverrideAcknowledged) {
+      const hits = detectDuplicatePayments({
+        partyId: partyIdResolved,
+        amount,
+        date,
+        entityCode,
+      });
+      if (hits.length > 0) {
+        setDupHits(hits);
+        setDupWarningOpen(true);
+        return;
+      }
+    }
+
     setSaving(true);
     const now = new Date().toISOString();
     const billRefs: BillReference[] = paymentPurpose === 'advance'
