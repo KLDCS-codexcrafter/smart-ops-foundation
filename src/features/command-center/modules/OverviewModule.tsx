@@ -9,6 +9,7 @@ import type { CommandCenterModule } from '../pages/CommandCenterPage';
 import { computeAllZones, isConfigured, ZONE_DEFINITIONS } from '../components/ZoneProgressResolver';
 import { RecentActivityStrip } from '../components/RecentActivityStrip';
 import { PendingActionsList } from '../components/PendingActionsList';
+import { EMIDashboardWidget } from '@/features/loan-emi/components/EMIDashboardWidget';
 
 interface OverviewModuleProps {
   onNavigate: (module: CommandCenterModule) => void;
