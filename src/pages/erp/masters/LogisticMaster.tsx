@@ -1250,7 +1250,10 @@ export function LogisticMasterPanel() {
           </button>
         </div>
       </div>
-      {filtered.length === 0 ? (
+      {/* S5 — Tree or Table */}
+      {viewMode === 'tree' ? (
+        <LogisticTreeBranch logistics={filtered} onLeafClick={openEdit} />
+      ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <Truck className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p className="text-sm font-medium">No logistic parties yet</p>
