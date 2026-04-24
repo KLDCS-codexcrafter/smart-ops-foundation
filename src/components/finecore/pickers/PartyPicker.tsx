@@ -50,11 +50,26 @@ export interface PartyPickerRow {
 
 export type PartyMode = 'customer' | 'vendor' | 'borrowing' | 'both';
 
-interface PartyPickerProps {
+/**
+ * Maps a PartyMode literal to the `_partyType` discriminant rows it can yield.
+ * T-H1.5-D-D3: lets existing call sites (Receipt mode='customer', JournalEntry
+ * mode='both') keep their narrower setState typings without modification.
+ */
+type PartyTypeForMode<M extends PartyMode> =
+  M extends 'customer' ? 'customer'
+  : M extends 'vendor' ? 'vendor'
+  : M extends 'borrowing' ? 'borrowing'
+  : 'customer' | 'vendor';
+
+export type PartyPickerRowFor<M extends PartyMode> = Omit<PartyPickerRow, '_partyType'> & {
+  _partyType: PartyTypeForMode<M>;
+};
+
+interface PartyPickerProps<M extends PartyMode> {
   value: string;
-  onChange: (row: PartyPickerRow | null) => void;
+  onChange: (row: PartyPickerRowFor<M> | null) => void;
   entityCode: string;
-  mode: PartyMode;
+  mode: M;
   placeholder?: string;
   disabled?: boolean;
   id?: string;
