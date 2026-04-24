@@ -33,6 +33,11 @@ import {
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import { onEnterNext } from '@/lib/keyboard';
+import {
+  BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
@@ -53,14 +58,7 @@ const STEPS = [
   { id: 7, title: 'Audit Trail', description: 'Change history' },
 ];
 
-const BUSINESS_ENTITIES = ['Private Limited', 'Public Limited', 'LLP', 'OPC',
-  'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society'];
-const INDUSTRIES = ['Technology', 'Manufacturing', 'Trading', 'Retail', 'Healthcare',
-  'Finance', 'Education', 'Real Estate', 'Logistics', 'Consulting',
-  'Food & Beverage', 'Textile', 'Pharma', 'Construction', 'Agriculture',
-  'Energy', 'Media', 'Others'];
-const BUSINESS_ACTIVITIES = ['Manufacturing', 'Trading', 'Services', 'Import / Export',
-  'E-Commerce', 'Distribution', 'IT Services', 'Consulting', 'Others'];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Australia',
   'Canada', 'Singapore', 'Germany', 'UAE', 'Japan', 'Others'];
 const ISD_CODES = ['+91', '+1', '+44', '+61', '+65', '+49', '+971', '+81', '+86'];
