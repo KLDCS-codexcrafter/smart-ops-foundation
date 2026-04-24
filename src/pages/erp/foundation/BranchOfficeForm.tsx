@@ -453,8 +453,10 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
       shortCode={form.shortCode}
       entityType="branch"
       businessEntity="Branch Office"
-      industry={form.branchType ?? 'Others'}
-      businessActivity={form.businessActivity}
+      industry={form.industry ? getSectorLabel(form.industry) : (form.branchType ?? 'Others')}
+      businessActivity={form.businessActivity === 'others' && form.businessActivityCustom
+        ? form.businessActivityCustom
+        : getActivityLabel(form.industry, form.businessActivity)}
       onComplete={(result) => {
         toast.success(`${form.name} is ready. ${result.ledgersCreated} ledgers created.`);
         navigate('/erp/foundation/branch-offices');
