@@ -244,7 +244,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       entity_id: entityCode, date,
       effective_date: effectiveDate || date,
       ref_no: refNo || undefined, ref_date: refDate || undefined,
-      party_id: selectedVendor?.id ?? '',
+      party_id: partyId,
       party_name: partyName, ref_voucher_no: '',
       vendor_bill_no: '', net_amount: netPayment, narration,
       terms_conditions: '', payment_enforcement: '',
