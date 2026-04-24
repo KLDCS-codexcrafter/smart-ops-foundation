@@ -275,17 +275,19 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
   return newId;
 }
 
-/** Convenience: resolves all 8 at engine run-start. */
+/** Convenience: resolves all 10 at engine run-start. */
 export function resolveAllExpenseLedgers(): Record<ExpenseLedgerKind, string> {
   return {
-    interest_expense:       resolveExpenseLedger('interest_expense'),
-    penal_interest_expense: resolveExpenseLedger('penal_interest_expense'),
-    bank_charges:           resolveExpenseLedger('bank_charges'),
-    processing_fee_expense: resolveExpenseLedger('processing_fee_expense'),
-    tds_payable:            resolveExpenseLedger('tds_payable'),
-    input_cgst:             resolveExpenseLedger('input_cgst'),
-    input_sgst:             resolveExpenseLedger('input_sgst'),
-    input_igst:             resolveExpenseLedger('input_igst'),
+    interest_expense:              resolveExpenseLedger('interest_expense'),
+    penal_interest_expense:        resolveExpenseLedger('penal_interest_expense'),
+    bank_charges:                  resolveExpenseLedger('bank_charges'),
+    processing_fee_expense:        resolveExpenseLedger('processing_fee_expense'),
+    tds_payable:                   resolveExpenseLedger('tds_payable'),
+    input_cgst:                    resolveExpenseLedger('input_cgst'),
+    input_sgst:                    resolveExpenseLedger('input_sgst'),
+    input_igst:                    resolveExpenseLedger('input_igst'),
+    interest_receivable_advances:  resolveExpenseLedger('interest_receivable_advances'),
+    notional_interest_income:      resolveExpenseLedger('notional_interest_income'),
   };
 }
 
