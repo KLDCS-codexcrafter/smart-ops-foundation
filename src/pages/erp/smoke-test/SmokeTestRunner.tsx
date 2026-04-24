@@ -220,10 +220,39 @@ const CHECKS: CheckSpec[] = [
   { id: 'cm-8', section: 'Customer Master (S4)', name: 'Deprecated fields retained (referredBy/associatedDealer/otherReference)',
     run: () => {
       const arr = readArray('erp_group_customer_master') as Array<Record<string, unknown>>;
-      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
-      const bad = arr.filter(c =>
-        !('referredBy' in c) || !('associatedDealer' in c) || !('otherReference' in c)).length;
+      const bad = arr.filter(c => !('referredBy' in c) || !('associatedDealer' in c) || !('otherReference' in c)).length;
       return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers missing deprecated fields` };
+    } },
+
+  // Customer Intelligence Layer (S4.5)
+  { id: 'cm-kpi-1', section: 'Customer Intelligence (S4.5)',
+    name: 'KPI engine returns finite numbers for seeded customer',
+    run: (e) => {
+      const customers = readArray('erp_group_customer_master') as Array<{ id?: string }>;
+      if (customers.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const first = customers[0].id;
+      if (!first) return { actual: 'missing id', expected: 'id', pass: false, details: 'First customer has no id' };
+      const kpi = computeCustomerKPIs(first, e);
+      const allFinite = [kpi.revenueMTD, kpi.revenueYTD, kpi.lifetimeRevenue, kpi.outstandingAmount, kpi.daysSalesOutstanding].every(Number.isFinite);
+      return { actual: allFinite ? 'ok' : 'NaN detected', expected: 'all finite', pass: allFinite, details: JSON.stringify(kpi) };
+    } },
+  { id: 'cm-kpi-2', section: 'Customer Intelligence (S4.5)',
+    name: 'Cross-sell finder returns array (never null/undefined)',
+    run: () => {
+      const out = findCrossSellCandidates({ customers: [], kpis: new Map() });
+      return { actual: Array.isArray(out) ? 'array' : 'not-array', expected: 'array', pass: Array.isArray(out), details: `length=${out.length}` };
+    } },
+  { id: 'cm-kpi-3', section: 'Customer Intelligence (S4.5)',
+    name: 'KPI healthStatus enum correct',
+    run: (e) => {
+      const customers = readArray('erp_group_customer_master') as Array<{ id?: string }>;
+      if (customers.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const allOk = customers.slice(0, 10).every(c => {
+        if (!c.id) return false;
+        const kpi = computeCustomerKPIs(c.id, e);
+        return ['green', 'amber', 'red', 'new'].includes(kpi.healthStatus);
+      });
+      return { actual: allOk ? 'ok' : 'bad enum', expected: 'valid', pass: allOk, details: 'Sampled first 10' };
     } },
 ];
 
