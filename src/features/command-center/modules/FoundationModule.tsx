@@ -84,6 +84,13 @@ export function FoundationModule() {
     return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
   } catch { return 0; } })();
 
+  // T-H1.5-C-S1 (CC-020) — Business Units Master count.
+  // Storage key confirmed in BusinessUnitMaster.tsx:81 (erp_group_business_unit_master).
+  const buCount = (() => { try {
+    // [JWT] GET /api/foundation/business-units
+    return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
+  } catch { return 0; } })();
+
   return (
     <div className="space-y-6">
       <div>
