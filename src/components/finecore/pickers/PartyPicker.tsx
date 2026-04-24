@@ -125,10 +125,10 @@ function loadParties(_entityCode: string, mode: PartyMode): PartyPickerRow[] {
   return out;
 }
 
-export function PartyPicker({
+export function PartyPicker<M extends PartyMode>({
   value, onChange, entityCode, mode,
   placeholder, disabled, id, compact, allowCreate = true,
-}: PartyPickerProps) {
+}: PartyPickerProps<M>) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
@@ -147,16 +147,20 @@ export function PartyPicker({
   const selected = useMemo(() => parties.find(p => p.id === value), [parties, value]);
 
   const handleSelect = useCallback((p: PartyPickerRow) => {
-    onChange(p);
+    onChange(p as PartyPickerRowFor<M>);
     setOpen(false);
     setSearch('');
   }, [onChange]);
 
   const defaultPlaceholder = mode === 'customer' ? 'Select customer'
     : mode === 'vendor' ? 'Select vendor'
+    : mode === 'borrowing' ? 'Select loan/borrowing'
     : 'Select party';
 
   const createType: 'customer' | 'vendor' = mode === 'vendor' ? 'vendor' : 'customer';
+  // T-H1.5-D-D3: borrowing mode cannot inline-create — InlineMasterCreate has no
+  // 'borrowing' branch and we will not fork it. Direct users to LedgerMaster.
+  const effectiveAllowCreate = mode === 'borrowing' ? false : allowCreate;
 
   return (
     <>
