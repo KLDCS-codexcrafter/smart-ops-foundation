@@ -487,15 +487,36 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
             </Select>
           </FormField>
           <FormField label="Industry / Sector" required>
-            <Select value={f('industry')} onValueChange={v => upd('industry', v)}>
+            <Select value={f('industry')} onValueChange={v => { upd('industry', v); upd('businessActivity', ''); upd('businessActivityCustom', ''); }}>
               <SelectTrigger className="text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
-              <SelectContent>{INDUSTRIES.map(i => <SelectItem key={i} value={i}><span className="text-xs">{i}</span></SelectItem>)}</SelectContent>
+              <SelectContent>{INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}</SelectContent>
             </Select>
           </FormField>
-          <FormField label="Business Activity" required>
-            <Select value={f('businessActivity')} onValueChange={v => upd('businessActivity', v)}>
-              <SelectTrigger className="text-xs"><SelectValue placeholder="Select activity" /></SelectTrigger>
-              <SelectContent>{BUSINESS_ACTIVITIES.map(a => <SelectItem key={a} value={a}><span className="text-xs">{a}</span></SelectItem>)}</SelectContent>
+          <FormField label="Business Activity" required hint={!f('industry') ? 'Select industry first' : undefined}>
+            <Select value={f('businessActivity')} onValueChange={v => upd('businessActivity', v)} disabled={!f('industry')}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder={f('industry') ? 'Select activity' : 'Select industry first'} /></SelectTrigger>
+              <SelectContent>{getActivitiesForSector(f('industry') as string).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}</SelectContent>
+            </Select>
+            {f('businessActivity') === 'others' && (
+              <Input
+                value={f('businessActivityCustom') as string}
+                onChange={e => upd('businessActivityCustom', e.target.value)}
+                placeholder="e.g. Specialty Jewellery Retail"
+                className="text-xs mt-1.5"
+                maxLength={80}
+              />
+            )}
+          </FormField>
+          <FormField label="Operating Scale" hint="Commercial tier — guidance only, NOT MSME classification">
+            <Select value={f('operatingScale') as string} onValueChange={v => upd('operatingScale', v as OperatingScale)}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+              <SelectContent>
+                {OPERATING_SCALES.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </FormField>
           <FormField label="Parent Company" required>
