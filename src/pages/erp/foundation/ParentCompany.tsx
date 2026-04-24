@@ -121,6 +121,8 @@ const INITIAL_FORM = {
   hasCIN: false,
   legalEntityName: '', tradingBrandName: '', shortCode: '',
   businessEntity: '', industry: '', businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '' as OperatingScale | '',
   hqAddress: '', hqCountry: 'India', hqState: '', hqDistrict: '',
   hqCity: '', hqPostalCode: '', hqTimezone: 'Asia/Kolkata', hqLat: '', hqLng: '',
   corpSameAsHq: false, corpAddress: '', corpCountry: '', corpState: '',
