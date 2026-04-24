@@ -118,7 +118,52 @@ export function postBounceCharge(
     const voucherId = `v-bnc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const voucherNo = generateVoucherNo('JV-BNC', entityCode);
     const nowIso = new Date().toISOString();
-    const narration = `Being Cheque Default Charged — EMI #${emiNumber}`;
+
+    // ── T-H1.5-D-D4 — Compute GST split BEFORE voucher construction ──
+    const gstSpec = splitChargeWithGST(ledger, charge);
+
+    const narration = gstSpec.applicable
+      ? `Being Cheque Default Charged — EMI #${emiNumber} (incl. IGST @ ${gstSpec.rateApplied}%)`
+      : `Being Cheque Default Charged — EMI #${emiNumber}`;
+
+    const ledger_lines = [
+      {
+        id: `ll-${Date.now()}-a`,
+        ledger_id: bankLedgerId,
+        ledger_code: bankCode,
+        ledger_name: bankName,
+        ledger_group_code: 'E-FC',
+        dr_amount: charge,                     // base (pre-GST) — accounting principle
+        cr_amount: 0,
+        narration: `Cheque bounce charge — ${ledger.name} — EMI #${emiNumber}`,
+      },
+    ];
+
+    if (gstSpec.applicable && gstSpec.inputIgstLedgerId) {
+      ledger_lines.push({
+        id: `ll-${Date.now()}-b`,
+        ledger_id: gstSpec.inputIgstLedgerId,
+        ledger_code: 'IIGST',
+        ledger_name: 'Input IGST',
+        ledger_group_code: 'ADTAX',
+        dr_amount: gstSpec.igstAmount,
+        cr_amount: 0,
+        narration: `IGST @ ${gstSpec.rateApplied}% on bounce charge`,
+      });
+    }
+
+    ledger_lines.push({
+      id: `ll-${Date.now()}-z`,
+      ledger_id: ledger.id,
+      ledger_code: ledger.code,
+      ledger_name: ledger.name,
+      ledger_group_code: ledger.parentGroupCode,
+      dr_amount: 0,
+      cr_amount: gstSpec.totalWithTax,
+      narration: gstSpec.applicable
+        ? `Bounce charge (incl GST) debited by ${ledger.name}`
+        : `Cheque bounce charge — EMI #${emiNumber}`,
+    });
 
     const voucher: Voucher = {
       id: voucherId,
@@ -131,38 +176,17 @@ export function postBounceCharge(
       effective_date: bouncedDate,
       party_id: ledger.id,
       party_name: ledger.name,
-      ledger_lines: [
-        {
-          id: `ll-${Date.now()}-a`,
-          ledger_id: bankLedgerId,
-          ledger_code: bankCode,
-          ledger_name: bankName,
-          ledger_group_code: 'E-FC',
-          dr_amount: charge,
-          cr_amount: 0,
-          narration: `Cheque bounce charge — ${ledger.name} — EMI #${emiNumber}`,
-        },
-        {
-          id: `ll-${Date.now()}-b`,
-          ledger_id: ledger.id,
-          ledger_code: ledger.code,
-          ledger_name: ledger.name,
-          ledger_group_code: ledger.parentGroupCode,
-          dr_amount: 0,
-          cr_amount: charge,
-          narration: `Cheque bounce charge — EMI #${emiNumber}`,
-        },
-      ],
-      gross_amount: charge,
+      ledger_lines,
+      gross_amount: gstSpec.totalWithTax,
       total_discount: 0,
-      total_taxable: 0,
+      total_taxable: gstSpec.applicable ? gstSpec.baseAmount : 0,
       total_cgst: 0,
       total_sgst: 0,
-      total_igst: 0,
+      total_igst: gstSpec.igstAmount,
       total_cess: 0,
-      total_tax: 0,
+      total_tax: gstSpec.igstAmount,
       round_off: 0,
-      net_amount: charge,
+      net_amount: gstSpec.totalWithTax,
       tds_applicable: false,
       narration,
       terms_conditions: '',
@@ -178,7 +202,7 @@ export function postBounceCharge(
     // [JWT] POST /api/accounting/vouchers/post
     postVoucher(voucher, entityCode);
 
-    const newLog = appendLogEntry(ledger.accrualLog, {
+    let nextLog = appendLogEntry(ledger.accrualLog, {
       ledgerId: ledger.id,
       action: 'bounce_charge',
       periodKey,
@@ -190,9 +214,25 @@ export function postBounceCharge(
       reversedByVoucherId: null,
       narration,
     });
-    persistLedger({ ...ledger, accrualLog: newLog });
 
-    return { posted: true, voucherId, voucherNo, amount: charge, skipReason: null };
+    if (gstSpec.applicable) {
+      nextLog = appendLogEntry(nextLog, {
+        ledgerId: ledger.id,
+        action: 'gst_on_charge',
+        periodKey: `${bouncedDate}#${emiNumber}#bounce-gst`,
+        emiNumber,
+        amount: gstSpec.igstAmount,
+        voucherId,
+        voucherNo,
+        postedBy: 'current-user',
+        reversedByVoucherId: null,
+        narration: `IGST ₹${gstSpec.igstAmount.toFixed(2)} on bounce charge — ${ledger.name}`,
+      });
+    }
+
+    persistLedger({ ...ledger, accrualLog: nextLog });
+
+    return { posted: true, voucherId, voucherNo, amount: gstSpec.totalWithTax, skipReason: null };
   } catch (err) {
     return {
       posted: false, voucherId: null, voucherNo: null, amount: 0,
