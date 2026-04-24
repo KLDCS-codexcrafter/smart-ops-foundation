@@ -600,7 +600,9 @@ export function CustomerMasterPanel() {
 
   const renderForm = () => (
     <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2" data-keyboard-form>
-      {/* Section 1 — Party Profile (always visible) */}
+      {/* Section 1 — Party Profile (always visible) — Steps 1 & 2 */}
+      <div id="cm-step-1" />
+      <div id="cm-step-2" />
       <div className="space-y-4">
         <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer Type</Label>
         <div className="grid grid-cols-4 gap-2">
@@ -693,7 +695,8 @@ export function CustomerMasterPanel() {
         </div>
       </div>
 
-      {/* Section 2 — Contacts */}
+      {/* Section 2 — Contacts (Step 3) */}
+      <div id="cm-step-3" />
       <Collapsible open={showContacts} onOpenChange={setShowContacts}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -870,7 +873,9 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 4 — Financial Details (Two-Tier Credit) */}
+      {/* Section 4 — Financial Details (Two-Tier Credit) — Steps 4 & 6 */}
+      <div id="cm-step-4" />
+      <div id="cm-step-6" />
       <Collapsible open={showFinancial} onOpenChange={setShowFinancial}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -1184,7 +1189,8 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 6 — Taxation Details */}
+      {/* Section 6 — Taxation Details (Step 5) */}
+      <div id="cm-step-5" />
       <Collapsible open={showTaxation} onOpenChange={setShowTaxation}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -1309,7 +1315,8 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 7 — Company Info */}
+      {/* Section 7 — Company Info (Step 7) */}
+      <div id="cm-step-7" />
       <Collapsible open={showCompanyInfo} onOpenChange={setShowCompanyInfo}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
