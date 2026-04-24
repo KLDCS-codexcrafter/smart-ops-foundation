@@ -620,6 +620,21 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       />
     </div>
     {GuardDialog}
+    <DuplicatePaymentWarningModal
+      open={dupWarningOpen}
+      hits={dupHits}
+      proposedAmount={amount}
+      proposedPartyName={partyName}
+      proposedDate={date}
+      onCancel={() => { setDupWarningOpen(false); setDupHits([]); }}
+      onConfirmProceed={() => {
+        setDupWarningOpen(false);
+        setDupOverrideAcknowledged(true);
+        // Re-invoke handlePost on next tick now that override is set.
+        // setTimeout(0) ensures state has flushed before re-running validation.
+        setTimeout(() => { void handlePost(); }, 0);
+      }}
+    />
     </>
   );
 }
