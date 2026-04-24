@@ -27,12 +27,18 @@ const ACTION_LABEL: Record<AccrualAction, string> = {
   monthly_interest: 'Monthly Interest',
   penal_daily: 'Penal Daily',
   bounce_charge: 'Bounce Charge',
+  tds_deduction: 'TDS Deducted',
+  gst_on_charge: 'GST on Charge',
+  processing_fee: 'Processing Fee',
 };
 
 const ACTION_TONE: Record<AccrualAction, string> = {
   monthly_interest: 'bg-blue-500/10 text-blue-700 border-blue-500/30',
   penal_daily: 'bg-amber-500/10 text-amber-700 border-amber-500/30',
   bounce_charge: 'bg-red-500/10 text-red-700 border-red-500/30',
+  tds_deduction: 'bg-violet-500/10 text-violet-700 border-violet-500/30',
+  gst_on_charge: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30',
+  processing_fee: 'bg-cyan-500/10 text-cyan-700 border-cyan-500/30',
 };
 
 const fmt = (n: number) =>
