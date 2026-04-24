@@ -351,19 +351,53 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
 
       <Card>
         <CardContent className="pt-5 space-y-4">
+          {/* T-H1.5-D-D3: party type toggle (vendor / borrowing) */}
+          <div>
+            <Label className="text-xs">Party Type</Label>
+            <RadioGroup
+              value={partyMode}
+              onValueChange={(v) => {
+                setPartyMode(v as 'vendor' | 'borrowing');
+                setPartyId(''); setPartyName('');   // reset on mode change
+              }}
+              className="flex gap-4 mt-1"
+            >
+              <div className="flex items-center gap-1.5">
+                <RadioGroupItem value="vendor" id="pm-v" />
+                <Label htmlFor="pm-v" className="text-xs cursor-pointer">Vendor</Label>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <RadioGroupItem value="borrowing" id="pm-b" />
+                <Label htmlFor="pm-b" className="text-xs cursor-pointer">Borrowing / Loan</Label>
+              </div>
+            </RadioGroup>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Party (Vendor) *</Label>
-              <PartyPicker
-                value={partyId}
-                onChange={(row) => {
-                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
-                  else { setPartyId(''); setPartyName(''); }
-                }}
-                entityCode={entityCode}
-                mode="vendor"
-                compact
-              />
+              <Label className="text-xs">{partyMode === 'borrowing' ? 'Loan Ledger *' : 'Party (Vendor) *'}</Label>
+              {partyMode === 'borrowing' ? (
+                <PartyPicker
+                  value={partyId}
+                  onChange={(row) => {
+                    if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                    else { setPartyId(''); setPartyName(''); }
+                  }}
+                  entityCode={entityCode}
+                  mode="borrowing"
+                  compact
+                />
+              ) : (
+                <PartyPicker
+                  value={partyId}
+                  onChange={(row) => {
+                    if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                    else { setPartyId(''); setPartyName(''); }
+                  }}
+                  entityCode={entityCode}
+                  mode="vendor"
+                  compact
+                />
+              )}
             </div>
             <div>
               <Label className="text-xs">Amount (₹) *</Label>
