@@ -109,6 +109,7 @@ function emptyDraft(): BorrowingLedger {
     tdsApplicable: false, tdsSection: '194A',
     gstOnChargesApplicable: true,
     emiScheduleCached: [],
+    emiScheduleLive: [],
     suspendedBy: null, suspendedAt: null, suspendedReason: null,
     reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
   };
