@@ -70,6 +70,7 @@ interface BorrowingLedger {
   gstOnChargesApplicable?: boolean;
   emiScheduleCached?: EMIScheduleRow[];
   emiScheduleLive?: EMIScheduleLiveRow[];   // T-H1.5-D-D1: actionable lifecycle rows
+  accrualLog?: AccrualLogEntry[];           // T-H1.5-D-D2: per-loan posting audit trail
   suspendedBy: string | null;
   suspendedAt: string | null;
   suspendedReason: string | null;
