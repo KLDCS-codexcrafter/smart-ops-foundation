@@ -34,6 +34,15 @@ import {
   INDUSTRY_SECTORS, getActivitiesForSector,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+// ── T-H1.5-C-S4 — Party Master Redesign (tree view + step sidebar + modals) ──
+import {
+  PartyTreeList, PartyStepSidebar,
+  ContactDetailsModal, BankDetailsModal, CompanyInfoModal,
+  BillWiseBreakupModal, CreditScoreBadge,
+  buildPartyTree, useCreditScoring,
+  type BankAccount, type OpeningBill, type PartyLeaf,
+} from '@/features/party-master';
+import { LayoutGrid, List as ListIcon } from 'lucide-react';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -147,6 +156,9 @@ interface CustomerMasterDefinition {
   upstream_customer_id: string | null;
   hierarchy_role: import('@/types/distributor-hierarchy').HierarchyRole | null;
   portal_enabled: boolean;
+  // ── S4 additions (OPTIONAL — backward compatible) ──
+  bankAccounts?: BankAccount[];
+  openingBalanceBills?: OpeningBill[];
 }
 
 // ─── Storage ──────────────────────────────────────────────────
