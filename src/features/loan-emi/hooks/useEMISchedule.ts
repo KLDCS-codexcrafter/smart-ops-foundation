@@ -112,7 +112,20 @@ export function useEMISchedule(ledgerId: string) {
       });
     });
     persistRows(next);
-  }, [storedRows, persistRows]);
+
+    // ── T-H1.5-D-D2: post bank charge (non-blocking on error) ──
+    if (ledger) {
+      const entityCode = ledger.entityShortCode ?? DEFAULT_ENTITY_SHORTCODE;
+      const result = postBounceCharge(ledger.id, emiNumber, bouncedDate, entityCode);
+      if (result.posted) {
+        toast.success(
+          `Bank charge ₹${result.amount.toLocaleString('en-IN')} posted (voucher ${result.voucherNo})`,
+        );
+      } else if (result.skipReason) {
+        toast.info(`No charge posted: ${result.skipReason}`);
+      }
+    }
+  }, [storedRows, persistRows, ledger]);
 
   const addNote = useCallback((emiNumber: number, note: string) => {
     const next = storedRows.map(r => {
