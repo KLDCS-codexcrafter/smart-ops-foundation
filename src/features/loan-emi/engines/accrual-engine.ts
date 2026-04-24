@@ -25,6 +25,7 @@ import {
   appendLogEntry,
   type AccrualLogEntry,
 } from '../lib/accrual-log';
+import { computeTDSForAccrual } from './tds-194a-engine';
 
 const STORAGE_KEY = 'erp_group_ledger_definitions';
 
@@ -40,6 +41,9 @@ interface BorrowingRow {
   status: 'active' | 'suspended';
   emiScheduleLive?: EMIScheduleLiveRow[];
   accrualLog?: AccrualLogEntry[];
+  // ── T-H1.5-D-D4 — TDS 194A flags (optional, set via LoanChargesMaster) ──
+  tdsApplicable?: boolean;
+  tdsSection?: string;
 }
 
 interface RawLedger {
