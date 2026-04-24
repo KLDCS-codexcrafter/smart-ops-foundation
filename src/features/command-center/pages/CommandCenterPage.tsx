@@ -219,6 +219,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-business-unit',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -303,6 +304,11 @@ export default function CommandCenterPage() {
       case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
       case 'finecore-currency': return <CurrencyMasterPanel />;
       case 'finecore-transaction-templates': return <TransactionTemplatesPanel />;
+      // T-H1.5-C-S1 — Supporting masters (CC-017/018/019/020)
+      case 'finecore-mode-of-payment': return <ModeOfPaymentMasterPanel />;
+      case 'finecore-terms-of-payment': return <TermsOfPaymentMasterPanel />;
+      case 'finecore-terms-of-delivery': return <TermsOfDeliveryMasterPanel />;
+      case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
