@@ -184,6 +184,9 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
         upstream_customer_id: c.upstream_customer_id ?? null,
         hierarchy_role: c.hierarchy_role ?? null,
         portal_enabled: c.portal_enabled ?? false,
+        // S4 — backfill new optional arrays
+        bankAccounts: c.bankAccounts ?? [],
+        openingBalanceBills: c.openingBalanceBills ?? [],
       }));
     }
   } catch {}
@@ -277,7 +280,21 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   upstream_customer_id: null,
   hierarchy_role: null,
   portal_enabled: false,
+  // S4 — new optional fields
+  bankAccounts: [],
+  openingBalanceBills: [],
 };
+
+// ─── S4 — 7-Step sidebar definition ───────────────────────────
+const CUSTOMER_STEPS = [
+  { id: 1, title: 'Group & Identity',  description: 'Customer type, GSTIN, legal details' },
+  { id: 2, title: 'GST Auto-Fill',     description: 'Fetch & verify GST profile' },
+  { id: 3, title: 'Contact & Address', description: 'Multi-contact + Bill-To / Ship-To' },
+  { id: 4, title: 'Banking',           description: 'Bank accounts with IFSC auto-fill' },
+  { id: 5, title: 'Compliance',        description: 'GST, TDS, e-Invoice, filing frequency' },
+  { id: 6, title: 'Accounting',        description: 'Credit limits, payment terms, opening balance' },
+  { id: 7, title: 'Classification',    description: 'Sector, activity, scale, sales-force, hierarchy' },
+];
 
 // ─── Panel Component ──────────────────────────────────────────
 
