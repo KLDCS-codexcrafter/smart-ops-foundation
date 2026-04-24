@@ -35,12 +35,16 @@ import {
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
 // ── T-H1.5-C-S4 — Party Master Redesign (tree view + step sidebar + modals) ──
+// ── T-H1.5-C-S4.5 — Customer Intelligence Layer (KPI rollups + cross-sell) ──
 import {
   PartyTreeList, PartyStepSidebar,
   ContactDetailsModal, BankDetailsModal, CompanyInfoModal,
   BillWiseBreakupModal, CreditScoreBadge,
   buildPartyTree, useCreditScoring,
+  CustomerIntelligenceDashboard, KPIBadgeGroup,
+  useCustomerKPIs, rollupFromLeaves,
   type BankAccount, type OpeningBill, type PartyLeaf,
+  type CustomerKPI,
 } from '@/features/party-master';
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
 
