@@ -37,6 +37,11 @@ import { computeAlerts } from '@/features/loan-emi/lib/alert-engine';
 import { computeTDSForAccrual } from '@/features/loan-emi/engines/tds-194a-engine';
 import { splitChargeWithGST } from '@/features/loan-emi/engines/gst-charge-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+// ── T-H1.5-D-D5 imports ──
+import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
+import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
+import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
+import type { AdvanceEntry } from '@/types/compliance';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
