@@ -507,7 +507,7 @@ export default function ParentCompany() {
         <Separator className="my-4" />
         <CompanyProfilePreview data={{
           legalEntityName: form.legalEntityName, tradingBrandName: form.tradingBrandName,
-          businessEntity: form.businessEntity, industry: form.industry,
+          businessEntity: form.businessEntity, industry: getSectorLabel(form.industry),
           hqCity: form.hqCity, hqCountry: form.hqCountry,
           corporateEmail: form.corporateEmail, website: form.website,
           status: form.status, logo: form.logoLeft || form.logoCenter || form.logoRight,
@@ -1247,7 +1247,7 @@ export default function ParentCompany() {
         <p className="text-xs font-semibold text-foreground mb-3">Live Preview</p>
         <CompanyProfilePreview data={{
           legalEntityName: form.legalEntityName, tradingBrandName: form.tradingBrandName,
-          businessEntity: form.businessEntity, industry: form.industry,
+          businessEntity: form.businessEntity, industry: getSectorLabel(form.industry),
           hqCity: form.hqCity, hqCountry: form.hqCountry,
           corporateEmail: form.corporateEmail, website: form.website,
           status: form.status, logo: form.logoLeft || form.logoCenter || form.logoRight,
@@ -1377,8 +1377,10 @@ export default function ParentCompany() {
       shortCode={form.shortCode}
       entityType="parent"
       businessEntity={form.businessEntity}
-      industry={form.industry}
-      businessActivity={form.businessActivity}
+      industry={getSectorLabel(form.industry)}
+      businessActivity={form.businessActivity === 'others' && form.businessActivityCustom
+        ? form.businessActivityCustom
+        : getActivityLabel(form.industry, form.businessActivity)}
       onComplete={(result) => {
         toast.success(`${form.legalEntityName} is ready. ${result.ledgersCreated} ledgers created.`);
       }}
