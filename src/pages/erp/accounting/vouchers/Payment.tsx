@@ -5,7 +5,7 @@
  * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,6 +36,8 @@ import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { detectDuplicatePayments, type DuplicateHit } from '@/features/loan-emi/lib/duplicate-detector';
+import { DuplicatePaymentWarningModal } from '@/features/loan-emi/components/DuplicatePaymentWarningModal';
 
 function ls<T>(key: string): T[] {
   try {
