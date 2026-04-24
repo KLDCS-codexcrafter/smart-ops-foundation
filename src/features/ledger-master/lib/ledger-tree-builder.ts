@@ -40,14 +40,15 @@ export interface LedgerTreeConfig {
   entityField: string;
 }
 
-export function buildLedgerTree<T extends Record<string, unknown>>(
+export function buildLedgerTree<T extends { id: string }>(
   ledgers: T[],
   config: LedgerTreeConfig,
 ): LedgerTreeL1[] {
   const byGroup = new Map<string, { label: string; byEntity: Map<string, LedgerLeaf[]> }>();
 
   for (const l of ledgers) {
-    const groupCodeRaw = l[config.parentGroupField];
+    const rec = l as unknown as Record<string, unknown>;
+    const groupCodeRaw = rec[config.parentGroupField];
     const groupCode = (groupCodeRaw === null || groupCodeRaw === undefined || groupCodeRaw === '')
       ? '__ungrouped__' : String(groupCodeRaw);
     const groupLabel = String(l[config.parentGroupLabelField] ?? 'Ungrouped');
