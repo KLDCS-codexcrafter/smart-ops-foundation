@@ -34,3 +34,13 @@ export {
 export type { PenalPlanItem, PenalRunResult } from './engines/penal-engine';
 export { postBounceCharge } from './engines/bounce-engine';
 export type { BouncePostResult } from './engines/bounce-engine';
+// ── T-H1.5-D-D3 ──
+export { detectDuplicatePayments } from './lib/duplicate-detector';
+export type { DuplicateHit, DuplicateDetectorInput } from './lib/duplicate-detector';
+export { computeAlerts } from './lib/alert-engine';
+export type { EMIAlert, AlertSeverity } from './lib/alert-engine';
+export { useEMIAlerts } from './hooks/useEMIAlerts';
+export type { EMIAlertSummary } from './hooks/useEMIAlerts';
+export { EMICalendar } from './components/EMICalendar';
+export { EMIDashboardWidget } from './components/EMIDashboardWidget';
+export { DuplicatePaymentWarningModal } from './components/DuplicatePaymentWarningModal';

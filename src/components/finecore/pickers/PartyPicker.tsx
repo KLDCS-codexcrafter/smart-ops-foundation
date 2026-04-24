@@ -45,16 +45,31 @@ export interface PartyPickerRow {
     isDefaultShipTo?: boolean;
   }>;
   /** Internal classification — filled by the loader. */
-  _partyType: 'customer' | 'vendor';
+  _partyType: 'customer' | 'vendor' | 'borrowing';
 }
 
-export type PartyMode = 'customer' | 'vendor' | 'both';
+export type PartyMode = 'customer' | 'vendor' | 'borrowing' | 'both';
 
-interface PartyPickerProps {
+/**
+ * Maps a PartyMode literal to the `_partyType` discriminant rows it can yield.
+ * T-H1.5-D-D3: lets existing call sites (Receipt mode='customer', JournalEntry
+ * mode='both') keep their narrower setState typings without modification.
+ */
+type PartyTypeForMode<M extends PartyMode> =
+  M extends 'customer' ? 'customer'
+  : M extends 'vendor' ? 'vendor'
+  : M extends 'borrowing' ? 'borrowing'
+  : 'customer' | 'vendor';
+
+export type PartyPickerRowFor<M extends PartyMode> = Omit<PartyPickerRow, '_partyType'> & {
+  _partyType: PartyTypeForMode<M>;
+};
+
+interface PartyPickerProps<M extends PartyMode> {
   value: string;
-  onChange: (row: PartyPickerRow | null) => void;
+  onChange: (row: PartyPickerRowFor<M> | null) => void;
   entityCode: string;
-  mode: PartyMode;
+  mode: M;
   placeholder?: string;
   disabled?: boolean;
   id?: string;
@@ -81,14 +96,39 @@ function loadParties(_entityCode: string, mode: PartyMode): PartyPickerRow[] {
         out.push(...rows.map(r => ({ ...r, _partyType: 'vendor' as const })));
       }
     }
+    // T-H1.5-D-D3: borrowing mode loads from ledger-definitions
+    if (mode === 'borrowing') {
+      // [JWT] GET /api/accounting/ledger-definitions?type=borrowing
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      if (raw) {
+        const all = JSON.parse(raw) as Array<{
+          id: string;
+          ledgerType?: string;
+          name?: string;
+          code?: string;
+          status?: string;
+        }>;
+        const borrowings = all.filter(l =>
+          l.ledgerType === 'borrowing' && l.status === 'active',
+        );
+        for (const b of borrowings) {
+          out.push({
+            id: b.id,
+            partyName: b.name ?? 'Unnamed Borrowing',
+            partyCode: b.code ?? '',
+            _partyType: 'borrowing',
+          });
+        }
+      }
+    }
   } catch { /* ignore */ }
   return out;
 }
 
-export function PartyPicker({
+export function PartyPicker<M extends PartyMode>({
   value, onChange, entityCode, mode,
   placeholder, disabled, id, compact, allowCreate = true,
-}: PartyPickerProps) {
+}: PartyPickerProps<M>) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
@@ -107,16 +147,20 @@ export function PartyPicker({
   const selected = useMemo(() => parties.find(p => p.id === value), [parties, value]);
 
   const handleSelect = useCallback((p: PartyPickerRow) => {
-    onChange(p);
+    onChange(p as PartyPickerRowFor<M>);
     setOpen(false);
     setSearch('');
   }, [onChange]);
 
   const defaultPlaceholder = mode === 'customer' ? 'Select customer'
     : mode === 'vendor' ? 'Select vendor'
+    : mode === 'borrowing' ? 'Select loan/borrowing'
     : 'Select party';
 
   const createType: 'customer' | 'vendor' = mode === 'vendor' ? 'vendor' : 'customer';
+  // T-H1.5-D-D3: borrowing mode cannot inline-create — InlineMasterCreate has no
+  // 'borrowing' branch and we will not fork it. Direct users to LedgerMaster.
+  const effectiveAllowCreate = mode === 'borrowing' ? false : allowCreate;
 
   return (
     <>
@@ -138,6 +182,7 @@ export function PartyPicker({
               <span className="flex items-center gap-2 truncate">
                 <span className="truncate">{selected.partyName}</span>
                 {selected._partyType === 'vendor' && <Badge variant="outline" className="text-[10px]">Vendor</Badge>}
+                {selected._partyType === 'borrowing' && <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 border-indigo-500/30">Borrowing</Badge>}
                 {selected.credit_hold_mode === 'hard' && (
                   <Badge variant="destructive" className="text-[10px] gap-1">
                     <AlertTriangle className="h-3 w-3" /> Credit Hold
@@ -154,7 +199,7 @@ export function PartyPicker({
             <CommandList className="max-h-[320px]">
               <CommandEmpty className="py-4 text-xs text-muted-foreground">
                 No matching party.
-                {allowCreate && (
+                {effectiveAllowCreate && (
                   <Button variant="link" size="sm" className="ml-1 h-6"
                     onClick={() => {
                       setOpen(false);
@@ -165,6 +210,11 @@ export function PartyPicker({
                     Create "{search}"
                   </Button>
                 )}
+                {mode === 'borrowing' && (
+                  <p className="mt-2 text-[10px] text-muted-foreground">
+                    Create loans via Ledger Master → Borrowing pill.
+                  </p>
+                )}
               </CommandEmpty>
               <CommandGroup>
                 {filtered.map(p => (
@@ -172,7 +222,7 @@ export function PartyPicker({
                     <div className="flex flex-col min-w-0">
                       <span className="truncate text-sm">{p.partyName}</span>
                       <span className="text-[10px] text-muted-foreground truncate">
-                        {p._partyType === 'customer' ? 'Customer' : 'Vendor'}
+                        {p._partyType === 'customer' ? 'Customer' : p._partyType === 'vendor' ? 'Vendor' : 'Borrowing'}
                         {p.gstin && ` · GSTIN ${p.gstin}`}
                         {p.partyCode && ` · ${p.partyCode}`}
                       </span>
@@ -181,7 +231,7 @@ export function PartyPicker({
                   </CommandItem>
                 ))}
               </CommandGroup>
-              {allowCreate && filtered.length > 0 && (
+              {effectiveAllowCreate && filtered.length > 0 && (
                 <div className="p-1 border-t">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs"
                     onClick={() => {
@@ -199,7 +249,7 @@ export function PartyPicker({
         </PopoverContent>
       </Popover>
 
-      {allowCreate && (
+      {effectiveAllowCreate && (
         <InlineMasterCreate
           open={createOpen}
           onOpenChange={setCreateOpen}

@@ -5,7 +5,7 @@
  * VoucherFormFooter, useEntityCode, useTenantConfig.
  * [JWT] All storage via finecore-engine
  */
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,6 +36,8 @@ import { advancesKey } from '@/types/compliance';
 import type { DraftEntry } from '@/components/finecore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { detectDuplicatePayments, type DuplicateHit } from '@/features/loan-emi/lib/duplicate-detector';
+import { DuplicatePaymentWarningModal } from '@/features/loan-emi/components/DuplicatePaymentWarningModal';
 
 function ls<T>(key: string): T[] {
   try {
@@ -92,6 +95,16 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const [saving, setSaving] = useState(false);
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
+
+  // T-H1.5-D-D3: party mode + duplicate-detector state
+  const [partyMode, setPartyMode] = useState<'vendor' | 'borrowing'>('vendor');
+  const [dupHits, setDupHits] = useState<DuplicateHit[]>([]);
+  const [dupWarningOpen, setDupWarningOpen] = useState(false);
+  const [dupOverrideAcknowledged, setDupOverrideAcknowledged] = useState(false);
+
+  // Reset override flag when key fields change so a stale override can never
+  // be reused for a different posting.
+  useEffect(() => { setDupOverrideAcknowledged(false); }, [amount, partyId]);
 
   // Sprint 3B state
   const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
@@ -199,6 +212,26 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     if (!partyName) { toast.error('Vendor is required'); return; }
     if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
+
+    // T-H1.5-D-D3: Pre-post duplicate detection.
+    // Heuristic: same party + amount ±₹0.50 + date ±3 days.
+    // Override flag is set ONLY by explicit "Post Anyway" click and resets on
+    // amount/party change (see useEffect above).
+    const partyIdResolved = selectedVendor?.id ?? partyId;
+    if (partyIdResolved && !dupOverrideAcknowledged) {
+      const hits = detectDuplicatePayments({
+        partyId: partyIdResolved,
+        amount,
+        date,
+        entityCode,
+      });
+      if (hits.length > 0) {
+        setDupHits(hits);
+        setDupWarningOpen(true);
+        return;
+      }
+    }
+
     setSaving(true);
     const now = new Date().toISOString();
     const billRefs: BillReference[] = paymentPurpose === 'advance'
@@ -244,7 +277,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     } finally {
       setSaving(false);
     }
-  }, [partyName, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate]);
+  }, [partyName, partyId, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate, dupOverrideAcknowledged]);
 
   const handleSaveAndNew = useCallback(async () => {
     await handlePost();
@@ -318,19 +351,53 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
 
       <Card>
         <CardContent className="pt-5 space-y-4">
+          {/* T-H1.5-D-D3: party type toggle (vendor / borrowing) */}
+          <div>
+            <Label className="text-xs">Party Type</Label>
+            <RadioGroup
+              value={partyMode}
+              onValueChange={(v) => {
+                setPartyMode(v as 'vendor' | 'borrowing');
+                setPartyId(''); setPartyName('');   // reset on mode change
+              }}
+              className="flex gap-4 mt-1"
+            >
+              <div className="flex items-center gap-1.5">
+                <RadioGroupItem value="vendor" id="pm-v" />
+                <Label htmlFor="pm-v" className="text-xs cursor-pointer">Vendor</Label>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <RadioGroupItem value="borrowing" id="pm-b" />
+                <Label htmlFor="pm-b" className="text-xs cursor-pointer">Borrowing / Loan</Label>
+              </div>
+            </RadioGroup>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs">Party (Vendor) *</Label>
-              <PartyPicker
-                value={partyId}
-                onChange={(row) => {
-                  if (row) { setPartyId(row.id); setPartyName(row.partyName); }
-                  else { setPartyId(''); setPartyName(''); }
-                }}
-                entityCode={entityCode}
-                mode="vendor"
-                compact
-              />
+              <Label className="text-xs">{partyMode === 'borrowing' ? 'Loan Ledger *' : 'Party (Vendor) *'}</Label>
+              {partyMode === 'borrowing' ? (
+                <PartyPicker
+                  value={partyId}
+                  onChange={(row) => {
+                    if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                    else { setPartyId(''); setPartyName(''); }
+                  }}
+                  entityCode={entityCode}
+                  mode="borrowing"
+                  compact
+                />
+              ) : (
+                <PartyPicker
+                  value={partyId}
+                  onChange={(row) => {
+                    if (row) { setPartyId(row.id); setPartyName(row.partyName); }
+                    else { setPartyId(''); setPartyName(''); }
+                  }}
+                  entityCode={entityCode}
+                  mode="vendor"
+                  compact
+                />
+              )}
             </div>
             <div>
               <Label className="text-xs">Amount (₹) *</Label>
@@ -553,6 +620,21 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
       />
     </div>
     {GuardDialog}
+    <DuplicatePaymentWarningModal
+      open={dupWarningOpen}
+      hits={dupHits}
+      proposedAmount={amount}
+      proposedPartyName={partyName}
+      proposedDate={date}
+      onCancel={() => { setDupWarningOpen(false); setDupHits([]); }}
+      onConfirmProceed={() => {
+        setDupWarningOpen(false);
+        setDupOverrideAcknowledged(true);
+        // Re-invoke handlePost on next tick now that override is set.
+        // setTimeout(0) ensures state has flushed before re-running validation.
+        setTimeout(() => { void handlePost(); }, 0);
+      }}
+    />
     </>
   );
 }

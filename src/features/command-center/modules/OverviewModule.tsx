@@ -9,6 +9,7 @@ import type { CommandCenterModule } from '../pages/CommandCenterPage';
 import { computeAllZones, isConfigured, ZONE_DEFINITIONS } from '../components/ZoneProgressResolver';
 import { RecentActivityStrip } from '../components/RecentActivityStrip';
 import { PendingActionsList } from '../components/PendingActionsList';
+import { EMIDashboardWidget } from '@/features/loan-emi/components/EMIDashboardWidget';
 
 interface OverviewModuleProps {
   onNavigate: (module: CommandCenterModule) => void;
@@ -193,6 +194,11 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
 
       {/* CC-008 Recent Activity */}
       <RecentActivityStrip />
+
+      {/* T-H1.5-D-D3: EMI alerts widget — surfaces overdue/due-soon EMIs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <EMIDashboardWidget />
+      </div>
 
       {/* Quick Actions */}
       <div className="glass-card rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
