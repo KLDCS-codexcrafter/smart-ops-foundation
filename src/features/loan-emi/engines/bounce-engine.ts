@@ -23,6 +23,7 @@ import {
   appendLogEntry,
   type AccrualLogEntry,
 } from '../lib/accrual-log';
+import { splitChargeWithGST } from './gst-charge-engine';
 
 const STORAGE_KEY = 'erp_group_ledger_definitions';
 
@@ -35,6 +36,9 @@ interface BorrowingRow {
   chequeBounceCharge?: number;
   emiScheduleLive?: EMIScheduleLiveRow[];
   accrualLog?: AccrualLogEntry[];
+  // ── T-H1.5-D-D4 — GST on charges flags (optional, set via LoanChargesMaster) ──
+  gstOnChargesApplicable?: boolean;
+  processingFeeGst?: number;
 }
 
 interface RawLedger { id: string; ledgerType?: string }
