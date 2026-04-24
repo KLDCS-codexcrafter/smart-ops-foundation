@@ -44,3 +44,12 @@ export type { EMIAlertSummary } from './hooks/useEMIAlerts';
 export { EMICalendar } from './components/EMICalendar';
 export { EMIDashboardWidget } from './components/EMIDashboardWidget';
 export { DuplicatePaymentWarningModal } from './components/DuplicatePaymentWarningModal';
+// ── T-H1.5-D-D4 ──
+export { computeTDSForAccrual } from './engines/tds-194a-engine';
+export type { TDSLineSpec, TDSBorrowingRow } from './engines/tds-194a-engine';
+export { splitChargeWithGST } from './engines/gst-charge-engine';
+export type { GSTSplitLineSpec, GSTBorrowingRow } from './engines/gst-charge-engine';
+export { postProcessingFee } from './engines/processing-fee-engine';
+export type { ProcessingFeePostResult } from './engines/processing-fee-engine';
+export { PostProcessingFeeModal } from './components/PostProcessingFeeModal';
+export { TaxComplianceLog } from './components/TaxComplianceLog';

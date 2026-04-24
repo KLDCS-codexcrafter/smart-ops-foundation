@@ -1,29 +1,27 @@
 /**
- * @file     bounce-engine.ts
- * @purpose  On-demand cheque bounce charge poster. Invoked when a user marks
- *           an EMI bounced via D1's EMIRowActionsMenu. Posts a flat
- *           `chequeBounceCharge` to Bank Charges:
- *             DR Bank Charges   /   CR <Lender>
+ * @file     processing-fee-engine.ts
+ * @purpose  One-shot posting for the upfront loan processing fee at
+ *           disbursement. Produces:
+ *             - 2-leg voucher (no GST): Dr Processing Fee Expense / Cr Lender
+ *             - 3-leg voucher (with GST): Dr Processing Fee Expense
+ *                                         / Dr Input IGST
+ *                                         / Cr Lender (gross + GST)
  *
- *           Idempotency key: '{bouncedDate}#{emiNumber}#bounce'.
- * @sprint   T-H1.5-D-D2
- * @finding  CC-063
+ *           Idempotent via accrualLog periodKey = 'processing-fee' — can only
+ *           post ONCE per loan, by design.
+ * @sprint   T-H1.5-D-D4
+ * @finding  CC-065
  */
 
 import type { Voucher } from '@/types/voucher';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
-import type { EMIScheduleLiveRow } from '../lib/emi-lifecycle-engine';
 import {
   resolveExpenseLedger,
   getLedgerName as resolveLedgerName,
   getLedgerCode as resolveLedgerCode,
 } from '../lib/ledger-resolver';
-import {
-  findDuplicate,
-  appendLogEntry,
-  type AccrualLogEntry,
-} from '../lib/accrual-log';
-import { splitChargeWithGST } from './gst-charge-engine';
+import { findDuplicate, appendLogEntry, type AccrualLogEntry } from '../lib/accrual-log';
+import { splitChargeWithGST, type GSTSplitLineSpec } from './gst-charge-engine';
 
 const STORAGE_KEY = 'erp_group_ledger_definitions';
 
@@ -33,21 +31,21 @@ interface BorrowingRow {
   name: string;
   code: string;
   parentGroupCode: string;
-  chequeBounceCharge?: number;
-  emiScheduleLive?: EMIScheduleLiveRow[];
-  accrualLog?: AccrualLogEntry[];
-  // ── T-H1.5-D-D4 — GST on charges flags (optional, set via LoanChargesMaster) ──
-  gstOnChargesApplicable?: boolean;
+  processingFee?: number;
   processingFeeGst?: number;
+  gstOnChargesApplicable?: boolean;
+  accrualLog?: AccrualLogEntry[];
 }
 
 interface RawLedger { id: string; ledgerType?: string }
 
-export interface BouncePostResult {
+export interface ProcessingFeePostResult {
   posted: boolean;
   voucherId: string | null;
   voucherNo: string | null;
-  amount: number;
+  baseAmount: number;
+  gstAmount: number;
+  totalAmount: number;
   skipReason: string | null;
 }
 
@@ -76,66 +74,66 @@ function persistLedger(updated: BorrowingRow): void {
 }
 
 /**
- * Post a single cheque bounce charge for a specific (ledger, emi, date).
- * Returns posted=false with skipReason for: no ledger, zero charge,
- * or already-posted (idempotency hit).
+ * Posts the one-time processing fee for a loan. Idempotent: subsequent calls
+ * for the same loan return posted=false with skipReason referencing the
+ * existing voucher.
  */
-export function postBounceCharge(
+export function postProcessingFee(
   ledgerId: string,
-  emiNumber: number,
-  bouncedDate: string,
   entityCode: string,
-): BouncePostResult {
+): ProcessingFeePostResult {
   const ledger = readLedgers().find(l => l.id === ledgerId);
   if (!ledger) {
     return {
-      posted: false, voucherId: null, voucherNo: null, amount: 0,
+      posted: false, voucherId: null, voucherNo: null,
+      baseAmount: 0, gstAmount: 0, totalAmount: 0,
       skipReason: 'Borrowing ledger not found',
     };
   }
-  const charge = ledger.chequeBounceCharge ?? 0;
-  if (charge <= 0) {
+  const baseFee = ledger.processingFee ?? 0;
+  if (baseFee <= 0) {
     return {
-      posted: false, voucherId: null, voucherNo: null, amount: 0,
-      skipReason: 'Bounce charge is ₹0 — nothing to post',
+      posted: false, voucherId: null, voucherNo: null,
+      baseAmount: 0, gstAmount: 0, totalAmount: 0,
+      skipReason: 'Processing fee is ₹0 — nothing to post',
     };
   }
 
-  const periodKey = `${bouncedDate}#${emiNumber}#bounce`;
-  const dup = findDuplicate(ledger.accrualLog, ledger.id, 'bounce_charge', periodKey);
+  const periodKey = 'processing-fee';
+  const dup = findDuplicate(ledger.accrualLog, ledger.id, 'processing_fee', periodKey);
   if (dup) {
     return {
-      posted: false, voucherId: dup.voucherId, voucherNo: dup.voucherNo, amount: dup.amount,
+      posted: false, voucherId: dup.voucherId, voucherNo: dup.voucherNo,
+      baseAmount: baseFee, gstAmount: 0, totalAmount: dup.amount,
       skipReason: `Already posted: voucher ${dup.voucherNo}`,
     };
   }
 
-  const bankLedgerId = resolveExpenseLedger('bank_charges');
-  const bankName = resolveLedgerName(bankLedgerId) || 'Bank Charges & Commission';
-  const bankCode = resolveLedgerCode(bankLedgerId) || 'BKCHG';
+  const gstSpec: GSTSplitLineSpec = splitChargeWithGST(ledger, baseFee);
+
+  const pfeLedgerId = resolveExpenseLedger('processing_fee_expense');
+  const pfeName = resolveLedgerName(pfeLedgerId) || 'Loan Processing Fees';
+  const pfeCode = resolveLedgerCode(pfeLedgerId) || 'LPF';
 
   try {
-    const voucherId = `v-bnc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    const voucherNo = generateVoucherNo('JV-BNC', entityCode);
+    const voucherId = `v-pf-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const voucherNo = generateVoucherNo('JV-PF', entityCode);
     const nowIso = new Date().toISOString();
-
-    // ── T-H1.5-D-D4 — Compute GST split BEFORE voucher construction ──
-    const gstSpec = splitChargeWithGST(ledger, charge);
-
+    const today = nowIso.slice(0, 10);
     const narration = gstSpec.applicable
-      ? `Being Cheque Default Charged — EMI #${emiNumber} (incl. IGST @ ${gstSpec.rateApplied}%)`
-      : `Being Cheque Default Charged — EMI #${emiNumber}`;
+      ? `Being Loan Processing Fee for ${ledger.name} (incl. GST @ ${gstSpec.rateApplied}%)`
+      : `Being Loan Processing Fee for ${ledger.name}`;
 
     const ledger_lines = [
       {
         id: `ll-${Date.now()}-a`,
-        ledger_id: bankLedgerId,
-        ledger_code: bankCode,
-        ledger_name: bankName,
+        ledger_id: pfeLedgerId,
+        ledger_code: pfeCode,
+        ledger_name: pfeName,
         ledger_group_code: 'E-FC',
-        dr_amount: charge,                     // base (pre-GST) — accounting principle
+        dr_amount: baseFee,
         cr_amount: 0,
-        narration: `Cheque bounce charge — ${ledger.name} — EMI #${emiNumber}`,
+        narration: `Processing fee — ${ledger.name}`,
       },
     ];
 
@@ -148,7 +146,7 @@ export function postBounceCharge(
         ledger_group_code: 'ADTAX',
         dr_amount: gstSpec.igstAmount,
         cr_amount: 0,
-        narration: `IGST @ ${gstSpec.rateApplied}% on bounce charge`,
+        narration: `Input IGST @ ${gstSpec.rateApplied}% on processing fee`,
       });
     }
 
@@ -161,8 +159,8 @@ export function postBounceCharge(
       dr_amount: 0,
       cr_amount: gstSpec.totalWithTax,
       narration: gstSpec.applicable
-        ? `Bounce charge (incl GST) debited by ${ledger.name}`
-        : `Cheque bounce charge — EMI #${emiNumber}`,
+        ? `Processing fee (incl GST) charged by ${ledger.name}`
+        : `Processing fee charged by ${ledger.name}`,
     });
 
     const voucher: Voucher = {
@@ -172,8 +170,8 @@ export function postBounceCharge(
       voucher_type_name: 'Journal Voucher',
       base_voucher_type: 'Journal',
       entity_id: entityCode,
-      date: bouncedDate,
-      effective_date: bouncedDate,
+      date: today,
+      effective_date: today,
       party_id: ledger.id,
       party_name: ledger.name,
       ledger_lines,
@@ -204,10 +202,10 @@ export function postBounceCharge(
 
     let nextLog = appendLogEntry(ledger.accrualLog, {
       ledgerId: ledger.id,
-      action: 'bounce_charge',
+      action: 'processing_fee',
       periodKey,
-      emiNumber,
-      amount: charge,
+      emiNumber: null,
+      amount: gstSpec.totalWithTax,
       voucherId,
       voucherNo,
       postedBy: 'current-user',
@@ -219,23 +217,32 @@ export function postBounceCharge(
       nextLog = appendLogEntry(nextLog, {
         ledgerId: ledger.id,
         action: 'gst_on_charge',
-        periodKey: `${bouncedDate}#${emiNumber}#bounce-gst`,
-        emiNumber,
+        periodKey: 'processing-fee#gst',
+        emiNumber: null,
         amount: gstSpec.igstAmount,
         voucherId,
         voucherNo,
         postedBy: 'current-user',
         reversedByVoucherId: null,
-        narration: `IGST ₹${gstSpec.igstAmount.toFixed(2)} on bounce charge — ${ledger.name}`,
+        narration: `IGST ₹${gstSpec.igstAmount.toFixed(2)} on processing fee — ${ledger.name}`,
       });
     }
 
     persistLedger({ ...ledger, accrualLog: nextLog });
 
-    return { posted: true, voucherId, voucherNo, amount: gstSpec.totalWithTax, skipReason: null };
+    return {
+      posted: true,
+      voucherId,
+      voucherNo,
+      baseAmount: baseFee,
+      gstAmount: gstSpec.igstAmount,
+      totalAmount: gstSpec.totalWithTax,
+      skipReason: null,
+    };
   } catch (err) {
     return {
-      posted: false, voucherId: null, voucherNo: null, amount: 0,
+      posted: false, voucherId: null, voucherNo: null,
+      baseAmount: baseFee, gstAmount: 0, totalAmount: 0,
       skipReason: err instanceof Error ? err.message : 'Posting failed',
     };
   }

@@ -33,6 +33,10 @@ import { planDailyPenal } from '@/features/loan-emi/engines/penal-engine';
 import { postBounceCharge } from '@/features/loan-emi/engines/bounce-engine';
 import { detectDuplicatePayments } from '@/features/loan-emi/lib/duplicate-detector';
 import { computeAlerts } from '@/features/loan-emi/lib/alert-engine';
+// ── T-H1.5-D-D4 imports ──
+import { computeTDSForAccrual } from '@/features/loan-emi/engines/tds-194a-engine';
+import { splitChargeWithGST } from '@/features/loan-emi/engines/gst-charge-engine';
+import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -781,6 +785,112 @@ const CHECKS: CheckSpec[] = [
       const pass = Array.isArray(alerts) && alerts.length === 0;
       return { actual: `len=${alerts.length}`, expected: 'len=0 for empty input',
         pass, details: 'Base case — no borrowings means no alerts' };
+    } },
+
+  // ── T-H1.5-D-D4 · Tax Compliance on Loan Transactions ──
+  { id: 'd4-1', section: 'D4 TDS 194A Engine',
+    name: 'computeTDSForAccrual skips when tdsApplicable=false',
+    run: () => {
+      const spec = computeTDSForAccrual(
+        { id: 'L1', name: 'Test Loan', tdsApplicable: false },
+        10000, DEFAULT_ENTITY_SHORTCODE,
+      );
+      const pass = spec.applicable === false && spec.tdsAmount === 0
+        && spec.netAmount === 10000;
+      return { actual: `applicable=${spec.applicable}, tds=${spec.tdsAmount}`,
+        expected: 'applicable=false, tds=0',
+        pass, details: 'Non-TDS loan correctly skipped' };
+    } },
+
+  { id: 'd4-2', section: 'D4 TDS 194A Engine',
+    name: 'computeTDSForAccrual applies 10% when tdsApplicable=true and threshold crossed',
+    run: () => {
+      // Ensure TDS sections seed is present (computeTDS reads erp_tds_sections)
+      const tdsKey = 'erp_tds_sections';
+      const existing = localStorage.getItem(tdsKey);
+      if (!existing || existing === '[]') {
+        // [JWT] POST /api/accounting/tds-sections — seed for smoke test
+        localStorage.setItem(tdsKey, JSON.stringify(TDS_SECTIONS));
+      }
+      const spec = computeTDSForAccrual(
+        { id: 'L-test-tds', name: 'Test TDS Loan', tdsApplicable: true, tdsSection: '194A' },
+        50000, DEFAULT_ENTITY_SHORTCODE,
+      );
+      // Single accrual ₹50,000 > ₹40,000 threshold → triggers TDS @ 10% (company)
+      const pass = spec.applicable === true
+        && spec.rate === 10
+        && Math.abs(spec.tdsAmount - 5000) < 0.01
+        && Math.abs(spec.netAmount - 45000) < 0.01;
+      return { actual: `applicable=${spec.applicable}, rate=${spec.rate}, tds=${spec.tdsAmount}`,
+        expected: 'applicable=true, rate=10, tds=5000',
+        pass, details: 'Threshold-crossing interest triggers 10% deduction' };
+    } },
+
+  { id: 'd4-3', section: 'D4 GST Charge Engine',
+    name: 'splitChargeWithGST skips when gstOnChargesApplicable=false',
+    run: () => {
+      const spec = splitChargeWithGST(
+        { id: 'L1', name: 'No GST Loan', gstOnChargesApplicable: false },
+        500,
+      );
+      const pass = spec.applicable === false && spec.totalWithTax === 500
+        && spec.igstAmount === 0;
+      return { actual: `applicable=${spec.applicable}, total=${spec.totalWithTax}`,
+        expected: 'applicable=false, total=500',
+        pass, details: 'No-GST loan correctly skipped' };
+    } },
+
+  { id: 'd4-4', section: 'D4 GST Charge Engine',
+    name: 'splitChargeWithGST applies 18% when applicable',
+    run: () => {
+      const spec = splitChargeWithGST(
+        { id: 'L1', name: 'GST Loan', gstOnChargesApplicable: true, processingFeeGst: 18 },
+        500,
+      );
+      const pass = spec.applicable === true
+        && Math.abs(spec.igstAmount - 90) < 0.01
+        && Math.abs(spec.totalWithTax - 590) < 0.01
+        && spec.mode === 'interstate';
+      return { actual: `igst=${spec.igstAmount}, total=${spec.totalWithTax}, mode=${spec.mode}`,
+        expected: 'igst=90, total=590, mode=interstate',
+        pass, details: '₹500 + 18% IGST = ₹590' };
+    } },
+
+  { id: 'd4-5', section: 'D4 Ledger Resolver Extension',
+    name: 'Resolver creates/finds TDS Payable ledger',
+    run: () => {
+      const id = resolveExpenseLedger('tds_payable');
+      const pass = typeof id === 'string' && id.length > 0;
+      return { actual: `id=${id.slice(0, 25)}...`,
+        expected: 'non-empty string',
+        pass, details: 'Resolver auto-creates if TDS Payable missing in seed' };
+    } },
+
+  { id: 'd4-6', section: 'D4 Ledger Resolver Extension',
+    name: 'Resolver creates/finds Input IGST ledger',
+    run: () => {
+      const id = resolveExpenseLedger('input_igst');
+      const pass = typeof id === 'string' && id.length > 0;
+      return { actual: `id=${id.slice(0, 25)}...`,
+        expected: 'non-empty string',
+        pass, details: 'Input IGST for bounce/processing-fee GST splits' };
+    } },
+
+  { id: 'd4-7', section: 'D4 Accrual Log Extension',
+    name: 'Log dup check works for new tds_deduction action',
+    run: () => {
+      const log: AccrualLogEntry[] = [{
+        id: 'a1', ledgerId: 'L1', action: 'tds_deduction',
+        periodKey: '2026-04#tds', reversedByVoucherId: null,
+        emiNumber: 25, amount: 52, voucherId: 'v1', voucherNo: 'JV-ACCR/0012',
+        postedBy: 'test', narration: 'test', postedAt: '2026-04-03T10:00:00Z',
+      }];
+      const dup = findDuplicate(log, 'L1', 'tds_deduction', '2026-04#tds');
+      const fresh = findDuplicate(log, 'L1', 'tds_deduction', '2026-05#tds');
+      const pass = !!dup && !fresh;
+      return { actual: `dup=${!!dup}, fresh=${!!fresh}`,
+        expected: 'dup=true, fresh=false',
+        pass, details: 'New action types work with existing dup detection' };
     } },
 ];
 

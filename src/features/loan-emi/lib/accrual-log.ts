@@ -10,7 +10,11 @@
 export type AccrualAction =
   | 'monthly_interest'   // Interest Expense Dr / Lender Cr
   | 'penal_daily'        // Penal Interest Expense Dr / Lender Cr
-  | 'bounce_charge';     // Bank Charges Dr / Lender Cr
+  | 'bounce_charge'      // Bank Charges Dr / Lender Cr
+  // ── T-H1.5-D-D4 additions (Tax compliance lines within the same voucher) ──
+  | 'tds_deduction'      // TDS Payable Cr leg of monthly_interest voucher
+  | 'gst_on_charge'      // Input IGST Dr leg of bounce/processing-fee voucher
+  | 'processing_fee';    // One-shot Loan Processing Fees Dr / Lender Cr
 
 export interface AccrualLogEntry {
   id: string;

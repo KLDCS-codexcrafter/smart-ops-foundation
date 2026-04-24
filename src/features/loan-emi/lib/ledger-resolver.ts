@@ -1,34 +1,58 @@
 /**
  * @file     ledger-resolver.ts
- * @purpose  Resolves the 3 Expense ledgers required for D2 postings:
- *             - Interest Expense (monthly accrual)
- *             - Penal Interest Expense (overdue penal charges)
- *             - Bank Charges (cheque bounce charges)
+ * @purpose  Resolves the Expense / Liability / Asset ledgers required for
+ *           D2-D4 postings:
+ *             D2 — Interest Expense, Penal Interest Expense, Bank Charges
+ *             D4 — Processing Fee Expense, TDS Payable u/s 194A,
+ *                   Input CGST, Input SGST, Input IGST
  *           If a ledger doesn't exist, creates it with correct L2/L3 tagging
- *           so Trial Balance / P&L groupings remain correct. Storage key
- *           and ExpenseLedgerDefinition shape mirror LedgerMaster.tsx.
- * @sprint   T-H1.5-D-D2
- * @finding  CC-063
+ *           so Trial Balance / P&L / Balance Sheet groupings remain correct.
+ *           Storage key and ExpenseLedgerDefinition shape mirror LedgerMaster.tsx.
+ *
+ *           NOTE on the type name: `ExpenseLedgerKind` was introduced in D2
+ *           when only Expense ledgers were resolved. D4 widens the resolver
+ *           to cover Liability (TDS Payable) and Asset (Input GSTs). The name
+ *           is preserved to avoid touching D2 callers; semantically read it as
+ *           "any ledger the D-engines might need to resolve".
+ * @sprint   T-H1.5-D-D2 (extended in T-H1.5-D-D4)
+ * @finding  CC-063 (D2) · CC-065 (D4)
  */
 
 const STORAGE_KEY = 'erp_group_ledger_definitions';
 
-export type ExpenseLedgerKind = 'interest_expense' | 'penal_interest_expense' | 'bank_charges';
+export type ExpenseLedgerKind =
+  | 'interest_expense'
+  | 'penal_interest_expense'
+  | 'bank_charges'
+  // ── T-H1.5-D-D4 additions ──
+  | 'processing_fee_expense'
+  | 'tds_payable'
+  | 'input_cgst'
+  | 'input_sgst'
+  | 'input_igst';
+
+type ResolverLedgerType = 'expense' | 'liability' | 'asset';
 
 interface ResolverMeta {
   searchName: RegExp;
   canonName: string;
   codePrefix: string;
+  parentGroupCode: string;
+  parentGroupName: string;
+  ledgerType: ResolverLedgerType;
 }
 
 /**
- * Internal full Expense ledger shape — mirrors ExpenseLedgerDefinition in
+ * Internal full ledger shape — mirrors ExpenseLedgerDefinition in
  * LedgerMaster.tsx (lines 316-349). Auto-creation defaults all unfamiliar
  * fields to safe zero-values so downstream consumers never trip on undefined.
+ *
+ * Note: `ledgerType` may be 'expense' | 'liability' | 'asset' depending on
+ * the resolver kind (TDS Payable is a liability, Input GSTs are assets).
  */
-interface AutoExpenseLedger {
+interface AutoLedger {
   id: string;
-  ledgerType: 'expense';
+  ledgerType: ResolverLedgerType;
   name: string;
   mailingName: string;
   numericCode: string;
@@ -82,24 +106,87 @@ interface MinimalLedgerRow {
 }
 
 const RESOLVER_META: Record<ExpenseLedgerKind, ResolverMeta> = {
-  interest_expense:       { searchName: /^interest (paid|expense)$/i,        canonName: 'Interest Expense',          codePrefix: 'EXP-INTEXP' },
-  penal_interest_expense: { searchName: /^penal interest( expense)?$/i,      canonName: 'Penal Interest Expense',    codePrefix: 'EXP-PENINT' },
-  bank_charges:           { searchName: /^bank charges( & commission)?$/i,   canonName: 'Bank Charges & Commission', codePrefix: 'EXP-BKCHG' },
+  // ── D2 entries (UNCHANGED behaviour; group fields added for uniformity) ──
+  interest_expense: {
+    searchName: /^interest (paid|expense)$/i,
+    canonName: 'Interest Expense',
+    codePrefix: 'EXP-INTEXP',
+    parentGroupCode: 'E-FC',
+    parentGroupName: 'Finance Costs',
+    ledgerType: 'expense',
+  },
+  penal_interest_expense: {
+    searchName: /^penal interest( expense)?$/i,
+    canonName: 'Penal Interest Expense',
+    codePrefix: 'EXP-PENINT',
+    parentGroupCode: 'E-FC',
+    parentGroupName: 'Finance Costs',
+    ledgerType: 'expense',
+  },
+  bank_charges: {
+    searchName: /^bank charges( & commission)?$/i,
+    canonName: 'Bank Charges & Commission',
+    codePrefix: 'EXP-BKCHG',
+    parentGroupCode: 'E-FC',
+    parentGroupName: 'Finance Costs',
+    ledgerType: 'expense',
+  },
+  // ── T-H1.5-D-D4 additions ──
+  processing_fee_expense: {
+    searchName: /^(loan )?processing fees?( expense)?$/i,
+    canonName: 'Loan Processing Fees',
+    codePrefix: 'EXP-LPF',
+    parentGroupCode: 'E-FC',
+    parentGroupName: 'Finance Costs',
+    ledgerType: 'expense',
+  },
+  tds_payable: {
+    searchName: /^tds payable(.*194a)?$/i,
+    canonName: 'TDS Payable u/s 194A',
+    codePrefix: 'LIA-TDS194A',
+    parentGroupCode: 'TDSP',
+    parentGroupName: 'TDS Payable',
+    ledgerType: 'liability',
+  },
+  input_cgst: {
+    searchName: /^input cgst$/i,
+    canonName: 'Input CGST',
+    codePrefix: 'AST-ICGST',
+    parentGroupCode: 'ADTAX',
+    parentGroupName: 'Advance Tax & Duties',
+    ledgerType: 'asset',
+  },
+  input_sgst: {
+    searchName: /^input sgst$/i,
+    canonName: 'Input SGST',
+    codePrefix: 'AST-ISGST',
+    parentGroupCode: 'ADTAX',
+    parentGroupName: 'Advance Tax & Duties',
+    ledgerType: 'asset',
+  },
+  input_igst: {
+    searchName: /^input igst$/i,
+    canonName: 'Input IGST',
+    codePrefix: 'AST-IIGST',
+    parentGroupCode: 'ADTAX',
+    parentGroupName: 'Advance Tax & Duties',
+    ledgerType: 'asset',
+  },
 };
 
 /**
- * Resolves an Expense ledger by kind. If found, returns its id.
- * If missing, creates a new Expense ledger with standard tagging and
- * returns the new id. All postings flow through this — never hardcode.
+ * Resolves a ledger by kind. If found, returns its id.
+ * If missing, creates a new ledger with standard tagging and returns the new id.
+ * All postings flow through this — never hardcode.
  */
 export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
   const meta = RESOLVER_META[kind];
-  // [JWT] GET /api/accounting/ledger-definitions?type=expense
+  // [JWT] GET /api/accounting/ledger-definitions?type=<meta.ledgerType>
   const raw = localStorage.getItem(STORAGE_KEY);
   const all: MinimalLedgerRow[] = raw ? (JSON.parse(raw) as MinimalLedgerRow[]) : [];
 
   const existing = all.find(l =>
-    l.ledgerType === 'expense'
+    l.ledgerType === meta.ledgerType
     && typeof l.name === 'string'
     && meta.searchName.test(l.name)
     && l.status !== 'suspended',
@@ -107,21 +194,22 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
   if (existing) return existing.id;
 
   const nowIso = new Date().toISOString();
-  const newId = `exp-${kind}-${Date.now()}`;
-  const newLedger: AutoExpenseLedger = {
+  const newId = `lr-${kind}-${Date.now()}`;
+  const openingBalanceType: 'Dr' | 'Cr' = meta.ledgerType === 'liability' ? 'Cr' : 'Dr';
+  const newLedger: AutoLedger = {
     id: newId,
-    ledgerType: 'expense',
+    ledgerType: meta.ledgerType,
     name: meta.canonName,
     mailingName: meta.canonName,
     numericCode: '',
     code: `${meta.codePrefix}-${Date.now().toString().slice(-6)}`,
     alias: '',
-    parentGroupCode: 'E-FC',
-    parentGroupName: 'Finance Costs',
+    parentGroupCode: meta.parentGroupCode,
+    parentGroupName: meta.parentGroupName,
     entityId: null,
     entityShortCode: null,
     openingBalance: 0,
-    openingBalanceType: 'Dr',
+    openingBalanceType,
     isGstApplicable: false,
     hsnSacCode: '',
     hsnSacType: '',
@@ -144,8 +232,8 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
     clause44Category: 'auto',
     forceIncludeClause44: false,
     status: 'active',
-    description: `Auto-created by D2 accrual engine — ${meta.canonName}`,
-    notes: `[Keyed] T-H1.5-D-D2 auto-creation at ${nowIso}`,
+    description: `Auto-created by D2/D4 engine — ${meta.canonName}`,
+    notes: `[Keyed] T-H1.5-D-D2/D4 auto-creation at ${nowIso}`,
     suspendedBy: null,
     suspendedAt: null,
     suspendedReason: null,
@@ -159,12 +247,17 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
   return newId;
 }
 
-/** Convenience: resolves all 3 at engine run-start. */
+/** Convenience: resolves all 8 at engine run-start. */
 export function resolveAllExpenseLedgers(): Record<ExpenseLedgerKind, string> {
   return {
     interest_expense:       resolveExpenseLedger('interest_expense'),
     penal_interest_expense: resolveExpenseLedger('penal_interest_expense'),
     bank_charges:           resolveExpenseLedger('bank_charges'),
+    processing_fee_expense: resolveExpenseLedger('processing_fee_expense'),
+    tds_payable:            resolveExpenseLedger('tds_payable'),
+    input_cgst:             resolveExpenseLedger('input_cgst'),
+    input_sgst:             resolveExpenseLedger('input_sgst'),
+    input_igst:             resolveExpenseLedger('input_igst'),
   };
 }
 
