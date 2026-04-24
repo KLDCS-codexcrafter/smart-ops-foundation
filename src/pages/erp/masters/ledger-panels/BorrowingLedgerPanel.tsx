@@ -531,6 +531,21 @@ export function BorrowingLedgerPanel() {
         onChange={v => setDraft(p => ({ ...p, ...v }))}
         onClose={() => setShowChargesMaster(false)}
       />
+
+      <AccrualRunModal
+        open={accrualRunOpen}
+        onClose={() => setAccrualRunOpen(false)}
+        ledgerId={isEdit && !draft.id.startsWith('borrow-') ? draft.id : undefined}
+      />
+
+      <Dialog open={accrualLogOpen} onOpenChange={setAccrualLogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Accrual Log — {draft.name || 'Loan'}</DialogTitle>
+          </DialogHeader>
+          <LoanAccrualLog ledgerId={draft.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
