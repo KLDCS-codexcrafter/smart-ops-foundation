@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Network, Users, Compass, Megaphone, MapPin, Route, Target, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
+import { getPrimaryEntity } from '@/data/mock-entities';
+import { schemesKey } from '@/types/scheme';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
 
