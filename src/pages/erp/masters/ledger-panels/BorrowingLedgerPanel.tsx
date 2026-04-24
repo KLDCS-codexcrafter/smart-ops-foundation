@@ -35,7 +35,10 @@ import { calculateEMIAmount, type EMIScheduleRow }
   from '@/features/ledger-master/lib/emi-schedule-builder';
 import { EMIScheduleTable } from '@/features/loan-emi/components/EMIScheduleTable';
 import { LoanChargesMaster } from '@/features/loan-emi/components/LoanChargesMaster';
+import { AccrualRunModal } from '@/features/loan-emi/components/AccrualRunModal';
+import { LoanAccrualLog } from '@/features/loan-emi/components/LoanAccrualLog';
 import type { EMIScheduleLiveRow } from '@/features/loan-emi/lib/emi-lifecycle-engine';
+import type { AccrualLogEntry } from '@/features/loan-emi/lib/accrual-log';
 
 interface BorrowingLedger {
   id: string;
