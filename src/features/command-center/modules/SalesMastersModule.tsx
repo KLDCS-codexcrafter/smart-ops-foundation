@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Network, Users, Compass, Megaphone, MapPin, Route, Target, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
+import { getPrimaryEntity } from '@/data/mock-entities';
+import { schemesKey } from '@/types/scheme';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
 
@@ -26,23 +29,27 @@ function getMasterStatus(key: string): 'live' | 'empty' {
   return 'empty';
 }
 
-const MASTER_CARDS: MasterCard[] = [
-  { title: 'Sales Hierarchy',  desc: 'Reporting structure of sales team — CEO > Sales Head > RM > ASM > Salesman.', icon: Network, module: 'sales-hierarchy', storageKey: 'erp_salesx_hierarchy_nodes', section: 'sales-org' },
-  { title: 'SAM Persons',      desc: 'Salesman / Agent / Broker / Receiver / Reference persons. Core for commission and ownership.', icon: Users, module: 'sales-sam-person', storageKey: 'erp_sam_persons', section: 'sales-org' },
-  { title: 'Enquiry Source',   desc: 'Lead origination channels — website, referral, cold-call, campaign.', icon: Compass, module: 'sales-enquiry-source', storageKey: 'erp_enquiry_sources', section: 'sales-ops' },
-  { title: 'Campaign',         desc: 'Marketing campaigns — digital, offline, events. Lead attribution.', icon: Megaphone, module: 'sales-campaign', storageKey: 'erp_campaigns', section: 'sales-ops' },
-  { title: 'Territory',        desc: 'Geo territories for field sales. Nested hierarchies supported.', icon: MapPin, module: 'sales-territory', storageKey: 'erp_territories', section: 'sales-ops' },
-  { title: 'Beat Routes',      desc: 'Daily field-visit routes — which salesman covers which customers on which day.', icon: Route, module: 'sales-beat-route', storageKey: 'erp_beat_routes', section: 'sales-ops' },
-  { title: 'Targets',          desc: 'Monthly / quarterly targets per salesman — revenue, volume, visits, conversion.', icon: Target, module: 'sales-target', storageKey: 'erp_sales_targets', section: 'sales-ops' },
-  { title: 'Sales Schemes',    desc: 'Promotional schemes — slab discount, BNGM, QPS, bundle. Audience: distributor / customer / both.', icon: Sparkles, module: 'sales-schemes', storageKey: 'erp_schemes_SMRT', section: 'sales-ops' },
-];
-
 const SECTION_META = {
   'sales-org': 'Sales Organisation',
   'sales-ops': 'Sales Operations',
 } as const;
 
 export function SalesMastersModule({ onNavigate }: Props) {
+  // T-H1.5-C-S1 (CC-029) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
+  const MASTER_CARDS = useMemo<MasterCard[]>(() => {
+    const entityCode = getPrimaryEntity().shortCode;
+    return [
+      { title: 'Sales Hierarchy',  desc: 'Reporting structure of sales team — CEO > Sales Head > RM > ASM > Salesman.', icon: Network, module: 'sales-hierarchy', storageKey: 'erp_salesx_hierarchy_nodes', section: 'sales-org' },
+      { title: 'SAM Persons',      desc: 'Salesman / Agent / Broker / Receiver / Reference persons. Core for commission and ownership.', icon: Users, module: 'sales-sam-person', storageKey: 'erp_sam_persons', section: 'sales-org' },
+      { title: 'Enquiry Source',   desc: 'Lead origination channels — website, referral, cold-call, campaign.', icon: Compass, module: 'sales-enquiry-source', storageKey: 'erp_enquiry_sources', section: 'sales-ops' },
+      { title: 'Campaign',         desc: 'Marketing campaigns — digital, offline, events. Lead attribution.', icon: Megaphone, module: 'sales-campaign', storageKey: 'erp_campaigns', section: 'sales-ops' },
+      { title: 'Territory',        desc: 'Geo territories for field sales. Nested hierarchies supported.', icon: MapPin, module: 'sales-territory', storageKey: 'erp_territories', section: 'sales-ops' },
+      { title: 'Beat Routes',      desc: 'Daily field-visit routes — which salesman covers which customers on which day.', icon: Route, module: 'sales-beat-route', storageKey: 'erp_beat_routes', section: 'sales-ops' },
+      { title: 'Targets',          desc: 'Monthly / quarterly targets per salesman — revenue, volume, visits, conversion.', icon: Target, module: 'sales-target', storageKey: 'erp_sales_targets', section: 'sales-ops' },
+      { title: 'Sales Schemes',    desc: 'Promotional schemes — slab discount, BNGM, QPS, bundle. Audience: distributor / customer / both.', icon: Sparkles, module: 'sales-schemes', storageKey: schemesKey(entityCode), section: 'sales-ops' },
+    ];
+  }, []);
+
   const sections: ('sales-org' | 'sales-ops')[] = ['sales-org', 'sales-ops'];
   const liveCount = MASTER_CARDS.filter(c => getMasterStatus(c.storageKey) === 'live').length;
 

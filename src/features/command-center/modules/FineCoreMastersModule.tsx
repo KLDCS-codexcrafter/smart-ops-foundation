@@ -49,6 +49,10 @@ const MASTER_CARDS: MasterCard[] = [
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', storageKey: 'erp_voucher_types', section: 'account-structure' },
   // Transaction Defaults
   { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', storageKey: 'erp_transaction_templates', section: 'transaction-defaults' },
+  // T-H1.5-C-S1 — Supporting masters (CC-017/018/019)
+  { title: 'Mode of Payment', desc: '10 seeded modes — Cash, Cheque, NEFT, RTGS, UPI, IMPS, DD, LC, Bank Transfer, Advance Online', icon: Coins, module: 'finecore-mode-of-payment', storageKey: 'erp_group_mode_of_payment', section: 'transaction-defaults' },
+  { title: 'Terms of Payment', desc: '10 seeded terms — Immediate, Net 7/15/30/45/60/90, 50% Adv, 100% Adv, LC', icon: Calculator, module: 'finecore-terms-of-payment', storageKey: 'erp_group_terms_of_payment', section: 'transaction-defaults' },
+  { title: 'Terms of Delivery', desc: 'Incoterms + delivery-location standards', icon: FileText, module: 'finecore-terms-of-delivery', storageKey: 'erp_group_terms_of_delivery', section: 'transaction-defaults' },
 ];
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {

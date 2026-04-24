@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Users, Truck, Tag, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
+import { getPrimaryEntity } from '@/data/mock-entities';
+import { customerSegmentsKey } from '@/types/customer-loyalty';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
 
@@ -26,34 +29,38 @@ function getMasterStatus(key: string): 'live' | 'empty' {
   return 'empty';
 }
 
-const MASTER_CARDS: MasterCard[] = [
-  {
-    title: 'Customer Master',
-    desc: 'All tenant customers — ledger, contacts, addresses, credit limits. Used by FineCore, SalesX, ReceivX, Distributor Hub, Customer Hub.',
-    icon: Users,
-    module: 'crm-customer',
-    storageKey: 'erp_group_customer_master',
-    section: 'customer-vendor',
-  },
-  {
-    title: 'Vendor Master',
-    desc: 'All tenant vendors — ledger, GSTIN, TDS, bank details, payment terms. Used by FineCore, Procure360, PayOut.',
-    icon: Truck,
-    module: 'crm-vendor',
-    storageKey: 'erp_group_vendor_master',
-    section: 'customer-vendor',
-  },
-  {
-    title: 'Customer Segments',
-    desc: 'Audience groupings for scheme targeting — VIP, festival buyers, new, at-risk.',
-    icon: Tag,
-    module: 'crm-customer-segments',
-    storageKey: 'erp_customer_segments_SMRT',
-    section: 'customer-vendor',
-  },
-];
-
 export function CRMMastersModule({ onNavigate }: Props) {
+  // T-H1.5-C-S1 (CC-025) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
+  const MASTER_CARDS = useMemo<MasterCard[]>(() => {
+    const entityCode = getPrimaryEntity().shortCode;
+    return [
+      {
+        title: 'Customer Master',
+        desc: 'All tenant customers — ledger, contacts, addresses, credit limits. Used by FineCore, SalesX, ReceivX, Distributor Hub, Customer Hub.',
+        icon: Users,
+        module: 'crm-customer',
+        storageKey: 'erp_group_customer_master',
+        section: 'customer-vendor',
+      },
+      {
+        title: 'Vendor Master',
+        desc: 'All tenant vendors — ledger, GSTIN, TDS, bank details, payment terms. Used by FineCore, Procure360, PayOut.',
+        icon: Truck,
+        module: 'crm-vendor',
+        storageKey: 'erp_group_vendor_master',
+        section: 'customer-vendor',
+      },
+      {
+        title: 'Customer Segments',
+        desc: 'Audience groupings for scheme targeting — VIP, festival buyers, new, at-risk.',
+        icon: Tag,
+        module: 'crm-customer-segments',
+        storageKey: customerSegmentsKey(entityCode),
+        section: 'customer-vendor',
+      },
+    ];
+  }, []);
+
   const liveCount = MASTER_CARDS.filter(c => getMasterStatus(c.storageKey) === 'live').length;
 
   return (

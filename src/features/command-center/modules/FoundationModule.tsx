@@ -8,6 +8,7 @@ import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, Ch
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type { BranchOffice } from '@/types/branch-office';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
@@ -20,7 +21,7 @@ function useFoundationStats() {
     catch { return 0; }
   };
 
-  const branches: any[] = (() => {
+  const branches: BranchOffice[] = (() => {
     // [JWT] GET /api/foundation/branch-offices
     try { return JSON.parse(localStorage.getItem('erp_branch_offices') || '[]'); }
     catch { return []; }
@@ -31,7 +32,7 @@ function useFoundationStats() {
     companiesCount:      safeCount('erp_companies'),
     subsidiariesCount:   safeCount('erp_subsidiaries'),
     branchOfficesTotal:  branches.length,
-    branchOfficesActive: branches.filter((b: any) =>
+    branchOfficesActive: branches.filter(b =>
       b.status === 'Active' || b.status === 'active'
     ).length,
   };
@@ -81,6 +82,13 @@ export function FoundationModule() {
   const deptCount = (() => { try {
     // [JWT] GET /api/foundation/org-structure/departments
     return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
+  } catch { return 0; } })();
+
+  // T-H1.5-C-S1 (CC-020) — Business Units Master count.
+  // Storage key confirmed in BusinessUnitMaster.tsx:81 (erp_group_business_unit_master).
+  const buCount = (() => { try {
+    // [JWT] GET /api/foundation/business-units
+    return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
   } catch { return 0; } })();
 
   return (
@@ -147,6 +155,15 @@ export function FoundationModule() {
           status={divCount > 0 ? 'ok' : 'empty'}
           href='/erp/foundation/org-structure'
           description='Divisions and departments — used for MIS reporting across all modules.'
+        />
+        {/* T-H1.5-C-S1 (CC-020) — Business Units Master (BU tier above Divisions) */}
+        <StatCard
+          icon={<Layers className="h-5 w-5" />}
+          title="Business Units Master"
+          value={buCount > 0 ? `${buCount} configured` : 'Not configured'}
+          status={buCount > 0 ? 'ok' : 'empty'}
+          href="/erp/masters/business-unit"
+          description="BU tier above Divisions — strategic business unit classification."
         />
         <StatCard
           icon={<MapPin className="h-5 w-5" />}
