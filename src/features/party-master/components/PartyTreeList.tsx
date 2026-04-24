@@ -85,6 +85,7 @@ export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, renderNodeMet
         <div className="divide-y divide-border/40">
           {filteredTree.map(l1 => {
             const l1Open = expanded.has(l1.code);
+            const l1Leaves = l1.l2.flatMap(l2 => l2.l3.flatMap(l3 => l3.leaves));
             return (
               <div key={l1.code}>
                 <button type="button"
@@ -93,11 +94,15 @@ export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, renderNodeMet
                   <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-150 ${l1Open ? '' : '-rotate-90'}`} />
                   <span className="text-sm font-bold text-foreground">{l1.label}</span>
                   <Badge variant="outline" className="text-[10px] ml-1">{l1.totalLeaves}</Badge>
+                  {renderNodeMeta && (
+                    <span className="ml-auto pl-2">{renderNodeMeta(1, l1.code, l1Leaves)}</span>
+                  )}
                 </button>
 
                 {l1Open && l1.l2.map(l2 => {
                   const l2Key = `${l1.code}:${l2.code}`;
                   const l2Open = expanded.has(l2Key);
+                  const l2Leaves = l2.l3.flatMap(l3 => l3.leaves);
                   return (
                     <div key={l2Key} className="bg-muted/10">
                       <button type="button"
@@ -105,6 +110,9 @@ export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, renderNodeMet
                         onClick={() => toggle(l2Key)}>
                         <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${l2Open ? '' : '-rotate-90'}`} />
                         <span className="text-xs font-semibold text-foreground">{l2.label}</span>
+                        {renderNodeMeta && (
+                          <span className="ml-auto pl-2">{renderNodeMeta(2, l2.code, l2Leaves)}</span>
+                        )}
                       </button>
 
                       {l2Open && l2.l3.map(l3 => {
@@ -118,6 +126,9 @@ export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, renderNodeMet
                               <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${l3Open ? '' : '-rotate-90'}`} />
                               <span className="text-xs font-medium text-foreground">{l3.label}</span>
                               <Badge variant="outline" className="text-[10px] ml-1">{l3.leaves.length}</Badge>
+                              {renderNodeMeta && (
+                                <span className="ml-auto pl-2">{renderNodeMeta(3, l3.code, l3.leaves)}</span>
+                              )}
                             </button>
                             {l3Open && l3.leaves.map(leaf => (
                               <button key={leaf.id} type="button"
