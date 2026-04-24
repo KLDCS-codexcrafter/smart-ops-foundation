@@ -65,6 +65,13 @@ import { BankLedgerPanel } from '@/pages/erp/masters/ledger-panels/BankLedgerPan
 import { AssetLedgerPanel } from '@/pages/erp/masters/ledger-panels/AssetLedgerPanel';
 import { LiabilityLedgerPanel } from '@/pages/erp/masters/ledger-panels/LiabilityLedgerPanel';
 import { CapitalLedgerPanel } from '@/pages/erp/masters/ledger-panels/CapitalLedgerPanel';
+// T-H1.5-C-S6.5b — P&L + Debt ledger panels
+import { IncomeLedgerPanel } from '@/pages/erp/masters/ledger-panels/IncomeLedgerPanel';
+import { ExpenseLedgerPanel } from '@/pages/erp/masters/ledger-panels/ExpenseLedgerPanel';
+import { DutiesTaxLedgerPanel } from '@/pages/erp/masters/ledger-panels/DutiesTaxLedgerPanel';
+import { PayrollStatutoryLedgerPanel } from '@/pages/erp/masters/ledger-panels/PayrollStatutoryLedgerPanel';
+import { LoanReceivableLedgerPanel } from '@/pages/erp/masters/ledger-panels/LoanReceivableLedgerPanel';
+import { BorrowingLedgerPanel } from '@/pages/erp/masters/ledger-panels/BorrowingLedgerPanel';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -3717,99 +3724,20 @@ export function LedgerMasterPanel() {
             </div>
           )}
 
-          {/* Income List */}
-          {defSubTab === 'income' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setIncomeOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Income</Button>
-              </div>
-              {renderDefTable(incomeDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-                { label: 'GST Rate', render: d => {
-                  const inc = d as IncomeLedgerDefinition;
-                  return inc.isGstApplicable ? <span className="text-xs font-mono">{inc.gstRate}%</span> : <span className="text-xs text-muted-foreground">N/A</span>;
-                }},
-                { label: 'TDS Section', render: d => {
-                  const inc = d as IncomeLedgerDefinition;
-                  return inc.isTdsApplicable ? <span className="text-xs font-mono">{inc.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No income ledgers yet.')}
-            </div>
-          )}
+          {/* Income List — S6.5b Panel */}
+          {defSubTab === 'income' && <IncomeLedgerPanel />}
 
-          {/* Expenses List */}
-          {defSubTab === 'expenses' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setExpenseOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Expense</Button>
-              </div>
-              {renderDefTable(expenseDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-                { label: 'GST Rate', render: d => {
-                  const exp = d as ExpenseLedgerDefinition;
-                  return exp.isGstApplicable ? <span className="text-xs font-mono">{exp.gstRate}%</span> : <span className="text-xs text-muted-foreground">N/A</span>;
-                }},
-                { label: 'RCM', render: d => (d as ExpenseLedgerDefinition).isRcmApplicable
-                  ? <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20">RCM</Badge>
-                  : <span className="text-xs text-muted-foreground">—</span> },
-                { label: 'TDS Section', render: d => {
-                  const exp = d as ExpenseLedgerDefinition;
-                  return exp.isTdsApplicable ? <span className="text-xs font-mono">{exp.tdsSection}</span> : <span className="text-xs text-muted-foreground">—</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No expense ledgers yet.')}
-            </div>
-          )}
+          {/* Expenses List — S6.5b Panel */}
+          {defSubTab === 'expenses' && <ExpenseLedgerPanel />}
 
           {/* Liabilities List — S6.5a Panel */}
           {defSubTab === 'liabilities' && <LiabilityLedgerPanel />}
 
-          {/* Duties & Tax List */}
-          {defSubTab === 'duties_tax' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setDutiesTaxOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Duties & Tax</Button>
-              </div>
-              {renderDefTable(dutiesTaxDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Tax Type', render: d => <Badge variant="outline" className="text-[10px] uppercase">{(d as DutiesTaxLedgerDefinition).taxType}</Badge> },
-                { label: 'GST Sub-type / Kind', render: d => {
-                  const dt = d as DutiesTaxLedgerDefinition;
-                  if (dt.taxType === 'gst') return <span className="text-xs uppercase">{dt.gstSubType} — {dt.calculationBasis === 'item_rate' ? 'On Item Rate' : dt.calculationBasis === 'ledger_value' ? `On Ledger Value (${dt.rate}%)` : '—'}</span>;
-                  return <span className="text-xs text-muted-foreground">—</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No duties & tax ledgers yet.')}
-            </div>
-          )}
+          {/* Duties & Tax List — S6.5b Panel */}
+          {defSubTab === 'duties_tax' && <DutiesTaxLedgerPanel />}
 
-          {/* Payroll Statutory List */}
-          {defSubTab === 'payroll' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setPayrollStatOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Payroll Statutory</Button>
-              </div>
-              {renderDefTable(payrollStatDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{(d as PayrollStatutoryLedgerDefinition).payrollCategory.replace('_', ' ')}</Badge> },
-                { label: 'Rate', render: d => {
-                  const p = d as PayrollStatutoryLedgerDefinition;
-                  if (p.statutoryRate > 0) return <span className="text-xs">{p.statutoryRate}% of {p.calculationBase.replace('_',' ')}</span>;
-                  if (p.calculationBase === 'state_slab' || p.calculationBase === 'state_specific') return <span className="text-xs text-muted-foreground">State-specific</span>;
-                  if (p.calculationBase === 'slab') return <span className="text-xs text-muted-foreground">IT slab</span>;
-                  return <span className="text-xs text-muted-foreground">{p.calculationBase}</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No payroll statutory ledgers yet.')}
-            </div>
-          )}
+          {/* Payroll Statutory List — S6.5b Panel */}
+          {defSubTab === 'payroll' && <PayrollStatutoryLedgerPanel />}
 
           {/* Asset List — S6.5a Panel */}
           {defSubTab === 'asset' && <AssetLedgerPanel />}
