@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +32,15 @@ import {
   INDUSTRY_SECTORS, getActivitiesForSector,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+// ── T-H1.5-C-S5 — Vendor Master Redesign (reuse party-master S4 components) ──
+import {
+  PartyTreeList, PartyStepSidebar,
+  ContactDetailsModal, BankDetailsModal, CompanyInfoModal,
+  BillWiseBreakupModal,
+  buildPartyTree,
+  type BankAccount, type OpeningBill, type PartyLeaf,
+} from '@/features/party-master';
+import { LayoutGrid, List as ListIcon } from 'lucide-react';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -122,6 +131,9 @@ interface VendorMasterDefinition {
   is_related_party: boolean; // Clause 26(b) + Clause 23. Related person u/s 40A(2)(b).
   status: 'active' | 'inactive';
   default_currency: string;  // ISO code — payment currency for this vendor
+  // ── S5 — optional additions (backward-compatible, no field removed/renamed) ──
+  bankAccounts?: BankAccount[];
+  openingBalanceBills?: OpeningBill[];
 }
 
 // ─── Storage ──────────────────────────────────────────────────
