@@ -3766,20 +3766,8 @@ export function LedgerMasterPanel() {
             </div>
           )}
 
-          {/* Liabilities List */}
-          {defSubTab === 'liabilities' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setLiabilityOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Liability</Button>
-              </div>
-              {renderDefTable(liabilityDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No liability ledgers yet.')}
-            </div>
-          )}
+          {/* Liabilities List — S6.5a Panel */}
+          {defSubTab === 'liabilities' && <LiabilityLedgerPanel />}
 
           {/* Duties & Tax List */}
           {defSubTab === 'duties_tax' && (
