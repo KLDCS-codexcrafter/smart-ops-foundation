@@ -1895,6 +1895,9 @@ function CustomerTreeBranch({ customers, entityCode, onLeafClick }: CustomerTree
     return m;
   }, [customers]);
 
+  // S4.5 — KPI map for entire tree (memoized by entity)
+  const kpis = useCustomerKPIs(customers);
+
   return (
     <PartyTreeList
       tree={tree}
@@ -1902,17 +1905,34 @@ function CustomerTreeBranch({ customers, entityCode, onLeafClick }: CustomerTree
         const item = byId.get(leaf.id);
         if (item) onLeafClick(item);
       }}
+      renderNodeMeta={(_level, _code, leaves) => {
+        const leafKpis = leaves
+          .map(l => kpis.get(l.id))
+          .filter((k): k is CustomerKPI => !!k);
+        if (leafKpis.length === 0) return null;
+        const r = rollupFromLeaves(leafKpis);
+        return (
+          <span className="text-[10px] text-muted-foreground font-mono">
+            ₹{(r.revenueYTD / 100_000).toFixed(1)}L · {r.greenCount}G/{r.amberCount}A/{r.redCount}R
+          </span>
+        );
+      }}
       renderLeafMeta={(leaf) => (
-        <CustomerLeafMeta partyId={leaf.id} entityCode={entityCode} />
+        <CustomerLeafMeta partyId={leaf.id} entityCode={entityCode} kpi={kpis.get(leaf.id)} />
       )}
       emptyState="No customers match the current filter."
     />
   );
 }
 
-function CustomerLeafMeta({ partyId, entityCode }: { partyId: string; entityCode: string }) {
+function CustomerLeafMeta({ partyId, entityCode, kpi }: { partyId: string; entityCode: string; kpi?: CustomerKPI }) {
   const credit = useCreditScoring({ partyId, entityCode });
-  return <CreditScoreBadge score={credit.score} band={credit.band} compact />;
+  return (
+    <div className="flex items-center gap-1.5">
+      {kpi && <KPIBadgeGroup kpi={kpi} compact />}
+      <CreditScoreBadge score={credit.score} band={credit.band} compact />
+    </div>
+  );
 }
 
 // ─── Page Wrapper ─────────────────────────────────────────────
