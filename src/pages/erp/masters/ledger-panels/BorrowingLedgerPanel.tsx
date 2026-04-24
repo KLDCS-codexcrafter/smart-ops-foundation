@@ -498,6 +498,20 @@ export function BorrowingLedgerPanel() {
         onClose={() => setEmiPreviewOpen(false)}
         onRegenerated={rows => setDraft(p => ({ ...p, emiScheduleCached: rows, repaymentScheduleGenerated: rows.length > 0 }))}
       />
+
+      <LoanChargesMaster
+        open={showChargesMaster}
+        value={{
+          processingFee: draft.processingFee ?? 0,
+          processingFeeGst: draft.processingFeeGst ?? 18,
+          penalInterestRate: draft.penalInterestRate ?? 0,
+          chequeBounceCharge: draft.chequeBounceCharge ?? 0,
+          foreclosureChargeRate: draft.foreclosureChargeRate ?? 0,
+          gstOnChargesApplicable: draft.gstOnChargesApplicable ?? true,
+        }}
+        onChange={v => setDraft(p => ({ ...p, ...v }))}
+        onClose={() => setShowChargesMaster(false)}
+      />
     </div>
   );
 }
