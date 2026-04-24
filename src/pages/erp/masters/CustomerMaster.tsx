@@ -1819,6 +1819,77 @@ export function CustomerMasterPanel() {
   );
 }
 
+// ─── S4 Helpers ───────────────────────────────────────────────
+
+/** Derive completed step IDs from form completeness. */
+function computeCompletedSteps(form: typeof defaultForm): number[] {
+  const done: number[] = [];
+  if (form.partyName.trim() && form.customerType) done.push(1);
+  if (form.gstin.replace(/\s/g, '').length === 15 || form.gstRegistrationType === 'unregistered' || form.gstRegistrationType === 'consumer') done.push(2);
+  if (form.contacts.length > 0 || form.addresses.length > 0) done.push(3);
+  if ((form.bankAccounts ?? []).length > 0) done.push(4);
+  if (form.gstRegistrationType) done.push(5);
+  if (form.creditLimit > 0 || form.creditDays > 0 || form.openingBalance !== 0) done.push(6);
+  if (form.natureOfBusiness && form.businessActivity) done.push(7);
+  return done;
+}
+
+interface CustomerCreditHeaderBadgeProps {
+  partyId: string;
+  entityCode: string;
+}
+function CustomerCreditHeaderBadge({ partyId, entityCode }: CustomerCreditHeaderBadgeProps) {
+  const credit = useCreditScoring({ partyId, entityCode });
+  return (
+    <div className="flex flex-col items-end gap-0.5">
+      <CreditScoreBadge score={credit.score} band={credit.band} />
+      <span className="text-[9px] text-muted-foreground">{credit.details}</span>
+    </div>
+  );
+}
+
+interface CustomerTreeBranchProps {
+  customers: CustomerMasterDefinition[];
+  entityCode: string;
+  onLeafClick: (item: CustomerMasterDefinition) => void;
+}
+function CustomerTreeBranch({ customers, entityCode, onLeafClick }: CustomerTreeBranchProps) {
+  const tree = useMemo(() => buildPartyTree(
+    customers as unknown as Array<Record<string, unknown>>,
+    {
+      typeField: 'customerType',
+      sectorField: 'natureOfBusiness',
+      activityField: 'businessActivity',
+      typeLabels: Object.fromEntries(CUSTOMER_TYPES.map(t => [t.value, t.label])),
+    },
+  ), [customers]);
+
+  const byId = useMemo(() => {
+    const m = new Map<string, CustomerMasterDefinition>();
+    for (const c of customers) m.set(c.id, c);
+    return m;
+  }, [customers]);
+
+  return (
+    <PartyTreeList
+      tree={tree}
+      onLeafClick={(leaf: PartyLeaf) => {
+        const item = byId.get(leaf.id);
+        if (item) onLeafClick(item);
+      }}
+      renderLeafMeta={(leaf) => (
+        <CustomerLeafMeta partyId={leaf.id} entityCode={entityCode} />
+      )}
+      emptyState="No customers match the current filter."
+    />
+  );
+}
+
+function CustomerLeafMeta({ partyId, entityCode }: { partyId: string; entityCode: string }) {
+  const credit = useCreditScoring({ partyId, entityCode });
+  return <CreditScoreBadge score={credit.score} band={credit.band} compact />;
+}
+
 // ─── Page Wrapper ─────────────────────────────────────────────
 
 export default function CustomerMaster() {
