@@ -30,7 +30,7 @@ function getMasterStatus(key: string): 'live' | 'empty' {
 }
 
 export function CRMMastersModule({ onNavigate }: Props) {
-  // T-H1.5-C-S1 (CC-025) — Resolve entity code dynamically; replaces _SMRT literal.
+  // T-H1.5-C-S1 (CC-025) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
   const MASTER_CARDS = useMemo<MasterCard[]>(() => {
     const entityCode = getPrimaryEntity().shortCode;
     return [

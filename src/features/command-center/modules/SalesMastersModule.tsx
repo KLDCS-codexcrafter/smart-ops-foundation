@@ -35,7 +35,7 @@ const SECTION_META = {
 } as const;
 
 export function SalesMastersModule({ onNavigate }: Props) {
-  // T-H1.5-C-S1 (CC-029) — Resolve entity code dynamically; replaces _SMRT literal.
+  // T-H1.5-C-S1 (CC-029) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
   const MASTER_CARDS = useMemo<MasterCard[]>(() => {
     const entityCode = getPrimaryEntity().shortCode;
     return [
