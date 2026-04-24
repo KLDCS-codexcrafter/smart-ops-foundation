@@ -3562,28 +3562,11 @@ export function LedgerMasterPanel() {
             </TabsList>
           </Tabs>
 
-          {/* Cash List */}
-          {defSubTab === 'cash' && renderDefTable(cashDefs, [
-            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-            { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-            { label: 'Scope', render: d => d.entityId
-              ? <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">{entities.find(e => e.id === d.entityId)?.name ?? d.entityShortCode}</Badge>
-              : <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge> },
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-          ], 'No cash ledgers yet. Click + Cash above or use a Quick Start template.')}
+          {/* Cash List — S6.5a Panel */}
+          {defSubTab === 'cash' && <CashLedgerPanel />}
 
-          {/* Bank List */}
-          {defSubTab === 'bank' && renderDefTable(bankDefs, [
-            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-            { label: 'Bank', render: d => <span className="text-xs">{(d as BankLedgerDefinition).bankName}</span> },
-            { label: 'Account Type', render: d => {
-              const bd = d as BankLedgerDefinition;
-              return <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[bd.accountType]}`}>{ACCOUNT_TYPE_LABELS[bd.accountType]}</Badge>;
-            }},
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-          ], 'No bank ledgers yet. Click + Bank above or use a Quick Start template.')}
+          {/* Bank List — S6.5a Panel */}
+          {defSubTab === 'bank' && <BankLedgerPanel />}
 
           {/* Capital List */}
           {defSubTab === 'capital' && (
