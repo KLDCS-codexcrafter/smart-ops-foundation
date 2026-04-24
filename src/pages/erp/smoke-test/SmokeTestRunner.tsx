@@ -16,6 +16,8 @@ import {
 } from '@/lib/demo-seed-orchestrator';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { computeCustomerKPIs } from '@/features/party-master/lib/customer-kpi-engine';
+import { findCrossSellCandidates } from '@/features/party-master/lib/cross-sell-finder';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
