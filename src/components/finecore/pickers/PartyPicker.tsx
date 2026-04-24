@@ -231,7 +231,7 @@ export function PartyPicker<M extends PartyMode>({
                   </CommandItem>
                 ))}
               </CommandGroup>
-              {allowCreate && filtered.length > 0 && (
+              {effectiveAllowCreate && filtered.length > 0 && (
                 <div className="p-1 border-t">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs"
                     onClick={() => {
@@ -249,7 +249,7 @@ export function PartyPicker<M extends PartyMode>({
         </PopoverContent>
       </Popover>
 
-      {allowCreate && (
+      {effectiveAllowCreate && (
         <InlineMasterCreate
           open={createOpen}
           onOpenChange={setCreateOpen}
