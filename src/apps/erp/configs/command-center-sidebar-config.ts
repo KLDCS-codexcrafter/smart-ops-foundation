@@ -11,7 +11,7 @@ import {
   Package, LayoutTemplate, QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
-  Truck, Network,
+  Truck, Network, Layers,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -29,6 +29,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'geography', requiredCards: ['command-center'] },
       { id: 'org-structure', type: 'item', label: 'Business Units', icon: Network,
         moduleId: 'org-structure', requiredCards: ['command-center'] },
+      { id: 'finecore-business-unit', type: 'item', label: 'Business Units Master', icon: Layers,
+        moduleId: 'finecore-business-unit', requiredCards: ['command-center'] },
     ],
   },
   {
@@ -68,6 +70,13 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-voucher-types', requiredCards: ['command-center'] },
       { id: 'finecore-transaction-templates', type: 'item', label: 'Transaction Templates',
         moduleId: 'finecore-transaction-templates', requiredCards: ['command-center'] },
+      { id: 'fc-divider-3', type: 'divider', label: '' },
+      { id: 'finecore-mode-of-payment', type: 'item', label: 'Mode of Payment',
+        moduleId: 'finecore-mode-of-payment', requiredCards: ['command-center'] },
+      { id: 'finecore-terms-of-payment', type: 'item', label: 'Terms of Payment',
+        moduleId: 'finecore-terms-of-payment', requiredCards: ['command-center'] },
+      { id: 'finecore-terms-of-delivery', type: 'item', label: 'Terms of Delivery',
+        moduleId: 'finecore-terms-of-delivery', requiredCards: ['command-center'] },
     ],
   },
   {
