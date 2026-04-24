@@ -1169,7 +1169,7 @@ const LABEL_TO_SUBTAB: Record<string, string> = {
   'Liability': 'liabilities',
   'Capital/Equity': 'capital',
   'Loan Receivable': 'loans',
-  'Borrowing': 'loans',
+  'Borrowing': 'borrowing',
   'Income': 'income',
   'Expense': 'expenses',
   'Duties & Taxes': 'duties_tax',
@@ -1322,7 +1322,7 @@ export function LedgerMasterPanel() {
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [assetDefs, setAssetDefs] = useState<AssetLedgerDefinition[]>(() => loadAssetDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'borrowing'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -3366,45 +3366,6 @@ export function LedgerMasterPanel() {
   );
 
   // ── Shared definitions table ──
-  const renderDefTable = (
-    defs: AnyLedgerDefinition[],
-    columns: { label: string; render: (d: AnyLedgerDefinition) => React.ReactNode }[],
-    emptyMsg: string,
-  ) => defs.length === 0 ? (
-    <div className="text-center py-12 text-muted-foreground text-sm">{emptyMsg}</div>
-  ) : (
-    <div className="rounded-xl border border-border overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map(c => <TableHead key={c.label}>{c.label}</TableHead>)}
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {defs.map(def => (
-            <TableRow key={def.id} className="group">
-              {columns.map(c => <TableCell key={c.label}>{c.render(def)}</TableCell>)}
-              <TableCell className="text-right">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  {def.status === 'active' ? (
-                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-amber-600" onClick={() => openSuspend(def)}>
-                      <PauseCircle className="h-3.5 w-3.5" /> Suspend
-                    </Button>
-                  ) : (
-                    <Button variant="ghost" size="sm" className="h-7 gap-1 text-emerald-600" onClick={() => openReinstate(def)}>
-                      <PlayCircle className="h-3.5 w-3.5" /> Reinstate
-                    </Button>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-
   // ── EMI preview for borrowing form ──
   const borrowingEMIPreview = borrowingForm.loanAmount > 0 && borrowingForm.interestRate > 0 && borrowingForm.tenureMonths > 0
     ? calculateEMI(borrowingForm.loanAmount, borrowingForm.interestRate, borrowingForm.tenureMonths)
@@ -3546,7 +3507,10 @@ export function LedgerMasterPanel() {
                 <Scale className="h-3.5 w-3.5" /> Capital ({capitalDefs.length})
               </TabsTrigger>
               <TabsTrigger value="loans" className="text-xs gap-1.5">
-                <ArrowUpRight className="h-3.5 w-3.5" /> Loans ({loanRecDefs.length + borrowingDefs.length})
+                <ArrowUpRight className="h-3.5 w-3.5" /> Loan Receivable ({loanRecDefs.length})
+              </TabsTrigger>
+              <TabsTrigger value="borrowing" className="text-xs gap-1.5">
+                <Banknote className="h-3.5 w-3.5" /> Borrowing ({borrowingDefs.length})
               </TabsTrigger>
               <TabsTrigger value="income" className="text-xs gap-1.5">
                 <TrendingUp className="h-3.5 w-3.5" /> Income ({incomeDefs.length})
@@ -3578,13 +3542,11 @@ export function LedgerMasterPanel() {
           {/* Capital List — S6.5a Panel */}
           {defSubTab === 'capital' && <CapitalLedgerPanel />}
 
-          {/* Loans List — S6.5b Panels */}
-          {defSubTab === 'loans' && (
-            <div className="space-y-8">
-              <LoanReceivableLedgerPanel />
-              <BorrowingLedgerPanel />
-            </div>
-          )}
+          {/* Loan Receivable List — S6.5b Panel */}
+          {defSubTab === 'loans' && <LoanReceivableLedgerPanel />}
+
+          {/* Borrowing List — S6.5b Panel */}
+          {defSubTab === 'borrowing' && <BorrowingLedgerPanel />}
 
           {/* Income List — S6.5b Panel */}
           {defSubTab === 'income' && <IncomeLedgerPanel />}
