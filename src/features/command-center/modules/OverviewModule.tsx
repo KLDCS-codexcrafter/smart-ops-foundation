@@ -6,6 +6,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
+import { computeAllZones, isConfigured, ZONE_DEFINITIONS } from '../components/ZoneProgressResolver';
+import { RecentActivityStrip } from '../components/RecentActivityStrip';
+import { PendingActionsList } from '../components/PendingActionsList';
 
 interface OverviewModuleProps {
   onNavigate: (module: CommandCenterModule) => void;
@@ -31,13 +34,6 @@ function getUserName(): string {
   return 'Admin';
 }
 
-const ZONE_CARDS = [
-  { zone: 'Zone 1', label: 'Entity Core', progress: 100, status: 'Complete', module: 'foundation' as CommandCenterModule, color: 'text-emerald-500' },
-  { zone: 'Zone 2', label: 'Geography Masters', progress: 100, status: 'Complete', module: 'geography' as CommandCenterModule, color: 'text-emerald-500' },
-  { zone: 'Zone 3', label: 'FineCore Masters', progress: 60, status: 'In Progress', module: 'finecore-hub' as CommandCenterModule, color: 'text-amber-500' },
-  { zone: 'Zone 4', label: 'Procure / Inventory', progress: 0, status: 'Coming Soon', module: 'overview' as CommandCenterModule, color: 'text-muted-foreground' },
-];
-
 const QUICK_ACTIONS = [
   { icon: Building2, label: 'Entity Setup', module: 'foundation' as CommandCenterModule },
   { icon: Globe, label: 'Geography', module: 'geography' as CommandCenterModule },
@@ -49,6 +45,47 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
   const greeting = getGreeting();
   const userName = getUserName();
   const today = format(new Date(), 'EEEE, dd MMMM yyyy');
+
+  // CC-006 — Live zone progress
+  const zones = computeAllZones();
+
+  // CC-007 — Live summary metrics
+  const totalMasters = ZONE_DEFINITIONS.reduce((sum, z) => sum + z.masterKeys.length, 0);
+  const configuredMasters = zones.reduce((sum, z) => sum + z.configuredCount, 0);
+  const pendingMasters = totalMasters - configuredMasters;
+
+  const userCount = (() => {
+    try {
+      // [JWT] GET /api/users/count
+      const raw = localStorage.getItem('erp_user_directory');
+      if (!raw) return 0;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.length : 0;
+    } catch { return 0; }
+  })();
+
+  // Security Score: simple heuristic — % of security-relevant keys configured.
+  // NOT a real security assessment. Will be replaced in S9 when real security engine lands.
+  const securityScore = (() => {
+    const securityKeys = [
+      'erp_gst_entity_config',
+      'erp_statutory_registrations',
+      'erp_comply360_config',
+      'erp_parent_company_saved',
+    ];
+    const configured = securityKeys.filter(isConfigured).length;
+    return Math.round((configured / securityKeys.length) * 100);
+  })();
+
+  // CC-010 — First-run banner
+  const isFirstRun = configuredMasters < 5;
+
+  const summaryItems = [
+    { label: 'Masters Configured', value: String(configuredMasters), icon: CheckCircle, color: 'text-emerald-400' },
+    { label: 'Pending Setup',      value: String(pendingMasters),    icon: Clock,        color: 'text-amber-400' },
+    { label: 'Users',              value: userCount === 0 ? '—' : String(userCount), icon: Shield, color: 'text-cyan-400' },
+    { label: 'Security Score',     value: String(securityScore),     icon: Shield,       color: 'text-violet-400' },
+  ];
 
   return (
     <div className="space-y-6 relative">
@@ -71,40 +108,78 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
         <p className="text-xs text-muted-foreground mt-0.5">Command Centre — Single Source of Truth for IT & Department Admins</p>
       </div>
 
-      {/* Setup Progress Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {ZONE_CARDS.map((card, i) => (
-          <button
-            key={card.zone}
-            onClick={() => card.progress > 0 ? onNavigate(card.module) : undefined}
-            disabled={card.progress === 0}
-            className={`group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-500 animate-slide-up ${
-              card.progress > 0 ? 'hover:scale-[1.02] cursor-pointer' : 'opacity-60 cursor-default'
-            }`}
-            style={{ animationDelay: `${0.1 + i * 0.08}s`, animationFillMode: 'backwards' }}
-          >
-            <div className="absolute inset-0 backdrop-blur-xl border rounded-2xl bg-card/60 border-border" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-3">
-                <Badge variant="outline" className="text-[10px]">{card.zone}</Badge>
-                <span className={`text-xs font-medium ${card.color}`}>{card.status}</span>
-              </div>
-              <h3 className="text-sm font-semibold text-foreground mb-2">{card.label}</h3>
-              <Progress value={card.progress} className="h-1.5" />
-              <p className="text-[10px] text-muted-foreground mt-1">{card.progress}% configured</p>
+      {/* CC-010 First-run banner */}
+      {isFirstRun && (
+        <div className="glass-card rounded-2xl p-5 border-amber-500/30 border">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+              <CheckCircle className="h-5 w-5 text-amber-500" />
             </div>
-          </button>
-        ))}
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-foreground mb-1">Welcome to Command Center</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Quick start — set up your first 4 masters in this order:
+                Parent Company → Currency → Chart of Accounts → a sample Customer.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => onNavigate('foundation')}
+                  className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity"
+                >
+                  Start with Parent Company
+                </button>
+                <button
+                  onClick={() => onNavigate('finecore-currency')}
+                  className="px-3 py-1.5 rounded-lg bg-background border border-border text-xs font-medium hover:bg-accent transition-colors"
+                >
+                  Configure Currency
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CC-009 Pending Actions */}
+      <PendingActionsList />
+
+      {/* Setup Progress Cards (CC-006 — live data) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {zones.map((card, i) => {
+          const colorClass =
+            card.status === 'Complete' ? 'text-emerald-500' :
+            card.status === 'In Progress' ? 'text-amber-500' :
+            'text-muted-foreground';
+          return (
+            <button
+              key={card.zone}
+              onClick={() => card.progress > 0 ? onNavigate(card.module as CommandCenterModule) : undefined}
+              disabled={card.progress === 0}
+              className={`group relative overflow-hidden rounded-2xl p-5 text-left w-full transition-all duration-500 animate-slide-up ${
+                card.progress > 0 ? 'hover:scale-[1.02] cursor-pointer' : 'opacity-60 cursor-default'
+              }`}
+              style={{ animationDelay: `${0.1 + i * 0.08}s`, animationFillMode: 'backwards' }}
+            >
+              <div className="absolute inset-0 backdrop-blur-xl border rounded-2xl bg-card/60 border-border" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <Badge variant="outline" className="text-[10px]">{card.zone}</Badge>
+                  <span className={`text-xs font-medium ${colorClass}`}>{card.status}</span>
+                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">{card.label}</h3>
+                <Progress value={card.progress} className="h-1.5" />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {card.configuredCount} of {card.totalKeys} configured ({card.progress}%)
+                </p>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Module Health Row */}
+      {/* Module Health Row (CC-007 — live data) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: 'Masters Configured', value: '14', icon: CheckCircle, color: 'text-emerald-400' },
-          { label: 'Pending Setup', value: '4', icon: Clock, color: 'text-amber-400' },
-          { label: 'Users', value: '—', icon: Shield, color: 'text-cyan-400' },
-          { label: 'Security Score', value: '87', icon: Shield, color: 'text-violet-400' },
-        ].map(s => {
+        {summaryItems.map(s => {
           const Icon = s.icon;
           return (
             <div key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center animate-slide-up" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
@@ -115,6 +190,9 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
           );
         })}
       </div>
+
+      {/* CC-008 Recent Activity */}
+      <RecentActivityStrip />
 
       {/* Quick Actions */}
       <div className="glass-card rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
