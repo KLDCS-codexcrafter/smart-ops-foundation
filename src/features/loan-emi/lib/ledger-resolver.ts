@@ -29,9 +29,12 @@ export type ExpenseLedgerKind =
   | 'tds_payable'
   | 'input_cgst'
   | 'input_sgst'
-  | 'input_igst';
+  | 'input_igst'
+  // ── T-H1.5-D-D5 additions (notional interest on aged advances) ──
+  | 'interest_receivable_advances'
+  | 'notional_interest_income';
 
-type ResolverLedgerType = 'expense' | 'liability' | 'asset';
+type ResolverLedgerType = 'expense' | 'liability' | 'asset' | 'income';
 
 interface ResolverMeta {
   searchName: RegExp;
