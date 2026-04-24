@@ -277,7 +277,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     } finally {
       setSaving(false);
     }
-  }, [partyName, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate]);
+  }, [partyName, partyId, bankCashLedgerId, bankCashLedgerName, amount, date, voucherNo, paymentMode, instrumentRef, instrumentType, chequeDate, bankName, narration, entityCode, selectedVendor, isTdsApplicable, tdsSection, tdsRate, tdsAmount, deducteeType, paymentPurpose, advancePORef, netPayment, refNo, refDate, effectiveDate, dupOverrideAcknowledged]);
 
   const handleSaveAndNew = useCallback(async () => {
     await handlePost();
