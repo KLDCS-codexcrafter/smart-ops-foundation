@@ -15,10 +15,12 @@ export interface PartyTreeListProps {
   tree: PartyTreeL1[];
   onLeafClick: (leaf: PartyLeaf) => void;
   renderLeafMeta?: (leaf: PartyLeaf) => React.ReactNode;
+  /** S4.5 — render aggregated KPI badges next to L1/L2/L3 node titles. */
+  renderNodeMeta?: (level: 1 | 2 | 3, nodeCode: string, leaves: PartyLeaf[]) => React.ReactNode;
   emptyState?: React.ReactNode;
 }
 
-export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, emptyState }: PartyTreeListProps) {
+export function PartyTreeList({ tree, onLeafClick, renderLeafMeta, renderNodeMeta, emptyState }: PartyTreeListProps) {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(tree.map(l1 => l1.code)));
   const [search, setSearch] = useState('');
 
