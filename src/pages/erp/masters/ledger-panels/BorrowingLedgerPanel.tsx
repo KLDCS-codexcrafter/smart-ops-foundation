@@ -370,17 +370,29 @@ export function BorrowingLedgerPanel() {
                     <Input type="number" value={draft.emiAmount} readOnly className="font-mono bg-muted/30" />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div>
                     <h3 className="text-sm font-semibold">EMI Schedule</h3>
                     <p className="text-xs text-muted-foreground">
                       Track each EMI through its lifecycle. Mark payments and bounces as they happen.
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
-                    disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
-                    <Eye className="h-3.5 w-3.5" /> Preview / Generate
-                  </Button>
+                  <div className="flex items-center gap-1.5">
+                    <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
+                      disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
+                      <Eye className="h-3.5 w-3.5" /> Preview / Generate
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5"
+                      onClick={() => setAccrualRunOpen(true)}
+                      disabled={!isEdit || draft.id.startsWith('borrow-')}>
+                      <PlayCircle className="h-3.5 w-3.5" /> Run Accrual
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5"
+                      onClick={() => setAccrualLogOpen(true)}
+                      disabled={!isEdit || draft.id.startsWith('borrow-')}>
+                      <History className="h-3.5 w-3.5" /> Accrual Log
+                    </Button>
+                  </div>
                 </div>
                 {isEdit && draft.id && !draft.id.startsWith('borrow-') ? (
                   <EMIScheduleTable ledgerId={draft.id} />
