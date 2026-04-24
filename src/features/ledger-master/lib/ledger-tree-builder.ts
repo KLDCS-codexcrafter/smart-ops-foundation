@@ -51,8 +51,8 @@ export function buildLedgerTree<T extends { id: string }>(
     const groupCodeRaw = rec[config.parentGroupField];
     const groupCode = (groupCodeRaw === null || groupCodeRaw === undefined || groupCodeRaw === '')
       ? '__ungrouped__' : String(groupCodeRaw);
-    const groupLabel = String(l[config.parentGroupLabelField] ?? 'Ungrouped');
-    const entityRaw = l[config.entityField];
+    const groupLabel = String(rec[config.parentGroupLabelField] ?? 'Ungrouped');
+    const entityRaw = rec[config.entityField];
     const entityCode = (entityRaw === null || entityRaw === undefined || entityRaw === '')
       ? '__group__' : String(entityRaw);
 
@@ -60,13 +60,13 @@ export function buildLedgerTree<T extends { id: string }>(
     const g = byGroup.get(groupCode)!;
     if (!g.byEntity.has(entityCode)) g.byEntity.set(entityCode, []);
     g.byEntity.get(entityCode)!.push({
-      id: String(l.id ?? ''),
-      name: String(l.name ?? ''),
-      code: String(l.code ?? ''),
-      numericCode: String(l.numericCode ?? ''),
-      status: String(l.status ?? 'active'),
+      id: String(rec.id ?? l.id ?? ''),
+      name: String(rec.name ?? ''),
+      code: String(rec.code ?? ''),
+      numericCode: String(rec.numericCode ?? ''),
+      status: String(rec.status ?? 'active'),
       entityShortCode: entityCode === '__group__' ? null : entityCode,
-      raw: l,
+      raw: rec,
     });
   }
 
