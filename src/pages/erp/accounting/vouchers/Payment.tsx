@@ -96,6 +96,16 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
   const lastSavedRef = useRef(false);
 
+  // T-H1.5-D-D3: party mode + duplicate-detector state
+  const [partyMode, setPartyMode] = useState<'vendor' | 'borrowing'>('vendor');
+  const [dupHits, setDupHits] = useState<DuplicateHit[]>([]);
+  const [dupWarningOpen, setDupWarningOpen] = useState(false);
+  const [dupOverrideAcknowledged, setDupOverrideAcknowledged] = useState(false);
+
+  // Reset override flag when key fields change so a stale override can never
+  // be reused for a different posting.
+  useEffect(() => { setDupOverrideAcknowledged(false); }, [amount, partyId]);
+
   // Sprint 3B state
   const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
   const [advancePORef, setAdvancePORef] = useState('');
