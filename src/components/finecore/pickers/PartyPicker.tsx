@@ -45,10 +45,10 @@ export interface PartyPickerRow {
     isDefaultShipTo?: boolean;
   }>;
   /** Internal classification — filled by the loader. */
-  _partyType: 'customer' | 'vendor';
+  _partyType: 'customer' | 'vendor' | 'borrowing';
 }
 
-export type PartyMode = 'customer' | 'vendor' | 'both';
+export type PartyMode = 'customer' | 'vendor' | 'borrowing' | 'both';
 
 interface PartyPickerProps {
   value: string;
@@ -79,6 +79,31 @@ function loadParties(_entityCode: string, mode: PartyMode): PartyPickerRow[] {
       if (raw) {
         const rows = JSON.parse(raw) as Omit<PartyPickerRow, '_partyType'>[];
         out.push(...rows.map(r => ({ ...r, _partyType: 'vendor' as const })));
+      }
+    }
+    // T-H1.5-D-D3: borrowing mode loads from ledger-definitions
+    if (mode === 'borrowing') {
+      // [JWT] GET /api/accounting/ledger-definitions?type=borrowing
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      if (raw) {
+        const all = JSON.parse(raw) as Array<{
+          id: string;
+          ledgerType?: string;
+          name?: string;
+          code?: string;
+          status?: string;
+        }>;
+        const borrowings = all.filter(l =>
+          l.ledgerType === 'borrowing' && l.status === 'active',
+        );
+        for (const b of borrowings) {
+          out.push({
+            id: b.id,
+            partyName: b.name ?? 'Unnamed Borrowing',
+            partyCode: b.code ?? '',
+            _partyType: 'borrowing',
+          });
+        }
       }
     }
   } catch { /* ignore */ }
