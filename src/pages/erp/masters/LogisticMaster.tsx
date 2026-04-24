@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,14 @@ import {
   INDUSTRY_SECTORS, getActivitiesForSector,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+// ── T-H1.5-C-S5 — Logistic Master Redesign (reuse party-master S4 components) ──
+import {
+  PartyTreeList, PartyStepSidebar,
+  ContactDetailsModal, BankDetailsModal,
+  buildPartyTree,
+  type BankAccount, type OpeningBill, type PartyLeaf,
+} from '@/features/party-master';
+import { LayoutGrid, List as ListIcon } from 'lucide-react';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -121,6 +129,10 @@ interface LogisticMasterDefinition {
   password_updated_at?: string | null;
   last_login_at?: string | null;
   must_change_password?: boolean;
+
+  // ── S5 — optional additions (backward-compatible, no field removed/renamed) ──
+  bankAccounts?: BankAccount[];
+  openingBalanceBills?: OpeningBill[];
 }
 
 // ─── Storage ──────────────────────────────────────────────────
