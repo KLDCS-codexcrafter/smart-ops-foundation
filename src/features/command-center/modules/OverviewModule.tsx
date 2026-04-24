@@ -195,6 +195,11 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
       {/* CC-008 Recent Activity */}
       <RecentActivityStrip />
 
+      {/* T-H1.5-D-D3: EMI alerts widget — surfaces overdue/due-soon EMIs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <EMIDashboardWidget />
+      </div>
+
       {/* Quick Actions */}
       <div className="glass-card rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Quick Actions</p>
