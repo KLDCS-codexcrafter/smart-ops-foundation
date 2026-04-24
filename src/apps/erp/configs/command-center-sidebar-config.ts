@@ -77,6 +77,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-terms-of-payment', requiredCards: ['command-center'] },
       { id: 'finecore-terms-of-delivery', type: 'item', label: 'Terms of Delivery',
         moduleId: 'finecore-terms-of-delivery', requiredCards: ['command-center'] },
+      { id: 'finecore-fiscal-year', type: 'item', label: 'Fiscal Year Calendar',
+        moduleId: 'finecore-fiscal-year', requiredCards: ['command-center'] },
     ],
   },
   {

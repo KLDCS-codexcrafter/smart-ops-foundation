@@ -27,6 +27,8 @@ import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMast
 import { CurrencyMasterPanel } from '@/pages/erp/accounting/CurrencyMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { TransactionTemplatesPanel } from '@/pages/erp/accounting/TransactionTemplates';
+// T-H1.5-C-S3 — FY Calendar Master (CC-015)
+import { FiscalYearMasterPanel } from '@/pages/erp/accounting/FiscalYearMaster';
 // T-H1.5-C-S1 — Supporting masters wired to CC (CC-017/018/019/020)
 import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
@@ -134,6 +136,7 @@ export type CommandCenterModule =
   | 'finecore-mode-of-payment'
   | 'finecore-terms-of-payment'
   | 'finecore-terms-of-delivery'
+  | 'finecore-fiscal-year'
   | 'finecore-business-unit'
   | 'console'
   | 'inventory-parametric'
@@ -219,7 +222,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-business-unit',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -308,6 +311,7 @@ export default function CommandCenterPage() {
       case 'finecore-mode-of-payment': return <ModeOfPaymentMasterPanel />;
       case 'finecore-terms-of-payment': return <TermsOfPaymentMasterPanel />;
       case 'finecore-terms-of-delivery': return <TermsOfDeliveryMasterPanel />;
+      case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
       case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
