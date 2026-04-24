@@ -210,7 +210,21 @@ const defaultForm: Omit<VendorMasterDefinition, 'id' | 'partyCode'> = {
   primary_division_id: '',
   primary_department_id: '',
   status: 'active',
+  // S5 — new optional collections
+  bankAccounts: [],
+  openingBalanceBills: [],
 };
+
+// ─── S5 — 7-Step sidebar definition ───────────────────────────
+const VENDOR_STEPS = [
+  { id: 1, title: 'Group & Identity',  description: 'Vendor type, GSTIN, legal details' },
+  { id: 2, title: 'GST Auto-Fill',     description: 'Fetch & verify GST profile' },
+  { id: 3, title: 'Contact & Address', description: 'Multi-contact + registered address' },
+  { id: 4, title: 'Banking',           description: 'Bank accounts with IFSC auto-fill' },
+  { id: 5, title: 'Compliance',        description: 'PAN required, TDS section, e-Invoice' },
+  { id: 6, title: 'Accounting',        description: 'Payment terms, opening balance, credit days' },
+  { id: 7, title: 'Classification',    description: 'Sector, activity, operating scale' },
+];
 
 // ─── Panel Component ──────────────────────────────────────────
 
