@@ -18,6 +18,11 @@ import type { DemoArchetype } from '@/data/demo-customers-vendors';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { computeCustomerKPIs } from '@/features/party-master/lib/customer-kpi-engine';
 import { findCrossSellCandidates } from '@/features/party-master/lib/cross-sell-finder';
+import {
+  canTransition, enrichRow, upgradeSchedule,
+  type EMIScheduleLiveRow,
+} from '@/features/loan-emi/lib/emi-lifecycle-engine';
+import type { EMIScheduleRow } from '@/features/ledger-master/lib/emi-schedule-builder';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -523,6 +528,85 @@ const CHECKS: CheckSpec[] = [
       if (br.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No borrowings' };
       const bad = br.filter(l => 'processingFee' in l && typeof l.processingFee !== 'number').length;
       return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken foundation field types` };
+    } },
+
+  // ── T-H1.5-D-D1 · EMI Lifecycle Layer (CC-062) ──
+  { id: 'emi-1', section: 'EMI Lifecycle (D1)',
+    name: 'Lifecycle engine blocks illegal transitions',
+    run: () => {
+      const legalOk = canTransition('scheduled', 'paid');
+      const illegalOk = canTransition('paid', 'scheduled');
+      const pass = legalOk === true && illegalOk === false;
+      return {
+        actual: `legal=${legalOk}, illegal=${illegalOk}`,
+        expected: 'legal=true, illegal=false',
+        pass, details: 'State machine gatekeeping',
+      };
+    } },
+  { id: 'emi-2', section: 'EMI Lifecycle (D1)',
+    name: 'enrichRow computes "due" for past dueDate',
+    run: () => {
+      const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+      const today = new Date().toISOString().slice(0, 10);
+      const mockRow: EMIScheduleLiveRow = {
+        emiNumber: 1, dueDate: yesterday,
+        principalPortion: 1000, interestPortion: 100, totalEMI: 1100,
+        openingBalance: 10000, closingBalance: 9000,
+        status: 'scheduled', paymentVoucherId: null, paidDate: null,
+        paidAmount: 0, penalAccrued: 0, bouncedDate: null, bouncedCount: 0, notes: '',
+      };
+      const enriched = enrichRow(mockRow, today);
+      return {
+        actual: enriched.status, expected: 'due',
+        pass: enriched.status === 'due',
+        details: `Row with dueDate=${yesterday} enriched on today=${today}`,
+      };
+    } },
+  { id: 'emi-3', section: 'EMI Lifecycle (D1)',
+    name: 'S6.5b → D1 migration preserves row count + dates',
+    run: () => {
+      const cached: EMIScheduleRow[] = [
+        { emiNumber: 1, dueDate: '2026-05-01', principal: 100, interest: 20,
+          runningBalance: 900, status: 'scheduled' },
+        { emiNumber: 2, dueDate: '2026-06-01', principal: 100, interest: 18,
+          runningBalance: 800, status: 'scheduled' },
+      ];
+      const live = upgradeSchedule(cached);
+      const pass = live.length === 2
+        && live[0].dueDate === '2026-05-01'
+        && live[0].principalPortion === 100
+        && live[0].totalEMI === 120
+        && live[0].status === 'scheduled';
+      return {
+        actual: `len=${live.length}, firstDue=${live[0]?.dueDate}, firstTotal=${live[0]?.totalEMI}`,
+        expected: 'len=2, firstDue=2026-05-01, firstTotal=120',
+        pass, details: 'Backward compat migration',
+      };
+    } },
+  { id: 'emi-4', section: 'EMI Lifecycle (D1)',
+    name: 'Charges fields remain optional / numeric when present',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{
+        ledgerType?: string;
+        processingFee?: unknown;
+        penalInterestRate?: unknown;
+        chequeBounceCharge?: unknown;
+        foreclosureChargeRate?: unknown;
+      }>;
+      const borrowings = all.filter(l => l.ledgerType === 'borrowing');
+      if (borrowings.length === 0) {
+        return { actual: 'skip', expected: 'skip', pass: true, details: 'No borrowing ledgers' };
+      }
+      const bad = borrowings.filter(l =>
+        (l.processingFee !== undefined && typeof l.processingFee !== 'number')
+        || (l.penalInterestRate !== undefined && typeof l.penalInterestRate !== 'number')
+        || (l.chequeBounceCharge !== undefined && typeof l.chequeBounceCharge !== 'number')
+        || (l.foreclosureChargeRate !== undefined && typeof l.foreclosureChargeRate !== 'number')
+      ).length;
+      return {
+        actual: bad, expected: 0, pass: bad === 0,
+        details: `${bad} borrowings with corrupt charge types`,
+      };
     } },
 ];
 
