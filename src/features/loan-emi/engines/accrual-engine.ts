@@ -175,7 +175,56 @@ export function commitMonthlyAccrual(asOfDate: string, entityCode: string): Accr
       const voucherId = `v-accr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       const voucherNo = generateVoucherNo('JV-ACCR', entityCode);
       const nowIso = new Date().toISOString();
-      const narration = `Being Interest Billing for ${ledger.name} — ${periodKey}`;
+
+      // ── T-H1.5-D-D4 — Compute TDS BEFORE voucher construction ──
+      const tdsSpec = computeTDSForAccrual(
+        { id: ledger.id, name: ledger.name, tdsApplicable: ledger.tdsApplicable, tdsSection: ledger.tdsSection },
+        emi.interestPortion,
+        entityCode,
+      );
+
+      const narration = tdsSpec.applicable
+        ? `Being Interest Billing for ${ledger.name} — ${periodKey} (TDS ₹${tdsSpec.tdsAmount.toFixed(2)} deducted u/s ${tdsSpec.section})`
+        : `Being Interest Billing for ${ledger.name} — ${periodKey}`;
+
+      const ledger_lines = [
+        {
+          id: `ll-${Date.now()}-a`,
+          ledger_id: intExpId,
+          ledger_code: intExpCode,
+          ledger_name: intExpName,
+          ledger_group_code: 'E-FC',
+          dr_amount: emi.interestPortion,                        // GROSS — accounting principle
+          cr_amount: 0,
+          narration: `Interest accrual for ${ledger.name} — EMI #${emi.emiNumber} — ${periodKey}`,
+        },
+        {
+          id: `ll-${Date.now()}-b`,
+          ledger_id: ledger.id,
+          ledger_code: ledger.code,
+          ledger_name: ledger.name,
+          ledger_group_code: ledger.parentGroupCode,
+          dr_amount: 0,
+          cr_amount: tdsSpec.applicable ? tdsSpec.netAmount : emi.interestPortion,
+          narration: tdsSpec.applicable
+            ? `Interest accrual (net of TDS) — EMI #${emi.emiNumber}`
+            : `Interest accrual — EMI #${emi.emiNumber}`,
+        },
+      ];
+
+      // 3rd leg ONLY if TDS applicable — keeps voucher Dr=Cr
+      if (tdsSpec.applicable && tdsSpec.tdsLedgerId) {
+        ledger_lines.push({
+          id: `ll-${Date.now()}-c`,
+          ledger_id: tdsSpec.tdsLedgerId,
+          ledger_code: 'TDSP',
+          ledger_name: 'TDS Payable u/s 194A',
+          ledger_group_code: 'TDSP',
+          dr_amount: 0,
+          cr_amount: tdsSpec.tdsAmount,
+          narration: tdsSpec.narration,
+        });
+      }
 
       const voucher: Voucher = {
         id: voucherId,
@@ -188,28 +237,7 @@ export function commitMonthlyAccrual(asOfDate: string, entityCode: string): Accr
         effective_date: emi.dueDate,
         party_id: ledger.id,
         party_name: ledger.name,
-        ledger_lines: [
-          {
-            id: `ll-${Date.now()}-a`,
-            ledger_id: intExpId,
-            ledger_code: intExpCode,
-            ledger_name: intExpName,
-            ledger_group_code: 'E-FC',
-            dr_amount: emi.interestPortion,
-            cr_amount: 0,
-            narration: `Interest accrual for ${ledger.name} — EMI #${emi.emiNumber} — ${periodKey}`,
-          },
-          {
-            id: `ll-${Date.now()}-b`,
-            ledger_id: ledger.id,
-            ledger_code: ledger.code,
-            ledger_name: ledger.name,
-            ledger_group_code: ledger.parentGroupCode,
-            dr_amount: 0,
-            cr_amount: emi.interestPortion,
-            narration: `Interest accrual — EMI #${emi.emiNumber}`,
-          },
-        ],
+        ledger_lines,
         gross_amount: emi.interestPortion,
         total_discount: 0,
         total_taxable: 0,
@@ -220,7 +248,11 @@ export function commitMonthlyAccrual(asOfDate: string, entityCode: string): Accr
         total_tax: 0,
         round_off: 0,
         net_amount: emi.interestPortion,
-        tds_applicable: false,
+        // ── Header fields critical for getAggregateYTD scan in computeTDS ──
+        tds_applicable: tdsSpec.applicable,
+        tds_section: tdsSpec.applicable ? tdsSpec.section : undefined,
+        tds_rate: tdsSpec.applicable ? tdsSpec.rate : undefined,
+        tds_amount: tdsSpec.applicable ? tdsSpec.tdsAmount : undefined,
         narration,
         terms_conditions: '',
         payment_enforcement: '',
@@ -235,7 +267,7 @@ export function commitMonthlyAccrual(asOfDate: string, entityCode: string): Accr
       // [JWT] POST /api/accounting/vouchers/post
       postVoucher(voucher, entityCode);
 
-      const newLog = appendLogEntry(ledger.accrualLog, {
+      let nextLog = appendLogEntry(ledger.accrualLog, {
         ledgerId: ledger.id,
         action: 'monthly_interest',
         periodKey,
@@ -247,7 +279,24 @@ export function commitMonthlyAccrual(asOfDate: string, entityCode: string): Accr
         reversedByVoucherId: null,
         narration,
       });
-      updated[i] = { ...ledger, accrualLog: newLog };
+
+      // Append TDS log entry (same voucher — for audit visibility, no separate dup-check)
+      if (tdsSpec.applicable) {
+        nextLog = appendLogEntry(nextLog, {
+          ledgerId: ledger.id,
+          action: 'tds_deduction',
+          periodKey: `${periodKey}#tds`,
+          emiNumber: emi.emiNumber,
+          amount: tdsSpec.tdsAmount,
+          voucherId,
+          voucherNo,
+          postedBy: 'current-user',
+          reversedByVoucherId: null,
+          narration: tdsSpec.narration,
+        });
+      }
+
+      updated[i] = { ...ledger, accrualLog: nextLog };
       result.posted += 1;
     } catch (err) {
       result.errors.push({
