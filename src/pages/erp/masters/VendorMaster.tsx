@@ -1306,10 +1306,27 @@ export function VendorMasterPanel() {
             </button>
           ))}
         </div>
+        {/* S5 — view mode toggle */}
+        <div className="ml-auto flex items-center gap-1 border border-border rounded-md p-0.5">
+          <button type="button" onClick={() => setViewMode('table')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'table' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <ListIcon className="h-3 w-3" /> Table
+          </button>
+          <button type="button" onClick={() => setViewMode('tree')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'tree' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <LayoutGrid className="h-3 w-3" /> Tree
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* Table or Tree (S5) */}
+      {viewMode === 'tree' ? (
+        <VendorTreeBranch vendors={filtered} onLeafClick={openEdit} />
+      ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p className="text-sm font-medium">No vendors yet</p>
@@ -1386,14 +1403,42 @@ export function VendorMasterPanel() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={addOpen || !!editTarget} onOpenChange={v => { if (!v) resetAndClose(); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-5xl">
           <DialogHeader>
             <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Vendor'}</DialogTitle>
             <DialogDescription>
               {editTarget ? 'Update vendor details.' : 'Create a new vendor or supplier (Sundry Creditor).'}
             </DialogDescription>
           </DialogHeader>
-          {renderForm()}
+          <PartyStepSidebar
+            steps={VENDOR_STEPS}
+            currentStep={currentStep}
+            onStepClick={(s) => {
+              setCurrentStep(s);
+              if (s === 3) setShowContacts(true);
+              if (s === 4) setBankModal(true);
+              if (s === 5) setShowTaxation(true);
+              if (s === 6) setShowFinancial(true);
+              if (s === 7) setShowCompanyInfo(true);
+            }}
+            completedSteps={computeVendorCompletedSteps(form)}
+          >
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setContactModal(true)}>
+                <User className="h-3 w-3" /> Contacts ({form.contacts.length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBankModal(true)}>
+                <CreditCard className="h-3 w-3" /> Banking ({(form.bankAccounts ?? []).length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setCompanyInfoModal(true)}>
+                <Building className="h-3 w-3" /> Company Info
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBillWiseModal(true)}>
+                <Briefcase className="h-3 w-3" /> Opening Balance Bills ({(form.openingBalanceBills ?? []).length})
+              </Button>
+            </div>
+            {renderForm()}
+          </PartyStepSidebar>
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
             <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
@@ -1402,7 +1447,117 @@ export function VendorMasterPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* S5 — Progressive modals */}
+      <ContactDetailsModal
+        open={contactModal}
+        onOpenChange={setContactModal}
+        contacts={form.contacts}
+        onSave={(next) => setForm(f => ({ ...f, contacts: next }))}
+      />
+      <BankDetailsModal
+        open={bankModal}
+        onOpenChange={setBankModal}
+        accounts={form.bankAccounts ?? []}
+        onSave={(next) => setForm(f => ({ ...f, bankAccounts: next }))}
+      />
+      <CompanyInfoModal
+        open={companyInfoModal}
+        onOpenChange={setCompanyInfoModal}
+        value={{
+          typeOfBusinessEntity: form.typeOfBusinessEntity,
+          natureOfBusiness: form.natureOfBusiness,
+          businessActivity: form.businessActivity,
+          businessActivityCustom: form.businessActivityCustom,
+          operatingScale: form.operatingScale,
+        }}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          typeOfBusinessEntity: next.typeOfBusinessEntity as typeof f.typeOfBusinessEntity,
+          natureOfBusiness: next.natureOfBusiness,
+          businessActivity: next.businessActivity,
+          businessActivityCustom: next.businessActivityCustom,
+          operatingScale: next.operatingScale,
+        }))}
+      />
+      <BillWiseBreakupModal
+        open={billWiseModal}
+        onOpenChange={setBillWiseModal}
+        openingBalance={form.openingBalance}
+        bills={form.openingBalanceBills ?? []}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          openingBalance: next.openingBalance,
+          openingBalanceBills: next.bills,
+        }))}
+      />
     </div>
+  );
+}
+
+// ─── S5 Helpers ───────────────────────────────────────────────
+
+/** Derive completed step IDs from vendor form completeness. */
+function computeVendorCompletedSteps(form: typeof defaultForm): number[] {
+  const done: number[] = [];
+  if (form.partyName.trim() && form.vendorType) done.push(1);
+  if (form.gstin.replace(/\s/g, '').length === 15 || form.gstRegistrationType === 'unregistered' || form.gstRegistrationType === 'consumer') done.push(2);
+  if (form.contacts.length > 0 || form.addressLine.trim()) done.push(3);
+  if ((form.bankAccounts ?? []).length > 0 || form.bankAccountNo.trim()) done.push(4);
+  if (form.pan.trim() && (!form.tdsApplicable || form.tdsSection)) done.push(5);
+  if (form.creditDays > 0 || form.openingBalance !== 0) done.push(6);
+  if (form.natureOfBusiness && form.businessActivity) done.push(7);
+  return done;
+}
+
+interface VendorTreeBranchProps {
+  vendors: VendorMasterDefinition[];
+  onLeafClick: (item: VendorMasterDefinition) => void;
+}
+function VendorTreeBranch({ vendors, onLeafClick }: VendorTreeBranchProps) {
+  const tree = useMemo(() => buildPartyTree(
+    vendors as unknown as Array<Record<string, unknown>>,
+    {
+      typeField: 'vendorType',
+      sectorField: 'natureOfBusiness',
+      activityField: 'businessActivity',
+      typeLabels: Object.fromEntries(VENDOR_TYPES.map(t => [t.value, t.label])),
+    },
+  ), [vendors]);
+
+  const byId = useMemo(() => {
+    const m = new Map<string, VendorMasterDefinition>();
+    for (const v of vendors) m.set(v.id, v);
+    return m;
+  }, [vendors]);
+
+  return (
+    <PartyTreeList
+      tree={tree}
+      onLeafClick={(leaf: PartyLeaf) => {
+        const item = byId.get(leaf.id);
+        if (item) onLeafClick(item);
+      }}
+      renderLeafMeta={(leaf) => {
+        const v = byId.get(leaf.id);
+        if (!v) return null;
+        return (
+          <span className="flex items-center gap-1.5">
+            {v.msmeRegistered && (
+              <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/30 text-[9px] capitalize">
+                {v.msmeCategory || 'MSME'}
+              </Badge>
+            )}
+            {v.tdsApplicable && v.tdsSection && (
+              <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30 text-[9px]">
+                TDS {v.tdsSection}
+              </Badge>
+            )}
+          </span>
+        );
+      }}
+      emptyState="No vendors match the current filter."
+    />
   );
 }
 
