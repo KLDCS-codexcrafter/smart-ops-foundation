@@ -41,7 +41,7 @@ import {
 // ── T-H1.5-C-S5 — Logistic Master Redesign (reuse party-master S4 components) ──
 import {
   PartyTreeList, PartyStepSidebar,
-  ContactDetailsModal, BankDetailsModal,
+  ContactDetailsModal, BankDetailsModal, BillWiseBreakupModal,
   buildPartyTree,
   type BankAccount, type OpeningBill, type PartyLeaf,
 } from '@/features/party-master';
