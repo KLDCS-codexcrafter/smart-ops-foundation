@@ -39,6 +39,11 @@ import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import type { SetupResult } from '@/services/entity-setup-service';
 import { onEnterNext } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
+  BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 
@@ -72,14 +77,7 @@ const STEPS = [
   { id: 7, title: 'Audit Trail', description: 'Change history' },
 ];
 
-const BUSINESS_ENTITIES = ['Private Limited', 'Public Limited', 'LLP', 'OPC',
-  'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society'];
-const INDUSTRIES = ['Technology', 'Manufacturing', 'Trading', 'Retail', 'Healthcare',
-  'Finance', 'Education', 'Real Estate', 'Logistics', 'Consulting',
-  'Food & Beverage', 'Textile', 'Pharma', 'Construction', 'Agriculture',
-  'Energy', 'Media', 'Others'];
-const BUSINESS_ACTIVITIES = ['Manufacturing', 'Trading', 'Services', 'Import / Export',
-  'E-Commerce', 'Distribution', 'IT Services', 'Consulting', 'Others'];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Australia',
   'Canada', 'Singapore', 'Germany', 'UAE', 'Japan', 'Others'];
 const ISD_CODES = ['+91', '+1', '+44', '+61', '+65', '+49', '+971', '+81', '+86'];
@@ -116,6 +114,8 @@ const COLOR_SWATCHES = ['#0D9488', '#1E3A5F', '#1E40AF', '#7C3AED', '#B91C1C',
 const INITIAL_FORM: Record<string, unknown> = {
   legalEntityName: '', tradingBrandName: '', shortCode: '',
   businessEntity: '', industry: '', businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '' as OperatingScale | '',
   parentCompanyId: '', parentCompanyName: '',
   // Subsidiary-specific
   reportingToEntityId: '',
@@ -487,15 +487,36 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
             </Select>
           </FormField>
           <FormField label="Industry / Sector" required>
-            <Select value={f('industry')} onValueChange={v => upd('industry', v)}>
+            <Select value={f('industry')} onValueChange={v => { upd('industry', v); upd('businessActivity', ''); upd('businessActivityCustom', ''); }}>
               <SelectTrigger className="text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
-              <SelectContent>{INDUSTRIES.map(i => <SelectItem key={i} value={i}><span className="text-xs">{i}</span></SelectItem>)}</SelectContent>
+              <SelectContent>{INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}</SelectContent>
             </Select>
           </FormField>
-          <FormField label="Business Activity" required>
-            <Select value={f('businessActivity')} onValueChange={v => upd('businessActivity', v)}>
-              <SelectTrigger className="text-xs"><SelectValue placeholder="Select activity" /></SelectTrigger>
-              <SelectContent>{BUSINESS_ACTIVITIES.map(a => <SelectItem key={a} value={a}><span className="text-xs">{a}</span></SelectItem>)}</SelectContent>
+          <FormField label="Business Activity" required hint={!f('industry') ? 'Select industry first' : undefined}>
+            <Select value={f('businessActivity')} onValueChange={v => upd('businessActivity', v)} disabled={!f('industry')}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder={f('industry') ? 'Select activity' : 'Select industry first'} /></SelectTrigger>
+              <SelectContent>{getActivitiesForSector(f('industry') as string).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}</SelectContent>
+            </Select>
+            {f('businessActivity') === 'others' && (
+              <Input
+                value={f('businessActivityCustom') as string}
+                onChange={e => upd('businessActivityCustom', e.target.value)}
+                placeholder="e.g. Specialty Jewellery Retail"
+                className="text-xs mt-1.5"
+                maxLength={80}
+              />
+            )}
+          </FormField>
+          <FormField label="Operating Scale" hint="Commercial tier — guidance only, NOT MSME classification">
+            <Select value={f('operatingScale') as string} onValueChange={v => upd('operatingScale', v as OperatingScale)}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+              <SelectContent>
+                {OPERATING_SCALES.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </FormField>
           <FormField label="Parent Company" required>
@@ -624,7 +645,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         <Separator className="my-4" />
         <CompanyProfilePreview data={{
           legalEntityName: f('legalEntityName'), tradingBrandName: f('tradingBrandName'),
-          businessEntity: f('businessEntity'), industry: f('industry'),
+          businessEntity: f('businessEntity'), industry: getSectorLabel(f('industry') as string),
           hqCity: f('hqCity'), hqCountry: f('hqCountry'),
           corporateEmail: f('corporateEmail'), website: f('website'),
           status: f('status'), logo: f('logoLeft') || f('logoCenter') || f('logoRight'),
@@ -975,7 +996,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         <p className="text-xs font-semibold text-foreground mb-3">Live Preview</p>
         <CompanyProfilePreview data={{
           legalEntityName: f('legalEntityName'), tradingBrandName: f('tradingBrandName'),
-          businessEntity: f('businessEntity'), industry: f('industry'),
+          businessEntity: f('businessEntity'), industry: getSectorLabel(f('industry') as string),
           hqCity: f('hqCity'), hqCountry: f('hqCountry'),
           corporateEmail: f('corporateEmail'), website: f('website'),
           status: f('status'), logo: f('logoLeft') || f('logoCenter') || f('logoRight'),
@@ -1103,8 +1124,10 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       shortCode={f('shortCode')}
       entityType={entityType === 'company' ? 'subsidiary' : 'subsidiary'}
       businessEntity={f('businessEntity')}
-      industry={f('industry')}
-      businessActivity={f('businessActivity')}
+      industry={getSectorLabel(f('industry') as string)}
+      businessActivity={f('businessActivity') === 'others' && f('businessActivityCustom')
+        ? (f('businessActivityCustom') as string)
+        : getActivityLabel(f('industry') as string, f('businessActivity') as string)}
       onComplete={(result) => {
         toast.success(`${f('legalEntityName')} is ready. ${result.ledgersCreated} ledgers created.`);
         navigate(listPath);

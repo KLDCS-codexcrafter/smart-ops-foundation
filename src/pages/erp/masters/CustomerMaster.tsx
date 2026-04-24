@@ -30,6 +30,10 @@ import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+import {
+  INDUSTRY_SECTORS, getActivitiesForSector,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -105,6 +109,8 @@ interface CustomerMasterDefinition {
     | 'proprietor' | 'opc' | 'huf' | 'individual' | 'trust' | 'other';
   natureOfBusiness: string;
   businessActivity: string;
+  businessActivityCustom: string;
+  operatingScale: OperatingScale | '';
   /** @deprecated Use default_reference_id — kept for data compat */
   referredBy: string;
   /** @deprecated Use default_salesman_id — kept for data compat */
@@ -231,7 +237,7 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   // [JWT] GET /api/foundation/parent-company/base-currency
   default_currency: (() => { try { return localStorage.getItem('erp_base_currency') || 'INR'; } catch { return 'INR'; } })(),
   typeOfBusinessEntity: 'private_limited',
-  natureOfBusiness: '', businessActivity: '',
+  natureOfBusiness: '', businessActivity: '', businessActivityCustom: '', operatingScale: '',
   referredBy: '', associatedDealer: '', otherReference: '',
   businessHours: '', termsOfDeliveryId: '', dispatchMode: '',
   status: 'active',
@@ -1314,16 +1320,47 @@ export function CustomerMasterPanel() {
             </Select>
           </div>
           <div>
-            <Label className="text-xs">Nature of Business</Label>
-            <Input value={form.natureOfBusiness}
-              onChange={e => setForm(f => ({ ...f, natureOfBusiness: e.target.value }))}
-              onKeyDown={onEnterNext} />
+            <Label className="text-xs">Industry / Sector</Label>
+            <Select value={form.natureOfBusiness}
+              onValueChange={v => setForm(f => ({ ...f, natureOfBusiness: v, businessActivity: '', businessActivityCustom: '' }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
+              <SelectContent>
+                {INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label className="text-xs">Business Activity</Label>
-            <Input value={form.businessActivity}
-              onChange={e => setForm(f => ({ ...f, businessActivity: e.target.value }))}
-              onKeyDown={onEnterNext} />
+            <Select value={form.businessActivity}
+              onValueChange={v => setForm(f => ({ ...f, businessActivity: v }))}
+              disabled={!form.natureOfBusiness}>
+              <SelectTrigger className="h-9 text-xs">
+                <SelectValue placeholder={form.natureOfBusiness ? 'Select activity' : 'Select industry first'} />
+              </SelectTrigger>
+              <SelectContent>
+                {getActivitiesForSector(form.natureOfBusiness).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}
+              </SelectContent>
+            </Select>
+            {form.businessActivity === 'others' && (
+              <Input value={form.businessActivityCustom}
+                onChange={e => setForm(f => ({ ...f, businessActivityCustom: e.target.value }))}
+                placeholder="e.g. Specialty Jewellery Retail" maxLength={80}
+                className="h-9 text-xs mt-1.5" />
+            )}
+          </div>
+          <div>
+            <Label className="text-xs">Operating Scale</Label>
+            <Select value={form.operatingScale}
+              onValueChange={v => setForm(f => ({ ...f, operatingScale: v as OperatingScale }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+              <SelectContent>
+                {OPERATING_SCALES.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
             <div className="flex items-center gap-2">

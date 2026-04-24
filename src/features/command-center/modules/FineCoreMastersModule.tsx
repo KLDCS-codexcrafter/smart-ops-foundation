@@ -34,29 +34,7 @@ function getMasterStatus(key: string): 'seeded' | 'empty' | 'live' {
   return 'empty';
 }
 
-const MASTER_CARDS: MasterCard[] = [
-  // Statutory Reference
-  { title: 'GST Rate Reference', desc: '24 GST rates + international — maintained by 4DSmartOps', icon: Calculator, module: 'finecore-tax-rates', storageKey: 'erp_tax_rates', section: 'statutory' },
-  { title: 'TDS / TCS Sections', desc: 'Tax deducted and collected at source — all sections', icon: Shield, module: 'finecore-tds', storageKey: 'erp_tds_sections', section: 'statutory' },
-  { title: 'HSN / SAC Directory', desc: '100+ codes with GST rates — searchable reference', icon: BookOpen, module: 'finecore-hsn-sac', storageKey: 'erp_hsn_sac_codes', section: 'statutory' },
-  { title: 'Payroll Statutory', desc: 'EPF, ESI, LWF, Professional Tax — contribution rates', icon: Users, module: 'finecore-epf-esi-lwf', storageKey: 'erp_epf_esi_lwf', section: 'statutory' },
-  { title: 'Income Tax Reference', desc: 'IT slabs, deductions, gratuity — FY 2024-25', icon: Receipt, module: 'finecore-income-tax', storageKey: 'erp_income_tax', section: 'statutory' },
-  // Entity Configuration
-  { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'finecore-statutory-reg', storageKey: 'erp_statutory_registrations', section: 'entity-config' },
-  { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'finecore-gst-config', storageKey: 'erp_gst_entity_config', section: 'entity-config' },
-  { title: 'Comply360 Config', desc: 'Feature flags and ledger mappings', icon: Shield, module: 'finecore-comply360', storageKey: 'erp_comply360_config', section: 'entity-config' },
-  // Account Structure
-  { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'finecore-currency', storageKey: 'erp_currencies', section: 'account-structure' },
-  { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', storageKey: 'erp_finframe_groups', section: 'account-structure' },
-  { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', storageKey: 'erp_ledgers', section: 'account-structure' },
-  { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', storageKey: 'erp_voucher_types', section: 'account-structure' },
-  // Transaction Defaults
-  { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', storageKey: 'erp_transaction_templates', section: 'transaction-defaults' },
-  // T-H1.5-C-S1 — Supporting masters (CC-017/018/019)
-  { title: 'Mode of Payment', desc: '10 seeded modes — Cash, Cheque, NEFT, RTGS, UPI, IMPS, DD, LC, Bank Transfer, Advance Online', icon: Coins, module: 'finecore-mode-of-payment', storageKey: 'erp_group_mode_of_payment', section: 'transaction-defaults' },
-  { title: 'Terms of Payment', desc: '10 seeded terms — Immediate, Net 7/15/30/45/60/90, 50% Adv, 100% Adv, LC', icon: Calculator, module: 'finecore-terms-of-payment', storageKey: 'erp_group_terms_of_payment', section: 'transaction-defaults' },
-  { title: 'Terms of Delivery', desc: 'Incoterms + delivery-location standards', icon: FileText, module: 'finecore-terms-of-delivery', storageKey: 'erp_group_terms_of_delivery', section: 'transaction-defaults' },
-];
+// MASTER_CARDS moved inside component to use reactive entityCode (T-H1.5-C-S3)
 
 const SECTION_META: Record<string, { label: string; badgeLabel: string; badgeCls: string }> = {
   'statutory': { label: 'Statutory Reference', badgeLabel: 'Platform', badgeCls: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },

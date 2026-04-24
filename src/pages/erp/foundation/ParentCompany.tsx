@@ -33,6 +33,11 @@ import {
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import { onEnterNext } from '@/lib/keyboard';
+import {
+  BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
@@ -53,14 +58,7 @@ const STEPS = [
   { id: 7, title: 'Audit Trail', description: 'Change history' },
 ];
 
-const BUSINESS_ENTITIES = ['Private Limited', 'Public Limited', 'LLP', 'OPC',
-  'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society'];
-const INDUSTRIES = ['Technology', 'Manufacturing', 'Trading', 'Retail', 'Healthcare',
-  'Finance', 'Education', 'Real Estate', 'Logistics', 'Consulting',
-  'Food & Beverage', 'Textile', 'Pharma', 'Construction', 'Agriculture',
-  'Energy', 'Media', 'Others'];
-const BUSINESS_ACTIVITIES = ['Manufacturing', 'Trading', 'Services', 'Import / Export',
-  'E-Commerce', 'Distribution', 'IT Services', 'Consulting', 'Others'];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Australia',
   'Canada', 'Singapore', 'Germany', 'UAE', 'Japan', 'Others'];
 const ISD_CODES = ['+91', '+1', '+44', '+61', '+65', '+49', '+971', '+81', '+86'];
@@ -123,6 +121,8 @@ const INITIAL_FORM = {
   hasCIN: false,
   legalEntityName: '', tradingBrandName: '', shortCode: '',
   businessEntity: '', industry: '', businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '' as OperatingScale | '',
   hqAddress: '', hqCountry: 'India', hqState: '', hqDistrict: '',
   hqCity: '', hqPostalCode: '', hqTimezone: 'Asia/Kolkata', hqLat: '', hqLng: '',
   corpSameAsHq: false, corpAddress: '', corpCountry: '', corpState: '',
@@ -458,15 +458,36 @@ export default function ParentCompany() {
             </Select>
           </FormField>
           <FormField label="Industry / Sector" required>
-            <Select value={form.industry} onValueChange={v => upd('industry', v)}>
+            <Select value={form.industry} onValueChange={v => { upd('industry', v); upd('businessActivity', ''); upd('businessActivityCustom', ''); }}>
               <SelectTrigger className="text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
-              <SelectContent>{INDUSTRIES.map(i => <SelectItem key={i} value={i}><span className="text-xs">{i}</span></SelectItem>)}</SelectContent>
+              <SelectContent>{INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}</SelectContent>
             </Select>
           </FormField>
-          <FormField label="Business Activity" required>
-            <Select value={form.businessActivity} onValueChange={v => upd('businessActivity', v)}>
-              <SelectTrigger className="text-xs"><SelectValue placeholder="Select activity" /></SelectTrigger>
-              <SelectContent>{BUSINESS_ACTIVITIES.map(a => <SelectItem key={a} value={a}><span className="text-xs">{a}</span></SelectItem>)}</SelectContent>
+          <FormField label="Business Activity" required hint={!form.industry ? 'Select industry first' : undefined}>
+            <Select value={form.businessActivity} onValueChange={v => upd('businessActivity', v)} disabled={!form.industry}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder={form.industry ? 'Select activity' : 'Select industry first'} /></SelectTrigger>
+              <SelectContent>{getActivitiesForSector(form.industry).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}</SelectContent>
+            </Select>
+            {form.businessActivity === 'others' && (
+              <Input
+                value={form.businessActivityCustom}
+                onChange={e => upd('businessActivityCustom', e.target.value)}
+                placeholder="e.g. Specialty Jewellery Retail"
+                className="text-xs mt-1.5"
+                maxLength={80}
+              />
+            )}
+          </FormField>
+          <FormField label="Operating Scale" hint="Commercial tier — guidance only, NOT MSME classification">
+            <Select value={form.operatingScale} onValueChange={v => upd('operatingScale', v as OperatingScale)}>
+              <SelectTrigger className="text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+              <SelectContent>
+                {OPERATING_SCALES.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </FormField>
           <FormField label="Short Code" required hint="Used as prefix for transaction codes. Cannot change after first transaction.">
@@ -486,7 +507,7 @@ export default function ParentCompany() {
         <Separator className="my-4" />
         <CompanyProfilePreview data={{
           legalEntityName: form.legalEntityName, tradingBrandName: form.tradingBrandName,
-          businessEntity: form.businessEntity, industry: form.industry,
+          businessEntity: form.businessEntity, industry: getSectorLabel(form.industry),
           hqCity: form.hqCity, hqCountry: form.hqCountry,
           corporateEmail: form.corporateEmail, website: form.website,
           status: form.status, logo: form.logoLeft || form.logoCenter || form.logoRight,
@@ -1226,7 +1247,7 @@ export default function ParentCompany() {
         <p className="text-xs font-semibold text-foreground mb-3">Live Preview</p>
         <CompanyProfilePreview data={{
           legalEntityName: form.legalEntityName, tradingBrandName: form.tradingBrandName,
-          businessEntity: form.businessEntity, industry: form.industry,
+          businessEntity: form.businessEntity, industry: getSectorLabel(form.industry),
           hqCity: form.hqCity, hqCountry: form.hqCountry,
           corporateEmail: form.corporateEmail, website: form.website,
           status: form.status, logo: form.logoLeft || form.logoCenter || form.logoRight,
@@ -1356,8 +1377,10 @@ export default function ParentCompany() {
       shortCode={form.shortCode}
       entityType="parent"
       businessEntity={form.businessEntity}
-      industry={form.industry}
-      businessActivity={form.businessActivity}
+      industry={getSectorLabel(form.industry)}
+      businessActivity={form.businessActivity === 'others' && form.businessActivityCustom
+        ? form.businessActivityCustom
+        : getActivityLabel(form.industry, form.businessActivity)}
       onComplete={(result) => {
         toast.success(`${form.legalEntityName} is ready. ${result.ledgersCreated} ledgers created.`);
       }}

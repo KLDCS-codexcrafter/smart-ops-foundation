@@ -28,6 +28,11 @@ import { INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import { onEnterNext } from '@/lib/keyboard';
+import {
+  INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
@@ -68,10 +73,7 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'R&D Centre': 'bg-violet-500/10 text-violet-700 border-violet-500/20',
 };
 
-const BUSINESS_ACTIVITIES = [
-  'Manufacturing', 'Trading', 'Services', 'IT Services', 'Consulting',
-  'Import / Export', 'Distribution',
-];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 
 interface BranchFormData {
   name: string; code: string; shortCode: string;
@@ -83,7 +85,10 @@ interface BranchFormData {
   branchHead: string; establishmentDate: string; officeArea: string;
   employeeCapacity: string; operatingLicenseNo: string; branchRegistrationNo: string;
   notes: string;
+  industry: string;
   businessActivity: string;
+  businessActivityCustom: string;
+  operatingScale: OperatingScale | '';
   jurisdiction: string;
   // Statutory registrations (branch-level)
   gstinNo: string;
@@ -104,7 +109,10 @@ const INITIAL: BranchFormData = {
   branchHead: '', establishmentDate: '', officeArea: '',
   employeeCapacity: '', operatingLicenseNo: '', branchRegistrationNo: '',
   notes: '',
-  businessActivity: 'Services',
+  industry: '',
+  businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '',
   jurisdiction: '',
   gstinNo: '', tanNo: '', pfEstablishmentCode: '', esicSubCode: '',
   ptRegNo: '', lwfRegNo: '',
@@ -256,10 +264,37 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
                   </SelectContent>
                 </Select>
               </FormField>
-              <FormField label="Business Activity" required hint="Determines which industry pack is loaded">
-                <Select value={form.businessActivity} onValueChange={v => upd('businessActivity', v)}>
-                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select activity" /></SelectTrigger>
-                  <SelectContent>{BUSINESS_ACTIVITIES.map(a => <SelectItem key={a} value={a}><span className="text-xs">{a}</span></SelectItem>)}</SelectContent>
+              <FormField label="Industry / Sector" required>
+                <Select value={form.industry} onValueChange={v => { upd('industry', v); upd('businessActivity', ''); upd('businessActivityCustom', ''); }}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
+                  <SelectContent>{INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}</SelectContent>
+                </Select>
+              </FormField>
+              <FormField label="Business Activity" required hint={!form.industry ? 'Select industry first' : 'Determines which industry pack is loaded'}>
+                <Select value={form.businessActivity} onValueChange={v => upd('businessActivity', v)} disabled={!form.industry}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder={form.industry ? 'Select activity' : 'Select industry first'} /></SelectTrigger>
+                  <SelectContent>{getActivitiesForSector(form.industry).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}</SelectContent>
+                </Select>
+                {form.businessActivity === 'others' && (
+                  <Input
+                    value={form.businessActivityCustom}
+                    onChange={e => upd('businessActivityCustom', e.target.value)}
+                    placeholder="e.g. Specialty Jewellery Retail"
+                    className="text-xs mt-1.5"
+                    maxLength={80}
+                  />
+                )}
+              </FormField>
+              <FormField label="Operating Scale" hint="Commercial tier — guidance only, NOT MSME classification">
+                <Select value={form.operatingScale} onValueChange={v => upd('operatingScale', v as OperatingScale)}>
+                  <SelectTrigger className="text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+                  <SelectContent>
+                    {OPERATING_SCALES.map(s => (
+                      <SelectItem key={s.id} value={s.id}>
+                        <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </FormField>
               <FormField label="Status">
@@ -418,8 +453,10 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
       shortCode={form.shortCode}
       entityType="branch"
       businessEntity="Branch Office"
-      industry={form.branchType ?? 'Others'}
-      businessActivity={form.businessActivity}
+      industry={form.industry ? getSectorLabel(form.industry) : (form.branchType ?? 'Others')}
+      businessActivity={form.businessActivity === 'others' && form.businessActivityCustom
+        ? form.businessActivityCustom
+        : getActivityLabel(form.industry, form.businessActivity)}
       onComplete={(result) => {
         toast.success(`${form.name} is ready. ${result.ledgersCreated} ledgers created.`);
         navigate('/erp/foundation/branch-offices');
