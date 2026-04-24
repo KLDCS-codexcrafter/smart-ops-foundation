@@ -315,6 +315,13 @@ export function LogisticMasterPanel() {
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
 
+  // ── S5 — view mode + step sidebar + modals ──
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('table');
+  const [currentStep, setCurrentStep] = useState(1);
+  const [contactModal, setContactModal] = useState(false);
+  const [bankModal, setBankModal] = useState(false);
+  const [billWiseModal, setBillWiseModal] = useState(false);
+
   // Sprint 15c-2 — Portal access UI state
   const [showPortal, setShowPortal] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
