@@ -49,6 +49,8 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
   const greeting = getGreeting();
   const userName = getUserName();
   const today = format(new Date(), 'EEEE, dd MMMM yyyy');
+  // T-H1.5-D-D5 — Advance Register detail dialog state
+  const [advanceViewOpen, setAdvanceViewOpen] = useState(false);
 
   // CC-006 — Live zone progress
   const zones = computeAllZones();
@@ -198,10 +200,12 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
       {/* CC-008 Recent Activity */}
       <RecentActivityStrip />
 
-      {/* T-H1.5-D-D3: EMI alerts widget — surfaces overdue/due-soon EMIs */}
+      {/* T-H1.5-D-D3 EMI alerts + T-H1.5-D-D5 Advance register widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <EMIDashboardWidget />
+        <AdvanceRegisterWidget onNavigate={() => setAdvanceViewOpen(true)} />
       </div>
+      <AdvanceRegisterView open={advanceViewOpen} onClose={() => setAdvanceViewOpen(false)} />
 
       {/* Quick Actions */}
       <div className="glass-card rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
