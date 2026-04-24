@@ -182,6 +182,7 @@ export function PartyPicker<M extends PartyMode>({
               <span className="flex items-center gap-2 truncate">
                 <span className="truncate">{selected.partyName}</span>
                 {selected._partyType === 'vendor' && <Badge variant="outline" className="text-[10px]">Vendor</Badge>}
+                {selected._partyType === 'borrowing' && <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 border-indigo-500/30">Borrowing</Badge>}
                 {selected.credit_hold_mode === 'hard' && (
                   <Badge variant="destructive" className="text-[10px] gap-1">
                     <AlertTriangle className="h-3 w-3" /> Credit Hold
@@ -198,7 +199,7 @@ export function PartyPicker<M extends PartyMode>({
             <CommandList className="max-h-[320px]">
               <CommandEmpty className="py-4 text-xs text-muted-foreground">
                 No matching party.
-                {allowCreate && (
+                {effectiveAllowCreate && (
                   <Button variant="link" size="sm" className="ml-1 h-6"
                     onClick={() => {
                       setOpen(false);
@@ -209,6 +210,11 @@ export function PartyPicker<M extends PartyMode>({
                     Create "{search}"
                   </Button>
                 )}
+                {mode === 'borrowing' && (
+                  <p className="mt-2 text-[10px] text-muted-foreground">
+                    Create loans via Ledger Master → Borrowing pill.
+                  </p>
+                )}
               </CommandEmpty>
               <CommandGroup>
                 {filtered.map(p => (
@@ -216,7 +222,7 @@ export function PartyPicker<M extends PartyMode>({
                     <div className="flex flex-col min-w-0">
                       <span className="truncate text-sm">{p.partyName}</span>
                       <span className="text-[10px] text-muted-foreground truncate">
-                        {p._partyType === 'customer' ? 'Customer' : 'Vendor'}
+                        {p._partyType === 'customer' ? 'Customer' : p._partyType === 'vendor' ? 'Vendor' : 'Borrowing'}
                         {p.gstin && ` · GSTIN ${p.gstin}`}
                         {p.partyCode && ` · ${p.partyCode}`}
                       </span>
