@@ -1718,14 +1718,51 @@ export function CustomerMasterPanel() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={addOpen || !!editTarget} onOpenChange={v => { if (!v) resetAndClose(); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-5xl">
           <DialogHeader>
-            <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Customer'}</DialogTitle>
-            <DialogDescription>
-              {editTarget ? 'Update customer details.' : 'Create a new customer or buyer (Sundry Debtor).'}
-            </DialogDescription>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Customer'}</DialogTitle>
+                <DialogDescription>
+                  {editTarget ? 'Update customer details.' : 'Create a new customer or buyer (Sundry Debtor).'}
+                </DialogDescription>
+              </div>
+              {editTarget && (
+                <CustomerCreditHeaderBadge partyId={editTarget.id} entityCode={entityCode} />
+              )}
+            </div>
           </DialogHeader>
-          {renderForm()}
+          <PartyStepSidebar
+            steps={CUSTOMER_STEPS}
+            currentStep={currentStep}
+            onStepClick={(s) => {
+              setCurrentStep(s);
+              const target = document.getElementById(`cm-step-${s}`);
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (s === 3) setShowContacts(true);
+              if (s === 4) setBankModal(true);
+              if (s === 5) setShowTaxation(true);
+              if (s === 6) setShowFinancial(true);
+              if (s === 7) setShowCompanyInfo(true);
+            }}
+            completedSteps={computeCompletedSteps(form)}
+          >
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setContactModal(true)}>
+                <User className="h-3 w-3" /> Contacts ({form.contacts.length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBankModal(true)}>
+                <CreditCard className="h-3 w-3" /> Banking ({(form.bankAccounts ?? []).length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setCompanyInfoModal(true)}>
+                <Building className="h-3 w-3" /> Company Info
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBillWiseModal(true)}>
+                <Briefcase className="h-3 w-3" /> Opening Balance Bills ({(form.openingBalanceBills ?? []).length})
+              </Button>
+            </div>
+            {renderForm()}
+          </PartyStepSidebar>
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
             <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
