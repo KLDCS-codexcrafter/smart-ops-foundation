@@ -49,9 +49,22 @@ export interface PartyTreeConfig {
   typeLabels: Record<string, string>;
 }
 
+/**
+ * Optional callback invoked once per L1/L2/L3 node during tree build.
+ * Receives the flat list of leaves under that node — caller can compute
+ * any aggregate (KPI rollup, count, sum) and return an opaque value that
+ * tree consumers can later display via `renderNodeMeta`.
+ *
+ * S4.5: opt-in only; CustomerMaster computes rollups inline via the
+ * `renderNodeMeta` PartyTreeList prop, so this callback is currently a
+ * no-op extension point reserved for future engines.
+ */
+export type ComputeRollupFn = (level: 1 | 2 | 3, code: string, leaves: PartyLeaf[]) => unknown;
+
 export function buildPartyTree<T extends Record<string, unknown>>(
   parties: T[],
   config: PartyTreeConfig,
+  computeRollup?: ComputeRollupFn,
 ): PartyTreeL1[] {
   const byType: Map<string, Map<string, Map<string, PartyLeaf[]>>> = new Map();
 
