@@ -249,6 +249,14 @@ export function VendorMasterPanel() {
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
 
+  // ── S5 — view mode + step sidebar + modals ──
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('table');
+  const [currentStep, setCurrentStep] = useState(1);
+  const [contactModal, setContactModal] = useState(false);
+  const [bankModal, setBankModal] = useState(false);
+  const [companyInfoModal, setCompanyInfoModal] = useState(false);
+  const [billWiseModal, setBillWiseModal] = useState(false);
+
   // ─── Dropdown helpers ────────────────────────────────────────
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/vendors
