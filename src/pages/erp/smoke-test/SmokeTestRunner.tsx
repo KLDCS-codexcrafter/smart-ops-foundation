@@ -164,6 +164,67 @@ const CHECKS: CheckSpec[] = [
   { id: 'ph-3', section: 'Pay Hub', name: 'Pay grades',
     run: () => { const n = readArray('erp_pay_grades').length;
       return { actual: n, expected: '≥1', pass: n >= 1, details: `${n} grades` }; } },
+
+  // T-H1.5-C-S4 — Customer Master regression checks
+  { id: 'cm-1', section: 'Customer Master (S4)', name: 'Interface shape preserved — contacts[] is array',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ contacts?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers to check' };
+      const bad = arr.filter(c => !Array.isArray(c.contacts)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with non-array contacts` };
+    } },
+  { id: 'cm-2', section: 'Customer Master (S4)', name: 'Interface shape preserved — addresses[] is array',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ addresses?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c => !Array.isArray(c.addresses)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with non-array addresses` };
+    } },
+  { id: 'cm-3', section: 'Customer Master (S4)', name: 'Credit-hold field present (credit_hold_mode)',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ credit_hold_mode?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const missing = arr.filter(c => c.credit_hold_mode === undefined).length;
+      return { actual: missing, expected: 0, pass: missing === 0, details: `${missing} missing credit_hold_mode` };
+    } },
+  { id: 'cm-4', section: 'Customer Master (S4)', name: 'Sales-force linkage preserved (territory_id, beat_ids)',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ territory_id?: unknown; beat_ids?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c => c.territory_id === undefined || !Array.isArray(c.beat_ids)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with broken SF linkage` };
+    } },
+  { id: 'cm-5', section: 'Customer Master (S4)', name: 'Distributor hierarchy linkage preserved',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ hierarchy_node_id?: unknown; hierarchy_role?: unknown; portal_enabled?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c => c.hierarchy_node_id === undefined || c.portal_enabled === undefined).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with broken hierarchy linkage` };
+    } },
+  { id: 'cm-6', section: 'Customer Master (S4)', name: 'Two-tier credit fields intact (creditLimit + warningLimit)',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ creditLimit?: unknown; warningLimit?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c => typeof c.creditLimit !== 'number' || typeof c.warningLimit !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with broken credit fields` };
+    } },
+  { id: 'cm-7', section: 'Customer Master (S4)', name: 'PartyPickerRow contract compatible',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<{ id?: unknown; partyName?: unknown; partyCode?: unknown; gstin?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c =>
+        typeof c.id !== 'string' || typeof c.partyName !== 'string' ||
+        typeof c.partyCode !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers with broken PartyPicker fields` };
+    } },
+  { id: 'cm-8', section: 'Customer Master (S4)', name: 'Deprecated fields retained (referredBy/associatedDealer/otherReference)',
+    run: () => {
+      const arr = readArray('erp_group_customer_master') as Array<Record<string, unknown>>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No customers' };
+      const bad = arr.filter(c =>
+        !('referredBy' in c) || !('associatedDealer' in c) || !('otherReference' in c)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} customers missing deprecated fields` };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
