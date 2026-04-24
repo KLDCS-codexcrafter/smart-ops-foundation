@@ -187,6 +187,15 @@ const FREIGHT_BASIS_LABELS: Record<FreightRate['basis'], string> = {
   fixed: 'Fixed Amount',
 };
 
+// ─── S5 — 5-Step sidebar definition ───────────────────────────
+const LOGISTIC_STEPS = [
+  { id: 1, title: 'Type & Identity',   description: 'Logistic type, GSTIN, PAN' },
+  { id: 2, title: 'Contact & Address', description: 'Multi-contact + registered address' },
+  { id: 3, title: 'Banking',           description: 'Bank accounts with IFSC auto-fill' },
+  { id: 4, title: 'GST & TDS',         description: 'Registration, GTA-RCM, TDS section' },
+  { id: 5, title: 'Freight Rates',     description: 'Rate card + opening balance' },
+];
+
 const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
   logisticType: 'gta',
   gstin: '', pan: '', partyName: '', mailingName: '',
