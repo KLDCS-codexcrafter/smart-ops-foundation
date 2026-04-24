@@ -65,6 +65,13 @@ import { BankLedgerPanel } from '@/pages/erp/masters/ledger-panels/BankLedgerPan
 import { AssetLedgerPanel } from '@/pages/erp/masters/ledger-panels/AssetLedgerPanel';
 import { LiabilityLedgerPanel } from '@/pages/erp/masters/ledger-panels/LiabilityLedgerPanel';
 import { CapitalLedgerPanel } from '@/pages/erp/masters/ledger-panels/CapitalLedgerPanel';
+// T-H1.5-C-S6.5b — P&L + Debt ledger panels
+import { IncomeLedgerPanel } from '@/pages/erp/masters/ledger-panels/IncomeLedgerPanel';
+import { ExpenseLedgerPanel } from '@/pages/erp/masters/ledger-panels/ExpenseLedgerPanel';
+import { DutiesTaxLedgerPanel } from '@/pages/erp/masters/ledger-panels/DutiesTaxLedgerPanel';
+import { PayrollStatutoryLedgerPanel } from '@/pages/erp/masters/ledger-panels/PayrollStatutoryLedgerPanel';
+import { LoanReceivableLedgerPanel } from '@/pages/erp/masters/ledger-panels/LoanReceivableLedgerPanel';
+import { BorrowingLedgerPanel } from '@/pages/erp/masters/ledger-panels/BorrowingLedgerPanel';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
