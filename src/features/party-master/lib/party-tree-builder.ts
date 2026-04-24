@@ -96,6 +96,7 @@ export function buildPartyTree<T extends Record<string, unknown>>(
       const l3List: PartyTreeL3[] = [];
       for (const [activityId, leaves] of byActivity.entries()) {
         totalLeaves += leaves.length;
+        if (computeRollup) computeRollup(3, activityId, leaves);
         l3List.push({
           code: activityId,
           label: activityId === '__unassigned__'
@@ -104,6 +105,8 @@ export function buildPartyTree<T extends Record<string, unknown>>(
           leaves: leaves.sort((a, b) => a.partyName.localeCompare(b.partyName)),
         });
       }
+      const sectorLeaves = l3List.flatMap(l3 => l3.leaves);
+      if (computeRollup) computeRollup(2, sectorId, sectorLeaves);
       l2List.push({
         code: sectorId,
         label: sectorId === '__unassigned__'
@@ -111,6 +114,10 @@ export function buildPartyTree<T extends Record<string, unknown>>(
           : getSectorLabel(sectorId),
         l3: l3List.sort((a, b) => a.label.localeCompare(b.label)),
       });
+    }
+    if (computeRollup) {
+      const typeLeaves = l2List.flatMap(l2 => l2.l3.flatMap(l3 => l3.leaves));
+      computeRollup(1, typeId, typeLeaves);
     }
     result.push({
       code: typeId,
