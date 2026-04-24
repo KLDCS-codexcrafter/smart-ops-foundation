@@ -8,7 +8,7 @@
  * @finding  CC-059 / CC-061
  */
 import { useMemo, useState } from 'react';
-import { Plus, ArrowDownLeft, Eye, FileText } from 'lucide-react';
+import { Plus, ArrowDownLeft, Eye, FileText, PlayCircle, History } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +35,10 @@ import { calculateEMIAmount, type EMIScheduleRow }
   from '@/features/ledger-master/lib/emi-schedule-builder';
 import { EMIScheduleTable } from '@/features/loan-emi/components/EMIScheduleTable';
 import { LoanChargesMaster } from '@/features/loan-emi/components/LoanChargesMaster';
+import { AccrualRunModal } from '@/features/loan-emi/components/AccrualRunModal';
+import { LoanAccrualLog } from '@/features/loan-emi/components/LoanAccrualLog';
 import type { EMIScheduleLiveRow } from '@/features/loan-emi/lib/emi-lifecycle-engine';
+import type { AccrualLogEntry } from '@/features/loan-emi/lib/accrual-log';
 
 interface BorrowingLedger {
   id: string;
@@ -67,6 +70,7 @@ interface BorrowingLedger {
   gstOnChargesApplicable?: boolean;
   emiScheduleCached?: EMIScheduleRow[];
   emiScheduleLive?: EMIScheduleLiveRow[];   // T-H1.5-D-D1: actionable lifecycle rows
+  accrualLog?: AccrualLogEntry[];           // T-H1.5-D-D2: per-loan posting audit trail
   suspendedBy: string | null;
   suspendedAt: string | null;
   suspendedReason: string | null;
@@ -110,6 +114,7 @@ function emptyDraft(): BorrowingLedger {
     gstOnChargesApplicable: true,
     emiScheduleCached: [],
     emiScheduleLive: [],
+    accrualLog: [],
     suspendedBy: null, suspendedAt: null, suspendedReason: null,
     reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
   };
@@ -136,6 +141,8 @@ export function BorrowingLedgerPanel() {
   const [agreementOpen, setAgreementOpen] = useState(false);
   const [emiPreviewOpen, setEmiPreviewOpen] = useState(false);
   const [showChargesMaster, setShowChargesMaster] = useState(false);
+  const [accrualRunOpen, setAccrualRunOpen] = useState(false);
+  const [accrualLogOpen, setAccrualLogOpen] = useState(false);
   const entities = useMemo(() => loadEntities(), []);
 
   const tree = useMemo(() => buildLedgerTree(ledgers, {
@@ -363,17 +370,29 @@ export function BorrowingLedgerPanel() {
                     <Input type="number" value={draft.emiAmount} readOnly className="font-mono bg-muted/30" />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div>
                     <h3 className="text-sm font-semibold">EMI Schedule</h3>
                     <p className="text-xs text-muted-foreground">
                       Track each EMI through its lifecycle. Mark payments and bounces as they happen.
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
-                    disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
-                    <Eye className="h-3.5 w-3.5" /> Preview / Generate
-                  </Button>
+                  <div className="flex items-center gap-1.5">
+                    <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
+                      disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
+                      <Eye className="h-3.5 w-3.5" /> Preview / Generate
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5"
+                      onClick={() => setAccrualRunOpen(true)}
+                      disabled={!isEdit || draft.id.startsWith('borrow-')}>
+                      <PlayCircle className="h-3.5 w-3.5" /> Run Accrual
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5"
+                      onClick={() => setAccrualLogOpen(true)}
+                      disabled={!isEdit || draft.id.startsWith('borrow-')}>
+                      <History className="h-3.5 w-3.5" /> Accrual Log
+                    </Button>
+                  </div>
                 </div>
                 {isEdit && draft.id && !draft.id.startsWith('borrow-') ? (
                   <EMIScheduleTable ledgerId={draft.id} />
@@ -512,6 +531,21 @@ export function BorrowingLedgerPanel() {
         onChange={v => setDraft(p => ({ ...p, ...v }))}
         onClose={() => setShowChargesMaster(false)}
       />
+
+      <AccrualRunModal
+        open={accrualRunOpen}
+        onClose={() => setAccrualRunOpen(false)}
+        ledgerId={isEdit && !draft.id.startsWith('borrow-') ? draft.id : undefined}
+      />
+
+      <Dialog open={accrualLogOpen} onOpenChange={setAccrualLogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Accrual Log — {draft.name || 'Loan'}</DialogTitle>
+          </DialogHeader>
+          <LoanAccrualLog ledgerId={draft.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

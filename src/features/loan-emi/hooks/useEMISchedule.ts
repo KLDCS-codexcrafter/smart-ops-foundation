@@ -4,10 +4,15 @@
  *           Reads live schedule from useLedgerStore, enriches with 'due' status,
  *           exposes mutation actions (markPaid, markBounced, addNote, regenerate).
  *           Handles silent S6.5b → D1 migration on read.
- * @sprint   T-H1.5-D-D1
+ *
+ *           D2: markBounced now invokes bounce-engine.postBounceCharge() after
+ *           the state transition succeeds. Surface toast about the GL posting
+ *           result here so EMIRowActionsMenu stays 0-diff.
+ * @sprint   T-H1.5-D-D1 (extended in T-H1.5-D-D2)
  */
 
 import { useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { useLedgerStore } from '@/features/ledger-master/hooks/useLedgerStore';
 import {
   transitionEMI, enrichRow, upgradeSchedule,
@@ -15,10 +20,13 @@ import {
 } from '../lib/emi-lifecycle-engine';
 import type { BuildScheduleInput, EMIScheduleRow } from '@/features/ledger-master/lib/emi-schedule-builder';
 import { buildEMISchedule } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { postBounceCharge } from '../engines/bounce-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 interface BorrowingLike {
   id: string;
   ledgerType: 'borrowing';
+  entityShortCode?: string | null;
   emiScheduleCached?: EMIScheduleRow[];
   emiScheduleLive?: EMIScheduleLiveRow[];
 }
@@ -104,7 +112,20 @@ export function useEMISchedule(ledgerId: string) {
       });
     });
     persistRows(next);
-  }, [storedRows, persistRows]);
+
+    // ── T-H1.5-D-D2: post bank charge (non-blocking on error) ──
+    if (ledger) {
+      const entityCode = ledger.entityShortCode ?? DEFAULT_ENTITY_SHORTCODE;
+      const result = postBounceCharge(ledger.id, emiNumber, bouncedDate, entityCode);
+      if (result.posted) {
+        toast.success(
+          `Bank charge ₹${result.amount.toLocaleString('en-IN')} posted (voucher ${result.voucherNo})`,
+        );
+      } else if (result.skipReason) {
+        toast.info(`No charge posted: ${result.skipReason}`);
+      }
+    }
+  }, [storedRows, persistRows, ledger]);
 
   const addNote = useCallback((emiNumber: number, note: string) => {
     const next = storedRows.map(r => {

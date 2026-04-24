@@ -23,6 +23,14 @@ import {
   type EMIScheduleLiveRow,
 } from '@/features/loan-emi/lib/emi-lifecycle-engine';
 import type { EMIScheduleRow } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { buildEMISchedule } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { resolveExpenseLedger } from '@/features/loan-emi/lib/ledger-resolver';
+import {
+  findDuplicate, type AccrualLogEntry,
+} from '@/features/loan-emi/lib/accrual-log';
+import { planMonthlyAccrual } from '@/features/loan-emi/engines/accrual-engine';
+import { planDailyPenal } from '@/features/loan-emi/engines/penal-engine';
+import { postBounceCharge } from '@/features/loan-emi/engines/bounce-engine';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -607,6 +615,67 @@ const CHECKS: CheckSpec[] = [
         actual: bad, expected: 0, pass: bad === 0,
         details: `${bad} borrowings with corrupt charge types`,
       };
+    } },
+
+  // ── T-H1.5-D-D2 · GL Posting Engines (CC-063) ──
+  { id: 'd2-1', section: 'D2 Accrual Engine',
+    name: 'Ledger resolver creates/returns Interest Expense ledger',
+    run: () => {
+      const id = resolveExpenseLedger('interest_expense');
+      const pass = typeof id === 'string' && id.length > 0;
+      return { actual: `id=${id.slice(0, 24)}`, expected: 'non-empty string', pass, details: '' };
+    } },
+  { id: 'd2-2', section: 'D2 Accrual Engine',
+    name: 'Accrual log dup detection works',
+    run: () => {
+      const log: AccrualLogEntry[] = [{
+        id: 'a1', ledgerId: 'L1', action: 'monthly_interest',
+        periodKey: '2026-04', emiNumber: 1, amount: 100,
+        voucherId: 'v1', voucherNo: 'JV-ACCR/26-27/0001',
+        postedAt: '2026-04-01T00:00:00Z', postedBy: 'current-user',
+        reversedByVoucherId: null, narration: '',
+      }];
+      const dup = findDuplicate(log, 'L1', 'monthly_interest', '2026-04');
+      const fresh = findDuplicate(log, 'L1', 'monthly_interest', '2026-05');
+      const pass = !!dup && !fresh;
+      return { actual: `dup=${!!dup}, fresh=${!!fresh}`,
+        expected: 'dup=true, fresh=false', pass, details: '' };
+    } },
+  { id: 'd2-3', section: 'D2 Accrual Engine',
+    name: 'Monthly accrual plan returns array',
+    run: () => {
+      const plan = planMonthlyAccrual(new Date().toISOString().slice(0, 10));
+      const pass = Array.isArray(plan);
+      return { actual: `plan-length=${plan.length}`, expected: 'array', pass, details: '' };
+    } },
+  { id: 'd2-4', section: 'D2 Penal Engine',
+    name: 'Penal plan filters to penal>0 ledgers',
+    run: () => {
+      const plan = planDailyPenal(new Date().toISOString().slice(0, 10));
+      const allHavePenalGt0 = plan.every(p => p.penalRate > 0);
+      const pass = Array.isArray(plan) && allHavePenalGt0;
+      return { actual: `len=${plan.length}, allPenalGt0=${allHavePenalGt0}`,
+        expected: 'Array with penalRate>0', pass, details: '' };
+    } },
+  { id: 'd2-5', section: 'D2 Bounce Engine',
+    name: 'Bounce charge skip on missing ledger (idempotency-safe)',
+    run: () => {
+      const r = postBounceCharge('no-such-ledger-xyz', 1, '2026-04-24', 'GROUP');
+      const pass = r.posted === false && typeof r.skipReason === 'string';
+      return { actual: `posted=${r.posted}, reason=${r.skipReason ?? ''}`,
+        expected: 'posted=false, skipReason=string', pass, details: '' };
+    } },
+  { id: 'd2-6', section: 'D2 Invariants',
+    name: '6-month accrual sum matches manual amortization',
+    run: () => {
+      const schedule = buildEMISchedule({
+        principal: 715000, annualRatePercent: 23,
+        tenureMonths: 36, firstEmiDate: '2022-02-16',
+      });
+      const sum6 = schedule.slice(0, 6).reduce((s, r) => s + r.interest, 0);
+      const pass = sum6 > 80000 && sum6 < 84000;
+      return { actual: `sum6=${sum6.toFixed(2)}`, expected: '80000..84000',
+        pass, details: 'First 6 months of standard amortization' };
     } },
 ];
 
