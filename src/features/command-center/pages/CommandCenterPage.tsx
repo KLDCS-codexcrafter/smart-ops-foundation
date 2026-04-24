@@ -27,6 +27,11 @@ import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMast
 import { CurrencyMasterPanel } from '@/pages/erp/accounting/CurrencyMaster';
 import { IncomeTaxMasterPanel } from '@/pages/erp/accounting/IncomeTaxMaster';
 import { TransactionTemplatesPanel } from '@/pages/erp/accounting/TransactionTemplates';
+// T-H1.5-C-S1 — Supporting masters wired to CC (CC-017/018/019/020)
+import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
+import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
+import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
+import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
@@ -126,6 +131,10 @@ export type CommandCenterModule =
   | 'finecore-voucher-types'
   | 'finecore-currency'
   | 'finecore-transaction-templates'
+  | 'finecore-mode-of-payment'
+  | 'finecore-terms-of-payment'
+  | 'finecore-terms-of-delivery'
+  | 'finecore-business-unit'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
