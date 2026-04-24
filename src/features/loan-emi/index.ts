@@ -53,3 +53,26 @@ export { postProcessingFee } from './engines/processing-fee-engine';
 export type { ProcessingFeePostResult } from './engines/processing-fee-engine';
 export { PostProcessingFeeModal } from './components/PostProcessingFeeModal';
 export { TaxComplianceLog } from './components/TaxComplianceLog';
+// ── T-H1.5-D-D5 ──
+export { computeAgingReport } from './lib/advance-aging';
+export type {
+  AgeBucket, AgedAdvance, AgingBucketSummary, AgingReport,
+} from './lib/advance-aging';
+export {
+  loadLog as loadNotionalLog,
+  saveLog as saveNotionalLog,
+  findNotionalDuplicate,
+  appendNotionalLogEntry,
+} from './lib/notional-interest-log';
+export type { NotionalInterestLogEntry } from './lib/notional-interest-log';
+export {
+  planMonthlyNotional, commitMonthlyNotional,
+  NOTIONAL_AGING_THRESHOLD_DAYS, NOTIONAL_ANNUAL_RATE_PERCENT,
+} from './engines/notional-interest-engine';
+export type {
+  NotionalPlanItem, NotionalRunResult,
+} from './engines/notional-interest-engine';
+export { useAdvanceRegister } from './hooks/useAdvanceRegister';
+export { AdvanceRegisterWidget } from './components/AdvanceRegisterWidget';
+export { AdvanceRegisterView } from './components/AdvanceRegisterView';
+export { NotionalInterestRunModal } from './components/NotionalInterestRunModal';

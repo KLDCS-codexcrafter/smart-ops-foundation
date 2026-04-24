@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import {
   Building2, Terminal, Landmark, Globe,
@@ -10,6 +11,8 @@ import { computeAllZones, isConfigured, ZONE_DEFINITIONS } from '../components/Z
 import { RecentActivityStrip } from '../components/RecentActivityStrip';
 import { PendingActionsList } from '../components/PendingActionsList';
 import { EMIDashboardWidget } from '@/features/loan-emi/components/EMIDashboardWidget';
+import { AdvanceRegisterWidget } from '@/features/loan-emi/components/AdvanceRegisterWidget';
+import { AdvanceRegisterView } from '@/features/loan-emi/components/AdvanceRegisterView';
 
 interface OverviewModuleProps {
   onNavigate: (module: CommandCenterModule) => void;
