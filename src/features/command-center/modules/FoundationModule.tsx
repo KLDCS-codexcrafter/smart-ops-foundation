@@ -150,11 +150,11 @@ export function FoundationModule() {
         />
         <StatCard
           icon={<Network className="h-5 w-5" />}
-          title="Business Units"
+          title="Org Structure"
           value={divCount > 0 || deptCount > 0 ? `${divCount} divisions · ${deptCount} departments` : 'Not configured'}
           status={divCount > 0 ? 'ok' : 'empty'}
           href='/erp/foundation/org-structure'
-          description='Divisions and departments — used for MIS reporting across all modules.'
+          description='Divisions and departments hierarchy — used for MIS reporting across all modules.'
         />
         {/* T-H1.5-C-S1 (CC-020) — Business Units Master (BU tier above Divisions) */}
         <StatCard

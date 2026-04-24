@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Users, Truck, Tag, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
-import { getPrimaryEntity } from '@/data/mock-entities';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { customerSegmentsKey } from '@/types/customer-loyalty';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
@@ -30,9 +30,9 @@ function getMasterStatus(key: string): 'live' | 'empty' {
 }
 
 export function CRMMastersModule({ onNavigate }: Props) {
-  // T-H1.5-C-S1 (CC-025) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
+  // T-H1.5-C-S1-patch (F2) — Use reactive hook so status updates when user switches company in ERP header.
+  const { entityCode } = useEntityCode();
   const MASTER_CARDS = useMemo<MasterCard[]>(() => {
-    const entityCode = getPrimaryEntity().shortCode;
     return [
       {
         title: 'Customer Master',
@@ -59,7 +59,7 @@ export function CRMMastersModule({ onNavigate }: Props) {
         section: 'customer-vendor',
       },
     ];
-  }, []);
+  }, [entityCode]);
 
   const liveCount = MASTER_CARDS.filter(c => getMasterStatus(c.storageKey) === 'live').length;
 
