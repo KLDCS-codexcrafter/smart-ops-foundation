@@ -59,6 +59,12 @@ import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfP
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
+// T-H1.5-C-S6.5a — Balance Sheet ledger panels (full party-master pattern)
+import { CashLedgerPanel } from '@/pages/erp/masters/ledger-panels/CashLedgerPanel';
+import { BankLedgerPanel } from '@/pages/erp/masters/ledger-panels/BankLedgerPanel';
+import { AssetLedgerPanel } from '@/pages/erp/masters/ledger-panels/AssetLedgerPanel';
+import { LiabilityLedgerPanel } from '@/pages/erp/masters/ledger-panels/LiabilityLedgerPanel';
+import { CapitalLedgerPanel } from '@/pages/erp/masters/ledger-panels/CapitalLedgerPanel';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
