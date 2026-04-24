@@ -332,6 +332,95 @@ const CHECKS: CheckSpec[] = [
       const bad = arr.filter(l => !l.logisticType || !allowed.includes(l.logisticType)).length;
       return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with invalid logisticType` };
     } },
+
+  // T-H1.5-C-S6.5a — Balance Sheet ledger Panel regression (Cash/Bank/Asset/Liability/Capital)
+  { id: 'lp-cash-1', section: 'Cash Ledger Panel (S6.5a)', name: 'Interface — cashLimit numeric',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; cashLimit?: unknown }>;
+      const cash = all.filter(l => l.ledgerType === 'cash');
+      if (cash.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No cash ledgers' };
+      const bad = cash.filter(l => typeof l.cashLimit !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-numeric cashLimit` };
+    } },
+  { id: 'lp-cash-2', section: 'Cash Ledger Panel (S6.5a)', name: 'ledgerType discriminator preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string }>;
+      const cash = all.filter(l => l.ledgerType === 'cash');
+      if (cash.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No cash ledgers' };
+      const bad = cash.filter(l => l.ledgerType !== 'cash').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} broken ledgerType` };
+    } },
+
+  { id: 'lp-bank-1', section: 'Bank Ledger Panel (S6.5a)', name: 'Interface — IFSC field present',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; ifscCode?: unknown }>;
+      const bank = all.filter(l => l.ledgerType === 'bank');
+      if (bank.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No bank ledgers' };
+      const bad = bank.filter(l => typeof l.ifscCode !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} missing/broken ifscCode` };
+    } },
+  { id: 'lp-bank-2', section: 'Bank Ledger Panel (S6.5a)', name: 'Payment-rail flags preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; neftEnabled?: unknown; rtgsEnabled?: unknown; impsEnabled?: unknown; upiEnabled?: unknown }>;
+      const bank = all.filter(l => l.ledgerType === 'bank');
+      if (bank.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No bank ledgers' };
+      const bad = bank.filter(l =>
+        typeof l.neftEnabled !== 'boolean' || typeof l.rtgsEnabled !== 'boolean' ||
+        typeof l.impsEnabled !== 'boolean' || typeof l.upiEnabled !== 'boolean').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken payment-rail flags` };
+    } },
+
+  { id: 'lp-asset-1', section: 'Asset Ledger Panel (S6.5a)', name: 'Depreciation method enum intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; depreciationMethod?: string }>;
+      const asset = all.filter(l => l.ledgerType === 'asset');
+      if (asset.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No asset ledgers' };
+      const valid = ['slm', 'wdv', 'none'];
+      const bad = asset.filter(l => !l.depreciationMethod || !valid.includes(l.depreciationMethod)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with invalid depreciationMethod` };
+    } },
+  { id: 'lp-asset-2', section: 'Asset Ledger Panel (S6.5a)', name: 'IT Act depreciation fields intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; it_act_block?: unknown; it_act_depr_rate?: unknown }>;
+      const asset = all.filter(l => l.ledgerType === 'asset');
+      if (asset.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No asset ledgers' };
+      const bad = asset.filter(l => l.it_act_block === undefined || typeof l.it_act_depr_rate !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken IT Act fields` };
+    } },
+
+  { id: 'lp-liab-1', section: 'Liability Ledger Panel (S6.5a)', name: 'Opening balance type enum intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; openingBalanceType?: string }>;
+      const liab = all.filter(l => l.ledgerType === 'liability');
+      if (liab.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No liability ledgers' };
+      const bad = liab.filter(l => !['Dr', 'Cr'].includes(l.openingBalanceType ?? '')).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with invalid openingBalanceType` };
+    } },
+  { id: 'lp-liab-2', section: 'Liability Ledger Panel (S6.5a)', name: 'Parent group linkage preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; parentGroupCode?: unknown }>;
+      const liab = all.filter(l => l.ledgerType === 'liability');
+      if (liab.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No liability ledgers' };
+      const bad = liab.filter(l => typeof l.parentGroupCode !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken parentGroupCode` };
+    } },
+
+  { id: 'lp-cap-1', section: 'Capital Ledger Panel (S6.5a)', name: 'capitalType discriminator intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; capitalType?: unknown }>;
+      const cap = all.filter(l => l.ledgerType === 'capital');
+      if (cap.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No capital ledgers' };
+      const bad = cap.filter(l => typeof l.capitalType !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken capitalType` };
+    } },
+  { id: 'lp-cap-2', section: 'Capital Ledger Panel (S6.5a)', name: 'Profit-sharing & contribution numeric',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; profitSharingRatio?: unknown; capitalContribution?: unknown }>;
+      const cap = all.filter(l => l.ledgerType === 'capital');
+      if (cap.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No capital ledgers' };
+      const bad = cap.filter(l => typeof l.profitSharingRatio !== 'number' || typeof l.capitalContribution !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-numeric ratio/contribution` };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
