@@ -1637,8 +1637,10 @@ export function CustomerMasterPanel() {
         </div>
       </div>
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* Table or Tree (S4) */}
+      {viewMode === 'tree' ? (
+        <CustomerTreeBranch customers={filtered} entityCode={entityCode} onLeafClick={openEdit} />
+      ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p className="text-sm font-medium">No customers yet</p>
@@ -1732,6 +1734,50 @@ export function CustomerMasterPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* S4 — Progressive modals */}
+      <ContactDetailsModal
+        open={contactModal}
+        onOpenChange={setContactModal}
+        contacts={form.contacts}
+        onSave={(next) => setForm(f => ({ ...f, contacts: next }))}
+      />
+      <BankDetailsModal
+        open={bankModal}
+        onOpenChange={setBankModal}
+        accounts={form.bankAccounts ?? []}
+        onSave={(next) => setForm(f => ({ ...f, bankAccounts: next }))}
+      />
+      <CompanyInfoModal
+        open={companyInfoModal}
+        onOpenChange={setCompanyInfoModal}
+        value={{
+          typeOfBusinessEntity: form.typeOfBusinessEntity,
+          natureOfBusiness: form.natureOfBusiness,
+          businessActivity: form.businessActivity,
+          businessActivityCustom: form.businessActivityCustom,
+          operatingScale: form.operatingScale,
+        }}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          typeOfBusinessEntity: next.typeOfBusinessEntity as typeof f.typeOfBusinessEntity,
+          natureOfBusiness: next.natureOfBusiness,
+          businessActivity: next.businessActivity,
+          businessActivityCustom: next.businessActivityCustom,
+          operatingScale: next.operatingScale,
+        }))}
+      />
+      <BillWiseBreakupModal
+        open={billWiseModal}
+        onOpenChange={setBillWiseModal}
+        openingBalance={form.openingBalance}
+        bills={form.openingBalanceBills ?? []}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          openingBalance: next.openingBalance,
+          openingBalanceBills: next.bills,
+        }))}
+      />
     </div>
   );
 }
