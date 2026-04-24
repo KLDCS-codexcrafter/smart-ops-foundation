@@ -34,6 +34,10 @@ import {
 } from '@/types/transporter-rate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import {
+  INDUSTRY_SECTORS, getActivitiesForSector,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -104,6 +108,8 @@ interface LogisticMasterDefinition {
     | 'proprietor' | 'opc' | 'huf' | 'individual' | 'other';
   natureOfBusiness: string;
   businessActivity: string;
+  businessActivityCustom: string;
+  operatingScale: OperatingScale | '';
   otherReference: string;
   freightRates: FreightRate[];
   freightRateTolerance: number;
@@ -187,7 +193,7 @@ const defaultForm: Omit<LogisticMasterDefinition, 'id' | 'partyCode'> = {
   tdsSection: '194C',
   businessMode: 'b2b',
   typeOfBusinessEntity: 'private_limited',
-  natureOfBusiness: '', businessActivity: '', otherReference: '',
+  natureOfBusiness: '', businessActivity: '', businessActivityCustom: '', operatingScale: '', otherReference: '',
   freightRates: [], freightRateTolerance: 5,
   status: 'active',
   portal_enabled: false,
@@ -879,23 +885,47 @@ export function LogisticMasterPanel() {
             </Select>
           </div>
           <div>
-            <Label className="text-xs">Nature of Business</Label>
-            <Select value={form.natureOfBusiness} onValueChange={v => setForm(f => ({ ...f, natureOfBusiness: v }))}>
-              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+            <Label className="text-xs">Industry / Sector</Label>
+            <Select value={form.natureOfBusiness}
+              onValueChange={v => setForm(f => ({ ...f, natureOfBusiness: v, businessActivity: '', businessActivityCustom: '' }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select industry" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="Transport">Transport</SelectItem>
-                <SelectItem value="Logistics">Logistics</SelectItem>
-                <SelectItem value="Courier">Courier</SelectItem>
-                <SelectItem value="Customs">Customs</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                {INDUSTRY_SECTORS.map(s => <SelectItem key={s.id} value={s.id}><span className="text-xs">{s.label}</span></SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label className="text-xs">Business Activity</Label>
-            <Input value={form.businessActivity}
-              onChange={e => setForm(f => ({ ...f, businessActivity: e.target.value }))}
-              onKeyDown={onEnterNext} />
+            <Select value={form.businessActivity}
+              onValueChange={v => setForm(f => ({ ...f, businessActivity: v }))}
+              disabled={!form.natureOfBusiness}>
+              <SelectTrigger className="h-9 text-xs">
+                <SelectValue placeholder={form.natureOfBusiness ? 'Select activity' : 'Select industry first'} />
+              </SelectTrigger>
+              <SelectContent>
+                {getActivitiesForSector(form.natureOfBusiness).map(a => <SelectItem key={a.id} value={a.id}><span className="text-xs">{a.label}</span></SelectItem>)}
+              </SelectContent>
+            </Select>
+            {form.businessActivity === 'others' && (
+              <Input value={form.businessActivityCustom}
+                onChange={e => setForm(f => ({ ...f, businessActivityCustom: e.target.value }))}
+                placeholder="e.g. Specialty Cold Chain Courier" maxLength={80}
+                className="h-9 text-xs mt-1.5" />
+            )}
+          </div>
+          <div>
+            <Label className="text-xs">Operating Scale</Label>
+            <Select value={form.operatingScale}
+              onValueChange={v => setForm(f => ({ ...f, operatingScale: v as OperatingScale }))}>
+              <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select scale (optional)" /></SelectTrigger>
+              <SelectContent>
+                {OPERATING_SCALES.map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-xs">{s.label} <span className="text-muted-foreground">— {s.hint}</span></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CollapsibleContent>
       </Collapsible>
