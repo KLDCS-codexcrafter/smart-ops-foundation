@@ -316,6 +316,14 @@ export function CustomerMasterPanel() {
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
 
+  // ── S4 — view mode + step sidebar + modals ──
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('table');
+  const [currentStep, setCurrentStep] = useState(1);
+  const [contactModal, setContactModal] = useState(false);
+  const [bankModal, setBankModal] = useState(false);
+  const [companyInfoModal, setCompanyInfoModal] = useState(false);
+  const [billWiseModal, setBillWiseModal] = useState(false);
+
   // ─── SAM context ─────────────────────────────────────────────
   const { entityCode } = useEntityCode();
 
