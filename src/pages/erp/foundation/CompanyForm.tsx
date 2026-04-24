@@ -39,6 +39,11 @@ import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import type { SetupResult } from '@/services/entity-setup-service';
 import { onEnterNext } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
+  BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 
@@ -72,14 +77,7 @@ const STEPS = [
   { id: 7, title: 'Audit Trail', description: 'Change history' },
 ];
 
-const BUSINESS_ENTITIES = ['Private Limited', 'Public Limited', 'LLP', 'OPC',
-  'Partnership', 'Sole Proprietorship', 'HUF', 'Trust', 'Society'];
-const INDUSTRIES = ['Technology', 'Manufacturing', 'Trading', 'Retail', 'Healthcare',
-  'Finance', 'Education', 'Real Estate', 'Logistics', 'Consulting',
-  'Food & Beverage', 'Textile', 'Pharma', 'Construction', 'Agriculture',
-  'Energy', 'Media', 'Others'];
-const BUSINESS_ACTIVITIES = ['Manufacturing', 'Trading', 'Services', 'Import / Export',
-  'E-Commerce', 'Distribution', 'IT Services', 'Consulting', 'Others'];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Australia',
   'Canada', 'Singapore', 'Germany', 'UAE', 'Japan', 'Others'];
 const ISD_CODES = ['+91', '+1', '+44', '+61', '+65', '+49', '+971', '+81', '+86'];
@@ -116,6 +114,8 @@ const COLOR_SWATCHES = ['#0D9488', '#1E3A5F', '#1E40AF', '#7C3AED', '#B91C1C',
 const INITIAL_FORM: Record<string, unknown> = {
   legalEntityName: '', tradingBrandName: '', shortCode: '',
   businessEntity: '', industry: '', businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '' as OperatingScale | '',
   parentCompanyId: '', parentCompanyName: '',
   // Subsidiary-specific
   reportingToEntityId: '',
