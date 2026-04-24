@@ -34,6 +34,15 @@ import {
   INDUSTRY_SECTORS, getActivitiesForSector,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+// ── T-H1.5-C-S4 — Party Master Redesign (tree view + step sidebar + modals) ──
+import {
+  PartyTreeList, PartyStepSidebar,
+  ContactDetailsModal, BankDetailsModal, CompanyInfoModal,
+  BillWiseBreakupModal, CreditScoreBadge,
+  buildPartyTree, useCreditScoring,
+  type BankAccount, type OpeningBill, type PartyLeaf,
+} from '@/features/party-master';
+import { LayoutGrid, List as ListIcon } from 'lucide-react';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -147,6 +156,9 @@ interface CustomerMasterDefinition {
   upstream_customer_id: string | null;
   hierarchy_role: import('@/types/distributor-hierarchy').HierarchyRole | null;
   portal_enabled: boolean;
+  // ── S4 additions (OPTIONAL — backward compatible) ──
+  bankAccounts?: BankAccount[];
+  openingBalanceBills?: OpeningBill[];
 }
 
 // ─── Storage ──────────────────────────────────────────────────
@@ -172,6 +184,9 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
         upstream_customer_id: c.upstream_customer_id ?? null,
         hierarchy_role: c.hierarchy_role ?? null,
         portal_enabled: c.portal_enabled ?? false,
+        // S4 — backfill new optional arrays
+        bankAccounts: c.bankAccounts ?? [],
+        openingBalanceBills: c.openingBalanceBills ?? [],
       }));
     }
   } catch {}
@@ -265,7 +280,21 @@ const defaultForm: Omit<CustomerMasterDefinition, 'id' | 'partyCode'> = {
   upstream_customer_id: null,
   hierarchy_role: null,
   portal_enabled: false,
+  // S4 — new optional fields
+  bankAccounts: [],
+  openingBalanceBills: [],
 };
+
+// ─── S4 — 7-Step sidebar definition ───────────────────────────
+const CUSTOMER_STEPS = [
+  { id: 1, title: 'Group & Identity',  description: 'Customer type, GSTIN, legal details' },
+  { id: 2, title: 'GST Auto-Fill',     description: 'Fetch & verify GST profile' },
+  { id: 3, title: 'Contact & Address', description: 'Multi-contact + Bill-To / Ship-To' },
+  { id: 4, title: 'Banking',           description: 'Bank accounts with IFSC auto-fill' },
+  { id: 5, title: 'Compliance',        description: 'GST, TDS, e-Invoice, filing frequency' },
+  { id: 6, title: 'Accounting',        description: 'Credit limits, payment terms, opening balance' },
+  { id: 7, title: 'Classification',    description: 'Sector, activity, scale, sales-force, hierarchy' },
+];
 
 // ─── Panel Component ──────────────────────────────────────────
 
@@ -286,6 +315,14 @@ export function CustomerMasterPanel() {
 
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);
+
+  // ── S4 — view mode + step sidebar + modals ──
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('table');
+  const [currentStep, setCurrentStep] = useState(1);
+  const [contactModal, setContactModal] = useState(false);
+  const [bankModal, setBankModal] = useState(false);
+  const [companyInfoModal, setCompanyInfoModal] = useState(false);
+  const [billWiseModal, setBillWiseModal] = useState(false);
 
   // ─── SAM context ─────────────────────────────────────────────
   const { entityCode } = useEntityCode();
@@ -563,7 +600,9 @@ export function CustomerMasterPanel() {
 
   const renderForm = () => (
     <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2" data-keyboard-form>
-      {/* Section 1 — Party Profile (always visible) */}
+      {/* Section 1 — Party Profile (always visible) — Steps 1 & 2 */}
+      <div id="cm-step-1" />
+      <div id="cm-step-2" />
       <div className="space-y-4">
         <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer Type</Label>
         <div className="grid grid-cols-4 gap-2">
@@ -656,7 +695,8 @@ export function CustomerMasterPanel() {
         </div>
       </div>
 
-      {/* Section 2 — Contacts */}
+      {/* Section 2 — Contacts (Step 3) */}
+      <div id="cm-step-3" />
       <Collapsible open={showContacts} onOpenChange={setShowContacts}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -833,7 +873,9 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 4 — Financial Details (Two-Tier Credit) */}
+      {/* Section 4 — Financial Details (Two-Tier Credit) — Steps 4 & 6 */}
+      <div id="cm-step-4" />
+      <div id="cm-step-6" />
       <Collapsible open={showFinancial} onOpenChange={setShowFinancial}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -1147,7 +1189,8 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 6 — Taxation Details */}
+      {/* Section 6 — Taxation Details (Step 5) */}
+      <div id="cm-step-5" />
       <Collapsible open={showTaxation} onOpenChange={setShowTaxation}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -1272,7 +1315,8 @@ export function CustomerMasterPanel() {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Section 7 — Company Info */}
+      {/* Section 7 — Company Info (Step 7) */}
+      <div id="cm-step-7" />
       <Collapsible open={showCompanyInfo} onOpenChange={setShowCompanyInfo}>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex items-center gap-2 w-full text-left py-2.5 border-b group/trigger">
@@ -1583,10 +1627,27 @@ export function CustomerMasterPanel() {
             </button>
           ))}
         </div>
+        {/* S4 — view mode toggle */}
+        <div className="ml-auto flex items-center gap-1 border border-border rounded-md p-0.5">
+          <button type="button" onClick={() => setViewMode('table')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'table' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <ListIcon className="h-3 w-3" /> Table
+          </button>
+          <button type="button" onClick={() => setViewMode('tree')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'tree' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <LayoutGrid className="h-3 w-3" /> Tree
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* Table or Tree (S4) */}
+      {viewMode === 'tree' ? (
+        <CustomerTreeBranch customers={filtered} entityCode={entityCode} onLeafClick={openEdit} />
+      ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p className="text-sm font-medium">No customers yet</p>
@@ -1664,14 +1725,51 @@ export function CustomerMasterPanel() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={addOpen || !!editTarget} onOpenChange={v => { if (!v) resetAndClose(); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-5xl">
           <DialogHeader>
-            <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Customer'}</DialogTitle>
-            <DialogDescription>
-              {editTarget ? 'Update customer details.' : 'Create a new customer or buyer (Sundry Debtor).'}
-            </DialogDescription>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Customer'}</DialogTitle>
+                <DialogDescription>
+                  {editTarget ? 'Update customer details.' : 'Create a new customer or buyer (Sundry Debtor).'}
+                </DialogDescription>
+              </div>
+              {editTarget && (
+                <CustomerCreditHeaderBadge partyId={editTarget.id} entityCode={entityCode} />
+              )}
+            </div>
           </DialogHeader>
-          {renderForm()}
+          <PartyStepSidebar
+            steps={CUSTOMER_STEPS}
+            currentStep={currentStep}
+            onStepClick={(s) => {
+              setCurrentStep(s);
+              const target = document.getElementById(`cm-step-${s}`);
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (s === 3) setShowContacts(true);
+              if (s === 4) setBankModal(true);
+              if (s === 5) setShowTaxation(true);
+              if (s === 6) setShowFinancial(true);
+              if (s === 7) setShowCompanyInfo(true);
+            }}
+            completedSteps={computeCompletedSteps(form)}
+          >
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setContactModal(true)}>
+                <User className="h-3 w-3" /> Contacts ({form.contacts.length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBankModal(true)}>
+                <CreditCard className="h-3 w-3" /> Banking ({(form.bankAccounts ?? []).length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setCompanyInfoModal(true)}>
+                <Building className="h-3 w-3" /> Company Info
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBillWiseModal(true)}>
+                <Briefcase className="h-3 w-3" /> Opening Balance Bills ({(form.openingBalanceBills ?? []).length})
+              </Button>
+            </div>
+            {renderForm()}
+          </PartyStepSidebar>
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
             <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
@@ -1680,8 +1778,123 @@ export function CustomerMasterPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* S4 — Progressive modals */}
+      <ContactDetailsModal
+        open={contactModal}
+        onOpenChange={setContactModal}
+        contacts={form.contacts}
+        onSave={(next) => setForm(f => ({ ...f, contacts: next }))}
+      />
+      <BankDetailsModal
+        open={bankModal}
+        onOpenChange={setBankModal}
+        accounts={form.bankAccounts ?? []}
+        onSave={(next) => setForm(f => ({ ...f, bankAccounts: next }))}
+      />
+      <CompanyInfoModal
+        open={companyInfoModal}
+        onOpenChange={setCompanyInfoModal}
+        value={{
+          typeOfBusinessEntity: form.typeOfBusinessEntity,
+          natureOfBusiness: form.natureOfBusiness,
+          businessActivity: form.businessActivity,
+          businessActivityCustom: form.businessActivityCustom,
+          operatingScale: form.operatingScale,
+        }}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          typeOfBusinessEntity: next.typeOfBusinessEntity as typeof f.typeOfBusinessEntity,
+          natureOfBusiness: next.natureOfBusiness,
+          businessActivity: next.businessActivity,
+          businessActivityCustom: next.businessActivityCustom,
+          operatingScale: next.operatingScale,
+        }))}
+      />
+      <BillWiseBreakupModal
+        open={billWiseModal}
+        onOpenChange={setBillWiseModal}
+        openingBalance={form.openingBalance}
+        bills={form.openingBalanceBills ?? []}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          openingBalance: next.openingBalance,
+          openingBalanceBills: next.bills,
+        }))}
+      />
     </div>
   );
+}
+
+// ─── S4 Helpers ───────────────────────────────────────────────
+
+/** Derive completed step IDs from form completeness. */
+function computeCompletedSteps(form: typeof defaultForm): number[] {
+  const done: number[] = [];
+  if (form.partyName.trim() && form.customerType) done.push(1);
+  if (form.gstin.replace(/\s/g, '').length === 15 || form.gstRegistrationType === 'unregistered' || form.gstRegistrationType === 'consumer') done.push(2);
+  if (form.contacts.length > 0 || form.addresses.length > 0) done.push(3);
+  if ((form.bankAccounts ?? []).length > 0) done.push(4);
+  if (form.gstRegistrationType) done.push(5);
+  if (form.creditLimit > 0 || form.creditDays > 0 || form.openingBalance !== 0) done.push(6);
+  if (form.natureOfBusiness && form.businessActivity) done.push(7);
+  return done;
+}
+
+interface CustomerCreditHeaderBadgeProps {
+  partyId: string;
+  entityCode: string;
+}
+function CustomerCreditHeaderBadge({ partyId, entityCode }: CustomerCreditHeaderBadgeProps) {
+  const credit = useCreditScoring({ partyId, entityCode });
+  return (
+    <div className="flex flex-col items-end gap-0.5">
+      <CreditScoreBadge score={credit.score} band={credit.band} />
+      <span className="text-[9px] text-muted-foreground">{credit.details}</span>
+    </div>
+  );
+}
+
+interface CustomerTreeBranchProps {
+  customers: CustomerMasterDefinition[];
+  entityCode: string;
+  onLeafClick: (item: CustomerMasterDefinition) => void;
+}
+function CustomerTreeBranch({ customers, entityCode, onLeafClick }: CustomerTreeBranchProps) {
+  const tree = useMemo(() => buildPartyTree(
+    customers as unknown as Array<Record<string, unknown>>,
+    {
+      typeField: 'customerType',
+      sectorField: 'natureOfBusiness',
+      activityField: 'businessActivity',
+      typeLabels: Object.fromEntries(CUSTOMER_TYPES.map(t => [t.value, t.label])),
+    },
+  ), [customers]);
+
+  const byId = useMemo(() => {
+    const m = new Map<string, CustomerMasterDefinition>();
+    for (const c of customers) m.set(c.id, c);
+    return m;
+  }, [customers]);
+
+  return (
+    <PartyTreeList
+      tree={tree}
+      onLeafClick={(leaf: PartyLeaf) => {
+        const item = byId.get(leaf.id);
+        if (item) onLeafClick(item);
+      }}
+      renderLeafMeta={(leaf) => (
+        <CustomerLeafMeta partyId={leaf.id} entityCode={entityCode} />
+      )}
+      emptyState="No customers match the current filter."
+    />
+  );
+}
+
+function CustomerLeafMeta({ partyId, entityCode }: { partyId: string; entityCode: string }) {
+  const credit = useCreditScoring({ partyId, entityCode });
+  return <CreditScoreBadge score={credit.score} band={credit.band} compact />;
 }
 
 // ─── Page Wrapper ─────────────────────────────────────────────
