@@ -49,9 +49,22 @@ export interface PartyTreeConfig {
   typeLabels: Record<string, string>;
 }
 
+/**
+ * Optional callback invoked once per L1/L2/L3 node during tree build.
+ * Receives the flat list of leaves under that node — caller can compute
+ * any aggregate (KPI rollup, count, sum) and return an opaque value that
+ * tree consumers can later display via `renderNodeMeta`.
+ *
+ * S4.5: opt-in only; CustomerMaster computes rollups inline via the
+ * `renderNodeMeta` PartyTreeList prop, so this callback is currently a
+ * no-op extension point reserved for future engines.
+ */
+export type ComputeRollupFn = (level: 1 | 2 | 3, code: string, leaves: PartyLeaf[]) => unknown;
+
 export function buildPartyTree<T extends Record<string, unknown>>(
   parties: T[],
   config: PartyTreeConfig,
+  computeRollup?: ComputeRollupFn,
 ): PartyTreeL1[] {
   const byType: Map<string, Map<string, Map<string, PartyLeaf[]>>> = new Map();
 
@@ -83,6 +96,7 @@ export function buildPartyTree<T extends Record<string, unknown>>(
       const l3List: PartyTreeL3[] = [];
       for (const [activityId, leaves] of byActivity.entries()) {
         totalLeaves += leaves.length;
+        if (computeRollup) computeRollup(3, activityId, leaves);
         l3List.push({
           code: activityId,
           label: activityId === '__unassigned__'
@@ -91,6 +105,8 @@ export function buildPartyTree<T extends Record<string, unknown>>(
           leaves: leaves.sort((a, b) => a.partyName.localeCompare(b.partyName)),
         });
       }
+      const sectorLeaves = l3List.flatMap(l3 => l3.leaves);
+      if (computeRollup) computeRollup(2, sectorId, sectorLeaves);
       l2List.push({
         code: sectorId,
         label: sectorId === '__unassigned__'
@@ -98,6 +114,10 @@ export function buildPartyTree<T extends Record<string, unknown>>(
           : getSectorLabel(sectorId),
         l3: l3List.sort((a, b) => a.label.localeCompare(b.label)),
       });
+    }
+    if (computeRollup) {
+      const typeLeaves = l2List.flatMap(l2 => l2.l3.flatMap(l3 => l3.leaves));
+      computeRollup(1, typeId, typeLeaves);
     }
     result.push({
       code: typeId,
