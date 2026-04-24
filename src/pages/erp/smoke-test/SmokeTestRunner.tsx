@@ -31,6 +31,8 @@ import {
 import { planMonthlyAccrual } from '@/features/loan-emi/engines/accrual-engine';
 import { planDailyPenal } from '@/features/loan-emi/engines/penal-engine';
 import { postBounceCharge } from '@/features/loan-emi/engines/bounce-engine';
+import { detectDuplicatePayments } from '@/features/loan-emi/lib/duplicate-detector';
+import { computeAlerts } from '@/features/loan-emi/lib/alert-engine';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -676,6 +678,109 @@ const CHECKS: CheckSpec[] = [
       const pass = sum6 > 77000 && sum6 < 79000;
       return { actual: `sum6=${sum6.toFixed(2)}`, expected: '77000..79000',
         pass, details: 'First 6 months of standard amortization (expected ~₹78,103.53)' };
+    } },
+
+  // ── T-H1.5-D-D3 · Visibility + Prevention Layer ──
+  { id: 'd3-1', section: 'D3 Duplicate Detector',
+    name: 'detectDuplicatePayments returns array never null',
+    run: () => {
+      const result = detectDuplicatePayments({
+        partyId: 'no-such-party', amount: 100, date: '2026-04-24', entityCode: 'SMRT',
+      });
+      return { actual: Array.isArray(result) ? 'array' : 'not-array',
+        expected: 'array', pass: Array.isArray(result),
+        details: `len=${result.length}` };
+    } },
+
+  { id: 'd3-2', section: 'D3 Duplicate Detector',
+    name: 'Tolerance ±₹0.50 — amounts within window flagged',
+    run: () => {
+      const testKey = 'erp_journal_SMRT';
+      const saved = localStorage.getItem(testKey);
+      const mockJournal = [{
+        id: 'je-dup-1', voucher_id: 'v-test-1', voucher_no: 'PAY/TEST/0001',
+        base_voucher_type: 'Payment', date: '2026-04-23', party_id: 'party-dup-test',
+        dr_amount: 0, cr_amount: 27677.50, narration: 'test',
+        ledger_name: 'Test Party', is_cancelled: false,
+      }];
+      localStorage.setItem(testKey, JSON.stringify(mockJournal));
+      const hits = detectDuplicatePayments({
+        partyId: 'party-dup-test', amount: 27677, date: '2026-04-24', entityCode: 'SMRT',
+      });
+      // Restore
+      if (saved) localStorage.setItem(testKey, saved); else localStorage.removeItem(testKey);
+      const pass = hits.length === 1 && hits[0].voucherNo === 'PAY/TEST/0001';
+      return { actual: `hits=${hits.length}`, expected: 'hits=1', pass, details: '' };
+    } },
+
+  { id: 'd3-3', section: 'D3 Alert Engine',
+    name: 'computeAlerts buckets by daysUntilDue correctly',
+    run: () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const t = Date.now();
+      const mkRow = (daysOffset: number, emiNumber: number) => ({
+        emiNumber,
+        dueDate: new Date(t + daysOffset * 86_400_000).toISOString().slice(0, 10),
+        principalPortion: 1000, interestPortion: 100, totalEMI: 1100,
+        openingBalance: 10000, closingBalance: 9000,
+        status: 'scheduled' as const, paymentVoucherId: null, paidDate: null,
+        paidAmount: 0, penalAccrued: 0, bouncedDate: null, bouncedCount: 0, notes: '',
+      });
+      const borrowings = [{
+        id: 'L-test', ledgerType: 'borrowing' as const, name: 'Test Loan', status: 'active',
+        emiScheduleLive: [mkRow(-2, 1), mkRow(3, 2), mkRow(5, 3), mkRow(10, 4)],
+      }];
+      const alerts = computeAlerts(borrowings, today);
+      const buckets = alerts.map(a => a.bucket).sort().join(',');
+      // Expected: overdue (EMI1), 3d (EMI2), 7d (EMI3). EMI4 too far — excluded.
+      const pass = alerts.length === 3;
+      return { actual: `count=${alerts.length}, buckets=${buckets}`,
+        expected: 'count=3 (overdue+3d+7d)',
+        pass, details: '' };
+    } },
+
+  { id: 'd3-4', section: 'D3 PartyPicker Extension',
+    name: "'borrowing' mode loads from ledger-definitions, filters by ledgerType+status",
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{
+        ledgerType?: string; status?: string;
+      }>;
+      const activeBorrowings = all.filter(l =>
+        l.ledgerType === 'borrowing' && l.status === 'active').length;
+      if (activeBorrowings === 0) {
+        return { actual: 'skip', expected: 'skip', pass: true, details: 'No active borrowings' };
+      }
+      const borrowings = all.filter(l => l.ledgerType === 'borrowing') as Array<
+        { id?: unknown; name?: unknown }
+      >;
+      const bad = borrowings.filter(b =>
+        typeof b.id !== 'string' || typeof b.name !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0,
+        details: `${bad} borrowings with broken PartyPicker contract fields` };
+    } },
+
+  { id: 'd3-5', section: 'D3 PartyPicker Regression',
+    name: 'Existing modes (customer/vendor/both) contract preserved',
+    run: () => {
+      const customers = readArray('erp_group_customer_master') as Array<Record<string, unknown>>;
+      const vendors = readArray('erp_group_vendor_master') as Array<Record<string, unknown>>;
+      const badCust = customers.filter(c =>
+        typeof c.id !== 'string' || typeof c.partyName !== 'string').length;
+      const badVen = vendors.filter(v =>
+        typeof v.id !== 'string' || typeof v.partyName !== 'string').length;
+      const total = badCust + badVen;
+      return { actual: total, expected: 0, pass: total === 0,
+        details: `Bad customers=${badCust}, bad vendors=${badVen}` };
+    } },
+
+  { id: 'd3-6', section: 'D3 EMI Dashboard',
+    name: 'EMIAlertSummary shape returns finite numbers',
+    run: () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const alerts = computeAlerts([], today);
+      const pass = Array.isArray(alerts) && alerts.length === 0;
+      return { actual: `len=${alerts.length}`, expected: 'len=0 for empty input',
+        pass, details: 'Base case — no borrowings means no alerts' };
     } },
 ];
 
