@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Users, Truck, Tag, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
+import { getPrimaryEntity } from '@/data/mock-entities';
+import { customerSegmentsKey } from '@/types/customer-loyalty';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
 
