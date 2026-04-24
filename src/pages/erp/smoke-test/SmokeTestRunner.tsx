@@ -37,6 +37,11 @@ import { computeAlerts } from '@/features/loan-emi/lib/alert-engine';
 import { computeTDSForAccrual } from '@/features/loan-emi/engines/tds-194a-engine';
 import { splitChargeWithGST } from '@/features/loan-emi/engines/gst-charge-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+// ── T-H1.5-D-D5 imports ──
+import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
+import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
+import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
+import type { AdvanceEntry } from '@/types/compliance';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -891,6 +896,125 @@ const CHECKS: CheckSpec[] = [
       return { actual: `dup=${!!dup}, fresh=${!!fresh}`,
         expected: 'dup=true, fresh=false',
         pass, details: 'New action types work with existing dup detection' };
+    } },
+
+  // ── T-H1.5-D-D5 · Notional Interest + Advance Register ──
+  { id: 'd5-1', section: 'D5 Advance Aging',
+    name: 'computeAgingReport buckets by age correctly',
+    run: () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const t = Date.now();
+      const mkAdv = (daysAgo: number, balance: number, id: string): AdvanceEntry => ({
+        id, advance_ref_no: `ADVP/TEST/${id}`,
+        entity_id: DEFAULT_ENTITY_SHORTCODE, party_type: 'vendor',
+        party_id: `p-${id}`, party_name: 'Test Vendor',
+        date: new Date(t - daysAgo * 86_400_000).toISOString().slice(0, 10),
+        source_voucher_id: `v-${id}`, source_voucher_no: `PAY/${id}`,
+        advance_amount: balance, tds_amount: 0, net_amount: balance,
+        adjustments: [], balance_amount: balance, tds_balance: 0,
+        status: 'open', tds_status: 'na',
+        created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z',
+      });
+      const advances = [
+        mkAdv(15, 10000, '1'),   // 0-30d
+        mkAdv(45, 20000, '2'),   // 31-60d
+        mkAdv(75, 30000, '3'),   // 61-90d
+        mkAdv(120, 40000, '4'),  // 91-180d
+        mkAdv(200, 50000, '5'),  // 180+d
+      ];
+      const report = computeAgingReport(advances, today);
+      const pass = report.totalOpenCount === 5
+        && report.totalOpenAmount === 150000
+        && report.byBucket.find(b => b.bucket === '0-30d')?.count === 1
+        && report.byBucket.find(b => b.bucket === '180+d')?.count === 1
+        && report.aged[0].daysOld === 200;
+      return { actual: `count=${report.totalOpenCount}, total=${report.totalOpenAmount}, oldest=${report.aged[0]?.daysOld ?? 0}`,
+        expected: 'count=5, total=150000, oldest=200',
+        pass, details: 'Bucket distribution + oldest-first sort' };
+    } },
+
+  { id: 'd5-2', section: 'D5 Advance Aging',
+    name: 'Cancelled + adjusted advances excluded from aging',
+    run: () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const t = Date.now();
+      const base = {
+        entity_id: DEFAULT_ENTITY_SHORTCODE, party_type: 'vendor' as const,
+        party_id: 'p1', party_name: 'V1',
+        date: new Date(t - 90 * 86_400_000).toISOString().slice(0, 10),
+        source_voucher_id: 'v1', source_voucher_no: 'PAY/1',
+        advance_amount: 10000, tds_amount: 0, net_amount: 10000,
+        adjustments: [], balance_amount: 10000, tds_balance: 0,
+        tds_status: 'na' as const,
+        created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z',
+      };
+      const advances: AdvanceEntry[] = [
+        { ...base, id: '1', advance_ref_no: 'A1', status: 'open' },
+        { ...base, id: '2', advance_ref_no: 'A2', status: 'adjusted' },
+        { ...base, id: '3', advance_ref_no: 'A3', status: 'cancelled' },
+        { ...base, id: '4', advance_ref_no: 'A4', status: 'partial', balance_amount: 5000 },
+      ];
+      const report = computeAgingReport(advances, today);
+      const pass = report.totalOpenCount === 2
+        && report.totalOpenAmount === 15000;
+      return { actual: `count=${report.totalOpenCount}, total=${report.totalOpenAmount}`,
+        expected: 'count=2, total=15000',
+        pass, details: 'Only open+partial included' };
+    } },
+
+  { id: 'd5-3', section: 'D5 Notional Interest Log',
+    name: 'findNotionalDuplicate detects existing same-month entry',
+    run: () => {
+      const log = [{
+        id: 'n1', entityCode: DEFAULT_ENTITY_SHORTCODE,
+        advanceId: 'adv-1', advanceRefNo: 'ADVP/0001',
+        partyType: 'vendor' as const, partyId: 'p1', partyName: 'V1',
+        periodKey: '2026-04', agedDaysAtPost: 90, baseAmount: 10000,
+        annualRatePercent: 9, interestAmount: 75,
+        voucherId: 'v1', voucherNo: 'JV-NOT/0001',
+        postedBy: 'test', reversedByVoucherId: null,
+        narration: 'test', postedAt: '2026-04-03T10:00:00Z',
+      }];
+      const dup = findNotionalDuplicate(log, 'adv-1', '2026-04');
+      const fresh = findNotionalDuplicate(log, 'adv-1', '2026-05');
+      const pass = !!dup && !fresh;
+      return { actual: `dup=${!!dup}, fresh=${!!fresh}`,
+        expected: 'dup=true, fresh=false',
+        pass, details: 'periodKey idempotency' };
+    } },
+
+  { id: 'd5-4', section: 'D5 Notional Interest Log',
+    name: 'Reversed entries ignored in dup check',
+    run: () => {
+      const log = [{
+        id: 'n1', entityCode: DEFAULT_ENTITY_SHORTCODE,
+        advanceId: 'adv-2', advanceRefNo: 'ADVP/0002',
+        partyType: 'vendor' as const, partyId: 'p2', partyName: 'V2',
+        periodKey: '2026-04', agedDaysAtPost: 90, baseAmount: 10000,
+        annualRatePercent: 9, interestAmount: 75,
+        voucherId: 'v1', voucherNo: 'JV-NOT/0001',
+        postedBy: 'test', reversedByVoucherId: 'v-cancel-1',
+        narration: 'test', postedAt: '2026-04-03T10:00:00Z',
+      }];
+      const dup = findNotionalDuplicate(log, 'adv-2', '2026-04');
+      const pass = dup === null;
+      return { actual: `dup=${!!dup}`,
+        expected: 'dup=false (reversed entries ignored)',
+        pass, details: 'User can re-post after cancelling the voucher' };
+    } },
+
+  { id: 'd5-5', section: 'D5 Engine Plan',
+    name: 'planMonthlyNotional returns array with correct shape',
+    run: () => {
+      const plan = planMonthlyNotional(new Date().toISOString().slice(0, 10), DEFAULT_ENTITY_SHORTCODE);
+      const shapeOk = Array.isArray(plan) && plan.every(p =>
+        typeof p.advanceId === 'string'
+        && typeof p.interestAmount === 'number'
+        && typeof p.alreadyPosted === 'boolean'
+      );
+      return { actual: `len=${plan.length}, shapeOk=${shapeOk}`,
+        expected: 'array with well-formed items',
+        pass: shapeOk, details: 'Plan function contract' };
     } },
 ];
 

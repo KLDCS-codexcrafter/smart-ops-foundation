@@ -29,9 +29,12 @@ export type ExpenseLedgerKind =
   | 'tds_payable'
   | 'input_cgst'
   | 'input_sgst'
-  | 'input_igst';
+  | 'input_igst'
+  // ── T-H1.5-D-D5 additions (notional interest on aged advances) ──
+  | 'interest_receivable_advances'
+  | 'notional_interest_income';
 
-type ResolverLedgerType = 'expense' | 'liability' | 'asset';
+type ResolverLedgerType = 'expense' | 'liability' | 'asset' | 'income';
 
 interface ResolverMeta {
   searchName: RegExp;
@@ -172,6 +175,30 @@ const RESOLVER_META: Record<ExpenseLedgerKind, ResolverMeta> = {
     parentGroupName: 'Advance Tax & Duties',
     ledgerType: 'asset',
   },
+  // ── T-H1.5-D-D5 additions ──
+  // Asset side: parked under STLA (Short-Term Loans & Advances) — same L3
+  // bucket as the underlying advances themselves, so the notional receivable
+  // sits naturally beside the principal it accrues on.
+  interest_receivable_advances: {
+    searchName: /^interest receivable( on advances)?$/i,
+    canonName: 'Interest Receivable on Advances',
+    codePrefix: 'AST-INTRCV',
+    parentGroupCode: 'STLA',
+    parentGroupName: 'Short-Term Loans & Advances',
+    ledgerType: 'asset',
+  },
+  // Income side: parked under INTINC (Interest Income L3 leaf under I-OI L2
+  // 'Other Income'). Chosen over MISC because the entry is semantically
+  // interest, even though notionally imputed. Verified `INTINC` exists in
+  // src/data/finframe-seed-data.ts (line 135).
+  notional_interest_income: {
+    searchName: /^notional interest income$/i,
+    canonName: 'Notional Interest Income',
+    codePrefix: 'INC-NOTINT',
+    parentGroupCode: 'INTINC',
+    parentGroupName: 'Interest Income',
+    ledgerType: 'income',
+  },
 };
 
 /**
@@ -195,7 +222,8 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
 
   const nowIso = new Date().toISOString();
   const newId = `lr-${kind}-${Date.now()}`;
-  const openingBalanceType: 'Dr' | 'Cr' = meta.ledgerType === 'liability' ? 'Cr' : 'Dr';
+  const openingBalanceType: 'Dr' | 'Cr' =
+    meta.ledgerType === 'liability' || meta.ledgerType === 'income' ? 'Cr' : 'Dr';
   const newLedger: AutoLedger = {
     id: newId,
     ledgerType: meta.ledgerType,
@@ -247,17 +275,19 @@ export function resolveExpenseLedger(kind: ExpenseLedgerKind): string {
   return newId;
 }
 
-/** Convenience: resolves all 8 at engine run-start. */
+/** Convenience: resolves all 10 at engine run-start. */
 export function resolveAllExpenseLedgers(): Record<ExpenseLedgerKind, string> {
   return {
-    interest_expense:       resolveExpenseLedger('interest_expense'),
-    penal_interest_expense: resolveExpenseLedger('penal_interest_expense'),
-    bank_charges:           resolveExpenseLedger('bank_charges'),
-    processing_fee_expense: resolveExpenseLedger('processing_fee_expense'),
-    tds_payable:            resolveExpenseLedger('tds_payable'),
-    input_cgst:             resolveExpenseLedger('input_cgst'),
-    input_sgst:             resolveExpenseLedger('input_sgst'),
-    input_igst:             resolveExpenseLedger('input_igst'),
+    interest_expense:              resolveExpenseLedger('interest_expense'),
+    penal_interest_expense:        resolveExpenseLedger('penal_interest_expense'),
+    bank_charges:                  resolveExpenseLedger('bank_charges'),
+    processing_fee_expense:        resolveExpenseLedger('processing_fee_expense'),
+    tds_payable:                   resolveExpenseLedger('tds_payable'),
+    input_cgst:                    resolveExpenseLedger('input_cgst'),
+    input_sgst:                    resolveExpenseLedger('input_sgst'),
+    input_igst:                    resolveExpenseLedger('input_igst'),
+    interest_receivable_advances:  resolveExpenseLedger('interest_receivable_advances'),
+    notional_interest_income:      resolveExpenseLedger('notional_interest_income'),
   };
 }
 
