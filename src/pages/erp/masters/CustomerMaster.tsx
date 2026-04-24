@@ -1606,6 +1606,20 @@ export function CustomerMasterPanel() {
         </Button>
       </div>
 
+      {/* S4.5 — Customer Intelligence Dashboard */}
+      <CustomerIntelligenceDashboard
+        customers={customers.map(c => ({
+          id: c.id,
+          partyName: c.partyName,
+          natureOfBusiness: c.natureOfBusiness ?? '',
+          businessActivity: c.businessActivity ?? '',
+        }))}
+        onCandidateClick={(partyId) => {
+          const target = customers.find(c => c.id === partyId);
+          if (target) openEdit(target);
+        }}
+      />
+
       {/* Stats */}
       <div className="flex gap-4 text-xs">
         <span className="text-muted-foreground">Total <strong className="text-foreground">{customers.length}</strong></span>
