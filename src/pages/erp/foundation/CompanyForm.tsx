@@ -645,7 +645,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         <Separator className="my-4" />
         <CompanyProfilePreview data={{
           legalEntityName: f('legalEntityName'), tradingBrandName: f('tradingBrandName'),
-          businessEntity: f('businessEntity'), industry: f('industry'),
+          businessEntity: f('businessEntity'), industry: getSectorLabel(f('industry') as string),
           hqCity: f('hqCity'), hqCountry: f('hqCountry'),
           corporateEmail: f('corporateEmail'), website: f('website'),
           status: f('status'), logo: f('logoLeft') || f('logoCenter') || f('logoRight'),
@@ -996,7 +996,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         <p className="text-xs font-semibold text-foreground mb-3">Live Preview</p>
         <CompanyProfilePreview data={{
           legalEntityName: f('legalEntityName'), tradingBrandName: f('tradingBrandName'),
-          businessEntity: f('businessEntity'), industry: f('industry'),
+          businessEntity: f('businessEntity'), industry: getSectorLabel(f('industry') as string),
           hqCity: f('hqCity'), hqCountry: f('hqCountry'),
           corporateEmail: f('corporateEmail'), website: f('website'),
           status: f('status'), logo: f('logoLeft') || f('logoCenter') || f('logoRight'),
@@ -1124,8 +1124,10 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       shortCode={f('shortCode')}
       entityType={entityType === 'company' ? 'subsidiary' : 'subsidiary'}
       businessEntity={f('businessEntity')}
-      industry={f('industry')}
-      businessActivity={f('businessActivity')}
+      industry={getSectorLabel(f('industry') as string)}
+      businessActivity={f('businessActivity') === 'others' && f('businessActivityCustom')
+        ? (f('businessActivityCustom') as string)
+        : getActivityLabel(f('industry') as string, f('businessActivity') as string)}
       onComplete={(result) => {
         toast.success(`${f('legalEntityName')} is ready. ${result.ledgersCreated} ledgers created.`);
         navigate(listPath);
