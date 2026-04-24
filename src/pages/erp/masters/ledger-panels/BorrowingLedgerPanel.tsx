@@ -114,6 +114,7 @@ function emptyDraft(): BorrowingLedger {
     gstOnChargesApplicable: true,
     emiScheduleCached: [],
     emiScheduleLive: [],
+    accrualLog: [],
     suspendedBy: null, suspendedAt: null, suspendedReason: null,
     reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
   };
@@ -140,6 +141,8 @@ export function BorrowingLedgerPanel() {
   const [agreementOpen, setAgreementOpen] = useState(false);
   const [emiPreviewOpen, setEmiPreviewOpen] = useState(false);
   const [showChargesMaster, setShowChargesMaster] = useState(false);
+  const [accrualRunOpen, setAccrualRunOpen] = useState(false);
+  const [accrualLogOpen, setAccrualLogOpen] = useState(false);
   const entities = useMemo(() => loadEntities(), []);
 
   const tree = useMemo(() => buildLedgerTree(ledgers, {
