@@ -421,6 +421,109 @@ const CHECKS: CheckSpec[] = [
       const bad = cap.filter(l => typeof l.profitSharingRatio !== 'number' || typeof l.capitalContribution !== 'number').length;
       return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-numeric ratio/contribution` };
     } },
+
+  // ─── S6.5b — P&L + Statutory + Debt Panels ─────────────────────────────
+  { id: 'lp-inc-1', section: 'Income Ledger Panel (S6.5b)', name: 'Interface — sacCode/hsnCode preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; sacCode?: unknown; hsnCode?: unknown }>;
+      const inc = all.filter(l => l.ledgerType === 'income');
+      if (inc.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No income ledgers' };
+      const bad = inc.filter(l => typeof l.sacCode !== 'string' && typeof l.hsnCode !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} missing sac/hsn` };
+    } },
+  { id: 'lp-inc-2', section: 'Income Ledger Panel (S6.5b)', name: 'GST flags numeric/boolean intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; isGstApplicable?: unknown; gstRate?: unknown }>;
+      const inc = all.filter(l => l.ledgerType === 'income');
+      if (inc.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No income ledgers' };
+      const bad = inc.filter(l => typeof l.isGstApplicable !== 'boolean' || typeof l.gstRate !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken GST shape` };
+    } },
+
+  { id: 'lp-exp-1', section: 'Expense Ledger Panel (S6.5b)', name: 'RCM flag boolean preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; isRcmApplicable?: unknown }>;
+      const exp = all.filter(l => l.ledgerType === 'expense');
+      if (exp.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No expense ledgers' };
+      const bad = exp.filter(l => typeof l.isRcmApplicable !== 'boolean').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken RCM flag` };
+    } },
+  { id: 'lp-exp-2', section: 'Expense Ledger Panel (S6.5b)', name: 'TDS section + rate intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; isTdsApplicable?: unknown; tdsSection?: unknown; tdsRate?: unknown }>;
+      const exp = all.filter(l => l.ledgerType === 'expense');
+      if (exp.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No expense ledgers' };
+      const bad = exp.filter(l => typeof l.isTdsApplicable !== 'boolean').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken TDS shape` };
+    } },
+
+  { id: 'lp-dt-1', section: 'Duties & Tax Ledger Panel (S6.5b)', name: 'taxType discriminator intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; taxType?: unknown }>;
+      const dt = all.filter(l => l.ledgerType === 'duties_tax');
+      if (dt.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No duties_tax ledgers' };
+      const bad = dt.filter(l => typeof l.taxType !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken taxType` };
+    } },
+  { id: 'lp-dt-2', section: 'Duties & Tax Ledger Panel (S6.5b)', name: 'GSTR mapping + filing freq present',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; gstrMapping?: unknown; filingFrequency?: unknown }>;
+      const dt = all.filter(l => l.ledgerType === 'duties_tax');
+      if (dt.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No duties_tax ledgers' };
+      const bad = dt.filter(l => typeof l.gstrMapping !== 'string' && typeof l.filingFrequency !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} missing mapping/frequency` };
+    } },
+
+  { id: 'lp-pay-1', section: 'Payroll Statutory Panel (S6.5b)', name: 'statutoryType discriminator intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; statutoryType?: unknown }>;
+      const pr = all.filter(l => l.ledgerType === 'payroll_statutory');
+      if (pr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No payroll ledgers' };
+      const bad = pr.filter(l => typeof l.statutoryType !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken statutoryType` };
+    } },
+  { id: 'lp-pay-2', section: 'Payroll Statutory Panel (S6.5b)', name: 'Employer/employee share numeric',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; employerShare?: unknown; employeeShare?: unknown }>;
+      const pr = all.filter(l => l.ledgerType === 'payroll_statutory');
+      if (pr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No payroll ledgers' };
+      const bad = pr.filter(l => typeof l.employerShare !== 'number' || typeof l.employeeShare !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-numeric shares` };
+    } },
+
+  { id: 'lp-lrec-1', section: 'Loan Receivable Panel (S6.5b)', name: 'Borrower + tenure fields intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; borrowerName?: unknown; tenureMonths?: unknown }>;
+      const lr = all.filter(l => l.ledgerType === 'loan_receivable');
+      if (lr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No loan receivables' };
+      const bad = lr.filter(l => typeof l.borrowerName !== 'string' || typeof l.tenureMonths !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken borrower/tenure` };
+    } },
+  { id: 'lp-lrec-2', section: 'Loan Receivable Panel (S6.5b)', name: 'Interest type enum (simple|compound)',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; interestType?: unknown }>;
+      const lr = all.filter(l => l.ledgerType === 'loan_receivable');
+      if (lr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No loan receivables' };
+      const bad = lr.filter(l => l.interestType !== 'simple' && l.interestType !== 'compound').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with bad interestType` };
+    } },
+
+  { id: 'lp-borr-1', section: 'Borrowing Panel (S6.5b)', name: 'lenderType + loanType discriminators intact',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; lenderType?: unknown; loanType?: unknown }>;
+      const br = all.filter(l => l.ledgerType === 'borrowing');
+      if (br.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No borrowings' };
+      const bad = br.filter(l => typeof l.lenderType !== 'string' || typeof l.loanType !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken lender/loan type` };
+    } },
+  { id: 'lp-borr-2', section: 'Borrowing Panel (S6.5b)', name: 'H1.5-D foundation fields preserved',
+    run: () => {
+      const all = readArray('erp_group_ledger_definitions') as Array<{ ledgerType?: string; processingFee?: unknown; penalInterestRate?: unknown; foreclosureRate?: unknown }>;
+      const br = all.filter(l => l.ledgerType === 'borrowing');
+      if (br.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No borrowings' };
+      const bad = br.filter(l => 'processingFee' in l && typeof l.processingFee !== 'number').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with broken foundation field types` };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
