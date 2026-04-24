@@ -256,6 +256,82 @@ const CHECKS: CheckSpec[] = [
       });
       return { actual: allOk ? 'ok' : 'bad enum', expected: 'valid', pass: allOk, details: 'Sampled first 10' };
     } },
+
+  // T-H1.5-C-S5 — Vendor Master regression checks
+  { id: 'vm-1', section: 'Vendor Master (S5)', name: 'Interface shape preserved — contacts[] is array',
+    run: () => {
+      const arr = readArray('erp_group_vendor_master') as Array<{ contacts?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No vendors' };
+      const bad = arr.filter(v => !Array.isArray(v.contacts)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} vendors with non-array contacts` };
+    } },
+  { id: 'vm-2', section: 'Vendor Master (S5)', name: 'PAN-required field present (panRequired)',
+    run: () => {
+      const arr = readArray('erp_group_vendor_master') as Array<{ panRequired?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No vendors' };
+      const missing = arr.filter(v => v.panRequired === undefined).length;
+      return { actual: missing, expected: 0, pass: missing === 0, details: `${missing} missing panRequired` };
+    } },
+  { id: 'vm-3', section: 'Vendor Master (S5)', name: 'MSME compliance fields intact (msmeRegistered + msmeCategory)',
+    run: () => {
+      const arr = readArray('erp_group_vendor_master') as Array<{ msmeRegistered?: unknown; msmeCategory?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No vendors' };
+      const bad = arr.filter(v => v.msmeRegistered === undefined || v.msmeCategory === undefined).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} vendors with broken MSME fields` };
+    } },
+  { id: 'vm-4', section: 'Vendor Master (S5)', name: 'Optional bankAccounts[] is array when present',
+    run: () => {
+      const arr = readArray('erp_group_vendor_master') as Array<{ bankAccounts?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No vendors' };
+      const bad = arr.filter(v => v.bankAccounts !== undefined && !Array.isArray(v.bankAccounts)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} vendors with non-array bankAccounts` };
+    } },
+  { id: 'vm-5', section: 'Vendor Master (S5)', name: 'PartyPickerRow contract compatible',
+    run: () => {
+      const arr = readArray('erp_group_vendor_master') as Array<{ id?: unknown; partyName?: unknown; partyCode?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No vendors' };
+      const bad = arr.filter(v =>
+        typeof v.id !== 'string' || typeof v.partyName !== 'string' || typeof v.partyCode !== 'string').length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} vendors with broken PartyPicker fields` };
+    } },
+
+  // T-H1.5-C-S6 — Logistic Master regression checks
+  { id: 'lm-1', section: 'Logistic Master (S6)', name: 'Interface shape preserved — contacts[] is array',
+    run: () => {
+      const arr = readArray('erp_group_logistic_master') as Array<{ contacts?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No logistic parties' };
+      const bad = arr.filter(l => !Array.isArray(l.contacts)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} logistic parties with non-array contacts` };
+    } },
+  { id: 'lm-2', section: 'Logistic Master (S6)', name: 'GTA-RCM fields intact (gtaRcmApplicable + rcmGstRate)',
+    run: () => {
+      const arr = readArray('erp_group_logistic_master') as Array<{ logisticType?: string; gtaRcmApplicable?: unknown; rcmGstRate?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No logistic parties' };
+      const bad = arr.filter(l => l.gtaRcmApplicable === undefined).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} missing gtaRcmApplicable` };
+    } },
+  { id: 'lm-3', section: 'Logistic Master (S6)', name: 'Freight rate card field intact (freightRates[] array)',
+    run: () => {
+      const arr = readArray('erp_group_logistic_master') as Array<{ freightRates?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No logistic parties' };
+      const bad = arr.filter(l => !Array.isArray(l.freightRates)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-array freightRates` };
+    } },
+  { id: 'lm-4', section: 'Logistic Master (S6)', name: 'Optional bankAccounts[] is array when present',
+    run: () => {
+      const arr = readArray('erp_group_logistic_master') as Array<{ bankAccounts?: unknown }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No logistic parties' };
+      const bad = arr.filter(l => l.bankAccounts !== undefined && !Array.isArray(l.bankAccounts)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with non-array bankAccounts` };
+    } },
+  { id: 'lm-5', section: 'Logistic Master (S6)', name: 'logisticType enum within allowed set',
+    run: () => {
+      const arr = readArray('erp_group_logistic_master') as Array<{ logisticType?: string }>;
+      if (arr.length === 0) return { actual: 'skip', expected: 'skip', pass: true, details: 'No logistic parties' };
+      const allowed = ['gta', 'courier', 'rail', 'air', 'sea', 'cha', 'freight_forwarder', 'other'];
+      const bad = arr.filter(l => !l.logisticType || !allowed.includes(l.logisticType)).length;
+      return { actual: bad, expected: 0, pass: bad === 0, details: `${bad} with invalid logisticType` };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
