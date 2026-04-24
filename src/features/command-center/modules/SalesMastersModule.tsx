@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Network, Users, Compass, Megaphone, MapPin, Route, Target, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
-import { getPrimaryEntity } from '@/data/mock-entities';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { schemesKey } from '@/types/scheme';
 
 interface Props { onNavigate: (m: CommandCenterModule) => void; }
@@ -35,9 +35,9 @@ const SECTION_META = {
 } as const;
 
 export function SalesMastersModule({ onNavigate }: Props) {
-  // T-H1.5-C-S1 (CC-029) — Resolve entity code dynamically; removes hardcoded entity-suffix literal.
+  // T-H1.5-C-S1-patch (F2) — Use reactive hook so status updates when user switches company in ERP header.
+  const { entityCode } = useEntityCode();
   const MASTER_CARDS = useMemo<MasterCard[]>(() => {
-    const entityCode = getPrimaryEntity().shortCode;
     return [
       { title: 'Sales Hierarchy',  desc: 'Reporting structure of sales team — CEO > Sales Head > RM > ASM > Salesman.', icon: Network, module: 'sales-hierarchy', storageKey: 'erp_salesx_hierarchy_nodes', section: 'sales-org' },
       { title: 'SAM Persons',      desc: 'Salesman / Agent / Broker / Receiver / Reference persons. Core for commission and ownership.', icon: Users, module: 'sales-sam-person', storageKey: 'erp_sam_persons', section: 'sales-org' },
@@ -48,7 +48,7 @@ export function SalesMastersModule({ onNavigate }: Props) {
       { title: 'Targets',          desc: 'Monthly / quarterly targets per salesman — revenue, volume, visits, conversion.', icon: Target, module: 'sales-target', storageKey: 'erp_sales_targets', section: 'sales-ops' },
       { title: 'Sales Schemes',    desc: 'Promotional schemes — slab discount, BNGM, QPS, bundle. Audience: distributor / customer / both.', icon: Sparkles, module: 'sales-schemes', storageKey: schemesKey(entityCode), section: 'sales-ops' },
     ];
-  }, []);
+  }, [entityCode]);
 
   const sections: ('sales-org' | 'sales-ops')[] = ['sales-org', 'sales-ops'];
   const liveCount = MASTER_CARDS.filter(c => getMasterStatus(c.storageKey) === 'live').length;
