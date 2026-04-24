@@ -28,6 +28,11 @@ import { INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
 import { onEnterNext } from '@/lib/keyboard';
+import {
+  INDUSTRY_SECTORS, getActivitiesForSector,
+  getSectorLabel, getActivityLabel,
+  OPERATING_SCALES, type OperatingScale,
+} from '@/data/industry-taxonomy';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
@@ -68,10 +73,7 @@ const BRANCH_TYPE_COLORS: Record<string, string> = {
   'R&D Centre': 'bg-violet-500/10 text-violet-700 border-violet-500/20',
 };
 
-const BUSINESS_ACTIVITIES = [
-  'Manufacturing', 'Trading', 'Services', 'IT Services', 'Consulting',
-  'Import / Export', 'Distribution',
-];
+// T-H1.5-C-S3 — taxonomy moved to src/data/industry-taxonomy.ts (CC-013)
 
 interface BranchFormData {
   name: string; code: string; shortCode: string;
@@ -83,7 +85,10 @@ interface BranchFormData {
   branchHead: string; establishmentDate: string; officeArea: string;
   employeeCapacity: string; operatingLicenseNo: string; branchRegistrationNo: string;
   notes: string;
+  industry: string;
   businessActivity: string;
+  businessActivityCustom: string;
+  operatingScale: OperatingScale | '';
   jurisdiction: string;
   // Statutory registrations (branch-level)
   gstinNo: string;
@@ -104,7 +109,10 @@ const INITIAL: BranchFormData = {
   branchHead: '', establishmentDate: '', officeArea: '',
   employeeCapacity: '', operatingLicenseNo: '', branchRegistrationNo: '',
   notes: '',
-  businessActivity: 'Services',
+  industry: '',
+  businessActivity: '',
+  businessActivityCustom: '',
+  operatingScale: '',
   jurisdiction: '',
   gstinNo: '', tanNo: '', pfEstablishmentCode: '', esicSubCode: '',
   ptRegNo: '', lwfRegNo: '',
