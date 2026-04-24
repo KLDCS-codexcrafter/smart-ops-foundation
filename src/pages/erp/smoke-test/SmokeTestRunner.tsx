@@ -685,7 +685,7 @@ const CHECKS: CheckSpec[] = [
     name: 'detectDuplicatePayments returns array never null',
     run: () => {
       const result = detectDuplicatePayments({
-        partyId: 'no-such-party', amount: 100, date: '2026-04-24', entityCode: 'SMRT',
+        partyId: 'no-such-party', amount: 100, date: '2026-04-24', entityCode: DEFAULT_ENTITY_SHORTCODE,
       });
       return { actual: Array.isArray(result) ? 'array' : 'not-array',
         expected: 'array', pass: Array.isArray(result),
@@ -695,7 +695,7 @@ const CHECKS: CheckSpec[] = [
   { id: 'd3-2', section: 'D3 Duplicate Detector',
     name: 'Tolerance ±₹0.50 — amounts within window flagged',
     run: () => {
-      const testKey = 'erp_journal_SMRT';
+      const testKey = `erp_journal_${DEFAULT_ENTITY_SHORTCODE}`;
       const saved = localStorage.getItem(testKey);
       const mockJournal = [{
         id: 'je-dup-1', voucher_id: 'v-test-1', voucher_no: 'PAY/TEST/0001',
@@ -705,7 +705,7 @@ const CHECKS: CheckSpec[] = [
       }];
       localStorage.setItem(testKey, JSON.stringify(mockJournal));
       const hits = detectDuplicatePayments({
-        partyId: 'party-dup-test', amount: 27677, date: '2026-04-24', entityCode: 'SMRT',
+        partyId: 'party-dup-test', amount: 27677, date: '2026-04-24', entityCode: DEFAULT_ENTITY_SHORTCODE,
       });
       // Restore
       if (saved) localStorage.setItem(testKey, saved); else localStorage.removeItem(testKey);
