@@ -8,6 +8,7 @@ import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, Ch
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type { BranchOffice } from '@/types/branch-office';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
@@ -20,7 +21,7 @@ function useFoundationStats() {
     catch { return 0; }
   };
 
-  const branches: any[] = (() => {
+  const branches: BranchOffice[] = (() => {
     // [JWT] GET /api/foundation/branch-offices
     try { return JSON.parse(localStorage.getItem('erp_branch_offices') || '[]'); }
     catch { return []; }
@@ -31,7 +32,7 @@ function useFoundationStats() {
     companiesCount:      safeCount('erp_companies'),
     subsidiariesCount:   safeCount('erp_subsidiaries'),
     branchOfficesTotal:  branches.length,
-    branchOfficesActive: branches.filter((b: any) =>
+    branchOfficesActive: branches.filter(b =>
       b.status === 'Active' || b.status === 'active'
     ).length,
   };
