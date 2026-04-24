@@ -8,7 +8,7 @@
  * @finding  CC-059 / CC-061
  */
 import { useMemo, useState } from 'react';
-import { Plus, ArrowDownLeft, Eye, FileText } from 'lucide-react';
+import { Plus, ArrowDownLeft, Eye, FileText, PlayCircle, History } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
