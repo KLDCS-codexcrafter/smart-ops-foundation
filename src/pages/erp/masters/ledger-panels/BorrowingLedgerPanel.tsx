@@ -33,6 +33,9 @@ import { LoanAgreementModal, type LenderType, type LoanType }
 import { EMIPreviewModal } from '@/features/ledger-master/components/modals/EMIPreviewModal';
 import { calculateEMIAmount, type EMIScheduleRow }
   from '@/features/ledger-master/lib/emi-schedule-builder';
+import { EMIScheduleTable } from '@/features/loan-emi/components/EMIScheduleTable';
+import { LoanChargesMaster } from '@/features/loan-emi/components/LoanChargesMaster';
+import type { EMIScheduleLiveRow } from '@/features/loan-emi/lib/emi-lifecycle-engine';
 
 interface BorrowingLedger {
   id: string;
@@ -63,6 +66,7 @@ interface BorrowingLedger {
   tdsSection?: string;
   gstOnChargesApplicable?: boolean;
   emiScheduleCached?: EMIScheduleRow[];
+  emiScheduleLive?: EMIScheduleLiveRow[];   // T-H1.5-D-D1: actionable lifecycle rows
   suspendedBy: string | null;
   suspendedAt: string | null;
   suspendedReason: string | null;
@@ -130,6 +134,7 @@ export function BorrowingLedgerPanel() {
   const [step, setStep] = useState(1);
   const [agreementOpen, setAgreementOpen] = useState(false);
   const [emiPreviewOpen, setEmiPreviewOpen] = useState(false);
+  const [showChargesMaster, setShowChargesMaster] = useState(false);
   const entities = useMemo(() => loadEntities(), []);
 
   const tree = useMemo(() => buildLedgerTree(ledgers, {
