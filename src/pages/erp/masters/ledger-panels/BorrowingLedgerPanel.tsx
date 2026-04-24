@@ -363,44 +363,55 @@ export function BorrowingLedgerPanel() {
                     <Input type="number" value={draft.emiAmount} readOnly className="font-mono bg-muted/30" />
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
-                  disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
-                  <Eye className="h-3.5 w-3.5" /> Preview EMI Schedule
-                </Button>
-                <p className="text-[10px] text-muted-foreground">
-                  H1.5-D will make this schedule actionable (mark paid, bounce, restructure).
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold">EMI Schedule</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Track each EMI through its lifecycle. Mark payments and bounces as they happen.
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmiPreviewOpen(true)}
+                    disabled={draft.loanAmount <= 0 || draft.tenureMonths <= 0 || !draft.firstEmiDate}>
+                    <Eye className="h-3.5 w-3.5" /> Preview / Generate
+                  </Button>
+                </div>
+                {isEdit && draft.id && !draft.id.startsWith('borrow-') ? (
+                  <EMIScheduleTable ledgerId={draft.id} />
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
+                    Save the loan first to access the actionable schedule. Use Step 3 to enter loan terms.
+                  </div>
+                )}
               </div>
             )}
 
             {step === 5 && (
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-xs">Processing Fee (₹)</Label>
-                    <Input type="number" value={draft.processingFee ?? 0}
-                      onChange={e => setField('processingFee', Number(e.target.value) || 0)} className="font-mono" />
+                    <h3 className="text-sm font-semibold">Charges Master</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Configure processing, penal, bounce, and foreclosure charges for this loan.
+                    </p>
                   </div>
-                  <div>
-                    <Label className="text-xs">Processing Fee GST (%)</Label>
-                    <Input type="number" step="0.01" value={draft.processingFeeGst ?? 18}
-                      onChange={e => setField('processingFeeGst', Number(e.target.value) || 0)} className="font-mono" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Penal Interest Rate (% daily)</Label>
-                    <Input type="number" step="0.001" value={draft.penalInterestRate ?? 0}
-                      onChange={e => setField('penalInterestRate', Number(e.target.value) || 0)} className="font-mono" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Cheque Bounce Charge (₹)</Label>
-                    <Input type="number" value={draft.chequeBounceCharge ?? 0}
-                      onChange={e => setField('chequeBounceCharge', Number(e.target.value) || 0)} className="font-mono" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Foreclosure Charge (% of outstanding)</Label>
-                    <Input type="number" step="0.01" value={draft.foreclosureChargeRate ?? 0}
-                      onChange={e => setField('foreclosureChargeRate', Number(e.target.value) || 0)} className="font-mono" />
-                  </div>
+                  <Button size="sm" onClick={() => setShowChargesMaster(true)} className="gap-1.5">
+                    <FileText className="h-3.5 w-3.5" /> Configure Charges
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Badge variant="outline" className="justify-start gap-2 py-1.5">
+                    Processing Fee: <span className="font-mono ml-auto">₹{(draft.processingFee ?? 0).toLocaleString('en-IN')}</span>
+                  </Badge>
+                  <Badge variant="outline" className="justify-start gap-2 py-1.5">
+                    Penal Rate: <span className="font-mono ml-auto">{(draft.penalInterestRate ?? 0).toFixed(3)}%/d</span>
+                  </Badge>
+                  <Badge variant="outline" className="justify-start gap-2 py-1.5">
+                    Cheque Bounce: <span className="font-mono ml-auto">₹{(draft.chequeBounceCharge ?? 0).toLocaleString('en-IN')}</span>
+                  </Badge>
+                  <Badge variant="outline" className="justify-start gap-2 py-1.5">
+                    Foreclosure: <span className="font-mono ml-auto">{(draft.foreclosureChargeRate ?? 0).toFixed(2)}%</span>
+                  </Badge>
                 </div>
               </div>
             )}
