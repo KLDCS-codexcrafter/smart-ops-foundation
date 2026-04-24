@@ -156,6 +156,15 @@ export function FoundationModule() {
           href='/erp/foundation/org-structure'
           description='Divisions and departments — used for MIS reporting across all modules.'
         />
+        {/* T-H1.5-C-S1 (CC-020) — Business Units Master (BU tier above Divisions) */}
+        <StatCard
+          icon={<Layers className="h-5 w-5" />}
+          title="Business Units Master"
+          value={buCount > 0 ? `${buCount} configured` : 'Not configured'}
+          status={buCount > 0 ? 'ok' : 'empty'}
+          href="/erp/masters/business-unit"
+          description="BU tier above Divisions — strategic business unit classification."
+        />
         <StatCard
           icon={<MapPin className="h-5 w-5" />}
           title="Geography"
