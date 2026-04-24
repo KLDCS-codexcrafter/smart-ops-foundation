@@ -59,6 +59,12 @@ import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfP
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
+// T-H1.5-C-S6.5a — Balance Sheet ledger panels (full party-master pattern)
+import { CashLedgerPanel } from '@/pages/erp/masters/ledger-panels/CashLedgerPanel';
+import { BankLedgerPanel } from '@/pages/erp/masters/ledger-panels/BankLedgerPanel';
+import { AssetLedgerPanel } from '@/pages/erp/masters/ledger-panels/AssetLedgerPanel';
+import { LiabilityLedgerPanel } from '@/pages/erp/masters/ledger-panels/LiabilityLedgerPanel';
+import { CapitalLedgerPanel } from '@/pages/erp/masters/ledger-panels/CapitalLedgerPanel';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -3556,43 +3562,14 @@ export function LedgerMasterPanel() {
             </TabsList>
           </Tabs>
 
-          {/* Cash List */}
-          {defSubTab === 'cash' && renderDefTable(cashDefs, [
-            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-            { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-            { label: 'Scope', render: d => d.entityId
-              ? <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">{entities.find(e => e.id === d.entityId)?.name ?? d.entityShortCode}</Badge>
-              : <Badge variant="outline" className="text-[10px] bg-teal-500/10 text-teal-600 border-teal-500/20">Group</Badge> },
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-          ], 'No cash ledgers yet. Click + Cash above or use a Quick Start template.')}
+          {/* Cash List — S6.5a Panel */}
+          {defSubTab === 'cash' && <CashLedgerPanel />}
 
-          {/* Bank List */}
-          {defSubTab === 'bank' && renderDefTable(bankDefs, [
-            { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-            { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-            { label: 'Bank', render: d => <span className="text-xs">{(d as BankLedgerDefinition).bankName}</span> },
-            { label: 'Account Type', render: d => {
-              const bd = d as BankLedgerDefinition;
-              return <Badge variant="outline" className={`text-[10px] ${ACCOUNT_TYPE_COLORS[bd.accountType]}`}>{ACCOUNT_TYPE_LABELS[bd.accountType]}</Badge>;
-            }},
-            { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-          ], 'No bank ledgers yet. Click + Bank above or use a Quick Start template.')}
+          {/* Bank List — S6.5a Panel */}
+          {defSubTab === 'bank' && <BankLedgerPanel />}
 
-          {/* Capital List */}
-          {defSubTab === 'capital' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setCapitalOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Capital</Button>
-              </div>
-              {renderDefTable(capitalDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Capital Type', render: d => <span className="text-xs">{CAPITAL_TYPE_LABELS[(d as CapitalLedgerDefinition).capitalType]}</span> },
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No capital ledgers yet.')}
-            </div>
-          )}
+          {/* Capital List — S6.5a Panel */}
+          {defSubTab === 'capital' && <CapitalLedgerPanel />}
 
           {/* Loans List */}
           {defSubTab === 'loans' && (
@@ -3789,20 +3766,8 @@ export function LedgerMasterPanel() {
             </div>
           )}
 
-          {/* Liabilities List */}
-          {defSubTab === 'liabilities' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={() => setLiabilityOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Liability</Button>
-              </div>
-              {renderDefTable(liabilityDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Parent Group', render: d => <span className="text-xs">{d.parentGroupName}</span> },
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : d.status === 'suspended' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>{d.status}</Badge> },
-              ], 'No liability ledgers yet.')}
-            </div>
-          )}
+          {/* Liabilities List — S6.5a Panel */}
+          {defSubTab === 'liabilities' && <LiabilityLedgerPanel />}
 
           {/* Duties & Tax List */}
           {defSubTab === 'duties_tax' && (
@@ -3846,24 +3811,8 @@ export function LedgerMasterPanel() {
             </div>
           )}
 
-          {/* Asset List */}
-          {defSubTab === 'asset' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={openAssetCreate} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Asset</Button>
-              </div>
-              {renderDefTable(assetDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{ASSET_CATEGORY_LABELS[(d as AssetLedgerDefinition).assetCategory]}</Badge> },
-                { label: 'Depreciation', render: d => {
-                  const a = d as AssetLedgerDefinition;
-                  return <span className="text-xs">{a.depreciationMethod === 'slm' ? `SLM ${a.usefulLifeYears}yr` : a.depreciationMethod === 'wdv' ? `WDV ${a.depreciationRate}%` : 'None'}</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>{d.status}</Badge> },
-              ], 'No asset ledgers yet. Click + Add Asset above.')}
-            </div>
-          )}
+          {/* Asset List — S6.5a Panel */}
+          {defSubTab === 'asset' && <AssetLedgerPanel />}
 
           {/* Customer Master */}
           {defSubTab === 'customer' && <CustomerMasterPanel />}
