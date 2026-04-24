@@ -1234,9 +1234,22 @@ export function LogisticMasterPanel() {
             </button>
           ))}
         </div>
+        {/* S5 — view mode toggle */}
+        <div className="ml-auto flex items-center gap-1 border border-border rounded-md p-0.5">
+          <button type="button" onClick={() => setViewMode('table')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'table' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <ListIcon className="h-3 w-3" /> Table
+          </button>
+          <button type="button" onClick={() => setViewMode('tree')}
+            className={`px-2 py-1 text-[10px] rounded gap-1 inline-flex items-center transition-colors ${
+              viewMode === 'tree' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+            }`}>
+            <LayoutGrid className="h-3 w-3" /> Tree
+          </button>
+        </div>
       </div>
-
-      {/* Table */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <Truck className="h-12 w-12 mx-auto mb-4 opacity-20" />
