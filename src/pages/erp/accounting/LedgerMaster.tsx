@@ -3811,24 +3811,8 @@ export function LedgerMasterPanel() {
             </div>
           )}
 
-          {/* Asset List */}
-          {defSubTab === 'asset' && (
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <Button size="sm" onClick={openAssetCreate} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Asset</Button>
-              </div>
-              {renderDefTable(assetDefs, [
-                { label: 'Name', render: d => (<button type='button' className='font-medium text-left hover:text-primary hover:underline transition-colors' onClick={() => openDisplay(d)}>{d.name}</button>) },
-                { label: 'Numeric Code', render: d => <span className="font-mono text-xs text-teal-600">{d.numericCode || '—'}</span> },
-                { label: 'Category', render: d => <Badge variant="outline" className="text-[10px] capitalize">{ASSET_CATEGORY_LABELS[(d as AssetLedgerDefinition).assetCategory]}</Badge> },
-                { label: 'Depreciation', render: d => {
-                  const a = d as AssetLedgerDefinition;
-                  return <span className="text-xs">{a.depreciationMethod === 'slm' ? `SLM ${a.usefulLifeYears}yr` : a.depreciationMethod === 'wdv' ? `WDV ${a.depreciationRate}%` : 'None'}</span>;
-                }},
-                { label: 'Status', render: d => <Badge variant="outline" className={`text-[10px] ${d.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}`}>{d.status}</Badge> },
-              ], 'No asset ledgers yet. Click + Add Asset above.')}
-            </div>
-          )}
+          {/* Asset List — S6.5a Panel */}
+          {defSubTab === 'asset' && <AssetLedgerPanel />}
 
           {/* Customer Master */}
           {defSubTab === 'customer' && <CustomerMasterPanel />}
