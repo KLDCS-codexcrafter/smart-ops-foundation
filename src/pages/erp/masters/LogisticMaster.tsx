@@ -1315,14 +1315,38 @@ export function LogisticMasterPanel() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={addOpen || !!editTarget} onOpenChange={v => { if (!v) resetAndClose(); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-5xl">
           <DialogHeader>
             <DialogTitle>{editTarget ? `Edit — ${editTarget.partyName}` : 'Add Logistic Party'}</DialogTitle>
             <DialogDescription>
               {editTarget ? 'Update transporter or courier details.' : 'Create a new transporter, courier, or logistics party (Sundry Creditor).'}
             </DialogDescription>
           </DialogHeader>
-          {renderForm()}
+          <PartyStepSidebar
+            steps={LOGISTIC_STEPS}
+            currentStep={currentStep}
+            onStepClick={(s) => {
+              setCurrentStep(s);
+              if (s === 2) setShowContacts(true);
+              if (s === 3) setBankModal(true);
+              if (s === 4) setShowGst(true);
+              if (s === 5) setShowFreightRates(true);
+            }}
+            completedSteps={computeLogisticCompletedSteps(form)}
+          >
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setContactModal(true)}>
+                <User className="h-3 w-3" /> Contacts ({form.contacts.length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBankModal(true)}>
+                <CreditCard className="h-3 w-3" /> Banking ({(form.bankAccounts ?? []).length})
+              </Button>
+              <Button variant="outline" size="sm" type="button" className="text-xs h-7 gap-1" onClick={() => setBillWiseModal(true)}>
+                <Package className="h-3 w-3" /> Opening Balance Bills ({(form.openingBalanceBills ?? []).length})
+              </Button>
+            </div>
+            {renderForm()}
+          </PartyStepSidebar>
           <DialogFooter>
             <Button variant="outline" onClick={resetAndClose}>Cancel</Button>
             <Button onClick={handleSave} data-primary className={justSaved ? 'gap-1.5' : ''}>
@@ -1331,7 +1355,96 @@ export function LogisticMasterPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* S5 — Progressive modals */}
+      <ContactDetailsModal
+        open={contactModal}
+        onOpenChange={setContactModal}
+        contacts={form.contacts}
+        onSave={(next) => setForm(f => ({ ...f, contacts: next }))}
+      />
+      <BankDetailsModal
+        open={bankModal}
+        onOpenChange={setBankModal}
+        accounts={form.bankAccounts ?? []}
+        onSave={(next) => setForm(f => ({ ...f, bankAccounts: next }))}
+      />
+      <BillWiseBreakupModal
+        open={billWiseModal}
+        onOpenChange={setBillWiseModal}
+        openingBalance={form.openingBalance}
+        bills={form.openingBalanceBills ?? []}
+        onSave={(next) => setForm(f => ({
+          ...f,
+          openingBalance: next.openingBalance,
+          openingBalanceBills: next.bills,
+        }))}
+      />
     </div>
+  );
+}
+
+// ─── S5 Helpers ───────────────────────────────────────────────
+
+/** Derive completed step IDs from logistic form completeness. */
+function computeLogisticCompletedSteps(form: typeof defaultForm): number[] {
+  const done: number[] = [];
+  if (form.partyName.trim() && form.logisticType) done.push(1);
+  if (form.contacts.length > 0 || form.addressLine.trim()) done.push(2);
+  if ((form.bankAccounts ?? []).length > 0) done.push(3);
+  if (form.gstRegistrationType && (!form.tdsApplicable || form.tdsSection)) done.push(4);
+  if (form.freightRates.length > 0 || form.openingBalance !== 0) done.push(5);
+  return done;
+}
+
+interface LogisticTreeBranchProps {
+  logistics: LogisticMasterDefinition[];
+  onLeafClick: (item: LogisticMasterDefinition) => void;
+}
+function LogisticTreeBranch({ logistics, onLeafClick }: LogisticTreeBranchProps) {
+  const tree = useMemo(() => buildPartyTree(
+    logistics as unknown as Array<Record<string, unknown>>,
+    {
+      typeField: 'logisticType',
+      sectorField: 'natureOfBusiness',
+      activityField: 'businessActivity',
+      typeLabels: Object.fromEntries(LOGISTIC_TYPES.map(t => [t.value, t.label])),
+    },
+  ), [logistics]);
+
+  const byId = useMemo(() => {
+    const m = new Map<string, LogisticMasterDefinition>();
+    for (const l of logistics) m.set(l.id, l);
+    return m;
+  }, [logistics]);
+
+  return (
+    <PartyTreeList
+      tree={tree}
+      onLeafClick={(leaf: PartyLeaf) => {
+        const item = byId.get(leaf.id);
+        if (item) onLeafClick(item);
+      }}
+      renderLeafMeta={(leaf) => {
+        const l = byId.get(leaf.id);
+        if (!l) return null;
+        return (
+          <span className="flex items-center gap-1.5">
+            {l.logisticType === 'gta' && (
+              <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30 text-[9px]">
+                GTA-RCM
+              </Badge>
+            )}
+            {l.tdsApplicable && l.tdsSection && (
+              <Badge variant="outline" className="bg-teal-500/10 text-teal-700 border-teal-500/30 text-[9px]">
+                TDS {l.tdsSection}
+              </Badge>
+            )}
+          </span>
+        );
+      }}
+      emptyState="No logistic parties match the current filter."
+    />
   );
 }
 
