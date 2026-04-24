@@ -23,6 +23,14 @@ import {
   type EMIScheduleLiveRow,
 } from '@/features/loan-emi/lib/emi-lifecycle-engine';
 import type { EMIScheduleRow } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { buildEMISchedule } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { resolveExpenseLedger } from '@/features/loan-emi/lib/ledger-resolver';
+import {
+  findDuplicate, type AccrualLogEntry,
+} from '@/features/loan-emi/lib/accrual-log';
+import { planMonthlyAccrual } from '@/features/loan-emi/engines/accrual-engine';
+import { planDailyPenal } from '@/features/loan-emi/engines/penal-engine';
+import { postBounceCharge } from '@/features/loan-emi/engines/bounce-engine';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
