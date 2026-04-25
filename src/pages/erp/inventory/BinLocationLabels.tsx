@@ -28,7 +28,7 @@ const BLANK: Omit<BinLabel, 'id' | 'created_at' | 'updated_at'> = {
 export function BinLocationLabelsPanel() {
   const [labels, setLabels] = useState<BinLabel[]>(ls(KEY));
   // [JWT] GET /api/labels/bin-labels
-  const [godowns] = useState<any[]>(ls(GKEY));
+  const [godowns] = useState<Array<{ id: string; name: string }>>(ls(GKEY));
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<BinLabel | null>(null);
@@ -158,18 +158,18 @@ export function BinLocationLabelsPanel() {
           <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Godown *</Label>
-              <Select value={form.godown_id || 'none'} onValueChange={v => { const g = godowns.find((x: any) => x.id === v); setForm(f => ({ ...f, godown_id: v === 'none' ? '' : v, godown_name: g?.name || '' })); }}>
+              <Select value={form.godown_id || 'none'} onValueChange={v => { const g = godowns.find(x => x.id === v); setForm(f => ({ ...f, godown_id: v === 'none' ? '' : v, godown_name: g?.name || '' })); }}>
                 <SelectTrigger><SelectValue placeholder="Select godown..." /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">— Select Godown —</SelectItem>
-                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                  {godowns.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                   {godowns.length === 0 && <SelectItem value="wh1">Default Warehouse</SelectItem>}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label>Location Type</Label>
-              <Select value={form.location_type} onValueChange={v => setForm(f => ({ ...f, location_type: v as any }))}>
+              <Select value={form.location_type} onValueChange={v => setForm(f => ({ ...f, location_type: v as typeof f.location_type }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{LOC_TYPES.map(t => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}</SelectContent>
               </Select>
@@ -178,7 +178,7 @@ export function BinLocationLabelsPanel() {
               {([{ f: 'aisle', l: 'Aisle' }, { f: 'rack', l: 'Rack' }, { f: 'shelf', l: 'Shelf' }, { f: 'bin', l: 'Bin' }] as const).map(({ f, l }) => (
                 <div key={f} className="space-y-1.5">
                   <Label className="text-xs">{l}</Label>
-                  <Input className="h-8 text-xs" placeholder={l[0]} value={(form as any)[f] || ''}
+                  <Input className="h-8 text-xs" placeholder={l[0]} value={(form as Record<string, unknown>)[f] || ''}
                     onChange={e => setForm(ff => ({ ...ff, [f]: e.target.value || null }))} />
                 </div>
               ))}
@@ -189,7 +189,7 @@ export function BinLocationLabelsPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Barcode Type</Label>
-              <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as any }))}>
+              <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as typeof f.barcode_type }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="QR">QR Code</SelectItem>
