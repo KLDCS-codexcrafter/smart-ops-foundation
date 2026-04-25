@@ -28,6 +28,10 @@ import {
   type EntityGSTConfig, DEFAULT_ENTITY_GST_CONFIG, GSP_PROVIDER_LABELS,
   entityGstKey, type GSPProvider,
 } from '@/types/entity-gst';
+import {
+  DEFAULT_GROUP_CONFIG, DEFAULT_SETTLEMENT, DEFAULT_OUTSTANDING,
+  DEFAULT_RCM, DEFAULT_LC,
+} from './ComplianceSettingsAutomation.defaults';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
@@ -62,16 +66,8 @@ export interface GroupConfig {
   defaultReceiveGodown: string;
 }
 
-export const DEFAULT_GROUP_CONFIG: GroupConfig = {
-  enableAdvancedGST: false, enableAutoRCM: false, enableQRMPScheme: false,
-  enableAutoTDSPayable: false, enableAutoTDSReceivable: false, enableDiscountAutoPosting: false,
-  enableTaxAuditReport: false,
-  enableDomesticLandedCost: false, enableEximManagement: false, enableSAMModule: false,
-  enableWhatsAppTrigger: false,
-  enableInventory: true, enableBillByBill: true, enableCostCentres: false,
-  enableOrderProcessing: false, enableJobWork: false, enableBudgets: false,
-  enableInterestCalc: false, itemInvoiceByDefault: true, defaultReceiveGodown: '',
-};
+
+
 
 // Section 9 — Settlement Configuration
 // [JWT] GET/PATCH /api/compliance/comply360/settlement/:entityId
@@ -86,11 +82,8 @@ export interface SettlementConfig {
   interestLedger: string;
 }
 
-export const DEFAULT_SETTLEMENT: SettlementConfig = {
-  settlementMethod: 'fifo', allowManualOverride: true, advanceAutoAdjust: true,
-  discountOnSettlement: false, discountLedger: '', overdueInterest: false,
-  interestRate: 24, interestLedger: '',
-};
+
+
 
 // Section 10 — Outstanding Configuration
 // [JWT] GET/PATCH /api/compliance/comply360/outstanding/:entityId
@@ -101,10 +94,8 @@ export interface OutstandingConfig {
   showMSMEFlag: boolean;
 }
 
-export const DEFAULT_OUTSTANDING: OutstandingConfig = {
-  creditLimitMode: 'warn', overdueBlockNewOrders: false,
-  agingBuckets: [30, 60, 90, 180, 999], showMSMEFlag: true,
-};
+
+
 
 // Storage: erp_comply360_rcm_{entityId}
 // [JWT] GET/PATCH /api/compliance/comply360/rcm/:entityId
@@ -120,11 +111,8 @@ export interface RCMLedgerConfig {
   taxPaidAgainstRCMLedger: string; // from ZXZ_CreateTaxPaidAgainstReverseCharges
   reverseChargeInputLedger: string; // TDL UDF 5014 CMPRevChrgInputType
 }
-export const DEFAULT_RCM: RCMLedgerConfig = {
-  rcmJournalVCH: '', rcmCGSTLedger: '', rcmSGSTLedger: '', rcmIGSTLedger: '',
-  inputCGSTLedger: '', inputSGSTLedger: '', inputIGSTLedger: '',
-  inputCessLedger: '', taxPaidAgainstRCMLedger: '', reverseChargeInputLedger: '',
-};
+
+
 
 // Storage: erp_comply360_tdsp_{entityId}
 // [JWT] GET/PATCH /api/compliance/comply360/tds-payable/:entityId
@@ -151,10 +139,8 @@ export interface LandedCostConfig {
   insuranceLedger: string;
   portCHAChargesLedger: string;
 }
-export const DEFAULT_LC: LandedCostConfig = {
-  defaultAllocationMethod: 'by_value', autoTrackingNumber: true,
-  freightLedger: '', insuranceLedger: '', portCHAChargesLedger: '',
-};
+
+
 
 // Storage: erp_comply360_exim_{entityId}
 // [JWT] GET/PATCH /api/compliance/comply360/exim/:entityId
