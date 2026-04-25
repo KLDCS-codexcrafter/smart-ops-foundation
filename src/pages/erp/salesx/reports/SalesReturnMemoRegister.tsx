@@ -133,7 +133,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
     persistAll(all);
     toast.success(`Memo ${all[idx].memo_no} rejected`);
     setRejectId(null); setRejectReason('');
-  }, [rejectId, rejectReason, entityCode]);
+  }, [rejectId, rejectReason, entityCode, persistAll]);
 
   const handleConvert = (m: SalesReturnMemo) => {
     navigate(`/erp/accounting/vouchers/credit-note?from_memo=${m.id}`);
