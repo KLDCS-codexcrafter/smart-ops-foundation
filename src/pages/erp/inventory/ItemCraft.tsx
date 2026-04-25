@@ -567,9 +567,9 @@ export function ItemCraftPanel() {
                       </div>
                       <p className="text-xs text-muted-foreground">Toggle which parameters apply to this item. Required parameters cannot be removed.</p>
                       {allP.map(param => {
-                        const pid = param.id || param.name;
+                        const pid = String(param.id || param.name || '');
                         const isSelected = sel.has(pid);
-                        const isRequired = param.required || param.is_required;
+                        const isRequired = Boolean(param.required || param.is_required);
                         return (
                           <div key={pid} className={`flex items-center justify-between p-3 border rounded-lg ${isSelected ? 'border-primary/30 bg-primary/5' : ''}`}>
                             <div className="flex items-center gap-3">
