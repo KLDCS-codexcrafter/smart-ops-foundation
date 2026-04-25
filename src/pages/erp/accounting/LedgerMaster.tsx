@@ -816,7 +816,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     reinstatedBy: d.reinstatedBy ?? null,
     reinstatedAt: d.reinstatedAt ?? null,
     reinstatedReason: d.reinstatedReason ?? null,
-  })) as AnyLedgerDefinition[];
+  })) as unknown as AnyLedgerDefinition[];
 };
 
 const loadCashDefs = (): CashLedgerDefinition[] =>
@@ -844,7 +844,7 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
-  const all: AnyLedgerDefinition[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(d => ({ ...d, ledgerType: (d.ledgerType ?? 'cash') })) as AnyLedgerDefinition[]) : [];
+  const all: AnyLedgerDefinition[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(d => ({ ...d, ledgerType: (d.ledgerType ?? 'cash') })) as unknown as AnyLedgerDefinition[]) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
@@ -907,7 +907,7 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  })) as EntityLedgerInstance[];
+  })) as unknown as EntityLedgerInstance[];
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
@@ -922,7 +922,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  })) as EntityLedgerInstance[]) : [];
+  })) as unknown as EntityLedgerInstance[]) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   // [JWT] POST /api/accounting/ledgers
