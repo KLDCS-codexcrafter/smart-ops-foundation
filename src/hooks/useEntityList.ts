@@ -36,10 +36,10 @@ function loadAllEntities(): EntityListItem[] {
     companies.forEach((c: Record<string, unknown>) => {
       if (c.id && c.legalEntityName) {
         entities.push({
-          id: c.id,
-          name: c.legalEntityName,
-          gstin: c.gstRegs?.[0]?.gstin ?? undefined,
-          shortCode: c.shortCode ?? undefined,
+          id: String(c.id),
+          name: String(c.legalEntityName),
+          gstin: ((c.gstRegs as Array<{ gstin?: string }> | undefined)?.[0]?.gstin) ?? undefined,
+          shortCode: c.shortCode != null ? String(c.shortCode) : undefined,
           entityType: 'company',
         });
       }
@@ -52,10 +52,10 @@ function loadAllEntities(): EntityListItem[] {
     subs.forEach((s: Record<string, unknown>) => {
       if (s.id && s.legalEntityName) {
         entities.push({
-          id: s.id,
-          name: s.legalEntityName,
-          gstin: s.gstRegs?.[0]?.gstin ?? undefined,
-          shortCode: s.shortCode ?? undefined,
+          id: String(s.id),
+          name: String(s.legalEntityName),
+          gstin: ((s.gstRegs as Array<{ gstin?: string }> | undefined)?.[0]?.gstin) ?? undefined,
+          shortCode: s.shortCode != null ? String(s.shortCode) : undefined,
           entityType: 'subsidiary',
         });
       }
@@ -68,10 +68,10 @@ function loadAllEntities(): EntityListItem[] {
     branches.forEach((b: Record<string, unknown>) => {
       if (b.id && b.name && (b.status === 'Active' || b.status === 'active' || !b.status)) {
         entities.push({
-          id: b.id,
-          name: b.name,
-          gstin: b.gstinNo ?? undefined,
-          shortCode: b.shortCode ?? b.code ?? undefined,
+          id: String(b.id),
+          name: String(b.name),
+          gstin: b.gstinNo != null ? String(b.gstinNo) : undefined,
+          shortCode: b.shortCode != null ? String(b.shortCode) : b.code != null ? String(b.code) : undefined,
           entityType: 'branch',
         });
       }
