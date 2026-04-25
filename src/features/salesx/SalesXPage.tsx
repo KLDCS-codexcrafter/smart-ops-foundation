@@ -119,7 +119,7 @@ function renderModule(
     case 'sx-t-pipeline':
       return <CRMPipelinePanel entityCode={entityCode} />;
     case 'sx-t-telecaller':
-      return <TelecallerPanel entityCode={entityCode} onNavigate={setActiveModule} />;
+      return <TelecallerPanel entityCode={entityCode} onNavigate={(m) => setActiveModule(m as SalesXModule)} />;
     case 'sx-t-quotation':
       return <QuotationEntryPanel entityCode={entityCode} />;
     case 'sx-t-return-memo':
