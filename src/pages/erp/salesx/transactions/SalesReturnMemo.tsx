@@ -194,7 +194,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
   }, [persons, raisedById, selectedInvoice, entityCode, memoNo, memoDate,
       reason, reasonNote, items, totalAmount, attachments]);
    
-  const _ = persistMemo;
+  void persistMemo;
 
   const handleSubmit = useCallback(() => persistMemo('pending'), [persistMemo]);
   const handleSaveDraft = useCallback(() => {

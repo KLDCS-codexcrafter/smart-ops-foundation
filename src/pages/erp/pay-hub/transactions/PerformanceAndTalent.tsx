@@ -17,7 +17,7 @@ import { Star, Grid3X3, Users, TrendingUp, Plus, Check, ChevronUp, Edit, Trash2 
 import { toast } from 'sonner';
 import type { AppraisalCycle, PerformanceReview, KRAItem, SuccessionPlan,
   SuccessionEntry, CompensationAction, PerformanceTab, ReviewStatus,
-  ReadinessLevel, CompActionType, CycleStatus } from '@/types/performance';
+  CompActionType, CycleStatus } from '@/types/performance';
 import { APPRAISAL_CYCLES_KEY, PERF_REVIEWS_KEY, SUCCESSION_PLANS_KEY, COMP_ACTIONS_KEY,
   REVIEW_STATUS_COLORS, READINESS_LABELS, READINESS_COLORS, get9BoxPosition } from '@/types/performance';
 import type { Employee } from '@/types/employee';

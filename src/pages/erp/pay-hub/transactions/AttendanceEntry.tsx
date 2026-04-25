@@ -22,7 +22,7 @@ import { UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X, ChevronLe
 import { toast } from 'sonner';
 import { useAttendanceEntry, parseBiometricFile, groupBiometricPunches,
   computeWorkHours, computeLate } from '@/hooks/useAttendanceEntry';
-import type { AttendanceRecord, BiometricDaySummary, GeoFence } from '@/types/attendance-entry';
+import type { AttendanceRecord, BiometricDaySummary } from '@/types/attendance-entry';
 import type { Employee } from '@/types/employee';
 import type { AttendanceType, Shift, HolidayCalendar } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
