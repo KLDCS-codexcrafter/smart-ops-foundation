@@ -52,7 +52,7 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
     // Entity Configuration
     { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'finecore-statutory-reg', storageKey: 'erp_statutory_registrations', section: 'entity-config' },
     { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'finecore-gst-config', storageKey: 'erp_gst_entity_config', section: 'entity-config' },
-    { title: 'Comply360 Config', desc: 'Feature flags and ledger mappings', icon: Shield, module: 'finecore-comply360', storageKey: 'erp_comply360_config', section: 'entity-config' },
+    { title: 'Compliance Settings & Automation', desc: 'Compliance feature flags, ledger mappings, and automation rules', icon: Shield, module: 'finecore-compliance-settings', storageKey: 'erp_comply360_config', section: 'entity-config' },
     // Account Structure
     { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'finecore-currency', storageKey: 'erp_currencies', section: 'account-structure' },
     { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', storageKey: 'erp_finframe_groups', section: 'account-structure' },
