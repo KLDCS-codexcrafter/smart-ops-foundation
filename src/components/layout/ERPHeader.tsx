@@ -52,7 +52,8 @@ import {
 import { ERPDatePicker } from '@/components/layout/ERPDatePicker';
 import { ERPCompanySelector, useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';
 
-import { useGlobalDateRange, formatIndianDate } from '@/hooks/useGlobalDateRange';
+import { useGlobalDateRange } from '@/hooks/useGlobalDateRange';
+import { formatIndianDate } from '@/hooks/useGlobalDateRange.types';
 import { cn } from '@/lib/utils';
 
 export interface BreadcrumbEntry {
