@@ -25,17 +25,17 @@ function loadEntityList(): {id: string; name: string}[] {
   const entities: {id: string; name: string}[] = [];
   try {
     // [JWT] GET /api/foundation/entities/all
-    const p = JSON.parse(localStorage.getItem('erp_parent_company') || 'null');
-    if (p?.legalEntityName) entities.push({ id: 'parent-root', name: p.legalEntityName });
+    const p = JSON.parse(localStorage.getItem('erp_parent_company') || 'null') as Record<string, unknown> | null;
+    if (p?.legalEntityName) entities.push({ id: 'parent-root', name: String(p.legalEntityName) });
     // [JWT] GET /api/foundation/companies
-    const cos = JSON.parse(localStorage.getItem('erp_companies') || '[]');
-    cos.forEach((c: any) => { if (c.id && c.legalEntityName) entities.push({ id: c.id, name: c.legalEntityName }); });
+    const cos = JSON.parse(localStorage.getItem('erp_companies') || '[]') as Array<Record<string, unknown>>;
+    cos.forEach(c => { if (c.id && c.legalEntityName) entities.push({ id: String(c.id), name: String(c.legalEntityName) }); });
     // [JWT] GET /api/foundation/subsidiaries
-    const subs = JSON.parse(localStorage.getItem('erp_subsidiaries') || '[]');
-    subs.forEach((s: any) => { if (s.id && s.legalEntityName) entities.push({ id: s.id, name: s.legalEntityName }); });
+    const subs = JSON.parse(localStorage.getItem('erp_subsidiaries') || '[]') as Array<Record<string, unknown>>;
+    subs.forEach(s => { if (s.id && s.legalEntityName) entities.push({ id: String(s.id), name: String(s.legalEntityName) }); });
     // [JWT] GET /api/foundation/branch-offices
-    const brs = JSON.parse(localStorage.getItem('erp_branch_offices') || '[]');
-    brs.forEach((b: any) => { if (b.id && b.name) entities.push({ id: b.id, name: b.name }); });
+    const brs = JSON.parse(localStorage.getItem('erp_branch_offices') || '[]') as Array<Record<string, unknown>>;
+    brs.forEach(b => { if (b.id && b.name) entities.push({ id: String(b.id), name: String(b.name) }); });
   } catch { /* ignore */ }
   return entities;
 }
@@ -51,8 +51,8 @@ export function MasterPropagationDialog({
   const getRecord = () => {
     try {
       // [JWT] GET /api/pay-hub/masters/:storageKey/:recordId
-      const all = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      return all.find((r: any) => r.id === recordId) ?? null;
+      const all = JSON.parse(localStorage.getItem(storageKey) || '[]') as Array<Record<string, unknown>>;
+      return all.find(r => r.id === recordId) ?? null;
     } catch { return null; }
   };
 
@@ -62,10 +62,10 @@ export function MasterPropagationDialog({
     const record = getRecord();
     if (!record) { toast.error('Record not found'); return; }
     // [JWT] GET /api/pay-hub/masters/:storageKey
-    const all = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const all = JSON.parse(localStorage.getItem(storageKey) || '[]') as Array<Record<string, unknown>>;
     let added = 0;
     targetIds.forEach(entityId => {
-      const exists = all.some((r: any) => r.entityId === entityId && r.code === record.code);
+      const exists = all.some(r => r.entityId === entityId && r.code === record.code);
       if (!exists) {
         all.push({ ...record, id: crypto.randomUUID(), entityId, propagatedFrom: recordId });
         added++;

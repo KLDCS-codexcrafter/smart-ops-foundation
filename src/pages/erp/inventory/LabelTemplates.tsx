@@ -308,7 +308,7 @@ export function LabelTemplatesPanel() {
                 { f: 'show_serial_number', l: 'Serial Number' },
               ] as const).map(({ f, l }) => (
                 <label key={f} className="flex items-center gap-2 p-2 border rounded-lg cursor-pointer">
-                  <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+                  <Switch checked={Boolean((form as Record<string, unknown>)[f])} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
                   <p className="text-xs">{l}</p>
                 </label>
               ))}
@@ -327,7 +327,7 @@ export function LabelTemplatesPanel() {
                       { f: 'show_epr_registration', l: 'EPR Registration Number', show: form.label_type === 'epr_compliance' },
                     ] as const).filter(x => x.show).map(({ f, l }) => (
                       <label key={f} className="flex items-center gap-2 p-2 border rounded-lg cursor-pointer">
-                        <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+                        <Switch checked={Boolean((form as Record<string, unknown>)[f])} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
                         <p className="text-xs">{l}</p>
                       </label>
                     ))}

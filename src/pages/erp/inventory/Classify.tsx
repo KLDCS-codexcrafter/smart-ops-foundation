@@ -206,13 +206,13 @@ export function ClassifyPanel() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5"><Label>Type</Label>
-                <Select value={form.classification_type} onValueChange={v => setForm(f => ({ ...f, classification_type: v as any }))}>
+                <Select value={form.classification_type} onValueChange={v => setForm(f => ({ ...f, classification_type: v as typeof f.classification_type }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{CLASS_TYPES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5"><Label>Level</Label>
-                <Select value={form.category_level} onValueChange={v => setForm(f => ({ ...f, category_level: v as any }))}>
+                <Select value={form.category_level} onValueChange={v => setForm(f => ({ ...f, category_level: v as typeof f.category_level }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{CAT_LVLS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                 </Select>

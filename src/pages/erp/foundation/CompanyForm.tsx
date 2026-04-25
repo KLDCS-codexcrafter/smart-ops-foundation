@@ -199,23 +199,23 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
 
   // Dynamic parent company picker
   const parentCompanies = useMemo(() => {
-    const parentRecord = lsObj<any>('erp_parent_company', {});
-    const companies: any[] = ls('erp_companies');
-    const subsidiaries: any[] = ls('erp_subsidiaries');
+    const parentRecord = lsObj<Record<string, unknown>>('erp_parent_company', {});
+    const companies: Record<string, unknown>[] = ls('erp_companies');
+    const subsidiaries: Record<string, unknown>[] = ls('erp_subsidiaries');
     const options: {id: string; name: string; shortCode: string; entity_type: string}[] = [];
     if (parentRecord?.legalEntityName) {
       options.push({
         id: 'parent-root',
-        name: parentRecord.legalEntityName,
-        shortCode: parentRecord.shortCode || 'ROOT',
+        name: String(parentRecord.legalEntityName),
+        shortCode: String(parentRecord.shortCode ?? 'ROOT'),
         entity_type: 'Parent Company',
       });
     }
     companies.forEach(c => {
-      if (c.id) options.push({ id: c.id, name: c.legalEntityName || c.name || '', shortCode: c.shortCode || '', entity_type: 'Company' });
+      if (c.id) options.push({ id: String(c.id), name: String(c.legalEntityName ?? c.name ?? ''), shortCode: String(c.shortCode ?? ''), entity_type: 'Company' });
     });
     subsidiaries.forEach(s => {
-      if (s.id) options.push({ id: s.id, name: s.legalEntityName || s.name || '', shortCode: s.shortCode || '', entity_type: 'Subsidiary' });
+      if (s.id) options.push({ id: String(s.id), name: String(s.legalEntityName ?? s.name ?? ''), shortCode: String(s.shortCode ?? ''), entity_type: 'Subsidiary' });
     });
     if (options.length === 0) {
       options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd', shortCode: DEFAULT_ENTITY_SHORTCODE, entity_type: 'Parent Company' });
@@ -227,12 +227,12 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
   useEffect(() => {
     if (mode !== 'edit' || !entityId) return;
     const key = entityType === 'company' ? 'erp_companies' : 'erp_subsidiaries';
-    const records: any[] = ls(key);
+    const records: Record<string, unknown>[] = ls(key);
     const existing = records.find(r => r.id === entityId);
     if (existing) {
       setForm(prev => ({ ...prev, ...existing }));
-      if (existing.gstRegs) setGstRegs(existing.gstRegs);
-      if (existing.lutBonds) setLutBonds(existing.lutBonds);
+      if (existing.gstRegs) setGstRegs(existing.gstRegs as GSTReg[]);
+      if (existing.lutBonds) setLutBonds(existing.lutBonds as LUTBond[]);
     }
   }, []); // eslint-disable-line
 
@@ -332,25 +332,25 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
     setTimeout(() => {
       setSaving(false);
       const storageKey = entityType === 'company' ? 'erp_companies' : 'erp_subsidiaries';
-      const existing: any[] = ls(storageKey);
+      const existing: Record<string, unknown>[] = ls(storageKey);
       const currentId = entityId ?? crypto.randomUUID();
       const record = {
         ...form, id: currentId, entity_type: entityType,
         gstRegs, lutBonds,
         updated_at: new Date().toISOString(),
-        created_at: existing.find(r => r.id === currentId)?.created_at ?? new Date().toISOString(),
+        created_at: (existing.find(r => r.id === currentId) as { created_at?: string } | undefined)?.created_at ?? new Date().toISOString(),
       };
-      const idx = existing.findIndex((r: any) => r.id === currentId);
+      const idx = existing.findIndex(r => r.id === currentId);
       if (idx >= 0) existing[idx] = record; else existing.push(record);
       // [JWT] POST /api/foundation/entities
       localStorage.setItem(storageKey, JSON.stringify(existing));
       /* [JWT] POST or PATCH /api/foundation/companies or /api/foundation/subsidiaries */
 
       // Auto-create forex ledgers + voucher type when multi-currency is enabled
-      if ((form as any).enableMultiCurrency) {
+      if ((form as Record<string, unknown>).enableMultiCurrency) {
         try {
           // [JWT] POST /api/group/finecore/ledger-definitions (forex system ledgers)
-          const ledgerDefs: any[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+          const ledgerDefs: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
           const now = new Date().toISOString();
           const fxGainCode = 'FXGAIN-SYS';
           const fxLossCode = 'FXLOSS-SYS';
@@ -379,7 +379,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
           // [JWT] POST /api/foundation/entities
           localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
           // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
-          const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+          const vtypes: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
           if (!vtypes.find(v => v.abbreviation === 'FXADJ')) {
             vtypes.push({
               id: `vt-fxadj-${Date.now()}`, name: 'Forex Adjustment',
@@ -411,8 +411,8 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
 
       // Also keep erp_company_settings write
       const settingsKey = 'erp_company_settings';
-      const settings: any[] = ls(settingsKey);
-      const mrpTreatment = (form as any).mrp_tax_treatment || 'inclusive';
+      const settings: Record<string, unknown>[] = ls(settingsKey);
+      const mrpTreatment = String((form as Record<string, unknown>).mrp_tax_treatment ?? 'inclusive');
       const settingsEntry = {
         id: crypto.randomUUID(), entity_id: currentId,
         mrp_tax_treatment: mrpTreatment,
@@ -422,7 +422,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         default_costing_method: 'weighted_avg',
         created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       };
-      const sIdx = settings.findIndex((s: any) => s.entity_id === currentId);
+      const sIdx = settings.findIndex(s => s.entity_id === currentId);
       if (sIdx >= 0) settings[sIdx] = settingsEntry; else settings.push(settingsEntry);
       // [JWT] POST /api/foundation/entities
       localStorage.setItem(settingsKey, JSON.stringify(settings));

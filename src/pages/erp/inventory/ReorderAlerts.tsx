@@ -69,7 +69,7 @@ export function ReorderAlertsPanel() {
   const [rules, setRules] = useState<LocationReorderRule[]>(ls(RRKEY));
   const [deptTags, setDeptTags] = useState<DepartmentTag[]>(initDeptTags);
   const [items] = useState<InventoryItem[]>(ls(IKEY));
-  const [stockLedger] = useState<any[]>(ls(SLKEY));
+  const [stockLedger] = useState<Record<string, unknown>[]>(ls(SLKEY));
 
   // Main tab
   const [mainTab, setMainTab] = useState<'matrix' | 'alerts'>('matrix');
@@ -97,7 +97,7 @@ export function ReorderAlertsPanel() {
   });
   const [itemSearch, setItemSearch] = useState('');
 
-  const godowns: any[] = ls('erp_godowns');
+  const godowns: Array<{ id: string; name: string }> = ls('erp_godowns');
   // [JWT] POST /api/inventory/reorder-rules
   const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(RRKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/reorder-rules */ };
   const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(DTKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/department-tags */ };
@@ -106,8 +106,9 @@ export function ReorderAlertsPanel() {
   const stockMap = useMemo(() => {
     const m: Record<string, number> = {};
     stockLedger.forEach(e => {
-      if (!m[e.item_id]) m[e.item_id] = 0;
-      m[e.item_id] += (e.qty_in || 0) - (e.qty_out || 0);
+      const itemId = String(e.item_id);
+      if (!m[itemId]) m[itemId] = 0;
+      m[itemId] += (Number(e.qty_in) || 0) - (Number(e.qty_out) || 0);
     });
     return m;
   }, [stockLedger]);
@@ -221,7 +222,7 @@ export function ReorderAlertsPanel() {
 
       const [itemId, vk] = compositeKey.split('|');
       const godownId = vk === 'global' ? '' : vk;
-      const godownName = godownId ? godowns.find((g: any) => g.id === godownId)?.name || '' : '';
+      const godownName = godownId ? godowns.find(g => g.id === godownId)?.name || '' : '';
       const deptTag = deptTags.find(t => t.id === row.department_tag_id);
 
       const existingIdx = updated.findIndex(r =>
@@ -295,7 +296,7 @@ export function ReorderAlertsPanel() {
       };
     });
     setPendingMatrix(newPending);
-    toast.info(`${globalRules.length} global thresholds staged for ${godowns.find((g: any) => g.id === selectedGodown)?.name}`);
+    toast.info(`${globalRules.length} global thresholds staged for ${godowns.find(g => g.id === selectedGodown)?.name}`);
   }, [selectedGodown, rules, pendingMatrix, items, godowns]);
 
   // ── Alert Dashboard logic ──
@@ -475,7 +476,7 @@ export function ReorderAlertsPanel() {
               <Select value={selectedGodown} onValueChange={setSelectedGodown}>
                 <SelectTrigger className="w-48 h-8 text-xs"><SelectValue placeholder="Select godown..." /></SelectTrigger>
                 <SelectContent>
-                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                  {godowns.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             )}
@@ -496,7 +497,7 @@ export function ReorderAlertsPanel() {
             <div className="ml-auto flex items-center gap-2">
               {viewMode === 'per_location' && selectedGodown && (
                 <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" onClick={copyGlobalToGodown}>
-                  <Copy className="h-3.5 w-3.5" />Copy Global → {godowns.find((g: any) => g.id === selectedGodown)?.name?.slice(0, 12)}
+                  <Copy className="h-3.5 w-3.5" />Copy Global → {godowns.find(g => g.id === selectedGodown)?.name?.slice(0, 12)}
                 </Button>
               )}
               {pendingCount > 0 && (
@@ -538,14 +539,14 @@ export function ReorderAlertsPanel() {
 
                       const getVal = (field: keyof ThresholdRow): string => {
                         if (pending && pending[field] !== undefined && pending[field] !== '') return String(pending[field]);
-                        if (rule) return String((rule as any)[field] || '');
+                        if (rule) return String((rule as unknown as Record<string, unknown>)[field] ?? '');
                         return '';
                       };
 
                       const isFieldPending = (field: keyof ThresholdRow): boolean => {
                         if (!pending) return false;
                         const pv = pending[field];
-                        const rv = rule ? String((rule as any)[field] || '') : '';
+                        const rv = rule ? String((rule as unknown as Record<string, unknown>)[field] ?? '') : '';
                         return pv !== undefined && pv !== '' && String(pv) !== rv;
                       };
 
@@ -869,11 +870,11 @@ export function ReorderAlertsPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Godown</Label>
-              <Select value={ruleForm.godown_id || 'default'} onValueChange={v => { const g = godowns.find((x: any) => x.id === v); setRuleForm(f => ({ ...f, godown_id: v, godown_name: g?.name || 'Default' })); }}>
+              <Select value={ruleForm.godown_id || 'default'} onValueChange={v => { const g = godowns.find(x => x.id === v); setRuleForm(f => ({ ...f, godown_id: v, godown_name: g?.name || 'Default' })); }}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="default">Default Warehouse</SelectItem>
-                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                  {godowns.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -901,7 +902,7 @@ export function ReorderAlertsPanel() {
               ].map(({ f, l, d }) => (
                 <div key={f} className="space-y-1">
                   <Label className="text-xs">{l}</Label>
-                  <Input type="number" min="0" className="h-8 text-xs" value={(ruleForm as any)[f] || ''}
+                  <Input type="number" min="0" className="h-8 text-xs" value={String((ruleForm as Record<string, unknown>)[f] ?? '')}
                     onChange={e => setRuleForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || 0 }))} />
                   <p className="text-[10px] text-muted-foreground">{d}</p>
                 </div>

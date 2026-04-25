@@ -51,7 +51,7 @@ const BLANK_DEPARTMENT: {
 
 function PresetDialog({
   open, onOpenChange, onImport
-}: { open: boolean; onOpenChange: (v: boolean) => void; onImport: (preset: any) => void }) {
+}: { open: boolean; onOpenChange: (v: boolean) => void; onImport: (preset: typeof ORG_PRESETS[number]) => void }) {
   const [selected, setSelected] = useState<string | null>(null);
   const preset = selected ? ORG_PRESETS.find(p => p.id === selected) : null;
 
@@ -107,18 +107,18 @@ function PresetDialog({
               <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-border/50 bg-muted/20 p-3 space-y-2">
                 {preset.divisions.length === 0 ? (
                   <p className="text-[11px] text-muted-foreground">No divisions — departments only.</p>
-                ) : preset.divisions.map((div: any) => {
-                  const depts = (preset.departments as any[]).filter(d => d.division_name === div.name);
+                ) : preset.divisions.map(div => {
+                  const depts = (preset.departments as Array<{ name: string; division_name?: string }>).filter(d => d.division_name === div.name);
                   return (
                     <div key={div.name}>
                       <p className="text-[11px] font-semibold text-foreground">{div.name}</p>
-                      {depts.map((d: any) => (
+                      {depts.map(d => (
                         <p key={d.name} className="text-[10px] text-muted-foreground pl-3">↳ {d.name}</p>
                       ))}
                     </div>
                   );
                 })}
-                {(preset.departments as any[]).filter(d => !d.division_name).map((d: any) => (
+                {(preset.departments as Array<{ name: string; division_name?: string }>).filter(d => !d.division_name).map(d => (
                   <p key={d.name} className="text-[10px] text-muted-foreground">· {d.name}</p>
                 ))}
               </div>

@@ -25,6 +25,8 @@ import { UAE_EMIRATES, UAE_DISTRICTS, INDIA_REGIONS, UAE_REGIONS } from '@/data/
 // [JWT] GET /api/geography/:type
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
 
+type GeoRow = Record<string, unknown>;
+
 type SetupTarget = 'india' | 'uae' | null;
 type StepStatus = 'pending' | 'running' | 'done' | 'error';
 
@@ -91,8 +93,8 @@ export function GeographyHubPanel() {
       // ── Write real data per step ────────────────────────────────────
       if (target === 'india') {
         if (i === 0) {
-          const countries = ls<any>('erp_geo_countries');
-          if (!countries.find((c: any) => c.code === 'IN')) {
+          const countries = ls<GeoRow>('erp_geo_countries');
+          if (!countries.find(c => c.code === 'IN')) {
             countries.push({ code:'IN', name:'India', flag:'🇮🇳', dialCode:'+91',
                              currencyCode:'INR', currencySymbol:'₹', capital:'New Delhi',
                              region:'Asia', timezone:'Asia/Kolkata', status:'active' });
@@ -102,7 +104,7 @@ export function GeographyHubPanel() {
           }
         }
         if (i === 1) {
-          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'IN');
+          const existing = ls<GeoRow>('erp_geo_states').filter(s => s.countryCode !== 'IN');
           const indiaStates = indianStates.map(s => ({
             code: s.code, name: s.name, countryCode: 'IN',
             gstStateCode: s.gstStateCode, unionTerritory: s.unionTerritory,
@@ -113,23 +115,23 @@ export function GeographyHubPanel() {
           /* [JWT] POST /api/geography/states/seed */
         }
         if (i === 2) {
-          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'IN');
-          const dists = indianDistricts.map((d: any) => ({
-            code: d.code || d.name.slice(0,6).toUpperCase().replace(/\s/g,''),
-            name: d.name, stateCode: d.stateCode || d.state_code || '',
-            countryCode: 'IN', headquarters: d.headquarters || '', status: 'active',
+          const existing = ls<GeoRow>('erp_geo_districts').filter(d => d.countryCode !== 'IN');
+          const dists = (indianDistricts as unknown as Array<Record<string, unknown>>).map(d => ({
+            code: (d.code as string) || String(d.name).slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: d.name, stateCode: (d.stateCode as string) || (d.state_code as string) || '',
+            countryCode: 'IN', headquarters: (d.headquarters as string) || '', status: 'active',
           }));
           // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_districts', JSON.stringify([...existing, ...dists]));
           /* [JWT] POST /api/geography/districts/seed */
         }
         if (i === 3) {
-          const existing = ls<any>('erp_geo_cities').filter((c: any) => c.countryCode !== 'IN');
-          const cities = indianCities.map((c: any) => ({
-            code: c.code || c.name.slice(0,6).toUpperCase().replace(/\s/g,''),
-            name: c.name, stateCode: c.stateCode || c.state_code || '',
-            districtCode: c.districtCode || '', countryCode: 'IN',
-            category: c.category || 'tier2', isMajor: ['metro','tier1'].includes(c.category || ''),
+          const existing = ls<GeoRow>('erp_geo_cities').filter(c => c.countryCode !== 'IN');
+          const cities = (indianCities as unknown as Array<Record<string, unknown>>).map(c => ({
+            code: (c.code as string) || String(c.name).slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: c.name, stateCode: (c.stateCode as string) || (c.state_code as string) || '',
+            districtCode: (c.districtCode as string) || '', countryCode: 'IN',
+            category: (c.category as string) || 'tier2', isMajor: ['metro','tier1'].includes((c.category as string) || ''),
             status: 'active',
           }));
           // [JWT] POST /api/geography/:type
@@ -137,10 +139,10 @@ export function GeographyHubPanel() {
           /* [JWT] POST /api/geography/cities/seed */
         }
         if (i === 4) {
-          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'IN');
-          const regions = INDIA_REGIONS.map((r: any) => ({
+          const existing = ls<GeoRow>('erp_geo_regions').filter(r => r.countryCode !== 'IN');
+          const regions = (INDIA_REGIONS as unknown as Array<Record<string, unknown>>).map(r => ({
             code: r.code, name: r.name, countryCode: 'IN',
-            states: r.states || [], status: 'active',
+            states: (r.states as string[]) || [], status: 'active',
           }));
           // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));
@@ -150,8 +152,8 @@ export function GeographyHubPanel() {
 
       if (target === 'uae') {
         if (i === 0) {
-          const countries = ls<any>('erp_geo_countries');
-          if (!countries.find((c: any) => c.code === 'AE')) {
+          const countries = ls<GeoRow>('erp_geo_countries');
+          if (!countries.find(c => c.code === 'AE')) {
             countries.push({ code:'AE', name:'United Arab Emirates', flag:'🇦🇪', dialCode:'+971',
                              currencyCode:'AED', currencySymbol:'د.إ', capital:'Abu Dhabi',
                              region:'Middle East', timezone:'Asia/Dubai', status:'active' });
@@ -161,8 +163,8 @@ export function GeographyHubPanel() {
           }
         }
         if (i === 1) {
-          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'AE');
-          const emirates = UAE_EMIRATES.map((e: any) => ({
+          const existing = ls<GeoRow>('erp_geo_states').filter(s => s.countryCode !== 'AE');
+          const emirates = (UAE_EMIRATES as unknown as Array<Record<string, unknown>>).map(e => ({
             code: e.code, name: e.name, countryCode: 'AE',
             gstStateCode: '', unionTerritory: false, region: 'Middle East', status: 'active',
           }));
@@ -171,10 +173,10 @@ export function GeographyHubPanel() {
           /* [JWT] POST /api/geography/states/seed */
         }
         if (i === 2) {
-          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'AE');
-          const dists = UAE_DISTRICTS.map((d: any) => ({
-            code: d.code || d.name.slice(0,6).toUpperCase().replace(/\s/g,''),
-            name: d.name, stateCode: d.emirateCode || d.stateCode || '', countryCode: 'AE',
+          const existing = ls<GeoRow>('erp_geo_districts').filter(d => d.countryCode !== 'AE');
+          const dists = (UAE_DISTRICTS as unknown as Array<Record<string, unknown>>).map(d => ({
+            code: (d.code as string) || String(d.name).slice(0,6).toUpperCase().replace(/\s/g,''),
+            name: d.name, stateCode: (d.emirateCode as string) || (d.stateCode as string) || '', countryCode: 'AE',
             headquarters: '', status: 'active',
           }));
           // [JWT] POST /api/geography/:type
@@ -182,10 +184,10 @@ export function GeographyHubPanel() {
           /* [JWT] POST /api/geography/districts/seed */
         }
         if (i === 3) {
-          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'AE');
-          const regions = UAE_REGIONS.map((r: any) => ({
+          const existing = ls<GeoRow>('erp_geo_regions').filter(r => r.countryCode !== 'AE');
+          const regions = (UAE_REGIONS as unknown as Array<Record<string, unknown>>).map(r => ({
             code: r.code, name: r.name, countryCode: 'AE',
-            states: r.states || [], status: 'active',
+            states: (r.states as string[]) || [], status: 'active',
           }));
           // [JWT] POST /api/geography/:type
           localStorage.setItem('erp_geo_regions', JSON.stringify([...existing, ...regions]));

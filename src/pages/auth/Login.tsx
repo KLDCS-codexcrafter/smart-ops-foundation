@@ -321,7 +321,7 @@ export default function Login() {
       if (attempts >= 5) setLockoutTimer(30);
       setShakeForm(true);
       setTimeout(() => setShakeForm(false), 600);
-      (activeForm as any).setValue("password", "");
+      (activeForm as { setValue: (name: string, value: string) => void }).setValue("password", "");
       passwordRef.current?.focus();
       toast.error("Invalid credentials. Please try again.");
       return;
@@ -737,6 +737,7 @@ export default function Login() {
 
 // ── Sub-components ──
 function PasswordField({ form, showPassword, setShowPassword, capsLock, handleCapsLock, passwordRef }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any; showPassword: boolean; setShowPassword: (v: boolean) => void;
   capsLock: boolean; handleCapsLock: (e: React.KeyboardEvent) => void;
   passwordRef: React.RefObject<HTMLInputElement>;

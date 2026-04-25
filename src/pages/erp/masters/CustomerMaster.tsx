@@ -386,14 +386,14 @@ export function CustomerMasterPanel() {
     try {
       // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]')
-        .filter((l: any) => l.logisticType === 'gta' && l.status === 'active');
+        .filter((l: { logisticType?: string; status?: string }) => l.logisticType === 'gta' && l.status === 'active');
     } catch { return []; }
   };
   const loadCourierOptions = () => {
     try {
       // [JWT] GET /api/masters/customers
       return JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]')
-        .filter((l: any) => l.logisticType === 'courier' && l.status === 'active');
+        .filter((l: { logisticType?: string; status?: string }) => l.logisticType === 'courier' && l.status === 'active');
     } catch { return []; }
   };
 
@@ -1137,7 +1137,7 @@ export function CustomerMasterPanel() {
               </div>
               <div>
                 <Label className="text-xs">Agreed Rate Basis</Label>
-                <Select value={form.agreedFreightBasis || ''} onValueChange={v => setForm(f => ({ ...f, agreedFreightBasis: v as any }))}>
+                <Select value={form.agreedFreightBasis || ''} onValueChange={v => setForm(f => ({ ...f, agreedFreightBasis: v as typeof f.agreedFreightBasis }))}>
                   <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select basis" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="per_kg">Per KG</SelectItem>

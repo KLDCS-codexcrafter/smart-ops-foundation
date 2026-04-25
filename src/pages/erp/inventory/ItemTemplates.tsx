@@ -392,7 +392,7 @@ export function ItemTemplatesPanel() {
               ] as const).map(({ f, l }) => (
                 <div key={f} className="space-y-1.5">
                   <Label>{l}</Label>
-                  <Input type="number" min="0" value={(form as any)[f] || ''}
+                  <Input type="number" min="0" value={String((form as Record<string, unknown>)[f] ?? '')}
                     onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
                 </div>
               ))}

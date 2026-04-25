@@ -74,8 +74,8 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const openAdvances = useMemo(() => {
     if (!partyName) return [];
     // [JWT] GET /api/masters/vendors
-    const vendors: any[] = (() => { try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]'); } catch { return []; } })();
-    const vendor = vendors.find((v: any) => v.partyName === partyName);
+    const vendors: Array<Record<string, unknown>> = (() => { try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]'); } catch { return []; } })();
+    const vendor = vendors.find(v => v.partyName === partyName);
     if (!vendor) return [];
     // [JWT] GET /api/compliance/advances
     return ls<AdvanceEntry>(advancesKey(entityCode))

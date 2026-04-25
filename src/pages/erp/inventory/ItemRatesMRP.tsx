@@ -107,7 +107,7 @@ export function ItemRatesPanel() {
   const [qaPercent, setQaPercent] = useState('');
   const [qaScope, setQaScope] = useState<'filtered' | 'all'>('filtered');
 
-  const companySettings: any[] = ls(CSKEY);
+  const companySettings: Array<{ mrp_tax_treatment?: string }> = ls(CSKEY);
   const mrpTax = companySettings?.[0]?.mrp_tax_treatment || 'inclusive';
 
   // [JWT] POST /api/inventory/item-rates
@@ -659,7 +659,7 @@ export function ItemRatesPanel() {
             <DialogTitle>Bulk Rate Update</DialogTitle>
             <DialogDescription>Update rates for multiple items at once. All changes are audited.</DialogDescription>
           </DialogHeader>
-          <Tabs value={bulkMode} onValueChange={v => setBulkMode(v as any)}>
+          <Tabs value={bulkMode} onValueChange={v => setBulkMode(v as typeof bulkMode)}>
             <TabsList className="w-full">
               <TabsTrigger value="percent" className="flex-1">% Revision</TabsTrigger>
               <TabsTrigger value="copy_last" className="flex-1">Copy Last Purchase</TabsTrigger>

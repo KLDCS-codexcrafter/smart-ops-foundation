@@ -163,7 +163,7 @@ export function resolvePreset(
     code: `DIV-${String(i + 1).padStart(4, '0')}`,
     entity_id: null, created_at: now, updated_at: now,
   }));
-  const depts: Department[] = preset.departments.map((d: any, i) => {
+  const depts: Department[] = preset.departments.map((d, i) => {
     const matchedDiv = divs.find(v => v.name === d.division_name) ?? null;
     return {
       id: `dept-${Date.now()}-${i}`,

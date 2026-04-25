@@ -17,7 +17,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { FileText, Printer, Download, Eye, Check, X, AlertTriangle, ShieldCheck, FileSearch } from 'lucide-react';
 import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip } from '@/types/payroll-run';
-import type { ITDeclaration, InvestmentProof } from '@/types/it-declaration';
+import type { ITDeclaration, InvestmentProof, HRADeclaration, HomeLoanDeclaration } from '@/types/it-declaration';
 import { IT_DECLARATIONS_KEY, computeTotal80C, computeTotalDeductions, getCurrentFY } from '@/types/it-declaration';
 import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
@@ -704,19 +704,19 @@ export function PayslipGenerationPanel() {
                     <div className="space-y-2 pl-8">
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Landlord Name</Label>
-                        <Input value={(declForm.hra as any)?.landlordName || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+                        <Input value={(declForm.hra as HRADeclaration | null)?.landlordName || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Landlord PAN</Label>
-                        <Input value={(declForm.hra as any)?.landlordPAN || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordPAN: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+                        <Input value={(declForm.hra as HRADeclaration | null)?.landlordPAN || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordPAN: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Monthly Rent (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.hra as any)?.rentPerMonth || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), rentPerMonth: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.hra as HRADeclaration | null)?.rentPerMonth || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), rentPerMonth: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">City Type</Label>
-                        <Select value={(declForm.hra as any)?.cityType || 'metro'} onValueChange={v => duf('hra', { ...(declForm.hra || {}), cityType: v })}>
+                        <Select value={(declForm.hra as HRADeclaration | null)?.cityType || 'metro'} onValueChange={v => duf('hra', { ...(declForm.hra || {}), cityType: v })}>
                           <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="metro">Metro</SelectItem>
@@ -726,11 +726,11 @@ export function PayslipGenerationPanel() {
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Rent From</Label>
-                        <SmartDateInput value={(declForm.hra as any)?.rentFromDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentFromDate: v })} className="h-8 text-xs" />
+                        <SmartDateInput value={(declForm.hra as HRADeclaration | null)?.rentFromDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentFromDate: v })} className="h-8 text-xs" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Rent To</Label>
-                        <SmartDateInput value={(declForm.hra as any)?.rentToDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentToDate: v })} className="h-8 text-xs" />
+                        <SmartDateInput value={(declForm.hra as HRADeclaration | null)?.rentToDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentToDate: v })} className="h-8 text-xs" />
                       </div>
                     </div>
                   )}
@@ -746,23 +746,23 @@ export function PayslipGenerationPanel() {
                     <div className="space-y-2 pl-8">
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Lender Name</Label>
-                        <Input value={(declForm.homeLoan as any)?.lenderName || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), lenderName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+                        <Input value={(declForm.homeLoan as HomeLoanDeclaration | null)?.lenderName || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), lenderName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Loan Account No</Label>
-                        <Input value={(declForm.homeLoan as any)?.loanAccountNo || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), loanAccountNo: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+                        <Input value={(declForm.homeLoan as HomeLoanDeclaration | null)?.loanAccountNo || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), loanAccountNo: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Interest Paid (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.homeLoan as any)?.interestPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), interestPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.interestPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), interestPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Principal Paid (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.homeLoan as any)?.principalPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), principalPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.principalPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), principalPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Property City</Label>
-                        <Input value={(declForm.homeLoan as any)?.propertyCity || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), propertyCity: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+                        <Input value={(declForm.homeLoan as HomeLoanDeclaration | null)?.propertyCity || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), propertyCity: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
                       </div>
                     </div>
                   )}
