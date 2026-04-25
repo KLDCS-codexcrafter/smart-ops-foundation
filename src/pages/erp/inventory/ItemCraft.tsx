@@ -140,7 +140,7 @@ const TABS = [
 ];
 
 function ItemProgressBar({ activeTab, form, onTabClick }: { activeTab: number; form: typeof BLANK; onTabClick: (t: number) => void }) {
-  const filled = TABS.filter(t => t.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; })).length;
+  const filled = TABS.filter(t => t.req.every(f => { const v = getStr(form, f); return v && v !== ''; })).length;
   const pct = Math.round((filled / TABS.length) * 100);
   return (
     <div data-keyboard-form className="px-5 pt-4 pb-3 border-b bg-muted/30">
@@ -151,7 +151,7 @@ function ItemProgressBar({ activeTab, form, onTabClick }: { activeTab: number; f
       <Progress value={pct} className="h-1.5 mb-3" />
       <div className="flex items-start overflow-x-auto gap-0">
         {TABS.map((tab, i) => {
-          const done = tab.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; });
+          const done = tab.req.every(f => { const v = getStr(form, f); return v && v !== ''; });
           const cur = activeTab === tab.id;
           return (
             <button key={tab.id} onClick={() => onTabClick(tab.id)}
@@ -228,13 +228,13 @@ export function ItemCraftPanel() {
   const [packings, setPackings] = useState<ItemPacking[]>([]);
   const [os, setOs] = useState<ItemOpeningStockEntry[]>([]);
   const [whereUsed, setWhereUsed] = useState<InventoryItem | null>(null);
-  const groups = useState(() => ls<any>(SGKEY))[0];
-  const brands = useState(() => ls<any>(BKEY))[0];
-  const subs = useState(() => ls<any>(SBKEY))[0];
-  const classifs = useState(() => ls<any>(CKEY))[0];
-  const uoms = useState(() => ls<any>(UKEY))[0];
-  const godowns = useState(() => ls<any>(GKEY))[0];
-  const groupParams = useState(() => ls<any>('erp_parametric_templates'))[0];
+  const groups = useState(() => ls<MasterRow>(SGKEY))[0];
+  const brands = useState(() => ls<MasterRow>(BKEY))[0];
+  const subs = useState(() => ls<MasterRow>(SBKEY))[0];
+  const classifs = useState(() => ls<MasterRow>(CKEY))[0];
+  const uoms = useState(() => ls<MasterRow>(UKEY))[0];
+  const godowns = useState(() => ls<MasterRow>(GKEY))[0];
+  const groupParams = useState(() => ls<ParamTemplate>('erp_parametric_templates'))[0];
 
   // [JWT] POST /api/inventory/items
   const sv  = (d: InventoryItem[]) => { localStorage.setItem(IKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items */ };
