@@ -7,26 +7,83 @@ import type { GSTEntry } from '@/types/voucher';
 import { mapUOMtoUQC } from './uqcMap';
 
 // ── GSTN JSON Types (portal-compliant) ────────────────────────────────
-export interface GSTR1B2BInvoice {
+export interface GSTR1ItemDet {
+  txval: number; idt?: string; igst?: number; cgst?: number; sgst?: number; cess?: number;
+}
+export interface GSTR1Item { num: number; itm_det: GSTR1ItemDet }
+export interface GSTR1Invoice {
   inum: string; idt: string; val: number; pos: string;
   rchrg: 'Y' | 'N'; itms: GSTR1Item[];
 }
-export interface GSTR1Item {
-  num: number;
-  itm_det: { txval: number; idt?: string; igst?: number; cgst?: number; sgst?: number; cess?: number };
+export interface GSTR1B2BInvoice extends GSTR1Invoice { /* alias */ }
+export interface GSTR1B2BGroup { ctin: string; inv: GSTR1Invoice[] }
+export interface GSTR1B2CLEntry {
+  inum: string; idt: string; val: number;
+  itms: { num: number; itm_det: { txval: number; igst?: number; cess?: number } }[];
+}
+export interface GSTR1B2CLGroup { pos: string; inv: GSTR1B2CLEntry[] }
+export interface GSTR1B2CSRow {
+  sply_ty: 'INTER' | 'INTRA'; pos: string; rt: number;
+  txval: number; iamt: number; camt: number; samt: number; csamt: number;
+}
+export interface GSTR1ExpEntry {
+  inum: string; idt: string; val: number;
+  sbpcode: string; sbnum: string; sbdt: string;
+  txval: number; igst: number; cess: number;
+}
+export interface GSTR1CDNREntry {
+  ntty: 'C' | 'D'; nt_num: string; nt_dt: string; val: number; itms: GSTR1Item[];
+}
+export interface GSTR1CDNRGroup { ctin: string; nt: GSTR1CDNREntry[] }
+export interface GSTR1HSNRow {
+  num: number; hsn_sc: string; uqc: string; qty: number;
+  txval: number; iamt: number; camt: number; samt: number; csamt: number;
+}
+export interface GSTR1DocIssue {
+  doc_det: { num: number; docs: { num: number; from: string; to: string;
+    totnum: number; cancel: number; net_issue: number }[] }[];
 }
 export interface GSTR1Payload {
   gstin: string; fp: string; gt?: number; cur_gt?: number;
-  b2b: any[]; b2cl: any[]; b2cs: any[]; exp: any[];
-  cdnr: any[]; cdnur: any[]; hsn: { data: any[] }; doc_issue?: any;
+  b2b: GSTR1B2BGroup[]; b2cl: GSTR1B2CLGroup[]; b2cs: GSTR1B2CSRow[]; exp: GSTR1ExpEntry[];
+  cdnr: GSTR1CDNRGroup[]; cdnur: GSTR1CDNREntry[]; hsn: { data: GSTR1HSNRow[] }; doc_issue?: GSTR1DocIssue;
 }
+
+export interface GSTRTaxAmounts {
+  txval: number; iamt: number; camt: number; samt: number; csamt: number;
+}
+export interface GSTR3BSupDetails {
+  osup_det: GSTRTaxAmounts; osup_zero: GSTRTaxAmounts;
+  osup_nil_exmp: GSTRTaxAmounts; isup_rev: GSTRTaxAmounts;
+}
+export interface GSTR3BInwardSup { isup_details: { ty: string; inter: number; intra: number }[] }
+export interface GSTR3BITCRow extends GSTRTaxAmounts { ty: string }
+export interface GSTR3BITCRev { ty: string; iamt: number; camt: number; samt: number; csamt: number }
+export interface GSTR3BITCElg {
+  itc_avl: GSTR3BITCRow[];
+  itc_rev: GSTR3BITCRev[];
+  itc_net: { iamt: number; camt: number; samt: number; csamt: number };
+}
+export interface GSTR3BIntrDtls { intr_ltfee: { iamt: number; camt: number; samt: number; csamt: number } }
+export interface GSTR3BNilSup { nil: { sply_ty: string; nil_amt: number; expt_amt: number; ngsup_amt: number } }
 export interface GSTR3BPayload {
   gstin: string; ret_period: string;
-  sup_details: any; inward_sup: any; itc_elg: any; intr_dtls: any; nil_sup: any;
+  sup_details: GSTR3BSupDetails; inward_sup: GSTR3BInwardSup;
+  itc_elg: GSTR3BITCElg; intr_dtls: GSTR3BIntrDtls; nil_sup: GSTR3BNilSup;
+}
+
+export interface GSTR9HSNRow {
+  hsn_sc: string; uqc: string; qty: number;
+  txval: number; iamt: number; camt: number; samt: number; csamt: number;
 }
 export interface GSTR9Payload {
   gstin: string; fy: string;
-  tbl4: any; tbl5: any; tbl6: any; tbl7: any; tbl9: any; tbl17: any;
+  tbl4: { pt4A: GSTRTaxAmounts };
+  tbl5: { pt5A: GSTRTaxAmounts };
+  tbl6: { pt6A: GSTRTaxAmounts; pt6B: GSTRTaxAmounts };
+  tbl7: { pt7A: { iamt: number; camt: number; samt: number; csamt: number } };
+  tbl9: { tax_pay: GSTRTaxAmounts; paid_itc: GSTRTaxAmounts };
+  tbl17: { hsn: Record<string, GSTR9HSNRow> };
 }
 
 // ── Date format helper ────────────────────────────────────────────────
