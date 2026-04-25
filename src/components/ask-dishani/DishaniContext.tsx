@@ -1,20 +1,7 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { useState, useCallback, ReactNode } from "react";
 import type { DishaniMessage } from "./DishaniContext.types";
+import { DishaniContext } from "./DishaniContextObject";
 
-interface DishaniContextType {
-  isOpen: boolean;
-  openDishani: () => void;
-  closeDishani: () => void;
-  toggleDishani: () => void;
-  messages: DishaniMessage[];
-  isLoading: boolean;
-  sendMessage: (content: string) => Promise<void>;
-  clearMessages: () => void;
-  currentPage: string;
-  setCurrentPage: (page: string) => void;
-}
-
-const DishaniContext = createContext<DishaniContextType | null>(null);
 
 // [AI-BACKEND] This system prompt will be sent to the AI gateway edge function
 // once Lovable Cloud is enabled. Currently the sendMessage function is a placeholder.
