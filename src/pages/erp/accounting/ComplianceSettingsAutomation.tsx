@@ -423,6 +423,7 @@ export function ComplianceSettingsAutomationPanel() {
     if (!groupConfig.enableAdvancedGST && groupConfig.enableAutoRCM) {
       setGroupConfig(prev => ({ ...prev, enableAutoRCM: false }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: effect reacts only to enableAdvancedGST flip; including enableAutoRCM would self-trigger infinite loop
   }, [groupConfig.enableAdvancedGST]);
 
   // ── Save handlers ──
