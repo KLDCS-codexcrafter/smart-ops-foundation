@@ -449,6 +449,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         { label: 'Subsidiaries', href: '/erp/foundation/subsidiaries' },
         { label: mode === 'create' ? 'Create Subsidiary' : 'Edit Subsidiary' },
       ];
+  void _breadcrumbs;
 
   // ── Step renderers ─────────────────────────────────────────────────────────
   function renderStep1() {

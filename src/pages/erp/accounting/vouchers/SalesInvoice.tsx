@@ -576,6 +576,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     clearForm();
     toast.info('Voucher discarded.');
   }, [isDirty, clearForm]);
+  void _handleCancel;
 
   const serializeFormState = useCallback(
     (): Partial<Voucher> => ({ party_name: partyName, date, narration }),

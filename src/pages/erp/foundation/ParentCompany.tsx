@@ -162,6 +162,7 @@ const INITIAL_FORM = {
 // ── Component ────────────────────────────────────────────────────────────────
 export default function ParentCompany() {
   const _navigate = useNavigate();
+  void _navigate;
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});

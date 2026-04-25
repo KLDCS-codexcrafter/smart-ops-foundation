@@ -102,6 +102,7 @@ export function SalaryStructureMasterPanel() {
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }, []);
+  void _grades;
 
   const openCreate = () => { setEditId(null); setForm(EMPTY_FORM); setPreviewCTC(0); setSheetOpen(true); };
   const openEdit = (ss: SalaryStructure) => {

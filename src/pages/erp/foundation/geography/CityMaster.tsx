@@ -199,6 +199,7 @@ export function CityMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -208,6 +209,7 @@ export function CityMasterPanel() {
     toast.success(`City ${r.name} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   const catLabel = (cat: string) => CITY_CATEGORIES.find(c => c.value === cat)?.label ?? cat;
   const canSeedDistrict = countryFilter === 'IN' && districtFilter !== 'all';

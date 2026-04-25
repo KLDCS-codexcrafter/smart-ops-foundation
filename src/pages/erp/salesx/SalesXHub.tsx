@@ -74,6 +74,7 @@ export function SalesXHubPanel({ entityCode, onNavigate }: Props) {
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
   const persons = useMemo(() => loadPersons(entityCode), [entityCode]);
   const _leads = useMemo(() => loadLeads(entityCode), [entityCode]);
+  void _leads;
   const register = useMemo(() => loadCommissionRegister(entityCode), [entityCode]);
   const { enquiries } = useEnquiries(entityCode);
   const { quotations } = useQuotations(entityCode);

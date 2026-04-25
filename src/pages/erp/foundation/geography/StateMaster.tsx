@@ -65,6 +65,7 @@ export function StateMasterPanel() {
     setRecords(next); saveRecords(next);
     toast.success(`Seeded ${indianStates.length} Indian states/UTs`);
   }
+  void _seedIndia;
 
   function _seedUAE() {
     const newRecs: StateRecord[] = UAE_EMIRATES.map(e => ({
@@ -75,6 +76,7 @@ export function StateMasterPanel() {
     setRecords(next); saveRecords(next);
     toast.success('Seeded 7 UAE Emirates');
   }
+  void _seedUAE;
 
   function openCreate() {
     setFormData({...EMPTY, countryCode: countryFilter !== 'all' ? countryFilter : ''});
@@ -104,6 +106,7 @@ export function StateMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -113,6 +116,7 @@ export function StateMasterPanel() {
     toast.success(`State ${r.code} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   const showIndiaSeed = countryFilter === 'IN' || countryFilter === 'all';
   const showUAESeed = countryFilter === 'AE' || countryFilter === 'all';

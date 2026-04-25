@@ -621,6 +621,7 @@ const _ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
   cash_credit: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
   overdraft: 'bg-red-500/10 text-red-500 border-red-500/20',
 };
+void _ACCOUNT_TYPE_COLORS;
 
 const CHEQUE_STATUS_LABELS: Record<ChequeStatus, string> = {
   available: 'Available', issued: 'Issued', post_dated: 'Post-Dated',
@@ -639,6 +640,7 @@ const _CHEQUE_STATUS_COLORS: Record<ChequeStatus, string> = {
   stop_payment: 'bg-red-500/10 text-red-500 border-red-500/20',
   cancelled: 'bg-muted/50 text-muted-foreground border-border',
 };
+void _CHEQUE_STATUS_COLORS;
 
 const CAPITAL_TYPE_LABELS: Record<CapitalType, string> = {
   share_capital_equity: 'Equity Share Capital',
@@ -678,6 +680,7 @@ const _maskAccountNo = (num: string): string => {
   if (num.length <= 4) return num;
   return '•'.repeat(num.length - 4) + num.slice(-4);
 };
+void _maskAccountNo;
 
 // ─── Amount to Words (Indian system) ──────────────────────────────
 
@@ -3040,6 +3043,7 @@ export function LedgerMasterPanel() {
     setReinstateReason('');
     setReinstateDialogOpen(true);
   };
+  void _openReinstate;
 
   const handleReinstate = () => {
     if (!suspendTarget) return;
@@ -3204,6 +3208,7 @@ export function LedgerMasterPanel() {
       frequency: 'monthly', debitDay: 1, startDate: '', endDate: '', notes: '', entityId: '', defId: '' });
     toast.success(`NACH mandate ${m.mandateRef} added`);
   };
+  void _handleNachSave;
 
   // ── Cheque status actions ──
   const _updateChequeStatus = (rec: ChequeRecord, newStatus: ChequeStatus) => {
@@ -3216,6 +3221,7 @@ export function LedgerMasterPanel() {
     setChequeRecords(loadChequeRecords(rec.entityId, rec.chequeBookId));
     toast.success(`Cheque #${rec.chequeNumber} marked as ${CHEQUE_STATUS_LABELS[newStatus]}`);
   };
+  void _updateChequeStatus;
 
   // ── Load bank management data ──
   const _loadBankMgmtData = (def: BankLedgerDefinition, entityId: string) => {
@@ -3224,6 +3230,7 @@ export function LedgerMasterPanel() {
     setSelectedChequeBook(null);
     setChequeRecords([]);
   };
+  void _loadBankMgmtData;
 
   // ── Mark Loan Paid ──
   const handleMarkPaid = () => {
@@ -3251,6 +3258,7 @@ export function LedgerMasterPanel() {
   // ── FinFrame L4 groups for parent pickers ──
   const l4CashGroups = getFinFrameL4Groups(['CASH']);
   const _l4BankGroups = getFinFrameL4Groups(['BANK', 'STBOR']);
+  void _l4BankGroups;
   const l4LiabilityGroups = getFinFrameL4Groups(['LTPROV', 'ONCL', 'OPAY', 'EMPL', 'LEASE', 'BOND']);
   const l4CapitalGroups = getFinFrameL4Groups(['EQSH', 'PRSH', 'RSRV', 'OCI', 'PCAP', 'BD', 'SUS']);
   const l4LoanRecGroups = getFinFrameL4Groups(['LTLA', 'STLA']);
@@ -3290,6 +3298,7 @@ export function LedgerMasterPanel() {
   TYPE_BUTTONS.forEach(b => { if (!rows[b.row]) rows[b.row] = []; rows[b.row].push(b); });
 
   const _suggestedParent = bankForm.accountType ? getSuggestedParent(bankForm.accountType as BankAccountType) : null;
+  void _suggestedParent;
 
   const _getAllPDCRecords = (defId: string, entityId: string): ChequeRecord[] => {
     const books = loadChequeBooks(entityId, defId);
@@ -3300,12 +3309,14 @@ export function LedgerMasterPanel() {
     });
     return allRecs.sort((a, b) => (a.postDatedDate ?? '').localeCompare(b.postDatedDate ?? ''));
   };
+  void _getAllPDCRecords;
 
   const _getDaysUntil = (dateStr: string | null): number => {
     if (!dateStr) return 999;
     const diff = new Date(dateStr).getTime() - new Date().getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
+  void _getDaysUntil;
 
   // ── Shared scope section renderer ──
   const renderScopeSection = (form: { scope: string; entityId: string }, setForm: React.Dispatch<React.SetStateAction<any>>) => (

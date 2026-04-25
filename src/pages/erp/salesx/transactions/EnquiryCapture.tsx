@@ -273,6 +273,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
   );
 
   const _salesmen = samPersons.filter(p => p.person_type === 'salesman');
+  void _salesmen;
   const dealers = samPersons.filter(p => p.person_type === 'agent' || p.person_type === 'broker');
   const references = samPersons.filter(p => p.person_type === 'reference');
 

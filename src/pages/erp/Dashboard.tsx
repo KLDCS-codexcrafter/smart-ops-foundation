@@ -128,6 +128,7 @@ function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
   const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
   const _isLive = !app.status;
+  void _isLive;
 
   function handleClick() {
     if (app.status === 'coming_soon') {

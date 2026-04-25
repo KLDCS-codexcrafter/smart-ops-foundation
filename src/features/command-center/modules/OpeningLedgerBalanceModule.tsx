@@ -40,6 +40,7 @@ interface LedgerDef {
 }
 
 const _PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
+void _PARTY_GROUPS;
 
 export function OpeningLedgerBalanceModule() {
   const { entityCode } = useEntityCode();

@@ -206,6 +206,7 @@ export function PayslipGenerationPanel() {
   }, [selectedRun, empSearch]);
 
   const _selectedPayslip = selectedRun?.payslips.find(ps => ps.employeeId === selectedPayslipId);
+  void _selectedPayslip;
 
   // ── Company name read ────────────────────────────────────────
   const companyName = useMemo(() => {

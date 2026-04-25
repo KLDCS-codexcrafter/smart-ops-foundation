@@ -448,6 +448,7 @@ export function AttendanceEntryPanel() {
               {gridEmployees.map(emp => {
                 const row = getRowVal(emp.id);
                 const _saved = savedForDate.get(emp.id);
+                void _saved;
                 const dayName = format(new Date(selectedDate + 'T12:00:00'), 'EEEE');
                 const shift = shifts.find(s => s.code === emp.shiftCode) || shifts.find(s => s.status === 'active');
                 const isWeeklyOff = shift ? shift.weeklyOff.includes(dayName) : dayName === 'Sunday';
