@@ -17,7 +17,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { FileText, Printer, Download, Eye, Check, X, AlertTriangle, ShieldCheck, FileSearch } from 'lucide-react';
 import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip } from '@/types/payroll-run';
-import type { ITDeclaration, InvestmentProof } from '@/types/it-declaration';
+import type { ITDeclaration, InvestmentProof, HRADeclaration, HomeLoanDeclaration } from '@/types/it-declaration';
 import { IT_DECLARATIONS_KEY, computeTotal80C, computeTotalDeductions, getCurrentFY } from '@/types/it-declaration';
 import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import type { Employee } from '@/types/employee';
