@@ -80,7 +80,7 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
         formState: { party_name: partyName, date, ref_voucher_no: vendorChallanNo } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, partyName, date, vendorChallanNo, inventoryLines]);
+  }, [onSaveDraft, partyName, date, vendorChallanNo]);
 
   const isDirty = useCallback(
     () => !!partyName || !!vendorChallanNo || !!receiveGodown || !!narration || inventoryLines.length > 0,
