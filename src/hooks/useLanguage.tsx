@@ -11,9 +11,6 @@ import { useState, useCallback, type ReactNode } from 'react';
 import { LANGUAGES, type SupportedLanguage } from './useLanguage.types';
 import { LanguageContext } from './LanguageContext';
 
-// Backward-compat re-export for existing `import { useLanguage } from '@/hooks/useLanguage'` sites.
-export { useLanguage } from './LanguageContext';
-
 const VALID = new Set(LANGUAGES.map(l => l.code));
 
 export function LanguageProvider({ children }: { children: ReactNode }) {

@@ -22,7 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogoutConfirmDialog } from "./LogoutConfirmDialog";
 import { mockLogout } from "@/lib/auth";
-import { useLanguage } from "@/hooks/useLanguage";
+import { useLanguage } from "@/hooks/LanguageContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface UserProfileDropdownProps {

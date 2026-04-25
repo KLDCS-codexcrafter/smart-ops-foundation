@@ -52,7 +52,7 @@ import {
 import { ERPDatePicker } from '@/components/layout/ERPDatePicker';
 import { ERPCompanySelector, useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';
 
-import { useGlobalDateRange } from '@/hooks/useGlobalDateRange';
+import { useGlobalDateRange } from '@/hooks/GlobalDateRangeContext';
 import { formatIndianDate } from '@/hooks/useGlobalDateRange.types';
 import { cn } from '@/lib/utils';
 

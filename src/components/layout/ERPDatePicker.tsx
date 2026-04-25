@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { useGlobalDateRange } from '@/hooks/useGlobalDateRange';
+import { useGlobalDateRange } from '@/hooks/GlobalDateRangeContext';
 import { PRESET_LABELS, type DatePreset } from '@/hooks/useGlobalDateRange.types';
 import type { DateRange as RDPRange } from 'react-day-picker';
 

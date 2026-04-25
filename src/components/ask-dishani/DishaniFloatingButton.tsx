@@ -1,5 +1,5 @@
 import { Sparkles } from "lucide-react";
-import { useDishani } from "./DishaniContext";
+import { useDishani } from "./useDishani";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 

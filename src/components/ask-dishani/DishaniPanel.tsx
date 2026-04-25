@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Sparkles, Send } from "lucide-react";
-import { useDishani } from "./DishaniContext";
+import { useDishani } from "./useDishani";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 export function LanguageSwitcher() {
   const { language, setLanguage, languages } = useLanguage();
