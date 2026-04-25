@@ -22,9 +22,6 @@ import { ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INDIA_STATES, type StateRow } from './StatePicker.types';
 
-// Backward-compat re-exports.
-export type { StateRow };
-export { INDIA_STATES } from './StatePicker.types';
 
 interface StatePickerProps {
   value: string;                                        // state_code
