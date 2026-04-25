@@ -148,41 +148,43 @@ export function FoundationEntityHubPanel() {
   const [rawSubsidiaries, setRawSubsidiaries] = useState<Record<string, unknown>[]>(() => ls('erp_subsidiaries'));
   const [rawBranches, setRawBranches] = useState<Record<string, unknown>[]>(() => ls('erp_branch_offices'));
 
+  const s = (v: unknown): string => v == null ? '' : String(v);
+
   const allCompanies = useMemo(() => rawCompanies.map(c => ({
-    id: c.id,
-    code: c.shortCode ? `${c.shortCode}001` : '',
-    shortCode: c.shortCode || '',
-    name: c.legalEntityName || c.name || '',
-    parentCompany: c.parentCompanyName || '—',
-    status: c.status || 'Active',
-    city: c.hqCity || '',
-    state: c.hqState || '',
-    entityLevel: c.entity_type || 'company',
-    createdAt: c.created_at ? c.created_at.slice(0,10) : '',
+    id: s(c.id),
+    code: c.shortCode ? `${s(c.shortCode)}001` : '',
+    shortCode: s(c.shortCode),
+    name: s(c.legalEntityName || c.name),
+    parentCompany: s(c.parentCompanyName) || '—',
+    status: s(c.status) || 'Active',
+    city: s(c.hqCity),
+    state: s(c.hqState),
+    entityLevel: s(c.entity_type) || 'company',
+    createdAt: c.created_at ? s(c.created_at).slice(0,10) : '',
   })), [rawCompanies]);
 
-  const allSubsidiaries = useMemo(() => rawSubsidiaries.map(s => ({
-    id: s.id,
-    code: s.shortCode || '',
-    name: s.legalEntityName || s.name || '',
-    parentCompany: s.parentCompanyName || '—',
-    reportingTo: s.reportingToEntityId && s.reportingToEntityId !== 'same' ? s.reportingToEntityId : '—',
-    ownershipPct: s.ownershipPercentage ? s.ownershipPercentage + '%' : '—',
-    relationship: s.subsidiaryRelationship || '—',
-    status: s.status || 'Active',
-    city: s.hqCity || '',
+  const allSubsidiaries = useMemo(() => rawSubsidiaries.map(sb => ({
+    id: s(sb.id),
+    code: s(sb.shortCode),
+    name: s(sb.legalEntityName || sb.name),
+    parentCompany: s(sb.parentCompanyName) || '—',
+    reportingTo: sb.reportingToEntityId && sb.reportingToEntityId !== 'same' ? s(sb.reportingToEntityId) : '—',
+    ownershipPct: sb.ownershipPercentage ? s(sb.ownershipPercentage) + '%' : '—',
+    relationship: s(sb.subsidiaryRelationship) || '—',
+    status: s(sb.status) || 'Active',
+    city: s(sb.hqCity),
   })), [rawSubsidiaries]);
 
   const allBranches = useMemo(() => rawBranches.map(b => ({
-    id: b.id,
-    code: b.code || '',
-    name: b.name || '',
-    branchType: b.branchType || '',
-    parentCompany: b.parentCompanyName || b.parentCompanyId || '—',
-    branchHead: b.branchHead || '—',
-    status: b.status || 'Active',
-    city: b.city || '',
-    state: b.state || '',
+    id: s(b.id),
+    code: s(b.code),
+    name: s(b.name),
+    branchType: s(b.branchType),
+    parentCompany: s(b.parentCompanyName || b.parentCompanyId) || '—',
+    branchHead: s(b.branchHead) || '—',
+    status: s(b.status) || 'Active',
+    city: s(b.city),
+    state: s(b.state),
   })), [rawBranches]);
 
   const [search, setSearch] = useState('');
@@ -317,11 +319,11 @@ export function FoundationEntityHubPanel() {
                 columns={[
                   { key:'code',          label:'Code',           sortable:true },
                   { key:'shortCode',     label:'Short Code',
-                    render: r => <span className='font-mono text-xs bg-muted px-1.5 py-0.5 rounded'>{(r as any).shortCode}</span> },
+                    render: r => <span className='font-mono text-xs bg-muted px-1.5 py-0.5 rounded'>{(r as { shortCode?: string }).shortCode}</span> },
                   { key:'name',          label:'Name',           sortable:true },
                   { key:'parentCompany', label:'Parent Company', sortable:true },
                   { key:'status',        label:'Status',
-                    render: r => <StatusBadge status={(r as any).status} /> },
+                    render: r => <StatusBadge status={(r as { status?: string }).status ?? ''} /> },
                   { key:'city',          label:'City',           sortable:true },
                   { key:'state',         label:'State' },
                 ]}
@@ -340,11 +342,11 @@ export function FoundationEntityHubPanel() {
                   { key:'name',          label:'Name',           sortable:true },
                   { key:'parentCompany', label:'Parent Company', sortable:true },
                   { key:'ownershipPct',  label:'Ownership %',
-                    render: r => <span className='font-mono font-semibold text-sm'>{(r as any).ownershipPct}</span> },
+                    render: r => <span className='font-mono font-semibold text-sm'>{(r as { ownershipPct?: string }).ownershipPct}</span> },
                   { key:'relationship',  label:'Relationship',
-                    render: r => <Badge variant='outline' className='text-xs'>{(r as any).relationship}</Badge> },
+                    render: r => <Badge variant='outline' className='text-xs'>{(r as { relationship?: string }).relationship}</Badge> },
                   { key:'status',        label:'Status',
-                    render: r => <StatusBadge status={(r as any).status} /> },
+                    render: r => <StatusBadge status={(r as { status?: string }).status ?? ''} /> },
                   { key:'city',          label:'City',           sortable:true },
                 ]}
               />
@@ -362,14 +364,14 @@ export function FoundationEntityHubPanel() {
                   { key:'name',          label:'Name',           sortable:true },
                   { key:'branchType',    label:'Type',
                     render: r => {
-                      const t = (r as any).branchType as string;
+                      const t = (r as { branchType?: string }).branchType ?? '';
                       return <span className={cn('text-[10px] border rounded-full px-2 py-0.5 font-medium',
                         BRANCH_TYPE_COLORS[t] ?? 'bg-muted text-foreground')}>{t}</span>;
                     } },
                   { key:'parentCompany', label:'Company',        sortable:true },
                   { key:'branchHead',    label:'Branch Head' },
                   { key:'status',        label:'Status',
-                    render: r => <StatusBadge status={(r as any).status} /> },
+                    render: r => <StatusBadge status={(r as { status?: string }).status ?? ''} /> },
                   { key:'city',          label:'City',           sortable:true },
                   { key:'state',         label:'State' },
                 ]}
