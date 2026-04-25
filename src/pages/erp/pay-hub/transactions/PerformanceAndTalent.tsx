@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Star, Grid3X3, Users, TrendingUp, Plus, Check, ChevronUp, Target, Award, Edit, X, Trash2 } from 'lucide-react';
+import { Star, Grid3X3, Users, TrendingUp, Plus, Check, ChevronUp, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { AppraisalCycle, PerformanceReview, KRAItem, SuccessionPlan,
   SuccessionEntry, CompensationAction, PerformanceTab, ReviewStatus,

@@ -7,7 +7,7 @@ export function SerialStatsCards() {
   const today = new Date();
   const available = serials.filter(s => s.status === 'available').length;
   const sold = serials.filter(s => s.status === 'sold').length;
-  const inRepair = serials.filter(s => s.status === 'in_repair').length;
+  const _inRepair = serials.filter(s => s.status === 'in_repair').length;
   const warrantyActive = serials.filter(s =>
     s.warranty_end_date && new Date(s.warranty_end_date) >= today
   ).length;

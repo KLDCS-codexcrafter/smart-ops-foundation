@@ -22,7 +22,7 @@ const seed = (id: string, overrides: Partial<VoucherType>): VoucherType => ({
   ...overrides,
 });
 
-const autoPostRule = (id: string, label: string, dr: string, cr: string): BehaviourRule => ({
+const _autoPostRule = (id: string, label: string, dr: string, cr: string): BehaviourRule => ({
   id, rule_type: 'auto_post', label, is_active: true, sequence: 1,
   config: { debit_ledger_code: dr, debit_ledger_name: dr, credit_ledger_code: cr, credit_ledger_name: cr, amount_mode: 'full' },
 });

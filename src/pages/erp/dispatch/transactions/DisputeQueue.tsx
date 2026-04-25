@@ -38,7 +38,7 @@ function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; }
   catch { return []; }
 }
-function nowISO() { return new Date().toISOString(); }
+function _nowISO() { return new Date().toISOString(); }
 function fmtINR(n: number) {
   return `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

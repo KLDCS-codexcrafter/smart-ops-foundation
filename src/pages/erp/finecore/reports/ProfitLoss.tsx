@@ -48,7 +48,7 @@ export function ProfitLossPanel({ entityCode }: ProfitLossPanelProps) {
   const depreciation = getL2Net('E-DEP', 'Dr');
   const netProfit = grossProfit + otherIncome.total - opex.total - finance.total - depreciation.total;
 
-  const renderSection = (title: string, data: ReturnType<typeof getL2Net>, isExpense = false) => {
+  const renderSection = (title: string, data: ReturnType<typeof getL2Net>, _isExpense = false) => {
     const l2 = L2_PARENT_GROUPS.find(g => g.code === title);
     const label = l2?.name ?? title;
     return (

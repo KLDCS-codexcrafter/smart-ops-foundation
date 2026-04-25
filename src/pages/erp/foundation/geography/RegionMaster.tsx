@@ -36,7 +36,7 @@ export function RegionMasterPanel() {
   // [JWT] POST /api/geography/regions
   const saveRecords = (d: RegionRecord[]) => { localStorage.setItem('erp_geo_regions', JSON.stringify(d)); /* [JWT] PATCH /api/geography/regions/bulk */ };
   const [search, setSearch] = useState('');
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<RegionRecord>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -82,7 +82,7 @@ export function RegionMasterPanel() {
     setFormOpen(true);
   }
 
-  function toggleState(stateCode: string) {
+  function _toggleState(stateCode: string) {
     setFormData(prev => ({
       ...prev,
       states: prev.states.includes(stateCode)
@@ -91,11 +91,11 @@ export function RegionMasterPanel() {
     }));
   }
 
-  function selectAllStates() {
+  function _selectAllStates() {
     setFormData(prev => ({...prev, states: stateOptionsForForm.map(s => s.code)}));
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.code || !formData.name || !formData.countryCode) {
       toast.error('Code, Name, and Country are required');
       return;
@@ -112,7 +112,7 @@ export function RegionMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
     const next = records.filter((_, i) => i !== deleteIndex);

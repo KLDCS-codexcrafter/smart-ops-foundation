@@ -42,12 +42,12 @@ export function StateMasterPanel() {
   const saveRecords = (d: StateRecord[]) => { localStorage.setItem('erp_geo_states', JSON.stringify(d)); /* [JWT] PATCH /api/geography/states/bulk */ };
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<StateRecord>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewTarget, setPreviewTarget] = useState<'india' | 'uae' | null>(null);
+  const [_previewOpen, setPreviewOpen] = useState(false);
+  const [_previewTarget, setPreviewTarget] = useState<'india' | 'uae' | null>(null);
 
   const filtered = useMemo(() =>
     records.filter(r => {
@@ -55,7 +55,7 @@ export function StateMasterPanel() {
       return `${r.code} ${r.name}`.toLowerCase().includes(search.toLowerCase());
     }), [records, search, countryFilter]);
 
-  function seedIndia() {
+  function _seedIndia() {
     const newRecs: StateRecord[] = indianStates.map(s => ({
       code: s.code, name: s.name, countryCode: 'IN',
       gstStateCode: s.gstStateCode, unionTerritory: s.unionTerritory,
@@ -66,7 +66,7 @@ export function StateMasterPanel() {
     toast.success(`Seeded ${indianStates.length} Indian states/UTs`);
   }
 
-  function seedUAE() {
+  function _seedUAE() {
     const newRecs: StateRecord[] = UAE_EMIRATES.map(e => ({
       code: e.code, name: e.name, countryCode: 'AE',
       gstStateCode: '', unionTerritory: false, region: '', status: 'active',
@@ -88,7 +88,7 @@ export function StateMasterPanel() {
     setFormOpen(true);
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.code || !formData.name || !formData.countryCode) {
       toast.error('Code, Name, and Country are required');
       return;
@@ -105,7 +105,7 @@ export function StateMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
     const next = records.filter((_, i) => i !== deleteIndex);

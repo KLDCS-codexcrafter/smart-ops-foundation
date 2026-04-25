@@ -189,7 +189,7 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
     }, 800);
   }
 
-  const breadcrumbs = [
+  const _breadcrumbs = [
     { label: 'Operix Core', href: '/erp/dashboard' },
     { label: 'Command Center', href: '/erp/command-center' },
     { label: 'Foundation' },

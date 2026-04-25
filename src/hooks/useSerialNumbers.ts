@@ -17,7 +17,7 @@ function saveSerials(serials: SerialNumber[]): void {
 
 export function useSerialNumbers() {
   const [serials, setSerials] = useState<SerialNumber[]>(loadSerials());
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   // [JWT] Replace with GET /api/inventory/serial-numbers
 
   const createSerial = (data: SerialFormData) => {

@@ -95,7 +95,7 @@ export function SalaryStructureMasterPanel() {
 
   const activePayHeads = useMemo(() => payHeads.filter(ph => ph.status === 'active'), [payHeads]);
 
-  const grades: { id: string; name: string; code: string }[] = useMemo(() => {
+  const _grades: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
       // [JWT] GET /api/pay-hub/masters/pay-grades
       const raw = localStorage.getItem('erp_pay_grades');

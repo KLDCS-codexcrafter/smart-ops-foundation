@@ -3,7 +3,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { Building, Building2, MapPin, DollarSign, Shield, Settings2, Palette, History, CalendarIcon, Upload, X, Plus, Trash2, ChevronLeft, ChevronRight, Save, Loader2, CheckCircle2 } from 'lucide-react';
+import { Building, MapPin, DollarSign, Shield, Settings2, Palette, History, CalendarIcon, Upload, X, Plus, Trash2, ChevronLeft, ChevronRight, Save, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -161,7 +161,7 @@ const INITIAL_FORM = {
 
 // ── Component ────────────────────────────────────────────────────────────────
 export default function ParentCompany() {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});

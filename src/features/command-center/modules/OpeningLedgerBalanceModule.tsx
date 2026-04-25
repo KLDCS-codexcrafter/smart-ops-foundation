@@ -39,7 +39,7 @@ interface LedgerDef {
   parentGroupName: string;
 }
 
-const PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
+const _PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
 
 export function OpeningLedgerBalanceModule() {
   const { entityCode } = useEntityCode();
@@ -54,7 +54,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
 
   const [tab, setTab] = useState<'ledgers' | 'bills'>('ledgers');
   const [filterLedgerId, setFilterLedgerId] = useState<string>('');
-  const [refreshTick, setRefreshTick] = useState(0);
+  const [refreshTick, _setRefreshTick] = useState(0);
 
   // Resolve entity record
   const entity = useMemo(() => {
@@ -124,7 +124,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
   const isPosted = ob.status.party_bills_posted;
 
   // Update ledger Dr/Cr — also creates an OB-${ledgerCode} bill row
-  const updateLedger = (instId: string, drVal: number, crVal: number, note: string) => {
+  const updateLedger = (instId: string, drVal: number, crVal: number, _note: string) => {
     if (!entity) return;
     const next = instances.map(i => i.id === instId
       ? { ...i, openingBalance: drVal > 0 ? drVal : crVal, openingBalanceType: drVal > 0 ? 'Dr' as const : 'Cr' as const }

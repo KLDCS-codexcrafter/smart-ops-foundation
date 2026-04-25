@@ -17,7 +17,7 @@ function saveBatches(batches: Batch[]): void {
 
 export function useBatches() {
   const [batches, setBatches] = useState<Batch[]>(loadBatches());
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   // [JWT] Replace with GET /api/inventory/batches
 
   const createBatch = (data: BatchFormData) => {

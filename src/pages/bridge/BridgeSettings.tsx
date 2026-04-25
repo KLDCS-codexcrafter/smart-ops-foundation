@@ -52,7 +52,7 @@ export default function BridgeSettings() {
   const [odbcFallback, setOdbcFallback] = useState(true);
 
   // Schedule export switch
-  const [scheduleSwitch, setScheduleSwitch] = useState(false);
+  const [_scheduleSwitch, _setScheduleSwitch] = useState(false);
 
   const testConnections = () => {
     setTesting(true);

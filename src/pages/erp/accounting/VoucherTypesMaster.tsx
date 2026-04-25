@@ -356,7 +356,7 @@ function VoucherSheet({
     ? `${form.numbering_prefix || ''}${String(form.current_sequence).padStart(form.numbering_width, '0')}`
     : '—';
   const lineOff    = NO_LINE_NARRATION_TYPES.includes(form.base_voucher_type);
-  const alwaysOpt  = ALWAYS_OPTIONAL_TYPES.includes(form.base_voucher_type);
+  const _alwaysOpt  = ALWAYS_OPTIONAL_TYPES.includes(form.base_voucher_type);
   const salesOnly  = SALES_ONLY_FIELDS.includes(form.base_voucher_type);
   const inh        = BASE_INHERITED[form.base_voucher_type];
 

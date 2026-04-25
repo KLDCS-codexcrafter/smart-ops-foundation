@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { countries as worldCountries, type WorldCountry } from '@/data/world-geography';
 import { useNavigate } from 'react-router-dom';
 
-const COUNTRY_REGIONS = ['Asia','Middle East','Europe','Americas','Africa','Oceania','SAARC'];
+const _COUNTRY_REGIONS = ['Asia','Middle East','Europe','Americas','Africa','Oceania','SAARC'];
 
 interface Country {
   code: string; name: string; flag: string; dialCode: string;
@@ -43,11 +43,11 @@ export function CountryMasterPanel() {
     /* [JWT] PATCH /api/geography/countries/bulk */
   };
   const [search, setSearch] = useState('');
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<Country>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [_libraryOpen, setLibraryOpen] = useState(false);
   const [libSearch, setLibSearch] = useState('');
 
   const filtered = useMemo(() =>
@@ -55,14 +55,14 @@ export function CountryMasterPanel() {
       `${c.code} ${c.name} ${c.capital}`.toLowerCase().includes(search.toLowerCase())
     ), [localCountries, search]);
 
-  const libraryFiltered = useMemo(() => {
+  const _libraryFiltered = useMemo(() => {
     const existing = new Set(localCountries.map(c => c.code));
     return worldCountries
       .filter(c => !existing.has(c.code))
       .filter(c => `${c.code} ${c.name}`.toLowerCase().includes(libSearch.toLowerCase()));
   }, [localCountries, libSearch]);
 
-  function pickFromLibrary(wc: WorldCountry) {
+  function _pickFromLibrary(wc: WorldCountry) {
     setFormData({
       code: wc.code, name: wc.name, flag: wc.flag, dialCode: wc.dialCode,
       currencyCode: wc.currencyCode, currencySymbol: wc.currencySymbol,
@@ -85,7 +85,7 @@ export function CountryMasterPanel() {
     setFormOpen(true);
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.code || !formData.name) {
       toast.error('Code and Name are required');
       return;
@@ -103,7 +103,7 @@ export function CountryMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const c = localCountries[deleteIndex];
     const next = localCountries.filter((_, i) => i !== deleteIndex);
@@ -160,7 +160,7 @@ export function CountryMasterPanel() {
                         : 'No results match your search.'}
                     </TableCell>
                   </TableRow>
-                ) : filtered.map((c, idx) => {
+                ) : filtered.map((c, _idx) => {
                   const realIdx = localCountries.indexOf(c);
                   return (
                     <TableRow key={c.code}>

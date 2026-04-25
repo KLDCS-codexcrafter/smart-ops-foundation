@@ -27,7 +27,7 @@ interface EntitySetupDialogProps {
   onComplete: (result: SetupResult) => void;
 }
 
-function getPreviewLedgerCount(businessActivity: string, businessEntity: string): number {
+function getPreviewLedgerCount(businessActivity: string, _businessEntity: string): number {
   const isService = ['Services', 'IT Services', 'Consulting'].includes(businessActivity);
   const isMfg = businessActivity === 'Manufacturing';
   // Base: 19 ledgers + conditional service revenue (1) + capital (1)

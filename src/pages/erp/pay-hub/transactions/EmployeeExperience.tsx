@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { format, parseISO, isAfter } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Users, Heart, Gift, Plus, Search, Printer, Pin, Bell, ThumbsUp, ChevronRight, Building } from 'lucide-react';
+import { Users, Heart, Gift, Plus, Search, Printer, Pin, Bell, ThumbsUp, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Announcement, Recognition, ExperienceTab,
   AnnouncementPriority, AnnouncementAudience, RecognitionType } from '@/types/collaboration';

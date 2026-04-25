@@ -244,7 +244,7 @@ export function VendorMasterPanel() {
   const [showBank, setShowBank] = useState(false);
   const [showTaxation, setShowTaxation] = useState(false);
   const [showCompanyInfo, setShowCompanyInfo] = useState(false);
-  const [showLogistics, setShowLogistics] = useState(false);
+  const [_showLogistics, setShowLogistics] = useState(false);
 
   const [form, setForm] = useState(defaultForm);
   const [justSaved, setJustSaved] = useState(false);

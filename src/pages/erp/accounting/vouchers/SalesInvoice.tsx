@@ -571,7 +571,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     [partyName.length, inventoryLines.length, ledgerLines.length, narration.length],
   );
 
-  const handleCancel = useCallback(() => {
+  const _handleCancel = useCallback(() => {
     if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');

@@ -10,9 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@/components/ui/dialog';
-import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
@@ -75,7 +72,7 @@ export function CityMasterPanel() {
   const [districtFilter, setDistrictFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<CityRecord>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -189,7 +186,7 @@ export function CityMasterPanel() {
     setFormOpen(true);
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.code || !formData.name) { toast.error('Code and Name are required'); return; }
     if (editIndex !== null) {
       const next = records.map((r, i) => i === editIndex ? {...formData} : r);
@@ -203,7 +200,7 @@ export function CityMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
     const next = records.filter((_, i) => i !== deleteIndex);

@@ -127,7 +127,7 @@ const PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
 function AppCard({ app }: { app: AppDefinition }) {
   const navigate = useNavigate();
   const IconComponent = ICON_MAP[app.icon] ?? LayoutDashboard;
-  const isLive = !app.status;
+  const _isLive = !app.status;
 
   function handleClick() {
     if (app.status === 'coming_soon') {

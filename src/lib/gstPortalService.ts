@@ -113,7 +113,7 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
   const totalInvoices = outward.filter(e => e.base_voucher_type === 'Sales').length;
   const cancelledInvoices = entries.filter(e => e.is_cancelled && e.base_voucher_type === 'Sales').length;
 
-  const fp = period.replace('-', ''); // '2026-04' → '202604' → need MMYYYY
+  const _fp = period.replace('-', ''); // '2026-04' → '202604' → need MMYYYY
   const [yr, mn] = period.split('-');
   const fpFormatted = `${mn}${yr}`;
 

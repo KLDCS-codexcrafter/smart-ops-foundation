@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { IndianRupee, ShoppingCart } from "lucide-react";
+import { IndianRupee } from "lucide-react";
 import { CustomerLayout } from "@/components/layout/CustomerLayout";
 import { Button } from "@/components/ui/button";
 import {

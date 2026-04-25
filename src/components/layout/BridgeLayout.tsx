@@ -35,7 +35,7 @@ interface BridgeLayoutProps {
   subtitle?: string;
 }
 
-export function BridgeLayout({ children, title, subtitle }: BridgeLayoutProps) {
+export function BridgeLayout({ children, title, subtitle: _subtitle }: BridgeLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();

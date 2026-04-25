@@ -143,8 +143,8 @@ function PresetDialog({
 
 export function OrgStructurePanel() {
   const { divisions, departments, activeDivisions, activeDepartments,
-    createDivision, updateDivision, deleteDivision, toggleDivisionStatus,
-    createDepartment, updateDepartment, deleteDepartment, toggleDepartmentStatus,
+    createDivision, updateDivision, deleteDivision, toggleDivisionStatus: _toggleDivisionStatus,
+    createDepartment, updateDepartment, deleteDepartment, toggleDepartmentStatus: _toggleDepartmentStatus,
     importPreset } = useOrgStructure();
 
   const [tab, setTab] = useState<'divisions' | 'departments'>('divisions');
