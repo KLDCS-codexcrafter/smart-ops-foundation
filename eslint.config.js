@@ -29,4 +29,13 @@ export default tseslint.config(
       }],
     },
   },
+  // D-139 — vendor scope: shadcn/ui CLI-generated files are upstream-managed.
+  // Suppress react-refresh/only-export-components for src/components/ui/** to preserve
+  // shadcn upgrade path (no source modifications to vendor files).
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 );
