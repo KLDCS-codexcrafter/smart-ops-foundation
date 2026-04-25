@@ -1,0 +1,6 @@
+=== any count after Block 3a ===
+src/pages/erp/inventory/ItemCraft.tsx: 0 (excludes comments)
+src/pages/erp/accounting/LedgerMaster.tsx: 2 (excludes comments)
+
+=== Project-wide any count ===
+143
