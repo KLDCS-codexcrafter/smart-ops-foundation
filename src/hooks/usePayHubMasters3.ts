@@ -114,13 +114,13 @@ export function useHolidayCalendars() {
           location: c.location ?? 'All Locations',
           inheritedHolidays: c.inheritedHolidays ?? [],
           holidays: (c.holidays ?? []).map(h => {
-            const hRec = h as Record<string, unknown>;
+            const hRec = h as unknown as Record<string, unknown>;
             return {
               ...h,
               localName: (hRec.localName as string) ?? '',
               counties: (hRec.counties as string[]) ?? [],
               isFixed: (hRec.isFixed as boolean) ?? false,
-              source: (hRec.source as string) ?? 'manual',
+              source: (hRec.source as 'api' | 'inherited' | 'manual') ?? 'manual',
             };
           }),
         };
