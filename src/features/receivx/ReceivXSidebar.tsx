@@ -12,9 +12,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import type { ReceivXModule } from './ReceivXSidebar.types';
 
-// Backward-compat re-exports.
-export type { ReceivXModule };
-export { LIVE_RECEIVX_MODULES } from './ReceivXSidebar.types';
 
 interface Props {
   activeModule: ReceivXModule;

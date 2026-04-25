@@ -22,8 +22,6 @@ import { indianStates, indianDistricts, getCitiesByState, getCitiesByDistrict } 
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
 import { CITY_CATEGORIES } from './CityMaster.constants';
 
-// Backward-compat re-export.
-export { CITY_CATEGORIES } from './CityMaster.constants';
 
 const CITY_CAT_COLORS: Record<string, string> = {
   metro: 'bg-purple-500/10 text-purple-700 border-purple-500/20',

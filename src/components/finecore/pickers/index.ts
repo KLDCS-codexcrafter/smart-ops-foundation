@@ -8,8 +8,9 @@ export type { LedgerPickerRow } from './LedgerPicker';
 export { PartyPicker } from './PartyPicker';
 export type { PartyPickerRow, PartyMode } from './PartyPicker';
 
-export { StatePicker, INDIA_STATES } from './StatePicker';
-export type { StateRow } from './StatePicker';
+export { StatePicker } from './StatePicker';
+export { INDIA_STATES } from './StatePicker.types';
+export type { StateRow } from './StatePicker.types';
 
 export { GodownPicker } from './GodownPicker';
 export type { GodownPickerOptions } from './GodownPicker';

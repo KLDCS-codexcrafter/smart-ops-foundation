@@ -1,23 +1,20 @@
 /**
- * useLanguage.tsx — Language/i18n context
+ * useLanguage.tsx — Language/i18n provider component
  * 23 Indian Eighth Schedule languages defined.
  * English: fully active. All others: architecture ready, translations coming soon.
  * Persisted to localStorage key 'app_language'.
  *
- * Types/constants live in `useLanguage.types.ts` (D-139 split for HMR).
+ * Context + consumer hook live in `LanguageContext.ts`.
+ * Types/constants live in `useLanguage.types.ts`.
  */
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { LANGUAGES, type SupportedLanguage, type LanguageOption } from './useLanguage.types';
+import { useState, useCallback, type ReactNode } from 'react';
+import { LANGUAGES, type SupportedLanguage } from './useLanguage.types';
+import { LanguageContext } from './LanguageContext';
+
+// Backward-compat re-export for existing `import { useLanguage } from '@/hooks/useLanguage'` sites.
+export { useLanguage } from './LanguageContext';
 
 const VALID = new Set(LANGUAGES.map(l => l.code));
-
-interface LanguageCtx {
-  language: SupportedLanguage;
-  setLanguage: (lang: SupportedLanguage) => void;
-  languages: LanguageOption[];
-}
-
-const Ctx = createContext<LanguageCtx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLang] = useState<SupportedLanguage>(() => {
@@ -32,11 +29,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('app_language', lang);
   }, []);
 
-  return <Ctx.Provider value={{ language, setLanguage, languages: LANGUAGES }}>{children}</Ctx.Provider>;
-}
-
-export function useLanguage(): LanguageCtx {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useLanguage must be inside LanguageProvider');
-  return ctx;
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, languages: LANGUAGES }}>
+      {children}
+    </LanguageContext.Provider>
+  );
 }

@@ -23,9 +23,6 @@ import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutoma
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import type { SalesXModule } from './SalesXSidebar.types';
 
-// Backward-compat re-exports.
-export type { SalesXModule };
-export { LIVE_SALESX_MODULES } from './SalesXSidebar.types';
 
 interface Props {
   activeModule: SalesXModule;
