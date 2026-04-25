@@ -68,10 +68,10 @@ export default function DistributorBroadcast() {
 
   // Cleanup-1a: `refresh` is bumped after a broadcast is sent so the list
   // re-reads localStorage and shows the new message immediately.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: manual refresh trigger
   const broadcasts = useMemo<BroadcastMessage[]>(
     () => ls<BroadcastMessage>(distributorBroadcastsKey(entityCode))
       .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, refresh],
   );
 

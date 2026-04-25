@@ -102,9 +102,9 @@ export function CustomerCartPanel() {
   // Cleanup-1a: `cart.id` rotates when a fresh cart is created after order
   // placement; we re-read active schemes then so a newly-launched campaign
   // applies to the next cart immediately.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on cart rotation
   const allSchemes = useMemo<Scheme[]>(
     () => ls<Scheme>(schemesKey(ENTITY)).filter(s => s.status === 'active'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [cart.id],
   );
 

@@ -49,7 +49,6 @@ export function GeographyHubPanel() {
   // Cleanup-1a: `seedComplete` and `isSeeding` are intentional triggers —
   // liveCounts reads localStorage outside React's view, so we recount after
   // a seed run flips either flag.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on seed lifecycle
   const liveCounts = useMemo(() => {
     // [JWT] GET /api/geography/:type
     const lsLen = (k: string) => { try { return JSON.parse(localStorage.getItem(k)||'[]').length; } catch { return 0; } };
@@ -61,6 +60,7 @@ export function GeographyHubPanel() {
       ports: lsLen('erp_geo_ports'),
       regions: lsLen('erp_geo_regions'),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seedComplete, isSeeding]);
 
   function buildIndiaSteps(): SetupStep[] {

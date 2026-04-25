@@ -62,10 +62,10 @@ function DistributorIntimationQueueInner({ entityCode }: { entityCode: string })
 
   // Cleanup-1a: `refresh` is bumped after verify/reject actions so the
   // queue re-reads localStorage and reflects updated statuses.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: manual refresh trigger
   const all = useMemo<DistributorPaymentIntimation[]>(
     () => ls<DistributorPaymentIntimation>(distributorIntimationsKey(entityCode))
       .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, refresh],
   );
 
