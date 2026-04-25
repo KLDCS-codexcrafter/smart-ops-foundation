@@ -38,10 +38,11 @@ export function OutstandingAgingPanel({ entityCode, type: initialType }: Outstan
   }, [aging, viewType]);
 
   // Group by party
+  type AgingBill = (typeof filtered)[number];
   const partyGroups = useMemo(() => {
-    const map = new Map<string, { partyName: string; partyType: string; bills: typeof filtered; buckets: number[]; total: number }>();
+    const map = new Map<string, { partyName: string; partyType: string; bills: AgingBill[]; buckets: number[]; total: number }>();
     for (const bill of filtered) {
-      const ex = map.get(bill.party_id) || { partyName: bill.party_name, partyType: bill.party_type, bills: [], buckets: new Array(BUCKETS.length).fill(0), total: 0 };
+      const ex = map.get(bill.party_id) || { partyName: bill.party_name, partyType: bill.party_type, bills: [] as AgingBill[], buckets: new Array(BUCKETS.length).fill(0), total: 0 };
       ex.bills.push(bill);
       ex.buckets[bill.bucket] += bill.pending_amount;
       ex.total += bill.pending_amount;

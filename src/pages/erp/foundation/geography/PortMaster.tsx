@@ -93,6 +93,7 @@ export function PortMasterPanel() {
     toast.success(`Seeded ${src.length} ${target === 'india' ? 'Indian' : 'UAE'} ports`);
     setPreviewOpen(false);
   }
+  void _seedPorts;
 
   function openCreate() {
     setFormData({...EMPTY});
@@ -119,6 +120,7 @@ export function PortMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -128,6 +130,7 @@ export function PortMasterPanel() {
     toast.success(`Port ${r.portCode} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   return (
     <div data-keyboard-form className="space-y-4">

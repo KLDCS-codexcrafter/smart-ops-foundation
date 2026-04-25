@@ -79,6 +79,9 @@ export function AssetMasterPanel() {
   const [catFilter, setCatFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // [Abstract] Per D-126: intentional one-shot load. Empty deps array is correct
+  //            because this useMemo reads static localStorage at component init.
+  //            Closure hazards do not apply — no stale-ref usage downstream.
   // ── Cross-module: active employees for Assign dropdown ──────────
   const activeEmployees = useMemo<Employee[]>(() => {
     try {

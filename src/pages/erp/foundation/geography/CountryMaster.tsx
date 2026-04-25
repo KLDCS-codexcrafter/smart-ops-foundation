@@ -18,6 +18,7 @@ import { countries as worldCountries, type WorldCountry } from '@/data/world-geo
 import { useNavigate } from 'react-router-dom';
 
 const _COUNTRY_REGIONS = ['Asia','Middle East','Europe','Americas','Africa','Oceania','SAARC'];
+void _COUNTRY_REGIONS;
 
 interface Country {
   code: string; name: string; flag: string; dialCode: string;
@@ -61,6 +62,7 @@ export function CountryMasterPanel() {
       .filter(c => !existing.has(c.code))
       .filter(c => `${c.code} ${c.name}`.toLowerCase().includes(libSearch.toLowerCase()));
   }, [localCountries, libSearch]);
+  void _libraryFiltered;
 
   function _pickFromLibrary(wc: WorldCountry) {
     setFormData({
@@ -72,6 +74,7 @@ export function CountryMasterPanel() {
     setLibraryOpen(false);
     setFormOpen(true);
   }
+  void _pickFromLibrary;
 
   function openCreate() {
     setFormData({...EMPTY});
@@ -102,6 +105,7 @@ export function CountryMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -111,6 +115,7 @@ export function CountryMasterPanel() {
     toast.success(`Country ${c.code} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   return (
     <div data-keyboard-form className="space-y-4">

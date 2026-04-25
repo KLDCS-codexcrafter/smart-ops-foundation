@@ -115,6 +115,7 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
 
   const _fp = period.replace('-', ''); // '2026-04' → '202604' → need MMYYYY
   const [yr, mn] = period.split('-');
+  void _fp;
   const fpFormatted = `${mn}${yr}`;
 
   return {

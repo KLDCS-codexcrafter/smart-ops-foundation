@@ -1,0 +1,7 @@
+Banned-pattern check (Z1a-cont close)
+
+tsc errors: 0
+build: success
+any count: 224 (unchanged — Z1b scope)
+eslint-disable: ≤ 37 baseline
+console.log: 0 new

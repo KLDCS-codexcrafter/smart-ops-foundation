@@ -196,6 +196,7 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
     { label: 'Branch Offices', href: '/erp/foundation/branch-offices' },
     { label: mode === 'create' ? 'Create Branch Office' : 'Edit Branch Office' },
   ];
+  void _breadcrumbs;
 
   return (
     <>

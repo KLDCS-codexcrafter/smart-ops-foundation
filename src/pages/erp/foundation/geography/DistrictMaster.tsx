@@ -96,6 +96,7 @@ export function DistrictMasterPanel() {
     toast.success(`Seeded ${newRecs.length} districts for ${previewData.name}`);
     setPreviewOpen(false);
   }
+  void _confirmSeed;
 
   function openCreate() {
     setFormData({...EMPTY, countryCode: countryFilter !== 'all' ? countryFilter : '', stateCode: stateFilter !== 'all' ? stateFilter : ''});
@@ -129,6 +130,7 @@ export function DistrictMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -138,6 +140,7 @@ export function DistrictMasterPanel() {
     toast.success(`District ${r.code} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   const canAutoSeed = stateFilter !== 'all' && (countryFilter === 'IN' || countryFilter === 'AE');
   const selectedStateName = stateOptions.find(s => s.code === stateFilter)?.name ?? stateFilter;

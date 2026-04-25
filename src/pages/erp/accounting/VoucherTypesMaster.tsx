@@ -357,6 +357,7 @@ function VoucherSheet({
     : '—';
   const lineOff    = NO_LINE_NARRATION_TYPES.includes(form.base_voucher_type);
   const _alwaysOpt  = ALWAYS_OPTIONAL_TYPES.includes(form.base_voucher_type);
+  void _alwaysOpt;
   const salesOnly  = SALES_ONLY_FIELDS.includes(form.base_voucher_type);
   const inh        = BASE_INHERITED[form.base_voucher_type];
 

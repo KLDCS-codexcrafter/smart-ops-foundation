@@ -162,6 +162,7 @@ const INITIAL_FORM = {
 // ── Component ────────────────────────────────────────────────────────────────
 export default function ParentCompany() {
   const _navigate = useNavigate();
+  void _navigate;
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -189,6 +190,9 @@ export default function ParentCompany() {
     catch { return def; }
   };
 
+  // [Abstract] Per D-126: intentional one-shot load. Empty deps array is correct
+  //            because this effect reads static localStorage at component init.
+  //            Closure hazards do not apply — no stale-ref usage downstream.
   // Load saved data on mount
   useEffect(() => {
     const saved = lsObj('erp_parent_company', INITIAL_FORM);

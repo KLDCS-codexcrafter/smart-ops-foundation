@@ -26,6 +26,7 @@ interface OrderLite {
 function _ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
+void _ls;
 
 function loadCustomers(): CustomerLite[] {
   try {

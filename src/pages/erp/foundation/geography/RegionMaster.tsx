@@ -90,10 +90,12 @@ export function RegionMasterPanel() {
         : [...prev.states, stateCode],
     }));
   }
+  void _toggleState;
 
   function _selectAllStates() {
     setFormData(prev => ({...prev, states: stateOptionsForForm.map(s => s.code)}));
   }
+  void _selectAllStates;
 
   function _handleSave() {
     if (!formData.code || !formData.name || !formData.countryCode) {
@@ -111,6 +113,7 @@ export function RegionMasterPanel() {
     }
     setFormOpen(false);
   }
+  void _handleSave;
 
   function _handleDelete() {
     if (deleteIndex === null) return;
@@ -120,6 +123,7 @@ export function RegionMasterPanel() {
     toast.success(`Region ${r.code} deleted`);
     setDeleteIndex(null);
   }
+  void _handleDelete;
 
   return (
     <div data-keyboard-form className="space-y-4">

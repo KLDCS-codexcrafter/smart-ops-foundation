@@ -4,7 +4,7 @@
  * All panels import from this file.
  */
 import type { Voucher, GSTEntry, JournalEntry } from '@/types/voucher';
-import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry, AdvanceEntry } from '@/types/compliance';
+import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry } from '@/types/compliance';
 import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/finecore-engine';
 import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey } from '@/types/compliance';
 
@@ -353,6 +353,7 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
 
   // 12. Section 43B liabilities cleared
   const _liabilityLedgers = ['PF Payable', 'ESI Payable', 'GST Payable', 'Professional Tax Payable'];
+  void _liabilityLedgers;
   const liabBal = Array.from(tbMap.entries())
     .filter(([, v]) => v.cr > v.dr)
     .reduce((s, [, v]) => s + (v.cr - v.dr), 0);

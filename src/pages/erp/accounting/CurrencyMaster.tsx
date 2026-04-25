@@ -35,7 +35,12 @@ import { CalendarIcon } from 'lucide-react';
 
 // ── Blank forms ───────────────────────────────────────────────────────────────
 
-const BLANK_CURRENCY = {
+const BLANK_CURRENCY: {
+  iso_code: string; name: string; formal_name: string; symbol: string;
+  decimal_places: number; symbol_before_amount: boolean; space_between: boolean;
+  show_in_millions: boolean; is_base_currency: boolean; is_active: boolean;
+  entity_id: string | null;
+} = {
   iso_code: '', name: '', formal_name: '', symbol: '',
   decimal_places: 2, symbol_before_amount: true, space_between: false,
   show_in_millions: false, is_base_currency: false, is_active: true, entity_id: null,

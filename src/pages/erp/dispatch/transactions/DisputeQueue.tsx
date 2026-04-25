@@ -39,6 +39,7 @@ function ls<T>(k: string): T[] {
   catch { return []; }
 }
 function _nowISO() { return new Date().toISOString(); }
+void _nowISO;
 function fmtINR(n: number) {
   return `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

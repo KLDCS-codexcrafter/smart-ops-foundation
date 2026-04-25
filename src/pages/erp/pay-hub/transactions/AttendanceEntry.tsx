@@ -22,7 +22,7 @@ import { UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X, ChevronLe
 import { toast } from 'sonner';
 import { useAttendanceEntry, parseBiometricFile, groupBiometricPunches,
   computeWorkHours, computeLate } from '@/hooks/useAttendanceEntry';
-import type { AttendanceRecord, BiometricDaySummary, GeoFence } from '@/types/attendance-entry';
+import type { AttendanceRecord, BiometricDaySummary } from '@/types/attendance-entry';
 import type { Employee } from '@/types/employee';
 import type { AttendanceType, Shift, HolidayCalendar } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
@@ -448,6 +448,7 @@ export function AttendanceEntryPanel() {
               {gridEmployees.map(emp => {
                 const row = getRowVal(emp.id);
                 const _saved = savedForDate.get(emp.id);
+                void _saved;
                 const dayName = format(new Date(selectedDate + 'T12:00:00'), 'EEEE');
                 const shift = shifts.find(s => s.code === emp.shiftCode) || shifts.find(s => s.status === 'active');
                 const isWeeklyOff = shift ? shift.weeklyOff.includes(dayName) : dayName === 'Sunday';

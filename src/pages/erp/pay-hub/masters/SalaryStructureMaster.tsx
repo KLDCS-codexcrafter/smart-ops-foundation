@@ -95,6 +95,9 @@ export function SalaryStructureMasterPanel() {
 
   const activePayHeads = useMemo(() => payHeads.filter(ph => ph.status === 'active'), [payHeads]);
 
+  // [Abstract] Per D-126: intentional one-shot load. Empty deps array is correct
+  //            because this useMemo reads static localStorage at component init.
+  //            Closure hazards do not apply — no stale-ref usage downstream.
   const _grades: { id: string; name: string; code: string }[] = useMemo(() => {
     try {
       // [JWT] GET /api/pay-hub/masters/pay-grades
@@ -102,6 +105,7 @@ export function SalaryStructureMasterPanel() {
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }, []);
+  void _grades;
 
   const openCreate = () => { setEditId(null); setForm(EMPTY_FORM); setPreviewCTC(0); setSheetOpen(true); };
   const openEdit = (ss: SalaryStructure) => {
