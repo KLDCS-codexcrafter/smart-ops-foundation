@@ -20,7 +20,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
 import { ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { INDIA_STATES, type StateRow } from './StatePicker.types';
+import { INDIA_STATES } from './StatePicker.types';
 
 
 interface StatePickerProps {
