@@ -1,0 +1,5 @@
+src/lib/demo-seed-orchestrator.ts:78:  safeSetArray(`erp_sam_targets_${entityCode}`, DEMO_TARGETS);
+src/pages/erp/salesx/masters/TargetMaster.tsx:3: * Storage: erp_sam_targets_{entityCode}
+src/pages/erp/salesx/masters/TargetMaster.types.ts:5: *           D-127 storage-key preservation: template literal `erp_sam_targets_${e}`
+src/pages/erp/salesx/masters/TargetMaster.types.ts:35:export const targetsKey = (e: string) => `erp_sam_targets_${e}`;
+src/pages/erp/smoke-test/SmokeTestRunner.tsx:131:    run: (e) => { const n = readArray(`erp_sam_targets_${e}`).length;

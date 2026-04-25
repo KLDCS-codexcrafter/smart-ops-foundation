@@ -10,26 +10,11 @@ import {
 } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import type { ReceivXModule } from './ReceivXSidebar.types';
 
-export type ReceivXModule =
-  | 'rx-hub'
-  | 'rx-m-reminder-template' | 'rx-m-collection-exec'
-  | 'rx-m-incentive-scheme' | 'rx-m-config'
-  | 'rx-t-task-board' | 'rx-t-ptp-tracker' | 'rx-t-reminder-console'
-  | 'rx-t-payment-links' | 'rx-t-dunning'
-  | 'rx-r-aging-salesman' | 'rx-r-aging-agent'
-  | 'rx-r-aging-broker' | 'rx-r-aging-telecaller'
-  | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk';
-
-export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
-  'rx-hub','rx-m-reminder-template','rx-m-collection-exec',
-  'rx-m-incentive-scheme','rx-m-config',
-  'rx-t-task-board','rx-t-ptp-tracker','rx-t-reminder-console',
-  'rx-t-payment-links','rx-t-dunning',
-  'rx-r-aging-salesman','rx-r-aging-agent',
-  'rx-r-aging-broker','rx-r-aging-telecaller',
-  'rx-r-collection-eff','rx-r-comm-log','rx-r-credit-risk',
-];
+// Backward-compat re-exports.
+export type { ReceivXModule };
+export { LIVE_RECEIVX_MODULES } from './ReceivXSidebar.types';
 
 interface Props {
   activeModule: ReceivXModule;

@@ -20,29 +20,13 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { cn } from '@/lib/utils';
+import { targetsKey, type SalesTarget } from './TargetMaster.types';
+
+// Backward-compat re-exports — preserve every previous import path.
+export type { SalesTarget };
+export { targetsKey } from './TargetMaster.types';
 
 interface Props { entityCode: string }
-
-export interface SalesTarget {
-  id: string;
-  entity_id: string;
-  financial_year: string;
-  target_type: 'company' | 'salesman' | 'agent';
-  person_id: string | null;
-  person_name: string | null;
-  period: 'monthly' | 'quarterly' | 'annual';
-  period_label: string;
-  dimension: 'sales_value' | 'collection' | 'new_customers' | 'order_volume';
-  target_value: number;
-  stock_group_id: string | null;
-  stock_group_name: string | null;
-  territory: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export const targetsKey = (e: string) => `erp_sam_targets_${e}`;
 
 interface FormState {
   financial_year: string;
