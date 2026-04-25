@@ -68,6 +68,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
   const memos = useMemo(
     () => ls<SalesReturnMemo>(salesReturnMemosKey(entityCode))
       .sort((a, b) => b.memo_date.localeCompare(a.memo_date)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refreshTick bump forces re-read of localStorage after approve/reject mutations
     [entityCode, refreshTick],
   );
 
