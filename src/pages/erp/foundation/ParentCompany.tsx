@@ -198,9 +198,9 @@ export default function ParentCompany() {
     const saved = lsObj('erp_parent_company', INITIAL_FORM);
     if (saved && saved.legalEntityName) {
       setForm(f => ({ ...f, ...saved }));
-      const full = lsObj<any>('erp_parent_company', {});
-      if (full.gstRegs) setGstRegs(full.gstRegs);
-      if (full.lutBonds) setLutBonds(full.lutBonds);
+      const full = lsObj<Record<string, unknown>>('erp_parent_company', {});
+      if (full.gstRegs) setGstRegs(full.gstRegs as GSTReg[]);
+      if (full.lutBonds) setLutBonds(full.lutBonds as LUTBond[]);
     }
   }, []);  
 
@@ -323,7 +323,7 @@ export default function ParentCompany() {
       if (form.enableMultiCurrency) {
         try {
           // [JWT] POST /api/group/finecore/ledger-definitions (forex system ledgers)
-          const ledgerDefs: any[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+          const ledgerDefs: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
           const now = new Date().toISOString();
           const fxGainCode = 'FXGAIN-SYS';
           const fxLossCode = 'FXLOSS-SYS';
@@ -352,7 +352,7 @@ export default function ParentCompany() {
           // [JWT] PATCH /api/foundation/company
           localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
           // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
-          const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+          const vtypes: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
           if (!vtypes.find(v => v.abbreviation === 'FXADJ')) {
             vtypes.push({
               id: `vt-fxadj-${Date.now()}`, name: 'Forex Adjustment',
