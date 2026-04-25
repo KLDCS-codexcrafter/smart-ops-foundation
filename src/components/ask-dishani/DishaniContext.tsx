@@ -154,9 +154,3 @@ export function DishaniProvider({ children }: { children: ReactNode }) {
     </DishaniContext.Provider>
   );
 }
-
-export function useDishani() {
-  const ctx = useContext(DishaniContext);
-  if (!ctx) throw new Error('useDishani must be used within DishaniProvider');
-  return ctx;
-}
