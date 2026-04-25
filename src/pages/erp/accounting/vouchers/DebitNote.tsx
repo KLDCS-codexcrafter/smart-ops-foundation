@@ -99,7 +99,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
         formState: { party_name: partyName, date, ref_voucher_no: againstBill } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, partyName, date, againstBill, reasonCode, inventoryLines]);
+  }, [onSaveDraft, partyName, date, againstBill]);
 
   const isDirty = useCallback(
     () => !!partyName || !!againstBill || !!reasonCode || !!narration || inventoryLines.length > 0 || ledgerLines.length > 0,

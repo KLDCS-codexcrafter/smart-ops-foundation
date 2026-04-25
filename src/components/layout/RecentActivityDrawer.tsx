@@ -34,6 +34,9 @@ export function RecentActivityDrawer() {
   const [open, setOpen] = useState(false);
   const [revKey, setRevKey] = useState(0);
 
+  // Cleanup-1a: `revKey` is bumped via setRevKey after handleClear so the
+  // memoized list re-reads localStorage and reflects the cleared state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: manual refresh trigger
   const items = useMemo<CrossCardActivityItem[]>(
     () => readActivity(entityCode, userId),
     [entityCode, userId, revKey],

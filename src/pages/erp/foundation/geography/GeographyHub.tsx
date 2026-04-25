@@ -46,6 +46,10 @@ export function GeographyHubPanel() {
   const [seedComplete, setSeedComplete] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  // Cleanup-1a: `seedComplete` and `isSeeding` are intentional triggers —
+  // liveCounts reads localStorage outside React's view, so we recount after
+  // a seed run flips either flag.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on seed lifecycle
   const liveCounts = useMemo(() => {
     // [JWT] GET /api/geography/:type
     const lsLen = (k: string) => { try { return JSON.parse(localStorage.getItem(k)||'[]').length; } catch { return 0; } };

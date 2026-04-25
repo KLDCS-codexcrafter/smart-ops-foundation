@@ -72,6 +72,9 @@ export default function DistributorPayments() {
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
 
+  // Cleanup-1a: `refresh` is bumped after a successful intimation submit so
+  // the list re-reads localStorage and shows the new entry immediately.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: manual refresh trigger
   const intimations = useMemo<DistributorPaymentIntimation[]>(() => {
     if (!session) return [];
     return ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code))

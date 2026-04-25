@@ -116,7 +116,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         formState: { date, narration } as Partial<Voucher>,
       });
     }
-  }, [onSaveDraft, date, purpose, consumptionLines, productionLines, narration]);
+  }, [onSaveDraft, date, purpose, narration]);
 
   const isDirty = useCallback(
     () => !!department || !!referenceNo || !!narration || consumptionLines.length > 0 || productionLines.length > 0,

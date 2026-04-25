@@ -94,7 +94,10 @@ export function LedgerPicker({
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
 
-  const ledgers = useMemo(() => loadLedgers(entityCode), [entityCode, open /* reload on open */]);
+  // Cleanup-1a: `open` intentionally re-triggers loadLedgers so the picker
+  // shows ledgers added since last open (e.g., via inline LedgerCreateDialog).
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on dialog open
+  const ledgers = useMemo(() => loadLedgers(entityCode), [entityCode, open]);
 
   const filtered = useMemo(() => {
     let list = ledgers;
