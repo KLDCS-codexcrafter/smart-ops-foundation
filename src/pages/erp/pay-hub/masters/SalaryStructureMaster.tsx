@@ -42,7 +42,7 @@ function computeBreakdown(components: SalaryStructureComponent[], annualCTC: num
   const monthlyCTC = annualCTC / 12;
   const results: { name: string; type: PayHeadType; monthly: number; annual: number }[] = [];
   let basic = 0;
-  let gross = 0;
+  const gross = 0;
 
   // First pass: compute basic
   const basicComp = components.find(c => c.payHeadCode === 'BASIC');

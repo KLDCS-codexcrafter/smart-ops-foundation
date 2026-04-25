@@ -193,7 +193,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setReasonNote(''); setItems([]); setAttachments([]);
   }, [persons, raisedById, selectedInvoice, entityCode, memoNo, memoDate,
       reason, reasonNote, items, totalAmount, attachments]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _ = persistMemo;
 
   const handleSubmit = useCallback(() => persistMemo('pending'), [persistMemo]);

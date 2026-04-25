@@ -212,7 +212,7 @@ export function ReorderAlertsPanel() {
 
   const saveAllMatrix = useCallback(() => {
     const now = new Date().toISOString();
-    let updated = [...rules];
+    const updated = [...rules];
     let created = 0;
     let updatedCount = 0;
 
