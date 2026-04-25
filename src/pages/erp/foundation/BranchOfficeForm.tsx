@@ -139,26 +139,26 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
   // Dynamic parent company picker
   const parentCompanyOptions = useMemo(() => {
     // [JWT] GET /api/foundation/branch-offices
-    const parentRecord = (() => { try { const v = localStorage.getItem('erp_parent_company'); return v ? JSON.parse(v) : null; } catch { return null; } })();
-    const companies: any[] = ls('erp_companies');
+    const parentRecord = (() => { try { const v = localStorage.getItem('erp_parent_company'); return v ? JSON.parse(v) as Record<string, unknown> : null; } catch { return null; } })();
+    const companies: Record<string, unknown>[] = ls('erp_companies');
     const options: {id: string; name: string}[] = [];
-    if (parentRecord?.legalEntityName) options.push({ id: 'parent-root', name: parentRecord.legalEntityName });
-    companies.forEach(c => { if (c.id && c.legalEntityName) options.push({ id: c.id, name: c.legalEntityName }); });
+    if (parentRecord?.legalEntityName) options.push({ id: 'parent-root', name: String(parentRecord.legalEntityName) });
+    companies.forEach(c => { if (c.id && c.legalEntityName) options.push({ id: String(c.id), name: String(c.legalEntityName) }); });
     if (options.length === 0) options.push({ id: 'parent-001', name: 'SmartOps Industries Pvt Ltd' });
     return options;
   }, []);
 
   // Dynamic existing branches
   const existingBranches = useMemo(() =>
-    ls<any>('erp_branch_offices')
-      .filter((b: any) => b.id && b.name && b.id !== entityId)
-      .map((b: any) => ({ id: b.id, name: b.name, code: b.code || '' })),
+    ls<Record<string, unknown>>('erp_branch_offices')
+      .filter(b => b.id && b.name && b.id !== entityId)
+      .map(b => ({ id: String(b.id), name: String(b.name), code: String(b.code ?? '') })),
   []);
 
   // Load data in edit mode
   useEffect(() => {
     if (mode !== 'edit' || !entityId) return;
-    const records: any[] = ls('erp_branch_offices');
+    const records: Record<string, unknown>[] = ls('erp_branch_offices');
     const existing = records.find(r => r.id === entityId);
     if (existing) setForm(prev => ({ ...prev, ...existing }));
   }, []); // eslint-disable-line
@@ -172,14 +172,14 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
     setSaving(true);
     setTimeout(() => {
       setSaving(false);
-      const existing: any[] = ls('erp_branch_offices');
+      const existing: Record<string, unknown>[] = ls('erp_branch_offices');
       const currentId = entityId ?? crypto.randomUUID();
       const record = {
         ...form, id: currentId, entity_type: 'branch',
         updated_at: new Date().toISOString(),
-        created_at: existing.find(r => r.id === currentId)?.created_at ?? new Date().toISOString(),
+        created_at: (existing.find(r => r.id === currentId) as { created_at?: string } | undefined)?.created_at ?? new Date().toISOString(),
       };
-      const idx = existing.findIndex((r: any) => r.id === currentId);
+      const idx = existing.findIndex(r => r.id === currentId);
       if (idx >= 0) existing[idx] = record; else existing.push(record);
       // [JWT] POST /api/foundation/branch-offices
       localStorage.setItem('erp_branch_offices', JSON.stringify(existing));
