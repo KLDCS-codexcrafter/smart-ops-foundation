@@ -9,10 +9,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { LANGUAGES, type SupportedLanguage, type LanguageOption } from './useLanguage.types';
 
-// Backward-compat re-exports.
-export type { SupportedLanguage, LanguageOption };
-export { LANGUAGES } from './useLanguage.types';
-
 const VALID = new Set(LANGUAGES.map(l => l.code));
 
 interface LanguageCtx {
