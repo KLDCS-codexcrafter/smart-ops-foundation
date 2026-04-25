@@ -737,7 +737,8 @@ export default function Login() {
 
 // ── Sub-components ──
 function PasswordField({ form, showPassword, setShowPassword, capsLock, handleCapsLock, passwordRef }: {
-  form: ReturnType<typeof useForm>; showPassword: boolean; setShowPassword: (v: boolean) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any; showPassword: boolean; setShowPassword: (v: boolean) => void;
   capsLock: boolean; handleCapsLock: (e: React.KeyboardEvent) => void;
   passwordRef: React.RefObject<HTMLInputElement>;
 }) {
