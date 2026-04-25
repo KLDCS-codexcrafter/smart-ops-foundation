@@ -25,7 +25,7 @@ const PAYROLL_CARDS = [
   { title: 'EPF / ESI / LWF', desc: 'Provident fund, state insurance and welfare fund rates', icon: Users, href: '/erp/accounting/epf-esi-lwf' },
   { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN, EPF, ESI registration numbers per entity', icon: FileText, href: '/erp/accounting/statutory-registrations' },
   { title: 'GST Entity Config', desc: 'Registration type, e-invoice, QRMP and turnover slab per entity', icon: Settings, href: '/erp/accounting/gst-config' },
-  { title: 'Comply360 Configuration', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/comply360-config' },
+  { title: 'Compliance Settings & Automation', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/compliance-settings-automation' },
 ];
 
 const PAYROLL_COMING_SOON = [

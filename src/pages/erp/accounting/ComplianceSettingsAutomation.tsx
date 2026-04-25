@@ -1,6 +1,6 @@
 /**
  * ComplianceSettingsAutomation.tsx — Sprint 22A Complete Redesign
- * (Renamed from Comply360Config.tsx per D-134; Comply360 brand reserved for the
+ * (Renamed from the prior file per D-134; the Comply360 brand is reserved for the
  *  future T19 major card. This screen is the per-entity compliance settings +
  *  automation rules surface that feeds the future Comply360 module.)
  * 8 config sections, extensible architecture, all TDL fields mapped.

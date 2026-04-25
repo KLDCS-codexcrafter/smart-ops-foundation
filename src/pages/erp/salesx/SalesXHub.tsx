@@ -243,7 +243,7 @@ export function SalesXHubPanel({ entityCode, onNavigate }: Props) {
         </Button>
         {!cfg?.enableSalesActivityModule && (
           <Button variant="outline" size="sm"
-            onClick={() => navigate('/erp/accounting/comply360-config')}>
+            onClick={() => navigate('/erp/accounting/compliance-settings-automation')}>
             <Settings2 className="h-3.5 w-3.5 mr-1" /> Configure SAM
           </Button>
         )}
