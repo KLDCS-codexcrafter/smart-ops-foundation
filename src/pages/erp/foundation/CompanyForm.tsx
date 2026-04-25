@@ -229,10 +229,11 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
     const key = entityType === 'company' ? 'erp_companies' : 'erp_subsidiaries';
     const records: Record<string, unknown>[] = ls(key);
     const existing = records.find(r => r.id === entityId);
+    const existing = records.find(r => r.id === entityId) as Record<string, unknown> | undefined;
     if (existing) {
       setForm(prev => ({ ...prev, ...existing }));
-      if (existing.gstRegs) setGstRegs(existing.gstRegs);
-      if (existing.lutBonds) setLutBonds(existing.lutBonds);
+      if (existing.gstRegs) setGstRegs(existing.gstRegs as GSTReg[]);
+      if (existing.lutBonds) setLutBonds(existing.lutBonds as LUTBond[]);
     }
   }, []); // eslint-disable-line
 
