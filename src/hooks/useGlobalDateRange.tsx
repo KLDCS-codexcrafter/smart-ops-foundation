@@ -1,13 +1,13 @@
 /**
- * useGlobalDateRange.tsx — Global date range context
+ * useGlobalDateRange.tsx — Global date range provider
  * Mirrors Tally's 'period' concept: one selection, all pages follow.
  * FY starts April (India standard). 13 presets. Persisted to localStorage.
  * Comparison mode: state stored, UI slot reserved for Phase 2 (reports).
  *
- * Types/constants/helpers live in `useGlobalDateRange.types.ts` (D-139 split
- * for HMR fast-refresh). Re-exported below for backward-compat.
+ * Context + consumer hook live in `GlobalDateRangeContext.ts`.
+ * Types/constants/helpers live in `useGlobalDateRange.types.ts`.
  */
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import { differenceInDays } from 'date-fns';
 import {
   FY_START_MONTH,
@@ -20,6 +20,10 @@ import {
   type DateRange,
   type GlobalDateRangeState,
 } from './useGlobalDateRange.types';
+import { GlobalDateRangeContext } from './GlobalDateRangeContext';
+
+// Backward-compat re-export so existing `import { useGlobalDateRange } from '@/hooks/useGlobalDateRange'` keeps working.
+export { useGlobalDateRange } from './GlobalDateRangeContext';
 
 const STORAGE_KEY = 'erp-date-range';
 
@@ -31,8 +35,6 @@ function loadStored(): { preset: DatePreset; selectedFY: string } {
   } catch { /* ignore */ }
   return { preset: 'cur_fy', selectedFY: '' };
 }
-
-const Ctx = createContext<GlobalDateRangeState | null>(null);
 
 export function GlobalDateRangeProvider({ children }: { children: ReactNode }) {
   const stored = loadStored();
@@ -83,11 +85,5 @@ export function GlobalDateRangeProvider({ children }: { children: ReactNode }) {
     setPreset, setCustomRange, setSelectedFY, setComparison,
   };
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-}
-
-export function useGlobalDateRange(): GlobalDateRangeState {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useGlobalDateRange must be inside GlobalDateRangeProvider');
-  return ctx;
+  return <GlobalDateRangeContext.Provider value={value}>{children}</GlobalDateRangeContext.Provider>;
 }
