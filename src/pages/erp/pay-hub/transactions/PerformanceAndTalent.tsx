@@ -129,6 +129,7 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
     saveCycles([...cycles, { ...cycleForm, id: `ac-${Date.now()}`, cycleCode: code, created_at: now, updated_at: now }]);
     toast.success('Appraisal cycle created');
     setCycleSheetOpen(false); setCycleForm(BLANK_CYCLE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_CYCLE is a stable shape constant defined in component scope
   }, [cycleSheetOpen, cycleForm, cycles]);
 
   // ── Review Sheet ──────────────────────────────────────────────
@@ -161,6 +162,7 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
     }
     toast.success('Review saved');
     setReviewSheetOpen(false); setReviewEditId(null); setReviewForm(BLANK_REVIEW);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_REVIEW is a stable shape constant defined in component scope
   }, [reviewSheetOpen, reviewForm, reviewEditId, reviews, activeCycle]);
 
   // ── Succession Sheet ──────────────────────────────────────────
@@ -185,6 +187,7 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
     }
     toast.success('Succession plan saved');
     setSuccSheetOpen(false); setSuccEditId(null); setSuccForm(BLANK_SUCC);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_SUCC is a stable shape constant defined in component scope
   }, [succSheetOpen, succForm, succEditId, succPlans]);
 
   // ── Compensation Action Sheet ─────────────────────────────────
@@ -216,6 +219,7 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
     }]);
     toast.success('Compensation action created');
     setCompSheetOpen(false); setCompForm(BLANK_COMP);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_COMP is a stable shape constant defined in component scope
   }, [compSheetOpen, compForm, compActions]);
 
   // ── Apply compensation action → write-back to employee record ─

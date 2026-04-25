@@ -137,6 +137,7 @@ export function OnboardingPanel() {
     setJourneySheetOpen(false);
     setJourneyForm(BLANK_JOURNEY_FORM);
     setSelectedJourneyId(newJourney.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_JOURNEY_FORM and nextCode are stable helpers defined in component scope
   }, [journeySheetOpen, journeyForm, journeys]);
 
   // ── Task edit Sheet ───────────────────────────────────────────

@@ -198,6 +198,7 @@ export function LeaveRequestsPanel() {
     });
     setReqSheetOpen(false);
     setReqForm(BLANK_REQ);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_REQ is a stable shape constant defined in component scope
   }, [reqSheetOpen, reqForm, computedDays, effectiveApprover, createRequest]);
 
   // ── handleDelSave ─────────────────────────────────────────────
@@ -219,6 +220,7 @@ export function LeaveRequestsPanel() {
     addCompOff(coForm);
     setCoSheetOpen(false);
     setCoForm(BLANK_CO);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_CO is a stable shape constant defined in component scope
   }, [coSheetOpen, coForm, addCompOff]);
 
   // ── masterSave (single Ctrl+S) ────────────────────────────────

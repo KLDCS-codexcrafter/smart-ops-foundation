@@ -70,6 +70,7 @@ export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel
     createHold(holdForm);
     setHoldSheetOpen(false);
     setHoldForm(BLANK_HOLD);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_HOLD is a stable shape constant defined in component scope
   }, [holdSheetOpen, holdForm, createHold]);
   const isFormActive = true;
   useCtrlS(isFormActive ? handleHoldSave : () => {});

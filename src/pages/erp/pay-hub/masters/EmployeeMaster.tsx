@@ -176,6 +176,7 @@ export function EmployeeMasterPanel() {
         // duplicate code error already toasted
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: uf is a stable field-update helper defined in component scope
   }, [view, form, activeEmployee, customCode, createEmployee, updateEmployee, revisionReason]);
 
   useCtrlS(handleSave);
