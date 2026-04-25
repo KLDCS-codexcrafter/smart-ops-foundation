@@ -424,7 +424,7 @@ export function ItemCraftPanel() {
                     <Label>Stock Group <span className="text-destructive">*</span></Label>
                     <Select value={form.stock_group_id || 'none'}
                       onValueChange={v => {
-                        const g = groups.find((x: any) => x.id === v);
+                        const g = groups.find(x => x.id === v);
                         setForm(f => ({ ...f, stock_group_id: v === 'none' ? null : v,
                           stock_group_name: g?.name || null, stock_group_breadcrumb: g?.name || null,
                           category_type: g?.category_type || f.category_type,
@@ -435,7 +435,7 @@ export function ItemCraftPanel() {
                       <SelectTrigger><SelectValue placeholder="Select stock group..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Select Group —</SelectItem>
-                        {groups.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                        {groups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -603,12 +603,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Classification (optional)</Label>
                     <Select value={form.classification_id || 'none'}
-                      onValueChange={v => { const c = classifs.find((x: any) => x.id === v);
+                      onValueChange={v => { const c = classifs.find(x => x.id === v);
                         setForm(f => ({ ...f, classification_id: v === 'none' ? null : v, classification_name: c?.name || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Any classification..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Classification —</SelectItem>
-                        {classifs.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classifs.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground">Groups items analytically across brands</p>
@@ -630,24 +630,24 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Brand</Label>
                     <Select value={form.brand_id || 'none'}
-                      onValueChange={v => { const b = brands.find((x: any) => x.id === v);
+                      onValueChange={v => { const b = brands.find(x => x.id === v);
                         setForm(f => ({ ...f, brand_id: v === 'none' ? null : v, brand_name: b?.name || null, sub_brand_id: null, sub_brand_name: null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select brand..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Brand —</SelectItem>
-                        {brands.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+                        {brands.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Sub-Brand</Label>
                     <Select value={form.sub_brand_id || 'none'} disabled={!form.brand_id}
-                      onValueChange={v => { const s = subs.find((x: any) => x.id === v);
+                      onValueChange={v => { const s = subs.find(x => x.id === v);
                         setForm(f => ({ ...f, sub_brand_id: v === 'none' ? null : v, sub_brand_name: s?.name || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select sub-brand..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Sub-Brand —</SelectItem>
-                        {subs.filter((s: any) => s.brand_id === form.brand_id).map((s: any) => (
+                        {subs.filter(s => s.brand_id === form.brand_id).map(s => (
                           <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                         ))}
                       </SelectContent>
@@ -732,12 +732,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Primary UOM <span className="text-destructive">*</span></Label>
                     <Select value={form.primary_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, primary_uom_id: v === 'none' ? null : v, primary_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select UOM..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Select UOM —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground">Used for stock balance and sales</p>
@@ -745,12 +745,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Purchase UOM</Label>
                     <Select value={form.purchase_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, purchase_uom_id: v === 'none' ? null : v, purchase_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Same as primary..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Same as Primary —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -759,12 +759,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Secondary UOM</Label>
                     <Select value={form.secondary_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, secondary_uom_id: v === 'none' ? null : v, secondary_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Optional..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— None —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -782,12 +782,12 @@ export function ItemCraftPanel() {
                     <div className="space-y-1.5">
                       <Label>Tertiary UOM</Label>
                       <Select value={form.tertiary_uom_id || 'none'}
-                        onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                        onValueChange={v => { const u = uoms.find(x => x.id === v);
                           setForm(f => ({ ...f, tertiary_uom_id: v === 'none' ? null : v, tertiary_uom_symbol: u?.symbol || null })); }}>
                         <SelectTrigger><SelectValue placeholder="Optional..." /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">— None —</SelectItem>
-                          {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                          {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
@@ -1088,12 +1088,12 @@ export function ItemCraftPanel() {
                             <TableRow key={entry.id}>
                               <TableCell className="py-1.5">
                                 <Select value={entry.godown_id}
-                                  onValueChange={v => { const g = godowns.find((x: any) => x.id === v);
+                                  onValueChange={v => { const g = godowns.find(x => x.id === v);
                                     setOs(a => a.map((x, j) => j === i ? { ...x, godown_id: v, godown_name: g?.name } : x)); }}>
                                   <SelectTrigger className="h-7 text-xs w-32"><SelectValue /></SelectTrigger>
                                   <SelectContent>
                                     {godowns.length > 0
-                                      ? godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)
+                                      ? godowns.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)
                                       : <SelectItem value="default">Default Godown</SelectItem>}
                                   </SelectContent>
                                 </Select>
