@@ -5,7 +5,8 @@
 import { useState, useEffect } from 'react';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { SalesXSidebar, type SalesXModule } from './SalesXSidebar';
+import { SalesXSidebar } from './SalesXSidebar';
+import type { SalesXModule } from './SalesXSidebar.types';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
