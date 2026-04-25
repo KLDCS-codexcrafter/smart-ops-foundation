@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { InventoryItem, ItemType, CostingMethodItem } from '@/types/inventory-item';
-import type { ItemPacking } from '@/types/item-packing';
+import type { ItemPacking, PackingLevel } from '@/types/item-packing';
 import type { ItemVendor } from '@/types/item-vendor';
 import type { ItemQCParam } from '@/types/item-qc-param';
 import type { ItemPartyCode } from '@/types/item-party-code';
