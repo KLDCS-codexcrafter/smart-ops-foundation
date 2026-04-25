@@ -129,6 +129,7 @@ export function RecruitmentPanel() {
     }
     toast.success('Job requisition saved');
     setJrSheetOpen(false); setJrEditId(null); setJrForm(BLANK_JR);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_JR and nextReqCode are stable helpers defined in component scope
   }, [jrSheetOpen, jrForm, jrEditId, requisitions]);
 
   // ── Application Sheet ─────────────────────────────────────────
@@ -170,6 +171,7 @@ export function RecruitmentPanel() {
     }
     toast.success('Application saved');
     setAppSheetOpen(false); setAppEditId(null); setAppForm(BLANK_APP);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_APP and nextAppCode are stable helpers defined in component scope
   }, [appSheetOpen, appForm, appEditId, applications]);
 
   // ── Move application stage ────────────────────────────────────

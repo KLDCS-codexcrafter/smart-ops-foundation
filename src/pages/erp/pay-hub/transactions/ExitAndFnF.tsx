@@ -196,6 +196,7 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
     }]);
     toast.success(`Exit request created for ${exitForm.employeeName}`);
     setExitSheetOpen(false); setExitForm(BLANK_EXIT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_EXIT is a stable shape constant defined in component scope
   }, [exitSheetOpen, exitForm, exitRequests]);
 
   // ── FnF Sheet (adjust computed figures before finalizing) ────

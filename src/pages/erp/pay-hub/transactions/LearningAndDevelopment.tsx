@@ -125,6 +125,7 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
     }
     toast.success('Course saved');
     setCourseSheetOpen(false); setCourseEditId(null); setCourseForm(BLANK_COURSE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_COURSE is a stable shape constant defined in component scope
   }, [courseSheetOpen, courseForm, courseEditId, courses]);
 
   // ── Enrollment Sheet ──────────────────────────────────────────
@@ -157,6 +158,7 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
     }
     toast.success('Enrollment saved');
     setEnrollSheetOpen(false); setEnrollEditId(null); setEnrollForm(BLANK_ENROLL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_ENROLL is a stable shape constant defined in component scope
   }, [enrollSheetOpen, enrollForm, enrollEditId, enrollments]);
 
   // ── Skill Sheet ───────────────────────────────────────────────
@@ -189,6 +191,7 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
     }
     toast.success('Skill record saved');
     setSkillSheetOpen(false); setSkillForm(BLANK_SKILL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_SKILL is a stable shape constant defined in component scope
   }, [skillSheetOpen, skillForm, skillRecords]);
 
   // ── Certification Sheet ───────────────────────────────────────
@@ -223,6 +226,7 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
     }
     toast.success('Certification saved');
     setCertSheetOpen(false); setCertEditId(null); setCertForm(BLANK_CERT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_CERT is a stable shape constant defined in component scope
   }, [certSheetOpen, certForm, certEditId, certifications]);
 
   // ── masterSave ────────────────────────────────────────────────
