@@ -218,7 +218,7 @@ export function AssetTagManagerPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label>Barcode Type</Label>
-                <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as any }))}>
+                <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as typeof f.barcode_type }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="QR">QR Code</SelectItem>
@@ -291,7 +291,7 @@ export function AssetTagManagerPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label>Status</Label>
-                <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+                <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as typeof f.status }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {['active', 'transferred', 'disposed', 'missing'].map(s => <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>)}

@@ -277,14 +277,14 @@ export function VendorMasterPanel() {
     try {
       // [JWT] GET /api/masters/vendors
       const all = JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]');
-      return all.filter((l: any) => l.logisticType === 'gta' && l.status === 'active');
+      return all.filter((l: { logisticType?: string; status?: string }) => l.logisticType === 'gta' && l.status === 'active');
     } catch { return []; }
   };
   const loadCourierOptions = () => {
     try {
       // [JWT] GET /api/masters/vendors
       const all = JSON.parse(localStorage.getItem('erp_group_logistic_master') || '[]');
-      return all.filter((l: any) => l.logisticType === 'courier' && l.status === 'active');
+      return all.filter((l: { logisticType?: string; status?: string }) => l.logisticType === 'courier' && l.status === 'active');
     } catch { return []; }
   };
 

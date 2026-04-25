@@ -211,7 +211,7 @@ export function CodeMatrixPanel() {
             <Separator />
             <div className="space-y-1.5">
               <Label>Applies To</Label>
-              <Select value={form.applies_to} onValueChange={v => setForm(f => ({ ...f, applies_to: v as any, applies_to_id: null }))}>
+              <Select value={form.applies_to} onValueChange={v => setForm(f => ({ ...f, applies_to: v as typeof f.applies_to, applies_to_id: null }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {APPLIES_OPTS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
@@ -277,7 +277,7 @@ export function CodeMatrixPanel() {
               </div>
             </label>
             {form.include_year && (
-              <Select value={form.year_format || 'YY'} onValueChange={v => setForm(f => ({ ...f, year_format: v as any }))}>
+              <Select value={form.year_format || 'YY'} onValueChange={v => setForm(f => ({ ...f, year_format: v as typeof f.year_format }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="YY">Short Year (25)</SelectItem>

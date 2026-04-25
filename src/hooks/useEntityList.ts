@@ -33,7 +33,7 @@ function loadAllEntities(): EntityListItem[] {
   try {
     // [JWT] GET /api/foundation/companies
     const companies = JSON.parse(localStorage.getItem('erp_companies') || '[]');
-    companies.forEach((c: any) => {
+    companies.forEach((c: Record<string, unknown>) => {
       if (c.id && c.legalEntityName) {
         entities.push({
           id: c.id,
@@ -49,7 +49,7 @@ function loadAllEntities(): EntityListItem[] {
   try {
     // [JWT] GET /api/foundation/subsidiaries
     const subs = JSON.parse(localStorage.getItem('erp_subsidiaries') || '[]');
-    subs.forEach((s: any) => {
+    subs.forEach((s: Record<string, unknown>) => {
       if (s.id && s.legalEntityName) {
         entities.push({
           id: s.id,
@@ -65,7 +65,7 @@ function loadAllEntities(): EntityListItem[] {
   try {
     // [JWT] GET /api/foundation/branch-offices
     const branches = JSON.parse(localStorage.getItem('erp_branch_offices') || '[]');
-    branches.forEach((b: any) => {
+    branches.forEach((b: Record<string, unknown>) => {
       if (b.id && b.name && (b.status === 'Active' || b.status === 'active' || !b.status)) {
         entities.push({
           id: b.id,
