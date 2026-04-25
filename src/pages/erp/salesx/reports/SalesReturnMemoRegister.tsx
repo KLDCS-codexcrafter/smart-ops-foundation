@@ -68,6 +68,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
   const memos = useMemo(
     () => ls<SalesReturnMemo>(salesReturnMemosKey(entityCode))
       .sort((a, b) => b.memo_date.localeCompare(a.memo_date)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refreshTick bump forces re-read of localStorage after approve/reject mutations
     [entityCode, refreshTick],
   );
 
@@ -86,13 +87,13 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
   // View dialog
   const [viewId, setViewId] = useState<string | null>(null);
 
-  const reload = () => setRefreshTick(t => t + 1);
+  const reload = useCallback(() => setRefreshTick(t => t + 1), []);
 
-  const persistAll = (next: SalesReturnMemo[]) => {
+  const persistAll = useCallback((next: SalesReturnMemo[]) => {
     // [JWT] PATCH /api/salesx/sales-return-memos
     localStorage.setItem(salesReturnMemosKey(entityCode), JSON.stringify(next));
     reload();
-  };
+  }, [entityCode, reload]);
 
   const handleApprove = useCallback(() => {
     if (!approveId) return;
@@ -111,7 +112,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
     persistAll(all);
     toast.success(`Memo ${all[idx].memo_no} approved`);
     setApproveId(null); setApproveNotes('');
-  }, [approveId, approveNotes, entityCode]);
+  }, [approveId, approveNotes, entityCode, persistAll]);
 
   const handleReject = useCallback(() => {
     if (!rejectId) return;
@@ -132,7 +133,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
     persistAll(all);
     toast.success(`Memo ${all[idx].memo_no} rejected`);
     setRejectId(null); setRejectReason('');
-  }, [rejectId, rejectReason, entityCode]);
+  }, [rejectId, rejectReason, entityCode, persistAll]);
 
   const handleConvert = (m: SalesReturnMemo) => {
     navigate(`/erp/accounting/vouchers/credit-note?from_memo=${m.id}`);

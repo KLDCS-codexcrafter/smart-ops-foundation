@@ -59,10 +59,13 @@ export function OpeningStockPanel() {
   const [grid, setGrid] = useState<GridState>({});
 
   const godowns: Array<{ id: string; name: string; status: string }> = ls('erp_godowns');
-  const activeCols: { id: string; name: string }[] =
-    godowns.length > 0
-      ? godowns.filter(g => g.status === 'active').map(g => ({ id: g.id, name: g.name }))
-      : [{ id: 'default', name: 'Default Warehouse' }];
+  const activeCols = useMemo<{ id: string; name: string }[]>(
+    () =>
+      godowns.length > 0
+        ? godowns.filter(g => g.status === 'active').map(g => ({ id: g.id, name: g.name }))
+        : [{ id: 'default', name: 'Default Warehouse' }],
+    [godowns],
+  );
 
   const groups = useMemo(() => [...new Set(items.map(i => i.stock_group_name).filter(Boolean))].sort(), [items]);
   const types = useMemo(() => [...new Set(items.map(i => i.item_type).filter(Boolean))].sort(), [items]);

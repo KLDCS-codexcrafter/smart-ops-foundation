@@ -136,14 +136,14 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setAttachments(prev => prev.filter((_, i) => i !== idx));
 
   // ── Validation ─────────────────────────────────────────────────────
-  const validate = (): string | null => {
+  const validate = useCallback((): string | null => {
     if (!raisedById) return 'Select the person raising this memo';
     if (!againstInvoiceId || !selectedInvoice) return 'Select the original sales invoice';
     if (items.length === 0) return 'Add at least one item line';
     if (items.some(it => !it.item_name.trim())) return 'Every line must have an item name';
     if (items.some(it => it.qty <= 0)) return 'Item quantity must be positive';
     return null;
-  };
+  }, [raisedById, againstInvoiceId, selectedInvoice, items]);
 
   // ── Persist ────────────────────────────────────────────────────────
   const persistMemo = useCallback((status: 'pending' | 'pending') => {
@@ -192,7 +192,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setRaisedById(''); setAgainstInvoiceId(''); setReason('damaged_goods');
     setReasonNote(''); setItems([]); setAttachments([]);
   }, [persons, raisedById, selectedInvoice, entityCode, memoNo, memoDate,
-      reason, reasonNote, items, totalAmount, attachments]);
+      reason, reasonNote, items, totalAmount, attachments, validate]);
    
   void persistMemo;
 
@@ -203,7 +203,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     // For Sprint 6B we treat draft same as pending status (workflow tightened in Sprint 6C).
     persistMemo('pending');
     toast.info('Saved as draft (pending approval)');
-  }, [persistMemo]);
+  }, [persistMemo, validate]);
 
   useCtrlS(handleSubmit);
 
