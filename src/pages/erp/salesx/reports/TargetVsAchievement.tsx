@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/table';
 import { Search } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
-import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster';
-import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster';
+import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
+import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
