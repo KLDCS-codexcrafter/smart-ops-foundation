@@ -1,9 +1,6 @@
 import { useEffect, useState, ReactNode } from "react";
 import { ThemeContext, type Theme } from "./ThemeContext";
 
-// Backward-compat re-export so existing importers continue to resolve.
-export { useTheme } from "./ThemeContext";
-
 const STORAGE_KEY = "4ds-theme";
 
 function getInitialTheme(): Theme {
