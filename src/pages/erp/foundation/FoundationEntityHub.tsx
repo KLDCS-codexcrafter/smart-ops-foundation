@@ -68,9 +68,9 @@ function EntityTable<T extends { id: string }>({
 
   const sorted = useMemo(() => {
     if (!sortKey) return rows;
-    return [...rows].sort((a: any, b: any) => {
-      const av = String(a[sortKey] ?? '').toLowerCase();
-      const bv = String(b[sortKey] ?? '').toLowerCase();
+    return [...rows].sort((a, b) => {
+      const av = String((a as Record<string, unknown>)[sortKey] ?? '').toLowerCase();
+      const bv = String((b as Record<string, unknown>)[sortKey] ?? '').toLowerCase();
       return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
     });
   }, [rows, sortKey, sortDir]);
@@ -115,7 +115,7 @@ function EntityTable<T extends { id: string }>({
               i % 2 === 0 ? 'bg-card' : 'bg-muted/10')}>
               {columns.map(col => (
                 <td key={col.key} className='px-4 py-3 text-sm'>
-                  {col.render ? col.render(row) : <span>{String((row as any)[col.key] ?? '')}</span>}
+                  {col.render ? col.render(row) : <span>{String((row as Record<string, unknown>)[col.key] ?? '')}</span>}
                 </td>
               ))}
               <td className='px-4 py-3'>
@@ -144,9 +144,9 @@ export function FoundationEntityHubPanel() {
   const activeTab = (searchParams.get('tab') as Tab) || 'companies';
   const setTab = (t: Tab) => setSearchParams({ tab: t }, { replace: true });
 
-  const [rawCompanies, setRawCompanies] = useState<any[]>(() => ls('erp_companies'));
-  const [rawSubsidiaries, setRawSubsidiaries] = useState<any[]>(() => ls('erp_subsidiaries'));
-  const [rawBranches, setRawBranches] = useState<any[]>(() => ls('erp_branch_offices'));
+  const [rawCompanies, setRawCompanies] = useState<Record<string, unknown>[]>(() => ls('erp_companies'));
+  const [rawSubsidiaries, setRawSubsidiaries] = useState<Record<string, unknown>[]>(() => ls('erp_subsidiaries'));
+  const [rawBranches, setRawBranches] = useState<Record<string, unknown>[]>(() => ls('erp_branch_offices'));
 
   const allCompanies = useMemo(() => rawCompanies.map(c => ({
     id: c.id,
