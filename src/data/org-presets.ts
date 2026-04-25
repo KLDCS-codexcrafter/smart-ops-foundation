@@ -12,12 +12,6 @@ export interface OrgPresetPackage {
   departments: PresetDepartment[];
 }
 
-// Helper — department linked to division by division name (resolved at import time)
-  division_name: string | null;  // matched to division.name at import
-  category: DivisionCategory;
-  description: string;
-};
-
 const mkDiv = (
   name: string, category: DivisionCategory, description: string
 ): Omit<Division, "id"|"code"|"created_at"|"updated_at"|"entity_id"> => ({
