@@ -477,7 +477,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     partyName, date, voucherNo, againstDN, gstTotals, narration, termsConditions, paymentTerms,
     ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstSO, openSOs, fulfillOrderLine,
     samSalesmanId, samSalesmanName, samAgentId, samAgentName, samReferenceId, samReferenceName,
-    commissionPreview, customerId, samPersons,
+    commissionPreview, customerId, samPersons, customers, placeOfSupply,
   ]);
 
   const handlePost = useCallback(() => {
