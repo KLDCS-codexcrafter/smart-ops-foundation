@@ -31,8 +31,6 @@ import {
 } from '@/types/transporter-invoice';
 import { parseInvoiceFile } from './InvoiceUploadWizard.helpers';
 
-// Backward-compat re-export.
-export { parseInvoiceFile } from './InvoiceUploadWizard.helpers';
 
 interface LogisticLite { id: string; partyName: string; logisticType: string }
 
