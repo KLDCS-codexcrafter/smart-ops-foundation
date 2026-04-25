@@ -974,7 +974,7 @@ export function ItemCraftPanel() {
                     { f: 'tds_applicable', l: 'TDS (Sec 194Q)', d: 'Tax Deducted at Source on purchase' },
                   ] as const).map(({ f, l, d }) => (
                     <label key={f} className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer">
-                      <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+                      <Switch checked={getBool(form, f)} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
                       <div><p className="text-sm font-medium">{l}</p><p className="text-xs text-muted-foreground">{d}</p></div>
                     </label>
                   ))}
@@ -1047,7 +1047,7 @@ export function ItemCraftPanel() {
                   ] as const).map(({ f, l, d }) => (
                     <div key={f} className="space-y-1.5">
                       <Label>{l}</Label>
-                      <Input type="number" min="0" value={(form as any)[f] || ''} onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
+                      <Input type="number" min="0" value={getStr(form, f)} onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
                       <p className="text-[10px] text-muted-foreground">{d}</p>
                     </div>
                   ))}
@@ -1159,7 +1159,7 @@ export function ItemCraftPanel() {
                     { tf: 'qc_hold_on_receipt', l: 'QC Hold on Receipt', d: 'Hold in QC location before main godown' },
                   ] as const).map(({ tf, l, d }) => (
                     <label key={tf} className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer">
-                      <Switch checked={(form as any)[tf]} onCheckedChange={v => setForm(f => ({ ...f, [tf]: v }))} />
+                      <Switch checked={getBool(form, tf)} onCheckedChange={v => setForm(f => ({ ...f, [tf]: v }))} />
                       <div><p className="text-sm font-medium">{l}</p><p className="text-xs text-muted-foreground">{d}</p></div>
                     </label>
                   ))}
@@ -1416,7 +1416,7 @@ export function ItemCraftPanel() {
                   ] as const).map(({ f, l, c }) => (
                     <div key={f} className="space-y-1.5">
                       <Label style={{ color: c }}>{l}</Label>
-                      <Select value={(form as any)[f] || 'not_listed'}
+                      <Select value={getStr(form, f) || 'not_listed'}
                         onValueChange={v => setForm(ff => ({ ...ff, [f]: v === 'not_listed' ? null : v }))}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
