@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/table';
 import { Plus, Save, Trash2, X, Lock } from 'lucide-react';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
-import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { cn } from '@/lib/utils';
 import { targetsKey, type SalesTarget } from './TargetMaster.types';
 

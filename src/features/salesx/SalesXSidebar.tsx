@@ -19,8 +19,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
-import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SalesXModule } from './SalesXSidebar.types';
 
 

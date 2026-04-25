@@ -39,7 +39,7 @@ import type { CommissionEntry } from '@/types/commission-register';
 import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
-import { comply360SAMKey, type SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { comply360SAMKey, type SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 interface TDSLineRow {
   id: string;
