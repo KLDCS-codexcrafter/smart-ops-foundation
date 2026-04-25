@@ -21,7 +21,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
-import { LIVE_SALESX_MODULES, type SalesXModule } from './SalesXSidebar.types';
+import type { SalesXModule } from './SalesXSidebar.types';
 
 // Backward-compat re-exports.
 export type { SalesXModule };
