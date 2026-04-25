@@ -20,7 +20,7 @@ import { ProfessionalTaxMasterPanel } from '@/pages/erp/accounting/ProfessionalT
 import { EPFESILWFMasterPanel } from '@/pages/erp/accounting/EPFESILWFMaster';
 import { StatutoryRegistrationsPanel } from '@/pages/erp/accounting/StatutoryRegistrations';
 import { GSTEntityConfigPanel } from '@/pages/erp/accounting/GSTEntityConfig';
-import { Comply360ConfigPanel } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { ComplianceSettingsAutomationPanel } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMaster';
@@ -127,7 +127,7 @@ export type CommandCenterModule =
   | 'finecore-income-tax'
   | 'finecore-statutory-reg'
   | 'finecore-gst-config'
-  | 'finecore-comply360'
+  | 'finecore-compliance-settings'
   | 'finecore-finframe'
   | 'finecore-ledgers'
   | 'finecore-voucher-types'
@@ -219,7 +219,7 @@ export default function CommandCenterPage() {
     if (['geography', 'console', 'finecore-hub',
       'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
       'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
-      'finecore-statutory-reg', 'finecore-gst-config', 'finecore-comply360',
+      'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
       'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit',
@@ -301,7 +301,7 @@ export default function CommandCenterPage() {
       case 'finecore-income-tax': return <IncomeTaxMasterPanel />;
       case 'finecore-statutory-reg': return <StatutoryRegistrationsPanel />;
       case 'finecore-gst-config': return <GSTEntityConfigPanel />;
-      case 'finecore-comply360': return <Comply360ConfigPanel />;
+      case 'finecore-compliance-settings': return <ComplianceSettingsAutomationPanel />;
       case 'finecore-finframe': return <FinFramePanel />;
       case 'finecore-ledgers': return <LedgerMasterPanel />;
       case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
@@ -449,7 +449,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'finecore-ledgers': 'Ledger Master',
     'finecore-finframe': 'FinFrame',
     'finecore-gst-config': 'GST Config',
-    'finecore-comply360': 'Comply360',
+    'finecore-compliance-settings': 'Compliance Settings & Automation',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
