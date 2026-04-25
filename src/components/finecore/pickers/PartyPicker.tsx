@@ -135,7 +135,7 @@ export function PartyPicker<M extends PartyMode>({
 
   // Cleanup-1a: `open` intentionally re-triggers loadParties so the picker
   // shows parties added since last open (e.g., via inline PartyCreateDialog).
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on dialog open
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const parties = useMemo(() => loadParties(entityCode, mode), [entityCode, mode, open]);
   const filtered = useMemo(() => {
     if (!search) return parties;
