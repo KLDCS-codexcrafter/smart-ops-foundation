@@ -84,61 +84,9 @@
   62:9  warning  The 'activeCols' conditional could make the dependencies of useCallback Hook (at line 165) change on every render. To fix this, wrap the initialization of 'activeCols' in its own useMemo() Hook  react-hooks/exhaustive-deps
   62:9  warning  The 'activeCols' conditional could make the dependencies of useCallback Hook (at line 194) change on every render. To fix this, wrap the initialization of 'activeCols' in its own useMemo() Hook  react-hooks/exhaustive-deps
 
-/dev-server/src/pages/erp/pay-hub/masters/EmployeeMaster.tsx
-  179:6  warning  React Hook useCallback has a missing dependency: 'uf'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/ContractManpower.tsx
-  129:6  warning  React Hook useCallback has a missing dependency: 'BLANK_AGENCY'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
-  166:6  warning  React Hook useCallback has a missing dependency: 'BLANK_WORKER'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
-  206:6  warning  React Hook useCallback has missing dependencies: 'BLANK_ORDER' and 'computedOrderValue'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-  235:6  warning  React Hook useCallback has a missing dependency: 'BLANK_INVOICE'. Either include it or remove the dependency array                           react-hooks/exhaustive-deps
-  268:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ATTENDANCE'. Either include it or remove the dependency array                        react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/DocumentManagement.tsx
-  200:6  warning  React Hook useCallback has a missing dependency: 'BLANK_DOC'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/DocumentsAndPolicies.tsx
-  101:6  warning  React Hook useCallback has missing dependencies: 'BLANK_DOC' and 'nextDocCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-  136:6  warning  React Hook useCallback has missing dependencies: 'BLANK_POL' and 'nextPolCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-
 /dev-server/src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx
   259:5  warning  React Hook useMemo has an unnecessary dependency: 'today'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
   262:5  warning  React Hook useMemo has an unnecessary dependency: 'today'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx
-  249:6  warning  React Hook useCallback has a missing dependency: 'BLANK_LOAN'. Either include it or remove the dependency array        react-hooks/exhaustive-deps
-  276:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ADV'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
-  308:6  warning  React Hook useCallback has a missing dependency: 'BLANK_EXP'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
-  348:6  warning  React Hook useCallback has a missing dependency: 'FLEXI_COMPONENTS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx
-  199:6  warning  React Hook useCallback has a missing dependency: 'BLANK_EXIT'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/LearningAndDevelopment.tsx
-  128:6  warning  React Hook useCallback has a missing dependency: 'BLANK_COURSE'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  160:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ENROLL'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  192:6  warning  React Hook useCallback has a missing dependency: 'BLANK_SKILL'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
-  226:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CERT'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/LeaveRequests.tsx
-  201:6  warning  React Hook useCallback has a missing dependency: 'BLANK_REQ'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  222:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CO'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/Onboarding.tsx
-  140:6  warning  React Hook useCallback has missing dependencies: 'BLANK_JOURNEY_FORM' and 'nextCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/PayrollProcessing.tsx
-  73:6  warning  React Hook useCallback has a missing dependency: 'BLANK_HOLD'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/PerformanceAndTalent.tsx
-  132:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CYCLE'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
-  164:6  warning  React Hook useCallback has a missing dependency: 'BLANK_REVIEW'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  188:6  warning  React Hook useCallback has a missing dependency: 'BLANK_SUCC'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
-  219:6  warning  React Hook useCallback has a missing dependency: 'BLANK_COMP'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
-
-/dev-server/src/pages/erp/pay-hub/transactions/Recruitment.tsx
-  132:6  warning  React Hook useCallback has missing dependencies: 'BLANK_JR' and 'nextReqCode'. Either include them or remove the dependency array   react-hooks/exhaustive-deps
-  173:6  warning  React Hook useCallback has missing dependencies: 'BLANK_APP' and 'nextAppCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
 
 /dev-server/src/pages/erp/salesx/masters/TargetMaster.tsx
   45:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
@@ -152,5 +100,5 @@
   194:6  warning  React Hook useCallback has a missing dependency: 'validate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
   206:6  warning  React Hook useCallback has a missing dependency: 'validate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
 
-✖ 81 problems (0 errors, 81 warnings)
+✖ 53 problems (0 errors, 53 warnings)
 
