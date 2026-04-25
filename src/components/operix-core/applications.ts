@@ -184,6 +184,15 @@ export const applications: AppDefinition[] = [
     icon: 'Calculator',
   },
   {
+    id: 'comply360',
+    name: 'Comply360',
+    description: 'Compliance & statutory management — GSTR (1/3B/9/2B), TDS, TCS, e-invoicing, e-way bill, MSME tracking, deadline automation',
+    category: 'Fin Hub',
+    route: '/erp/comply360',
+    icon: 'Shield',
+    status: 'coming_soon',
+  },
+  {
     id: 'payout',
     name: 'PayOut',
     description: 'Vendor payment management — AP scheduling, payment run, advance tracking, release approvals and vendor account reconciliation',
@@ -199,15 +208,6 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/receivx',
     icon: 'TrendingUp',
-  },
-  {
-    id: 'comply360',
-    name: 'Comply360',
-    description: 'Compliance & statutory management — GSTR (1/3B/9/2B), TDS, TCS, e-invoicing, e-way bill, MSME tracking, deadline automation',
-    category: 'Fin Hub',
-    route: '/erp/comply360',
-    icon: 'Shield',
-    status: 'coming_soon',
   },
   {
     id: 'eximx',
