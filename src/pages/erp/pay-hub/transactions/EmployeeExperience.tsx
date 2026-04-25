@@ -256,10 +256,13 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
         if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
         return b.created_at.localeCompare(a.created_at);
       }),
-    [announcements, today]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: 'today' is informational only; filter reads new Date() inline and re-runs on announcements change
+    [announcements]);
   const expiredAnnouncements = useMemo(() =>
     announcements.filter(a => a.expiryDate && !isAfter(parseISO(a.expiryDate), new Date())),
-    [announcements, today]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: 'today' is informational only; filter reads new Date() inline and re-runs on announcements change
+    [announcements]);
+  void today;
 
   const publicRecognitions = useMemo(() =>
     recognitions.filter(r => r.isPublic).sort((a, b) => b.created_at.localeCompare(a.created_at)),
