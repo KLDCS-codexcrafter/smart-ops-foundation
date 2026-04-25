@@ -1,0 +1,172 @@
+
+/dev-server/src/components/ask-dishani/DishaniContext.tsx
+  177:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/finecore/pickers/StatePicker.tsx
+  31:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/theme/ThemeProvider.tsx
+  50:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/badge.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/button.tsx
+  47:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/sidebar.tsx
+  636:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/components/ui/toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/features/receivx/ReceivXSidebar.tsx
+  24:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/features/salesx/SalesXSidebar.tsx
+  58:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/hooks/useGlobalDateRange.tsx
+   25:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   52:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   60:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   70:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   97:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  102:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  107:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  195:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/hooks/useLanguage.tsx
+  21:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  73:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/pages/erp/accounting/ComplianceSettingsAutomation.tsx
+   65:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   89:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  104:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  123:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  154:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  331:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  332:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  333:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  334:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  335:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  336:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  337:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  338:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  339:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  340:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  426:6   warning  React Hook useEffect has a missing dependency: 'groupConfig.enableAutoRCM'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/accounting/LedgerMaster.tsx
+  2071:9  warning  The 'handleAssetSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleAssetSave' in its own useCallback() Hook              react-hooks/exhaustive-deps
+  2262:9  warning  The 'handleCashSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleCashSave' in its own useCallback() Hook                react-hooks/exhaustive-deps
+  2340:9  warning  The 'handleBankSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleBankSave' in its own useCallback() Hook                react-hooks/exhaustive-deps
+  2425:9  warning  The 'handleLiabilitySave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleLiabilitySave' in its own useCallback() Hook      react-hooks/exhaustive-deps
+  2480:9  warning  The 'handleCapitalSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleCapitalSave' in its own useCallback() Hook          react-hooks/exhaustive-deps
+  2551:9  warning  The 'handleLoanRecSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleLoanRecSave' in its own useCallback() Hook          react-hooks/exhaustive-deps
+  2620:9  warning  The 'handleBorrowingSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleBorrowingSave' in its own useCallback() Hook      react-hooks/exhaustive-deps
+  2695:9  warning  The 'handleIncomeSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleIncomeSave' in its own useCallback() Hook            react-hooks/exhaustive-deps
+  2764:9  warning  The 'handleExpenseSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleExpenseSave' in its own useCallback() Hook          react-hooks/exhaustive-deps
+  2845:9  warning  The 'handleDutiesTaxSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handleDutiesTaxSave' in its own useCallback() Hook      react-hooks/exhaustive-deps
+  2906:9  warning  The 'handlePayrollStatSave' function makes the dependencies of useCallback Hook (at line 2978) change on every render. To fix this, wrap the definition of 'handlePayrollStatSave' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/accounting/TransactionTemplates.tsx
+  105:9  warning  The 'handleSave' function makes the dependencies of useCallback Hook (at line 121) change on every render. To fix this, wrap the definition of 'handleSave' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/accounting/vouchers/ReceiptNote.tsx
+  83:6  warning  React Hook useCallback has an unnecessary dependency: 'inventoryLines'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/accounting/vouchers/SalesInvoice.tsx
+  476:6  warning  React Hook useCallback has missing dependencies: 'customers' and 'placeOfSupply'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/dispatch/transactions/InvoiceUploadWizard.tsx
+  47:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/pages/erp/foundation/geography/CityMaster.tsx
+  24:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/pages/erp/inventory/OpeningStockEntry.tsx
+  62:9  warning  The 'activeCols' conditional could make the dependencies of useMemo Hook (at line 115) change on every render. To fix this, wrap the initialization of 'activeCols' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  62:9  warning  The 'activeCols' conditional could make the dependencies of useCallback Hook (at line 165) change on every render. To fix this, wrap the initialization of 'activeCols' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  62:9  warning  The 'activeCols' conditional could make the dependencies of useCallback Hook (at line 194) change on every render. To fix this, wrap the initialization of 'activeCols' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/masters/EmployeeMaster.tsx
+  179:6  warning  React Hook useCallback has a missing dependency: 'uf'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/ContractManpower.tsx
+  129:6  warning  React Hook useCallback has a missing dependency: 'BLANK_AGENCY'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
+  166:6  warning  React Hook useCallback has a missing dependency: 'BLANK_WORKER'. Either include it or remove the dependency array                            react-hooks/exhaustive-deps
+  206:6  warning  React Hook useCallback has missing dependencies: 'BLANK_ORDER' and 'computedOrderValue'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  235:6  warning  React Hook useCallback has a missing dependency: 'BLANK_INVOICE'. Either include it or remove the dependency array                           react-hooks/exhaustive-deps
+  268:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ATTENDANCE'. Either include it or remove the dependency array                        react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/DocumentManagement.tsx
+  200:6  warning  React Hook useCallback has a missing dependency: 'BLANK_DOC'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/DocumentsAndPolicies.tsx
+  101:6  warning  React Hook useCallback has missing dependencies: 'BLANK_DOC' and 'nextDocCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  136:6  warning  React Hook useCallback has missing dependencies: 'BLANK_POL' and 'nextPolCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx
+  259:5  warning  React Hook useMemo has an unnecessary dependency: 'today'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  262:5  warning  React Hook useMemo has an unnecessary dependency: 'today'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx
+  249:6  warning  React Hook useCallback has a missing dependency: 'BLANK_LOAN'. Either include it or remove the dependency array        react-hooks/exhaustive-deps
+  276:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ADV'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  308:6  warning  React Hook useCallback has a missing dependency: 'BLANK_EXP'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  348:6  warning  React Hook useCallback has a missing dependency: 'FLEXI_COMPONENTS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx
+  199:6  warning  React Hook useCallback has a missing dependency: 'BLANK_EXIT'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/LearningAndDevelopment.tsx
+  128:6  warning  React Hook useCallback has a missing dependency: 'BLANK_COURSE'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  160:6  warning  React Hook useCallback has a missing dependency: 'BLANK_ENROLL'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  192:6  warning  React Hook useCallback has a missing dependency: 'BLANK_SKILL'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+  226:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CERT'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/LeaveRequests.tsx
+  201:6  warning  React Hook useCallback has a missing dependency: 'BLANK_REQ'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  222:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CO'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/Onboarding.tsx
+  140:6  warning  React Hook useCallback has missing dependencies: 'BLANK_JOURNEY_FORM' and 'nextCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/PayrollProcessing.tsx
+  73:6  warning  React Hook useCallback has a missing dependency: 'BLANK_HOLD'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/PerformanceAndTalent.tsx
+  132:6  warning  React Hook useCallback has a missing dependency: 'BLANK_CYCLE'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+  164:6  warning  React Hook useCallback has a missing dependency: 'BLANK_REVIEW'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  188:6  warning  React Hook useCallback has a missing dependency: 'BLANK_SUCC'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  219:6  warning  React Hook useCallback has a missing dependency: 'BLANK_COMP'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/pay-hub/transactions/Recruitment.tsx
+  132:6  warning  React Hook useCallback has missing dependencies: 'BLANK_JR' and 'nextReqCode'. Either include them or remove the dependency array   react-hooks/exhaustive-deps
+  173:6  warning  React Hook useCallback has missing dependencies: 'BLANK_APP' and 'nextAppCode'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/salesx/masters/TargetMaster.tsx
+  45:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/dev-server/src/pages/erp/salesx/reports/SalesReturnMemoRegister.tsx
+   71:5  warning  React Hook useMemo has an unnecessary dependency: 'refreshTick'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  114:6  warning  React Hook useCallback has a missing dependency: 'persistAll'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  135:6  warning  React Hook useCallback has a missing dependency: 'persistAll'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+/dev-server/src/pages/erp/salesx/transactions/SalesReturnMemo.tsx
+  194:6  warning  React Hook useCallback has a missing dependency: 'validate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  206:6  warning  React Hook useCallback has a missing dependency: 'validate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 93 problems (0 errors, 93 warnings)
+
