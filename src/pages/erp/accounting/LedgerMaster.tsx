@@ -2068,7 +2068,11 @@ export function LedgerMasterPanel() {
     setAssetOpen(true);
   };
 
-  const handleAssetSave = () => {
+  // Cleanup-1b: wrapped in useCallback so downstream useCallback at L2978
+  // (handleCtrlS) does not re-fire on every render. inner deps suppressed —
+  // handler reads many form fields; explicit deps would be brittle and
+  // mass-suppression here is preferred over a 20-item deps array (D-138).
+  const handleAssetSave = useCallback(() => {
     if (!assetForm.name.trim()) return toast.error('Asset name is required');
     if (!assetForm.parentGroupCode) return toast.error('Select an asset group first');
     const all = loadAllDefinitions();
@@ -2123,7 +2127,8 @@ export function LedgerMasterPanel() {
     toast.success(`${def.name} created`);
     setAssetOpen(false); setAssetEditTarget(null); setAssetForm(defaultAssetForm); refreshAll();
     // [JWT] POST /api/group/finecore/ledger-definitions
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: reads many form fields; explicit deps brittle. Handler invoked from event handlers; closure captures fresh state via re-render.
+  }, [assetForm, assetEditTarget, entities]);
 
   // ── Type button helpers ──
   const handleTypeCreate = (label: string) => {
@@ -2259,7 +2264,8 @@ export function LedgerMasterPanel() {
   };
 
   // ── Save Cash ──
-  const handleCashSave = () => {
+  // Cleanup-1b: wrapped in useCallback (see handleAssetSave note above).
+  const handleCashSave = useCallback(() => {
     if (!cashForm.name.trim()) { toast.error('Ledger name is required'); return; }
     if (!cashForm.parentGroupCode) { toast.error('Select a parent group first'); return; }
     const all = loadAllDefinitions();
@@ -2334,10 +2340,11 @@ export function LedgerMasterPanel() {
       toast.success(`${code} created for ${entity.name}`);
     }
     setCashCreateOpen(false); setCashEditTarget(null); setCashForm(defaultCashForm); refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [cashForm, cashEditTarget, entities]);
 
   // ── Save Bank ──
-  const handleBankSave = () => {
+  const handleBankSave = useCallback(() => {
     if (!bankForm.name.trim()) return toast.error('Ledger name is required');
     const resolvedBankName = bankForm.bankName === 'Other' ? bankForm.bankNameOther.trim() : bankForm.bankName;
     if (!resolvedBankName) return toast.error('Select a bank');
@@ -2418,11 +2425,12 @@ export function LedgerMasterPanel() {
     }
     setBankCreateOpen(false); setBankEditTarget(null); setBankForm(defaultBankForm);
     setIfscValid(null); setShowAccountPreview(false); refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [bankForm, bankEditTarget, entities]);
 
   // ── 6 New Save Handlers ──
 
-  const handleLiabilitySave = () => {
+  const handleLiabilitySave = useCallback(() => {
     if (!liabilityForm.name.trim()) return toast.error('Name is required');
     if (liabilityEditTarget) {
       const updated: LiabilityLedgerDefinition = {
@@ -2475,9 +2483,10 @@ export function LedgerMasterPanel() {
       name: '', mailingName: '', alias: '', openingBalance: 0, openingBalanceType: 'Cr',
       scope: 'group', entityId: '' });
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [liabilityForm, liabilityEditTarget, entities]);
 
-  const handleCapitalSave = () => {
+  const handleCapitalSave = useCallback(() => {
     if (!capitalForm.name.trim()) return toast.error('Name is required');
     if (capitalEditTarget) {
       const updated: CapitalLedgerDefinition = {
@@ -2546,9 +2555,10 @@ export function LedgerMasterPanel() {
       profitSharingRatio: 0, capitalContribution: 0, proprietorName: '', proprietorPAN: '',
       scope: 'group', entityId: '' });
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [capitalForm, capitalEditTarget, entities]);
 
-  const handleLoanRecSave = () => {
+  const handleLoanRecSave = useCallback(() => {
     if (!loanRecForm.name.trim()) return toast.error('Name is required');
     if (loanRecEditTarget) {
       const updated: LoanReceivableLedgerDefinition = {
@@ -2615,9 +2625,10 @@ export function LedgerMasterPanel() {
     setLoanRecEditTarget(null);
     setLoanRecForm(defaultLoanRecForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [loanRecForm, loanRecEditTarget, entities]);
 
-  const handleBorrowingSave = () => {
+  const handleBorrowingSave = useCallback(() => {
     if (!borrowingForm.name.trim()) return toast.error('Name is required');
     if (borrowingEditTarget) {
       const updated: BorrowingLedgerDefinition = {
@@ -2690,9 +2701,10 @@ export function LedgerMasterPanel() {
     setBorrowingEditTarget(null);
     setBorrowingForm(defaultBorrowingForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [borrowingForm, borrowingEditTarget, entities]);
 
-  const handleIncomeSave = () => {
+  const handleIncomeSave = useCallback(() => {
     if (!incomeForm.name.trim()) return toast.error('Name is required');
     if (incomeEditTarget) {
       const updated: IncomeLedgerDefinition = {
@@ -2759,9 +2771,10 @@ export function LedgerMasterPanel() {
     setIncomeEditTarget(null);
     setIncomeForm(defaultIncomeForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [incomeForm, incomeEditTarget, entities]);
 
-  const handleExpenseSave = () => {
+  const handleExpenseSave = useCallback(() => {
     if (!expenseForm.name.trim()) return toast.error('Name is required');
     if (expenseEditTarget) {
       const updated: ExpenseLedgerDefinition = {
@@ -2839,10 +2852,11 @@ export function LedgerMasterPanel() {
     setExpenseEditTarget(null);
     setExpenseForm(defaultExpenseForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [expenseForm, expenseEditTarget, entities]);
 
   // ── Save Duties & Tax ──
-  const handleDutiesTaxSave = () => {
+  const handleDutiesTaxSave = useCallback(() => {
     if (!dutiesTaxForm.taxType) return toast.error('Select tax type');
     if (dutiesTaxForm.taxType === 'gst' && !dutiesTaxForm.gstSubType)
       return toast.error('Select GST type (CGST/SGST/IGST/Cess)');
@@ -2900,10 +2914,11 @@ export function LedgerMasterPanel() {
     setDutiesTaxEditTarget(null);
     setDutiesTaxForm(defaultDutiesTaxForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [dutiesTaxForm, dutiesTaxEditTarget]);
 
   // ── Save Payroll Statutory ──
-  const handlePayrollStatSave = () => {
+  const handlePayrollStatSave = useCallback(() => {
     if (!payrollForm.payrollComponent) return toast.error('Select a component');
     if (!payrollForm.name.trim()) return toast.error('Ledger name is required');
     if (payrollStatEditTarget) {
@@ -2960,7 +2975,8 @@ export function LedgerMasterPanel() {
     setPayrollStatEditTarget(null);
     setPayrollForm(defaultPayrollForm);
     refreshAll();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: see handleAssetSave note (D-138 Pattern B)
+  }, [payrollForm, payrollStatEditTarget]);
 
   // Ctrl+S saves the active form
   const handleCtrlS = useCallback(() => {

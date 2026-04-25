@@ -102,7 +102,9 @@ export function TransactionTemplatesPanel() {
     setSheetOpen(true);
   };
 
-  const handleSave = () => {
+  // Cleanup-1b Cluster 1: wrapped in useCallback so handleCtrlSave below
+  // doesn't re-fire on every render.
+  const handleSave = useCallback(() => {
     if (!form.name.trim()) { toast.error('Name is required'); return; }
     if (!form.content.trim()) { toast.error('Content is required'); return; }
     if (editTarget) {
@@ -113,7 +115,7 @@ export function TransactionTemplatesPanel() {
     setSheetOpen(false);
     setForm(BLANK);
     setEditTarget(null);
-  };
+  }, [form, editTarget, updateTemplate, createTemplate]);
 
   const handleCtrlSave = useCallback(() => {
     if (!sheetOpen) return;
