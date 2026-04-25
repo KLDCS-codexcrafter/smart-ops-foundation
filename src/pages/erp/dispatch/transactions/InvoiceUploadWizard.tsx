@@ -25,7 +25,7 @@ import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import {
-  type TransporterInvoice, type TransporterInvoiceLine, type WorkflowMode,
+  type TransporterInvoice, type WorkflowMode,
   type MappableField, type InvoiceColumnMapping,
   MAPPABLE_FIELDS, transporterInvoicesKey, invoiceColumnMappingsKey,
 } from '@/types/transporter-invoice';
