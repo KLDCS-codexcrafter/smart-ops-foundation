@@ -63,6 +63,34 @@ const CKEY = 'erp_classifications', UKEY = 'erp_uom', GKEY = 'erp_godowns';
 // [JWT] GET /api/inventory/items
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
 
+/* ─── master data row types (loose because seed shapes vary) ─── */
+type MasterRow = {
+  id: string;
+  name: string;
+  symbol?: string;
+  category_type?: string;
+  costing_method?: CostingMethodItem;
+  batch_grid_enabled?: boolean;
+  serial_grid_enabled?: boolean;
+  brand_id?: string;
+};
+type ParamRow = {
+  id?: string;
+  name?: string;
+  label?: string;
+  type?: string;
+  param_type?: string;
+  required?: boolean;
+  is_required?: boolean;
+};
+type ParamTemplate = { parameters?: ParamRow[] };
+/** Safe accessor for dynamic field reads on form/packing/vendor objects. */
+const getStr = (obj: unknown, k: string): string => {
+  const v = (obj as Record<string, unknown>)[k];
+  return v == null ? '' : String(v);
+};
+const getBool = (obj: unknown, k: string): boolean => Boolean((obj as Record<string, unknown>)[k]);
+
 /* ─── BLANK form ─── */
 const BLANK: Omit<InventoryItem, 'id' | 'created_at' | 'updated_at'> = {
   code: '', auto_code: true, name: '', display_name: null, short_name: null, regional_name: null,
