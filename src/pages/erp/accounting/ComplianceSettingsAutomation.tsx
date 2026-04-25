@@ -189,83 +189,10 @@ const DEFAULT_EXIM: EximConfig = {
   vchAddlExpensePayment: '', vchTDSJournal: '', vchForexJournal: '',
 };
 
-// Storage: erp_comply360_sam_{entityId}
-// [JWT] GET/PATCH /api/compliance/comply360/sam/:entityId
-export interface SAMConfig {
-  // Master gate
-  enableSalesActivityModule: boolean;
-  // Card 1 — Internal Sales Team
-  enableCompanySalesMan: boolean;
-  companySalesManSource: 'ledger' | 'payhub';
-  commissionCalcMethod: 'item_amount' | 'item_qty' | 'both' | 'slab_based' | 'net_margin';
-  enableCommissionOnService: boolean;
-  enablePortfolioAssignment: boolean;
-  portfolioMatchMethod: 'auto' | 'manual';
-  allowMultipleSalesmenPerInvoice: boolean;
-  // Card 2 — Reference
-  enableReference: boolean;
-  referenceCommission: boolean;
-  // Card 3 — Sales Operations
-  enableCRM: boolean;
-  crmType: 'option_a' | 'option_b' | null;
-  pipelineType: 'standard' | 'solutions' | null;
-  enableTelecalling: boolean;
-  // Card 4 — Agent Module
-  enableAgentModule: boolean;
-  enableReceiver: boolean;
-  commissionRateMethod: 'all_items' | 'item_by_item' | 'stock_group';
-  enableHierarchyMaster: boolean;
-  // Card 5 — Voucher Scope (purchase excluded by design)
-  enableInSalesOrder: boolean;
-  enableInDeliveryNote: boolean;
-  enableCommissionOnDeliveryNote: boolean; // book CommissionEntry at DN stage
-  // Card 6 — Security
-  hideCommissionInTransaction: boolean;
-  slsmMandatoryOutward: boolean;
-  slsmMandatoryInward: boolean;
-  receiverMandatory: boolean;
-  // Card 7 — Printing
-  printAgentNameOnInvoice: boolean;
-  agentPrintTitle: string;
-  // Card 8 — Targets: Company
-  enableCompanyTarget: boolean;
-  companyTargetByStockGroup: boolean;
-  companyTargetByStockItem: boolean;
-  companyTargetByService: boolean;
-  companyTargetByDivision: boolean;
-  companyTargetByCustomer: boolean;
-  companyTargetByCustomerCategory: boolean;
-  companyTargetByTerritory: boolean;
-  companyTargetByNewCustomerCount: boolean;
-  companyTargetByCollection: boolean;
-  // Card 8 — Targets: SLSM
-  enableSLSMTarget: boolean;
-  slsmTargetByStockGroup: boolean;
-  slsmTargetByStockItem: boolean;
-  slsmTargetByService: boolean;
-  slsmTargetByDivision: boolean;
-  slsmTargetByCustomer: boolean;
-  slsmTargetByCustomerCategory: boolean;
-  slsmTargetByTerritory: boolean;
-  slsmTargetByNewCustomerCount: boolean;
-  slsmTargetByCollection: boolean;
-  slsmTargetByOrderVolume: boolean;
-  slsmTargetByCallVisitActivity: boolean;
-  // TDS on commission
-  tdsOnCommissionSection: '194H' | '194J' | 'not_applicable';
-  commissionLedgerSales: string;
-  commissionLedgerPurchase: string;
-  // Sprint 6B — Collection Bonus
-  enableCollectionBonus: boolean;
-  collectionBonusRate: number;                      // % of commission earned on this receipt
-  collectionBonusWindowDays: number;                // days from invoice date
-  collectionBonusAppliesTo: 'salesman' | 'all_persons';
-  // Legacy fields kept for backward compat (unused in new screen)
-  enableCompanySalesPerson: boolean;
-  enableInPurchase: boolean;
-  enableInPurchaseOrder: boolean;
-  enableInReceiptNote: boolean;
-}
+// SAMConfig interface moved to ComplianceSettingsAutomation.constants.ts
+// (Sprint T-H1.5-Z-Cleanup-1c-b-b · co-located with comply360SAMKey for clean
+// single-path imports across 11 cross-file consumers)
+
 
 const DEFAULT_SAM: SAMConfig = {
   enableSalesActivityModule: false,
