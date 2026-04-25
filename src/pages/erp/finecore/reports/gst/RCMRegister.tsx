@@ -19,7 +19,6 @@ import type { RCMLedgerConfig } from '@/pages/erp/accounting/Comply360Config';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { inr, fmtDate } from '../reportUtils';
-import { onEnterNext } from '@/lib/keyboard';
 
 interface RCMRegisterPanelProps { entityCode: string; }
 

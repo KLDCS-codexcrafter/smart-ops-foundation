@@ -13,11 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { DollarSign, Search, History, AlertTriangle, TrendingUp, Copy, CheckCircle2 } from 'lucide-react';
+import { DollarSign, Search, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
-import { onEnterNext } from '@/lib/keyboard';
 
 const IKEY = 'erp_inventory_items';
 const RHKEY = 'erp_item_rate_history';

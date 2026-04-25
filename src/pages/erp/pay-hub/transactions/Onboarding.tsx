@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { format, parseISO, differenceInDays, isBefore } from 'date-fns';
+import { format, parseISO, differenceInDays } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -12,13 +12,11 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Rocket, CheckCircle2, Circle, Clock, FileCheck, UserPlus,
-  ChevronDown, ChevronRight, AlertTriangle, Mail, Check, X,
-  ClipboardList, FolderOpen, Settings } from 'lucide-react';
+import { Rocket, CheckCircle2, Circle, Clock, UserPlus, ChevronRight, AlertTriangle, Mail, Check, X, ClipboardList, FolderOpen, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OnboardingJourney, ChecklistTask, DocRequirement,
   OnboardingPhase, TaskStatus, JourneyStatus } from '@/types/onboarding';

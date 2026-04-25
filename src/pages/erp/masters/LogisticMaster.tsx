@@ -18,11 +18,7 @@ import {
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import {
-  Truck, Plus, Edit2, Ban, CheckCircle2, Loader2, Search,
-  ChevronDown, AlertTriangle, Check, User, MapPin,
-  CreditCard, Shield, Building, Package, X, Globe, ShieldCheck,
-} from 'lucide-react';
+import { Truck, Plus, Edit2, Ban, CheckCircle2, Loader2, Search, ChevronDown, AlertTriangle, Check, User, MapPin, CreditCard, Shield, Building, Package, X, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState } from '@/data/india-geography';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';

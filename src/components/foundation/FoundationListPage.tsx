@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
 
 type SortDir = 'asc' | 'desc';
 

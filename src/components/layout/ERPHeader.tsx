@@ -27,7 +27,6 @@ import {
   RefreshCw, Sparkles, ChevronRight,
   Home, ArrowLeft, ArrowRight, Circle, HelpCircle,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { DepartmentSwitcher } from './DepartmentSwitcher';
 import { RecentActivityDrawer } from './RecentActivityDrawer';
 import { CommandPalette } from './CommandPalette';

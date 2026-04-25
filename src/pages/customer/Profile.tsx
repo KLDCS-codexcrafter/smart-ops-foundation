@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
 
 // [JWT] Replace with real profile data

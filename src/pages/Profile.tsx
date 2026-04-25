@@ -9,10 +9,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import {
-  User, Settings, Monitor, Bell, Shield,
-  ArrowLeft, Save, Globe, Lock,
-} from 'lucide-react';
+import { User, Settings, Monitor, Bell, Shield, ArrowLeft, Save, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';

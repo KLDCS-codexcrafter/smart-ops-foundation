@@ -1,8 +1,5 @@
 import { useMemo } from 'react';
-import {
-  Calculator, Shield, BookOpen, Users, Settings, ArrowRight,
-  Landmark, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Coins, Zap, Calendar,
-} from 'lucide-react';
+import { Calculator, Shield, BookOpen, Users, Settings, ArrowRight, FolderTree, Wallet, FileText, Receipt, FileSpreadsheet, Coins, Zap, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { fiscalYearStorageKey } from '@/types/fiscal-year';

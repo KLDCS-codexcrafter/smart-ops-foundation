@@ -24,7 +24,6 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 /* ── Types ─────────────────────────────────────── */
 

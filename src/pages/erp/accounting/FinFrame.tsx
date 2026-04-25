@@ -19,17 +19,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ArrowLeft, ChevronRight, ChevronDown, Lock, Plus, Search,
   Edit2, XCircle, FolderTree, Layers, Package, TreePine,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
-  type L4IndustryGroup,
-} from '@/data/finframe-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
+import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 
 // ─── Types ──────────────────────────────────────────────────────
 interface UserGroup {

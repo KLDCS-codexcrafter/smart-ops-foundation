@@ -16,9 +16,8 @@ import {
 } from '@/components/ui/tooltip';
 import { Search, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
-import { TCS_SECTIONS, type TCSSection } from '@/data/compliance-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
+import { TDS_SECTIONS } from '@/data/compliance-seed-data';
+import { TCS_SECTIONS } from '@/data/compliance-seed-data';
 
 function formatAmount(val: number | null): string {
   if (val === null) return '—';

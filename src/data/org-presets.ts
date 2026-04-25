@@ -13,8 +13,6 @@ export interface OrgPresetPackage {
 }
 
 // Helper — department linked to division by division name (resolved at import time)
-type PresetDept = {
-  name: string;
   division_name: string | null;  // matched to division.name at import
   category: DivisionCategory;
   description: string;

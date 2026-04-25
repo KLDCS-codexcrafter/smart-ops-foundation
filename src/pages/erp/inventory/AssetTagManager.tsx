@@ -14,7 +14,6 @@ import { ScanLine, Plus, Search, Edit2, Trash2, ArrowRightLeft, CheckSquare } fr
 import { toast } from 'sonner';
 import type { AssetTag, CustodyTransfer } from '@/types/asset-tag';
 import type { InventoryItem } from '@/types/inventory-item';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_asset_tags';
 const CTKEY = 'erp_custody_transfers';

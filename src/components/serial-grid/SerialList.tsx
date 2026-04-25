@@ -9,7 +9,6 @@ import { useSerialNumbers } from '@/hooks/useSerialNumbers';
 import SerialFormDialog from './SerialFormDialog';
 import SerialViewDialog from './SerialViewDialog';
 import type { SerialNumber } from '@/types/serial-number';
-import { onEnterNext } from '@/lib/keyboard';
 
 const STATUS_COLORS: Record<string, string> = {
   available: 'bg-emerald-500/10 text-emerald-700',

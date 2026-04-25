@@ -3,7 +3,7 @@
  * Simple Sheet-based master. No sub-tables.
  */
 import { useState, useCallback } from 'react';
-import { Coins, Plus, Search, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Search, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

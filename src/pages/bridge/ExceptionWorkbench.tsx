@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  AlertTriangle, Search, RotateCcw, SkipForward,
-  Eye, Lightbulb, SearchX, TrendingDown,
-} from "lucide-react";
+import { AlertTriangle, Search, RotateCcw, SkipForward, Eye, Lightbulb, SearchX } from "lucide-react";
 import { BridgeLayout } from "@/components/layout/BridgeLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +20,6 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 // Step 1 — Exception types
 type ExceptionCode =

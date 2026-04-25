@@ -16,9 +16,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Search, Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
+import { HSN_CODES, SAC_CODES } from '@/data/hsn-sac-seed-data';
 
 function HSNSACMasterPanelInner() {
   const [hsnSearch, setHsnSearch] = useState('');

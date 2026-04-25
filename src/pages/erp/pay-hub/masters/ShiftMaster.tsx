@@ -3,7 +3,7 @@
  * Sheet-based. Color swatch picker. Weekly off multi-checkbox. 4 seed shifts.
  */
 import { useState, useCallback } from 'react';
-import { Clock, Plus, Search, Edit2, ToggleLeft, ToggleRight, Moon, Sun } from 'lucide-react';
+import { Plus, Search, Edit2, ToggleLeft, ToggleRight, Moon, Sun } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

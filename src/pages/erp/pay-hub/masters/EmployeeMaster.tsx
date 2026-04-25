@@ -15,11 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import {
-  User, Briefcase, MapPin, Landmark, IndianRupee, Users as UsersIcon,
-  FileText, Settings2, Plus, Trash2, Edit2, ArrowLeft, Loader2,
-  Search, Ban, CheckCircle2, Eye, UserPlus,
-} from 'lucide-react';
+import { User, Briefcase, MapPin, Landmark, IndianRupee, Users as UsersIcon, FileText, Settings2, Plus, Trash2, Edit2, ArrowLeft, Loader2, Search, Ban, CheckCircle2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEmployees } from '@/hooks/useEmployees';
 import type { Employee, FamilyMember, EquipmentIssued, LoanDetail,

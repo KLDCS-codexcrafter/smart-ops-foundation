@@ -25,7 +25,6 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import type { LoanType } from '@/types/payroll-masters';
 import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { loadEntities } from '@/data/mock-entities';
-import { L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 
 interface LedgerDef {
   id: string;

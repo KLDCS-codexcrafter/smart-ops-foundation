@@ -8,27 +8,18 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { MapPin, Plus, Search, Edit, Trash2, Zap, ArrowLeft } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Zap, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, getDistrictsByState } from '@/data/india-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS } from '@/data/geo-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
 
 interface DistrictRecord {
   code: string; name: string; stateCode: string; countryCode: string;

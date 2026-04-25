@@ -4,7 +4,7 @@
  * [JWT] Replace with GET /api/compliance/clause44
  */
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, ChevronDown, ChevronRight, Download, FileText, Filter } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronRight, Download, FileText } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { computeClause44, type Clause44Row } from '@/lib/auditEngine';
 

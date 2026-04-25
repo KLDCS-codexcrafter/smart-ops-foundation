@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { CustomerLayout } from "@/components/layout/CustomerLayout";

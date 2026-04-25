@@ -16,8 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { LogOut, Receipt, Check, X, Printer, Plus, AlertTriangle,
-  Clock, CheckCircle2, Circle, ChevronRight } from 'lucide-react';
+import { LogOut, Receipt, Check, X, Printer, Plus, AlertTriangle, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ExitRequest, FnFSettlement, FnFLine, ClearanceItem,
   ExitType, ExitStatus, ExitTab } from '@/types/exit-management';
@@ -31,7 +30,7 @@ import { LEAVE_TYPES_KEY } from '@/types/payroll-masters';
 import { LOAN_APPLICATIONS_KEY } from '@/types/employee-finance';
 import { GRATUITY_NPS_KEY, DEFAULT_GRATUITY_NPS } from '@/types/payroll-masters';
 import type { GratuityNPSSettings } from '@/types/payroll-masters';
-import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { toIndianFormat, useCtrlS } from '@/lib/keyboard';
 
 // ── loadGratuityConfig ───────────────────────────────────────────
 function loadGratuityConfig(): GratuityNPSSettings['gratuity'] {

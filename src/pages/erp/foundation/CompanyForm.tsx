@@ -8,11 +8,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import {
-  Building, Building2, MapPin, DollarSign, Shield, Settings2, Palette,
-  History, CalendarIcon, Upload, X, Plus, Trash2,
-  ChevronLeft, ChevronRight, Save, Loader2, Globe, CheckCircle2,
-} from 'lucide-react';
+import { Building, Building2, MapPin, DollarSign, Shield, Settings2, Palette, History, CalendarIcon, Upload, X, Plus, Trash2, ChevronLeft, ChevronRight, Save, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -31,13 +27,9 @@ import { ProgressStepper } from '@/components/company/ProgressStepper';
 import { CompanyProfilePreview } from '@/components/company/CompanyProfilePreview';
 import { GovernanceForm, type GSTReg, type LUTBond } from '@/components/company/GovernanceForm';
 import { Confetti } from '@/components/ui/confetti';
-import {
-  formatPAN, formatShortCode, suggestShortCode, INDIAN_STATE_NAMES,
-} from '@/lib/india-validations';
+import { formatShortCode, suggestShortCode, INDIAN_STATE_NAMES } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
 import { EntitySetupDialog } from '@/components/foundation/EntitySetupDialog';
-import type { SetupResult } from '@/services/entity-setup-service';
-import { onEnterNext } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,

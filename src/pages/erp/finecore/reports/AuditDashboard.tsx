@@ -7,14 +7,8 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar,
-  BarChart3, BookOpen, Shield, Receipt, ArrowRight, Loader2,
-} from 'lucide-react';
-import { onEnterNext } from '@/lib/keyboard';
-import { computeAuditScore, runCrossValidations, type AuditCheckpoint, type CrossValidationResult } from '@/lib/auditEngine';
+import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, BookOpen, Shield, Receipt, ArrowRight, Loader2 } from 'lucide-react';
+import { computeAuditScore, runCrossValidations, type CrossValidationResult } from '@/lib/auditEngine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 

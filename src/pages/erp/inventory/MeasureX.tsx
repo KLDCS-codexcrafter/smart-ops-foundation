@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Ruler, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UnitOfMeasure, UOMCategory, UOMType } from '@/types/uom';
-import { onEnterNext } from '@/lib/keyboard';
 
 const CATS: { value: UOMCategory; label: string }[] = [
   { value: 'weight', label: 'Weight / Mass' },

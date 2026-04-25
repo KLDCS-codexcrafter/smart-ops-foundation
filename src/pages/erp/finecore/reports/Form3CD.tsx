@@ -20,10 +20,7 @@ import {
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import {
-  CheckCircle2, AlertTriangle, XCircle, ChevronRight, Save, Loader2,
-  FileText, Info, Shield,
-} from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, ChevronRight, Save, Loader2, Info, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { useEntityCode } from '@/hooks/useEntityCode';

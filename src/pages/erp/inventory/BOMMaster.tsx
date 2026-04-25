@@ -19,13 +19,10 @@
  * TALLY-ON-TOP Neutral. BOM is master data, not a voucher.
  */
 import { useMemo, useState, useCallback } from 'react';
-import {
-  Plus, Save, Trash2, Copy, Search, Edit2, Network,
-  ChevronDown, X, AlertTriangle, Check, Layers,
-} from 'lucide-react';
+import { Plus, Save, Trash2, Copy, Search, Network, ChevronDown, X, AlertTriangle, Check, Layers } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

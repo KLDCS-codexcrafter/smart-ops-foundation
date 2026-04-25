@@ -3,12 +3,7 @@
  * Amber-500 accent. Hub / Masters / Transactions / Reports.
  */
 import { useState } from 'react';
-import {
-  TrendingUp, LayoutDashboard, Bell, MessageCircle, Mail,
-  ClipboardCheck, AlertTriangle, Shield, Users, Settings,
-  CalendarClock, BadgeIndianRupee, BarChart3, Activity,
-  ChevronRight, CreditCard, MailWarning,
-} from 'lucide-react';
+import { TrendingUp, LayoutDashboard, Bell, MessageCircle, Mail, ClipboardCheck, AlertTriangle, Shield, Users, Settings, CalendarClock, BadgeIndianRupee, Activity, ChevronRight, CreditCard, MailWarning } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
   SidebarMenu, SidebarMenuItem, SidebarMenuButton,

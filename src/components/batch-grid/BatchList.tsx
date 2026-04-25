@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useBatches } from '@/hooks/useBatches';
 import BatchFormDialog from './BatchFormDialog';
 import type { Batch } from '@/types/batch';
-import { onEnterNext } from '@/lib/keyboard';
 
 export function BatchList() {
   const { batches, deleteBatch, createBatch, updateBatch } = useBatches();

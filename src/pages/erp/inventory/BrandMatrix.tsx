@@ -13,7 +13,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Search, Edit2, Trash2, Tag, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Brand, SubBrand } from '@/types/brand';
-import { onEnterNext } from '@/lib/keyboard';
 
 const COUNTRIES = ['India', 'China', 'USA', 'Germany', 'Japan', 'South Korea',
   'UK', 'France', 'Italy', 'Taiwan', 'Netherlands', 'Sweden', 'Switzerland',

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Shield, Plus, Check, Minus, Download, Pencil, Lock,
-} from "lucide-react";
+import { Plus, Check, Minus, Download, Pencil, Lock } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,7 +15,6 @@ import { TrendingDown, Plus, Search, Edit2, Trash2, ChevronRight, CheckCircle2, 
 import { toast } from 'sonner';
 import type { PriceList, PriceListItem, PriceListType } from '@/types/price-list';
 import type { InventoryItem } from '@/types/inventory-item';
-import { onEnterNext } from '@/lib/keyboard';
 
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';

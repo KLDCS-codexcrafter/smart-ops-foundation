@@ -16,7 +16,6 @@ import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr, fmtDate } from '../reportUtils';
 import { buildGSTR1Payload, submitGSTR1 } from '@/lib/gstPortalService';
-import { onEnterNext } from '@/lib/keyboard';
 
 interface GSTR1PanelProps { entityCode: string; }
 

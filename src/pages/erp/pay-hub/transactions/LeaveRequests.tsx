@@ -3,7 +3,7 @@
  * 4-tab screen: Leave Requests · Leave Balance · Approval Delegation · Comp-Off
  */
 import React, { useState, useMemo, useCallback } from 'react';
-import { format, parseISO, differenceInCalendarDays } from 'date-fns';
+import { parseISO, differenceInCalendarDays } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
@@ -24,7 +24,6 @@ import {
 import { toast } from 'sonner';
 import { useLeaveManagement, computeLeaveDays, getEffectiveApprover,
   computeLeaveBalance } from '@/hooks/useLeaveManagement';
-import type { LeaveRequest, ApprovalDelegation, CompOffEntry } from '@/types/leave-management';
 import { LEAVE_STATUS_COLORS } from '@/types/leave-management';
 import type { Employee } from '@/types/employee';
 import type { LeaveType, HolidayCalendar } from '@/types/payroll-masters';

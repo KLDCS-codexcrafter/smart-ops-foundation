@@ -8,7 +8,7 @@ import type { PayrollRun, EmployeePayslip, PayslipLine } from '@/types/payroll-r
 import type { AttendanceRecord } from '@/types/attendance-entry';
 import type { LeaveRequest } from '@/types/leave-management';
 import type { ITDeclaration } from '@/types/it-declaration';
-import { DEMO_EMPLOYEES, DEMO_HOLIDAY_DATES } from './demo-seed-data';
+import { DEMO_EMPLOYEES } from './demo-seed-data';
 
 const now = new Date().toISOString();
 

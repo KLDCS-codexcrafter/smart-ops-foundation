@@ -1,15 +1,6 @@
 import { useState, useCallback } from "react";
 import { onEnterNext } from "@/lib/keyboard";
-import {
-  BarChart3, Shield, Monitor, Lock, Key, Globe, MonitorCheck,
-  ShieldCheck, ShieldAlert, Building, UserCog, TreePine, Users,
-  Activity, Mail, Link2, Eye, Zap, FileDown, MessageSquare,
-  ChevronDown, ChevronRight, Search, Plus, Check, Download,
-  Upload, RefreshCw, Settings, AlertTriangle, CheckCircle,
-  XCircle, TrendingUp, TrendingDown, Fingerprint, Clock,
-  Database, Server, HardDrive, Gauge, Wifi, AlertCircle,
-  Building2, LayoutGrid, Terminal, Crown, Smartphone,
-} from "lucide-react";
+import { BarChart3, Shield, Monitor, Lock, Key, Globe, MonitorCheck, ShieldCheck, ShieldAlert, Building, UserCog, TreePine, Users, Activity, Mail, Link2, Eye, Zap, FileDown, MessageSquare, ChevronDown, ChevronRight, Search, Plus, Check, Download, Upload, RefreshCw, Settings, AlertTriangle, CheckCircle, XCircle, TrendingUp, TrendingDown, Fingerprint, Clock, Database, Server, HardDrive, Gauge, Wifi, AlertCircle, Building2, LayoutGrid, Terminal, Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

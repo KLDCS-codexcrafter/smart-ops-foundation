@@ -20,7 +20,6 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, indianCities } from '@/data/india-geography';
-import { countries as worldCountries } from '@/data/world-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS, INDIA_REGIONS, UAE_REGIONS } from '@/data/geo-seed-data';
 
 // [JWT] GET /api/geography/:type

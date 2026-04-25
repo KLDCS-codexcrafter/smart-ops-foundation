@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
 
 // [JWT] Replace with real payment data

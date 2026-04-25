@@ -19,7 +19,6 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 type AuditOperation = "read" | "write" | "validate" | "approve" | "reconcile"
   | "exception" | "agent_event" | "user_action";
