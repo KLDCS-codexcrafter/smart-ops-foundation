@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
       });
       return;
     }
-    setLanguage(code as any);
+    setLanguage(code as Parameters<typeof setLanguage>[0]);
   }
 
   return (

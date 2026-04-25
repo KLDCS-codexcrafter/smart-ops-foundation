@@ -54,8 +54,8 @@ export function RFIDManagerPanel() {
 
   // Items from inventory
   const allItems: ItemResult[] = useMemo(() => {
-    const raw = ls<any>(ITEM_KEY);
-    return raw.map((i: any) => ({ id: i.id, code: i.code, name: i.name }));
+    const raw = ls<{ id: string; code: string; name: string }>(ITEM_KEY);
+    return raw.map(i => ({ id: i.id, code: i.code, name: i.name }));
   }, []);
 
   const itemResults = useMemo(() => {

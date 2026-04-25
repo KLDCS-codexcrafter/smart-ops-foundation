@@ -580,7 +580,7 @@ export function usePayrollEngine(entityCode: string) {
       try {
         const allLoans = JSON.parse(loanRaw);
         let loansChanged = false;
-        const updatedLoans = allLoans.map((loan: any) => {
+        const updatedLoans = allLoans.map((loan: Record<string, unknown>) => {
           const ps = payslips.find(p => p.employeeId === loan.employeeId);
           if (!ps) return loan;
           const emiLine = ps.lines.find(
@@ -609,7 +609,7 @@ export function usePayrollEngine(entityCode: string) {
       try {
         const allAdvances = JSON.parse(advRaw);
         let advChanged = false;
-        const updatedAdv = allAdvances.map((adv: any) => {
+        const updatedAdv = allAdvances.map((adv: Record<string, unknown>) => {
           const ps = payslips.find(p => p.employeeId === adv.employeeId);
           if (!ps) return adv;
           const recLine = ps.lines.find(
