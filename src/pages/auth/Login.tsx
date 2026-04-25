@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, type UseFormReturn, type FieldValues, type Path } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -736,14 +736,13 @@ export default function Login() {
 }
 
 // ── Sub-components ──
-function PasswordField({ form, showPassword, setShowPassword, capsLock, handleCapsLock, passwordRef }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any; showPassword: boolean; setShowPassword: (v: boolean) => void;
+function PasswordField<T extends FieldValues>({ form, showPassword, setShowPassword, capsLock, handleCapsLock, passwordRef }: {
+  form: UseFormReturn<T>; showPassword: boolean; setShowPassword: (v: boolean) => void;
   capsLock: boolean; handleCapsLock: (e: React.KeyboardEvent) => void;
   passwordRef: React.RefObject<HTMLInputElement>;
 }) {
   return (
-    <FormField control={form.control} name="password" render={({ field }) => (
+    <FormField control={form.control} name={"password" as Path<T>} render={({ field }) => (
       <FormItem>
         <FormLabel className="text-muted-foreground text-xs">Password</FormLabel>
         <FormControl>

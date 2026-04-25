@@ -71,7 +71,13 @@ export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const data = await parse2AFile(file);
+      const raw = await parse2AFile(file);
+      type PortalItmDet = { txval?: number; igst?: number; cgst?: number; sgst?: number; cess?: number };
+      type PortalInv = { inum: string; idt: string; val: number; itms?: { itm_det?: PortalItmDet }[] };
+      type PortalNt = { nt_num: string; nt_dt: string; val: number; itms?: { itm_det?: PortalItmDet }[] };
+      type PortalB2BParty = { ctin: string; inv?: PortalInv[] };
+      type PortalCDNRParty = { ctin: string; nt?: PortalNt[] };
+      const data = (raw ?? {}) as { b2b?: PortalB2BParty[]; cdnr?: PortalCDNRParty[] };
       const invoices: PortalInvoice[] = [];
       // Parse b2b section
       if (data.b2b) {

@@ -24,13 +24,29 @@ export interface VoiceOrderResult {
   unmatched_phrases: string[];
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Minimal Web Speech API types (browser SpeechRecognition is non-standard).
+interface SpeechRecognitionAlt { transcript: string }
+interface SpeechRecognitionRes { 0: SpeechRecognitionAlt }
+interface SpeechRecognitionEv { results: { 0: SpeechRecognitionRes } }
+interface SpeechRecognitionErr { error?: string; message?: string }
+interface SpeechRecognitionLike {
+  lang: string; continuous: boolean; interimResults: boolean; maxAlternatives: number;
+  onresult: ((e: SpeechRecognitionEv) => void) | null;
+  onerror: ((e: SpeechRecognitionErr) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
+interface SpeechWindow {
+  SpeechRecognition?: SpeechRecognitionCtor;
+  webkitSpeechRecognition?: SpeechRecognitionCtor;
+}
 
 /** Browser capability check. Safari lacks Web Speech; return false. */
 export function isSpeechRecognitionSupported(): boolean {
   if (typeof window === 'undefined') return false;
-  const w = window as any;
-  return 'SpeechRecognition' in w || 'webkitSpeechRecognition' in w;
+  const w = window as unknown as SpeechWindow;
+  return !!(w.SpeechRecognition || w.webkitSpeechRecognition);
 }
 
 /** Start a recognition session. Returns a Promise<transcript>. */
@@ -40,7 +56,7 @@ export function transcribeVoice(lang: string = 'en-IN'): Promise<string> {
       reject(new Error('Voice not supported in this environment'));
       return;
     }
-    const w = window as any;
+    const w = window as unknown as SpeechWindow;
     const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!SR) {
       reject(new Error('Voice not supported on this browser'));
@@ -52,14 +68,14 @@ export function transcribeVoice(lang: string = 'en-IN'): Promise<string> {
     rec.interimResults = false;
     rec.maxAlternatives = 1;
     let finalText = '';
-    rec.onresult = (event: any) => {
+    rec.onresult = (event) => {
       try {
         finalText = event.results[0][0].transcript ?? '';
       } catch {
         finalText = '';
       }
     };
-    rec.onerror = (e: any) => reject(new Error(e?.error || e?.message || 'Voice error'));
+    rec.onerror = (e) => reject(new Error(e?.error || e?.message || 'Voice error'));
     rec.onend = () => resolve(finalText);
     try {
       rec.start();
