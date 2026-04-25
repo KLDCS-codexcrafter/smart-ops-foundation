@@ -742,7 +742,7 @@ function PasswordField<T extends FieldValues>({ form, showPassword, setShowPassw
   passwordRef: React.RefObject<HTMLInputElement>;
 }) {
   return (
-    <FormField control={form.control} name="password" render={({ field }) => (
+    <FormField control={form.control} name={"password" as Path<T>} render={({ field }) => (
       <FormItem>
         <FormLabel className="text-muted-foreground text-xs">Password</FormLabel>
         <FormControl>
