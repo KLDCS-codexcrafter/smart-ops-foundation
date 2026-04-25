@@ -112,7 +112,7 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
     persistAll(all);
     toast.success(`Memo ${all[idx].memo_no} approved`);
     setApproveId(null); setApproveNotes('');
-  }, [approveId, approveNotes, entityCode]);
+  }, [approveId, approveNotes, entityCode, persistAll]);
 
   const handleReject = useCallback(() => {
     if (!rejectId) return;
