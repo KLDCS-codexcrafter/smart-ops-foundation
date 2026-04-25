@@ -1,1 +1,15 @@
-PASS 29.63s
+dist/assets/CommandCenterPage-dzKykbB3.js               235.00 kB │ gzip:  51.82 kB
+dist/assets/vendor-radix-DF9ayLm4.js                    249.92 kB │ gzip:  79.74 kB
+dist/assets/LedgerMaster-Bu5JPAUG.js                    309.98 kB │ gzip:  54.45 kB
+dist/assets/web-Baa0a-at.js                             415.33 kB │ gzip: 108.17 kB
+dist/assets/xlsx-uoQkVabA.js                            424.64 kB │ gzip: 140.69 kB
+dist/assets/FinCorePage-BkXuNk9S.js                     428.82 kB │ gzip:  84.88 kB
+dist/assets/pdf-CTZ9Q1jI.js                             453.46 kB │ gzip: 134.74 kB
+dist/assets/PayHubPage-qAdm6lfL.js                      567.25 kB │ gzip: 114.05 kB
+dist/assets/vendor-ui-DZoc8Rq0.js                     1,257.20 kB │ gzip: 262.72 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 29.69s
