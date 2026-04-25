@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/LanguageContext';
 import { onEnterNext } from '@/lib/keyboard';
 
 // ── Mock user data — [JWT] replace with useProfile hook ──────────────
