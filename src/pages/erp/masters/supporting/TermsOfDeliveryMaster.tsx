@@ -22,7 +22,7 @@ const loadTerms = (): TermsOfDelivery[] => {
     // [JWT] GET /api/masters/terms-of-delivery
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
-  } catch {}
+  } catch { /* ignore */ }
   const seeded = TERMS_OF_DELIVERY_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));

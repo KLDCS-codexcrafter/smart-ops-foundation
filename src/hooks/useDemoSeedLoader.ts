@@ -181,6 +181,7 @@ export const DEMO_MODULES: DemoModule[] = [
     transactionKeys: [],
     loadMasters: () => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { loadFineCoreTransactions } = require('@/data/demo-transactions-finecore');
         loadFineCoreTransactions(DEFAULT_ENTITY_SHORTCODE);
       } catch { /* seed data module not yet loaded */ }

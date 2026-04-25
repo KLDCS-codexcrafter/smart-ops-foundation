@@ -95,7 +95,7 @@ export function ClassifyPanel() {
   const fil = items.filter(x => x.name.toLowerCase().includes(search.toLowerCase()));
   const roots = fil.filter(x => !x.parent_id);
   const kids = (id: string) => items.filter(x => x.parent_id === id);
-  const tog = (id: string) => setExp(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const tog = (id: string) => setExp(p => { const n = new Set(p); if (n.has(id)) { n.delete(id); } else { n.add(id); } return n; });
 
   const renderRow = (c: Classification, d = 0): React.ReactNode => {
     const ch = kids(c.id);

@@ -15,7 +15,7 @@ export interface GSTR1Invoice {
   inum: string; idt: string; val: number; pos: string;
   rchrg: 'Y' | 'N'; itms: GSTR1Item[];
 }
-export interface GSTR1B2BInvoice extends GSTR1Invoice { /* alias */ }
+export type GSTR1B2BInvoice = GSTR1Invoice;
 export interface GSTR1B2BGroup { ctin: string; inv: GSTR1Invoice[] }
 export interface GSTR1B2CLEntry {
   inum: string; idt: string; val: number;

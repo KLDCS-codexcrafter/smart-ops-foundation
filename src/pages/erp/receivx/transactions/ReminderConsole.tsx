@@ -150,7 +150,7 @@ export function ReminderConsolePanel({ entityCode, onNavigate: _onNavigate }: Pr
           const log = await sendEmail({ config, task, toEmail: cust.email, subject, body, cadenceStep, sentByUser: 'current-user' });
           newLogs.push(log);
         }
-      } catch (err) { /* logged inside engine */ }
+      } catch (_err) { /* logged inside engine */ }
       setProgress({ done: i + 1, total: selectedTasks.length });
     }
     try {

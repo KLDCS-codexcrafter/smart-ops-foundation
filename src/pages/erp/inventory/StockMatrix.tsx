@@ -93,7 +93,7 @@ export function StockMatrixPanel() {
     g.code.toLowerCase().includes(search.toLowerCase()));
   const roots=fil.filter(g=>!g.parent_id);
   const kids=(id:string)=>groups.filter(g=>g.parent_id===id);
-  const tog=(id:string)=>setExp(p=>{const n=new Set(p);n.has(id)?n.delete(id):n.add(id);return n;});
+  const tog=(id:string)=>setExp(p=>{const n=new Set(p);if(n.has(id)){n.delete(id);}else{n.add(id);}return n;});
   const renderRow=(g:StockGroup,d=0):React.ReactNode=>{
     const ch=kids(g.id);const ie=exp.has(g.id);
     return(<><TableRow key={g.id} className='group'>

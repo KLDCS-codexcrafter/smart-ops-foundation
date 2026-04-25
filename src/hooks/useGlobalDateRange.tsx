@@ -116,7 +116,7 @@ function loadStored(): { preset: DatePreset; selectedFY: string } {
     // [JWT] GET /api/entity/storage/:key
     const s = localStorage.getItem(STORAGE_KEY);
     if (s) { const p = JSON.parse(s); return { preset: p.preset ?? 'cur_fy', selectedFY: p.selectedFY ?? '' }; }
-  } catch {}
+  } catch { /* ignore */ }
   return { preset: 'cur_fy', selectedFY: '' };
 }
 

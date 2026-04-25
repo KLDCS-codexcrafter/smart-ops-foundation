@@ -193,7 +193,7 @@ const loadCustomers = (): CustomerMasterDefinition[] => {
         openingBalanceBills: c.openingBalanceBills ?? [],
       }));
     }
-  } catch {}
+  } catch { /* ignore */ }
   return [];
 };
 

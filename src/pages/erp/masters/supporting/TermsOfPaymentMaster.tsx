@@ -21,7 +21,7 @@ const loadTerms = (): TermsOfPayment[] => {
     // [JWT] GET /api/masters/terms-of-payment
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
-  } catch {}
+  } catch { /* ignore */ }
   const seeded = TERMS_OF_PAYMENT_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
