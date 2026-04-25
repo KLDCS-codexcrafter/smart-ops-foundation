@@ -95,13 +95,13 @@ function loadFoundationMasters(): void {
   // Companies
   const companies = DEMO_COMPANY_PROFILES
     .filter(p => p.type === 'subsidiary')
-    .map(p => ({ id: p.id, ...p }));
+    .map(p => ({ ...p }));
   if (companies.length) safeSet('erp_companies', companies);
 
   // Branches
   const branches = DEMO_COMPANY_PROFILES
     .filter(p => p.type === 'branch')
-    .map(p => ({ id: p.id, ...p }));
+    .map(p => ({ ...p }));
   if (branches.length) safeSet('erp_branch_offices', branches);
 }
 
