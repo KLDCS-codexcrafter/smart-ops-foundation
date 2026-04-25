@@ -50,7 +50,7 @@ export function DepreciationWorkingsPanel({ entityCode }: Props) {
     // [JWT] GET /api/accounting/ledger-definitions
     const ldefs = ls<Record<string, unknown>>(`erp_group_ledger_definitions_${entityCode}`)
       .filter(d => d.ledgerType === 'asset')
-      .map(d => ({ id: String(d.id), depreciationMethod: d.depreciationMethod as string | undefined, depreciationRate: d.depreciationRate as number | undefined, usefulLifeYears: d.usefulLifeYears as number | undefined, name: String(d.name ?? '') }));
+      .map(d => ({ id: String(d.id), depreciationMethod: String(d.depreciationMethod ?? ''), depreciationRate: Number(d.depreciationRate ?? 0), usefulLifeYears: Number(d.usefulLifeYears ?? 0), name: String(d.name ?? '') }));
     const result = computeDepreciationForUnits(units, fy, entityCode, ldefs);
     setEntries(result);
     setComputed(true);
