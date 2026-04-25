@@ -21,18 +21,6 @@ import {
   type GlobalDateRangeState,
 } from './useGlobalDateRange.types';
 
-// Backward-compat re-exports — preserve every previous import path.
-export type { DatePreset, ComparisonMode, DateRange, GlobalDateRangeState };
-export {
-  PRESET_LABELS,
-  getFYLabel,
-  getAvailableFYs,
-  getPresetRange,
-  formatIndianDate,
-  formatIndianNumber,
-  formatPaise,
-} from './useGlobalDateRange.types';
-
 const STORAGE_KEY = 'erp-date-range';
 
 function loadStored(): { preset: DatePreset; selectedFY: string } {
