@@ -34,11 +34,9 @@ Closes the final 13 `react-hooks/exhaustive-deps` warnings via per-site judgment
 | `npx eslint src` exit code | **0** |
 | `exhaustive-deps` warning count | **0** (was 13) ✅ **HOOKS RULE FULLY CLOSED** |
 | `react-refresh` warning count | **40** (unchanged — Cleanup-1c scope) |
-| Total ESLint warnings | **41** (40 react-refresh + 1 unrelated)* |
+| Total ESLint warnings | **40** (all react-refresh, matches I-6) ✅ |
 | `eslint-disable` directive count | **91** (Cleanup-1b baseline 89 · +2 for sites 1 + 9, ≤ I-9 cap of 95) |
 | Voucher-adjacent invariants (D-127/D-128) | **HELD** — only deps arrays changed in SalesInvoice + ReceiptNote |
-
-*Note: total = 41 (one unaccounted vs forecast of 40); see eslint_full_output.txt.
 
 ## Files Modified (7)
 1. `src/pages/erp/accounting/ComplianceSettingsAutomation.tsx`
