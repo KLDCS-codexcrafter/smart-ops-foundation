@@ -57,7 +57,7 @@ export interface GSTR3BSupDetails {
   osup_nil_exmp: GSTRTaxAmounts; isup_rev: GSTRTaxAmounts;
 }
 export interface GSTR3BInwardSup { isup_details: { ty: string; inter: number; intra: number }[] }
-export interface GSTR3BITCRow extends GSTRTaxAmounts { ty: string }
+export interface GSTR3BITCRow { ty: string; txval?: number; iamt: number; camt: number; samt: number; csamt: number }
 export interface GSTR3BITCRev { ty: string; iamt: number; camt: number; samt: number; csamt: number }
 export interface GSTR3BITCElg {
   itc_avl: GSTR3BITCRow[];
