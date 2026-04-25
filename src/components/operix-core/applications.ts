@@ -201,6 +201,15 @@ export const applications: AppDefinition[] = [
     icon: 'TrendingUp',
   },
   {
+    id: 'comply360',
+    name: 'Comply360',
+    description: 'Compliance & statutory management — GSTR (1/3B/9/2B), TDS, TCS, e-invoicing, e-way bill, MSME tracking, deadline automation',
+    category: 'Fin Hub',
+    route: '/erp/comply360',
+    icon: 'Shield',
+    status: 'coming_soon',
+  },
+  {
     id: 'eximx',
     name: 'EximX',
     description: 'International trade management — export/import documentation, DGFT integration, e-BRC, shipping bills, landed cost, buyer/supplier risk scoring, FEMA tracker, Treasury.',

@@ -11,7 +11,7 @@ import type {
 } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import type { VoucherLedgerLine } from '@/types/voucher';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
 
 export interface CommissionReceiptResult {

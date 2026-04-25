@@ -21,8 +21,8 @@ import { leadsKey } from '@/types/lead';
 import type { Lead } from '@/types/lead';
 import { commissionRegisterKey } from '@/types/commission-register';
 import type { CommissionEntry } from '@/types/commission-register';
-import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useQuotations } from '@/hooks/useQuotations';
 import { cn } from '@/lib/utils';
@@ -243,7 +243,7 @@ export function SalesXHubPanel({ entityCode, onNavigate }: Props) {
         </Button>
         {!cfg?.enableSalesActivityModule && (
           <Button variant="outline" size="sm"
-            onClick={() => navigate('/erp/accounting/comply360-config')}>
+            onClick={() => navigate('/erp/accounting/compliance-settings-automation')}>
             <Settings2 className="h-3.5 w-3.5 mr-1" /> Configure SAM
           </Button>
         )}

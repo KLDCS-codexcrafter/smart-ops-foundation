@@ -25,7 +25,7 @@ function ss<T>(key: string, data: T[]): void {
 
 function isOrderProcessingEnabled(): boolean {
   try {
-    // [JWT] GET /api/accounting/comply360-config
+    // [JWT] GET /api/accounting/compliance-settings-automation
     const raw = localStorage.getItem('erp_comply360_group_config');
     if (raw) {
       const cfg = JSON.parse(raw);

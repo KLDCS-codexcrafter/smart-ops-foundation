@@ -19,8 +19,8 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useEnquirySources } from '@/hooks/useEnquirySources';
 import { useProspects } from '@/hooks/useProspects';
-import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import type {
   Enquiry, EnquiryItem, EnquiryFollowUp, EnquiryType,
   EnquiryStatus, EnquiryPriority, FollowUpType,

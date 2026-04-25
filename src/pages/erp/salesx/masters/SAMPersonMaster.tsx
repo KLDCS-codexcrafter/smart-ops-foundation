@@ -24,8 +24,8 @@ import {
 import { useSAMPersons, useSAMHierarchy } from '@/hooks/useSAMPersons';
 import { useStockGroups } from '@/hooks/useStockGroups';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import type {
   SAMPerson, SAMPersonType, SAMCommissionRateRow, SAMSlabRow, SAMPortfolioItem,
 } from '@/types/sam-person';

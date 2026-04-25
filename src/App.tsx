@@ -75,7 +75,7 @@ const ProfessionalTaxMaster = lazy(() => import('./pages/erp/accounting/Professi
 const EPFESILWFMaster = lazy(() => import('./pages/erp/accounting/EPFESILWFMaster'));
 const StatutoryRegistrations = lazy(() => import('./pages/erp/accounting/StatutoryRegistrations'));
 const GSTEntityConfig = lazy(() => import('./pages/erp/accounting/GSTEntityConfig'));
-const Comply360Config = lazy(() => import('./pages/erp/accounting/Comply360Config'));
+const ComplianceSettingsAutomation = lazy(() => import('./pages/erp/accounting/ComplianceSettingsAutomation'));
 const FinFrame = lazy(() => import('./pages/erp/accounting/FinFrame'));
 const LedgerMaster = lazy(() => import('./pages/erp/accounting/LedgerMaster'));
 const IncomeTaxMaster = lazy(() => import('./pages/erp/accounting/IncomeTaxMaster'));
@@ -312,7 +312,7 @@ const App = () => (
               <Route path="/erp/accounting/epf-esi-lwf" element={<P><EPFESILWFMaster /></P>} />
               <Route path="/erp/accounting/statutory-registrations" element={<P><StatutoryRegistrations /></P>} />
               <Route path="/erp/accounting/gst-config" element={<P><GSTEntityConfig /></P>} />
-              <Route path="/erp/accounting/comply360-config" element={<P><Comply360Config /></P>} />
+              <Route path="/erp/accounting/compliance-settings-automation" element={<P><ComplianceSettingsAutomation /></P>} />
               <Route path="/erp/accounting/finframe" element={<P><FinFrame /></P>} />
               <Route path="/erp/accounting/ledger-master" element={<P><LedgerMaster /></P>} />
               <Route path="/erp/accounting/income-tax" element={<P><IncomeTaxMaster /></P>} />

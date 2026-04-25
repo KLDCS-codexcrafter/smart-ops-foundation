@@ -70,7 +70,7 @@ const MASTERS_LINKS: LinkOutItem[] = [
   { label: 'Voucher Types', icon: FileText, hash: '#finecore-voucher-types' },
   { label: 'Currency Master', icon: IndianRupee, hash: '#finecore-currency' },
   { label: 'GST / TDS Config', icon: Shield, hash: '#finecore-gst-config' },
-  { label: 'Comply360', icon: Shield, hash: '#finecore-comply360' },
+  { label: 'Compliance Settings & Automation', icon: Shield, hash: '#finecore-compliance-settings' },
 ];
 
 const TXN_ITEMS: SidebarItem[] = [

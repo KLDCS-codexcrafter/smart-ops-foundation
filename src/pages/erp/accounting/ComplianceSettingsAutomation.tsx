@@ -1,5 +1,8 @@
 /**
- * Comply360Config.tsx — Sprint 22A Complete Redesign
+ * ComplianceSettingsAutomation.tsx — Sprint 22A Complete Redesign
+ * (Renamed from the prior file per D-134; the Comply360 brand is reserved for the
+ *  future T19 major card. This screen is the per-entity compliance settings +
+ *  automation rules surface that feeds the future Comply360 module.)
  * 8 config sections, extensible architecture, all TDL fields mapped.
  * GroupConfig (global toggles) on the left, entity-specific sections on the right.
  * [JWT] Replace with GET/POST/PATCH /api/compliance/comply360
@@ -375,7 +378,7 @@ function loadOrDefault<T>(key: string, def: T): T {
 
 // ─── Panel Component ──────────────────────────────────────────────────
 
-export function Comply360ConfigPanel() {
+export function ComplianceSettingsAutomationPanel() {
   const { entities, selectedEntityId, setSelectedEntityId } = useEntityList();
 
   // Group config (global)
@@ -1942,7 +1945,7 @@ export function Comply360ConfigPanel() {
     <div className="space-y-6" data-keyboard-form>
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl font-bold text-foreground">Comply360 Configuration</h1>
+          <h1 className="text-2xl font-bold text-foreground">Compliance Settings &amp; Automation</h1>
           <Badge className="text-[10px] bg-indigo-500/10 text-indigo-600 border-indigo-500/20">Sprint 22A</Badge>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -2039,7 +2042,7 @@ export function Comply360ConfigPanel() {
   );
 }
 
-export default function Comply360ConfigPage() {
+export default function ComplianceSettingsAutomation() {
   const navigate = useNavigate();
   return (
     <SidebarProvider defaultOpen={false}>
@@ -2047,13 +2050,13 @@ export default function Comply360ConfigPage() {
         <ERPHeader breadcrumbs={[
           { label: 'Operix Core', href: '/erp/dashboard' },
           { label: 'Command Center', href: '/erp/command-center' },
-          { label: 'Comply360 Configuration' },
+          { label: 'Compliance Settings & Automation' },
         ]} showDatePicker={false} showCompany={false} />
         <main className='p-6 space-y-6'>
           <Button variant='ghost' size='icon' onClick={() => navigate(-1)}>
             <ArrowLeft className='h-4 w-4' />
           </Button>
-          <Comply360ConfigPanel />
+          <ComplianceSettingsAutomationPanel />
         </main>
       </div>
     </SidebarProvider>
