@@ -22,9 +22,6 @@ import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomat
 import { cn } from '@/lib/utils';
 import { targetsKey, type SalesTarget } from './TargetMaster.types';
 
-// Backward-compat re-exports — preserve every previous import path.
-export type { SalesTarget };
-export { targetsKey } from './TargetMaster.types';
 
 interface Props { entityCode: string }
 
