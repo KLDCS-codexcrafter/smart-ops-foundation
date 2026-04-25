@@ -97,6 +97,9 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
     } catch { return []; }
   }, [entityCode]);
 
+  // [Abstract] Per D-126: intentional one-shot load. Empty deps array is correct
+  //            because this useMemo reads static localStorage at component init.
+  //            Closure hazards do not apply — no stale-ref usage downstream.
   const employees = useMemo<Employee[]>(() => {
     try {
       // [JWT] GET /api/pay-hub/employees
