@@ -35,7 +35,7 @@ import {
 import {
   COMPLY360_GROUP_KEY, comply360RCMKey, comply360TDSPKey, comply360TDSRKey,
   comply360LCKey, comply360EximKey, comply360SAMKey, comply360WAKey,
-  comply360FeaturesKey, comply360SettlementKey, comply360OutstandingKey,
+  comply360SettlementKey, comply360OutstandingKey,
   type SAMConfig,
 } from './ComplianceSettingsAutomation.constants';
 
