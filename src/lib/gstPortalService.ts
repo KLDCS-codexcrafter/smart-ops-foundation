@@ -98,10 +98,10 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
     ['Sales', 'Credit Note', 'Debit Note'].includes(e.base_voucher_type));
 
   // B2B: grouped by GSTIN
-  const b2bMap = new Map<string, any>();
+  const b2bMap = new Map<string, GSTR1B2BGroup>();
   outward.filter(e => e.supply_type === 'B2B' && e.base_voucher_type === 'Sales').forEach(e => {
     if (!b2bMap.has(e.party_gstin)) b2bMap.set(e.party_gstin, { ctin: e.party_gstin, inv: [] });
-    b2bMap.get(e.party_gstin).inv.push({
+    b2bMap.get(e.party_gstin)!.inv.push({
       inum: e.voucher_no, idt: toGSTNDate(e.date), val: e.invoice_value,
       pos: e.place_of_supply, rchrg: e.is_rcm ? 'Y' : 'N',
       itms: [{ num: 1, itm_det: { txval: e.taxable_value, igst: e.igst_amount, cgst: e.cgst_amount, sgst: e.sgst_amount, cess: e.cess_amount } }],
@@ -109,9 +109,9 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
   });
 
   // B2CL: inter-state B2C > 2.5L
-  const b2cl: any[] = [];
+  const b2cl: GSTR1B2CLGroup[] = [];
   const b2clEntries = outward.filter(e => e.supply_type === 'B2C' && e.is_inter_state && e.invoice_value > 250000);
-  const b2clByState = new Map<string, any[]>();
+  const b2clByState = new Map<string, GSTR1B2CLEntry[]>();
   b2clEntries.forEach(e => {
     if (!b2clByState.has(e.place_of_supply)) b2clByState.set(e.place_of_supply, []);
     b2clByState.get(e.place_of_supply)!.push({
@@ -124,7 +124,7 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
   // B2CS: remaining B2C
   const b2csEntries = outward.filter(e => e.supply_type === 'B2C' &&
     !(e.is_inter_state && e.invoice_value > 250000));
-  const b2csMap = new Map<string, any>();
+  const b2csMap = new Map<string, GSTR1B2CSRow>();
   b2csEntries.forEach(e => {
     const key = `${e.igst_rate || e.cgst_rate * 2}-${e.place_of_supply}-${e.is_inter_state ? 'I' : 'D'}`;
     if (!b2csMap.has(key)) b2csMap.set(key, { sply_ty: e.is_inter_state ? 'INTER' : 'INTRA', pos: e.place_of_supply, rt: e.igst_rate || e.cgst_rate * 2, txval: 0, iamt: 0, camt: 0, samt: 0, csamt: 0 });
@@ -133,14 +133,14 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
   });
 
   // Exports
-  const exp = outward.filter(e => ['EXP_WP', 'EXP_WOP', 'SEZWP', 'SEZWOP'].includes(e.supply_type))
+  const exp: GSTR1ExpEntry[] = outward.filter(e => ['EXP_WP', 'EXP_WOP', 'SEZWP', 'SEZWOP'].includes(e.supply_type))
     .map(e => ({ inum: e.voucher_no, idt: toGSTNDate(e.date), val: e.invoice_value, sbpcode: '', sbnum: '', sbdt: '', txval: e.taxable_value, igst: e.igst_amount, cess: e.cess_amount }));
 
   // CDNR: CN/DN for registered
-  const cdnrMap = new Map<string, any>();
+  const cdnrMap = new Map<string, GSTR1CDNRGroup>();
   outward.filter(e => ['Credit Note', 'Debit Note'].includes(e.base_voucher_type) && e.supply_type === 'B2B').forEach(e => {
     if (!cdnrMap.has(e.party_gstin)) cdnrMap.set(e.party_gstin, { ctin: e.party_gstin, nt: [] });
-    cdnrMap.get(e.party_gstin).nt.push({
+    cdnrMap.get(e.party_gstin)!.nt.push({
       ntty: e.base_voucher_type === 'Credit Note' ? 'C' : 'D',
       nt_num: e.voucher_no, nt_dt: toGSTNDate(e.date), val: e.invoice_value,
       itms: [{ num: 1, itm_det: { txval: e.taxable_value, igst: e.igst_amount, cgst: e.cgst_amount, sgst: e.sgst_amount, cess: e.cess_amount } }],
@@ -148,15 +148,15 @@ export function buildGSTR1Payload(gstin: string, period: string, entries: GSTEnt
   });
 
   // CDNUR: CN/DN for unregistered
-  const cdnur = outward.filter(e => ['Credit Note', 'Debit Note'].includes(e.base_voucher_type) && e.supply_type !== 'B2B')
+  const cdnur: GSTR1CDNREntry[] = outward.filter(e => ['Credit Note', 'Debit Note'].includes(e.base_voucher_type) && e.supply_type !== 'B2B')
     .map(e => ({
-      ntty: e.base_voucher_type === 'Credit Note' ? 'C' : 'D',
+      ntty: (e.base_voucher_type === 'Credit Note' ? 'C' : 'D') as 'C' | 'D',
       nt_num: e.voucher_no, nt_dt: toGSTNDate(e.date), val: e.invoice_value,
       itms: [{ num: 1, itm_det: { txval: e.taxable_value, igst: e.igst_amount, cgst: e.cgst_amount, sgst: e.sgst_amount, cess: e.cess_amount } }],
     }));
 
   // HSN Summary
-  const hsnMap = new Map<string, any>();
+  const hsnMap = new Map<string, GSTR1HSNRow>();
   outward.forEach(e => {
     if (!e.hsn_code) return;
     const uqc = e.uqc || mapUOMtoUQC('NOS');
