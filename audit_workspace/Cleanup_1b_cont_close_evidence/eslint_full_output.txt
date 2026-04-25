@@ -72,13 +72,8 @@
 /dev-server/src/pages/erp/foundation/geography/CityMaster.tsx
   24:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
 
-/dev-server/src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx
-  259:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
-  263:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
-
 /dev-server/src/pages/erp/salesx/masters/TargetMaster.tsx
   45:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
 
-✖ 42 problems (0 errors, 42 warnings)
-  0 errors and 2 warnings potentially fixable with the `--fix` option.
+✖ 40 problems (0 errors, 40 warnings)
 
