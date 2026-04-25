@@ -1,0 +1,14 @@
+src/features/salesx/SalesXSidebar.tsx
+src/lib/commission-engine.ts
+src/lib/sam-engine.ts
+src/pages/erp/accounting/vouchers/DeliveryNote.tsx
+src/pages/erp/accounting/vouchers/Receipt.tsx
+src/pages/erp/accounting/vouchers/SalesInvoice.tsx
+src/pages/erp/salesx/SalesXHub.tsx
+src/pages/erp/salesx/masters/SAMPersonMaster.tsx
+src/pages/erp/salesx/masters/TargetMaster.tsx
+src/pages/erp/salesx/reports/CommissionRegister.tsx
+src/pages/erp/salesx/transactions/CRMPipeline.tsx
+src/pages/erp/salesx/transactions/EnquiryCapture.tsx
+src/pages/erp/salesx/transactions/Telecaller.tsx
+src/pages/mobile/SalesXGoMobile.tsx
