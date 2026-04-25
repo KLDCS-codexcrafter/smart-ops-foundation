@@ -87,13 +87,13 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
   // View dialog
   const [viewId, setViewId] = useState<string | null>(null);
 
-  const reload = () => setRefreshTick(t => t + 1);
+  const reload = useCallback(() => setRefreshTick(t => t + 1), []);
 
-  const persistAll = (next: SalesReturnMemo[]) => {
+  const persistAll = useCallback((next: SalesReturnMemo[]) => {
     // [JWT] PATCH /api/salesx/sales-return-memos
     localStorage.setItem(salesReturnMemosKey(entityCode), JSON.stringify(next));
     reload();
-  };
+  }, [entityCode, reload]);
 
   const handleApprove = useCallback(() => {
     if (!approveId) return;
