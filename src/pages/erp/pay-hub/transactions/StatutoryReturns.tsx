@@ -978,7 +978,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Total Amount (₹)</Label>
-                <Input className="h-8 text-xs" type="number" value={challanForm.totalAmount || ''}
+                <Input className="h-8 text-xs" value={challanForm.totalAmount || ''}
                   onChange={e => cf('totalAmount', parseFloat(e.target.value) || 0)}
                   onKeyDown={onEnterNext} {...amountInputProps} />
               </div>
