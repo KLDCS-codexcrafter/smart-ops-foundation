@@ -1,0 +1,20 @@
+dist/assets/CustomerHubPage-jcYNrqpN.js                122.36 kB │ gzip:  29.56 kB
+dist/assets/DispatchHubPage-Rep7NKgf.js                173.74 kB │ gzip:  39.83 kB
+dist/assets/index-DlL7ZrtW.js                          175.52 kB │ gzip:  53.62 kB
+dist/assets/EmployeeMaster-Bgg-w7gu.js                 199.70 kB │ gzip:  38.71 kB
+dist/assets/SalesXPage-BDt0WXyR.js                     206.15 kB │ gzip:  42.24 kB
+dist/assets/CommandCenterPage-BcdMjfjJ.js              234.83 kB │ gzip:  51.77 kB
+dist/assets/vendor-radix-DF9ayLm4.js                   249.92 kB │ gzip:  79.74 kB
+dist/assets/LedgerMaster-B8NlnhiO.js                   309.68 kB │ gzip:  54.37 kB
+dist/assets/web-DRbMcjGs.js                            415.33 kB │ gzip: 108.18 kB
+dist/assets/xlsx-uoQkVabA.js                           424.64 kB │ gzip: 140.69 kB
+dist/assets/FinCorePage-dDj7GseI.js                    428.71 kB │ gzip:  84.86 kB
+dist/assets/pdf-CTZ9Q1jI.js                            453.46 kB │ gzip: 134.74 kB
+dist/assets/PayHubPage-CjFpo9XI.js                     567.25 kB │ gzip: 114.05 kB
+dist/assets/vendor-ui-DZoc8Rq0.js                    1,257.20 kB │ gzip: 262.72 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 34.13s
