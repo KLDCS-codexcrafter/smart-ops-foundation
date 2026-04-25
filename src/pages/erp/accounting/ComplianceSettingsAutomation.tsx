@@ -28,6 +28,10 @@ import {
   type EntityGSTConfig, DEFAULT_ENTITY_GST_CONFIG, GSP_PROVIDER_LABELS,
   entityGstKey, type GSPProvider,
 } from '@/types/entity-gst';
+import {
+  DEFAULT_GROUP_CONFIG, DEFAULT_SETTLEMENT, DEFAULT_OUTSTANDING,
+  DEFAULT_RCM, DEFAULT_LC,
+} from './ComplianceSettingsAutomation.defaults';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
