@@ -20,17 +20,10 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByState, getCitiesByDistrict } from '@/data/india-geography';
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
+import { CITY_CATEGORIES } from './CityMaster.constants';
 
-export const CITY_CATEGORIES = [
-  { value:'metro', label:'Metro', desc:'Population 4M+, Tier-0 cities' },
-  { value:'tier1', label:'Tier 1', desc:'Population 1M–4M, major state capitals' },
-  { value:'tier2', label:'Tier 2', desc:'Population 100K–1M, district HQ' },
-  { value:'tier3', label:'Tier 3', desc:'Population 20K–100K, sub-district towns' },
-  { value:'town', label:'Town', desc:'Population under 20K' },
-  { value:'rural', label:'Rural / Village', desc:'Rural area or village' },
-  { value:'biz_area', label:'Business Area', desc:'UAE: JAFZA, DIFC, KIZAD etc.' },
-  { value:'fz', label:'Free Zone', desc:'UAE/International free trade zones' },
-];
+// Backward-compat re-export.
+export { CITY_CATEGORIES } from './CityMaster.constants';
 
 const CITY_CAT_COLORS: Record<string, string> = {
   metro: 'bg-purple-500/10 text-purple-700 border-purple-500/20',
