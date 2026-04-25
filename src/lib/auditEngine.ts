@@ -352,7 +352,7 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
     status: hasRelated || cl26.filter(r => r.is_related_party).length === 0 ? 'green' : 'red' });
 
   // 12. Section 43B liabilities cleared
-  const liabilityLedgers = ['PF Payable', 'ESI Payable', 'GST Payable', 'Professional Tax Payable'];
+  const _liabilityLedgers = ['PF Payable', 'ESI Payable', 'GST Payable', 'Professional Tax Payable'];
   const liabBal = Array.from(tbMap.entries())
     .filter(([, v]) => v.cr > v.dr)
     .reduce((s, [, v]) => s + (v.cr - v.dr), 0);

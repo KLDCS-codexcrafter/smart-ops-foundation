@@ -53,7 +53,7 @@ function recalcLine(line: VoucherInventoryLine, isInterState: boolean): VoucherI
 }
 
 export function InventoryLineGrid({ lines, onChange, mode, showTax = true, isInterState = false }: InventoryLineGridProps) {
-  const [focusedIdx, setFocusedIdx] = useState<number | null>(null);
+  const [_focusedIdx, setFocusedIdx] = useState<number | null>(null);
 
   const updateLine = (idx: number, field: keyof VoucherInventoryLine, value: string | number) => {
     const updated = [...lines];

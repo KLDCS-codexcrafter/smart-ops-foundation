@@ -77,8 +77,8 @@ function RateInput({ label, value, onChange, hint }: {
 // ── Rate sub-screen (inside sheet) ────────────────────────────────────────────
 
 function RateSubScreen({
-  currencyId, currencyName, isoCode, baseCurrencySymbol,
-  rates, onAdd, onUpdate, onDelete,
+  currencyId, _currencyName, isoCode, baseCurrencySymbol,
+  rates, onAdd, _onUpdate, onDelete,
 }: {
   currencyId: string; currencyName: string; isoCode: string; baseCurrencySymbol: string;
   rates: ForexRate[];
@@ -88,7 +88,7 @@ function RateSubScreen({
 }) {
   const [newRate, setNewRate] = useState({ ...BLANK_RATE });
   const [addDate, setAddDate] = useState<Date>(new Date());
-  const [editId, setEditId] = useState<string | null>(null);
+  const [_editId, _setEditId] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
   const [ecbMeta, setEcbMeta] = useState<{ date: string } | null>(null);
 

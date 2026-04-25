@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users2, LayoutDashboard, IndianRupee, Calculator, Award, Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box, ClipboardList, FileText, BarChart3, ChevronRight, Shield, HardHat, CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket, Star, Grid3X3, TrendingUp, GraduationCap, Bell, UserCog, Mail, Monitor, LogOut, ExternalLink } from 'lucide-react';
+import { Users2, LayoutDashboard, IndianRupee, Calculator, Award, Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box, ClipboardList, FileText, ChevronRight, Shield, HardHat, CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket, Star, Grid3X3, TrendingUp, GraduationCap, Bell, UserCog, Mail, Monitor, LogOut, ExternalLink } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,

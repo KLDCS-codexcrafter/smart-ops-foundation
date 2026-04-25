@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Search, RotateCcw, SkipForward, Eye, Lightbulb, SearchX } from "lucide-react";
+import { Search, RotateCcw, SkipForward, Eye, Lightbulb, SearchX } from "lucide-react";
 import { BridgeLayout } from "@/components/layout/BridgeLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

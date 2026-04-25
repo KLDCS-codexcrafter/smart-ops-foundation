@@ -11,7 +11,7 @@ interface InlineMasterCreateProps {
   onCreated?: (name: string) => void;
 }
 
-export function InlineMasterCreate({ open, onOpenChange, type, onCreated }: InlineMasterCreateProps) {
+export function InlineMasterCreate({ open, onOpenChange, type, _onCreated }: InlineMasterCreateProps) {
   const titles: Record<string, string> = {
     customer: 'Create Customer',
     vendor: 'Create Vendor',

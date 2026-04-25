@@ -62,12 +62,12 @@ export function PortMasterPanel() {
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [zoneFilter, setZoneFilter] = useState<string>('all');
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<PortRecord>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewTarget, setPreviewTarget] = useState<'india' | 'uae' | null>(null);
+  const [_previewOpen, setPreviewOpen] = useState(false);
+  const [_previewTarget, setPreviewTarget] = useState<'india' | 'uae' | null>(null);
 
   const filtered = useMemo(() =>
     records.filter(r => {
@@ -86,7 +86,7 @@ export function PortMasterPanel() {
     land: records.filter(r => r.portType === 'land_border').length,
   }), [records]);
 
-  function seedPorts(target: 'india' | 'uae') {
+  function _seedPorts(target: 'india' | 'uae') {
     const src = target === 'india' ? INDIA_PORTS : UAE_PORTS;
     const next = [...records, ...src.filter(n => !records.some(p => p.portCode === n.portCode))];
     setRecords(next); saveRecords(next);
@@ -106,7 +106,7 @@ export function PortMasterPanel() {
     setFormOpen(true);
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.portCode || !formData.portName) { toast.error('Port Code and Name are required'); return; }
     if (editIndex !== null) {
       const next = records.map((r, i) => i === editIndex ? {...formData} : r);
@@ -120,7 +120,7 @@ export function PortMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
     const next = records.filter((_, i) => i !== deleteIndex);

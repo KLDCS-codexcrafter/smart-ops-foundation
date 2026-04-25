@@ -48,7 +48,7 @@ const newPasswordSchema = z.object({
 
 // ── Mock auth ──
 // [JWT] Replace this with: POST /api/auth/login
-const mockLogin = async (credential: string, password: string) => {
+const mockLogin = async (_credential: string, password: string) => {
   await new Promise((r) => setTimeout(r, 1200));
   if (password.length < 6) return { error: "Invalid credentials" };
   return { role: "tenant_admin" };

@@ -28,11 +28,11 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Wallet, Lock, Plus, Landmark, Building2, CreditCard, Banknote, TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch, PiggyBank, HandCoins, Edit2, Ban, CheckCircle2, Loader2, BookOpen, FileText, AlertTriangle, Shield, Building, Scale, ArrowUpRight, ArrowDownLeft, Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag, History, PauseCircle, PlayCircle, MessageSquare, Trash2, Search } from 'lucide-react';
+import { Wallet, Lock, Plus, Landmark, Building2, CreditCard, Banknote, TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch, PiggyBank, HandCoins, Edit2, CheckCircle2, Loader2, BookOpen, FileText, AlertTriangle, Shield, Scale, ArrowUpRight, ChevronDown, PauseCircle, PlayCircle, Trash2, Search } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
-import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS, deriveLedgerNumericCode, L3_NUMERIC_MAP } from '@/data/finframe-seed-data';
+import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, deriveLedgerNumericCode } from '@/data/finframe-seed-data';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import type { ITActBlock } from '@/types/fixed-asset';
@@ -613,7 +613,7 @@ const ACCOUNT_TYPE_LABELS: Record<BankAccountType, string> = {
   eefc: 'EEFC', cash_credit: 'Cash Credit', overdraft: 'Overdraft',
 };
 
-const ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
+const _ACCOUNT_TYPE_COLORS: Record<BankAccountType, string> = {
   current: 'bg-teal-500/10 text-teal-600 border-teal-500/20',
   savings: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
   fixed_deposit: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
@@ -628,7 +628,7 @@ const CHEQUE_STATUS_LABELS: Record<ChequeStatus, string> = {
   stale: 'Stale', stop_payment: 'Stop Payment', cancelled: 'Cancelled',
 };
 
-const CHEQUE_STATUS_COLORS: Record<ChequeStatus, string> = {
+const _CHEQUE_STATUS_COLORS: Record<ChequeStatus, string> = {
   available: 'bg-muted/50 text-muted-foreground border-border',
   issued: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
   post_dated: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
@@ -674,7 +674,7 @@ const getSuggestedParent = (type: BankAccountType) => {
   return { code: 'BANK', name: 'Bank Balances' };
 };
 
-const maskAccountNo = (num: string): string => {
+const _maskAccountNo = (num: string): string => {
   if (num.length <= 4) return num;
   return '•'.repeat(num.length - 4) + num.slice(-4);
 };
@@ -1332,30 +1332,30 @@ export function LedgerMasterPanel() {
   const [bankEditTarget, setBankEditTarget] = useState<BankLedgerDefinition | null>(null);
   const [bankForm, setBankForm] = useState(defaultBankForm);
   const [ifscValid, setIfscValid] = useState<boolean | null>(null);
-  const [showAccountPreview, setShowAccountPreview] = useState(false);
+  const [_showAccountPreview, setShowAccountPreview] = useState(false);
 
   // Cash dialog collapsed sections
-  const [cashShowMore, setCashShowMore] = useState(false);
+  const [_cashShowMore, _setCashShowMore] = useState(false);
   const [cashShowAdvanced, setCashShowAdvanced] = useState(false);
 
   // Bank dialog collapsed sections
   const [ifscFetching, setIfscFetching] = useState(false);
-  const [ifscFetchError, setIfscFetchError] = useState('');
-  const [bankShowMore, setBankShowMore] = useState(false);
-  const [bankShowBranch, setBankShowBranch] = useState(false);
-  const [bankShowGst, setBankShowGst] = useState(false);
-  const [bankShowCheque, setBankShowCheque] = useState(false);
+  const [_ifscFetchError, setIfscFetchError] = useState('');
+  const [_bankShowMore, setBankShowMore] = useState(false);
+  const [_bankShowBranch, setBankShowBranch] = useState(false);
+  const [_bankShowGst, setBankShowGst] = useState(false);
+  const [_bankShowCheque, setBankShowCheque] = useState(false);
   const [bankShowAdvanced, setBankShowAdvanced] = useState(false);
 
   // Bank management tabs
-  const [expandedBankId, setExpandedBankId] = useState<string | null>(null);
-  const [bankMgmtTab, setBankMgmtTab] = useState<'definition' | 'cheques' | 'pdc' | 'nach'>('definition');
+  const [_expandedBankId, _setExpandedBankId] = useState<string | null>(null);
+  const [_bankMgmtTab, _setBankMgmtTab] = useState<'definition' | 'cheques' | 'pdc' | 'nach'>('definition');
 
   // Cheque book management
-  const [chequeBooks, setChequeBooks] = useState<ChequeBook[]>([]);
+  const [_chequeBooks, setChequeBooks] = useState<ChequeBook[]>([]);
   const [chequeBookOpen, setChequeBookOpen] = useState(false);
   const [chequeBookForm, setChequeBookForm] = useState({ bookReference: '', fromLeaf: 0, toLeaf: 0, issuedDate: '', entityId: '', defId: '' });
-  const [chequeRecords, setChequeRecords] = useState<ChequeRecord[]>([]);
+  const [_chequeRecords, setChequeRecords] = useState<ChequeRecord[]>([]);
   const [selectedChequeBook, setSelectedChequeBook] = useState<ChequeBook | null>(null);
   const [chequeIssueOpen, setChequeIssueOpen] = useState(false);
   const [chequeIssueForm, setChequeIssueForm] = useState({
@@ -1363,11 +1363,11 @@ export function LedgerMasterPanel() {
     crossingType: 'account_payee' as 'account_payee' | 'not_negotiable' | 'none',
     narration: '', chequeNumber: 0,
   });
-  const [chequePrintPreview, setChequePrintPreview] = useState<ChequeRecord | null>(null);
+  const [_chequePrintPreview, _setChequePrintPreview] = useState<ChequeRecord | null>(null);
 
   // NACH mandates
-  const [nachMandates, setNachMandates] = useState<NachMandate[]>([]);
-  const [nachOpen, setNachOpen] = useState(false);
+  const [_nachMandates, setNachMandates] = useState<NachMandate[]>([]);
+  const [_nachOpen, setNachOpen] = useState(false);
   const [nachForm, setNachForm] = useState({
     mandateRef: '', beneficiary: '', amount: 0, amountMin: 0, amountMax: 0,
     frequency: 'monthly' as NachMandate['frequency'],
@@ -1376,14 +1376,14 @@ export function LedgerMasterPanel() {
 
   // Signatory management
   const [signatoryOpen, setSignatoryOpen] = useState(false);
-  const [signatoryTargetInstanceId, setSignatoryTargetInstanceId] = useState<string | null>(null);
+  const [signatoryTargetInstanceId, _setSignatoryTargetInstanceId] = useState<string | null>(null);
   const [signatoryForm, setSignatoryForm] = useState({
     name: '', designation: '', phone: '', signingLimit: 0, validFrom: '', isActive: true,
   });
 
   // Custodian dialog state
   const [custodianOpen, setCustodianOpen] = useState(false);
-  const [custodianTargetInstanceId, setCustodianTargetInstanceId] = useState<string | null>(null);
+  const [custodianTargetInstanceId, _setCustodianTargetInstanceId] = useState<string | null>(null);
   const [custodianHistory, setCustodianHistory] = useState<CustodianHistoryRecord[]>([]);
   const [custodianForm, setCustodianForm] = useState({
     name: '', designation: '', phone: '', handoverBy: '', cashBalanceAtHandover: 0, notes: '',
@@ -1538,14 +1538,14 @@ export function LedgerMasterPanel() {
   };
 
 
-  const [activeScheduleDefId, setActiveScheduleDefId] = useState<string | null>(null);
-  const [loanSchedule, setLoanSchedule] = useState<LoanRepaymentRecord[]>([]);
+  const [_activeScheduleDefId, _setActiveScheduleDefId] = useState<string | null>(null);
+  const [_loanSchedule, setLoanSchedule] = useState<LoanRepaymentRecord[]>([]);
   const [markPaidOpen, setMarkPaidOpen] = useState(false);
   const [markPaidTarget, setMarkPaidTarget] = useState<LoanRepaymentRecord | null>(null);
   const [markPaidForm, setMarkPaidForm] = useState({ paidAmount: 0, paidDate: '', paymentReference: '', narration: '' });
 
   // HSN search
-  const [hsnSearch, setHsnSearch] = useState('');
+  const [_hsnSearch, _setHsnSearch] = useState('');
 
   // Reload instances when entity changes
   useEffect(() => {
@@ -3035,7 +3035,7 @@ export function LedgerMasterPanel() {
     // [JWT] POST /api/group/finecore/ledger-definitions/audit
   };
 
-  const openReinstate = (def: AnyLedgerDefinition) => {
+  const _openReinstate = (def: AnyLedgerDefinition) => {
     setSuspendTarget(def);
     setReinstateReason('');
     setReinstateDialogOpen(true);
@@ -3185,7 +3185,7 @@ export function LedgerMasterPanel() {
   };
 
   // ── NACH Save ──
-  const handleNachSave = () => {
+  const _handleNachSave = () => {
     if (!nachForm.mandateRef.trim()) { toast.error('Mandate reference required'); return; }
     if (!nachForm.beneficiary.trim()) { toast.error('Beneficiary required'); return; }
     const m: NachMandate = {
@@ -3206,7 +3206,7 @@ export function LedgerMasterPanel() {
   };
 
   // ── Cheque status actions ──
-  const updateChequeStatus = (rec: ChequeRecord, newStatus: ChequeStatus) => {
+  const _updateChequeStatus = (rec: ChequeRecord, newStatus: ChequeStatus) => {
     const today = new Date().toISOString().split('T')[0];
     const updated: ChequeRecord = { ...rec, status: newStatus };
     if (newStatus === 'cleared') updated.clearedDate = today;
@@ -3218,7 +3218,7 @@ export function LedgerMasterPanel() {
   };
 
   // ── Load bank management data ──
-  const loadBankMgmtData = (def: BankLedgerDefinition, entityId: string) => {
+  const _loadBankMgmtData = (def: BankLedgerDefinition, entityId: string) => {
     setChequeBooks(loadChequeBooks(entityId, def.id));
     setNachMandates(loadNachMandates(entityId, def.id));
     setSelectedChequeBook(null);
@@ -3250,7 +3250,7 @@ export function LedgerMasterPanel() {
 
   // ── FinFrame L4 groups for parent pickers ──
   const l4CashGroups = getFinFrameL4Groups(['CASH']);
-  const l4BankGroups = getFinFrameL4Groups(['BANK', 'STBOR']);
+  const _l4BankGroups = getFinFrameL4Groups(['BANK', 'STBOR']);
   const l4LiabilityGroups = getFinFrameL4Groups(['LTPROV', 'ONCL', 'OPAY', 'EMPL', 'LEASE', 'BOND']);
   const l4CapitalGroups = getFinFrameL4Groups(['EQSH', 'PRSH', 'RSRV', 'OCI', 'PCAP', 'BD', 'SUS']);
   const l4LoanRecGroups = getFinFrameL4Groups(['LTLA', 'STLA']);
@@ -3289,9 +3289,9 @@ export function LedgerMasterPanel() {
   const rows: Record<string, typeof TYPE_BUTTONS> = {};
   TYPE_BUTTONS.forEach(b => { if (!rows[b.row]) rows[b.row] = []; rows[b.row].push(b); });
 
-  const suggestedParent = bankForm.accountType ? getSuggestedParent(bankForm.accountType as BankAccountType) : null;
+  const _suggestedParent = bankForm.accountType ? getSuggestedParent(bankForm.accountType as BankAccountType) : null;
 
-  const getAllPDCRecords = (defId: string, entityId: string): ChequeRecord[] => {
+  const _getAllPDCRecords = (defId: string, entityId: string): ChequeRecord[] => {
     const books = loadChequeBooks(entityId, defId);
     const allRecs: ChequeRecord[] = [];
     books.forEach(b => {
@@ -3301,7 +3301,7 @@ export function LedgerMasterPanel() {
     return allRecs.sort((a, b) => (a.postDatedDate ?? '').localeCompare(b.postDatedDate ?? ''));
   };
 
-  const getDaysUntil = (dateStr: string | null): number => {
+  const _getDaysUntil = (dateStr: string | null): number => {
     if (!dateStr) return 999;
     const diff = new Date(dateStr).getTime() - new Date().getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));

@@ -56,7 +56,7 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [voucherNo] = useState(() => generateVoucherNo('CN', entityCode));
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [partyName, setPartyName] = useState('');
-  const [partyId, setPartyId] = useState('');
+  const [_partyId, setPartyId] = useState('');
   const [againstInvoice, setAgainstInvoice] = useState('');
   const [reasonCode, setReasonCode] = useState('');
   const [invoiceMode, setInvoiceMode] = useState<'item' | 'accounting'>('item');

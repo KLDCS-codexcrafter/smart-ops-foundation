@@ -18,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X, ChevronLeft, ChevronRight, Download, AlertTriangle, Save, Filter } from 'lucide-react';
+import { UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X, ChevronLeft, ChevronRight, Download, AlertTriangle, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAttendanceEntry, parseBiometricFile, groupBiometricPunches,
   computeWorkHours, computeLate } from '@/hooks/useAttendanceEntry';
@@ -31,7 +31,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 
 export function AttendanceEntryPanel() {
   const { records, regularizations, geoFences,
-    upsertRecord, upsertMany, getByDate,
+    _upsertRecord, upsertMany, getByDate,
     createRegularization, approveRegularization, rejectRegularization,
     createGeoFence, updateGeoFence, toggleGeoFence } = useAttendanceEntry();
 
@@ -447,7 +447,7 @@ export function AttendanceEntryPanel() {
               )}
               {gridEmployees.map(emp => {
                 const row = getRowVal(emp.id);
-                const saved = savedForDate.get(emp.id);
+                const _saved = savedForDate.get(emp.id);
                 const dayName = format(new Date(selectedDate + 'T12:00:00'), 'EEEE');
                 const shift = shifts.find(s => s.code === emp.shiftCode) || shifts.find(s => s.status === 'active');
                 const isWeeklyOff = shift ? shift.weeklyOff.includes(dayName) : dayName === 'Sunday';

@@ -16,7 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Rocket, CheckCircle2, Circle, Clock, UserPlus, ChevronRight, AlertTriangle, Mail, Check, X, ClipboardList, FolderOpen, Settings } from 'lucide-react';
+import { Rocket, CheckCircle2, Circle, Clock, UserPlus, AlertTriangle, Mail, Check, X, ClipboardList, FolderOpen, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OnboardingJourney, ChecklistTask, DocRequirement,
   OnboardingPhase, TaskStatus, JourneyStatus } from '@/types/onboarding';

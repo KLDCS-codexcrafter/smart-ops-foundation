@@ -3,7 +3,7 @@
  * Sheet panel for create/edit. 15 seed pay heads auto-present on first open.
  */
 import { useState, useCallback } from 'react';
-import { IndianRupee, Plus, Search, Edit2, ToggleLeft, ToggleRight, XCircle, DollarSign, FileText, Percent, ArrowDownUp } from 'lucide-react';
+import { IndianRupee, Plus, Search, Edit2, ToggleLeft, ToggleRight, DollarSign, FileText, Percent, ArrowDownUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

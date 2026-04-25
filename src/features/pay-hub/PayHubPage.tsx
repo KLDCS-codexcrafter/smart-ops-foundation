@@ -182,8 +182,8 @@ export function PayHubPagePanel() {
 
 export default function PayHubPage() {
   const [activeModule, setActiveModule] = useState<PayHubModule>('ph-dashboard');
-  const { entities, selectedEntityId, setSelectedEntityId,
-    selectedEntity, isMultiEntity } = useEntityList();
+  const { entities, selectedEntityId, _setSelectedEntityId,
+    _selectedEntity, isMultiEntity } = useEntityList();
   const { entityCode, userId } = useCardEntitlement();
 
   useEffect(() => {

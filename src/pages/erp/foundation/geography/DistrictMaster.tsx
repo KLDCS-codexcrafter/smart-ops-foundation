@@ -41,11 +41,11 @@ export function DistrictMasterPanel() {
   const [search, setSearch] = useState('');
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [stateFilter, setStateFilter] = useState<string>('all');
-  const [formOpen, setFormOpen] = useState(false);
+  const [_formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<DistrictRecord>({...EMPTY});
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [_previewOpen, setPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<{name: string; items: {code:string;name:string;headquarters:string}[]}>({name:'',items:[]});
 
   const stateOptions = useMemo(() => {
@@ -85,7 +85,7 @@ export function DistrictMasterPanel() {
     setPreviewOpen(true);
   }
 
-  function confirmSeed() {
+  function _confirmSeed() {
     const country = countryFilter !== 'all' ? countryFilter : 'IN';
     const newRecs: DistrictRecord[] = previewData.items.map(d => ({
       code: d.code, name: d.name, stateCode: stateFilter,
@@ -109,7 +109,7 @@ export function DistrictMasterPanel() {
     setFormOpen(true);
   }
 
-  function handleSave() {
+  function _handleSave() {
     if (!formData.code || !formData.name) {
       toast.error('Code and Name are required');
       return;
@@ -130,7 +130,7 @@ export function DistrictMasterPanel() {
     setFormOpen(false);
   }
 
-  function handleDelete() {
+  function _handleDelete() {
     if (deleteIndex === null) return;
     const r = records[deleteIndex];
     const next = records.filter((_, i) => i !== deleteIndex);

@@ -232,7 +232,7 @@ const Notifications = () => {
       ) : (
         <div className="space-y-3">
           {filtered.map((n) => {
-            const TypeIcon = TYPE_CONFIG[n.type].icon;
+            const _TypeIcon = TYPE_CONFIG[n.type].icon;
             return (
               <div data-keyboard-form
                 key={n.id}

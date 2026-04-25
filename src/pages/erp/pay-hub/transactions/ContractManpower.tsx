@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { parseISO, getDaysInMonth, differenceInDays } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -14,7 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Users, Building2, FileText, Shield, Plus, Download, AlertTriangle, X, ChevronRight, HardHat, Receipt } from 'lucide-react';
+import { Users, Building2, FileText, Shield, Plus, Download, AlertTriangle, HardHat, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LabourContractor, ContractWorker, WorkOrder, ContractInvoice,
   ContractAttendance, ContractTab, WorkerSkillCategory, InvoiceStatus,

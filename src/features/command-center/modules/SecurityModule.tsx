@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { onEnterNext } from "@/lib/keyboard";
-import { BarChart3, Shield, Monitor, Lock, Key, Globe, MonitorCheck, ShieldCheck, ShieldAlert, Building, UserCog, TreePine, Users, Activity, Mail, Link2, Eye, Zap, FileDown, MessageSquare, ChevronDown, ChevronRight, Search, Plus, Check, Download, Upload, RefreshCw, Settings, AlertTriangle, CheckCircle, XCircle, TrendingUp, TrendingDown, Fingerprint, Clock, Database, Server, HardDrive, Gauge, Wifi, AlertCircle, Building2, LayoutGrid, Terminal, Smartphone } from "lucide-react";
+import { BarChart3, Shield, Monitor, Lock, Key, Globe, MonitorCheck, ShieldCheck, ShieldAlert, Building, UserCog, TreePine, Users, Activity, Mail, Link2, Eye, Zap, FileDown, MessageSquare, ChevronDown, ChevronRight, Search, Plus, Check, Download, Upload, RefreshCw, AlertTriangle, CheckCircle, XCircle, TrendingUp, TrendingDown, Fingerprint, Database, Server, HardDrive, Gauge, Wifi, Building2, LayoutGrid, Terminal, Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -690,7 +690,7 @@ function SecurityTemplatesPanel() {
 function PasswordPolicyPanel() {
   const [minLength, setMinLength] = useState([12]);
   const [expiryDays, setExpiryDays] = useState([90]);
-  const [expiryEnabled, setExpiryEnabled] = useState(true);
+  const [expiryEnabled, _setExpiryEnabled] = useState(true);
   return (
     <div className="space-y-5">
       <SectionHeader title="Password Policy">Define password strength requirements and expiry rules. This is a Global policy — applies to all users and companies.</SectionHeader>
@@ -722,7 +722,7 @@ function PasswordPolicyPanel() {
 
 // ── Panel 6: Geo-Fencing ──────────────────────────────────────
 function GeoFencingPanel() {
-  const [enabled, setEnabled] = useState(true);
+  const [_enabled, _setEnabled] = useState(true);
   const countries = ["India", "United Arab Emirates", "Singapore", "United Kingdom", "United States", "Germany"];
   const [selected, setSelected] = useState(["India"]);
   function toggle(c: string) { setSelected(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]); }

@@ -23,7 +23,7 @@ interface OrderLite {
   order_value_paise?: number; total_paise?: number;
 }
 
-function ls<T>(k: string): T[] {
+function _ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
 

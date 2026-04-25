@@ -7,7 +7,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, BookOpen, Shield, Receipt, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, ArrowRight, Loader2 } from 'lucide-react';
 import { computeAuditScore, runCrossValidations, type CrossValidationResult } from '@/lib/auditEngine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';

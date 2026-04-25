@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import { ScrollText, Download, Search, X, Shield, Server, Users, CreditCard, Database, Link2, FileDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollText, Download, Search, Shield, Database, ChevronLeft, ChevronRight } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
