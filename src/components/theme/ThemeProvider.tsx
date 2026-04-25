@@ -1,14 +1,8 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode } from "react";
+import { ThemeContext, type Theme } from "./ThemeContext";
 
-type Theme = "dark" | "light";
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (t: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | null>(null);
+// Backward-compat re-export so existing importers continue to resolve.
+export { useTheme } from "./ThemeContext";
 
 const STORAGE_KEY = "4ds-theme";
 
@@ -45,10 +39,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
-  return ctx;
 }
