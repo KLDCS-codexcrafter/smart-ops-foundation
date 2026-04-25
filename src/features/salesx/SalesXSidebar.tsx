@@ -19,8 +19,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 
 export type SalesXModule =
   | 'sx-hub'

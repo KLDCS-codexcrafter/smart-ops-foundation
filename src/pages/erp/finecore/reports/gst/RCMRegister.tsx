@@ -14,8 +14,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import type { RCMEntry } from '@/types/compliance';
 import { rcmEntriesKey } from '@/types/compliance';
-import { comply360RCMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { RCMLedgerConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360RCMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { RCMLedgerConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { inr, fmtDate } from '../reportUtils';

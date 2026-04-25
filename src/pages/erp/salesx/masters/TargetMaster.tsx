@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/table';
 import { Plus, Save, Trash2, X, Lock } from 'lucide-react';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { comply360SAMKey } from '@/pages/erp/accounting/Comply360Config';
-import type { SAMConfig } from '@/pages/erp/accounting/Comply360Config';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { cn } from '@/lib/utils';
 
 interface Props { entityCode: string }

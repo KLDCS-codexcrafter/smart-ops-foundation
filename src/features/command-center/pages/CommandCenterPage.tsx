@@ -20,7 +20,7 @@ import { ProfessionalTaxMasterPanel } from '@/pages/erp/accounting/ProfessionalT
 import { EPFESILWFMasterPanel } from '@/pages/erp/accounting/EPFESILWFMaster';
 import { StatutoryRegistrationsPanel } from '@/pages/erp/accounting/StatutoryRegistrations';
 import { GSTEntityConfigPanel } from '@/pages/erp/accounting/GSTEntityConfig';
-import { Comply360ConfigPanel } from '@/pages/erp/accounting/Comply360Config';
+import { Comply360ConfigPanel } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
 import { FinFramePanel } from '@/pages/erp/accounting/FinFrame';
 import { LedgerMasterPanel } from '@/pages/erp/accounting/LedgerMaster';
 import { VoucherTypesMasterPanel } from '@/pages/erp/accounting/VoucherTypesMaster';
