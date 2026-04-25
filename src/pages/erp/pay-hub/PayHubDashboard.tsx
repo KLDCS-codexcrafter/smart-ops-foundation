@@ -130,7 +130,7 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
     // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
     const all = safeReadJson<PayrollRun[]>(payrollRunsKey(entityCode), []);
     return all.filter(r =>
-      ((r as any).entityId ?? 'parent-root') === selectedEntityId
+      ((r as PayrollRun & { entityId?: string }).entityId ?? 'parent-root') === selectedEntityId
     );
   }, [selectedEntityId, entityCode]);
 
@@ -373,15 +373,15 @@ export function PayHubDashboardPanel({ selectedEntityId = 'parent-root' }: PayHu
         return pc.legalName ?? pc.name ?? 'Your Company';
       }
       // [JWT] GET /api/foundation/companies
-      const companies = safeReadJson<any[]>('erp_companies', []);
+      const companies = safeReadJson<Array<{ id?: string; legalEntityName?: string }>>('erp_companies', []);
       const found = companies.find(c => c.id === selectedEntityId);
       if (found?.legalEntityName) return found.legalEntityName;
       // [JWT] GET /api/foundation/subsidiaries
-      const subs = safeReadJson<any[]>('erp_subsidiaries', []);
+      const subs = safeReadJson<Array<{ id?: string; legalEntityName?: string }>>('erp_subsidiaries', []);
       const sub = subs.find(s => s.id === selectedEntityId);
       if (sub?.legalEntityName) return sub.legalEntityName;
       // [JWT] GET /api/foundation/branch-offices
-      const branches = safeReadJson<any[]>('erp_branch_offices', []);
+      const branches = safeReadJson<Array<{ id?: string; name?: string }>>('erp_branch_offices', []);
       const branch = branches.find(b => b.id === selectedEntityId);
       if (branch?.name) return branch.name;
       return 'Your Company';
