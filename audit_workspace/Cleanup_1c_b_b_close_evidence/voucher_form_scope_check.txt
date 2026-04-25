@@ -1,0 +1,9 @@
+=== Voucher scope check (only import-line diff expected) ===
+--- src/pages/erp/accounting/vouchers/SalesInvoice.tsx ---
+50:import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+51:import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+--- src/pages/erp/accounting/vouchers/Receipt.tsx ---
+42:import { comply360SAMKey, type SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+--- src/pages/erp/accounting/vouchers/DeliveryNote.tsx ---
+34:import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+35:import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
