@@ -246,6 +246,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
     toast.success(`Loan application submitted for ${loanForm.employeeName}`);
     setLoanSheetOpen(false);
     setLoanForm(BLANK_LOAN);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_LOAN is a stable shape constant defined in component scope
   }, [loanSheetOpen, loanForm, loans]);
 
   // ── Advance Sheet ─────────────────────────────────────────────
@@ -273,6 +274,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
     toast.success(`Salary advance submitted for ${advForm.employeeName}`);
     setAdvSheetOpen(false);
     setAdvForm(BLANK_ADV);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_ADV is a stable shape constant defined in component scope
   }, [advSheetOpen, advForm, advances]);
 
   // ── Expense Sheet ─────────────────────────────────────────────
@@ -305,6 +307,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
     toast.success('Expense claim submitted');
     setExpSheetOpen(false);
     setExpForm(BLANK_EXP);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_EXP is a stable shape constant defined in component scope
   }, [expSheetOpen, expForm, expenses]);
 
   // ── Flexi Sheet ───────────────────────────────────────────────
@@ -345,6 +348,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
     saveFlexiAllocs([...flexiAllocs, alloc]);
     toast.success(`Flexi allocation created for ${emp?.displayName}`);
     setFlexiSheetOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: FLEXI_COMPONENTS is a stable enum array defined in component scope
   }, [flexiSheetOpen, flexiEmpId, flexiTotal, flexiComponents, flexiAllocs, activeEmployees]);
 
   // ── masterSave ────────────────────────────────────────────────

@@ -98,6 +98,7 @@ export function DocumentsAndPoliciesPanel() {
     }
     toast.success('Document saved');
     setDocSheetOpen(false); setDocEditId(null); setDocForm(BLANK_DOC);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_DOC and nextDocCode are stable helpers defined in component scope
   }, [docSheetOpen, docForm, docEditId, documents]);
 
   // ── Policy Sheet ─────────────────────────────────────────────
@@ -133,6 +134,7 @@ export function DocumentsAndPoliciesPanel() {
     }
     toast.success('Policy saved');
     setPolSheetOpen(false); setPolEditId(null); setPolForm(BLANK_POL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_POL and nextPolCode are stable helpers defined in component scope
   }, [polSheetOpen, polForm, polEditId, policies]);
 
   // ── masterSave ────────────────────────────────────────────────

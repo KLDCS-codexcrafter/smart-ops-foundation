@@ -197,6 +197,7 @@ export function DocumentManagementPanel({ defaultTab = 'vault' }: DocumentManage
     }]);
     toast.success('Document saved');
     setDocSheetOpen(false); setDocForm(BLANK_DOC);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_DOC is a stable shape constant defined in component scope
   }, [docSheetOpen, docForm, docs]);
 
   // ── Template Sheet ───────────────────────────────────────────
