@@ -62,7 +62,7 @@ const LANES: Array<{
     label: 'Finance',
     borderColor: 'border-l-indigo-500',
     labelColor: 'text-indigo-600 dark:text-indigo-400',
-    ids: ['finecore', 'payout', 'receivx'],
+    ids: ['finecore', 'comply360', 'payout', 'receivx'],
   },
   {
     id: 'international-trade',
