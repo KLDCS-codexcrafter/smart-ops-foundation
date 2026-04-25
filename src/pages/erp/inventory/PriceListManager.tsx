@@ -620,14 +620,14 @@ export function PriceListsPanel() {
                     {(() => {
                       try {
                         // [JWT] GET /api/accounting/currencies
-                        const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]');
-                        const active = currencies.filter((c: any) => c.is_active);
+                        const currencies = JSON.parse(localStorage.getItem('erp_currencies') || '[]') as Array<{ id: string; iso_code: string; symbol: string; name: string; is_active: boolean; is_base_currency?: boolean }>;
+                        const active = currencies.filter(c => c.is_active);
                         if (!active.length) {
                           // [JWT] GET /api/entity/base-currency
                           const base = localStorage.getItem('erp_base_currency') || 'INR';
                           return <SelectItem value={base}>{base} (Base)</SelectItem>;
                         }
-                        return active.map((c: any) => (
+                        return active.map(c => (
                           <SelectItem key={c.id} value={c.iso_code}>
                             {c.symbol} {c.iso_code} — {c.name}{c.is_base_currency ? ' (Base)' : ''}
                           </SelectItem>
@@ -765,7 +765,7 @@ export function PriceListsPanel() {
           <div data-keyboard-form className="space-y-3">
             <div className="space-y-1.5">
               <Label>Fill Mode</Label>
-              <Select value={fillMode} onValueChange={v => setFillMode(v as any)}>
+              <Select value={fillMode} onValueChange={v => setFillMode(v as 'pct_of_std' | 'fixed_pct_discount' | 'copy_list')}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pct_of_std">X% of Standard Selling (e.g. 95 = 5% below)</SelectItem>
