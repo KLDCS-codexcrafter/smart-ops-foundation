@@ -575,7 +575,7 @@ export function ItemCraftPanel() {
                             <div className="flex items-center gap-3">
                               <Switch checked={isSelected || isRequired} disabled={isRequired}
                                 onCheckedChange={v => {
-                                  const ns = new Set(sel); v ? ns.add(pid) : ns.delete(pid);
+                                  const ns = new Set(sel); if (v) { ns.add(pid); } else { ns.delete(pid); }
                                   setForm(f => ({ ...f, selected_param_ids: Array.from(ns) }));
                                 }} />
                               <div>

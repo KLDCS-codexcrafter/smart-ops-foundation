@@ -679,9 +679,9 @@ export function DocumentManagementPanel({ defaultTab = 'vault' }: DocumentManage
                   <Search className="h-3.5 w-3.5 mr-1" /> Scan / Document
                 </Button>
               </div>
-              <input ref={fileInputRef} type="file" accept="image/*,application/pdf,.doc,.docx,.xlsx,.csv" className="hidden" onChange={e => { e.target.files?.[0] && handleFileAttach(e.target.files[0], 'upload'); e.target.value = ''; }} />
-              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { e.target.files?.[0] && handleFileAttach(e.target.files[0], 'camera'); e.target.value = ''; }} />
-              <input ref={scanInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={e => { e.target.files?.[0] && handleFileAttach(e.target.files[0], 'scan'); e.target.value = ''; }} />
+              <input ref={fileInputRef} type="file" accept="image/*,application/pdf,.doc,.docx,.xlsx,.csv" className="hidden" onChange={e => { if (e.target.files?.[0]) { handleFileAttach(e.target.files[0], 'upload'); } e.target.value = ''; }} />
+              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { if (e.target.files?.[0]) { handleFileAttach(e.target.files[0], 'camera'); } e.target.value = ''; }} />
+              <input ref={scanInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={e => { if (e.target.files?.[0]) { handleFileAttach(e.target.files[0], 'scan'); } e.target.value = ''; }} />
 
               {docForm.fileData ? (
                 <div className="mt-3 p-3 border rounded-lg bg-muted/30">

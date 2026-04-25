@@ -140,7 +140,7 @@ const loadLogistics = (): LogisticMasterDefinition[] => {
     // [JWT] GET /api/masters/logistics
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
-  } catch {}
+  } catch { /* ignore */ }
   return [];
 };
 

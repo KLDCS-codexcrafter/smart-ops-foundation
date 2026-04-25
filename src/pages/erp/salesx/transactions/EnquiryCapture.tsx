@@ -102,7 +102,7 @@ const nowHHMM = () => {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 };
 
-interface FormState extends Omit<Enquiry, 'id' | 'enquiry_no' | 'entity_id' | 'created_at' | 'updated_at'> {}
+type FormState = Omit<Enquiry, 'id' | 'enquiry_no' | 'entity_id' | 'created_at' | 'updated_at'>;
 
 const blankForm = (): FormState => ({
   enquiry_date: todayISO(),

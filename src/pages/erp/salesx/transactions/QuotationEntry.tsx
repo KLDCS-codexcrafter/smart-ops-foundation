@@ -66,7 +66,7 @@ const addDays = (iso: string, n: number): string => {
   return d.toISOString().split('T')[0];
 };
 
-interface FormState extends Omit<Quotation, 'id' | 'quotation_no' | 'entity_id' | 'created_at' | 'updated_at'> {}
+type FormState = Omit<Quotation, 'id' | 'quotation_no' | 'entity_id' | 'created_at' | 'updated_at'>;
 
 const blank = (): FormState => ({
   quotation_date: todayISO(),

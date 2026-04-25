@@ -102,7 +102,7 @@ export function MasterPropagationDialog({
                   <Checkbox checked={selected.has(e.id)}
                     onCheckedChange={v => setSelected(prev => {
                       const n = new Set(prev);
-                      v ? n.add(e.id) : n.delete(e.id);
+                      if (v) { n.add(e.id); } else { n.delete(e.id); }
                       return n;
                     })} />
                   <Building2 className="h-3 w-3 text-muted-foreground" />

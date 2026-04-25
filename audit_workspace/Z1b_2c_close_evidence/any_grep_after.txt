@@ -1,0 +1,4 @@
+src/lib/distributor-auth-engine.ts:41: * Mock auth: any password ≥6 chars succeeds (matches internal mockLogin).
+src/pages/erp/accounting/LedgerMaster.tsx:857:  // Check 1: any entity instance has non-zero opening balance
+src/pages/erp/accounting/LedgerMaster.tsx:869:  // if (vouchers.some((v: any) => v.entries?.some((e: any) => e.ledgerId === defId))) return true;
+src/types/branch-office.ts:9: * @iso      Maintainability (HIGH — replaces `any[]` in FoundationModule)

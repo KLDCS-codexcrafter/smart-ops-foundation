@@ -145,7 +145,7 @@ const loadVendors = (): VendorMasterDefinition[] => {
     // [JWT] GET /api/masters/vendors
     const r = localStorage.getItem(STORAGE_KEY);
     if (r) return JSON.parse(r);
-  } catch {}
+  } catch { /* ignore */ }
   return [];
 };
 
