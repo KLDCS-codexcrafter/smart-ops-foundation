@@ -20,55 +20,11 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
 import { ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { INDIA_STATES, type StateRow } from './StatePicker.types';
 
-export interface StateRow {
-  code: string;        // '27'
-  name: string;        // 'Maharashtra'
-  type: 'state' | 'ut';
-}
-
-// Complete list — 28 states + 8 UTs. GST state codes per GSTN portal.
-export const INDIA_STATES: StateRow[] = [
-  { code: '01', name: 'Jammu & Kashmir', type: 'ut' },
-  { code: '02', name: 'Himachal Pradesh', type: 'state' },
-  { code: '03', name: 'Punjab', type: 'state' },
-  { code: '04', name: 'Chandigarh', type: 'ut' },
-  { code: '05', name: 'Uttarakhand', type: 'state' },
-  { code: '06', name: 'Haryana', type: 'state' },
-  { code: '07', name: 'Delhi', type: 'ut' },
-  { code: '08', name: 'Rajasthan', type: 'state' },
-  { code: '09', name: 'Uttar Pradesh', type: 'state' },
-  { code: '10', name: 'Bihar', type: 'state' },
-  { code: '11', name: 'Sikkim', type: 'state' },
-  { code: '12', name: 'Arunachal Pradesh', type: 'state' },
-  { code: '13', name: 'Nagaland', type: 'state' },
-  { code: '14', name: 'Manipur', type: 'state' },
-  { code: '15', name: 'Mizoram', type: 'state' },
-  { code: '16', name: 'Tripura', type: 'state' },
-  { code: '17', name: 'Meghalaya', type: 'state' },
-  { code: '18', name: 'Assam', type: 'state' },
-  { code: '19', name: 'West Bengal', type: 'state' },
-  { code: '20', name: 'Jharkhand', type: 'state' },
-  { code: '21', name: 'Odisha', type: 'state' },
-  { code: '22', name: 'Chhattisgarh', type: 'state' },
-  { code: '23', name: 'Madhya Pradesh', type: 'state' },
-  { code: '24', name: 'Gujarat', type: 'state' },
-  { code: '26', name: 'Dadra & Nagar Haveli and Daman & Diu', type: 'ut' },
-  { code: '27', name: 'Maharashtra', type: 'state' },
-  { code: '28', name: 'Andhra Pradesh (Old)', type: 'state' },
-  { code: '29', name: 'Karnataka', type: 'state' },
-  { code: '30', name: 'Goa', type: 'state' },
-  { code: '31', name: 'Lakshadweep', type: 'ut' },
-  { code: '32', name: 'Kerala', type: 'state' },
-  { code: '33', name: 'Tamil Nadu', type: 'state' },
-  { code: '34', name: 'Puducherry', type: 'ut' },
-  { code: '35', name: 'Andaman & Nicobar Islands', type: 'ut' },
-  { code: '36', name: 'Telangana', type: 'state' },
-  { code: '37', name: 'Andhra Pradesh', type: 'state' },
-  { code: '38', name: 'Ladakh', type: 'ut' },
-  { code: '97', name: 'Other Territory', type: 'ut' },
-  { code: '99', name: 'Centre Jurisdiction', type: 'ut' },
-];
+// Backward-compat re-exports.
+export type { StateRow };
+export { INDIA_STATES } from './StatePicker.types';
 
 interface StatePickerProps {
   value: string;                                        // state_code
