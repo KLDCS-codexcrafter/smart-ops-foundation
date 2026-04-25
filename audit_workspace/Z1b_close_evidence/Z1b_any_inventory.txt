@@ -1,0 +1,224 @@
+src/components/layout/LanguageSwitcher.tsx:24:    setLanguage(code as any);
+src/components/pay-hub/MasterPropagationDialog.tsx:32:    cos.forEach((c: any) => { if (c.id && c.legalEntityName) entities.push({ id: c.id, name: c.legalEntityName }); });
+src/components/pay-hub/MasterPropagationDialog.tsx:35:    subs.forEach((s: any) => { if (s.id && s.legalEntityName) entities.push({ id: s.id, name: s.legalEntityName }); });
+src/components/pay-hub/MasterPropagationDialog.tsx:38:    brs.forEach((b: any) => { if (b.id && b.name) entities.push({ id: b.id, name: b.name }); });
+src/components/pay-hub/MasterPropagationDialog.tsx:55:      return all.find((r: any) => r.id === recordId) ?? null;
+src/components/pay-hub/MasterPropagationDialog.tsx:68:      const exists = all.some((r: any) => r.entityId === entityId && r.code === record.code);
+src/data/org-presets.ts:166:  const depts: Department[] = preset.departments.map((d: any, i) => {
+src/hooks/useCurrencies.ts:120:      const inUse = ledgers.some((l: any) => l.currency === c.iso_code || l.currency_id === c.id);
+src/hooks/useEntityList.ts:36:    companies.forEach((c: any) => {
+src/hooks/useEntityList.ts:52:    subs.forEach((s: any) => {
+src/hooks/useEntityList.ts:68:    branches.forEach((b: any) => {
+src/hooks/usePayHubMasters3.ts:118:            localName: (h as any).localName ?? '',
+src/hooks/usePayHubMasters3.ts:119:            counties: (h as any).counties ?? [],
+src/hooks/usePayHubMasters3.ts:120:            isFixed: (h as any).isFixed ?? false,
+src/hooks/usePayHubMasters3.ts:121:            source: (h as any).source ?? 'manual',
+src/hooks/usePayrollEngine.ts:583:        const updatedLoans = allLoans.map((loan: any) => {
+src/hooks/usePayrollEngine.ts:612:        const updatedAdv = allAdvances.map((adv: any) => {
+src/lib/distributor-auth-engine.ts:41: * Mock auth: any password ≥6 chars succeeds (matches internal mockLogin).
+src/lib/gstPortalService.ts:20:  b2b: any[]; b2cl: any[]; b2cs: any[]; exp: any[];
+src/lib/gstPortalService.ts:21:  cdnr: any[]; cdnur: any[]; hsn: { data: any[] }; doc_issue?: any;
+src/lib/gstPortalService.ts:25:  sup_details: any; inward_sup: any; itc_elg: any; intr_dtls: any; nil_sup: any;
+src/lib/gstPortalService.ts:29:  tbl4: any; tbl5: any; tbl6: any; tbl7: any; tbl9: any; tbl17: any;
+src/lib/gstPortalService.ts:55:  const b2cl: any[] = [];
+src/lib/gstPortalService.ts:57:  const b2clByState = new Map<string, any[]>();
+src/lib/gstPortalService.ts:261:export function parse2AFile(file: File): Promise<any> {
+src/lib/voice-to-order-engine.ts:32:  const w = window as any;
+src/lib/voice-to-order-engine.ts:43:    const w = window as any;
+src/lib/voice-to-order-engine.ts:55:    rec.onresult = (event: any) => {
+src/lib/voice-to-order-engine.ts:62:    rec.onerror = (e: any) => reject(new Error(e?.error || e?.message || 'Voice error'));
+src/pages/auth/Login.tsx:324:      (activeForm as any).setValue("password", "");
+src/pages/auth/Login.tsx:740:  form: any; showPassword: boolean; setShowPassword: (v: boolean) => void;
+src/pages/erp/accounting/LedgerMaster.tsx:720:  return all.map((d: any) => ({
+src/pages/erp/accounting/LedgerMaster.tsx:847:  const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
+src/pages/erp/accounting/LedgerMaster.tsx:857:  // Check 1: any entity instance has non-zero opening balance
+src/pages/erp/accounting/LedgerMaster.tsx:869:  // if (vouchers.some((v: any) => v.entries?.some((e: any) => e.ledgerId === defId))) return true;
+src/pages/erp/accounting/LedgerMaster.tsx:878:  const filtered = all.filter((d: any) => d.id !== defId);
+src/pages/erp/accounting/LedgerMaster.tsx:901:  return JSON.parse(raw).map((i: any) => ({
+src/pages/erp/accounting/LedgerMaster.tsx:916:  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({
+src/pages/erp/accounting/LedgerMaster.tsx:1110:      displayNumericCode: `${entity.shortCode}/${(def as any).numericCode || def.code}`,
+src/pages/erp/accounting/LedgerMaster.tsx:1128:    return groups.filter((g: any) => l3Codes.includes(g.parentL3Code) && g.status === 'active');
+src/pages/erp/accounting/LedgerMaster.tsx:1640:    setter: React.Dispatch<React.SetStateAction<any>>
+src/pages/erp/accounting/LedgerMaster.tsx:1642:    setter((f: any) => ({
+src/pages/erp/accounting/LedgerMaster.tsx:1728:      const ob = (d as any).openingBalance ?? 0;
+src/pages/erp/accounting/LedgerMaster.tsx:1729:      const obt: 'Dr' | 'Cr' = (d as any).openingBalanceType ?? 'Dr';
+src/pages/erp/accounting/LedgerMaster.tsx:1877:      bankName: INDIAN_BANKS.includes(def.bankName as any) ? def.bankName : 'Other',
+src/pages/erp/accounting/LedgerMaster.tsx:1878:      bankNameOther: INDIAN_BANKS.includes(def.bankName as any) ? '' : def.bankName,
+src/pages/erp/accounting/LedgerMaster.tsx:3289:    const ob = (def as any).openingBalance ?? 0;
+src/pages/erp/accounting/LedgerMaster.tsx:3290:    const obt = (def as any).openingBalanceType ?? 'Dr';
+src/pages/erp/accounting/LedgerMaster.tsx:3322:  const renderScopeSection = (form: { scope: string; entityId: string }, setForm: React.Dispatch<React.SetStateAction<any>>) => (
+src/pages/erp/accounting/LedgerMaster.tsx:3327:          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'group', entityId: '' }))}
+src/pages/erp/accounting/LedgerMaster.tsx:3329:          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'entity' }))}
+src/pages/erp/accounting/LedgerMaster.tsx:3336:          <Select value={form.entityId} onValueChange={(v) => setForm((f: any) => ({ ...f, entityId: v }))}>
+src/pages/erp/accounting/LedgerMaster.tsx:3484:      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+src/pages/erp/accounting/LedgerMaster.tsx:3496:          <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as any)} className="mb-4">
+src/pages/erp/accounting/LedgerMaster.tsx:4189:              <Select value={borrowingForm.lenderType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, lenderType: v }))}>
+src/pages/erp/accounting/LedgerMaster.tsx:4206:                  <Select value={borrowingForm.loanType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, loanType: v }))}>
+src/pages/erp/accounting/LedgerMaster.tsx:4639:                  <Select value={dutiesTaxForm.rcmSection ?? 'not_applicable'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, rcmSection: v } as any))}>
+src/pages/erp/accounting/LedgerMaster.tsx:4650:                  <Select value={(dutiesTaxForm as any).gstTaxSubType ?? 'output'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, gstTaxSubType: v } as any))}>
+src/pages/erp/accounting/LedgerMaster.tsx:4663:                  <Select value={(dutiesTaxForm as any).itcEligibility ?? 'full'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, itcEligibility: v } as any))}>
+src/pages/erp/accounting/LedgerMaster.tsx:4688:            <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' } as any))}
+src/pages/erp/accounting/LedgerMaster.tsx:4692:            {(dutiesTaxForm as any).scope === 'entity' && renderScopeSection(dutiesTaxForm as any, setDutiesTaxForm)}
+src/pages/erp/accounting/LedgerMaster.tsx:5672:                    <Field label="Mailing Name" value={(def as any).mailingName} />
+src/pages/erp/accounting/LedgerMaster.tsx:5673:                    <Field label="Alias" value={(def as any).alias} />
+src/pages/erp/accounting/LedgerMaster.tsx:5685:                        value={<span className={`font-mono font-semibold ${ (def as any).openingBalanceType === 'Dr' ? 'text-teal-600' : 'text-amber-600'}`}>
+src/pages/erp/accounting/LedgerMaster.tsx:5686:                          {(def as any).openingBalanceType} ₹{toIndianFormat((def as any).openingBalance ?? 0)}
+src/pages/erp/accounting/capital-assets/DepreciationWorkings.tsx:51:    const ldefs = ls<any>(`erp_group_ledger_definitions_${entityCode}`)
+src/pages/erp/accounting/capital-assets/DepreciationWorkings.tsx:52:      .filter((d: any) => d.ledgerType === 'asset')
+src/pages/erp/accounting/capital-assets/DepreciationWorkings.tsx:53:      .map((d: any) => ({ id: d.id, depreciationMethod: d.depreciationMethod, depreciationRate: d.depreciationRate, usefulLifeYears: d.usefulLifeYears, name: d.name }));
+src/pages/erp/accounting/vouchers/PurchaseInvoice.tsx:77:    const vendors: any[] = (() => { try { return JSON.parse(localStorage.getItem('erp_group_vendor_master') || '[]'); } catch { return []; } })();
+src/pages/erp/accounting/vouchers/PurchaseInvoice.tsx:78:    const vendor = vendors.find((v: any) => v.partyName === partyName);
+src/pages/erp/foundation/BranchOfficeForm.tsx:143:    const companies: any[] = ls('erp_companies');
+src/pages/erp/foundation/BranchOfficeForm.tsx:153:    ls<any>('erp_branch_offices')
+src/pages/erp/foundation/BranchOfficeForm.tsx:154:      .filter((b: any) => b.id && b.name && b.id !== entityId)
+src/pages/erp/foundation/BranchOfficeForm.tsx:155:      .map((b: any) => ({ id: b.id, name: b.name, code: b.code || '' })),
+src/pages/erp/foundation/BranchOfficeForm.tsx:161:    const records: any[] = ls('erp_branch_offices');
+src/pages/erp/foundation/BranchOfficeForm.tsx:175:      const existing: any[] = ls('erp_branch_offices');
+src/pages/erp/foundation/BranchOfficeForm.tsx:182:      const idx = existing.findIndex((r: any) => r.id === currentId);
+src/pages/erp/foundation/CompanyForm.tsx:202:    const parentRecord = lsObj<any>('erp_parent_company', {});
+src/pages/erp/foundation/CompanyForm.tsx:203:    const companies: any[] = ls('erp_companies');
+src/pages/erp/foundation/CompanyForm.tsx:204:    const subsidiaries: any[] = ls('erp_subsidiaries');
+src/pages/erp/foundation/CompanyForm.tsx:230:    const records: any[] = ls(key);
+src/pages/erp/foundation/CompanyForm.tsx:335:      const existing: any[] = ls(storageKey);
+src/pages/erp/foundation/CompanyForm.tsx:343:      const idx = existing.findIndex((r: any) => r.id === currentId);
+src/pages/erp/foundation/CompanyForm.tsx:350:      if ((form as any).enableMultiCurrency) {
+src/pages/erp/foundation/CompanyForm.tsx:353:          const ledgerDefs: any[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+src/pages/erp/foundation/CompanyForm.tsx:382:          const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+src/pages/erp/foundation/CompanyForm.tsx:414:      const settings: any[] = ls(settingsKey);
+src/pages/erp/foundation/CompanyForm.tsx:415:      const mrpTreatment = (form as any).mrp_tax_treatment || 'inclusive';
+src/pages/erp/foundation/CompanyForm.tsx:425:      const sIdx = settings.findIndex((s: any) => s.entity_id === currentId);
+src/pages/erp/foundation/FoundationEntityHub.tsx:71:    return [...rows].sort((a: any, b: any) => {
+src/pages/erp/foundation/FoundationEntityHub.tsx:118:                  {col.render ? col.render(row) : <span>{String((row as any)[col.key] ?? '')}</span>}
+src/pages/erp/foundation/FoundationEntityHub.tsx:147:  const [rawCompanies, setRawCompanies] = useState<any[]>(() => ls('erp_companies'));
+src/pages/erp/foundation/FoundationEntityHub.tsx:148:  const [rawSubsidiaries, setRawSubsidiaries] = useState<any[]>(() => ls('erp_subsidiaries'));
+src/pages/erp/foundation/FoundationEntityHub.tsx:149:  const [rawBranches, setRawBranches] = useState<any[]>(() => ls('erp_branch_offices'));
+src/pages/erp/foundation/FoundationEntityHub.tsx:320:                    render: r => <span className='font-mono text-xs bg-muted px-1.5 py-0.5 rounded'>{(r as any).shortCode}</span> },
+src/pages/erp/foundation/FoundationEntityHub.tsx:324:                    render: r => <StatusBadge status={(r as any).status} /> },
+src/pages/erp/foundation/FoundationEntityHub.tsx:343:                    render: r => <span className='font-mono font-semibold text-sm'>{(r as any).ownershipPct}</span> },
+src/pages/erp/foundation/FoundationEntityHub.tsx:345:                    render: r => <Badge variant='outline' className='text-xs'>{(r as any).relationship}</Badge> },
+src/pages/erp/foundation/FoundationEntityHub.tsx:347:                    render: r => <StatusBadge status={(r as any).status} /> },
+src/pages/erp/foundation/FoundationEntityHub.tsx:365:                      const t = (r as any).branchType as string;
+src/pages/erp/foundation/FoundationEntityHub.tsx:372:                    render: r => <StatusBadge status={(r as any).status} /> },
+src/pages/erp/foundation/OrgStructureHub.tsx:54:}: { open: boolean; onOpenChange: (v: boolean) => void; onImport: (preset: any) => void }) {
+src/pages/erp/foundation/OrgStructureHub.tsx:110:                ) : preset.divisions.map((div: any) => {
+src/pages/erp/foundation/OrgStructureHub.tsx:111:                  const depts = (preset.departments as any[]).filter(d => d.division_name === div.name);
+src/pages/erp/foundation/OrgStructureHub.tsx:115:                      {depts.map((d: any) => (
+src/pages/erp/foundation/OrgStructureHub.tsx:121:                {(preset.departments as any[]).filter(d => !d.division_name).map((d: any) => (
+src/pages/erp/foundation/ParentCompany.tsx:201:      const full = lsObj<any>('erp_parent_company', {});
+src/pages/erp/foundation/ParentCompany.tsx:326:          const ledgerDefs: any[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
+src/pages/erp/foundation/ParentCompany.tsx:355:          const vtypes: any[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+src/pages/erp/foundation/geography/GeographyHub.tsx:94:          const countries = ls<any>('erp_geo_countries');
+src/pages/erp/foundation/geography/GeographyHub.tsx:95:          if (!countries.find((c: any) => c.code === 'IN')) {
+src/pages/erp/foundation/geography/GeographyHub.tsx:105:          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'IN');
+src/pages/erp/foundation/geography/GeographyHub.tsx:116:          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'IN');
+src/pages/erp/foundation/geography/GeographyHub.tsx:117:          const dists = indianDistricts.map((d: any) => ({
+src/pages/erp/foundation/geography/GeographyHub.tsx:127:          const existing = ls<any>('erp_geo_cities').filter((c: any) => c.countryCode !== 'IN');
+src/pages/erp/foundation/geography/GeographyHub.tsx:128:          const cities = indianCities.map((c: any) => ({
+src/pages/erp/foundation/geography/GeographyHub.tsx:140:          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'IN');
+src/pages/erp/foundation/geography/GeographyHub.tsx:141:          const regions = INDIA_REGIONS.map((r: any) => ({
+src/pages/erp/foundation/geography/GeographyHub.tsx:153:          const countries = ls<any>('erp_geo_countries');
+src/pages/erp/foundation/geography/GeographyHub.tsx:154:          if (!countries.find((c: any) => c.code === 'AE')) {
+src/pages/erp/foundation/geography/GeographyHub.tsx:164:          const existing = ls<any>('erp_geo_states').filter((s: any) => s.countryCode !== 'AE');
+src/pages/erp/foundation/geography/GeographyHub.tsx:165:          const emirates = UAE_EMIRATES.map((e: any) => ({
+src/pages/erp/foundation/geography/GeographyHub.tsx:174:          const existing = ls<any>('erp_geo_districts').filter((d: any) => d.countryCode !== 'AE');
+src/pages/erp/foundation/geography/GeographyHub.tsx:175:          const dists = UAE_DISTRICTS.map((d: any) => ({
+src/pages/erp/foundation/geography/GeographyHub.tsx:185:          const existing = ls<any>('erp_geo_regions').filter((r: any) => r.countryCode !== 'AE');
+src/pages/erp/foundation/geography/GeographyHub.tsx:186:          const regions = UAE_REGIONS.map((r: any) => ({
+src/pages/erp/inventory/AssetTagManager.tsx:221:                <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as any }))}>
+src/pages/erp/inventory/AssetTagManager.tsx:294:                <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+src/pages/erp/inventory/BinLocationLabels.tsx:31:  const [godowns] = useState<any[]>(ls(GKEY));
+src/pages/erp/inventory/BinLocationLabels.tsx:161:              <Select value={form.godown_id || 'none'} onValueChange={v => { const g = godowns.find((x: any) => x.id === v); setForm(f => ({ ...f, godown_id: v === 'none' ? '' : v, godown_name: g?.name || '' })); }}>
+src/pages/erp/inventory/BinLocationLabels.tsx:165:                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+src/pages/erp/inventory/BinLocationLabels.tsx:172:              <Select value={form.location_type} onValueChange={v => setForm(f => ({ ...f, location_type: v as any }))}>
+src/pages/erp/inventory/BinLocationLabels.tsx:181:                  <Input className="h-8 text-xs" placeholder={l[0]} value={(form as any)[f] || ''}
+src/pages/erp/inventory/BinLocationLabels.tsx:192:              <Select value={form.barcode_type} onValueChange={v => setForm(f => ({ ...f, barcode_type: v as any }))}>
+src/pages/erp/inventory/Classify.tsx:209:                <Select value={form.classification_type} onValueChange={v => setForm(f => ({ ...f, classification_type: v as any }))}>
+src/pages/erp/inventory/Classify.tsx:215:                <Select value={form.category_level} onValueChange={v => setForm(f => ({ ...f, category_level: v as any }))}>
+src/pages/erp/inventory/CodeMatrix.tsx:214:              <Select value={form.applies_to} onValueChange={v => setForm(f => ({ ...f, applies_to: v as any, applies_to_id: null }))}>
+src/pages/erp/inventory/CodeMatrix.tsx:280:              <Select value={form.year_format || 'YY'} onValueChange={v => setForm(f => ({ ...f, year_format: v as any }))}>
+src/pages/erp/inventory/ItemCraft.tsx:115:  const filled = TABS.filter(t => t.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; })).length;
+src/pages/erp/inventory/ItemCraft.tsx:126:          const done = tab.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; });
+src/pages/erp/inventory/ItemCraft.tsx:203:  const groups = useState(() => ls<any>(SGKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:204:  const brands = useState(() => ls<any>(BKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:205:  const subs = useState(() => ls<any>(SBKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:206:  const classifs = useState(() => ls<any>(CKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:207:  const uoms = useState(() => ls<any>(UKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:208:  const godowns = useState(() => ls<any>(GKEY))[0];
+src/pages/erp/inventory/ItemCraft.tsx:209:  const groupParams = useState(() => ls<any>('erp_parametric_templates'))[0];
+src/pages/erp/inventory/ItemCraft.tsx:399:                        const g = groups.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:410:                        {groups.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:424:                    <Select value={form.stock_nature} onValueChange={v => setForm(f => ({ ...f, stock_nature: v as any }))}>
+src/pages/erp/inventory/ItemCraft.tsx:469:                    <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+src/pages/erp/inventory/ItemCraft.tsx:522:                  const allP: any[] = groupParams.flatMap((t: any) => t.parameters || []);
+src/pages/erp/inventory/ItemCraft.tsx:536:                          onClick={() => setForm(f => ({ ...f, selected_param_ids: allP.map((p: any) => p.id || p.name) }))}>
+src/pages/erp/inventory/ItemCraft.tsx:541:                      {allP.map((param: any) => {
+src/pages/erp/inventory/ItemCraft.tsx:578:                      onValueChange={v => { const c = classifs.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:583:                        {classifs.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:605:                      onValueChange={v => { const b = brands.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:610:                        {brands.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:617:                      onValueChange={v => { const s = subs.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:622:                        {subs.filter((s: any) => s.brand_id === form.brand_id).map((s: any) => (
+src/pages/erp/inventory/ItemCraft.tsx:660:                                onValueChange={v => setPartyCodes(a => a.map((x, j) => j === i ? { ...x, party_type: v as any } : x))}>
+src/pages/erp/inventory/ItemCraft.tsx:707:                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:712:                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:720:                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:725:                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:734:                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:739:                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:757:                        onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:762:                          {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+src/pages/erp/inventory/ItemCraft.tsx:794:                      <Input type="number" min="0" value={(form as any)[d] || ''}
+src/pages/erp/inventory/ItemCraft.tsx:822:                      <Select value={pk.level} onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, level: v as any } : x))}>
+src/pages/erp/inventory/ItemCraft.tsx:839:                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode_type: v as any } : x))}>
+src/pages/erp/inventory/ItemCraft.tsx:850:                          value={(pk as any)[d] || ''}
+src/pages/erp/inventory/ItemCraft.tsx:854:                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, dimension_unit: v as any } : x))}>
+src/pages/erp/inventory/ItemCraft.tsx:949:                      <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+src/pages/erp/inventory/ItemCraft.tsx:1022:                      <Input type="number" min="0" value={(form as any)[f] || ''} onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
+src/pages/erp/inventory/ItemCraft.tsx:1063:                                  onValueChange={v => { const g = godowns.find((x: any) => x.id === v);
+src/pages/erp/inventory/ItemCraft.tsx:1068:                                      ? godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)
+src/pages/erp/inventory/ItemCraft.tsx:1134:                      <Switch checked={(form as any)[tf]} onCheckedChange={v => setForm(f => ({ ...f, [tf]: v }))} />
+src/pages/erp/inventory/ItemCraft.tsx:1269:                          value={(v as any)[f] || ''}
+src/pages/erp/inventory/ItemCraft.tsx:1391:                      <Select value={(form as any)[f] || 'not_listed'}
+src/pages/erp/inventory/ItemRatesMRP.tsx:110:  const companySettings: any[] = ls(CSKEY);
+src/pages/erp/inventory/ItemRatesMRP.tsx:662:          <Tabs value={bulkMode} onValueChange={v => setBulkMode(v as any)}>
+src/pages/erp/inventory/ItemTemplates.tsx:395:                  <Input type="number" min="0" value={(form as any)[f] || ''}
+src/pages/erp/inventory/LabelTemplates.tsx:311:                  <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+src/pages/erp/inventory/LabelTemplates.tsx:330:                        <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+src/pages/erp/inventory/PriceListManager.tsx:624:                        const active = currencies.filter((c: any) => c.is_active);
+src/pages/erp/inventory/PriceListManager.tsx:630:                        return active.map((c: any) => (
+src/pages/erp/inventory/PriceListManager.tsx:768:              <Select value={fillMode} onValueChange={v => setFillMode(v as any)}>
+src/pages/erp/inventory/RFIDManager.tsx:57:    const raw = ls<any>(ITEM_KEY);
+src/pages/erp/inventory/RFIDManager.tsx:58:    return raw.map((i: any) => ({ id: i.id, code: i.code, name: i.name }));
+src/pages/erp/inventory/ReorderAlerts.tsx:72:  const [stockLedger] = useState<any[]>(ls(SLKEY));
+src/pages/erp/inventory/ReorderAlerts.tsx:100:  const godowns: any[] = ls('erp_godowns');
+src/pages/erp/inventory/ReorderAlerts.tsx:224:      const godownName = godownId ? godowns.find((g: any) => g.id === godownId)?.name || '' : '';
+src/pages/erp/inventory/ReorderAlerts.tsx:298:    toast.info(`${globalRules.length} global thresholds staged for ${godowns.find((g: any) => g.id === selectedGodown)?.name}`);
+src/pages/erp/inventory/ReorderAlerts.tsx:478:                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+src/pages/erp/inventory/ReorderAlerts.tsx:499:                  <Copy className="h-3.5 w-3.5" />Copy Global → {godowns.find((g: any) => g.id === selectedGodown)?.name?.slice(0, 12)}
+src/pages/erp/inventory/ReorderAlerts.tsx:541:                        if (rule) return String((rule as any)[field] || '');
+src/pages/erp/inventory/ReorderAlerts.tsx:548:                        const rv = rule ? String((rule as any)[field] || '') : '';
+src/pages/erp/inventory/ReorderAlerts.tsx:872:              <Select value={ruleForm.godown_id || 'default'} onValueChange={v => { const g = godowns.find((x: any) => x.id === v); setRuleForm(f => ({ ...f, godown_id: v, godown_name: g?.name || 'Default' })); }}>
+src/pages/erp/inventory/ReorderAlerts.tsx:876:                  {godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+src/pages/erp/inventory/ReorderAlerts.tsx:904:                  <Input type="number" min="0" className="h-8 text-xs" value={(ruleForm as any)[f] || ''}
+src/pages/erp/inventory/StorageMatrix.tsx:166:      <div className='space-y-1.5'><Label>Billing Cycle</Label><Select value={af.billing_cycle} onValueChange={v=>setAf(f=>({...f,billing_cycle:v as any}))}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['monthly','quarterly','annual'].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+src/pages/erp/masters/CustomerMaster.tsx:389:        .filter((l: any) => l.logisticType === 'gta' && l.status === 'active');
+src/pages/erp/masters/CustomerMaster.tsx:396:        .filter((l: any) => l.logisticType === 'courier' && l.status === 'active');
+src/pages/erp/masters/CustomerMaster.tsx:1140:                <Select value={form.agreedFreightBasis || ''} onValueChange={v => setForm(f => ({ ...f, agreedFreightBasis: v as any }))}>
+src/pages/erp/masters/VendorMaster.tsx:280:      return all.filter((l: any) => l.logisticType === 'gta' && l.status === 'active');
+src/pages/erp/masters/VendorMaster.tsx:287:      return all.filter((l: any) => l.logisticType === 'courier' && l.status === 'active');
+src/pages/erp/pay-hub/PayHubDashboard.tsx:133:      ((r as any).entityId ?? 'parent-root') === selectedEntityId
+src/pages/erp/pay-hub/PayHubDashboard.tsx:376:      const companies = safeReadJson<any[]>('erp_companies', []);
+src/pages/erp/pay-hub/PayHubDashboard.tsx:380:      const subs = safeReadJson<any[]>('erp_subsidiaries', []);
+src/pages/erp/pay-hub/PayHubDashboard.tsx:384:      const branches = safeReadJson<any[]>('erp_branch_offices', []);
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:707:                        <Input value={(declForm.hra as any)?.landlordName || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:711:                        <Input value={(declForm.hra as any)?.landlordPAN || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), landlordPAN: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:715:                        <Input {...amountInputProps} value={(declForm.hra as any)?.rentPerMonth || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), rentPerMonth: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:719:                        <Select value={(declForm.hra as any)?.cityType || 'metro'} onValueChange={v => duf('hra', { ...(declForm.hra || {}), cityType: v })}>
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:729:                        <SmartDateInput value={(declForm.hra as any)?.rentFromDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentFromDate: v })} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:733:                        <SmartDateInput value={(declForm.hra as any)?.rentToDate || ''} onChange={v => duf('hra', { ...(declForm.hra || {}), rentToDate: v })} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:749:                        <Input value={(declForm.homeLoan as any)?.lenderName || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), lenderName: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:753:                        <Input value={(declForm.homeLoan as any)?.loanAccountNo || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), loanAccountNo: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:757:                        <Input {...amountInputProps} value={(declForm.homeLoan as any)?.interestPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), interestPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:761:                        <Input {...amountInputProps} value={(declForm.homeLoan as any)?.principalPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), principalPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:765:                        <Input value={(declForm.homeLoan as any)?.propertyCity || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), propertyCity: e.target.value })} onKeyDown={onEnterNext} className="h-8 text-xs" />
+src/types/branch-office.ts:9: * @iso      Maintainability (HIGH — replaces `any[]` in FoundationModule)
