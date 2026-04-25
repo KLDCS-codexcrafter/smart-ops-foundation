@@ -116,7 +116,7 @@ export function GeographyHubPanel() {
         }
         if (i === 2) {
           const existing = ls<GeoRow>('erp_geo_districts').filter(d => d.countryCode !== 'IN');
-          const dists = (indianDistricts as Array<Record<string, unknown>>).map(d => ({
+          const dists = (indianDistricts as unknown as Array<Record<string, unknown>>).map(d => ({
             code: (d.code as string) || String(d.name).slice(0,6).toUpperCase().replace(/\s/g,''),
             name: d.name, stateCode: (d.stateCode as string) || (d.state_code as string) || '',
             countryCode: 'IN', headquarters: (d.headquarters as string) || '', status: 'active',
@@ -127,7 +127,7 @@ export function GeographyHubPanel() {
         }
         if (i === 3) {
           const existing = ls<GeoRow>('erp_geo_cities').filter(c => c.countryCode !== 'IN');
-          const cities = (indianCities as Array<Record<string, unknown>>).map(c => ({
+          const cities = (indianCities as unknown as Array<Record<string, unknown>>).map(c => ({
             code: (c.code as string) || String(c.name).slice(0,6).toUpperCase().replace(/\s/g,''),
             name: c.name, stateCode: (c.stateCode as string) || (c.state_code as string) || '',
             districtCode: (c.districtCode as string) || '', countryCode: 'IN',
@@ -140,7 +140,7 @@ export function GeographyHubPanel() {
         }
         if (i === 4) {
           const existing = ls<GeoRow>('erp_geo_regions').filter(r => r.countryCode !== 'IN');
-          const regions = (INDIA_REGIONS as Array<Record<string, unknown>>).map(r => ({
+          const regions = (INDIA_REGIONS as unknown as Array<Record<string, unknown>>).map(r => ({
             code: r.code, name: r.name, countryCode: 'IN',
             states: (r.states as string[]) || [], status: 'active',
           }));
@@ -164,7 +164,7 @@ export function GeographyHubPanel() {
         }
         if (i === 1) {
           const existing = ls<GeoRow>('erp_geo_states').filter(s => s.countryCode !== 'AE');
-          const emirates = (UAE_EMIRATES as Array<Record<string, unknown>>).map(e => ({
+          const emirates = (UAE_EMIRATES as unknown as Array<Record<string, unknown>>).map(e => ({
             code: e.code, name: e.name, countryCode: 'AE',
             gstStateCode: '', unionTerritory: false, region: 'Middle East', status: 'active',
           }));
@@ -174,7 +174,7 @@ export function GeographyHubPanel() {
         }
         if (i === 2) {
           const existing = ls<GeoRow>('erp_geo_districts').filter(d => d.countryCode !== 'AE');
-          const dists = (UAE_DISTRICTS as Array<Record<string, unknown>>).map(d => ({
+          const dists = (UAE_DISTRICTS as unknown as Array<Record<string, unknown>>).map(d => ({
             code: (d.code as string) || String(d.name).slice(0,6).toUpperCase().replace(/\s/g,''),
             name: d.name, stateCode: (d.emirateCode as string) || (d.stateCode as string) || '', countryCode: 'AE',
             headquarters: '', status: 'active',
@@ -185,7 +185,7 @@ export function GeographyHubPanel() {
         }
         if (i === 3) {
           const existing = ls<GeoRow>('erp_geo_regions').filter(r => r.countryCode !== 'AE');
-          const regions = (UAE_REGIONS as Array<Record<string, unknown>>).map(r => ({
+          const regions = (UAE_REGIONS as unknown as Array<Record<string, unknown>>).map(r => ({
             code: r.code, name: r.name, countryCode: 'AE',
             states: (r.states as string[]) || [], status: 'active',
           }));
