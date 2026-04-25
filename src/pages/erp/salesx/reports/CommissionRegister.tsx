@@ -29,8 +29,8 @@ import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { computeCommissionGL } from '@/lib/commission-engine';
-import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
-import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { Voucher } from '@/types/voucher';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';

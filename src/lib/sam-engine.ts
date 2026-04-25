@@ -5,7 +5,7 @@
  */
 
 import type { SAMPerson, SAMCommissionRateRow, SAMSlabRow } from '@/types/sam-person';
-import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 
 export interface CommissionLineBreakdown {
