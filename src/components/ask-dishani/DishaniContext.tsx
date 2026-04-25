@@ -1,11 +1,8 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import type { DishaniMessage } from "./DishaniContext.types";
 
-export interface DishaniMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+// Backward-compat re-export so existing importers continue to work.
+export type { DishaniMessage };
 
 interface DishaniContextType {
   isOpen: boolean;
