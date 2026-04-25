@@ -249,6 +249,8 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
     return recognitions.filter(r => r.created_at.startsWith(prefix)).length;
   }, [recognitions]);
 
+  // 'today' kept for display elsewhere; filters read new Date() inline so
+  // listing it as a dep was redundant (recreated each render anyway).
   const today = format(new Date(), 'yyyy-MM-dd');
   const activeAnnouncements = useMemo(() =>
     announcements.filter(a => !a.expiryDate || isAfter(parseISO(a.expiryDate), new Date()))
@@ -256,11 +258,9 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
         if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
         return b.created_at.localeCompare(a.created_at);
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: 'today' is informational only; filter reads new Date() inline and re-runs on announcements change
     [announcements]);
   const expiredAnnouncements = useMemo(() =>
     announcements.filter(a => a.expiryDate && !isAfter(parseISO(a.expiryDate), new Date())),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: 'today' is informational only; filter reads new Date() inline and re-runs on announcements change
     [announcements]);
   void today;
 
