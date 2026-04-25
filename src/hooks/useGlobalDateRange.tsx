@@ -22,9 +22,6 @@ import {
 } from './useGlobalDateRange.types';
 import { GlobalDateRangeContext } from './GlobalDateRangeContext';
 
-// Backward-compat re-export so existing `import { useGlobalDateRange } from '@/hooks/useGlobalDateRange'` keeps working.
-export { useGlobalDateRange } from './GlobalDateRangeContext';
-
 const STORAGE_KEY = 'erp-date-range';
 
 function loadStored(): { preset: DatePreset; selectedFY: string } {
