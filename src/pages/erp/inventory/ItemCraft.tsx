@@ -449,7 +449,7 @@ export function ItemCraftPanel() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Stock Nature</Label>
-                    <Select value={form.stock_nature} onValueChange={v => setForm(f => ({ ...f, stock_nature: v as any }))}>
+                    <Select value={form.stock_nature} onValueChange={v => setForm(f => ({ ...f, stock_nature: v as 'Inventory' | 'Non-Inventory' }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Inventory">Inventory</SelectItem>
@@ -494,7 +494,7 @@ export function ItemCraftPanel() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label>Status</Label>
-                    <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+                    <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as 'active' | 'inactive' | 'draft' }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="active">Active</SelectItem>
@@ -547,7 +547,7 @@ export function ItemCraftPanel() {
                     <p className="text-xs">Go back to Tab 1 and select a Stock Group to see inherited parameters</p>
                   </div>
                 ) : (() => {
-                  const allP: any[] = groupParams.flatMap((t: any) => t.parameters || []);
+                  const allP: ParamRow[] = groupParams.flatMap(t => t.parameters || []);
                   const sel = new Set<string>(form.selected_param_ids || []);
                   if (allP.length === 0) { return (
                     <div className="text-center py-12 text-muted-foreground">
@@ -561,12 +561,12 @@ export function ItemCraftPanel() {
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-medium">Group Parameters ({allP.length} available)</p>
                         <Button size="sm" variant="outline" className="h-7 text-xs"
-                          onClick={() => setForm(f => ({ ...f, selected_param_ids: allP.map((p: any) => p.id || p.name) }))}>
+                          onClick={() => setForm(f => ({ ...f, selected_param_ids: allP.map(p => p.id || p.name).filter((x): x is string => !!x) }))}>
                           Keep All
                         </Button>
                       </div>
                       <p className="text-xs text-muted-foreground">Toggle which parameters apply to this item. Required parameters cannot be removed.</p>
-                      {allP.map((param: any) => {
+                      {allP.map(param => {
                         const pid = param.id || param.name;
                         const isSelected = sel.has(pid);
                         const isRequired = param.required || param.is_required;
@@ -685,7 +685,7 @@ export function ItemCraftPanel() {
                           <TableRow key={pc.id}>
                             <TableCell className="py-1.5">
                               <Select value={pc.party_type}
-                                onValueChange={v => setPartyCodes(a => a.map((x, j) => j === i ? { ...x, party_type: v as any } : x))}>
+                                onValueChange={v => setPartyCodes(a => a.map((x, j) => j === i ? { ...x, party_type: v as 'vendor' | 'customer' } : x))}>
                                 <SelectTrigger className="h-7 text-xs w-24"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="vendor">Vendor</SelectItem>
@@ -847,7 +847,7 @@ export function ItemCraftPanel() {
                 ) : packings.map((pk, i) => (
                   <div key={pk.id} className="border rounded-lg p-3 space-y-2">
                     <div className="flex items-center justify-between">
-                      <Select value={pk.level} onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, level: v as any } : x))}>
+                      <Select value={pk.level} onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, level: v as PackingLevel } : x))}>
                         <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primary Pack</SelectItem>
@@ -864,7 +864,7 @@ export function ItemCraftPanel() {
                       <Input className="h-7 text-xs" placeholder="Barcode" value={pk.barcode || ''}
                         onChange={e => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode: e.target.value || null } : x))} />
                       <Select value={pk.barcode_type || 'EAN13'}
-                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode_type: v as any } : x))}>
+                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode_type: v as ItemPacking['barcode_type'] } : x))}>
                         <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>{['EAN13', 'QR', 'Code128', 'ITF14', 'EAN8'].map(bt => <SelectItem key={bt} value={bt}>{bt}</SelectItem>)}</SelectContent>
                       </Select>
@@ -879,7 +879,7 @@ export function ItemCraftPanel() {
                           onChange={e => setPackings(a => a.map((x, j) => j === i ? { ...x, [d]: parseFloat(e.target.value) || null } : x))} />
                       ))}
                       <Select value={pk.dimension_unit}
-                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, dimension_unit: v as any } : x))}>
+                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, dimension_unit: v as ItemPacking['dimension_unit'] } : x))}>
                         <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="cm">cm</SelectItem><SelectItem value="inch">inch</SelectItem></SelectContent>
                       </Select>
