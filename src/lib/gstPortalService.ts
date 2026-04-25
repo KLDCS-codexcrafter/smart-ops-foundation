@@ -292,7 +292,7 @@ export function buildGSTR9Payload(gstin: string, fy: string, entries: GSTEntry[]
         acc[key].iamt += e.igst_amount; acc[key].camt += e.cgst_amount;
         acc[key].samt += e.sgst_amount; acc[key].csamt += e.cess_amount;
         return acc;
-      }, {} as Record<string, any>),
+      }, {} as Record<string, GSTR9HSNRow>),
     },
   };
 }
@@ -315,7 +315,7 @@ export function submitGSTR3B(payload: GSTR3BPayload, mode: PortalMode = 'manual'
 }
 
 // ── 2A/2B fetch (current: accept uploaded file. Future: fetch from GSTN) ──
-export function parse2AFile(file: File): Promise<any> {
+export function parse2AFile(file: File): Promise<unknown> {
   // [JWT] Future: GET /api/gst/2a-data
   return new Promise((res, rej) => {
     const reader = new FileReader();
