@@ -819,7 +819,7 @@ export function ItemCraftPanel() {
                 <div className="grid grid-cols-4 gap-3">
                   {['length', 'width', 'height'].map(d => (
                     <div key={d} className="space-y-1.5"><Label>{d.charAt(0).toUpperCase() + d.slice(1)}</Label>
-                      <Input type="number" min="0" value={(form as any)[d] || ''}
+                      <Input type="number" min="0" value={getStr(form, d)}
                         onChange={e => setForm(f => ({ ...f, [d]: parseFloat(e.target.value) || null }))} /></div>
                   ))}
                   <div className="space-y-1.5"><Label>Dim. Unit</Label>
@@ -875,7 +875,7 @@ export function ItemCraftPanel() {
                     <div className="grid grid-cols-4 gap-2">
                       {['length', 'width', 'height'].map(d => (
                         <Input key={d} className="h-7 text-xs" type="number" placeholder={d}
-                          value={(pk as any)[d] || ''}
+                          value={getStr(pk, d)}
                           onChange={e => setPackings(a => a.map((x, j) => j === i ? { ...x, [d]: parseFloat(e.target.value) || null } : x))} />
                       ))}
                       <Select value={pk.dimension_unit}
@@ -1294,7 +1294,7 @@ export function ItemCraftPanel() {
                         { f: 'last_rejection_percent', ph: 'Rejection %', t: 'number' },
                       ] as const).map(({ f, ph, t }) => (
                         <Input key={f} className="h-7 text-xs" type={t} placeholder={ph}
-                          value={(v as any)[f] || ''}
+                          value={getStr(v, f)}
                           onChange={e => setVendors(a => a.map((x, j) => j === i ? { ...x, [f]: t === 'number' ? parseFloat(e.target.value) || null : e.target.value || null } : x))} />
                       ))}
                     </div>
