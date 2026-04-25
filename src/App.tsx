@@ -75,7 +75,7 @@ const ProfessionalTaxMaster = lazy(() => import('./pages/erp/accounting/Professi
 const EPFESILWFMaster = lazy(() => import('./pages/erp/accounting/EPFESILWFMaster'));
 const StatutoryRegistrations = lazy(() => import('./pages/erp/accounting/StatutoryRegistrations'));
 const GSTEntityConfig = lazy(() => import('./pages/erp/accounting/GSTEntityConfig'));
-const Comply360Config = lazy(() => import('./pages/erp/accounting/ComplianceSettingsAutomation'));
+const ComplianceSettingsAutomation = lazy(() => import('./pages/erp/accounting/ComplianceSettingsAutomation'));
 const FinFrame = lazy(() => import('./pages/erp/accounting/FinFrame'));
 const LedgerMaster = lazy(() => import('./pages/erp/accounting/LedgerMaster'));
 const IncomeTaxMaster = lazy(() => import('./pages/erp/accounting/IncomeTaxMaster'));
