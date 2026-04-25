@@ -3,7 +3,7 @@
  * fc-fa-depreciation: FY selector + Compute + Post All
  * [JWT] Replace with GET/POST /api/fixed-assets/depreciation
  */
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -3,7 +3,7 @@
  * Sheet-based. Bonus type drives conditional fields (statutory shows wage ceiling).
  */
 import { useState, useCallback } from 'react';
-import { Gift, Plus, Search, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Search, Edit2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

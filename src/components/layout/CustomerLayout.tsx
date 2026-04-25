@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard, FileText, IndianRupee, ScrollText,
-  ShoppingCart, FolderOpen, HeadphonesIcon, User,
-  ChevronLeft, ChevronRight, Building2, Bell, LogOut,
-} from "lucide-react";
+import { LayoutDashboard, FileText, IndianRupee, ScrollText, ShoppingCart, FolderOpen, HeadphonesIcon, User, ChevronLeft, ChevronRight, Building2, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme";
 import {

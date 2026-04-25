@@ -25,7 +25,6 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 type ConnMode = "json_http" | "odbc" | "file_watch";
 type CompanyStatus = "connected" | "disconnected" | "syncing" | "error";

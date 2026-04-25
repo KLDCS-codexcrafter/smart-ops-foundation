@@ -3,7 +3,6 @@
  * 4 tabs: EPF, ESI, LWF, Income Tax (summary)
  * Maintained by 4DSmartOps. No CRUD.
  */
-import { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';

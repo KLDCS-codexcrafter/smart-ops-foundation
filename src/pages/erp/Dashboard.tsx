@@ -18,7 +18,6 @@ import {
   applications,
   type AppDefinition,
 } from "@/components/operix-core/applications";
-import { onEnterNext } from '@/lib/keyboard';
 import { CardTile } from "@/components/operix-core/CardTile";
 import { SuspendedSessionBanner } from "@/components/layout/SuspendedSessionBanner";
 import { CommandPalette } from "@/components/layout/CommandPalette";

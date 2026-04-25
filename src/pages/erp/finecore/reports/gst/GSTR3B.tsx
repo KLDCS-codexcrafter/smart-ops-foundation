@@ -14,7 +14,6 @@ import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr } from '../reportUtils';
 import { buildGSTR3BPayload, submitGSTR3B } from '@/lib/gstPortalService';
-import { onEnterNext } from '@/lib/keyboard';
 
 interface GSTR3BPanelProps { entityCode: string; }
 

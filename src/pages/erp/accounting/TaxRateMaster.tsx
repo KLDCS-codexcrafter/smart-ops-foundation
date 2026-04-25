@@ -3,7 +3,6 @@
  * Maintained by 4DSmartOps. No CRUD.
  */
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Input } from '@/components/ui/input';
@@ -16,8 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GST_RATES, type GSTRate } from '@/data/compliance-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
+import { GST_RATES } from '@/data/compliance-seed-data';
 
 const COUNTRY_FLAGS: Record<string, string> = { IN: '🇮🇳', AE: '🇦🇪', SG: '🇸🇬', GB: '🇬🇧' };
 const COUNTRY_NAMES: Record<string, string> = { IN: 'India', AE: 'UAE', SG: 'Singapore', GB: 'United Kingdom' };

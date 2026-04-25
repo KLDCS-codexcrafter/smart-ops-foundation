@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LayoutTemplate, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ItemTemplateA3 } from '@/types/item-template-a3';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_item_templates_a3';
 // [JWT] GET /api/inventory/item-templates

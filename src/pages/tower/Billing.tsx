@@ -23,7 +23,6 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 // ── Types ──────────────────────────────────────────────
 type PlanType = "Starter" | "Growth" | "Enterprise";

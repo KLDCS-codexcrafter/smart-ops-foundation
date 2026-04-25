@@ -10,10 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Wifi, Plus, Search, Edit2, Trash2, Radio, Zap, Info, Tag, Activity, ScanLine, Package, MapPin, ShieldAlert } from 'lucide-react';
+import { Wifi, Plus, Search, Edit2, Trash2, Radio, Zap, Info, ScanLine, Package, MapPin, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RFIDTag, RFIDTagStatus, RFIDEvent } from '@/types/rfid-tag';
-import { onEnterNext } from '@/lib/keyboard';
 
 const TAG_KEY = 'erp_rfid_tags';
 const EVT_KEY = 'erp_rfid_events';

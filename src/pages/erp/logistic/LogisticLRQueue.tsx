@@ -21,9 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Truck, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getLogisticSession, recordLogisticActivity } from '@/lib/logistic-auth-engine';
-import {
-  lrAcceptancesKey, type LRAcceptance, type LRAcceptanceStatus,
-} from '@/types/logistic-portal';
+import { lrAcceptancesKey, type LRAcceptance } from '@/types/logistic-portal';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/finecore-engine';
 

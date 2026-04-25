@@ -4,7 +4,7 @@
  * [JWT] Book data from useGSTRegister. Portal data from uploaded file.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { ArrowLeftRight, Upload, Search } from 'lucide-react';
+import { ArrowLeftRight, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { parse2AFile } from '@/lib/gstPortalService';
 import { inr, fmtDate } from '../reportUtils';
-import { onEnterNext } from '@/lib/keyboard';
 import type { GSTEntry } from '@/types/voucher';
 
 interface RecoPanelGSTProps { entityCode: string; }

@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,7 +16,6 @@ import { toast } from 'sonner';
 import type { BarcodeJob, BarcodeSuperType } from '@/types/barcode-job';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { LabelTemplate } from '@/types/label-template';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_barcode_jobs';
 const IKEY = 'erp_inventory_items';

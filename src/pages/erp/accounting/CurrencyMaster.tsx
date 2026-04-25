@@ -7,7 +7,6 @@
  * Rate of Exchange: Tally model — date-wise selling/buying/standard per currency
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { onEnterNext } from '@/lib/keyboard';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
@@ -25,11 +24,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import {
-  Lock, Plus, Trash2, Edit2, ChevronDown, Search,
-  RefreshCw, Info, TrendingUp, X, DollarSign,
-  ArrowUpRight, ArrowDownLeft, Download, Loader2,
-} from 'lucide-react';
+import { Lock, Plus, Trash2, Edit2, ChevronDown, Search, Info, TrendingUp, X, DollarSign, ArrowUpRight, ArrowDownLeft, Download, Loader2 } from 'lucide-react';
 import { useCurrencies } from '@/hooks/useCurrencies';
 import type { Currency, ForexRate } from '@/types/currency';
 import { searchWorldCurrencies, getWorldCurrency, type WorldCurrencyEntry } from '@/data/world-currencies';

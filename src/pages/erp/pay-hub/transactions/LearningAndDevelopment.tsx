@@ -11,12 +11,11 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { BookOpen, GraduationCap, Grid3X3, Award, Plus, Check,
-  X, AlertTriangle, Filter, Search } from 'lucide-react';
+import { BookOpen, GraduationCap, Grid3X3, Award, Plus, Check, X, AlertTriangle, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TrainingCourse, TrainingEnrollment, SkillRecord,
   CertificationRecord, LearningTab, CourseType, EnrollmentStatus,

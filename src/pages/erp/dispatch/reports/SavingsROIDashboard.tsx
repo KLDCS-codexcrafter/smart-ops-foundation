@@ -20,10 +20,7 @@ import {
 import {
   TrendingUp, Settings, Download, AlertCircle, CheckCircle2, Lightbulb,
 } from 'lucide-react';
-import {
-  BarChart, Bar, Line, ComposedChart, ResponsiveContainer,
-  XAxis, YAxis, Tooltip, CartesianGrid, Legend,
-} from 'recharts';
+import { Bar, Line, ComposedChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {

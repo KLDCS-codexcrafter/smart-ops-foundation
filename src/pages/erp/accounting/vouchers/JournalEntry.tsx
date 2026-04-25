@@ -20,7 +20,6 @@
  * [JWT] All storage via finecore-engine
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';

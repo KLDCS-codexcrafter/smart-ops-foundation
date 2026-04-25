@@ -1,10 +1,6 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import {
-  ScrollText, Download, Search, X, Shield, Server,
-  Globe, Users, CreditCard, Database, Link2, FileDown,
-  ChevronLeft, ChevronRight,
-} from "lucide-react";
+import { ScrollText, Download, Search, X, Shield, Server, Users, CreditCard, Database, Link2, FileDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +19,6 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { onEnterNext } from '@/lib/keyboard';
 
 // ── Types ──────────────────────────────────────────────
 type EventType = "Security" | "Customer" | "User" | "Billing" | "System" | "Integration" | "Data Export";

@@ -12,10 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tag, Plus, Search, Edit2, Trash2, Copy, ShieldCheck, FileText } from 'lucide-react';
+import { Tag, Plus, Search, Edit2, Trash2, Copy, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LabelTemplate, LabelType, LabelSize, LabelBarcodeType } from '@/types/label-template';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_label_templates';
 // [JWT] GET /api/inventory/label-templates

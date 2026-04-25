@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { QrCode, ArrowLeft, CheckCircle2, Download, Printer, Palette, IndianRupee } from 'lucide-react';
+import { QrCode, ArrowLeft, CheckCircle2, Download, Palette } from 'lucide-react';
 
 const FEATURES = [
   { icon: Download, title: 'Pull from Tally', desc: 'Import item masters directly from Tally ERP via the Bridge sync engine. No manual data entry — items flow automatically with code, name, HSN, and UOM.' },

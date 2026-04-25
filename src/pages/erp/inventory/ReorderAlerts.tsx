@@ -18,7 +18,6 @@ import {
 import { toast } from 'sonner';
 import type { LocationReorderRule, DepartmentTag, ReorderPriority } from '@/types/location-reorder-rule';
 import type { InventoryItem } from '@/types/inventory-item';
-import { onEnterNext } from '@/lib/keyboard';
 
 const RRKEY = 'erp_location_reorder_rules';
 const DTKEY = 'erp_department_tags';

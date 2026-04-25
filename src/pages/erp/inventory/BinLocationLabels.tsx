@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MapPin, Plus, Search, Edit2, Trash2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BinLabel } from '@/types/bin-label';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_bin_labels';
 const GKEY = 'erp_godowns';

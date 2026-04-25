@@ -3,7 +3,7 @@
  * 4-tab screen: Daily Entry · Biometric Import · Regularization · Geo-Fence Config
  */
 import React, { useState, useMemo, useCallback, useRef } from 'react';
-import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -15,14 +15,10 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Separator } from '@/components/ui/separator';
-import {
-  UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X,
-  ChevronLeft, ChevronRight, Clock, Download, AlertTriangle, Save, Filter
-} from 'lucide-react';
+import { UserCheck, Upload, RotateCcw, MapPin, Plus, Search, Check, X, ChevronLeft, ChevronRight, Download, AlertTriangle, Save, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAttendanceEntry, parseBiometricFile, groupBiometricPunches,
   computeWorkHours, computeLate } from '@/hooks/useAttendanceEntry';

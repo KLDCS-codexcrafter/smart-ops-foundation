@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { format, parseISO, getDaysInMonth, differenceInDays } from 'date-fns';
+import { parseISO, getDaysInMonth, differenceInDays } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -7,16 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
-import { Users, Building2, FileText, Shield, Plus, Download,
-  AlertTriangle, Check, X, ChevronRight, HardHat, Receipt } from 'lucide-react';
+import { Users, Building2, FileText, Shield, Plus, Download, AlertTriangle, X, ChevronRight, HardHat, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LabourContractor, ContractWorker, WorkOrder, ContractInvoice,
   ContractAttendance, ContractTab, WorkerSkillCategory, InvoiceStatus,

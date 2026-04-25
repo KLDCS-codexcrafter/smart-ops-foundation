@@ -12,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Search, Plus, Lock, Settings2, Boxes, Trash2, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
 
 export interface ParameterEntry {
   id: string;

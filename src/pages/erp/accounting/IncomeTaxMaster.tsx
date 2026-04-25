@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Info, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import {
   IT_SLABS_OLD_REGIME, IT_SLABS_NEW_REGIME, SURCHARGE_RATES,
   IT_CESS_RATE, STANDARD_DEDUCTION, REBATE_87A,

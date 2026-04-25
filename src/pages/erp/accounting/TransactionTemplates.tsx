@@ -14,8 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
-import { FileText, Shield, CreditCard, Plus, Edit2, Trash2,
-  Search, Star, StarOff, Eye, EyeOff, Zap, ChevronDown } from 'lucide-react';
+import { FileText, Shield, CreditCard, Plus, Edit2, Trash2, Search, Star, StarOff, Eye, EyeOff, ChevronDown } from 'lucide-react';
 import { useTransactionTemplates } from '@/hooks/useTransactionTemplates';
 import type { TransactionTemplate, TransactionTemplateType } from '@/types/transaction-template';
 import { TEMPLATE_VARIABLES, PREVIEW_VARS, VOUCHER_TYPE_NAMES,

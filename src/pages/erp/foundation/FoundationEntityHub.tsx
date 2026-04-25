@@ -4,7 +4,7 @@
  * Tab controlled by ?tab= URL param.
  * Create/edit routes unchanged.
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { onEnterNext } from '@/lib/keyboard';
 
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 

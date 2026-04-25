@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import {
   CommandDialog,
   CommandInput,
@@ -28,26 +28,13 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import {
-  Wallet, Lock, Plus, Landmark, Building2, CreditCard, Banknote,
-  TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch,
-  PiggyBank, HandCoins, Edit2, Ban, CheckCircle2, Loader2,
-  BookOpen, FileText, AlertTriangle, Shield,
-  Building, Scale, ArrowUpRight, ArrowDownLeft,
-  Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag,
-  Clock, History, PauseCircle, PlayCircle, MessageSquare,
-  Trash2, Search,
-} from 'lucide-react';
+import { Wallet, Lock, Plus, Landmark, Building2, CreditCard, Banknote, TrendingUp, TrendingDown, Receipt, Users, Truck, GitBranch, PiggyBank, HandCoins, Edit2, Ban, CheckCircle2, Loader2, BookOpen, FileText, AlertTriangle, Shield, Building, Scale, ArrowUpRight, ArrowDownLeft, Calendar, ChevronDown, ChevronUp, DollarSign, Percent, Hash, Tag, History, PauseCircle, PlayCircle, MessageSquare, Trash2, Search } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadEntities } from '@/data/mock-entities';
-import {
-  L1_PRIMARIES, L2_PARENT_GROUPS,
-  L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS,
-  deriveL3NumericCode, deriveLedgerNumericCode, L3_NUMERIC_MAP,
-} from '@/data/finframe-seed-data';
+import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS, L4_INDUSTRY_PACKS, deriveLedgerNumericCode, L3_NUMERIC_MAP } from '@/data/finframe-seed-data';
 import { HSN_CODES, SAC_CODES, type HSNSACCode } from '@/data/hsn-sac-seed-data';
-import { TDS_SECTIONS, type TDSSection } from '@/data/compliance-seed-data';
+import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import type { ITActBlock } from '@/types/fixed-asset';
 import { IT_ACT_RATES, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';

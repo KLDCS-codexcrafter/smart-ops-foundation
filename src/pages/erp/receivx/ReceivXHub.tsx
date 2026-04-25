@@ -3,7 +3,7 @@
  * 8 KPIs + aging + recent PTPs + recent comm log
  */
 import { useMemo } from 'react';
-import { TrendingUp, AlertTriangle, Clock, Activity, ClipboardCheck, CalendarClock, MessageCircle, Bell } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Clock, Activity, ClipboardCheck, CalendarClock, Bell } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';

@@ -19,10 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
-import {
-  Banknote, Check, ChevronRight, AlertTriangle, Lock, Unlock, Play,
-  FileText, Download, Eye, UserX, RotateCcw, IndianRupee,
-} from 'lucide-react';
+import { Banknote, Check, ChevronRight, AlertTriangle, Lock, Unlock, Play, FileText, Download, Eye, UserX, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePayrollEngine } from '@/hooks/usePayrollEngine';
 import type { PayrollRun, EmployeePayslip } from '@/types/payroll-run';

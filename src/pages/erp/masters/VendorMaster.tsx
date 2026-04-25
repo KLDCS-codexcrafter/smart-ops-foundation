@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByDistrict, getDistrictsByState } from '@/data/india-geography';
-import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
+import { onEnterNext, useCtrlS, amountInputProps } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import {

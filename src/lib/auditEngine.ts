@@ -6,7 +6,7 @@
 import type { Voucher, GSTEntry, JournalEntry } from '@/types/voucher';
 import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry, AdvanceEntry } from '@/types/compliance';
 import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/finecore-engine';
-import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey, advancesKey } from '@/types/compliance';
+import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey } from '@/types/compliance';
 
 // ── Storage reader ──────────────────────────────────────────────────
 function ls<T>(key: string): T[] {

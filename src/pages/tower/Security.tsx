@@ -1,12 +1,6 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import {
-  Search, Shield, ShieldCheck, ShieldAlert, AlertTriangle, XCircle,
-  Lock, Activity, Server, Database, Cable, Globe, Layers,
-  ChevronDown, ChevronRight, Users, Settings, FileText,
-  Eye, Trash2, Plus, UserPlus, Building2, Zap, Mail,
-  Share2, MessageSquare, Workflow, Palette, Download,
-} from "lucide-react";
+import { Search, Shield, ShieldCheck, ShieldAlert, AlertTriangle, XCircle, Lock, Activity, Server, Database, Cable, Globe, Layers, ChevronDown, ChevronRight, Users, Settings, FileText, Eye, Trash2, Plus, UserPlus, Building2, Zap, Mail, MessageSquare, Workflow, Palette, Download } from "lucide-react";
 import { TowerLayout } from "@/components/layout/TowerLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

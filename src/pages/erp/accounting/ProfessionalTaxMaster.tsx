@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/table';
 import { Info } from 'lucide-react';
 import { PROFESSIONAL_TAX_SLABS, type ProfessionalTaxSlab } from '@/data/payroll-statutory-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
 
 export function ProfessionalTaxMasterPanel() {
   const [search, setSearch] = useState('');

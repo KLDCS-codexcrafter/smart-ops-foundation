@@ -3,7 +3,7 @@
  * fc-fa-cwip: Shows status=cwip units, Capitalise button
  * [JWT] Replace with GET /api/fixed-assets/units?status=cwip
  */
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {

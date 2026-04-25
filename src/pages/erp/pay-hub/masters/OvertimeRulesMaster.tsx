@@ -3,7 +3,7 @@
  * Sheet (sm:max-w-2xl). OT slabs inline editable.
  */
 import { useState, useCallback } from 'react';
-import { Clock, Plus, Search, Edit2, ToggleLeft, ToggleRight, X } from 'lucide-react';
+import { Plus, Search, Edit2, ToggleLeft, ToggleRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

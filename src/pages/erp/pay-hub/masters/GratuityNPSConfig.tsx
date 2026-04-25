@@ -3,7 +3,7 @@
  * Config panel (not a list master). Always-visible form. Save button.
  */
 import { useState, useCallback } from 'react';
-import { Heart, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

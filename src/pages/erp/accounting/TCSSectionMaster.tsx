@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/table';
 import { Search } from 'lucide-react';
 import { TCS_SECTIONS } from '@/data/compliance-seed-data';
-import { onEnterNext } from '@/lib/keyboard';
 
 function formatAmount(val: number | null): string {
   if (val === null) return '—';

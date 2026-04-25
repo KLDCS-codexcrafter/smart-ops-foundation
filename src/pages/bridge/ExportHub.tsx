@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Download, CheckCircle2, XCircle, Calendar, FileSpreadsheet,
-} from "lucide-react";
+import { Download, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { BridgeLayout } from "@/components/layout/BridgeLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

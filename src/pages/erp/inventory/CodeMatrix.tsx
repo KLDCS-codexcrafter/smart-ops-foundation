@@ -14,7 +14,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Hash, Plus, Edit2, Trash2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CodeMatrixRule, BarcodeType } from '@/types/code-matrix';
-import { onEnterNext } from '@/lib/keyboard';
 
 const BARCODE_TYPES: { value: BarcodeType; label: string; desc: string }[] = [
   { value: 'EAN13', label: 'EAN-13', desc: 'Standard retail barcode (13 digits)' },

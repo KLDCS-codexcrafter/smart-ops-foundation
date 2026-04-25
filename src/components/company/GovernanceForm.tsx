@@ -26,7 +26,6 @@ import {
   INDIAN_STATE_NAMES,
 } from '@/lib/india-validations';
 import { cn } from '@/lib/utils';
-import { onEnterNext } from '@/lib/keyboard';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 export interface GSTReg {

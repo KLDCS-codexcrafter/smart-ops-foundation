@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Printer, Play, XCircle, RotateCw, Clock, CheckCircle2, Tags, AlertTriangle, Search, Info, BarChart3 } from 'lucide-react';
 import type { PrintJob, PrintJobStatus } from '@/types/print-job';
-import { onEnterNext } from '@/lib/keyboard';
 
 const KEY = 'erp_print_jobs';
 // [JWT] GET /api/inventory/print-jobs

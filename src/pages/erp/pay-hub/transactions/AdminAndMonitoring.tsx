@@ -20,9 +20,7 @@ import { UserCog, Mail, Monitor, Shield, Plus, Check,
 import { toast } from 'sonner';
 import type { AccessRole, EmailTemplate, ActivityLog, ESSConfig,
   AdminTab, RoleLevel, TemplateEvent, ActivityCategory } from '@/types/admin-config';
-import { ACCESS_ROLES_KEY, EMAIL_TEMPLATES_KEY, ACTIVITY_LOGS_KEY, ESS_CONFIG_KEY,
-  ROLE_LEVEL_LABELS, TEMPLATE_EVENT_LABELS, ACTIVITY_CATEGORY_COLORS,
-  DEFAULT_MODULES, makeDefaultRoles } from '@/types/admin-config';
+import { ACCESS_ROLES_KEY, EMAIL_TEMPLATES_KEY, ACTIVITY_LOGS_KEY, ESS_CONFIG_KEY, ROLE_LEVEL_LABELS, TEMPLATE_EVENT_LABELS, DEFAULT_MODULES, makeDefaultRoles } from '@/types/admin-config';
 import type { Employee } from '@/types/employee';
 import type { PayrollRun } from '@/types/payroll-run';
 import type { LeaveRequest } from '@/types/leave-management';

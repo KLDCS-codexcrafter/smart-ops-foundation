@@ -15,7 +15,6 @@ import { Tags, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, Chevron
 import { toast } from 'sonner';
 import type { Classification } from '@/types/classification';
 import type { Brand } from '@/types/brand';
-import { onEnterNext } from '@/lib/keyboard';
 
 const CLASS_TYPES = ['category', 'subcategory', 'group', 'class'];
 const CAT_LVLS = ['L1', 'L2', 'L3'];
