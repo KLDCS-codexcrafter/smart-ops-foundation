@@ -31,7 +31,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 
 export function AttendanceEntryPanel() {
   const { records, regularizations, geoFences,
-    _upsertRecord, upsertMany, getByDate,
+    upsertRecord: _upsertRecord, upsertMany, getByDate,
     createRegularization, approveRegularization, rejectRegularization,
     createGeoFence, updateGeoFence, toggleGeoFence } = useAttendanceEntry();
 

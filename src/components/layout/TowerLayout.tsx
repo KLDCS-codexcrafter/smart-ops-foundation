@@ -33,7 +33,7 @@ interface TowerLayoutProps {
   subtitle?: string;
 }
 
-export function TowerLayout({ children, title, _subtitle }: TowerLayoutProps) {
+export function TowerLayout({ children, title, subtitle: _subtitle }: TowerLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();

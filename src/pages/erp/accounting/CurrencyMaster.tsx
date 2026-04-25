@@ -77,8 +77,8 @@ function RateInput({ label, value, onChange, hint }: {
 // ── Rate sub-screen (inside sheet) ────────────────────────────────────────────
 
 function RateSubScreen({
-  currencyId, _currencyName, isoCode, baseCurrencySymbol,
-  rates, onAdd, _onUpdate, onDelete,
+  currencyId, currencyName: _currencyName, isoCode, baseCurrencySymbol,
+  rates, onAdd, onUpdate: _onUpdate, onDelete,
 }: {
   currencyId: string; currencyName: string; isoCode: string; baseCurrencySymbol: string;
   rates: ForexRate[];
