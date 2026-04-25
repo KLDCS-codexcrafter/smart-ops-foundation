@@ -203,7 +203,7 @@ export default function ParentCompany() {
       if (full.gstRegs) setGstRegs(full.gstRegs);
       if (full.lutBonds) setLutBonds(full.lutBonds);
     }
-  }, []); // eslint-disable-line
+  }, []);  
 
   // Auto-suggest short code
   useEffect(() => {

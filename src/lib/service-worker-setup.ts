@@ -57,7 +57,7 @@ export async function registerServiceWorker(): Promise<void> {
       });
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn('[sw] registration failed', err);
   }
 

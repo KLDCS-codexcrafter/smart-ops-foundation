@@ -90,7 +90,7 @@ export function AssetMasterPanel() {
       }
     } catch { /* ignore */ }
     return [];
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);  
 
   // ── Company name for barcode labels ─────────────────────────────
   const companyName = useMemo(() => {
