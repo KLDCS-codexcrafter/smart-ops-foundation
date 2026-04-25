@@ -192,7 +192,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setRaisedById(''); setAgainstInvoiceId(''); setReason('damaged_goods');
     setReasonNote(''); setItems([]); setAttachments([]);
   }, [persons, raisedById, selectedInvoice, entityCode, memoNo, memoDate,
-      reason, reasonNote, items, totalAmount, attachments]);
+      reason, reasonNote, items, totalAmount, attachments, validate]);
    
   void persistMemo;
 
