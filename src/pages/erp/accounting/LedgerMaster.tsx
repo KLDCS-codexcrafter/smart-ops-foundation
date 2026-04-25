@@ -717,7 +717,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   if (!raw) return [];
   const all = JSON.parse(raw);
-  return (all as Array<Partial<AnyLedgerDefinition> & Record<string, unknown>>).map(d => ({
+  return (all as Array<Record<string, unknown>>).map(d => ({
     ...d,
     ledgerType: d.ledgerType ?? 'cash',
     numericCode: d.numericCode ?? '',
@@ -816,7 +816,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     reinstatedBy: d.reinstatedBy ?? null,
     reinstatedAt: d.reinstatedAt ?? null,
     reinstatedReason: d.reinstatedReason ?? null,
-  }));
+  })) as AnyLedgerDefinition[];
 };
 
 const loadCashDefs = (): CashLedgerDefinition[] =>
@@ -844,7 +844,7 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
-  const all: AnyLedgerDefinition[] = raw ? (JSON.parse(raw) as Array<Partial<AnyLedgerDefinition> & Record<string, unknown>>).map(d => ({ ...d, ledgerType: (d.ledgerType ?? 'cash') } as AnyLedgerDefinition)) : [];
+  const all: AnyLedgerDefinition[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(d => ({ ...d, ledgerType: (d.ledgerType ?? 'cash') })) as AnyLedgerDefinition[]) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
@@ -898,7 +898,7 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
-  return (JSON.parse(raw) as Array<Partial<EntityLedgerInstance> & Record<string, unknown>>).map(i => ({
+  return (JSON.parse(raw) as Array<Record<string, unknown>>).map(i => ({
     ...i,
     openingBalanceType: i.openingBalanceType ?? 'Dr',
     displayNumericCode: i.displayNumericCode ?? '',
@@ -907,13 +907,13 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  }));
+  })) as EntityLedgerInstance[];
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
   // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${inst.entityId}_ledger_instances`);
-  const all: EntityLedgerInstance[] = raw ? (JSON.parse(raw) as Array<Partial<EntityLedgerInstance> & Record<string, unknown>>).map(i => ({
+  const all: EntityLedgerInstance[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(i => ({
     ...i,
     openingBalanceType: i.openingBalanceType ?? 'Dr',
     displayNumericCode: i.displayNumericCode ?? '',
@@ -922,7 +922,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  })) : [];
+  })) as EntityLedgerInstance[]) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   // [JWT] POST /api/accounting/ledgers
@@ -1635,9 +1635,9 @@ export function LedgerMasterPanel() {
   };
 
   // HSN/SAC auto-fill helper
-  const applyHsnSac = (
+  const applyHsnSac = <F extends Record<string, unknown>>(
     code: HSNSACCode,
-    setter: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
+    setter: React.Dispatch<React.SetStateAction<F>>
   ) => {
     setter(f => ({
       ...f,
@@ -3319,7 +3319,7 @@ export function LedgerMasterPanel() {
   void _getDaysUntil;
 
   // ── Shared scope section renderer ──
-  const renderScopeSection = (form: { scope: string; entityId: string }, setForm: React.Dispatch<React.SetStateAction<{ scope: string; entityId: string }>>) => (
+  const renderScopeSection = <F extends { scope: string; entityId: string }>(form: F, setForm: React.Dispatch<React.SetStateAction<F>>) => (
     <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
       <div className="space-y-2">
         <Label className="text-sm font-medium">Entity Scope</Label>
@@ -4689,7 +4689,7 @@ export function LedgerMasterPanel() {
               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
               <ChevronDown className="h-3 w-3" /> Advanced
             </button>
-            {dutiesTaxForm.scope === 'entity' && renderScopeSection(dutiesTaxForm, setDutiesTaxForm as React.Dispatch<React.SetStateAction<{ scope: string; entityId: string }>>)}
+            {dutiesTaxForm.scope === 'entity' && renderScopeSection(dutiesTaxForm, setDutiesTaxForm)}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDutiesTaxOpen(false)}>Cancel</Button>
