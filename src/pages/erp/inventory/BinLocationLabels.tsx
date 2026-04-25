@@ -178,7 +178,7 @@ export function BinLocationLabelsPanel() {
               {([{ f: 'aisle', l: 'Aisle' }, { f: 'rack', l: 'Rack' }, { f: 'shelf', l: 'Shelf' }, { f: 'bin', l: 'Bin' }] as const).map(({ f, l }) => (
                 <div key={f} className="space-y-1.5">
                   <Label className="text-xs">{l}</Label>
-                  <Input className="h-8 text-xs" placeholder={l[0]} value={(form as Record<string, unknown>)[f] || ''}
+                  <Input className="h-8 text-xs" placeholder={l[0]} value={String((form as Record<string, unknown>)[f] ?? '')}
                     onChange={e => setForm(ff => ({ ...ff, [f]: e.target.value || null }))} />
                 </div>
               ))}

@@ -106,8 +106,9 @@ export function ReorderAlertsPanel() {
   const stockMap = useMemo(() => {
     const m: Record<string, number> = {};
     stockLedger.forEach(e => {
-      if (!m[e.item_id]) m[e.item_id] = 0;
-      m[e.item_id] += (e.qty_in || 0) - (e.qty_out || 0);
+      const itemId = String(e.item_id);
+      if (!m[itemId]) m[itemId] = 0;
+      m[itemId] += (Number(e.qty_in) || 0) - (Number(e.qty_out) || 0);
     });
     return m;
   }, [stockLedger]);
@@ -538,14 +539,14 @@ export function ReorderAlertsPanel() {
 
                       const getVal = (field: keyof ThresholdRow): string => {
                         if (pending && pending[field] !== undefined && pending[field] !== '') return String(pending[field]);
-                        if (rule) return String((rule as Record<string, unknown>)[field] ?? '');
+                        if (rule) return String((rule as unknown as Record<string, unknown>)[field] ?? '');
                         return '';
                       };
 
                       const isFieldPending = (field: keyof ThresholdRow): boolean => {
                         if (!pending) return false;
                         const pv = pending[field];
-                        const rv = rule ? String((rule as Record<string, unknown>)[field] ?? '') : '';
+                        const rv = rule ? String((rule as unknown as Record<string, unknown>)[field] ?? '') : '';
                         return pv !== undefined && pv !== '' && String(pv) !== rv;
                       };
 
@@ -901,7 +902,7 @@ export function ReorderAlertsPanel() {
               ].map(({ f, l, d }) => (
                 <div key={f} className="space-y-1">
                   <Label className="text-xs">{l}</Label>
-                  <Input type="number" min="0" className="h-8 text-xs" value={(ruleForm as Record<string, unknown>)[f] || ''}
+                  <Input type="number" min="0" className="h-8 text-xs" value={String((ruleForm as Record<string, unknown>)[f] ?? '')}
                     onChange={e => setRuleForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || 0 }))} />
                   <p className="text-[10px] text-muted-foreground">{d}</p>
                 </div>

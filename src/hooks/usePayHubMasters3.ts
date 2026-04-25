@@ -113,13 +113,16 @@ export function useHolidayCalendars() {
           stateName: c.stateName ?? '',
           location: c.location ?? 'All Locations',
           inheritedHolidays: c.inheritedHolidays ?? [],
-          holidays: (c.holidays ?? []).map(h => ({
-            ...h,
-            localName: (h as any).localName ?? '',
-            counties: (h as any).counties ?? [],
-            isFixed: (h as any).isFixed ?? false,
-            source: (h as any).source ?? 'manual',
-          })),
+          holidays: (c.holidays ?? []).map(h => {
+            const hRec = h as Record<string, unknown>;
+            return {
+              ...h,
+              localName: (hRec.localName as string) ?? '',
+              counties: (hRec.counties as string[]) ?? [],
+              isFixed: (hRec.isFixed as boolean) ?? false,
+              source: (hRec.source as string) ?? 'manual',
+            };
+          }),
         };
       });
     } catch { /* ignore */ }
