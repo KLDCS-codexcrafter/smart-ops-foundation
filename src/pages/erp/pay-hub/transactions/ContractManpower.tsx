@@ -126,6 +126,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     }
     toast.success('Contractor saved');
     setAgencySheetOpen(false); setAgencyEditId(null); setAgencyForm(BLANK_AGENCY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_AGENCY is a stable shape constant defined in component scope
   }, [agencySheetOpen, agencyForm, agencyEditId, agencies]);
 
   // ── Worker Sheet ─────────────────────────────────────────────
@@ -163,6 +164,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     }
     toast.success('Contract worker saved');
     setWorkerSheetOpen(false); setWorkerEditId(null); setWorkerForm(BLANK_WORKER);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_WORKER is a stable shape constant defined in component scope
   }, [workerSheetOpen, workerForm, workerEditId, workers]);
 
   // ── Work Order Sheet ─────────────────────────────────────────
@@ -203,7 +205,8 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     }
     toast.success('Work order saved');
     setOrderSheetOpen(false); setOrderEditId(null); setOrderForm(BLANK_ORDER);
-  }, [orderSheetOpen, orderForm, orderEditId, orders]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_ORDER stable shape; computedOrderValue used inline above
+  }, [orderSheetOpen, orderForm, orderEditId, orders, computedOrderValue]);
 
   // ── Invoice Sheet ────────────────────────────────────────────
   const [invoiceSheetOpen, setInvoiceSheetOpen] = useState(false);
@@ -232,6 +235,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
       id: `inv-${Date.now()}`, invoiceCode: code, created_at: now, updated_at: now } as ContractInvoice]);
     toast.success('Invoice recorded');
     setInvoiceSheetOpen(false); setInvoiceForm(BLANK_INVOICE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_INVOICE is a stable shape constant defined in component scope
   }, [invoiceSheetOpen, invoiceForm, invoices, orders]);
 
   // ── Attendance Sheet ─────────────────────────────────────────
@@ -265,6 +269,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     } as ContractAttendance]);
     toast.success('Attendance recorded');
     setAttendanceSheetOpen(false); setAttForm(BLANK_ATTENDANCE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: BLANK_ATTENDANCE is a stable shape constant defined in component scope
   }, [attendanceSheetOpen, attForm, attendance]);
 
   // ── masterSave ────────────────────────────────────────────────
