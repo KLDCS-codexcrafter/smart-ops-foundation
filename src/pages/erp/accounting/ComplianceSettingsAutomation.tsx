@@ -32,6 +32,12 @@ import {
   DEFAULT_GROUP_CONFIG, DEFAULT_SETTLEMENT, DEFAULT_OUTSTANDING,
   DEFAULT_RCM, DEFAULT_LC,
 } from './ComplianceSettingsAutomation.defaults';
+import {
+  COMPLY360_GROUP_KEY, comply360RCMKey, comply360TDSPKey, comply360TDSRKey,
+  comply360LCKey, comply360EximKey, comply360SAMKey, comply360WAKey,
+  comply360FeaturesKey, comply360SettlementKey, comply360OutstandingKey,
+  type SAMConfig,
+} from './ComplianceSettingsAutomation.constants';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
