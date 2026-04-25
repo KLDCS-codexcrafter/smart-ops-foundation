@@ -717,7 +717,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   if (!raw) return [];
   const all = JSON.parse(raw);
-  return all.map((d: any) => ({
+  return (all as Array<Record<string, unknown>>).map(d => ({
     ...d,
     ledgerType: d.ledgerType ?? 'cash',
     numericCode: d.numericCode ?? '',
@@ -816,7 +816,7 @@ const loadAllDefinitions = (): AnyLedgerDefinition[] => {
     reinstatedBy: d.reinstatedBy ?? null,
     reinstatedAt: d.reinstatedAt ?? null,
     reinstatedReason: d.reinstatedReason ?? null,
-  }));
+  })) as unknown as AnyLedgerDefinition[];
 };
 
 const loadCashDefs = (): CashLedgerDefinition[] =>
@@ -844,7 +844,7 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
-  const all: AnyLedgerDefinition[] = raw ? JSON.parse(raw).map((d: any) => ({ ...d, ledgerType: d.ledgerType ?? 'cash' })) : [];
+  const all: AnyLedgerDefinition[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(d => ({ ...d, ledgerType: (d.ledgerType ?? 'cash') })) as unknown as AnyLedgerDefinition[]) : [];
   const idx = all.findIndex(d => d.id === def.id);
   if (idx >= 0) all[idx] = def; else all.push(def);
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
@@ -875,7 +875,7 @@ const removeDefinition = (defId: string): void => {
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   const raw = localStorage.getItem('erp_group_ledger_definitions');
   const all = raw ? JSON.parse(raw) : [];
-  const filtered = all.filter((d: any) => d.id !== defId);
+  const filtered = (all as Array<{ id: string }>).filter(d => d.id !== defId);
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
@@ -898,7 +898,7 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${entityId}_ledger_instances`);
   if (!raw) return [];
-  return JSON.parse(raw).map((i: any) => ({
+  return (JSON.parse(raw) as Array<Record<string, unknown>>).map(i => ({
     ...i,
     openingBalanceType: i.openingBalanceType ?? 'Dr',
     displayNumericCode: i.displayNumericCode ?? '',
@@ -907,13 +907,13 @@ const loadInstances = (entityId: string): EntityLedgerInstance[] => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  }));
+  })) as unknown as EntityLedgerInstance[];
 };
 
 const saveInstance = (inst: EntityLedgerInstance) => {
   // [JWT] GET /api/ledger/instances/:entityId
   const raw = localStorage.getItem(`erp_entity_${inst.entityId}_ledger_instances`);
-  const all: EntityLedgerInstance[] = raw ? JSON.parse(raw).map((i: any) => ({
+  const all: EntityLedgerInstance[] = raw ? ((JSON.parse(raw) as Array<Record<string, unknown>>).map(i => ({
     ...i,
     openingBalanceType: i.openingBalanceType ?? 'Dr',
     displayNumericCode: i.displayNumericCode ?? '',
@@ -922,7 +922,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
     signatories: i.signatories ?? [],
     lastReconciledDate: i.lastReconciledDate ?? null,
     lastReconciledBalance: i.lastReconciledBalance ?? 0,
-  })) : [];
+  })) as unknown as EntityLedgerInstance[]) : [];
   const idx = all.findIndex(i => i.id === inst.id);
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   // [JWT] POST /api/accounting/ledgers
@@ -1107,7 +1107,7 @@ const autoCreateInstances = (
       openingBalanceType,
       isActive: true,
       displayCode: def.code,
-      displayNumericCode: `${entity.shortCode}/${(def as any).numericCode || def.code}`,
+      displayNumericCode: `${entity.shortCode}/${(def as { numericCode?: string }).numericCode || def.code}`,
       currentCustodian: null,
       signatoryType: null,
       signatories: [],
@@ -1125,7 +1125,7 @@ const getFinFrameL4Groups = (l3Codes: string[]): { code: string; name: string; p
   if (!raw) return [];
   try {
     const groups = JSON.parse(raw);
-    return groups.filter((g: any) => l3Codes.includes(g.parentL3Code) && g.status === 'active');
+    return (groups as Array<{ code: string; name: string; parentL3Code: string; status: string }>).filter(g => l3Codes.includes(g.parentL3Code) && g.status === 'active');
   } catch { return []; }
 };
 
@@ -1635,11 +1635,11 @@ export function LedgerMasterPanel() {
   };
 
   // HSN/SAC auto-fill helper
-  const applyHsnSac = (
+  const applyHsnSac = <F extends Record<string, unknown>>(
     code: HSNSACCode,
-    setter: React.Dispatch<React.SetStateAction<any>>
+    setter: React.Dispatch<React.SetStateAction<F>>
   ) => {
-    setter((f: any) => ({
+    setter(f => ({
       ...f,
       hsnSacCode: code.code,
       hsnSacType: code.codeType,
@@ -1725,8 +1725,8 @@ export function LedgerMasterPanel() {
     );
     if (defs.length === 0) return null;
     const total = defs.reduce((sum, d) => {
-      const ob = (d as any).openingBalance ?? 0;
-      const obt: 'Dr' | 'Cr' = (d as any).openingBalanceType ?? 'Dr';
+      const ob = (d as { openingBalance?: number }).openingBalance ?? 0;
+      const obt: 'Dr' | 'Cr' = (d as { openingBalanceType?: 'Dr' | 'Cr' }).openingBalanceType ?? 'Dr';
       return sum + (obt === 'Dr' ? ob : -ob);
     }, 0);
     if (total === 0) return null;
@@ -1874,8 +1874,8 @@ export function LedgerMasterPanel() {
     setBankForm({
       parentGroupCode: def.parentGroupCode, parentGroupName: def.parentGroupName,
       name: def.name, alias: def.alias,
-      bankName: INDIAN_BANKS.includes(def.bankName as any) ? def.bankName : 'Other',
-      bankNameOther: INDIAN_BANKS.includes(def.bankName as any) ? '' : def.bankName,
+      bankName: (INDIAN_BANKS as readonly string[]).includes(def.bankName) ? def.bankName : 'Other',
+      bankNameOther: (INDIAN_BANKS as readonly string[]).includes(def.bankName) ? '' : def.bankName,
       accountNumber: def.accountNumber, ifscCode: def.ifscCode,
       accountType: def.accountType, odLimit: def.odLimit,
       openingBalance: 0, openingBalanceType: getDefaultNature(def.accountType),
@@ -3286,8 +3286,8 @@ export function LedgerMasterPanel() {
       const inst = filteredInstances.find(i => i.ledgerDefinitionId === def.id);
       if (inst) return { amount: inst.openingBalance, type: inst.openingBalanceType };
     }
-    const ob = (def as any).openingBalance ?? 0;
-    const obt = (def as any).openingBalanceType ?? 'Dr';
+    const ob = (def as { openingBalance?: number }).openingBalance ?? 0;
+    const obt = ((def as { openingBalanceType?: 'Dr' | 'Cr' }).openingBalanceType ?? 'Dr') as 'Dr' | 'Cr';
     return { amount: ob, type: obt };
   };
 
@@ -3319,21 +3319,21 @@ export function LedgerMasterPanel() {
   void _getDaysUntil;
 
   // ── Shared scope section renderer ──
-  const renderScopeSection = (form: { scope: string; entityId: string }, setForm: React.Dispatch<React.SetStateAction<any>>) => (
+  const renderScopeSection = <F extends { scope: string; entityId: string }>(form: F, setForm: React.Dispatch<React.SetStateAction<F>>) => (
     <div className="space-y-3 border border-border rounded-xl p-3 bg-muted/5">
       <div className="space-y-2">
         <Label className="text-sm font-medium">Entity Scope</Label>
         <div className="flex gap-3">
-          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'group', entityId: '' }))}
+          <button type="button" onClick={() => setForm(f => ({ ...f, scope: 'group', entityId: '' }))}
             className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${form.scope === 'group' ? 'bg-teal-500/10 text-teal-600 border-teal-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Group Level</button>
-          <button type="button" onClick={() => setForm((f: any) => ({ ...f, scope: 'entity' }))}
+          <button type="button" onClick={() => setForm(f => ({ ...f, scope: 'entity' }))}
             className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${form.scope === 'entity' ? 'bg-amber-500/10 text-amber-600 border-amber-500/30' : 'bg-muted/30 text-muted-foreground border-border hover:bg-muted/50'}`}>Entity Specific</button>
         </div>
       </div>
       {form.scope === 'entity' && (
         <div className="space-y-1.5">
           <Label className="text-sm font-medium">Entity <span className="text-destructive">*</span></Label>
-          <Select value={form.entityId} onValueChange={(v) => setForm((f: any) => ({ ...f, entityId: v }))}>
+          <Select value={form.entityId} onValueChange={(v) => setForm(f => ({ ...f, entityId: v }))}>
             <SelectTrigger><SelectValue placeholder="Select entity" /></SelectTrigger>
             <SelectContent>{entities.map(e => (<SelectItem key={e.id} value={e.id}>{e.name} ({e.shortCode})</SelectItem>))}</SelectContent>
           </Select>
@@ -3481,7 +3481,7 @@ export function LedgerMasterPanel() {
       )}
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'definitions' | 'opening_balances' | 'chart_of_accounts')}>
         <TabsList>
           <TabsTrigger value="definitions">Ledger Definitions</TabsTrigger>
           <TabsTrigger value="opening_balances">Opening Balances</TabsTrigger>
@@ -3493,7 +3493,7 @@ export function LedgerMasterPanel() {
 
         {/* Tab 1 — Definitions */}
         <TabsContent value="definitions">
-          <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as any)} className="mb-4">
+          <Tabs value={defSubTab} onValueChange={(v) => setDefSubTab(v as typeof defSubTab)} className="mb-4">
             <TabsList className="h-9 flex-wrap">
               <TabsTrigger value="cash" className="text-xs gap-1.5">
                 <Wallet className="h-3.5 w-3.5" /> Cash ({cashDefs.length})
@@ -4186,7 +4186,7 @@ export function LedgerMasterPanel() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Lender Type</Label>
-              <Select value={borrowingForm.lenderType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, lenderType: v }))}>
+              <Select value={borrowingForm.lenderType} onValueChange={v => setBorrowingForm(f => ({ ...f, lenderType: v as BorrowingLedgerDefinition['lenderType'] }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(LENDER_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
@@ -4203,7 +4203,7 @@ export function LedgerMasterPanel() {
                   <Input {...amountInputProps} value={borrowingForm.interestRate || ''} onKeyDown={onEnterNext}
                     onChange={(e) => setBorrowingForm(f => ({ ...f, interestRate: parseFloat(e.target.value) || 0 }))} /></div>
                 <div className="space-y-1"><Label className="text-xs">Loan Type</Label>
-                  <Select value={borrowingForm.loanType} onValueChange={(v: any) => setBorrowingForm(f => ({ ...f, loanType: v }))}>
+                  <Select value={borrowingForm.loanType} onValueChange={v => setBorrowingForm(f => ({ ...f, loanType: v as BorrowingLedgerDefinition['loanType'] }))}>
                     <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {Object.entries(LOAN_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
@@ -4636,7 +4636,7 @@ export function LedgerMasterPanel() {
                 </p>
                 <div className='space-y-1.5'>
                   <Label className='text-xs'>RCM Section</Label>
-                  <Select value={dutiesTaxForm.rcmSection ?? 'not_applicable'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, rcmSection: v } as any))}>
+                  <Select value={dutiesTaxForm.rcmSection ?? 'not_applicable'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, rcmSection: v as typeof f.rcmSection }))}>
                     <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value='not_applicable'>Not applicable</SelectItem>
@@ -4647,7 +4647,7 @@ export function LedgerMasterPanel() {
                 </div>
                 <div className='space-y-1.5'>
                   <Label className='text-xs'>GST Tax Sub Type</Label>
-                  <Select value={(dutiesTaxForm as any).gstTaxSubType ?? 'output'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, gstTaxSubType: v } as any))}>
+                  <Select value={dutiesTaxForm.gstTaxSubType ?? 'output'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, gstTaxSubType: v as typeof f.gstTaxSubType }))}>
                     <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value='output'>Output</SelectItem>
@@ -4660,7 +4660,7 @@ export function LedgerMasterPanel() {
                 </div>
                 <div className='space-y-1.5'>
                   <Label className='text-xs'>ITC Eligibility</Label>
-                  <Select value={(dutiesTaxForm as any).itcEligibility ?? 'full'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, itcEligibility: v } as any))}>
+                  <Select value={dutiesTaxForm.itcEligibility ?? 'full'} onValueChange={v => setDutiesTaxForm(f => ({ ...f, itcEligibility: v as typeof f.itcEligibility }))}>
                     <SelectTrigger className='h-8 text-sm'><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value='full'>Full</SelectItem>
@@ -4685,11 +4685,11 @@ export function LedgerMasterPanel() {
             </div>
 
             {/* Advanced — Entity Scope */}
-            <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' } as any))}
+            <button type="button" onClick={() => setDutiesTaxForm(f => ({ ...f, scope: f.scope === 'group' ? 'entity' : 'group' }))}
               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
               <ChevronDown className="h-3 w-3" /> Advanced
             </button>
-            {(dutiesTaxForm as any).scope === 'entity' && renderScopeSection(dutiesTaxForm as any, setDutiesTaxForm)}
+            {dutiesTaxForm.scope === 'entity' && renderScopeSection(dutiesTaxForm, setDutiesTaxForm)}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDutiesTaxOpen(false)}>Cancel</Button>
@@ -5669,8 +5669,8 @@ export function LedgerMasterPanel() {
                 <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
                   <Section title="Identity">
                     <Field label="Ledger Name" value={def.name} />
-                    <Field label="Mailing Name" value={(def as any).mailingName} />
-                    <Field label="Alias" value={(def as any).alias} />
+                    <Field label="Mailing Name" value={'mailingName' in def ? (def as { mailingName?: string }).mailingName : undefined} />
+                    <Field label="Alias" value={'alias' in def ? (def as { alias?: string }).alias : undefined} />
                     <Field label="Numeric Code" value={<span className="font-mono text-teal-600">{def.numericCode}</span>} />
                     <Field label="Ledger Code" value={<span className="font-mono text-xs">{def.code}</span>} />
                     <Field label="Parent Group" value={def.parentGroupName} />
@@ -5682,8 +5682,8 @@ export function LedgerMasterPanel() {
                   {('openingBalance' in def) && (
                     <Section title="Opening Balance">
                       <Field label="Opening Balance"
-                        value={<span className={`font-mono font-semibold ${ (def as any).openingBalanceType === 'Dr' ? 'text-teal-600' : 'text-amber-600'}`}>
-                          {(def as any).openingBalanceType} ₹{toIndianFormat((def as any).openingBalance ?? 0)}
+                        value={<span className={`font-mono font-semibold ${ (def as { openingBalanceType?: 'Dr' | 'Cr' }).openingBalanceType === 'Dr' ? 'text-teal-600' : 'text-amber-600'}`}>
+                          {(def as { openingBalanceType?: 'Dr' | 'Cr' }).openingBalanceType} ₹{toIndianFormat((def as { openingBalance?: number }).openingBalance ?? 0)}
                         </span>} />
                     </Section>
                   )}

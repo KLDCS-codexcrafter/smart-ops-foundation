@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { InventoryItem, ItemType, CostingMethodItem } from '@/types/inventory-item';
-import type { ItemPacking } from '@/types/item-packing';
+import type { ItemPacking, PackingLevel } from '@/types/item-packing';
 import type { ItemVendor } from '@/types/item-vendor';
 import type { ItemQCParam } from '@/types/item-qc-param';
 import type { ItemPartyCode } from '@/types/item-party-code';
@@ -62,6 +62,34 @@ const SGKEY = 'erp_stock_groups', BKEY = 'erp_brands', SBKEY = 'erp_sub_brands';
 const CKEY = 'erp_classifications', UKEY = 'erp_uom', GKEY = 'erp_godowns';
 // [JWT] GET /api/inventory/items
 const ls = <T,>(k: string): T[] => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
+
+/* ─── master data row types (loose because seed shapes vary) ─── */
+type MasterRow = {
+  id: string;
+  name: string;
+  symbol?: string;
+  category_type?: string;
+  costing_method?: CostingMethodItem;
+  batch_grid_enabled?: boolean;
+  serial_grid_enabled?: boolean;
+  brand_id?: string;
+};
+type ParamRow = {
+  id?: string;
+  name?: string;
+  label?: string;
+  type?: string;
+  param_type?: string;
+  required?: boolean;
+  is_required?: boolean;
+};
+type ParamTemplate = { parameters?: ParamRow[] };
+/** Safe accessor for dynamic field reads on form/packing/vendor objects. */
+const getStr = (obj: unknown, k: string): string => {
+  const v = (obj as Record<string, unknown>)[k];
+  return v == null ? '' : String(v);
+};
+const getBool = (obj: unknown, k: string): boolean => Boolean((obj as Record<string, unknown>)[k]);
 
 /* ─── BLANK form ─── */
 const BLANK: Omit<InventoryItem, 'id' | 'created_at' | 'updated_at'> = {
@@ -112,7 +140,7 @@ const TABS = [
 ];
 
 function ItemProgressBar({ activeTab, form, onTabClick }: { activeTab: number; form: typeof BLANK; onTabClick: (t: number) => void }) {
-  const filled = TABS.filter(t => t.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; })).length;
+  const filled = TABS.filter(t => t.req.every(f => { const v = getStr(form, f); return v && v !== ''; })).length;
   const pct = Math.round((filled / TABS.length) * 100);
   return (
     <div data-keyboard-form className="px-5 pt-4 pb-3 border-b bg-muted/30">
@@ -123,7 +151,7 @@ function ItemProgressBar({ activeTab, form, onTabClick }: { activeTab: number; f
       <Progress value={pct} className="h-1.5 mb-3" />
       <div className="flex items-start overflow-x-auto gap-0">
         {TABS.map((tab, i) => {
-          const done = tab.req.every(f => { const v = (form as any)[f]; return v && v !== '' && v !== null; });
+          const done = tab.req.every(f => { const v = getStr(form, f); return v && v !== ''; });
           const cur = activeTab === tab.id;
           return (
             <button key={tab.id} onClick={() => onTabClick(tab.id)}
@@ -200,13 +228,13 @@ export function ItemCraftPanel() {
   const [packings, setPackings] = useState<ItemPacking[]>([]);
   const [os, setOs] = useState<ItemOpeningStockEntry[]>([]);
   const [whereUsed, setWhereUsed] = useState<InventoryItem | null>(null);
-  const groups = useState(() => ls<any>(SGKEY))[0];
-  const brands = useState(() => ls<any>(BKEY))[0];
-  const subs = useState(() => ls<any>(SBKEY))[0];
-  const classifs = useState(() => ls<any>(CKEY))[0];
-  const uoms = useState(() => ls<any>(UKEY))[0];
-  const godowns = useState(() => ls<any>(GKEY))[0];
-  const groupParams = useState(() => ls<any>('erp_parametric_templates'))[0];
+  const groups = useState(() => ls<MasterRow>(SGKEY))[0];
+  const brands = useState(() => ls<MasterRow>(BKEY))[0];
+  const subs = useState(() => ls<MasterRow>(SBKEY))[0];
+  const classifs = useState(() => ls<MasterRow>(CKEY))[0];
+  const uoms = useState(() => ls<MasterRow>(UKEY))[0];
+  const godowns = useState(() => ls<MasterRow>(GKEY))[0];
+  const groupParams = useState(() => ls<ParamTemplate>('erp_parametric_templates'))[0];
 
   // [JWT] POST /api/inventory/items
   const sv  = (d: InventoryItem[]) => { localStorage.setItem(IKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/items */ };
@@ -396,7 +424,7 @@ export function ItemCraftPanel() {
                     <Label>Stock Group <span className="text-destructive">*</span></Label>
                     <Select value={form.stock_group_id || 'none'}
                       onValueChange={v => {
-                        const g = groups.find((x: any) => x.id === v);
+                        const g = groups.find(x => x.id === v);
                         setForm(f => ({ ...f, stock_group_id: v === 'none' ? null : v,
                           stock_group_name: g?.name || null, stock_group_breadcrumb: g?.name || null,
                           category_type: g?.category_type || f.category_type,
@@ -407,7 +435,7 @@ export function ItemCraftPanel() {
                       <SelectTrigger><SelectValue placeholder="Select stock group..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Select Group —</SelectItem>
-                        {groups.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                        {groups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -421,7 +449,7 @@ export function ItemCraftPanel() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Stock Nature</Label>
-                    <Select value={form.stock_nature} onValueChange={v => setForm(f => ({ ...f, stock_nature: v as any }))}>
+                    <Select value={form.stock_nature} onValueChange={v => setForm(f => ({ ...f, stock_nature: v as 'Inventory' | 'Non-Inventory' }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Inventory">Inventory</SelectItem>
@@ -466,7 +494,7 @@ export function ItemCraftPanel() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label>Status</Label>
-                    <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+                    <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as 'active' | 'inactive' | 'draft' }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="active">Active</SelectItem>
@@ -519,7 +547,7 @@ export function ItemCraftPanel() {
                     <p className="text-xs">Go back to Tab 1 and select a Stock Group to see inherited parameters</p>
                   </div>
                 ) : (() => {
-                  const allP: any[] = groupParams.flatMap((t: any) => t.parameters || []);
+                  const allP: ParamRow[] = groupParams.flatMap(t => t.parameters || []);
                   const sel = new Set<string>(form.selected_param_ids || []);
                   if (allP.length === 0) { return (
                     <div className="text-center py-12 text-muted-foreground">
@@ -533,15 +561,15 @@ export function ItemCraftPanel() {
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-medium">Group Parameters ({allP.length} available)</p>
                         <Button size="sm" variant="outline" className="h-7 text-xs"
-                          onClick={() => setForm(f => ({ ...f, selected_param_ids: allP.map((p: any) => p.id || p.name) }))}>
+                          onClick={() => setForm(f => ({ ...f, selected_param_ids: allP.map(p => p.id || p.name).filter((x): x is string => !!x) }))}>
                           Keep All
                         </Button>
                       </div>
                       <p className="text-xs text-muted-foreground">Toggle which parameters apply to this item. Required parameters cannot be removed.</p>
-                      {allP.map((param: any) => {
-                        const pid = param.id || param.name;
+                      {allP.map(param => {
+                        const pid = String(param.id || param.name || '');
                         const isSelected = sel.has(pid);
-                        const isRequired = param.required || param.is_required;
+                        const isRequired = Boolean(param.required || param.is_required);
                         return (
                           <div key={pid} className={`flex items-center justify-between p-3 border rounded-lg ${isSelected ? 'border-primary/30 bg-primary/5' : ''}`}>
                             <div className="flex items-center gap-3">
@@ -575,12 +603,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Classification (optional)</Label>
                     <Select value={form.classification_id || 'none'}
-                      onValueChange={v => { const c = classifs.find((x: any) => x.id === v);
+                      onValueChange={v => { const c = classifs.find(x => x.id === v);
                         setForm(f => ({ ...f, classification_id: v === 'none' ? null : v, classification_name: c?.name || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Any classification..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Classification —</SelectItem>
-                        {classifs.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classifs.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground">Groups items analytically across brands</p>
@@ -602,24 +630,24 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Brand</Label>
                     <Select value={form.brand_id || 'none'}
-                      onValueChange={v => { const b = brands.find((x: any) => x.id === v);
+                      onValueChange={v => { const b = brands.find(x => x.id === v);
                         setForm(f => ({ ...f, brand_id: v === 'none' ? null : v, brand_name: b?.name || null, sub_brand_id: null, sub_brand_name: null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select brand..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Brand —</SelectItem>
-                        {brands.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+                        {brands.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Sub-Brand</Label>
                     <Select value={form.sub_brand_id || 'none'} disabled={!form.brand_id}
-                      onValueChange={v => { const s = subs.find((x: any) => x.id === v);
+                      onValueChange={v => { const s = subs.find(x => x.id === v);
                         setForm(f => ({ ...f, sub_brand_id: v === 'none' ? null : v, sub_brand_name: s?.name || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select sub-brand..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— No Sub-Brand —</SelectItem>
-                        {subs.filter((s: any) => s.brand_id === form.brand_id).map((s: any) => (
+                        {subs.filter(s => s.brand_id === form.brand_id).map(s => (
                           <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                         ))}
                       </SelectContent>
@@ -657,7 +685,7 @@ export function ItemCraftPanel() {
                           <TableRow key={pc.id}>
                             <TableCell className="py-1.5">
                               <Select value={pc.party_type}
-                                onValueChange={v => setPartyCodes(a => a.map((x, j) => j === i ? { ...x, party_type: v as any } : x))}>
+                                onValueChange={v => setPartyCodes(a => a.map((x, j) => j === i ? { ...x, party_type: v as 'vendor' | 'customer' } : x))}>
                                 <SelectTrigger className="h-7 text-xs w-24"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="vendor">Vendor</SelectItem>
@@ -704,12 +732,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Primary UOM <span className="text-destructive">*</span></Label>
                     <Select value={form.primary_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, primary_uom_id: v === 'none' ? null : v, primary_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Select UOM..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Select UOM —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground">Used for stock balance and sales</p>
@@ -717,12 +745,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Purchase UOM</Label>
                     <Select value={form.purchase_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, purchase_uom_id: v === 'none' ? null : v, purchase_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Same as primary..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— Same as Primary —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -731,12 +759,12 @@ export function ItemCraftPanel() {
                   <div className="space-y-1.5">
                     <Label>Secondary UOM</Label>
                     <Select value={form.secondary_uom_id || 'none'}
-                      onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                      onValueChange={v => { const u = uoms.find(x => x.id === v);
                         setForm(f => ({ ...f, secondary_uom_id: v === 'none' ? null : v, secondary_uom_symbol: u?.symbol || null })); }}>
                       <SelectTrigger><SelectValue placeholder="Optional..." /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">— None —</SelectItem>
-                        {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                        {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -754,12 +782,12 @@ export function ItemCraftPanel() {
                     <div className="space-y-1.5">
                       <Label>Tertiary UOM</Label>
                       <Select value={form.tertiary_uom_id || 'none'}
-                        onValueChange={v => { const u = uoms.find((x: any) => x.id === v);
+                        onValueChange={v => { const u = uoms.find(x => x.id === v);
                           setForm(f => ({ ...f, tertiary_uom_id: v === 'none' ? null : v, tertiary_uom_symbol: u?.symbol || null })); }}>
                         <SelectTrigger><SelectValue placeholder="Optional..." /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">— None —</SelectItem>
-                          {uoms.map((u: any) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
+                          {uoms.map(u => <SelectItem key={u.id} value={u.id}>{u.name} ({u.symbol})</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
@@ -791,7 +819,7 @@ export function ItemCraftPanel() {
                 <div className="grid grid-cols-4 gap-3">
                   {['length', 'width', 'height'].map(d => (
                     <div key={d} className="space-y-1.5"><Label>{d.charAt(0).toUpperCase() + d.slice(1)}</Label>
-                      <Input type="number" min="0" value={(form as any)[d] || ''}
+                      <Input type="number" min="0" value={getStr(form, d)}
                         onChange={e => setForm(f => ({ ...f, [d]: parseFloat(e.target.value) || null }))} /></div>
                   ))}
                   <div className="space-y-1.5"><Label>Dim. Unit</Label>
@@ -819,7 +847,7 @@ export function ItemCraftPanel() {
                 ) : packings.map((pk, i) => (
                   <div key={pk.id} className="border rounded-lg p-3 space-y-2">
                     <div className="flex items-center justify-between">
-                      <Select value={pk.level} onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, level: v as any } : x))}>
+                      <Select value={pk.level} onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, level: v as PackingLevel } : x))}>
                         <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primary Pack</SelectItem>
@@ -836,7 +864,7 @@ export function ItemCraftPanel() {
                       <Input className="h-7 text-xs" placeholder="Barcode" value={pk.barcode || ''}
                         onChange={e => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode: e.target.value || null } : x))} />
                       <Select value={pk.barcode_type || 'EAN13'}
-                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode_type: v as any } : x))}>
+                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, barcode_type: v as ItemPacking['barcode_type'] } : x))}>
                         <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>{['EAN13', 'QR', 'Code128', 'ITF14', 'EAN8'].map(bt => <SelectItem key={bt} value={bt}>{bt}</SelectItem>)}</SelectContent>
                       </Select>
@@ -847,11 +875,11 @@ export function ItemCraftPanel() {
                     <div className="grid grid-cols-4 gap-2">
                       {['length', 'width', 'height'].map(d => (
                         <Input key={d} className="h-7 text-xs" type="number" placeholder={d}
-                          value={(pk as any)[d] || ''}
+                          value={getStr(pk, d)}
                           onChange={e => setPackings(a => a.map((x, j) => j === i ? { ...x, [d]: parseFloat(e.target.value) || null } : x))} />
                       ))}
                       <Select value={pk.dimension_unit}
-                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, dimension_unit: v as any } : x))}>
+                        onValueChange={v => setPackings(a => a.map((x, j) => j === i ? { ...x, dimension_unit: v as ItemPacking['dimension_unit'] } : x))}>
                         <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectItem value="cm">cm</SelectItem><SelectItem value="inch">inch</SelectItem></SelectContent>
                       </Select>
@@ -946,7 +974,7 @@ export function ItemCraftPanel() {
                     { f: 'tds_applicable', l: 'TDS (Sec 194Q)', d: 'Tax Deducted at Source on purchase' },
                   ] as const).map(({ f, l, d }) => (
                     <label key={f} className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer">
-                      <Switch checked={(form as any)[f]} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
+                      <Switch checked={getBool(form, f)} onCheckedChange={v => setForm(ff => ({ ...ff, [f]: v }))} />
                       <div><p className="text-sm font-medium">{l}</p><p className="text-xs text-muted-foreground">{d}</p></div>
                     </label>
                   ))}
@@ -1019,7 +1047,7 @@ export function ItemCraftPanel() {
                   ] as const).map(({ f, l, d }) => (
                     <div key={f} className="space-y-1.5">
                       <Label>{l}</Label>
-                      <Input type="number" min="0" value={(form as any)[f] || ''} onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
+                      <Input type="number" min="0" value={getStr(form, f)} onChange={e => setForm(ff => ({ ...ff, [f]: parseFloat(e.target.value) || null }))} />
                       <p className="text-[10px] text-muted-foreground">{d}</p>
                     </div>
                   ))}
@@ -1060,12 +1088,12 @@ export function ItemCraftPanel() {
                             <TableRow key={entry.id}>
                               <TableCell className="py-1.5">
                                 <Select value={entry.godown_id}
-                                  onValueChange={v => { const g = godowns.find((x: any) => x.id === v);
+                                  onValueChange={v => { const g = godowns.find(x => x.id === v);
                                     setOs(a => a.map((x, j) => j === i ? { ...x, godown_id: v, godown_name: g?.name } : x)); }}>
                                   <SelectTrigger className="h-7 text-xs w-32"><SelectValue /></SelectTrigger>
                                   <SelectContent>
                                     {godowns.length > 0
-                                      ? godowns.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)
+                                      ? godowns.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)
                                       : <SelectItem value="default">Default Godown</SelectItem>}
                                   </SelectContent>
                                 </Select>
@@ -1131,7 +1159,7 @@ export function ItemCraftPanel() {
                     { tf: 'qc_hold_on_receipt', l: 'QC Hold on Receipt', d: 'Hold in QC location before main godown' },
                   ] as const).map(({ tf, l, d }) => (
                     <label key={tf} className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer">
-                      <Switch checked={(form as any)[tf]} onCheckedChange={v => setForm(f => ({ ...f, [tf]: v }))} />
+                      <Switch checked={getBool(form, tf)} onCheckedChange={v => setForm(f => ({ ...f, [tf]: v }))} />
                       <div><p className="text-sm font-medium">{l}</p><p className="text-xs text-muted-foreground">{d}</p></div>
                     </label>
                   ))}
@@ -1266,7 +1294,7 @@ export function ItemCraftPanel() {
                         { f: 'last_rejection_percent', ph: 'Rejection %', t: 'number' },
                       ] as const).map(({ f, ph, t }) => (
                         <Input key={f} className="h-7 text-xs" type={t} placeholder={ph}
-                          value={(v as any)[f] || ''}
+                          value={getStr(v, f)}
                           onChange={e => setVendors(a => a.map((x, j) => j === i ? { ...x, [f]: t === 'number' ? parseFloat(e.target.value) || null : e.target.value || null } : x))} />
                       ))}
                     </div>
@@ -1388,7 +1416,7 @@ export function ItemCraftPanel() {
                   ] as const).map(({ f, l, c }) => (
                     <div key={f} className="space-y-1.5">
                       <Label style={{ color: c }}>{l}</Label>
-                      <Select value={(form as any)[f] || 'not_listed'}
+                      <Select value={getStr(form, f) || 'not_listed'}
                         onValueChange={v => setForm(ff => ({ ...ff, [f]: v === 'not_listed' ? null : v }))}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>

@@ -1,0 +1,6 @@
+=== Block 3a — any remediation ===
+
+src/pages/erp/inventory/ItemCraft.tsx: 0 real any sites (excludes comments)
+src/pages/erp/accounting/LedgerMaster.tsx: 0 real any sites (excludes comments)
+
+Project-wide remaining: 143 (was 224 at Z1b.1 close)
