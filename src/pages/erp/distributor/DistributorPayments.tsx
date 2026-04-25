@@ -72,11 +72,14 @@ export default function DistributorPayments() {
     ? loadDistributors(session.entity_code).find(p => p.id === session.distributor_id) ?? null
     : null;
 
+  // Cleanup-1a: `refresh` is bumped after a successful intimation submit so
+  // the list re-reads localStorage and shows the new entry immediately.
   const intimations = useMemo<DistributorPaymentIntimation[]>(() => {
     if (!session) return [];
     return ls<DistributorPaymentIntimation>(distributorIntimationsKey(session.entity_code))
       .filter(i => i.partner_id === session.distributor_id)
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, refresh]);
 
   const form = useForm<FormValues>({

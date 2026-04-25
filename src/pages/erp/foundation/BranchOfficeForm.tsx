@@ -149,11 +149,13 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
   }, []);
 
   // Dynamic existing branches
+  // Cleanup-1a: added missing `entityId` so the "exclude current" filter
+  // updates correctly when the form switches to a different branch.
   const existingBranches = useMemo(() =>
     ls<Record<string, unknown>>('erp_branch_offices')
       .filter(b => b.id && b.name && b.id !== entityId)
       .map(b => ({ id: String(b.id), name: String(b.name), code: String(b.code ?? '') })),
-  []);
+  [entityId]);
 
   // Load data in edit mode
   useEffect(() => {

@@ -56,12 +56,17 @@ export function AccrualRunModal({ open, onClose, ledgerId }: Props) {
     }
   }, [open]);
 
+  // Cleanup-1a: `refreshTick` is bumped on modal open (see useEffect above)
+  // and after a successful commit to force a re-plan against fresh ledger
+  // state — the plan functions read localStorage outside React's view.
   const monthlyPlan: AccrualPlanItem[] = useMemo(
     () => (open ? planMonthlyAccrual(asOfDate, ledgerId) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [open, asOfDate, ledgerId, refreshTick],
   );
   const penalPlan: PenalPlanItem[] = useMemo(
     () => (open ? planDailyPenal(asOfDate, ledgerId) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [open, asOfDate, ledgerId, refreshTick],
   );
 

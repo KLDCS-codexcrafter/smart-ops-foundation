@@ -36,9 +36,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   const allowedSet = useMemo(() => new Set<string>(allowedCards), [allowedCards]);
 
-  // Pull last 5 activity items as 'recent' entries at top when query is empty
+  // Pull last 5 activity items as 'recent' entries at top when query is empty.
+  // Cleanup-1a: `open` intentionally re-reads activity each time the palette
+  // is opened, so the recent list reflects work done since the last open.
   const recent = useMemo(
     () => readActivity(entityCode, userId).slice(0, 5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, userId, open],
   );
 

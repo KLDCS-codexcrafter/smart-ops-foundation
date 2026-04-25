@@ -56,12 +56,17 @@ export function VoucherFormPanel({
   });
   const [collapseOpen, setCollapseOpen] = useState(defaultOpen);
 
+  // Cleanup-1a: explicit field-level deps avoid over-invalidation when
+  // unrelated form fields change (status, narration, etc.). resolveVars only
+  // consumes the listed fields. Adding `form` would defeat the optimization.
+  /* eslint-disable react-hooks/exhaustive-deps */
   const vars = useMemo(() => resolveVars(form, null, null, 'Current User'), [
     form.party_name, form.date, form.net_amount, form.ref_voucher_no,
     form.vendor_bill_no, form.payment_instrument,
     form.from_ledger_name, form.to_ledger_name,
     form.from_godown_name, form.to_godown_name,
   ]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const handleSave = () => {
     // [JWT] POST /api/accounting/vouchers
