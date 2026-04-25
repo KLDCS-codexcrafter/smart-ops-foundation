@@ -203,7 +203,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     // For Sprint 6B we treat draft same as pending status (workflow tightened in Sprint 6C).
     persistMemo('pending');
     toast.info('Saved as draft (pending approval)');
-  }, [persistMemo]);
+  }, [persistMemo, validate]);
 
   useCtrlS(handleSubmit);
 
