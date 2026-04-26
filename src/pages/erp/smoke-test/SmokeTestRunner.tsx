@@ -42,14 +42,62 @@ import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
 import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
 import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
 import type { AdvanceEntry } from '@/types/compliance';
-// ── T-T10-pre.2c-PDF + T-T10-pre.2c-Word imports ──
+// ── T-T10-pre.2c-PDF + T-T10-pre.2c-Word + T-T10-pre.2c-TallyNative imports ──
 import {
   buildVoucherPDFDoc, exportVoucherAsPDF,
   buildVoucherWordDoc, exportVoucherAsWord,
+  buildTallyVoucherXML, exportVoucherAsTallyXML,
+  buildTallyVoucherJSON, exportVoucherAsTallyJSON,
   type ExportRows,
 } from '@/lib/voucher-export-engine';
 import { buildExportFilename } from '@/lib/export-helpers';
 import { Packer } from 'docx';
+import type { Voucher } from '@/types/voucher';
+
+// [T-T10-pre.2c-TallyNative] Minimal fixture builder for smoke checks · returns
+// a Sales voucher with one ledger line (party Dr) + one inventory line. Used by
+// tally-1..tally-5 only — not seeded into storage.
+function buildTallyFixtureVoucher(): Voucher {
+  return {
+    id: 'tally-fix-1',
+    voucher_no: 'INV/TALLY/0001',
+    voucher_type_id: 'vt-sales',
+    voucher_type_name: 'Sales Invoice',
+    base_voucher_type: 'Sales',
+    entity_id: 'ent-1',
+    date: '2026-04-15',
+    party_id: 'cust-1',
+    party_code: 'C001',
+    party_name: 'Acme Industries Pvt Ltd',
+    party_gstin: '27AABCA1234A1Z5',
+    party_state_code: '27',
+    place_of_supply: '27',
+    is_inter_state: false,
+    ledger_lines: [{
+      id: 'll-1', ledger_id: 'led-acme', ledger_code: 'L001',
+      ledger_name: 'Acme Industries Pvt Ltd', ledger_group_code: 'SUNDRY_DEBTORS',
+      dr_amount: 11800, cr_amount: 0, narration: '',
+    }],
+    inventory_lines: [{
+      id: 'iv-1', item_id: 'itm-w', item_code: 'W-001', item_name: 'Widget',
+      hsn_sac_code: '8473', godown_id: 'g-main', godown_name: 'Main',
+      qty: 10, uom: 'NOS', rate: 1000,
+      discount_percent: 0, discount_amount: 0, taxable_value: 10000,
+      gst_rate: 18, cgst_rate: 9, sgst_rate: 9, igst_rate: 0, cess_rate: 0,
+      cgst_amount: 900, sgst_amount: 900, igst_amount: 0, cess_amount: 0,
+      total: 11800, gst_type: 'taxable', gst_source: 'item',
+    }],
+    gross_amount: 10000, total_discount: 0, total_taxable: 10000,
+    total_cgst: 900, total_sgst: 900, total_igst: 0, total_cess: 0,
+    total_tax: 1800, round_off: 0, net_amount: 11800,
+    tds_applicable: false,
+    narration: 'Smoke test fixture',
+    terms_conditions: '', payment_enforcement: '', payment_instrument: '',
+    status: 'posted',
+    created_by: 'smoke', created_at: '2026-04-15T00:00:00Z',
+    updated_at: '2026-04-15T00:00:00Z',
+  };
+}
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -1195,6 +1243,77 @@ const CHECKS: CheckSpec[] = [
       const ok = matchesPattern && hooked;
       return { actual: `filename=${expected}, hooked=${hooked}`,
         expected: 'matches Sales_Invoice_INV_2026_0099_<date>.docx',
+        pass: ok, details: 'Filename helper reused · no bespoke pattern' };
+    } },
+
+  // ── T-T10-pre.2c-TallyNative · 5 smoke checks for Tally XML + JSON export ──
+  { id: 'tally-1', section: 'Tally Export',
+    name: 'Tally XML envelope contains required Tally headers',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { xml } = buildTallyVoucherXML(v, 'Create', 'Acme Pvt Ltd');
+      const hasEnv = xml.includes('<ENVELOPE>') && xml.includes('</ENVELOPE>');
+      const hasImport = xml.includes('<TALLYREQUEST>Import</TALLYREQUEST>');
+      const hasMsg = xml.includes('<TALLYMESSAGE');
+      const hasCompany = xml.includes('<SVCURRENTCOMPANY>Acme Pvt Ltd</SVCURRENTCOMPANY>');
+      const ok = hasEnv && hasImport && hasMsg && hasCompany;
+      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}`,
+        expected: 'all four envelope markers present',
+        pass: ok, details: `XML length=${xml.length}` };
+    } },
+
+  { id: 'tally-2', section: 'Tally Export',
+    name: 'Tally JSON envelope mirrors XML hierarchy',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { json } = buildTallyVoucherJSON(v, 'Create', 'Acme Pvt Ltd');
+      const env = (json as { ENVELOPE?: { HEADER?: { TALLYREQUEST?: string };
+        BODY?: { DATA?: { TALLYMESSAGE?: unknown[] } } } }).ENVELOPE;
+      const hasHeader = env?.HEADER?.TALLYREQUEST === 'Import';
+      const msgs = env?.BODY?.DATA?.TALLYMESSAGE;
+      const hasMsg = Array.isArray(msgs) && msgs.length === 1;
+      const ok = hasHeader && hasMsg;
+      return { actual: `header=${hasHeader}, messages=${Array.isArray(msgs) ? msgs.length : 'n/a'}`,
+        expected: 'header=true, messages=1',
+        pass: ok, details: 'JSON envelope shape matches XML' };
+    } },
+
+  { id: 'tally-3', section: 'Tally Export',
+    name: 'mapVoucherToTallySchema sets @ACTION + VCHTYPE for Sales',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { xml } = buildTallyVoucherXML(v, 'Alter');
+      const hasAction = xml.includes('ACTION="Alter"') || xml.includes('@ACTION="Alter"');
+      const hasVchType = xml.includes('VCHTYPE="Sales"') || xml.includes('>Sales<');
+      const ok = hasAction && hasVchType;
+      return { actual: `action=${hasAction}, vchtype=${hasVchType}`,
+        expected: 'both Tally voucher attrs present',
+        pass: ok, details: 'Schema mapper honors Alter + Sales vch type' };
+    } },
+
+  { id: 'tally-4', section: 'Tally Export',
+    name: 'Batch-mode Tally XML wraps multiple TALLYMESSAGE blocks',
+    run: () => {
+      const v1 = buildTallyFixtureVoucher();
+      const v2 = { ...buildTallyFixtureVoucher(), id: 'tally-fix-2', voucher_no: 'INV/TALLY/0002' };
+      const { xml } = buildTallyVoucherXML([v1, v2], 'Create');
+      const count = (xml.match(/<TALLYMESSAGE/g) || []).length;
+      const ok = count === 2;
+      return { actual: `TALLYMESSAGE count=${count}`, expected: 'count=2',
+        pass: ok, details: 'Batch envelope concatenates per-voucher blocks' };
+    } },
+
+  { id: 'tally-5', section: 'Tally Export',
+    name: 'Tally export filenames match buildExportFilename pattern (.xml + .json)',
+    run: () => {
+      const xmlName = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'xml');
+      const jsonName = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'json');
+      const xmlOk = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.xml$/.test(xmlName);
+      const jsonOk = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.json$/.test(jsonName);
+      const hooked = typeof exportVoucherAsTallyXML === 'function' && typeof exportVoucherAsTallyJSON === 'function';
+      const ok = xmlOk && jsonOk && hooked;
+      return { actual: `xml=${xmlName}, json=${jsonName}, hooked=${hooked}`,
+        expected: 'both filenames match · both hooks wired',
         pass: ok, details: 'Filename helper reused · no bespoke pattern' };
     } },
 ];
