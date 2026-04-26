@@ -219,9 +219,14 @@ export function RegisterGrid({
           <h2 className="text-lg font-bold">{meta.title}</h2>
           <Badge variant="outline" className="text-[10px]">{filtered.length} rows</Badge>
         </div>
-        <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
-          <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
+            <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={handlePDFExport} disabled={filtered.length === 0}>
+            <FileDown className="h-3.5 w-3.5 mr-1" /> Export PDF
+          </Button>
+        </div>
       </div>
 
       {/* Filter bar */}
