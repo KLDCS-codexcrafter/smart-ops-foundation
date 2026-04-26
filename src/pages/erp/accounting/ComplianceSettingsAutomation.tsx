@@ -489,6 +489,13 @@ export function ComplianceSettingsAutomationPanel() {
     toast.success('Entity GST configuration saved');
   }, [entityGst, selectedEntityId]);
 
+  // [T-T10-pre.2c-TallyNative] Tally export config save.
+  const handleSaveTally = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/tally/:entityId
+    localStorage.setItem(comply360TallyKey(selectedEntityId), JSON.stringify(tallyConfig));
+    toast.success('Tally export configuration saved');
+  }, [tallyConfig, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
       case 'gst-entity': handleSaveEntityGst(); break;
@@ -503,9 +510,10 @@ export function ComplianceSettingsAutomationPanel() {
       case 'features': handleSaveFeatures(); break;
       case 'settlement': handleSaveSettlement(); break;
       case 'outstanding': handleSaveOutstanding(); break;
+      case 'tally': handleSaveTally(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally]);
 
   const isConfigActive = true;
   useCtrlS(isConfigActive ? handleCtrlS : () => {});
