@@ -336,6 +336,7 @@ export function ComplianceSettingsAutomationPanel() {
   const [settlementConfig, setSettlementConfig] = useState<SettlementConfig>(DEFAULT_SETTLEMENT);
   const [outstandingConfig, setOutstandingConfig] = useState<OutstandingConfig>(DEFAULT_OUTSTANDING);
   const [entityGst, setEntityGst] = useState<EntityGSTConfig>(DEFAULT_ENTITY_GST_CONFIG);
+  const [tallyConfig, setTallyConfig] = useState<TallyExportConfig>(DEFAULT_TALLY_EXPORT_CONFIG);
 
   const [activeSection, setActiveSection] = useState('gst-entity');
 
@@ -354,6 +355,7 @@ export function ComplianceSettingsAutomationPanel() {
     setSettlementConfig(loadOrDefault(comply360SettlementKey(entityId), DEFAULT_SETTLEMENT));
     setOutstandingConfig(loadOrDefault(comply360OutstandingKey(entityId), DEFAULT_OUTSTANDING));
     setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
+    setTallyConfig(loadOrDefault(comply360TallyKey(entityId), DEFAULT_TALLY_EXPORT_CONFIG));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
