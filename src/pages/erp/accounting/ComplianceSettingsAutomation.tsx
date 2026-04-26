@@ -290,6 +290,8 @@ const SECTIONS = [
   { id: 'features', label: 'Features (F11)', toggle: 'enableInventory' as keyof GroupConfig },
   { id: 'settlement', label: 'Settlement', toggle: 'enableBillByBill' as keyof GroupConfig },
   { id: 'outstanding', label: 'Outstanding', toggle: 'enableBillByBill' as keyof GroupConfig },
+  // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
+  { id: 'tally', label: 'Tally export', toggle: 'enableInventory' as keyof GroupConfig },
 ];
 
 const IMPORT_DUTY_TYPES = [
