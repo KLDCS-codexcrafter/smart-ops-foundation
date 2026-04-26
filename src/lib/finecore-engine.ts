@@ -2,6 +2,7 @@
  * finecore-engine.ts — Core posting engine for FineCore vouchers
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
+import Decimal from 'decimal.js';
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
 import type { RCMEntry, TDSDeductionEntry, AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
 import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '@/types/compliance';
