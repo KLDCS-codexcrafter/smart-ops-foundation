@@ -18,6 +18,8 @@ import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types'
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
+import Decimal from 'decimal.js';
+import { round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
