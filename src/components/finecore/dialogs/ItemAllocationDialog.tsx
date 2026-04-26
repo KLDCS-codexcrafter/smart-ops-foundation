@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import Decimal from 'decimal.js';
+import { dMul, dSub, round2 } from '@/lib/decimal-helpers';
 import type { ItemAllocation } from '@/types/voucher';
 
 export interface GodownLite { id: string; name: string; }
