@@ -333,7 +333,11 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
           igst_rate: line.igst_rate, cess_rate: line.cess_rate,
           cgst_amount: line.cgst_amount, sgst_amount: line.sgst_amount,
           igst_amount: line.igst_amount, cess_amount: line.cess_amount,
-          total_tax: line.cgst_amount + line.sgst_amount + line.igst_amount + line.cess_amount,
+          total_tax: new Decimal(line.cgst_amount ?? 0)
+            .plus(new Decimal(line.sgst_amount ?? 0))
+            .plus(new Decimal(line.igst_amount ?? 0))
+            .plus(new Decimal(line.cess_amount ?? 0))
+            .toDecimalPlaces(2).toNumber(),
           invoice_value: line.total,
           place_of_supply: voucher.place_of_supply || '',
           is_inter_state: voucher.is_inter_state || false,
