@@ -90,10 +90,12 @@ export function validateAllocations(voucher: Partial<Voucher>): ValidationResult
   }
   for (const line of voucher.inventory_lines) {
     if (!line.allocations || line.allocations.length === 0) continue;
-    const sum = line.allocations.reduce((s, a) => s + a.qty, 0);
-    if (Math.abs(sum - line.qty) > 0.001) {
+    const sum = line.allocations
+      .reduce((s, a) => s.plus(new Decimal(a.qty ?? 0)), new Decimal(0));
+    const lineQty = new Decimal(line.qty ?? 0);
+    if (!sum.minus(lineQty).abs().lessThanOrEqualTo('0.001')) {
       errors.push(
-        `Line "${line.item_name}": allocation qty ${sum.toFixed(3)} ≠ line qty ${line.qty.toFixed(3)}`,
+        `Line "${line.item_name}": allocation qty ${sum.toFixed(3)} ≠ line qty ${lineQty.toFixed(3)}`,
       );
     }
   }
