@@ -26,6 +26,7 @@ import {
   type SecondarySales, type SecondarySalesLine, type EndCustomerType,
   secondarySalesKey, END_CUSTOMER_LABELS,
 } from '@/types/secondary-sales';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
