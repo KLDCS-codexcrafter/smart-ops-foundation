@@ -19,6 +19,19 @@ import {
   PageOrientation, BorderStyle,
 } from 'docx';
 import { downloadBlob, csvEscapeCell, buildExportFilename } from '@/lib/export-helpers';
+import {
+  mapVoucherToTallySchema,
+  type TallyAction,
+  type TallyVoucherSchema,
+  type TallyLedgerEntry,
+  type TallyInventoryEntry,
+  type TallyBillAllocation,
+  type TallyBatchAllocation,
+} from '@/lib/tally-export/voucher-to-tally-schema';
+import type { Voucher } from '@/types/voucher';
+
+// Re-export TallyAction so consumers can import it from the engine alongside other export types.
+export type { TallyAction } from '@/lib/tally-export/voucher-to-tally-schema';
 
 /**
  * A single sheet worth of export data.
