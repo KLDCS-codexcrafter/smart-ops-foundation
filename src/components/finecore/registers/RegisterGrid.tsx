@@ -36,7 +36,7 @@ import type { Voucher } from '@/types/voucher';
 import { useVouchers } from '@/hooks/useVouchers';
 import { today } from '@/pages/erp/finecore/reports/reportUtils';
 import {
-  exportVoucherAsXLSX, exportVoucherAsPDF,
+  exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord,
   type ExportRows, type ExportSheet,
 } from '@/lib/voucher-export-engine';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
