@@ -200,6 +200,18 @@ export function RegisterGrid({
     }
   };
 
+  // [T-T10-pre.2c-Word] Word export alongside Excel + PDF. Uses 'register' layout (landscape A4).
+  const handleWordExport = () => {
+    try {
+      exportVoucherAsWord(buildRegisterExportRows(), 'register');
+      toast.success(`Exported ${filtered.length} rows as Word`);
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
+      toast.error('Word export failed. Check console for details.');
+      console.error('Register Word export error:', err);
+    }
+  };
+
   const handleRowClick = (v: Voucher) => {
     // [Convergent] D-136: drill-down lands in DayBook, pre-filtered. Preserves context.
     onNavigateToDayBook({
