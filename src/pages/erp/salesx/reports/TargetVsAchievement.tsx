@@ -106,7 +106,9 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
   const summary = useMemo(() => {
     const totalTarget = filtered.reduce((s, r) => s + r.target.target_value, 0);
     const totalActual = filtered.reduce((s, r) => s + r.actual, 0);
-    const totalPct = totalTarget > 0 ? +(totalActual / totalTarget * 100).toFixed(2) : 0;
+    const totalPct = totalTarget > 0
+      ? round2(new Decimal(totalActual).dividedBy(totalTarget).times(100).toNumber())
+      : 0;
     return { totalTarget, totalActual, totalPct };
   }, [filtered]);
 
