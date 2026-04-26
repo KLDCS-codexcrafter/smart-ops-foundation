@@ -169,7 +169,7 @@ export function TransporterScorecardPanel() {
       .slice(-12)
       .map(s => ({
         month: new Date(s.computed_at).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }),
-        score: Number(s.composite_score.toFixed(1)),
+        score: new Decimal(s.composite_score ?? 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP).toNumber(),
       }));
     return filtered;
   }, [trendDialog, entityCode]);
