@@ -1,0 +1,17 @@
+=== imports_check ===
+=== src/pages/erp/salesx/reports/CommissionRegister.tsx ===
+import { dAdd, dSub, dMul, dPct, round2 } from '@/lib/decimal-helpers';
+=== src/components/finecore/dialogs/ItemAllocationDialog.tsx ===
+import Decimal from 'decimal.js';
+import { dMul, dSub, round2 } from '@/lib/decimal-helpers';
+=== src/pages/erp/salesx/transactions/SalesReturnMemo.tsx ===
+import { dMul, round2 } from '@/lib/decimal-helpers';
+=== src/pages/erp/salesx/reports/TargetVsAchievement.tsx ===
+import Decimal from 'decimal.js';
+import { round2 } from '@/lib/decimal-helpers';
+=== src/pages/erp/salesx/transactions/SecondarySales.tsx ===
+import { dMul, round2 } from '@/lib/decimal-helpers';
+=== src/pages/erp/dispatch/reports/TransporterScorecard.tsx ===
+import Decimal from 'decimal.js';
+=== src/pages/erp/dispatch/reports/SavingsROIDashboard.tsx ===
+import Decimal from 'decimal.js';

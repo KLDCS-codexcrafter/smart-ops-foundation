@@ -1,0 +1,8 @@
+=== math_idiom_check ===
+src/pages/erp/salesx/reports/CommissionRegister.tsx: 0
+src/components/finecore/dialogs/ItemAllocationDialog.tsx: 0
+src/pages/erp/salesx/transactions/SalesReturnMemo.tsx: 0
+src/pages/erp/salesx/reports/TargetVsAchievement.tsx: 0
+src/pages/erp/salesx/transactions/SecondarySales.tsx: 0
+src/pages/erp/dispatch/reports/TransporterScorecard.tsx: 0
+src/pages/erp/dispatch/reports/SavingsROIDashboard.tsx: 0
