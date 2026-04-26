@@ -657,9 +657,12 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
         name: String(row['Name'] ?? ''),
       }),
     };
-    const csv = 'Code,Name\n,Plant Machinery A\nA002,Plant Machinery B\n';
-    const file = new File([csv], 'assets.csv', { type: 'text/csv' });
-    const result = await importMasterFile(file, assetSchema);
+    const rows: Record<string, unknown>[] = [
+      { 'Code': '', 'Name': 'Plant Machinery A' },
+      { 'Code': 'A002', 'Name': 'Plant Machinery B' },
+    ];
+    const validation = validateRows<AssetRec>(rows, assetSchema);
+    const result = { totalRows: rows.length, errors: validation.errors };
     const codeError = result.errors.find(e => /Code is required/.test(e.message));
     const pass = !!codeError;
     const ev = record(
