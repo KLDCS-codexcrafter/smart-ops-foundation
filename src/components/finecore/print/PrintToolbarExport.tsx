@@ -33,6 +33,8 @@ export interface PrintToolbarExportProps {
   label?: string;
   /** Optional override for the PDF button label. Default: "PDF". */
   pdfLabel?: string;
+  /** Optional override for the Word button label. Default: "Word". */
+  wordLabel?: string;
 }
 
 /**
