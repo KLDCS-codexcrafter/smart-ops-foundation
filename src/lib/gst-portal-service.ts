@@ -1,5 +1,5 @@
 /**
- * gstPortalService.ts — API abstraction layer for GSTN
+ * gst-portal-service.ts — API abstraction layer for GSTN
  * Current: JSON export (manual). Future: live GSTN API.
  * [JWT] Replace submit* with POST /api/gst/submit-*
  */

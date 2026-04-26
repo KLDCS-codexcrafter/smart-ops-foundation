@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table';
 import { AlertTriangle, ChevronDown, ChevronRight, Download, FileText } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
-import { computeClause44, type Clause44Row } from '@/lib/auditEngine';
+import { computeClause44, type Clause44Row } from '@/lib/audit-engine';
 
 const fmt = (n: number) => n ? `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 0 })}` : '—';
 

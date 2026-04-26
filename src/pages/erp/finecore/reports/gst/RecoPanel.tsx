@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
-import { parse2AFile } from '@/lib/gstPortalService';
+import { parse2AFile } from '@/lib/gst-portal-service';
 import { inr, fmtDate } from '../reportUtils';
 import type { GSTEntry } from '@/types/voucher';
 

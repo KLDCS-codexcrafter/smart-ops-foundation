@@ -1,5 +1,5 @@
 /**
- * depreciationEngine.ts — Pure computation library for Fixed Asset depreciation
+ * depreciation-engine.ts — Pure computation library for Fixed Asset depreciation
  * NO localStorage calls, NO side effects. All reads passed in or via params.
  * 6 exported functions: computeWDV, computeSLM, is180DayRule,
  * computeDepreciationForUnits, computeITActReport, computeCompaniesActReport

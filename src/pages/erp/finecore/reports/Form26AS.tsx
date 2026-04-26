@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Upload, FileText, ChevronDown, ChevronUp, Download, Link, Mail, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { inr, exportCSV } from './reportUtils';
-import { parse26ASTextFile, type TRACES26ASRow } from '@/lib/gstPortalService';
+import { parse26ASTextFile, type TRACES26ASRow } from '@/lib/gst-portal-service';
 import type { TDSReceivableEntry } from '@/types/compliance';
 import { tdsReceivableKey } from '@/types/compliance';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
