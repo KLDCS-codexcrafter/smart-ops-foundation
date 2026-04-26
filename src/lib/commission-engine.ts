@@ -14,6 +14,7 @@ import type { TDSDeductionEntry } from '@/types/compliance';
 import type { VoucherLedgerLine } from '@/types/voucher';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
+import { round2 } from '@/lib/decimal-helpers';
 
 export interface CommissionReceiptResult {
   updatedEntries: CommissionEntry[];
@@ -41,8 +42,7 @@ export interface CommissionGLResult {
   tdsPayableAmount: number;
 }
 
-// round2: Decimal-based 2dp half-up rounding (Z2a · prevents floating-point drift across commission lifecycle)
-const round2 = (n: number) => new Decimal(n ?? 0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
+// round2 extracted to @/lib/decimal-helpers (T-H1.5-Z-Z2-prep-helpers)
 const inr = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
 /**

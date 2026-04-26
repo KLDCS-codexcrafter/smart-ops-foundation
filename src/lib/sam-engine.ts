@@ -8,13 +8,11 @@ import Decimal from 'decimal.js';
 import type { SAMPerson, SAMCommissionRateRow, SAMSlabRow } from '@/types/sam-person';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
-import { dAdd } from '@/lib/decimal-helpers';
+import { dAdd, dPct, dMul } from '@/lib/decimal-helpers';
 
 // Decimal-safe arithmetic helpers (Z2a · prevents drift across multi-line aggregation)
-// dAdd extracted to @/lib/decimal-helpers (T-H1.5-Z-Z2-prep-helpers Block 1)
-const dPct = (base: number, pct: number): number =>
-  new Decimal(base ?? 0).times(new Decimal(pct ?? 0)).dividedBy(100).toNumber();
-const dMul = (a: number, b: number): number => new Decimal(a ?? 0).times(new Decimal(b ?? 0)).toNumber();
+// dAdd/dPct/dMul extracted to @/lib/decimal-helpers (T-H1.5-Z-Z2-prep-helpers)
+
 
 export interface CommissionLineBreakdown {
   item_name: string;
