@@ -400,3 +400,312 @@ export function exportVoucherAsWord(data: ExportRows, layout: WordLayoutHint = '
   }
 }
 
+// ──────────────────────────────────────────────────────────────────────────
+// T-T10-pre.2c-TallyNative · Tally Prime native export (XML + JSON)
+// Reference: https://help.tallysolutions.com/xml-integration/ (envelope structure)
+//            https://help.tallysolutions.com/tally-prime-integration-using-json-1/ (JSON 7.0+)
+// ──────────────────────────────────────────────────────────────────────────
+
+/** XML special-character escape (RFC-compliant: & < > " '). */
+function escapeXML(value: string): string {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/** Serialize a single Tally ledger entry as an XML fragment. */
+function ledgerEntryToXML(e: TallyLedgerEntry): string {
+  const parts: string[] = ['<ALLLEDGERENTRIES.LIST>'];
+  parts.push(`<LEDGERNAME>${escapeXML(e.LEDGERNAME)}</LEDGERNAME>`);
+  parts.push(`<ISDEEMEDPOSITIVE>${e.ISDEEMEDPOSITIVE}</ISDEEMEDPOSITIVE>`);
+  parts.push(`<AMOUNT>${escapeXML(e.AMOUNT)}</AMOUNT>`);
+  if (e.GSTCLASS) parts.push(`<GSTCLASS>${escapeXML(e.GSTCLASS)}</GSTCLASS>`);
+  if (e.BILLALLOCATIONS_LIST) {
+    for (const b of e.BILLALLOCATIONS_LIST) parts.push(billAllocToXML(b));
+  }
+  parts.push('</ALLLEDGERENTRIES.LIST>');
+  return parts.join('');
+}
+
+function billAllocToXML(b: TallyBillAllocation): string {
+  return [
+    '<BILLALLOCATIONS.LIST>',
+    `<NAME>${escapeXML(b.NAME)}</NAME>`,
+    `<BILLTYPE>${escapeXML(b.BILLTYPE)}</BILLTYPE>`,
+    `<AMOUNT>${escapeXML(b.AMOUNT)}</AMOUNT>`,
+    '</BILLALLOCATIONS.LIST>',
+  ].join('');
+}
+
+function batchAllocToXML(b: TallyBatchAllocation): string {
+  const parts = ['<BATCHALLOCATIONS.LIST>'];
+  parts.push(`<GODOWNNAME>${escapeXML(b.GODOWNNAME)}</GODOWNNAME>`);
+  if (b.BATCHNAME) parts.push(`<BATCHNAME>${escapeXML(b.BATCHNAME)}</BATCHNAME>`);
+  parts.push(`<ACTUALQTY>${escapeXML(b.ACTUALQTY)}</ACTUALQTY>`);
+  parts.push(`<BILLEDQTY>${escapeXML(b.BILLEDQTY)}</BILLEDQTY>`);
+  parts.push(`<AMOUNT>${escapeXML(b.AMOUNT)}</AMOUNT>`);
+  parts.push('</BATCHALLOCATIONS.LIST>');
+  return parts.join('');
+}
+
+function inventoryEntryToXML(e: TallyInventoryEntry): string {
+  const parts: string[] = ['<ALLINVENTORYENTRIES.LIST>'];
+  parts.push(`<STOCKITEMNAME>${escapeXML(e.STOCKITEMNAME)}</STOCKITEMNAME>`);
+  parts.push(`<ACTUALQTY>${escapeXML(e.ACTUALQTY)}</ACTUALQTY>`);
+  parts.push(`<BILLEDQTY>${escapeXML(e.BILLEDQTY)}</BILLEDQTY>`);
+  parts.push(`<RATE>${escapeXML(e.RATE)}</RATE>`);
+  parts.push(`<AMOUNT>${escapeXML(e.AMOUNT)}</AMOUNT>`);
+  if (e.GODOWNNAME) parts.push(`<GODOWNNAME>${escapeXML(e.GODOWNNAME)}</GODOWNNAME>`);
+  if (e.BATCHALLOCATIONS_LIST) {
+    for (const b of e.BATCHALLOCATIONS_LIST) parts.push(batchAllocToXML(b));
+  }
+  if (e.ACCOUNTINGALLOCATIONS_LIST) {
+    for (const l of e.ACCOUNTINGALLOCATIONS_LIST) {
+      // Reuse ledger-entry shape inside ACCOUNTINGALLOCATIONS.LIST per Tally schema.
+      parts.push('<ACCOUNTINGALLOCATIONS.LIST>');
+      parts.push(`<LEDGERNAME>${escapeXML(l.LEDGERNAME)}</LEDGERNAME>`);
+      parts.push(`<ISDEEMEDPOSITIVE>${l.ISDEEMEDPOSITIVE}</ISDEEMEDPOSITIVE>`);
+      parts.push(`<AMOUNT>${escapeXML(l.AMOUNT)}</AMOUNT>`);
+      parts.push('</ACCOUNTINGALLOCATIONS.LIST>');
+    }
+  }
+  parts.push('</ALLINVENTORYENTRIES.LIST>');
+  return parts.join('');
+}
+
+/** Serialize a TallyVoucherSchema object as an XML <VOUCHER> fragment. */
+function voucherSchemaToXML(v: TallyVoucherSchema): string {
+  const attrs: string[] = [`VCHTYPE="${escapeXML(v['@VCHTYPE'])}"`, `ACTION="${v['@ACTION']}"`];
+  if (v['@TAGNAME']) attrs.push(`TAGNAME="${escapeXML(v['@TAGNAME'])}"`);
+  if (v['@TAGVALUE']) attrs.push(`TAGVALUE="${escapeXML(v['@TAGVALUE'])}"`);
+  const parts: string[] = [`<VOUCHER ${attrs.join(' ')}>`];
+  // Scalar fields in Tally's preferred order.
+  const scalar = (tag: string, val: string | undefined) => {
+    if (val === undefined || val === null || val === '') return;
+    parts.push(`<${tag}>${escapeXML(val)}</${tag}>`);
+  };
+  scalar('DATE', v.DATE);
+  scalar('GUID', v.GUID);
+  scalar('VOUCHERNUMBER', v.VOUCHERNUMBER);
+  scalar('VOUCHERTYPENAME', v.VOUCHERTYPENAME);
+  scalar('PARTYLEDGERNAME', v.PARTYLEDGERNAME);
+  scalar('PARTYNAME', v.PARTYNAME);
+  scalar('PLACEOFSUPPLY', v.PLACEOFSUPPLY);
+  scalar('REFERENCE', v.REFERENCE);
+  scalar('REFERENCEDATE', v.REFERENCEDATE);
+  scalar('NARRATION', v.NARRATION);
+  scalar('EFFECTIVEDATE', v.EFFECTIVEDATE);
+  scalar('PERSISTEDVIEW', v.PERSISTEDVIEW);
+  scalar('GSTREGISTRATIONTYPE', v.GSTREGISTRATIONTYPE);
+  scalar('COUNTRYOFRESIDENCE', v.COUNTRYOFRESIDENCE);
+  scalar('ISDEDUCTEDFLAG', v.ISDEDUCTEDFLAG);
+  scalar('TDSCATEGORY', v.TDSCATEGORY);
+  scalar('TDSAMOUNT', v.TDSAMOUNT);
+  scalar('DEDUCTEEPAN', v.DEDUCTEEPAN);
+  scalar('BOMNAME', v.BOMNAME);
+  scalar('INSTRUMENTNUMBER', v.INSTRUMENTNUMBER);
+  scalar('INSTRUMENTDATE', v.INSTRUMENTDATE);
+  scalar('SOURCEGODOWN', v.SOURCEGODOWN);
+  scalar('DESTINATIONGODOWN', v.DESTINATIONGODOWN);
+  if (v.ALLLEDGERENTRIES_LIST) {
+    for (const e of v.ALLLEDGERENTRIES_LIST) parts.push(ledgerEntryToXML(e));
+  }
+  if (v.ALLINVENTORYENTRIES_LIST) {
+    for (const e of v.ALLINVENTORYENTRIES_LIST) parts.push(inventoryEntryToXML(e));
+  }
+  parts.push('</VOUCHER>');
+  return parts.join('');
+}
+
+/**
+ * @purpose   Build a Tally Prime XML envelope for one or more Operix Vouchers.
+ *            Wraps voucher schema(s) in TALLYMESSAGE → DATA → BODY → ENVELOPE.
+ * @param     voucher     — Operix Voucher OR array of Vouchers (batch mode)
+ * @param     action      — TallyAction (default 'Create')
+ * @param     companyName — value for <SVCURRENTCOMPANY> tag (empty omits STATICVARIABLES)
+ * @returns   { xml, action }
+ * @reference https://help.tallysolutions.com/xml-integration/
+ */
+export function buildTallyVoucherXML(
+  voucher: Voucher | Voucher[],
+  action: TallyAction = 'Create',
+  companyName = '',
+): { xml: string; action: TallyAction } {
+  const list = Array.isArray(voucher) ? voucher : [voucher];
+  const messages = list
+    .map(v => `<TALLYMESSAGE xmlns:UDF="TallyUDF">${voucherSchemaToXML(mapVoucherToTallySchema(v, action))}</TALLYMESSAGE>`)
+    .join('');
+  const desc = companyName
+    ? `<DESC><STATICVARIABLES><SVCURRENTCOMPANY>${escapeXML(companyName)}</SVCURRENTCOMPANY></STATICVARIABLES></DESC>`
+    : '<DESC></DESC>';
+  const xml =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<ENVELOPE>' +
+      '<HEADER>' +
+        '<VERSION>1</VERSION>' +
+        '<TALLYREQUEST>Import</TALLYREQUEST>' +
+        '<TYPE>Data</TYPE>' +
+        '<ID>Vouchers</ID>' +
+      '</HEADER>' +
+      '<BODY>' +
+        desc +
+        `<DATA>${messages}</DATA>` +
+      '</BODY>' +
+    '</ENVELOPE>';
+  return { xml, action };
+}
+
+/**
+ * @purpose   Trigger browser download of a Tally XML envelope file.
+ * @example   exportVoucherAsTallyXML(salesVoucher, 'Create', 'Acme Pvt Ltd');
+ */
+export function exportVoucherAsTallyXML(
+  voucher: Voucher | Voucher[],
+  action: TallyAction = 'Create',
+  companyName = '',
+): void {
+  try {
+    const { xml } = buildTallyVoucherXML(voucher, action, companyName);
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const filename = Array.isArray(voucher)
+      ? buildExportFilename('Tally Batch', new Date().toISOString().slice(0, 10), 'xml')
+      : buildExportFilename(voucher.voucher_type_name, voucher.voucher_no, 'xml');
+    downloadBlob(blob, filename);
+  } catch (err) {
+    // [Analytical] Diagnostic-only · banned-pattern targets console.log not console.error.
+    console.error('exportVoucherAsTallyXML failed:', err);
+    throw err;
+  }
+}
+
+/**
+ * Build a Tally Prime native JSON object for one or more Operix Vouchers.
+ * Mirrors the XML envelope hierarchy with `@`-prefixed attribute keys and
+ * `.LIST` arrays preserved (always arrays, even for single entries — Tally
+ * round-trip safe per https://help.tallysolutions.com/json-based-export-import/).
+ */
+export function buildTallyVoucherJSON(
+  voucher: Voucher | Voucher[],
+  action: TallyAction = 'Create',
+  companyName = '',
+): { json: object; action: TallyAction } {
+  const list = Array.isArray(voucher) ? voucher : [voucher];
+  const messages = list.map(v => {
+    const schema = mapVoucherToTallySchema(v, action);
+    return { VOUCHER: schemaToJSON(schema) };
+  });
+  const desc = companyName
+    ? { STATICVARIABLES: { SVCURRENTCOMPANY: companyName } }
+    : {};
+  const json = {
+    ENVELOPE: {
+      HEADER: {
+        VERSION: '1',
+        TALLYREQUEST: 'Import',
+        TYPE: 'Data',
+        ID: 'Vouchers',
+      },
+      BODY: {
+        DESC: desc,
+        DATA: { TALLYMESSAGE: messages },
+      },
+    },
+  };
+  return { json, action };
+}
+
+/** Convert a TallyVoucherSchema to its JSON representation (with `.LIST` keys). */
+function schemaToJSON(v: TallyVoucherSchema): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
+  // Attributes first.
+  obj['@VCHTYPE'] = v['@VCHTYPE'];
+  obj['@ACTION'] = v['@ACTION'];
+  if (v['@TAGNAME']) obj['@TAGNAME'] = v['@TAGNAME'];
+  if (v['@TAGVALUE']) obj['@TAGVALUE'] = v['@TAGVALUE'];
+  const passthrough: Array<keyof TallyVoucherSchema> = [
+    'DATE', 'GUID', 'VOUCHERNUMBER', 'VOUCHERTYPENAME', 'PARTYLEDGERNAME', 'PARTYNAME',
+    'PLACEOFSUPPLY', 'REFERENCE', 'REFERENCEDATE', 'NARRATION', 'EFFECTIVEDATE',
+    'PERSISTEDVIEW', 'GSTREGISTRATIONTYPE', 'COUNTRYOFRESIDENCE',
+    'ISDEDUCTEDFLAG', 'TDSCATEGORY', 'TDSAMOUNT', 'DEDUCTEEPAN',
+    'BOMNAME', 'INSTRUMENTNUMBER', 'INSTRUMENTDATE', 'SOURCEGODOWN', 'DESTINATIONGODOWN',
+  ];
+  for (const k of passthrough) {
+    const val = v[k];
+    if (val !== undefined && val !== null && val !== '') obj[k] = val;
+  }
+  if (v.ALLLEDGERENTRIES_LIST) {
+    obj['ALLLEDGERENTRIES.LIST'] = v.ALLLEDGERENTRIES_LIST.map(le => {
+      const o: Record<string, unknown> = {
+        LEDGERNAME: le.LEDGERNAME,
+        ISDEEMEDPOSITIVE: le.ISDEEMEDPOSITIVE,
+        AMOUNT: le.AMOUNT,
+      };
+      if (le.GSTCLASS) o.GSTCLASS = le.GSTCLASS;
+      if (le.BILLALLOCATIONS_LIST) {
+        o['BILLALLOCATIONS.LIST'] = le.BILLALLOCATIONS_LIST.map(b => ({
+          NAME: b.NAME, BILLTYPE: b.BILLTYPE, AMOUNT: b.AMOUNT,
+        }));
+      }
+      return o;
+    });
+  }
+  if (v.ALLINVENTORYENTRIES_LIST) {
+    obj['ALLINVENTORYENTRIES.LIST'] = v.ALLINVENTORYENTRIES_LIST.map(ie => {
+      const o: Record<string, unknown> = {
+        STOCKITEMNAME: ie.STOCKITEMNAME,
+        ACTUALQTY: ie.ACTUALQTY,
+        BILLEDQTY: ie.BILLEDQTY,
+        RATE: ie.RATE,
+        AMOUNT: ie.AMOUNT,
+      };
+      if (ie.GODOWNNAME) o.GODOWNNAME = ie.GODOWNNAME;
+      if (ie.BATCHALLOCATIONS_LIST) {
+        o['BATCHALLOCATIONS.LIST'] = ie.BATCHALLOCATIONS_LIST.map(b => {
+          const bo: Record<string, unknown> = {
+            GODOWNNAME: b.GODOWNNAME,
+            ACTUALQTY: b.ACTUALQTY,
+            BILLEDQTY: b.BILLEDQTY,
+            AMOUNT: b.AMOUNT,
+          };
+          if (b.BATCHNAME) bo.BATCHNAME = b.BATCHNAME;
+          return bo;
+        });
+      }
+      if (ie.ACCOUNTINGALLOCATIONS_LIST) {
+        o['ACCOUNTINGALLOCATIONS.LIST'] = ie.ACCOUNTINGALLOCATIONS_LIST.map(le => ({
+          LEDGERNAME: le.LEDGERNAME,
+          ISDEEMEDPOSITIVE: le.ISDEEMEDPOSITIVE,
+          AMOUNT: le.AMOUNT,
+        }));
+      }
+      return o;
+    });
+  }
+  return obj;
+}
+
+/**
+ * Trigger browser download of a Tally Prime native JSON file.
+ */
+export function exportVoucherAsTallyJSON(
+  voucher: Voucher | Voucher[],
+  action: TallyAction = 'Create',
+  companyName = '',
+): void {
+  try {
+    const { json } = buildTallyVoucherJSON(voucher, action, companyName);
+    const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+    const filename = Array.isArray(voucher)
+      ? buildExportFilename('Tally Batch', new Date().toISOString().slice(0, 10), 'json')
+      : buildExportFilename(voucher.voucher_type_name, voucher.voucher_no, 'json');
+    downloadBlob(blob, filename);
+  } catch (err) {
+    // [Analytical] Diagnostic-only · banned-pattern targets console.log not console.error.
+    console.error('exportVoucherAsTallyJSON failed:', err);
+    throw err;
+  }
+}
+
