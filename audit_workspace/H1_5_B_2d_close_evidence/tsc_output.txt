@@ -1,0 +1,5 @@
+tsc verification
+Date: 2026-04-26 (Sprint A.1 audit)
+Command: ./node_modules/.bin/tsc --noEmit -p tsconfig.app.json
+Exit: 0
+Errors: 0
