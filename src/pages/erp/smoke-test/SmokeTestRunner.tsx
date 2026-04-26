@@ -1141,20 +1141,21 @@ export default function SmokeTestRunner() {
 
   const runAll = useCallback(() => {
     setRunning(true);
-    setTimeout(() => {
-      const next: CheckResult[] = CHECKS.map(c => {
+    setTimeout(async () => {
+      // [T-T10-pre.2c-Word] Some checks (Word/docx Packer) are async — await all results.
+      const next: CheckResult[] = await Promise.all(CHECKS.map(async c => {
         try {
-          const r = c.run(entityCode);
+          const r = await c.run(entityCode);
           return {
             id: c.id, section: c.section, name: c.name,
-            status: r.pass ? 'pass' : 'fail',
+            status: (r.pass ? 'pass' : 'fail') as CheckStatus,
             expected: r.expected, actual: r.actual, details: r.details,
           };
         } catch (err) {
           return { id: c.id, section: c.section, name: c.name,
-            status: 'fail', expected: '-', actual: 'error', details: (err as Error).message };
+            status: 'fail' as CheckStatus, expected: '-', actual: 'error', details: (err as Error).message };
         }
-      });
+      }));
       setResults(next);
       setRunning(false);
       const passed = next.filter(r => r.status === 'pass').length;
