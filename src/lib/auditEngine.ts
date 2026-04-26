@@ -7,6 +7,7 @@ import type { Voucher, GSTEntry, JournalEntry } from '@/types/voucher';
 import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry } from '@/types/compliance';
 import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/finecore-engine';
 import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey } from '@/types/compliance';
+import { dAdd, dSub, dSum } from '@/lib/decimal-helpers';
 
 // ── Storage reader ──────────────────────────────────────────────────
 function ls<T>(key: string): T[] {
@@ -218,8 +219,8 @@ export function computeClause34(entityCode: string): Clause34Row[] {
   }
 
   for (const [, row] of map) {
-    row.total_deposited = row.challans.reduce((s, c) => s + c.amount, 0);
-    row.balance = row.total_deducted - row.total_deposited;
+    row.total_deposited = dSum(row.challans, c => c.amount);
+    row.balance = dSub(row.total_deducted, row.total_deposited);
   }
 
   return Array.from(map.values());
@@ -249,7 +250,7 @@ export function computeClause9(entityCode: string, from: string, to: string): Cl
     else if (serviceGroups.includes(gc)) grossReceipts += e.cr_amount - e.dr_amount;
     else if (otherGroups.includes(gc)) otherIncome += e.cr_amount - e.dr_amount;
   }
-  return { grossTurnover, grossReceipts, otherIncome, totalGrossReceipts: grossTurnover + grossReceipts + otherIncome };
+  return { grossTurnover, grossReceipts, otherIncome, totalGrossReceipts: dAdd(dAdd(grossTurnover, grossReceipts), otherIncome) };
 }
 
 // ── Audit Score (0–100) ──────────────────────────────────────────────
@@ -269,9 +270,9 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
     ex.dr += e.dr_amount; ex.cr += e.cr_amount;
     tbMap.set(e.ledger_id, ex);
   }
-  const totalDr = Array.from(tbMap.values()).reduce((s, v) => s + v.dr, 0);
-  const totalCr = Array.from(tbMap.values()).reduce((s, v) => s + v.cr, 0);
-  const tbDiff = Math.abs(totalDr - totalCr);
+  const totalDr = dSum(Array.from(tbMap.values()), v => v.dr);
+  const totalCr = dSum(Array.from(tbMap.values()), v => v.cr);
+  const tbDiff = Math.abs(dSub(totalDr, totalCr));
   checkpoints.push({ label: 'Trial Balance Balanced', maxPoints: 12,
     score: tbDiff < 1 ? 12 : tbDiff < 1000 ? 8 : 0,
     status: tbDiff < 1 ? 'green' : tbDiff < 1000 ? 'amber' : 'red' });
@@ -318,11 +319,11 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
 
   // 8. Cash payments ratio
   const cl26 = computeClause26(entityCode, from, to);
-  const cashTotal = cl26.reduce((s, r) => s + r.amount, 0);
-  const expenseTotal = entries.filter(e => {
+  const cashTotal = dSum(cl26, r => r.amount);
+  const expenseTotal = dSum(entries.filter(e => {
     const gc = e.ledger_group_code?.toUpperCase() ?? '';
     return ['ADMIN', 'SELL', 'MFGE', 'DIREX', 'PURCH'].includes(gc);
-  }).reduce((s, e) => s + e.dr_amount, 0) || 1;
+  }), e => e.dr_amount) || 1;
   const cashPct = (cashTotal / expenseTotal) * 100;
   checkpoints.push({ label: 'Cash Payments', maxPoints: 8,
     score: cashPct < 5 ? 8 : cashPct <= 20 ? 4 : 0,
@@ -354,15 +355,16 @@ export function computeAuditScore(entityCode: string, from: string, to: string):
   // 12. Section 43B liabilities cleared
   const _liabilityLedgers = ['PF Payable', 'ESI Payable', 'GST Payable', 'Professional Tax Payable'];
   void _liabilityLedgers;
-  const liabBal = Array.from(tbMap.entries())
-    .filter(([, v]) => v.cr > v.dr)
-    .reduce((s, [, v]) => s + (v.cr - v.dr), 0);
+  const liabBal = dSum(
+    Array.from(tbMap.entries()).filter(([, v]) => v.cr > v.dr),
+    ([, v]) => dSub(v.cr, v.dr),
+  );
   checkpoints.push({ label: 'Sec 43B Liabilities', maxPoints: 6,
     score: liabBal < 100 ? 6 : liabBal < 50000 ? 3 : 0,
     status: liabBal < 100 ? 'green' : liabBal < 50000 ? 'amber' : 'red' });
 
-  const total = checkpoints.reduce((s, c) => s + c.score, 0);
-  const max = checkpoints.reduce((s, c) => s + c.maxPoints, 0);
+  const total = dSum(checkpoints, c => c.score);
+  const max = dSum(checkpoints, c => c.maxPoints);
   return { total, max, checkpoints };
 }
 
@@ -380,12 +382,12 @@ export function runCrossValidations(entityCode: string, from: string, to: string
 
   // V1 — Clause 44 vs Trial Balance
   const cl44 = computeClause44(entityCode, from, to);
-  const cl44Total = cl44.reduce((s, r) => s + r.totalAmount, 0);
-  const tbExpense = entries.filter(e => {
+  const cl44Total = dSum(cl44, r => r.totalAmount);
+  const tbExpense = dSum(entries.filter(e => {
     const gc = e.ledger_group_code?.toUpperCase() ?? '';
     return ['ADMIN', 'SELL', 'MFGE', 'DIREX', 'PURCH'].includes(gc);
-  }).reduce((s, e) => s + e.dr_amount, 0);
-  const v1Diff = Math.abs(cl44Total - tbExpense);
+  }), e => e.dr_amount);
+  const v1Diff = Math.abs(dSub(cl44Total, tbExpense));
   results.push({
     id: 'V1', name: 'Clause 44 vs Trial Balance',
     status: v1Diff < 100 ? 'pass' : 'warn',
@@ -398,8 +400,8 @@ export function runCrossValidations(entityCode: string, from: string, to: string
   const cl9 = computeClause9(entityCode, from, to);
   const gstEntries = ls<GSTEntry>(gstRegisterKey(entityCode))
     .filter(g => !g.is_cancelled && g.date >= from && g.date <= to && g.base_voucher_type === 'Sales');
-  const gstr1Total = gstEntries.reduce((s, g) => s + g.invoice_value, 0);
-  const v2Diff = Math.abs(cl9.grossTurnover - gstr1Total);
+  const gstr1Total = dSum(gstEntries, g => g.invoice_value);
+  const v2Diff = Math.abs(dSub(cl9.grossTurnover, gstr1Total));
   results.push({
     id: 'V2', name: 'Clause 9 vs GSTR-1',
     status: v2Diff < 100 ? 'pass' : 'warn',
@@ -431,9 +433,9 @@ export function runCrossValidations(entityCode: string, from: string, to: string
 
   // V5 — GP% consistency
   const turnover = cl9.grossTurnover || 1;
-  const purchases = entries.filter(e => e.ledger_group_code?.toUpperCase() === 'PURCH')
-    .reduce((s, e) => s + e.dr_amount, 0);
-  const gp = turnover - purchases;
+  const purchases = dSum(entries.filter(e => e.ledger_group_code?.toUpperCase() === 'PURCH'),
+    e => e.dr_amount);
+  const gp = dSub(turnover, purchases);
   const gpPct = (gp / turnover) * 100;
   results.push({
     id: 'V5', name: 'GP% Consistency',
