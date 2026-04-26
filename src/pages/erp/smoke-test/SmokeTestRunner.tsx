@@ -42,6 +42,11 @@ import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
 import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
 import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
 import type { AdvanceEntry } from '@/types/compliance';
+// ── T-T10-pre.2c-PDF imports ──
+import {
+  buildVoucherPDFDoc, exportVoucherAsPDF, type ExportRows,
+} from '@/lib/voucher-export-engine';
+import { buildExportFilename } from '@/lib/export-helpers';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
