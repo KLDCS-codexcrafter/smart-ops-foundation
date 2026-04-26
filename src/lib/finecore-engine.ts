@@ -420,7 +420,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       tds_rate: voucher.tds_rate ?? 0,
       gross_amount: voucher.gross_amount,
       advance_tds_already: advanceTDS,
-      net_tds_amount: (voucher.tds_amount ?? 0) - advanceTDS,
+      net_tds_amount: new Decimal(voucher.tds_amount ?? 0).minus(new Decimal(advanceTDS ?? 0)).toDecimalPlaces(2).toNumber(),
       date: voucher.date,
       quarter, assessment_year: getAssessmentYear(voucher.date),
       status: isPayment ? 'posted' : 'open',
