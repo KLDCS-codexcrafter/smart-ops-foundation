@@ -1,0 +1,4 @@
+Build verification (referenced from Z14 Block 1 Auto · Apr 2026)
+Source: audit_workspace/Z14_close_evidence/Z14_Block1_Auto_evidence/build_output.txt
+Result: ✓ built in 33.74s
+Note: Build was verified post-D5 + post-H1.5-Z + post-backlog. T10-pre.2d source files are 0-line diff between Z14 close and this audit, so build evidence applies.
