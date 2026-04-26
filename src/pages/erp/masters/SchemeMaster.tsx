@@ -29,6 +29,8 @@ import { seedDemoSchemes } from '@/lib/scheme-seed';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+import type { ImportSchema } from '@/lib/master-import-engine';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -61,6 +63,59 @@ function writeSchemes(list: Scheme[]): void {
     localStorage.setItem(schemesKey(ENTITY), JSON.stringify(list));
   } catch { toast.error('Failed to save schemes'); }
 }
+
+// ─── Z9 — Master Import/Export Schema (inline · self-documenting) ────
+// Only headers/metadata are import/exportable. Payload + scope (typed unions)
+// stay out of CSV scope; they are managed in the in-app dialog.
+const SCHEME_IMPORT_SCHEMA: ImportSchema<Scheme> = {
+  entityName: 'Scheme',
+  storageKey: schemesKey(ENTITY),
+  primaryKey: 'code',
+  columns: [
+    { header: 'Scheme Code', field: 'code', required: true, type: 'string' },
+    { header: 'Scheme Name', field: 'name', required: true, type: 'string' },
+    { header: 'Scheme Type', field: 'type', required: true, type: 'string' },
+    { header: 'Description', field: 'description', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string' },
+    { header: 'Valid From', field: 'valid_from', required: true, type: 'date' },
+    { header: 'Valid Until', field: 'valid_until', required: false, type: 'date' },
+    { header: 'Priority', field: 'priority', required: false, type: 'number' },
+    { header: 'Stackable', field: 'stackable', required: false, type: 'boolean' },
+  ],
+  rowToRecord: (row) => {
+    const code = String(row['Scheme Code'] ?? '').trim();
+    const type = (String(row['Scheme Type'] ?? 'flat_percent').trim() || 'flat_percent') as SchemeType;
+    const stackRaw = String(row['Stackable'] ?? '').toLowerCase();
+    const stackable = stackRaw === 'true' || stackRaw === 'yes' || stackRaw === '1';
+    const validUntil = String(row['Valid Until'] ?? '').trim();
+    const now = new Date().toISOString();
+    return {
+      id: `scm-imp-${code}-${Date.now().toString(36)}`,
+      entity_id: ENTITY,
+      code,
+      name: String(row['Scheme Name'] ?? ''),
+      description: String(row['Description'] ?? ''),
+      type,
+      status: (String(row['Status'] ?? 'draft').trim() || 'draft') as SchemeStatus,
+      valid_from: String(row['Valid From'] ?? '').trim(),
+      valid_until: validUntil === '' ? null : validUntil,
+      scope: { audience: 'distributor' },
+      payload: emptyPayload(type),
+      priority: Number(row['Priority'] ?? 5) || 5,
+      stackable,
+      max_uses_per_customer: null,
+      created_at: now,
+      updated_at: now,
+      created_by: 'import',
+    };
+  },
+  validateRow: (rec, line) => {
+    const errs: string[] = [];
+    if (!rec.code) errs.push(`Line ${line}: Scheme Code is empty`);
+    return errs;
+  },
+};
+
 
 function emptyPayload(t: SchemeType): Scheme['payload'] {
   switch (t) {
