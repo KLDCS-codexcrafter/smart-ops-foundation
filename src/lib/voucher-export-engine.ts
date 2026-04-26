@@ -13,6 +13,11 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+  WidthType, AlignmentType, HeadingLevel, Footer, PageNumber,
+  PageOrientation, BorderStyle,
+} from 'docx';
 import { downloadBlob, csvEscapeCell, buildExportFilename } from '@/lib/export-helpers';
 
 /**
