@@ -41,7 +41,8 @@ export interface CommissionGLResult {
   tdsPayableAmount: number;
 }
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
+// round2: Decimal-based 2dp half-up rounding (Z2a · prevents floating-point drift across commission lifecycle)
+const round2 = (n: number) => new Decimal(n ?? 0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
 const inr = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
 /**
