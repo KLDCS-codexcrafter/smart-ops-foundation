@@ -1,0 +1,8 @@
+File | Has math? | Action
+contra-print-engine.ts | no | Z2c defer
+credit-note-print-engine.ts | no | Z2c defer
+debit-note-print-engine.ts | no | Z2c defer
+invoice-print-engine.ts | no (display-only amountInWords) | Z2c defer
+payment-print-engine.ts | no | Z2c defer
+purchase-print-engine.ts | no | Z2c defer
+receipt-print-engine.ts | no | Z2c defer

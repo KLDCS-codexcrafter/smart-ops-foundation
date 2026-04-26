@@ -9,6 +9,7 @@
 import type { Voucher } from '@/types/voucher';
 import type { IRNRecord } from '@/types/irn';
 import type { GSPProvider } from '@/types/entity-gst';
+import { dMul, dSub, dSum } from '@/lib/decimal-helpers';
 
 export interface IRPCredentials {
   username: string;
@@ -116,7 +117,7 @@ export function buildIRNPayload(
     Qty: l.qty,
     Unit: l.uom || 'NOS',
     UnitPrice: l.rate,
-    TotAmt: l.qty * l.rate,
+    TotAmt: dMul(l.qty, l.rate),
     Discount: l.discount_amount,
     AssAmt: l.taxable_value,
     GstRt: l.gst_rate,
@@ -191,8 +192,8 @@ export function validateIRNPayload(payload: IRPPayload): string[] {
       errors.push(`HSN code missing or too short for line ${it.SlNo}`);
     }
   }
-  const lineSum = payload.ItemList.reduce((s, it) => s + it.TotItemVal, 0);
-  if (Math.abs(lineSum - payload.ValDtls.TotInvVal) > 1) {
+  const lineSum = dSum(payload.ItemList, it => it.TotItemVal);
+  if (Math.abs(dSub(lineSum, payload.ValDtls.TotInvVal)) > 1) {
     errors.push(`Line item total (${lineSum.toFixed(2)}) must match invoice total (${payload.ValDtls.TotInvVal.toFixed(2)}) within ₹1`);
   }
   return errors;

@@ -12,6 +12,7 @@ import type {
 } from '@/types/freight-reconciliation';
 import type { TransporterRateCard } from '@/types/transporter-rate';
 import { computeExpectedFreight } from './freight-calc-engine';
+import { dSub, dPct, dSum, dMul } from '@/lib/decimal-helpers';
 
 export interface PayerCustomerLite {
   id: string;
@@ -52,14 +53,14 @@ export function resolveTolerance(
 export function classifyMatch(
   expected: number, declared: number, tolerance: ToleranceConfig,
 ): MatchStatus {
-  const variance = declared - expected;
+  const variance = dSub(declared, expected);
   const absVariance = Math.abs(variance);
-  const varPct = expected > 0 ? (absVariance / expected) * 100 : 0;
+  const varPct = expected > 0 ? dPct(absVariance, 100) / expected : 0;
 
   if (absVariance < 0.01) return 'exact_match';
 
   const exceedsPct = varPct > tolerance.pct;
-  const exceedsAmount = absVariance * 100 > tolerance.amount_paise;
+  const exceedsAmount = dMul(absVariance, 100) > tolerance.amount_paise;
   if (!exceedsPct || !exceedsAmount) return 'within_tolerance';
 
   return variance > 0 ? 'over_billed' : 'under_billed';
@@ -241,8 +242,8 @@ export function summarizeMatches(matches: MatchLine[]): ReconciliationSummary {
       m.status === 'rate_calc_failed',
     ).length,
   };
-  const declared = matches.reduce((s, m) => s + m.declared_amount, 0);
-  const expected = matches.reduce((s, m) => s + m.expected_amount, 0);
+  const declared = dSum(matches, m => m.declared_amount);
+  const expected = dSum(matches, m => m.expected_amount);
   const actions = {
     approved: matches.filter(m => m.auto_decision === 'approve').length,
     flagged: matches.filter(m => m.auto_decision === 'flag').length,
@@ -258,7 +259,7 @@ export function summarizeMatches(matches: MatchLine[]): ReconciliationSummary {
     errors: counts.errors,
     total_declared: declared,
     total_expected: expected,
-    total_variance: declared - expected,
+    total_variance: dSub(declared, expected),
     pct_auto_approved: total > 0 ? (actions.approved / total) * 100 : 0,
     pct_flagged: total > 0 ? (actions.flagged / total) * 100 : 0,
     pct_disputed: total > 0 ? (actions.disputed / total) * 100 : 0,

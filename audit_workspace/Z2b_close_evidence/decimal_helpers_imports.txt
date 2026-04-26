@@ -1,0 +1,8 @@
+=== src/lib/tds-engine.ts ===
+import { dAdd, dSub, dPct, dSum } from '@/lib/decimal-helpers';
+=== src/lib/auditEngine.ts ===
+import { dAdd, dSub, dSum } from '@/lib/decimal-helpers';
+=== src/lib/freight-match-engine.ts ===
+import { dSub, dPct, dSum, dMul } from '@/lib/decimal-helpers';
+=== src/lib/irn-engine.ts ===
+import { dMul, dSub, dSum } from '@/lib/decimal-helpers';

@@ -5,6 +5,7 @@
  */
 
 import type { TDSSection } from '@/data/compliance-seed-data';
+import { dAdd, dSub, dPct, dSum } from '@/lib/decimal-helpers';
 
 export interface TDSComputeResult {
   applicable: boolean;
@@ -32,10 +33,10 @@ function getAggregateYTD(vendorId: string, sectionCode: string, entityCode: stri
   try {
     // [JWT] GET /api/accounting/vouchers
     const vouchers = JSON.parse(localStorage.getItem(`erp_group_vouchers_${entityCode}`) || '[]');
-    return vouchers
+    const filtered = vouchers
       .filter((v: Record<string, unknown>) => v.party_id === vendorId && vendorId &&
-        v.tds_section === sectionCode && v.status === 'posted')
-      .reduce((s: number, v: Record<string, unknown>) => s + ((v.gross_amount as number) || 0), 0);
+        v.tds_section === sectionCode && v.status === 'posted');
+    return dSum(filtered as Record<string, unknown>[], v => (v.gross_amount as number) || 0);
   } catch { return 0; }
 }
 
@@ -66,13 +67,13 @@ export function computeTDS(
 
   const rate = deducteeType === 'no_pan' ? sec.rateNoPAN :
     deducteeType === 'company' ? sec.rateCompany : sec.rateIndividual;
-  const tdsAmount = Math.round(grossAmount * rate / 100);
+  const tdsAmount = Math.round(dPct(grossAmount, rate));
 
   return {
     applicable: true, section: sectionCode, sectionName: sec.sectionName,
-    rate, grossAmount, tdsAmount, netAmount: grossAmount - tdsAmount,
+    rate, grossAmount, tdsAmount, netAmount: dSub(grossAmount, tdsAmount),
     thresholdCrossed: true,
-    is194QApplicable: is194QApplicable(ytd + grossAmount),
+    is194QApplicable: is194QApplicable(dAdd(ytd, grossAmount)),
     ledgerSuggestion: `TDS Payable u/s ${sectionCode}`,
   };
 }
@@ -83,7 +84,7 @@ export function checkThreshold(
   if (sec.thresholdPerTransaction && currentPayment < sec.thresholdPerTransaction)
     return false;
   if (sec.thresholdAggregateAnnual &&
-    (aggregateYTD + currentPayment) < sec.thresholdAggregateAnnual)
+    dAdd(aggregateYTD, currentPayment) < sec.thresholdAggregateAnnual)
     return false;
   return true;
 }
