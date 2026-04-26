@@ -1,0 +1,5 @@
+tsc verification
+Date: 2026-04-26T12:41:58Z
+Command: ./node_modules/.bin/tsc --noEmit -p tsconfig.app.json
+Exit: 0
+Errors: 0
