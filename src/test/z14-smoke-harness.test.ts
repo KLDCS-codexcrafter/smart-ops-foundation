@@ -551,10 +551,14 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
         name: String(row['Name'] ?? '').trim(),
       }),
     };
-    // Build CSV with empty Code on line 2
-    const csv = 'Code,Name\n,Festive Diwali\nS002,Holi Bonanza\n';
-    const file = new File([csv], 'schemes.csv', { type: 'text/csv' });
-    const result = await importMasterFile(file, schemeSchema);
+    // Feed parsed-row dicts directly to validateRows (engine code path · jsdom
+    // File polyfill lacks arrayBuffer · XLSX parse infra not a Z14 invariant)
+    const rows: Record<string, unknown>[] = [
+      { 'Code': '', 'Name': 'Festive Diwali' },
+      { 'Code': 'S002', 'Name': 'Holi Bonanza' },
+    ];
+    const validation = validateRows<SchemeRec>(rows, schemeSchema);
+    const result = { totalRows: rows.length, importedCount: 0, updatedCount: 0, errors: validation.errors };
     const codeError = result.errors.find(e => /Code is required/.test(e.message));
     const pass = !!codeError && codeError.line === 2 && result.errors.length >= 1;
     const ev = record(
