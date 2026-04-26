@@ -24,6 +24,7 @@ import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   salesReturnMemosKey,
   SALES_RETURN_REASON_LABELS,
