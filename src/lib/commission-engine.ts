@@ -97,7 +97,7 @@ export function triggerCommissionOnReceipt(
   let totalTDS = 0;
 
   for (const entry of eligible) {
-    const entryOutstanding = Math.max(0, entry.net_invoice_amount - entry.amount_received_to_date);
+    const entryOutstanding = Decimal.max(0, new Decimal(entry.net_invoice_amount ?? 0).minus(new Decimal(entry.amount_received_to_date ?? 0))).toNumber();
     if (entryOutstanding <= 0) continue;
 
     const share = round2((entryOutstanding / totalOutstanding) * allocatable);
