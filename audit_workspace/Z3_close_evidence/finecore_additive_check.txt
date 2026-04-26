@@ -1,0 +1,3 @@
+14:import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
+66:    if (isPeriodLocked(voucher.date, voucher.entity_id)) {
+67:      const msg = periodLockMessage(voucher.date, voucher.entity_id);

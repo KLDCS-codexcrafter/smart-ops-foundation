@@ -21,6 +21,7 @@ import { ChevronDown } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/finecore/TemplateField';
 import { resolveVars, vouchersKey } from '@/lib/finecore-engine';
+import { getCurrentUserId } from '@/lib/auth-helpers';
 import type { Voucher } from '@/types/voucher';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -107,7 +108,7 @@ export function VoucherFormPanel({
         round_off: 0,
         tds_applicable: false,
         status: 'draft',
-        created_by: 'current-user',
+        created_by: getCurrentUserId(),
         created_at: now,
         updated_at: now,
       };

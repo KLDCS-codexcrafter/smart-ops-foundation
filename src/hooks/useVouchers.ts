@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey, postVoucher, cancelVoucher as cancelEngine, validateVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { getCurrentUserId } from '@/lib/auth-helpers';
 
 function ls<T>(key: string): T[] {
   try {
@@ -42,23 +43,29 @@ export function useVouchers(entityCode: string) {
   }, [vouchers]);
 
   const createVoucher = useCallback((voucher: Voucher, post = false) => {
+    // Auto-set created_by if missing (T-H1.5-Z-Z3 actor threading)
+    const enrichedVoucher: Voucher = {
+      ...voucher,
+      created_by: voucher.created_by || getCurrentUserId(),
+    };
+
     if (post) {
-      const validation = validateVoucher(voucher);
+      const validation = validateVoucher(enrichedVoucher);
       if (!validation.valid) {
         toast.error(validation.errors[0]);
         return null;
       }
-      postVoucher(voucher, entityCode);
-      toast.success(`${voucher.voucher_type_name} ${voucher.voucher_no} posted`);
+      postVoucher(enrichedVoucher, entityCode);
+      toast.success(`${enrichedVoucher.voucher_type_name} ${enrichedVoucher.voucher_no} posted`);
     } else {
       const existing = ls<Voucher>(key);
-      existing.push({ ...voucher, status: 'draft' });
+      existing.push({ ...enrichedVoucher, status: 'draft' });
       // [JWT] POST /api/accounting/vouchers (draft)
       localStorage.setItem(key, JSON.stringify(existing));
-      toast.success(`${voucher.voucher_type_name} saved as draft`);
+      toast.success(`${enrichedVoucher.voucher_type_name} saved as draft`);
     }
     reload();
-    return voucher;
+    return enrichedVoucher;
   }, [entityCode, key, reload]);
 
   const cancelVoucher = useCallback((voucherId: string, reason: string) => {

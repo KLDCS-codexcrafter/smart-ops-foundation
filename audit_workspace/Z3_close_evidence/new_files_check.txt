@@ -1,0 +1,8 @@
+=== src/lib/period-lock-engine.ts ===
+-rw-r--r-- 1 root root 3126 Apr 26 06:37 src/lib/period-lock-engine.ts
+=== src/lib/auth-helpers.ts ===
+-rw-r--r-- 1 root root 2623 Apr 26 06:39 src/lib/auth-helpers.ts
+=== src/pages/erp/accounting/PeriodLockSettings.tsx ===
+-rw-r--r-- 1 root root 6019 Apr 26 06:41 src/pages/erp/accounting/PeriodLockSettings.tsx
+=== src/pages/erp/accounting/MockAuthDevPanel.tsx ===
+-rw-r--r-- 1 root root 5071 Apr 26 06:41 src/pages/erp/accounting/MockAuthDevPanel.tsx
