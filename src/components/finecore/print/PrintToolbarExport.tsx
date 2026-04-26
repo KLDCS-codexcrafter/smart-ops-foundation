@@ -12,10 +12,10 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  exportVoucherAsXLSX, type ExportRows,
+  exportVoucherAsXLSX, exportVoucherAsPDF, type ExportRows,
 } from '@/lib/voucher-export-engine';
 
 export interface PrintToolbarExportProps {
@@ -29,23 +29,29 @@ export interface PrintToolbarExportProps {
    * Returns ExportRows consumed by the shared XLSX serializer.
    */
   buildRows: (payload: unknown) => ExportRows;
-  /** Optional override for button label. Default: "Excel". */
+  /** Optional override for the Excel button label. Default: "Excel". */
   label?: string;
+  /** Optional override for the PDF button label. Default: "PDF". */
+  pdfLabel?: string;
 }
 
 /**
- * @purpose   Render an "Excel" button that exports the given payload to .xlsx on click.
+ * @purpose   Render "Excel" + "PDF" buttons that export the given payload to .xlsx / .pdf on click.
  * @param     props.payload      — voucher payload (already built by parent)
  * @param     props.buildRows    — per-voucher row-builder (e.g. buildInvoiceExportRows)
- * @param     props.label        — optional button label, default "Excel"
+ * @param     props.label        — optional Excel button label, default "Excel"
+ * @param     props.pdfLabel     — optional PDF button label, default "PDF"
  * @why-this-approach  [Convergent] D-129: export belongs where payload lives (print page),
  *                     not where forms live (voucher entry). Shared component keeps
  *                     PrintSheetFrame lean and allows SalesInvoicePrint's bespoke toolbar
  *                     to drop it in without duplicating logic.
+ *                     [T-T10-pre.2c-PDF] PDF button added alongside Excel · CSV/XLSX engines untouched.
  * @iso       Reliability (HIGH — try/catch with toast fallback) · Maintainability (HIGH)
  */
-export function PrintToolbarExport({ payload, buildRows, label = 'Excel' }: PrintToolbarExportProps) {
-  const handleClick = () => {
+export function PrintToolbarExport({
+  payload, buildRows, label = 'Excel', pdfLabel = 'PDF',
+}: PrintToolbarExportProps) {
+  const handleExcelClick = () => {
     try {
       const rows = buildRows(payload);
       exportVoucherAsXLSX(rows);
@@ -57,10 +63,27 @@ export function PrintToolbarExport({ payload, buildRows, label = 'Excel' }: Prin
     }
   };
 
+  const handlePDFClick = () => {
+    try {
+      const rows = buildRows(payload);
+      exportVoucherAsPDF(rows, 'voucher');
+      toast.success('Exported as PDF');
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern rule targets console.log, not console.error.
+      toast.error('PDF export failed. Check console for details.');
+      console.error('Print-toolbar PDF export error:', err);
+    }
+  };
+
   return (
-    <Button variant="outline" size="sm" onClick={handleClick}>
-      <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> {label}
-    </Button>
+    <>
+      <Button variant="outline" size="sm" onClick={handleExcelClick}>
+        <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> {label}
+      </Button>
+      <Button variant="outline" size="sm" onClick={handlePDFClick}>
+        <FileText className="h-3.5 w-3.5 mr-1" /> {pdfLabel}
+      </Button>
+    </>
   );
 }
 
