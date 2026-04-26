@@ -11,6 +11,8 @@
  */
 
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { downloadBlob, csvEscapeCell, buildExportFilename } from '@/lib/export-helpers';
 
 /**
