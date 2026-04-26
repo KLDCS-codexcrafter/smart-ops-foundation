@@ -1021,6 +1021,96 @@ const CHECKS: CheckSpec[] = [
         expected: 'array with well-formed items',
         pass: shapeOk, details: 'Plan function contract' };
     } },
+
+  // ── T-T10-pre.2c-PDF · 5 smoke checks for PDF export hook ──
+  // Single-sheet voucher fixture used by pdf-1, pdf-3, pdf-5.
+  // Multi-sheet register fixture used by pdf-2, pdf-4.
+  { id: 'pdf-1', section: 'PDF Export',
+    name: 'Voucher PDF export produces application/pdf blob',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'Sales Invoice', voucherNo: 'INV-PDF-1',
+        sheets: [{ name: 'Lines', headers: ['Item', 'Qty', 'Rate', 'Amount'],
+          rows: [['Widget', 10, 100, 1000], ['Gadget', 5, 200, 1000]] }],
+      };
+      const { doc } = buildVoucherPDFDoc(data, 'voucher');
+      const blob = doc.output('blob');
+      const ok = blob.type === 'application/pdf';
+      return { actual: `type=${blob.type}`, expected: 'application/pdf',
+        pass: ok, details: `blob size=${blob.size} bytes` };
+    } },
+
+  { id: 'pdf-2', section: 'PDF Export',
+    name: 'Register PDF export produces application/pdf blob',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'Sales Register', voucherNo: '2026-04-01_to_2026-04-30',
+        sheets: [
+          { name: 'Vouchers', headers: ['Date', 'No', 'Party', 'Total'],
+            rows: [['2026-04-05', 'INV/0001', 'Acme', 12500],
+              ['2026-04-08', 'INV/0002', 'Beta', 7800]] },
+          { name: 'Summary', headers: ['Metric', 'Value'],
+            rows: [['Count', 2], ['Grand Total', 20300]] },
+        ],
+      };
+      const { doc } = buildVoucherPDFDoc(data, 'register');
+      const blob = doc.output('blob');
+      const ok = blob.type === 'application/pdf';
+      return { actual: `type=${blob.type}`, expected: 'application/pdf',
+        pass: ok, details: `blob size=${blob.size} bytes` };
+    } },
+
+  { id: 'pdf-3', section: 'PDF Export',
+    name: 'Single-sheet ExportRows in auto mode → voucher layout (portrait)',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'Receipt', voucherNo: 'RCP-PDF-3',
+        sheets: [{ name: 'Lines', headers: ['Account', 'Amount'],
+          rows: [['Cash', 5000], ['Bank', 2500]] }],
+      };
+      const { doc, layout } = buildVoucherPDFDoc(data, 'auto');
+      // Portrait A4: width (~595pt) < height (~842pt).
+      const w = doc.internal.pageSize.getWidth();
+      const h = doc.internal.pageSize.getHeight();
+      const ok = layout === 'voucher' && w < h;
+      return { actual: `layout=${layout}, w=${Math.round(w)}, h=${Math.round(h)}`,
+        expected: 'layout=voucher, portrait (w<h)',
+        pass: ok, details: 'Auto mode infers single-sheet → voucher → portrait A4' };
+    } },
+
+  { id: 'pdf-4', section: 'PDF Export',
+    name: 'Multi-sheet ExportRows in auto mode → register layout (landscape)',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'GST Invoice', voucherNo: 'GST-PDF-4',
+        sheets: [
+          { name: 'Lines', headers: ['Item', 'Qty'], rows: [['A', 1]] },
+          { name: 'HSN Summary', headers: ['HSN', 'Total'], rows: [['1234', 100]] },
+        ],
+      };
+      const { doc, layout } = buildVoucherPDFDoc(data, 'auto');
+      // Landscape A4: width (~842pt) > height (~595pt).
+      const w = doc.internal.pageSize.getWidth();
+      const h = doc.internal.pageSize.getHeight();
+      const ok = layout === 'register' && w > h;
+      return { actual: `layout=${layout}, w=${Math.round(w)}, h=${Math.round(h)}`,
+        expected: 'layout=register, landscape (w>h)',
+        pass: ok, details: 'Auto mode infers multi-sheet → register → landscape A4' };
+    } },
+
+  { id: 'pdf-5', section: 'PDF Export',
+    name: 'PDF filename matches buildExportFilename pattern',
+    run: () => {
+      const expected = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'pdf');
+      // Pattern: <SafeType>_<SafeNo>_<YYYY-MM-DD>.pdf · '/' becomes '_'.
+      const matchesPattern = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.pdf$/.test(expected);
+      // Sanity: exportVoucherAsPDF is wired (function exists).
+      const hooked = typeof exportVoucherAsPDF === 'function';
+      const ok = matchesPattern && hooked;
+      return { actual: `filename=${expected}, hooked=${hooked}`,
+        expected: 'matches Sales_Invoice_INV_2026_0099_<date>.pdf',
+        pass: ok, details: 'Filename helper reused · no bespoke pattern' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
