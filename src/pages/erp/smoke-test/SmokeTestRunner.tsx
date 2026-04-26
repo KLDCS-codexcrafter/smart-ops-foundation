@@ -78,7 +78,9 @@ function readObj(key: string): unknown {
 
 interface CheckSpec {
   id: string; section: string; name: string;
-  run: (entityCode: string) => { actual: number | string; expected: number | string; pass: boolean; details: string };
+  run: (entityCode: string) =>
+    | { actual: number | string; expected: number | string; pass: boolean; details: string }
+    | Promise<{ actual: number | string; expected: number | string; pass: boolean; details: string }>;
 }
 
 const CHECKS: CheckSpec[] = [
