@@ -1,0 +1,16 @@
+{
+  "id": "z10-asset-error",
+  "description": "Asset CSV with empty Code → error \"Code is required\"",
+  "pass": true,
+  "expected": "errors[] contains Code is required",
+  "actual": {
+    "totalRows": 2,
+    "errors": [
+      {
+        "line": 2,
+        "message": "Code is required"
+      }
+    ]
+  },
+  "timestamp": "2026-04-26T11:48:36.303Z"
+}

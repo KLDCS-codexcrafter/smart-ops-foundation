@@ -1,0 +1,18 @@
+{
+  "id": "z9-scheme-error",
+  "description": "Scheme CSV with empty Code → error \"Code is required\" on line 2",
+  "pass": true,
+  "expected": "errors[] contains Code is required at line 2",
+  "actual": {
+    "totalRows": 2,
+    "errors": [
+      {
+        "line": 2,
+        "message": "Code is required"
+      }
+    ],
+    "codeErrorFound": true,
+    "errorLine": 2
+  },
+  "timestamp": "2026-04-26T11:48:36.301Z"
+}
