@@ -174,7 +174,7 @@ export function SavingsROIDashboardPanel() {
       cum += b.recovered;
       const cumSub = subPerMonth * (Array.from(buckets.values()).indexOf(b) + 1);
       const cumROI = cumSub > 0 ? (cum / cumSub) * 100 : 0;
-      return { ...b, cumROI: Number(cumROI.toFixed(1)) };
+      return { ...b, cumROI: new Decimal(cumROI ?? 0).toDecimalPlaces(1, Decimal.ROUND_HALF_UP).toNumber() };
     });
   }, [matches, invoices, disputes, benchmark]);
 
