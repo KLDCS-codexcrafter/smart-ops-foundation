@@ -254,14 +254,20 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       );
       if (origIdx >= 0) {
         const orig = { ...entries[origIdx] };
-        const reduction = Math.min(voucher.net_amount, orig.pending_amount);
-        orig.settled_amount = +(orig.settled_amount + reduction).toFixed(2);
-        orig.pending_amount = +(orig.pending_amount - reduction).toFixed(2);
+        const reductionDec = Decimal.min(
+          new Decimal(voucher.net_amount ?? 0),
+          new Decimal(orig.pending_amount ?? 0),
+        );
+        const reduction = reductionDec.toNumber();
+        orig.settled_amount = new Decimal(orig.settled_amount ?? 0)
+          .plus(reductionDec).toDecimalPlaces(2).toNumber();
+        orig.pending_amount = new Decimal(orig.pending_amount ?? 0)
+          .minus(reductionDec).toDecimalPlaces(2).toNumber();
         orig.settlement_refs = [
           ...orig.settlement_refs,
           { voucher_id: voucher.id, amount: reduction, date: voucher.date },
         ];
-        orig.status = orig.pending_amount <= 0.01 ? 'settled' : 'partial';
+        orig.status = new Decimal(orig.pending_amount).lessThanOrEqualTo('0.01') ? 'settled' : 'partial';
         orig.updated_at = now;
         entries[origIdx] = orig;
         creditNoteSettled = true;
