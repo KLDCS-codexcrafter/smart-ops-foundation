@@ -235,13 +235,13 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const updated = { ...list[idx] };
     updated.payments = [...updated.payments, payment];
     updated.amount_received_to_date =
-      +(updated.amount_received_to_date + amt).toFixed(2);
+      round2(dAdd(updated.amount_received_to_date, amt));
     updated.commission_earned_to_date =
-      +(updated.commission_earned_to_date + previewPayment.commissionOnReceipt).toFixed(2);
+      round2(dAdd(updated.commission_earned_to_date, previewPayment.commissionOnReceipt));
     updated.tds_deducted_to_date =
-      +(updated.tds_deducted_to_date + previewPayment.tdsAmount).toFixed(2);
+      round2(dAdd(updated.tds_deducted_to_date, previewPayment.tdsAmount));
     updated.net_paid_to_date =
-      +(updated.net_paid_to_date + previewPayment.netCommissionPaid).toFixed(2);
+      round2(dAdd(updated.net_paid_to_date, previewPayment.netCommissionPaid));
     updated.status = updated.amount_received_to_date >= updated.invoice_amount - 0.01
       ? 'paid' : 'partial';
     updated.updated_at = now;
