@@ -111,7 +111,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setItems(prev => prev.map((it, i) => {
       if (i !== idx) return it;
       const next = { ...it, ...patch };
-      next.amount = +(next.qty * next.rate).toFixed(2);
+      next.amount = round2(dMul(next.qty, next.rate));
       return next;
     }));
   };
