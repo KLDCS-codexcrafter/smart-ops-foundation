@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText, FileDown } from 'lucide-react';
+import { FileSpreadsheet, Search, FileText, FileDown, FileType2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
