@@ -29,6 +29,7 @@ import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { computeCommissionGL } from '@/lib/commission-engine';
+import { dAdd, dSub, dMul, dPct, round2 } from '@/lib/decimal-helpers';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { Voucher } from '@/types/voucher';
@@ -137,11 +138,11 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const amt = Number(amountReceived);
     if (!amt || amt <= 0) return null;
     const ratio = active.invoice_amount > 0 ? amt / active.invoice_amount : 0;
-    const commissionOnReceipt = +(active.total_commission * ratio).toFixed(2);
+    const commissionOnReceipt = round2(dMul(active.total_commission, ratio));
     const tdsAmount = active.tds_applicable
-      ? +(commissionOnReceipt * active.tds_rate / 100).toFixed(2)
+      ? round2(dPct(commissionOnReceipt, active.tds_rate))
       : 0;
-    const netCommissionPaid = +(commissionOnReceipt - tdsAmount).toFixed(2);
+    const netCommissionPaid = round2(dSub(commissionOnReceipt, tdsAmount));
     return { commissionOnReceipt, tdsAmount, netCommissionPaid };
   }, [active, amountReceived]);
 
@@ -234,13 +235,13 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const updated = { ...list[idx] };
     updated.payments = [...updated.payments, payment];
     updated.amount_received_to_date =
-      +(updated.amount_received_to_date + amt).toFixed(2);
+      round2(dAdd(updated.amount_received_to_date, amt));
     updated.commission_earned_to_date =
-      +(updated.commission_earned_to_date + previewPayment.commissionOnReceipt).toFixed(2);
+      round2(dAdd(updated.commission_earned_to_date, previewPayment.commissionOnReceipt));
     updated.tds_deducted_to_date =
-      +(updated.tds_deducted_to_date + previewPayment.tdsAmount).toFixed(2);
+      round2(dAdd(updated.tds_deducted_to_date, previewPayment.tdsAmount));
     updated.net_paid_to_date =
-      +(updated.net_paid_to_date + previewPayment.netCommissionPaid).toFixed(2);
+      round2(dAdd(updated.net_paid_to_date, previewPayment.netCommissionPaid));
     updated.status = updated.amount_received_to_date >= updated.invoice_amount - 0.01
       ? 'paid' : 'partial';
     updated.updated_at = now;
@@ -410,7 +411,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const gst = Number(agentInvGST);
     if (!agentInvNo.trim()) { toast.error('Agent invoice number required'); return; }
     if (!gross || gross <= 0) { toast.error('Gross amount must be positive'); return; }
-    const variance = +(gross - gst - entry.commission_earned_to_date).toFixed(2);
+    const variance = round2(dSub(dSub(gross, gst), entry.commission_earned_to_date));
     const list = loadRegister(entityCode);
     const idx = list.findIndex(e => e.id === entry.id);
     if (idx < 0) return;

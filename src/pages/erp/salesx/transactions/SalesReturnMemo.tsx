@@ -24,6 +24,7 @@ import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   salesReturnMemosKey,
   SALES_RETURN_REASON_LABELS,
@@ -101,7 +102,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
       qty: l.qty,
       uom: l.uom,
       rate: l.rate,
-      amount: +(l.qty * l.rate).toFixed(2),
+      amount: round2(dMul(l.qty, l.rate)),
     }));
     setItems(lines);
   }, [selectedInvoice]);
@@ -110,7 +111,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     setItems(prev => prev.map((it, i) => {
       if (i !== idx) return it;
       const next = { ...it, ...patch };
-      next.amount = +(next.qty * next.rate).toFixed(2);
+      next.amount = round2(dMul(next.qty, next.rate));
       return next;
     }));
   };

@@ -26,6 +26,7 @@ import {
   type SecondarySales, type SecondarySalesLine, type EndCustomerType,
   secondarySalesKey, END_CUSTOMER_LABELS,
 } from '@/types/secondary-sales';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -159,7 +160,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
       lines: f.lines.map(l => {
         if (l.id !== id) return l;
         const updated = { ...l, ...patch };
-        updated.amount = +(updated.qty * updated.rate).toFixed(2);
+        updated.amount = round2(dMul(updated.qty, updated.rate));
         return updated;
       }),
     }));

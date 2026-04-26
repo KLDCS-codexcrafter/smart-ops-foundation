@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import Decimal from 'decimal.js';
+import { dMul, dSub, round2 } from '@/lib/decimal-helpers';
 import type { ItemAllocation } from '@/types/voucher';
 
 export interface GodownLite { id: string; name: string; }
@@ -57,7 +59,9 @@ export function ItemAllocationDialog({
   );
 
   const totalQty = useMemo(() => rows.reduce((s, r) => s + (r.qty || 0), 0), [rows]);
-  const qtyDelta = +(lineQty - totalQty).toFixed(3);
+  // qty precision is 3dp (vs monetary 2dp · round2 helper not applicable · D-142 amendment candidate)
+  const qtyDelta = new Decimal(lineQty ?? 0).minus(new Decimal(totalQty ?? 0))
+    .toDecimalPlaces(3, Decimal.ROUND_HALF_UP).toNumber();
   const qtyOk = Math.abs(qtyDelta) < 0.001;
 
   const addRow = () => setRows(r => [...r, emptyAllocation(godowns[0]?.id)]);
@@ -71,8 +75,8 @@ export function ItemAllocationDialog({
 
   const recomputeLineFinancials = (row: ItemAllocation, qty: number): ItemAllocation => {
     const qtyShare = lineQty > 0 ? qty / lineQty : 0;
-    const disc = +(lineDiscountAmount * qtyShare).toFixed(2);
-    const taxable = +(qty * lineRate - disc).toFixed(2);
+    const disc = round2(dMul(lineDiscountAmount, qtyShare));
+    const taxable = round2(dSub(dMul(qty, lineRate), disc));
     return { ...row, qty, rate: lineRate, discount_amount: disc, taxable_value: taxable };
   };
 

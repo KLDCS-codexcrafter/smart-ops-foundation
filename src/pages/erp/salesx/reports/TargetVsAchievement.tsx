@@ -18,6 +18,8 @@ import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types'
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
+import Decimal from 'decimal.js';
+import { round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -84,7 +86,9 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
       } else if (t.dimension === 'order_volume') {
         actual = vouchers.filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted').length;
       }
-      const pct = t.target_value > 0 ? +(actual / t.target_value * 100).toFixed(2) : 0;
+      const pct = t.target_value > 0
+        ? round2(new Decimal(actual).dividedBy(t.target_value).times(100).toNumber())
+        : 0;
       return { target: t, actual, pct, status: computeStatus(pct) };
     });
   }, [entityCode]);
@@ -102,7 +106,9 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
   const summary = useMemo(() => {
     const totalTarget = filtered.reduce((s, r) => s + r.target.target_value, 0);
     const totalActual = filtered.reduce((s, r) => s + r.actual, 0);
-    const totalPct = totalTarget > 0 ? +(totalActual / totalTarget * 100).toFixed(2) : 0;
+    const totalPct = totalTarget > 0
+      ? round2(new Decimal(totalActual).dividedBy(totalTarget).times(100).toNumber())
+      : 0;
     return { totalTarget, totalActual, totalPct };
   }, [filtered]);
 
