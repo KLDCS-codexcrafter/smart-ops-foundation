@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText, FileDown, FileType2 } from 'lucide-react';
+import { FileSpreadsheet, Search, FileText, FileDown, FileType2, FileCode } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -37,8 +37,12 @@ import { useVouchers } from '@/hooks/useVouchers';
 import { today } from '@/pages/erp/finecore/reports/reportUtils';
 import {
   exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord,
-  type ExportRows, type ExportSheet,
+  exportVoucherAsTallyXML, exportVoucherAsTallyJSON,
+  type ExportRows, type ExportSheet, type TallyAction,
 } from '@/lib/voucher-export-engine';
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
 import {
   loadRegisterConfig, resolveToggles, resolveDefaultGroup,
@@ -212,6 +216,20 @@ export function RegisterGrid({
     }
   };
 
+  // [T-T10-pre.2c-TallyNative] Tally export — batches all filtered vouchers into one envelope per format.
+  const handleTallyExport = (format: 'xml' | 'json') => {
+    try {
+      const action: TallyAction = 'Create';
+      const companyName = '';
+      if (format === 'xml') exportVoucherAsTallyXML(filtered, action, companyName);
+      else exportVoucherAsTallyJSON(filtered, action, companyName);
+      toast.success(`Exported ${filtered.length} vouchers as Tally ${format.toUpperCase()}`);
+    } catch (err) {
+      toast.error(`Tally ${format.toUpperCase()} export failed.`);
+      console.error(`Register Tally ${format.toUpperCase()} export error:`, err);
+    }
+  };
+
   const handleRowClick = (v: Voucher) => {
     // [Convergent] D-136: drill-down lands in DayBook, pre-filtered. Preserves context.
     onNavigateToDayBook({
@@ -241,6 +259,17 @@ export function RegisterGrid({
           <Button variant="outline" size="sm" onClick={handleWordExport} disabled={filtered.length === 0}>
             <FileType2 className="h-3.5 w-3.5 mr-1" /> Export Word
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={filtered.length === 0}>
+                <FileCode className="h-3.5 w-3.5 mr-1" /> Export Tally
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleTallyExport('xml')}>Export as Tally XML</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleTallyExport('json')}>Export as Tally JSON</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

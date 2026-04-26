@@ -235,6 +235,32 @@ const DEFAULT_WA: WhatsAppConfig = {
   waApiKey: '', waUserName: '', waCompanyNumber: '',
 };
 
+// ── T-T10-pre.2c-TallyNative · Tally Prime native export config ────────────
+// Storage: erp_comply360_tally_{entityId}
+// [JWT] GET/PATCH /api/compliance/comply360/tally/:entityId
+import type { TallyAction } from '@/lib/voucher-export-engine';
+
+export interface TallyExportConfig {
+  /** Default Tally export format. */
+  export_format: 'xml' | 'json' | 'both';
+  /** Default Tally action for new exports. */
+  default_action: TallyAction;
+  /** Whether to include <STATICVARIABLES><SVCURRENTCOMPANY> in envelope. */
+  include_static_variables: boolean;
+  /** Company name for <SVCURRENTCOMPANY> tag · pulls from entity master if blank. */
+  company_name: string;
+}
+
+export const DEFAULT_TALLY_EXPORT_CONFIG: TallyExportConfig = {
+  export_format: 'both',
+  default_action: 'Create',
+  include_static_variables: true,
+  company_name: '',
+};
+
+export const comply360TallyKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_tally_${entityId ?? 'default'}`;
+
 const DEFAULT_TDSP: TDSPayableConfig = {
   tdsPayableJournalVCH: '', tdsPayableLedger: '',
 };
@@ -264,6 +290,8 @@ const SECTIONS = [
   { id: 'features', label: 'Features (F11)', toggle: 'enableInventory' as keyof GroupConfig },
   { id: 'settlement', label: 'Settlement', toggle: 'enableBillByBill' as keyof GroupConfig },
   { id: 'outstanding', label: 'Outstanding', toggle: 'enableBillByBill' as keyof GroupConfig },
+  // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
+  { id: 'tally', label: 'Tally export', toggle: 'enableInventory' as keyof GroupConfig },
 ];
 
 const IMPORT_DUTY_TYPES = [
@@ -308,6 +336,7 @@ export function ComplianceSettingsAutomationPanel() {
   const [settlementConfig, setSettlementConfig] = useState<SettlementConfig>(DEFAULT_SETTLEMENT);
   const [outstandingConfig, setOutstandingConfig] = useState<OutstandingConfig>(DEFAULT_OUTSTANDING);
   const [entityGst, setEntityGst] = useState<EntityGSTConfig>(DEFAULT_ENTITY_GST_CONFIG);
+  const [tallyConfig, setTallyConfig] = useState<TallyExportConfig>(DEFAULT_TALLY_EXPORT_CONFIG);
 
   const [activeSection, setActiveSection] = useState('gst-entity');
 
@@ -326,6 +355,7 @@ export function ComplianceSettingsAutomationPanel() {
     setSettlementConfig(loadOrDefault(comply360SettlementKey(entityId), DEFAULT_SETTLEMENT));
     setOutstandingConfig(loadOrDefault(comply360OutstandingKey(entityId), DEFAULT_OUTSTANDING));
     setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
+    setTallyConfig(loadOrDefault(comply360TallyKey(entityId), DEFAULT_TALLY_EXPORT_CONFIG));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
@@ -459,6 +489,13 @@ export function ComplianceSettingsAutomationPanel() {
     toast.success('Entity GST configuration saved');
   }, [entityGst, selectedEntityId]);
 
+  // [T-T10-pre.2c-TallyNative] Tally export config save.
+  const handleSaveTally = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/tally/:entityId
+    localStorage.setItem(comply360TallyKey(selectedEntityId), JSON.stringify(tallyConfig));
+    toast.success('Tally export configuration saved');
+  }, [tallyConfig, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
       case 'gst-entity': handleSaveEntityGst(); break;
@@ -473,9 +510,10 @@ export function ComplianceSettingsAutomationPanel() {
       case 'features': handleSaveFeatures(); break;
       case 'settlement': handleSaveSettlement(); break;
       case 'outstanding': handleSaveOutstanding(); break;
+      case 'tally': handleSaveTally(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally]);
 
   const isConfigActive = true;
   useCtrlS(isConfigActive ? handleCtrlS : () => {});
@@ -492,6 +530,8 @@ export function ComplianceSettingsAutomationPanel() {
 
   // ── Section active check ──
   const isSectionEnabled = (sectionId: string) => {
+    // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
+    if (sectionId === 'tally') return true;
     const sec = SECTIONS.find(s => s.id === sectionId);
     if (!sec) return false;
     return groupConfig[sec.toggle] === true;
@@ -526,6 +566,7 @@ export function ComplianceSettingsAutomationPanel() {
       case 'features': return renderFeaturesSection();
       case 'settlement': return renderSettlementSection();
       case 'outstanding': return renderOutstandingSection();
+      case 'tally': return renderTallySection();
       default: return null;
     }
   };
@@ -1693,6 +1734,67 @@ export function ComplianceSettingsAutomationPanel() {
           <Input value={waConfig.waCompanyNumber} onKeyDown={onEnterNext} onChange={e => setWaConfig(p => ({ ...p, waCompanyNumber: e.target.value }))} className="h-8 text-sm" placeholder="+91 XXXXX XXXXX" /></div>
       </div>
       <Button data-primary onClick={handleSaveWA} className="w-full"><Save className="h-4 w-4 mr-1" /> Save WhatsApp Config</Button>
+    </div>
+  );
+
+  // ── Tally Export Section (T-T10-pre.2c-TallyNative) ──
+  const renderTallySection = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Tally Export Settings</h3>
+      <div className="grid grid-cols-1 gap-3">
+        <div>
+          <Label className="text-xs">Default export format</Label>
+          <Select
+            value={tallyConfig.export_format}
+            onValueChange={v => setTallyConfig(p => ({ ...p, export_format: v as TallyExportConfig['export_format'] }))}
+          >
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="xml">XML</SelectItem>
+              <SelectItem value="json">JSON</SelectItem>
+              <SelectItem value="both">Both (XML + JSON)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="text-xs">Default action</Label>
+          <Select
+            value={tallyConfig.default_action}
+            onValueChange={v => setTallyConfig(p => ({ ...p, default_action: v as TallyAction }))}
+          >
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Create">Create</SelectItem>
+              <SelectItem value="Alter">Alter</SelectItem>
+              <SelectItem value="Cancel">Cancel</SelectItem>
+              <SelectItem value="Delete">Delete</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <Label className="text-sm">Include STATICVARIABLES</Label>
+            <p className="text-[10px] text-muted-foreground">Adds &lt;SVCURRENTCOMPANY&gt; tag inside &lt;DESC&gt;</p>
+          </div>
+          <Switch
+            checked={tallyConfig.include_static_variables}
+            onCheckedChange={v => setTallyConfig(p => ({ ...p, include_static_variables: v }))}
+          />
+        </div>
+        <div>
+          <Label className="text-xs">Company name (override)</Label>
+          <Input
+            value={tallyConfig.company_name}
+            onKeyDown={onEnterNext}
+            onChange={e => setTallyConfig(p => ({ ...p, company_name: e.target.value }))}
+            className="h-8 text-sm"
+            placeholder="Defaults to entity name when blank"
+          />
+        </div>
+      </div>
+      <Button data-primary onClick={handleSaveTally} className="w-full">
+        <Save className="h-4 w-4 mr-1" /> Save Tally Export Config
+      </Button>
     </div>
   );
 
