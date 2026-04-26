@@ -67,6 +67,9 @@ const CityMaster = lazy(() => import('./pages/erp/foundation/geography/CityMaste
 const PortMaster = lazy(() => import('./pages/erp/foundation/geography/PortMaster'));
 const RegionMaster = lazy(() => import('./pages/erp/foundation/geography/RegionMaster'));
 const AccountingHub = lazy(() => import('./pages/erp/accounting/AccountingHub'));
+const PeriodLockSettings = lazy(() => import('./pages/erp/accounting/PeriodLockSettings'));
+// PHASE 2 REMOVE — Mock auth dev panel is dropped when real auth lands
+const MockAuthDevPanel = lazy(() => import('./pages/erp/accounting/MockAuthDevPanel'));
 const TaxRateMaster = lazy(() => import('./pages/erp/accounting/TaxRateMaster'));
 const TDSSectionMaster = lazy(() => import('./pages/erp/accounting/TDSSectionMaster'));
 const TCSSectionMaster = lazy(() => import('./pages/erp/accounting/TCSSectionMaster'));
@@ -319,6 +322,9 @@ const App = () => (
               <Route path="/erp/accounting/currency-master" element={<P><CurrencyMaster /></P>} />
               <Route path="/erp/accounting/voucher-types" element={<P><VoucherTypesMaster /></P>} />
               <Route path="/erp/accounting/transaction-templates" element={<P><TransactionTemplates /></P>} />
+              <Route path="/erp/accounting/period-lock" element={<P><PeriodLockSettings /></P>} />
+              {/* PHASE 2 REMOVE — Mock auth dev panel route */}
+              <Route path="/erp/accounting/mock-auth" element={<P><MockAuthDevPanel /></P>} />
               <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/finecore/receipt-print" element={<P><ReceiptPrint /></P>} />
