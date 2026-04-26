@@ -1,0 +1,12 @@
+=== Schema inventory ===
+CASH_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+BANK_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+LIABILITY_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+CAPITAL_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+LOAN_RECEIVABLE_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+BORROWING_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+INCOME_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+EXPENSE_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+DUTIES_TAX_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+PAYROLL_STATUTORY_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)
+ASSET_LEDGER_IMPORT_SCHEMA: 2 occurrences (expect 2+)

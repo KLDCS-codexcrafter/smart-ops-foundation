@@ -59,6 +59,9 @@ import { DutiesTaxLedgerPanel } from '@/pages/erp/masters/ledger-panels/DutiesTa
 import { PayrollStatutoryLedgerPanel } from '@/pages/erp/masters/ledger-panels/PayrollStatutoryLedgerPanel';
 import { LoanReceivableLedgerPanel } from '@/pages/erp/masters/ledger-panels/LoanReceivableLedgerPanel';
 import { BorrowingLedgerPanel } from '@/pages/erp/masters/ledger-panels/BorrowingLedgerPanel';
+// T-H1.5-Z-Z10 — Bulk import/export for chart-of-accounts master records
+import type { ImportSchema } from '@/lib/master-import-engine';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
@@ -893,6 +896,685 @@ const removeDefinition = (defId: string): void => {
   // [JWT] DELETE /api/group/finecore/ledger-instances/by-definition/:id
 };
 
+// ─── T-H1.5-Z-Z10 — 11 Per-Sub-Type Import Schemas ───────────────────
+// Bulk import/export for ledger DEFINITIONS (chart of accounts master records).
+// DISTINCT from ImportHubModule's ledger-bal tab which imports OPENING BALANCES.
+// All schemas share the same storageKey 'erp_group_ledger_definitions' (group-scoped
+// per D-127). Per-sub-type primaryKey 'code' produces correct upsert dedup since
+// ledger codes are globally unique across the chart of accounts. Audit/system
+// fields (id · suspendedBy/At/Reason · reinstatedBy/At/Reason) are EXCLUDED from
+// schemas (set automatically · not user-editable). Bank signatories array is
+// excluded from import (handled via UI · per Z10 prompt §3 Block 2).
+
+const LEDGER_STORAGE_KEY = 'erp_group_ledger_definitions';
+const toBool = (v: unknown): boolean =>
+  v === true || v === 1 ||
+  String(v ?? '').toLowerCase() === 'yes' ||
+  String(v ?? '').toLowerCase() === 'true';
+const auditNulls = {
+  suspendedBy: null, suspendedAt: null, suspendedReason: null,
+  reinstatedBy: null, reinstatedAt: null, reinstatedReason: null,
+};
+
+const CASH_LEDGER_IMPORT_SCHEMA: ImportSchema<CashLedgerDefinition> = {
+  entityName: 'Cash Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Alias', field: 'alias', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Location', field: 'location', required: false, type: 'string' },
+    { header: 'Cash Limit', field: 'cashLimit', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Alert Threshold', field: 'alertThreshold', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Is Main Cash', field: 'isMainCash', required: false, type: 'boolean', defaultValue: false },
+    { header: 'Voucher Series', field: 'voucherSeries', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+    { header: 'Description', field: 'description', required: false, type: 'string' },
+    { header: 'Notes', field: 'notes', required: false, type: 'string' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    if (row.status && !['active', 'suspended'].includes(String(row.status))) {
+      errors.push(`Status must be 'active' or 'suspended'`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'cash',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: String(row['Alias'] ?? ''),
+    mailingName: String(row['Mailing Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    location: String(row['Location'] ?? ''),
+    cashLimit: Number(row['Cash Limit']) || 0,
+    alertThreshold: Number(row['Alert Threshold']) || 0,
+    isMainCash: toBool(row['Is Main Cash']),
+    voucherSeries: String(row['Voucher Series'] ?? ''),
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: String(row['Description'] ?? ''),
+    notes: String(row['Notes'] ?? ''),
+    ...auditNulls,
+  }),
+};
+
+// Bank — core fields only · signatories array EXCLUDED from import (handled in UI)
+const BANK_LEDGER_IMPORT_SCHEMA: ImportSchema<BankLedgerDefinition> = {
+  entityName: 'Bank Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Alias', field: 'alias', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Bank Name', field: 'bankName', required: true, type: 'string' },
+    { header: 'Account Number', field: 'accountNumber', required: true, type: 'string' },
+    { header: 'IFSC Code', field: 'ifscCode', required: true, type: 'string' },
+    { header: 'Account Type', field: 'accountType', required: true, type: 'string', defaultValue: 'current' },
+    { header: 'Currency', field: 'currency', required: false, type: 'string', defaultValue: 'INR' },
+    { header: 'OD Limit', field: 'odLimit', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Branch Name', field: 'branchName', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    const validTypes = ['current', 'savings', 'fixed_deposit', 'eefc', 'cash_credit', 'overdraft'];
+    if (row.accountType && !validTypes.includes(String(row.accountType))) {
+      errors.push(`Account Type must be one of: ${validTypes.join(', ')}`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'bank',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: String(row['Alias'] ?? ''),
+    mailingName: String(row['Mailing Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    bankName: String(row['Bank Name'] ?? ''),
+    accountNumber: String(row['Account Number'] ?? ''),
+    ifscCode: String(row['IFSC Code'] ?? '').toUpperCase(),
+    accountType: (String(row['Account Type'] ?? 'current') as BankAccountType),
+    currency: String(row['Currency'] ?? 'INR'),
+    odLimit: Number(row['OD Limit']) || 0,
+    branchName: String(row['Branch Name'] ?? ''),
+    branchAddress: '',
+    branchCity: '',
+    branchState: '',
+    branchPincode: '',
+    micrCode: '',
+    swiftCode: '',
+    ifscAutoFilled: false,
+    bankGstin: '',
+    bankStateCode: '',
+    gstOnCharges: false,
+    chequeFormat: 'GENERIC_CTS',
+    chequeSize: 'A4',
+    defaultCrossing: 'account_payee',
+    brsEnabled: false,
+    clearingDays: 1,
+    cutoffTime: '',
+    status: (['active', 'suspended', 'dormant', 'closed'].includes(String(row['Status']))
+      ? (String(row['Status']) as BankLedgerDefinition['status'])
+      : 'active'),
+    acHolderName: '',
+    bankPhone: '',
+    neftEnabled: true,
+    rtgsEnabled: true,
+    impsEnabled: true,
+    upiEnabled: false,
+    bankManagerName: '',
+    bankManagerPhone: '',
+    bankManagerEmail: '',
+    description: '',
+    notes: '',
+    ...auditNulls,
+  }),
+};
+
+const LIABILITY_LEDGER_IMPORT_SCHEMA: ImportSchema<LiabilityLedgerDefinition> = {
+  entityName: 'Liability Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Alias', field: 'alias', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Opening Balance', field: 'openingBalance', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Opening Balance Type', field: 'openingBalanceType', required: false, type: 'string', defaultValue: 'Cr' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+    { header: 'Description', field: 'description', required: false, type: 'string' },
+    { header: 'Notes', field: 'notes', required: false, type: 'string' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    if (row.openingBalanceType && !['Dr', 'Cr'].includes(String(row.openingBalanceType))) {
+      errors.push(`Opening Balance Type must be 'Dr' or 'Cr'`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'liability',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: String(row['Alias'] ?? ''),
+    mailingName: String(row['Mailing Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: Number(row['Opening Balance']) || 0,
+    openingBalanceType: row['Opening Balance Type'] === 'Dr' ? 'Dr' : 'Cr',
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: String(row['Description'] ?? ''),
+    notes: String(row['Notes'] ?? ''),
+    ...auditNulls,
+  }),
+};
+
+const CAPITAL_LEDGER_IMPORT_SCHEMA: ImportSchema<CapitalLedgerDefinition> = {
+  entityName: 'Capital Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Alias', field: 'alias', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Capital Type', field: 'capitalType', required: true, type: 'string', defaultValue: 'general_reserve' },
+    { header: 'Opening Balance', field: 'openingBalance', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Opening Balance Type', field: 'openingBalanceType', required: false, type: 'string', defaultValue: 'Cr' },
+    { header: 'Authorised Capital', field: 'authorisedCapital', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Issued Capital', field: 'issuedCapital', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Paid-Up Capital', field: 'paidUpCapital', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    const validTypes: CapitalType[] = ['share_capital_equity', 'share_capital_preference',
+      'partners_capital', 'proprietor_capital', 'general_reserve', 'retained_earnings', 'other_reserve'];
+    if (row.capitalType && !(validTypes as string[]).includes(String(row.capitalType))) {
+      errors.push(`Capital Type must be one of: ${validTypes.join(', ')}`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'capital',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: String(row['Alias'] ?? ''),
+    mailingName: String(row['Mailing Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: Number(row['Opening Balance']) || 0,
+    openingBalanceType: row['Opening Balance Type'] === 'Dr' ? 'Dr' : 'Cr',
+    capitalType: (String(row['Capital Type'] ?? 'general_reserve') as CapitalType),
+    authorisedCapital: Number(row['Authorised Capital']) || 0,
+    issuedCapital: Number(row['Issued Capital']) || 0,
+    paidUpCapital: Number(row['Paid-Up Capital']) || 0,
+    faceValuePerShare: 10,
+    numberOfShares: 0,
+    partnerName: '',
+    partnerPAN: '',
+    profitSharingRatio: 0,
+    capitalContribution: 0,
+    proprietorName: '',
+    proprietorPAN: '',
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: '',
+    notes: '',
+    ...auditNulls,
+  }),
+};
+
+const LOAN_RECEIVABLE_LEDGER_IMPORT_SCHEMA: ImportSchema<LoanReceivableLedgerDefinition> = {
+  entityName: 'Loan Receivable Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Borrower Name', field: 'borrowerName', required: true, type: 'string' },
+    { header: 'Borrower PAN', field: 'borrowerPAN', required: false, type: 'string' },
+    { header: 'Loan Amount', field: 'loanAmount', required: true, type: 'number' },
+    { header: 'Interest Rate', field: 'interestRate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Interest Type', field: 'interestType', required: false, type: 'string', defaultValue: 'simple' },
+    { header: 'Tenure Months', field: 'tenureMonths', required: false, type: 'number', defaultValue: 12 },
+    { header: 'Disbursement Date', field: 'disbursementDate', required: false, type: 'date' },
+    { header: 'First Repayment Date', field: 'firstRepaymentDate', required: false, type: 'date' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'loan_receivable',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: '',
+    mailingName: String(row['Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: Number(row['Loan Amount']) || 0,
+    openingBalanceType: 'Dr',
+    borrowerName: String(row['Borrower Name'] ?? ''),
+    borrowerPhone: '',
+    borrowerEmail: '',
+    borrowerAddress: '',
+    borrowerState: '',
+    borrowerPincode: '',
+    borrowerPAN: String(row['Borrower PAN'] ?? '').toUpperCase(),
+    loanAmount: Number(row['Loan Amount']) || 0,
+    interestRate: Number(row['Interest Rate']) || 0,
+    interestType: row['Interest Type'] === 'compound' ? 'compound' : 'simple',
+    tenureMonths: Number(row['Tenure Months']) || 12,
+    disbursementDate: String(row['Disbursement Date'] ?? ''),
+    firstRepaymentDate: String(row['First Repayment Date'] ?? ''),
+    collateral: '',
+    purpose: '',
+    isTdsApplicable: false,
+    tdsSection: '',
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: '',
+    notes: '',
+    ...auditNulls,
+  }),
+};
+
+const BORROWING_LEDGER_IMPORT_SCHEMA: ImportSchema<BorrowingLedgerDefinition> = {
+  entityName: 'Borrowing Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Lender Name', field: 'lenderName', required: true, type: 'string' },
+    { header: 'Lender Type', field: 'lenderType', required: false, type: 'string', defaultValue: 'bank' },
+    { header: 'Loan Type', field: 'loanType', required: false, type: 'string', defaultValue: 'term_loan' },
+    { header: 'Loan Amount', field: 'loanAmount', required: true, type: 'number' },
+    { header: 'Interest Rate', field: 'interestRate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Tenure Months', field: 'tenureMonths', required: false, type: 'number', defaultValue: 12 },
+    { header: 'EMI Amount', field: 'emiAmount', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Loan Account No', field: 'loanAccountNo', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'borrowing',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: '',
+    mailingName: String(row['Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: Number(row['Loan Amount']) || 0,
+    openingBalanceType: 'Cr',
+    lenderName: String(row['Lender Name'] ?? ''),
+    lenderType: (['bank', 'nbfc', 'director', 'group_company', 'individual', 'other'].includes(String(row['Lender Type']))
+      ? (String(row['Lender Type']) as BorrowingLedgerDefinition['lenderType'])
+      : 'bank'),
+    lenderPhone: '',
+    lenderEmail: '',
+    lenderAddress: '',
+    loanAmount: Number(row['Loan Amount']) || 0,
+    interestRate: Number(row['Interest Rate']) || 0,
+    loanType: (['term_loan', 'od', 'cc', 'demand_loan', 'vehicle_loan'].includes(String(row['Loan Type']))
+      ? (String(row['Loan Type']) as BorrowingLedgerDefinition['loanType'])
+      : 'term_loan'),
+    tenureMonths: Number(row['Tenure Months']) || 12,
+    firstEmiDate: '',
+    loanAccountNo: String(row['Loan Account No'] ?? ''),
+    collateralPledged: '',
+    emiAmount: Number(row['EMI Amount']) || 0,
+    repaymentScheduleGenerated: false,
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: '',
+    notes: '',
+    ...auditNulls,
+  }),
+};
+
+const INCOME_LEDGER_IMPORT_SCHEMA: ImportSchema<IncomeLedgerDefinition> = {
+  entityName: 'Income Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Is GST Applicable', field: 'isGstApplicable', required: false, type: 'boolean', defaultValue: false },
+    { header: 'HSN/SAC Code', field: 'hsnSacCode', required: false, type: 'string' },
+    { header: 'GST Rate', field: 'gstRate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'GST Type', field: 'gstType', required: false, type: 'string', defaultValue: 'taxable' },
+    { header: 'Allow Commission Base', field: 'allow_commission_base', required: false, type: 'boolean', defaultValue: false },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  rowToRecord: (row) => {
+    const gstRate = Number(row['GST Rate']) || 0;
+    return {
+      id: crypto.randomUUID(),
+      ledgerType: 'income',
+      code: String(row['Code'] ?? ''),
+      numericCode: String(row['Numeric Code'] ?? ''),
+      name: String(row['Name'] ?? ''),
+      alias: '',
+      mailingName: String(row['Name'] ?? ''),
+      parentGroupCode: String(row['Parent Group Code'] ?? ''),
+      parentGroupName: String(row['Parent Group Name'] ?? ''),
+      entityId: null,
+      entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+      openingBalance: 0,
+      openingBalanceType: 'Cr',
+      isGstApplicable: toBool(row['Is GST Applicable']),
+      hsnSacCode: String(row['HSN/SAC Code'] ?? ''),
+      hsnSacType: '',
+      gstRate,
+      cgstRate: gstRate / 2,
+      sgstRate: gstRate / 2,
+      igstRate: gstRate,
+      cessRate: 0,
+      gstType: (['taxable', 'exempt', 'nil_rated', 'non_gst', 'zero_rated'].includes(String(row['GST Type']))
+        ? (String(row['GST Type']) as IncomeLedgerDefinition['gstType'])
+        : 'taxable'),
+      includeInGstTurnover: true,
+      isTdsApplicable: false,
+      tdsSection: '',
+      isTdsReceivableLedger: false,
+      allow_commission_base: toBool(row['Allow Commission Base']),
+      costCentreApplicable: false,
+      status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+      description: '',
+      notes: '',
+      ...auditNulls,
+    };
+  },
+};
+
+const EXPENSE_LEDGER_IMPORT_SCHEMA: ImportSchema<ExpenseLedgerDefinition> = {
+  entityName: 'Expense Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Is GST Applicable', field: 'isGstApplicable', required: false, type: 'boolean', defaultValue: false },
+    { header: 'HSN/SAC Code', field: 'hsnSacCode', required: false, type: 'string' },
+    { header: 'GST Rate', field: 'gstRate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Is ITC Eligible', field: 'isItcEligible', required: false, type: 'boolean', defaultValue: true },
+    { header: 'Is RCM Applicable', field: 'isRcmApplicable', required: false, type: 'boolean', defaultValue: false },
+    { header: 'Expense Nature', field: 'expenseNature', required: false, type: 'string', defaultValue: 'revenue' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  rowToRecord: (row) => {
+    const gstRate = Number(row['GST Rate']) || 0;
+    return {
+      id: crypto.randomUUID(),
+      ledgerType: 'expense',
+      code: String(row['Code'] ?? ''),
+      numericCode: String(row['Numeric Code'] ?? ''),
+      name: String(row['Name'] ?? ''),
+      alias: '',
+      mailingName: String(row['Name'] ?? ''),
+      parentGroupCode: String(row['Parent Group Code'] ?? ''),
+      parentGroupName: String(row['Parent Group Name'] ?? ''),
+      entityId: null,
+      entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+      openingBalance: 0,
+      openingBalanceType: 'Dr',
+      isGstApplicable: toBool(row['Is GST Applicable']),
+      hsnSacCode: String(row['HSN/SAC Code'] ?? ''),
+      hsnSacType: '',
+      gstRate,
+      cgstRate: gstRate / 2,
+      sgstRate: gstRate / 2,
+      igstRate: gstRate,
+      cessRate: 0,
+      gstType: 'taxable',
+      isItcEligible: toBool(row['Is ITC Eligible']),
+      isRcmApplicable: toBool(row['Is RCM Applicable']),
+      rcmSection: null,
+      isTdsApplicable: false,
+      tdsSection: '',
+      allow_commission_base: false,
+      usePurchaseAdditionalExpense: false,
+      costCentreApplicable: false,
+      isBudgetHead: false,
+      expenseNature: row['Expense Nature'] === 'capital_expense' ? 'capital_expense' : 'revenue',
+      clause44Category: 'auto',
+      forceIncludeClause44: false,
+      status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+      description: '',
+      notes: '',
+      ...auditNulls,
+    };
+  },
+};
+
+const DUTIES_TAX_LEDGER_IMPORT_SCHEMA: ImportSchema<DutiesTaxLedgerDefinition> = {
+  entityName: 'Duties & Tax Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Tax Type', field: 'taxType', required: true, type: 'string', defaultValue: 'gst' },
+    { header: 'GST Sub Type', field: 'gstSubType', required: false, type: 'string' },
+    { header: 'Calculation Basis', field: 'calculationBasis', required: false, type: 'string' },
+    { header: 'Rate', field: 'rate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'GST Tax Sub Type', field: 'gstTaxSubType', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    const validTax: TaxType[] = ['gst', 'tds', 'tcs', 'other'];
+    if (row.taxType && !(validTax as string[]).includes(String(row.taxType))) {
+      errors.push(`Tax Type must be one of: ${validTax.join(', ')}`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => {
+    const gstSub = String(row['GST Sub Type'] ?? '');
+    const calc = String(row['Calculation Basis'] ?? '');
+    const taxSub = String(row['GST Tax Sub Type'] ?? '');
+    return {
+      id: crypto.randomUUID(),
+      ledgerType: 'duties_tax',
+      code: String(row['Code'] ?? ''),
+      numericCode: String(row['Numeric Code'] ?? ''),
+      name: String(row['Name'] ?? ''),
+      alias: '',
+      mailingName: String(row['Name'] ?? ''),
+      parentGroupCode: String(row['Parent Group Code'] ?? ''),
+      parentGroupName: String(row['Parent Group Name'] ?? ''),
+      entityId: null,
+      entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+      openingBalance: 0,
+      openingBalanceType: 'Cr',
+      status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+      taxType: (String(row['Tax Type'] ?? 'gst') as TaxType),
+      gstSubType: (['cgst', 'sgst', 'igst', 'cess'].includes(gstSub) ? (gstSub as GstSubType) : null),
+      calculationBasis: (['item_rate', 'ledger_value'].includes(calc) ? (calc as CalcBasis) : null),
+      rate: Number(row['Rate']) || 0,
+      gstTaxSubType: (['output', 'input', 'rcm_payable', 'rcm_input', 'cess'].includes(taxSub)
+        ? (taxSub as DutiesTaxLedgerDefinition['gstTaxSubType'])
+        : undefined),
+      description: '',
+      notes: '',
+      ...auditNulls,
+    };
+  },
+};
+
+const PAYROLL_STATUTORY_LEDGER_IMPORT_SCHEMA: ImportSchema<PayrollStatutoryLedgerDefinition> = {
+  entityName: 'Payroll Statutory Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Payroll Category', field: 'payrollCategory', required: true, type: 'string', defaultValue: 'employee_deduction' },
+    { header: 'Payroll Component', field: 'payrollComponent', required: true, type: 'string' },
+    { header: 'Statutory Rate', field: 'statutoryRate', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Calculation Base', field: 'calculationBase', required: false, type: 'string' },
+    { header: 'Wage Ceiling', field: 'wageCeiling', required: false, type: 'number' },
+    { header: 'Max Amount', field: 'maxAmount', required: false, type: 'number' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  validateRow: (row) => {
+    const errors: string[] = [];
+    const validCat: PayrollCategory[] = ['employee_deduction', 'employer_contribution'];
+    if (row.payrollCategory && !(validCat as string[]).includes(String(row.payrollCategory))) {
+      errors.push(`Payroll Category must be one of: ${validCat.join(', ')}`);
+    }
+    return errors;
+  },
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'payroll_statutory',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: '',
+    mailingName: String(row['Name'] ?? ''),
+    parentGroupCode: 'EMPL',
+    parentGroupName: String(row['Parent Group Name'] ?? 'Employee Statutory'),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: 0,
+    openingBalanceType: 'Cr',
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    payrollCategory: (String(row['Payroll Category'] ?? 'employee_deduction') as PayrollCategory),
+    payrollComponent: (String(row['Payroll Component'] ?? 'pf_employee') as PayrollComponent),
+    statutoryRate: Number(row['Statutory Rate']) || 0,
+    calculationBase: String(row['Calculation Base'] ?? ''),
+    wageCeiling: row['Wage Ceiling'] !== '' && row['Wage Ceiling'] != null ? Number(row['Wage Ceiling']) : null,
+    maxAmount: row['Max Amount'] !== '' && row['Max Amount'] != null ? Number(row['Max Amount']) : null,
+    description: '',
+    notes: '',
+    ...auditNulls,
+  }),
+};
+
+const ASSET_LEDGER_IMPORT_SCHEMA: ImportSchema<AssetLedgerDefinition> = {
+  entityName: 'Asset Ledger',
+  storageKey: LEDGER_STORAGE_KEY,
+  primaryKey: 'code',
+  columns: [
+    { header: 'Code', field: 'code', required: true, type: 'string' },
+    { header: 'Numeric Code', field: 'numericCode', required: true, type: 'string' },
+    { header: 'Name', field: 'name', required: true, type: 'string' },
+    { header: 'Alias', field: 'alias', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Parent Group Code', field: 'parentGroupCode', required: true, type: 'string' },
+    { header: 'Parent Group Name', field: 'parentGroupName', required: false, type: 'string' },
+    { header: 'Entity Short Code', field: 'entityShortCode', required: false, type: 'string' },
+    { header: 'Asset Category', field: 'assetCategory', required: false, type: 'string', defaultValue: 'ppe' },
+    { header: 'Purchase Date', field: 'purchaseDate', required: false, type: 'date' },
+    { header: 'Gross Block', field: 'grossBlock', required: false, type: 'number', defaultValue: 0 },
+    { header: 'Depreciation Method', field: 'depreciationMethod', required: false, type: 'string', defaultValue: 'slm' },
+    { header: 'Useful Life Years', field: 'usefulLifeYears', required: false, type: 'number', defaultValue: 10 },
+    { header: 'Depreciation Rate', field: 'depreciationRate', required: false, type: 'number', defaultValue: 10 },
+    { header: 'Vendor Name', field: 'vendorName', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string', defaultValue: 'active' },
+  ],
+  rowToRecord: (row) => ({
+    id: crypto.randomUUID(),
+    ledgerType: 'asset',
+    code: String(row['Code'] ?? ''),
+    numericCode: String(row['Numeric Code'] ?? ''),
+    name: String(row['Name'] ?? ''),
+    alias: String(row['Alias'] ?? ''),
+    mailingName: String(row['Mailing Name'] ?? ''),
+    parentGroupCode: String(row['Parent Group Code'] ?? ''),
+    parentGroupName: String(row['Parent Group Name'] ?? ''),
+    assetCategory: (['ppe', 'cwip', 'intangible', 'intangible_wip', 'investment'].includes(String(row['Asset Category']))
+      ? (String(row['Asset Category']) as AssetCategory)
+      : 'ppe'),
+    purchaseDate: String(row['Purchase Date'] ?? ''),
+    grossBlock: Number(row['Gross Block']) || 0,
+    depreciationMethod: (['slm', 'wdv', 'none'].includes(String(row['Depreciation Method']))
+      ? (String(row['Depreciation Method']) as DepreciationMethod)
+      : 'slm'),
+    usefulLifeYears: Number(row['Useful Life Years']) || 10,
+    depreciationRate: Number(row['Depreciation Rate']) || 10,
+    vendorId: '',
+    vendorName: String(row['Vendor Name'] ?? ''),
+    entityId: null,
+    entityShortCode: row['Entity Short Code'] ? String(row['Entity Short Code']) : null,
+    openingBalance: Number(row['Gross Block']) || 0,
+    openingBalanceType: 'Dr',
+    status: row['Status'] === 'suspended' ? 'suspended' : 'active',
+    description: '',
+    notes: '',
+    ...auditNulls,
+    it_act_block: 'BLOCK_1' as ITActBlock,
+    it_act_depr_rate: 0,
+    salvage_value_percent: 5,
+    accum_depr_ledger_id: '',
+  }),
+};
 
 const loadInstances = (entityId: string): EntityLedgerInstance[] => {
   // [JWT] GET /api/ledger/instances/:entityId
@@ -3547,7 +4229,36 @@ export function LedgerMasterPanel() {
             </TabsList>
           </Tabs>
 
-          {/* Cash List — S6.5a Panel */}
+          {/* T-H1.5-Z-Z10 — Bulk Import/Export toolbar (sub-tab-aware schema selection) */}
+          {(() => {
+            type AnyImportSchema = ImportSchema<Record<string, unknown>>;
+            const ledgerImportConfig: Partial<Record<typeof defSubTab, { schema: AnyImportSchema; records: Record<string, unknown>[] }>> = {
+              cash:        { schema: CASH_LEDGER_IMPORT_SCHEMA               as unknown as AnyImportSchema, records: cashDefs        as unknown as Record<string, unknown>[] },
+              bank:        { schema: BANK_LEDGER_IMPORT_SCHEMA               as unknown as AnyImportSchema, records: bankDefs        as unknown as Record<string, unknown>[] },
+              liabilities: { schema: LIABILITY_LEDGER_IMPORT_SCHEMA          as unknown as AnyImportSchema, records: liabilityDefs   as unknown as Record<string, unknown>[] },
+              capital:     { schema: CAPITAL_LEDGER_IMPORT_SCHEMA            as unknown as AnyImportSchema, records: capitalDefs     as unknown as Record<string, unknown>[] },
+              loans:       { schema: LOAN_RECEIVABLE_LEDGER_IMPORT_SCHEMA    as unknown as AnyImportSchema, records: loanRecDefs     as unknown as Record<string, unknown>[] },
+              borrowing:   { schema: BORROWING_LEDGER_IMPORT_SCHEMA          as unknown as AnyImportSchema, records: borrowingDefs   as unknown as Record<string, unknown>[] },
+              income:      { schema: INCOME_LEDGER_IMPORT_SCHEMA             as unknown as AnyImportSchema, records: incomeDefs      as unknown as Record<string, unknown>[] },
+              expenses:    { schema: EXPENSE_LEDGER_IMPORT_SCHEMA            as unknown as AnyImportSchema, records: expenseDefs     as unknown as Record<string, unknown>[] },
+              duties_tax:  { schema: DUTIES_TAX_LEDGER_IMPORT_SCHEMA         as unknown as AnyImportSchema, records: dutiesTaxDefs   as unknown as Record<string, unknown>[] },
+              payroll:     { schema: PAYROLL_STATUTORY_LEDGER_IMPORT_SCHEMA  as unknown as AnyImportSchema, records: payrollStatDefs as unknown as Record<string, unknown>[] },
+              asset:       { schema: ASSET_LEDGER_IMPORT_SCHEMA              as unknown as AnyImportSchema, records: assetDefs       as unknown as Record<string, unknown>[] },
+            };
+            const cfg = ledgerImportConfig[defSubTab];
+            if (!cfg) return null;
+            return (
+              <div className="flex justify-end mb-3">
+                <MasterImportExportButtons
+                  schema={cfg.schema}
+                  records={cfg.records}
+                  onImported={refreshAll}
+                />
+              </div>
+            );
+          })()}
+
+
           {defSubTab === 'cash' && <CashLedgerPanel />}
 
           {/* Bank List — S6.5a Panel */}
