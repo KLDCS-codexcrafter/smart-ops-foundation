@@ -4,6 +4,7 @@
  * No React. No localStorage. All data passed as params.
  * [JWT] All storage handled by callers.
  */
+import Decimal from 'decimal.js';
 import type {
   CommissionEntry,
   CommissionPayment,
