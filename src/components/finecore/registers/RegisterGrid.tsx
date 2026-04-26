@@ -238,6 +238,9 @@ export function RegisterGrid({
           <Button variant="outline" size="sm" onClick={handlePDFExport} disabled={filtered.length === 0}>
             <FileDown className="h-3.5 w-3.5 mr-1" /> Export PDF
           </Button>
+          <Button variant="outline" size="sm" onClick={handleWordExport} disabled={filtered.length === 0}>
+            <FileType2 className="h-3.5 w-3.5 mr-1" /> Export Word
+          </Button>
         </div>
       </div>
 
