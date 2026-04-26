@@ -1245,6 +1245,77 @@ const CHECKS: CheckSpec[] = [
         expected: 'matches Sales_Invoice_INV_2026_0099_<date>.docx',
         pass: ok, details: 'Filename helper reused · no bespoke pattern' };
     } },
+
+  // ── T-T10-pre.2c-TallyNative · 5 smoke checks for Tally XML + JSON export ──
+  { id: 'tally-1', section: 'Tally Export',
+    name: 'Tally XML envelope contains required Tally headers',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { xml } = buildTallyVoucherXML(v, 'Create', 'Acme Pvt Ltd');
+      const hasEnv = xml.includes('<ENVELOPE>') && xml.includes('</ENVELOPE>');
+      const hasImport = xml.includes('<TALLYREQUEST>Import</TALLYREQUEST>');
+      const hasMsg = xml.includes('<TALLYMESSAGE');
+      const hasCompany = xml.includes('<SVCURRENTCOMPANY>Acme Pvt Ltd</SVCURRENTCOMPANY>');
+      const ok = hasEnv && hasImport && hasMsg && hasCompany;
+      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}`,
+        expected: 'all four envelope markers present',
+        pass: ok, details: `XML length=${xml.length}` };
+    } },
+
+  { id: 'tally-2', section: 'Tally Export',
+    name: 'Tally JSON envelope mirrors XML hierarchy',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { json } = buildTallyVoucherJSON(v, 'Create', 'Acme Pvt Ltd');
+      const env = (json as { ENVELOPE?: { HEADER?: { TALLYREQUEST?: string };
+        BODY?: { DATA?: { TALLYMESSAGE?: unknown[] } } } }).ENVELOPE;
+      const hasHeader = env?.HEADER?.TALLYREQUEST === 'Import';
+      const msgs = env?.BODY?.DATA?.TALLYMESSAGE;
+      const hasMsg = Array.isArray(msgs) && msgs.length === 1;
+      const ok = hasHeader && hasMsg;
+      return { actual: `header=${hasHeader}, messages=${Array.isArray(msgs) ? msgs.length : 'n/a'}`,
+        expected: 'header=true, messages=1',
+        pass: ok, details: 'JSON envelope shape matches XML' };
+    } },
+
+  { id: 'tally-3', section: 'Tally Export',
+    name: 'mapVoucherToTallySchema sets @ACTION + VCHTYPE for Sales',
+    run: () => {
+      const v = buildTallyFixtureVoucher();
+      const { xml } = buildTallyVoucherXML(v, 'Alter');
+      const hasAction = xml.includes('ACTION="Alter"') || xml.includes('@ACTION="Alter"');
+      const hasVchType = xml.includes('VCHTYPE="Sales"') || xml.includes('>Sales<');
+      const ok = hasAction && hasVchType;
+      return { actual: `action=${hasAction}, vchtype=${hasVchType}`,
+        expected: 'both Tally voucher attrs present',
+        pass: ok, details: 'Schema mapper honors Alter + Sales vch type' };
+    } },
+
+  { id: 'tally-4', section: 'Tally Export',
+    name: 'Batch-mode Tally XML wraps multiple TALLYMESSAGE blocks',
+    run: () => {
+      const v1 = buildTallyFixtureVoucher();
+      const v2 = { ...buildTallyFixtureVoucher(), id: 'tally-fix-2', voucher_no: 'INV/TALLY/0002' };
+      const { xml } = buildTallyVoucherXML([v1, v2], 'Create');
+      const count = (xml.match(/<TALLYMESSAGE/g) || []).length;
+      const ok = count === 2;
+      return { actual: `TALLYMESSAGE count=${count}`, expected: 'count=2',
+        pass: ok, details: 'Batch envelope concatenates per-voucher blocks' };
+    } },
+
+  { id: 'tally-5', section: 'Tally Export',
+    name: 'Tally export filenames match buildExportFilename pattern (.xml + .json)',
+    run: () => {
+      const xmlName = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'xml');
+      const jsonName = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'json');
+      const xmlOk = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.xml$/.test(xmlName);
+      const jsonOk = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.json$/.test(jsonName);
+      const hooked = typeof exportVoucherAsTallyXML === 'function' && typeof exportVoucherAsTallyJSON === 'function';
+      const ok = xmlOk && jsonOk && hooked;
+      return { actual: `xml=${xmlName}, json=${jsonName}, hooked=${hooked}`,
+        expected: 'both filenames match · both hooks wired',
+        pass: ok, details: 'Filename helper reused · no bespoke pattern' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
