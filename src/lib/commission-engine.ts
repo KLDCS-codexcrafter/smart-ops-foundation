@@ -4,6 +4,7 @@
  * No React. No localStorage. All data passed as params.
  * [JWT] All storage handled by callers.
  */
+import Decimal from 'decimal.js';
 import type {
   CommissionEntry,
   CommissionPayment,
@@ -40,7 +41,8 @@ export interface CommissionGLResult {
   tdsPayableAmount: number;
 }
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
+// round2: Decimal-based 2dp half-up rounding (Z2a · prevents floating-point drift across commission lifecycle)
+const round2 = (n: number) => new Decimal(n ?? 0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
 const inr = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
 /**
@@ -65,9 +67,9 @@ export function triggerCommissionOnReceipt(
   );
 
   const totalOutstanding = eligible.reduce(
-    (s, e) => s + Math.max(0, e.net_invoice_amount - e.amount_received_to_date),
-    0,
-  );
+    (s, e) => s.plus(Decimal.max(0, new Decimal(e.net_invoice_amount ?? 0).minus(new Decimal(e.amount_received_to_date ?? 0)))),
+    new Decimal(0),
+  ).toNumber();
 
   if (totalOutstanding <= 0 || eligible.length === 0) {
     return {
@@ -95,7 +97,7 @@ export function triggerCommissionOnReceipt(
   let totalTDS = 0;
 
   for (const entry of eligible) {
-    const entryOutstanding = Math.max(0, entry.net_invoice_amount - entry.amount_received_to_date);
+    const entryOutstanding = Decimal.max(0, new Decimal(entry.net_invoice_amount ?? 0).minus(new Decimal(entry.amount_received_to_date ?? 0))).toNumber();
     if (entryOutstanding <= 0) continue;
 
     const share = round2((entryOutstanding / totalOutstanding) * allocatable);

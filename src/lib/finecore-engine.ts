@@ -2,6 +2,7 @@
  * finecore-engine.ts — Core posting engine for FineCore vouchers
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
+import Decimal from 'decimal.js';
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
 import type { RCMEntry, TDSDeductionEntry, AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
 import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '@/types/compliance';
@@ -61,10 +62,12 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
 
   // Dr = Cr check for journal lines
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
-    const totalDr = voucher.ledger_lines.reduce((s, l) => s + l.dr_amount, 0);
-    const totalCr = voucher.ledger_lines.reduce((s, l) => s + l.cr_amount, 0);
-    if (Math.abs(totalDr - totalCr) > 0.01) {
-      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toLocaleString('en-IN')}`);
+    const totalDr = voucher.ledger_lines
+      .reduce((s, l) => s.plus(new Decimal(l.dr_amount ?? 0)), new Decimal(0));
+    const totalCr = voucher.ledger_lines
+      .reduce((s, l) => s.plus(new Decimal(l.cr_amount ?? 0)), new Decimal(0));
+    if (!totalDr.equals(totalCr)) {
+      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toNumber().toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toNumber().toLocaleString('en-IN')}`);
     }
   }
 
@@ -87,10 +90,12 @@ export function validateAllocations(voucher: Partial<Voucher>): ValidationResult
   }
   for (const line of voucher.inventory_lines) {
     if (!line.allocations || line.allocations.length === 0) continue;
-    const sum = line.allocations.reduce((s, a) => s + a.qty, 0);
-    if (Math.abs(sum - line.qty) > 0.001) {
+    const sum = line.allocations
+      .reduce((s, a) => s.plus(new Decimal(a.qty ?? 0)), new Decimal(0));
+    const lineQty = new Decimal(line.qty ?? 0);
+    if (!sum.minus(lineQty).abs().lessThanOrEqualTo('0.001')) {
       errors.push(
-        `Line "${line.item_name}": allocation qty ${sum.toFixed(3)} ≠ line qty ${line.qty.toFixed(3)}`,
+        `Line "${line.item_name}": allocation qty ${sum.toFixed(3)} ≠ line qty ${lineQty.toFixed(3)}`,
       );
     }
   }
@@ -249,14 +254,20 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       );
       if (origIdx >= 0) {
         const orig = { ...entries[origIdx] };
-        const reduction = Math.min(voucher.net_amount, orig.pending_amount);
-        orig.settled_amount = +(orig.settled_amount + reduction).toFixed(2);
-        orig.pending_amount = +(orig.pending_amount - reduction).toFixed(2);
+        const reductionDec = Decimal.min(
+          new Decimal(voucher.net_amount ?? 0),
+          new Decimal(orig.pending_amount ?? 0),
+        );
+        const reduction = reductionDec.toNumber();
+        orig.settled_amount = new Decimal(orig.settled_amount ?? 0)
+          .plus(reductionDec).toDecimalPlaces(2).toNumber();
+        orig.pending_amount = new Decimal(orig.pending_amount ?? 0)
+          .minus(reductionDec).toDecimalPlaces(2).toNumber();
         orig.settlement_refs = [
           ...orig.settlement_refs,
           { voucher_id: voucher.id, amount: reduction, date: voucher.date },
         ];
-        orig.status = orig.pending_amount <= 0.01 ? 'settled' : 'partial';
+        orig.status = new Decimal(orig.pending_amount).lessThanOrEqualTo('0.01') ? 'settled' : 'partial';
         orig.updated_at = now;
         entries[origIdx] = orig;
         creditNoteSettled = true;
@@ -322,7 +333,11 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
           igst_rate: line.igst_rate, cess_rate: line.cess_rate,
           cgst_amount: line.cgst_amount, sgst_amount: line.sgst_amount,
           igst_amount: line.igst_amount, cess_amount: line.cess_amount,
-          total_tax: line.cgst_amount + line.sgst_amount + line.igst_amount + line.cess_amount,
+          total_tax: new Decimal(line.cgst_amount ?? 0)
+            .plus(new Decimal(line.sgst_amount ?? 0))
+            .plus(new Decimal(line.igst_amount ?? 0))
+            .plus(new Decimal(line.cess_amount ?? 0))
+            .toDecimalPlaces(2).toNumber(),
           invoice_value: line.total,
           place_of_supply: voucher.place_of_supply || '',
           is_inter_state: voucher.is_inter_state || false,
@@ -409,7 +424,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       tds_rate: voucher.tds_rate ?? 0,
       gross_amount: voucher.gross_amount,
       advance_tds_already: advanceTDS,
-      net_tds_amount: (voucher.tds_amount ?? 0) - advanceTDS,
+      net_tds_amount: new Decimal(voucher.tds_amount ?? 0).minus(new Decimal(advanceTDS ?? 0)).toDecimalPlaces(2).toNumber(),
       date: voucher.date,
       quarter, assessment_year: getAssessmentYear(voucher.date),
       status: isPayment ? 'posted' : 'open',

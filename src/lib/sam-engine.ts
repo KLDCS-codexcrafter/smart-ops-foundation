@@ -4,9 +4,16 @@
  * [JWT] All data passed in as parameters — no direct API calls.
  */
 
+import Decimal from 'decimal.js';
 import type { SAMPerson, SAMCommissionRateRow, SAMSlabRow } from '@/types/sam-person';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
+
+// Decimal-safe arithmetic helpers (Z2a · prevents drift across multi-line aggregation)
+const dAdd = (a: number, b: number): number => new Decimal(a ?? 0).plus(new Decimal(b ?? 0)).toNumber();
+const dPct = (base: number, pct: number): number =>
+  new Decimal(base ?? 0).times(new Decimal(pct ?? 0)).dividedBy(100).toNumber();
+const dMul = (a: number, b: number): number => new Decimal(a ?? 0).times(new Decimal(b ?? 0)).toNumber();
 
 export interface CommissionLineBreakdown {
   item_name: string;
@@ -137,10 +144,13 @@ export function calculatePersonCommission(
     const marginPct = rateRow.margin_pct ?? 0;
     filteredLines.forEach(l => {
       const costPrice = 0;
-      const margin = Math.max(0, l.taxable_value - l.qty * costPrice);
-      const lc = (margin * marginPct) / 100;
-      commissionAmount += lc;
-      baseAmount += margin;
+      const margin = Decimal.max(
+        0,
+        new Decimal(l.taxable_value ?? 0).minus(new Decimal(l.qty ?? 0).times(costPrice)),
+      ).toNumber();
+      const lc = dPct(margin, marginPct);
+      commissionAmount = dAdd(commissionAmount, lc);
+      baseAmount = dAdd(baseAmount, margin);
       breakdown.push({
         item_name: l.item_name,
         qty: l.qty,
@@ -158,9 +168,9 @@ export function calculatePersonCommission(
       const overridePct = sgId ? overrides.get(sgId) : undefined;
       const pct = (overridePct != null ? overridePct : rateRow.item_pct) ?? 0;
       const lineBase = l.taxable_value;
-      const lc = (lineBase * pct) / 100;
-      commissionAmount += lc;
-      baseAmount += lineBase;
+      const lc = dPct(lineBase, pct);
+      commissionAmount = dAdd(commissionAmount, lc);
+      baseAmount = dAdd(baseAmount, lineBase);
       rateUsed = pct;
       breakdown.push({
         item_name: l.item_name,
@@ -170,12 +180,12 @@ export function calculatePersonCommission(
         commission_amount: lc,
       });
     });
-    const nonServiceAddon = ledgerAddon - serviceBase;
+    const nonServiceAddon = new Decimal(ledgerAddon ?? 0).minus(new Decimal(serviceBase ?? 0)).toNumber();
     if (nonServiceAddon !== 0) {
       const pct = rateRow.item_pct ?? 0;
-      const lc = (nonServiceAddon * pct) / 100;
-      commissionAmount += lc;
-      baseAmount += nonServiceAddon;
+      const lc = dPct(nonServiceAddon, pct);
+      commissionAmount = dAdd(commissionAmount, lc);
+      baseAmount = dAdd(baseAmount, nonServiceAddon);
       breakdown.push({
         item_name: 'Ledger absorption (AllowCommAssVal)',
         qty: 1,
@@ -189,10 +199,10 @@ export function calculatePersonCommission(
   if (method === 'item_qty' || method === 'both') {
     filteredLines.forEach(l => {
       const amtPerUnit = rateRow.item_amt_per_unit ?? 0;
-      const lc = l.qty * amtPerUnit;
+      const lc = dMul(l.qty, amtPerUnit);
       if (method === 'item_qty') {
-        commissionAmount += lc;
-        baseAmount += l.qty;
+        commissionAmount = dAdd(commissionAmount, lc);
+        baseAmount = dAdd(baseAmount, l.qty);
         rateUsed = amtPerUnit;
         breakdown.push({
           item_name: l.item_name,
@@ -202,15 +212,15 @@ export function calculatePersonCommission(
           commission_amount: lc,
         });
       } else {
-        commissionAmount += lc;
+        commissionAmount = dAdd(commissionAmount, lc);
       }
     });
   }
 
   if (cfg.enableCommissionOnService && serviceBase !== 0) {
     const svcPct = rateRow.service_pct ?? 0;
-    const svcCommission = (serviceBase * svcPct) / 100;
-    commissionAmount += svcCommission;
+    const svcCommission = dPct(serviceBase, svcPct);
+    commissionAmount = dAdd(commissionAmount, svcCommission);
     baseAmount += serviceBase;
     breakdown.push({
       item_name: 'Service income (AllowCommAssVal + Income group)',
@@ -260,8 +270,7 @@ export function calculateInvoiceCommission(
           primaryAgent, invLines, ledgerLines, ledgerFlags, invoiceDate, cfg
         );
         if (agentResult) {
-          const receiverAmt =
-            (agentResult.commission_amount * person.receiver_share_pct) / 100;
+          const receiverAmt = dPct(agentResult.commission_amount, person.receiver_share_pct);
           results.push({
             person_id: person.id,
             person_name: person.display_name,
