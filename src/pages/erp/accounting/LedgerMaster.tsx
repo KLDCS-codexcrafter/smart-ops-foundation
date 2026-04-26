@@ -59,6 +59,9 @@ import { DutiesTaxLedgerPanel } from '@/pages/erp/masters/ledger-panels/DutiesTa
 import { PayrollStatutoryLedgerPanel } from '@/pages/erp/masters/ledger-panels/PayrollStatutoryLedgerPanel';
 import { LoanReceivableLedgerPanel } from '@/pages/erp/masters/ledger-panels/LoanReceivableLedgerPanel';
 import { BorrowingLedgerPanel } from '@/pages/erp/masters/ledger-panels/BorrowingLedgerPanel';
+// T-H1.5-Z-Z10 — Bulk import/export for chart-of-accounts master records
+import type { ImportSchema } from '@/lib/master-import-engine';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 
 // ─── Custodian Types ──────────────────────────────────────────────
 
