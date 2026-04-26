@@ -62,10 +62,12 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
 
   // Dr = Cr check for journal lines
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
-    const totalDr = voucher.ledger_lines.reduce((s, l) => s + l.dr_amount, 0);
-    const totalCr = voucher.ledger_lines.reduce((s, l) => s + l.cr_amount, 0);
-    if (Math.abs(totalDr - totalCr) > 0.01) {
-      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toLocaleString('en-IN')}`);
+    const totalDr = voucher.ledger_lines
+      .reduce((s, l) => s.plus(new Decimal(l.dr_amount ?? 0)), new Decimal(0));
+    const totalCr = voucher.ledger_lines
+      .reduce((s, l) => s.plus(new Decimal(l.cr_amount ?? 0)), new Decimal(0));
+    if (!totalDr.equals(totalCr)) {
+      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toNumber().toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toNumber().toLocaleString('en-IN')}`);
     }
   }
 
