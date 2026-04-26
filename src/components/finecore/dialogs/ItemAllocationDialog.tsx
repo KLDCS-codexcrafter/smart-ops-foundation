@@ -75,8 +75,8 @@ export function ItemAllocationDialog({
 
   const recomputeLineFinancials = (row: ItemAllocation, qty: number): ItemAllocation => {
     const qtyShare = lineQty > 0 ? qty / lineQty : 0;
-    const disc = +(lineDiscountAmount * qtyShare).toFixed(2);
-    const taxable = +(qty * lineRate - disc).toFixed(2);
+    const disc = round2(dMul(lineDiscountAmount, qtyShare));
+    const taxable = round2(dSub(dMul(qty, lineRate), disc));
     return { ...row, qty, rate: lineRate, discount_amount: disc, taxable_value: taxable };
   };
 
