@@ -530,6 +530,8 @@ export function ComplianceSettingsAutomationPanel() {
 
   // ── Section active check ──
   const isSectionEnabled = (sectionId: string) => {
+    // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
+    if (sectionId === 'tally') return true;
     const sec = SECTIONS.find(s => s.id === sectionId);
     if (!sec) return false;
     return groupConfig[sec.toggle] === true;
@@ -564,6 +566,7 @@ export function ComplianceSettingsAutomationPanel() {
       case 'features': return renderFeaturesSection();
       case 'settlement': return renderSettlementSection();
       case 'outstanding': return renderOutstandingSection();
+      case 'tally': return renderTallySection();
       default: return null;
     }
   };
@@ -1731,6 +1734,67 @@ export function ComplianceSettingsAutomationPanel() {
           <Input value={waConfig.waCompanyNumber} onKeyDown={onEnterNext} onChange={e => setWaConfig(p => ({ ...p, waCompanyNumber: e.target.value }))} className="h-8 text-sm" placeholder="+91 XXXXX XXXXX" /></div>
       </div>
       <Button data-primary onClick={handleSaveWA} className="w-full"><Save className="h-4 w-4 mr-1" /> Save WhatsApp Config</Button>
+    </div>
+  );
+
+  // ── Tally Export Section (T-T10-pre.2c-TallyNative) ──
+  const renderTallySection = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Tally Export Settings</h3>
+      <div className="grid grid-cols-1 gap-3">
+        <div>
+          <Label className="text-xs">Default export format</Label>
+          <Select
+            value={tallyConfig.export_format}
+            onValueChange={v => setTallyConfig(p => ({ ...p, export_format: v as TallyExportConfig['export_format'] }))}
+          >
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="xml">XML</SelectItem>
+              <SelectItem value="json">JSON</SelectItem>
+              <SelectItem value="both">Both (XML + JSON)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="text-xs">Default action</Label>
+          <Select
+            value={tallyConfig.default_action}
+            onValueChange={v => setTallyConfig(p => ({ ...p, default_action: v as TallyAction }))}
+          >
+            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Create">Create</SelectItem>
+              <SelectItem value="Alter">Alter</SelectItem>
+              <SelectItem value="Cancel">Cancel</SelectItem>
+              <SelectItem value="Delete">Delete</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <Label className="text-sm">Include STATICVARIABLES</Label>
+            <p className="text-[10px] text-muted-foreground">Adds &lt;SVCURRENTCOMPANY&gt; tag inside &lt;DESC&gt;</p>
+          </div>
+          <Switch
+            checked={tallyConfig.include_static_variables}
+            onCheckedChange={v => setTallyConfig(p => ({ ...p, include_static_variables: v }))}
+          />
+        </div>
+        <div>
+          <Label className="text-xs">Company name (override)</Label>
+          <Input
+            value={tallyConfig.company_name}
+            onKeyDown={onEnterNext}
+            onChange={e => setTallyConfig(p => ({ ...p, company_name: e.target.value }))}
+            className="h-8 text-sm"
+            placeholder="Defaults to entity name when blank"
+          />
+        </div>
+      </div>
+      <Button data-primary onClick={handleSaveTally} className="w-full">
+        <Save className="h-4 w-4 mr-1" /> Save Tally Export Config
+      </Button>
     </div>
   );
 
