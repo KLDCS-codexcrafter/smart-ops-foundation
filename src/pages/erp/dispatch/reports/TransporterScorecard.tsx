@@ -36,6 +36,7 @@ import {
   scorecardWeightsKey, transporterScoresKey, scoreToGrade,
 } from '@/types/transporter-scorecard';
 import { computeAllScorecards } from '@/lib/transporter-scorecard-engine';
+import Decimal from 'decimal.js';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; }
