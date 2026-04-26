@@ -59,7 +59,9 @@ export function ItemAllocationDialog({
   );
 
   const totalQty = useMemo(() => rows.reduce((s, r) => s + (r.qty || 0), 0), [rows]);
-  const qtyDelta = +(lineQty - totalQty).toFixed(3);
+  // qty precision is 3dp (vs monetary 2dp · round2 helper not applicable · D-142 amendment candidate)
+  const qtyDelta = new Decimal(lineQty ?? 0).minus(new Decimal(totalQty ?? 0))
+    .toDecimalPlaces(3, Decimal.ROUND_HALF_UP).toNumber();
   const qtyOk = Math.abs(qtyDelta) < 0.001;
 
   const addRow = () => setRows(r => [...r, emptyAllocation(godowns[0]?.id)]);
