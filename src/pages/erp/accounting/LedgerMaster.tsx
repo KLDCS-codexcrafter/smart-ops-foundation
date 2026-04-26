@@ -4229,7 +4229,36 @@ export function LedgerMasterPanel() {
             </TabsList>
           </Tabs>
 
-          {/* Cash List — S6.5a Panel */}
+          {/* T-H1.5-Z-Z10 — Bulk Import/Export toolbar (sub-tab-aware schema selection) */}
+          {(() => {
+            type AnyImportSchema = ImportSchema<Record<string, unknown>>;
+            const ledgerImportConfig: Partial<Record<typeof defSubTab, { schema: AnyImportSchema; records: Record<string, unknown>[] }>> = {
+              cash:        { schema: CASH_LEDGER_IMPORT_SCHEMA               as unknown as AnyImportSchema, records: cashDefs        as unknown as Record<string, unknown>[] },
+              bank:        { schema: BANK_LEDGER_IMPORT_SCHEMA               as unknown as AnyImportSchema, records: bankDefs        as unknown as Record<string, unknown>[] },
+              liabilities: { schema: LIABILITY_LEDGER_IMPORT_SCHEMA          as unknown as AnyImportSchema, records: liabilityDefs   as unknown as Record<string, unknown>[] },
+              capital:     { schema: CAPITAL_LEDGER_IMPORT_SCHEMA            as unknown as AnyImportSchema, records: capitalDefs     as unknown as Record<string, unknown>[] },
+              loans:       { schema: LOAN_RECEIVABLE_LEDGER_IMPORT_SCHEMA    as unknown as AnyImportSchema, records: loanRecDefs     as unknown as Record<string, unknown>[] },
+              borrowing:   { schema: BORROWING_LEDGER_IMPORT_SCHEMA          as unknown as AnyImportSchema, records: borrowingDefs   as unknown as Record<string, unknown>[] },
+              income:      { schema: INCOME_LEDGER_IMPORT_SCHEMA             as unknown as AnyImportSchema, records: incomeDefs      as unknown as Record<string, unknown>[] },
+              expenses:    { schema: EXPENSE_LEDGER_IMPORT_SCHEMA            as unknown as AnyImportSchema, records: expenseDefs     as unknown as Record<string, unknown>[] },
+              duties_tax:  { schema: DUTIES_TAX_LEDGER_IMPORT_SCHEMA         as unknown as AnyImportSchema, records: dutiesTaxDefs   as unknown as Record<string, unknown>[] },
+              payroll:     { schema: PAYROLL_STATUTORY_LEDGER_IMPORT_SCHEMA  as unknown as AnyImportSchema, records: payrollStatDefs as unknown as Record<string, unknown>[] },
+              asset:       { schema: ASSET_LEDGER_IMPORT_SCHEMA              as unknown as AnyImportSchema, records: assetDefs       as unknown as Record<string, unknown>[] },
+            };
+            const cfg = ledgerImportConfig[defSubTab];
+            if (!cfg) return null;
+            return (
+              <div className="flex justify-end mb-3">
+                <MasterImportExportButtons
+                  schema={cfg.schema}
+                  records={cfg.records}
+                  onImported={refreshAll}
+                />
+              </div>
+            );
+          })()}
+
+
           {defSubTab === 'cash' && <CashLedgerPanel />}
 
           {/* Bank List — S6.5a Panel */}
