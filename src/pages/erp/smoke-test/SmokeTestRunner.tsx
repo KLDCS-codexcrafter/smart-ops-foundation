@@ -42,14 +42,62 @@ import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
 import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
 import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
 import type { AdvanceEntry } from '@/types/compliance';
-// ── T-T10-pre.2c-PDF + T-T10-pre.2c-Word imports ──
+// ── T-T10-pre.2c-PDF + T-T10-pre.2c-Word + T-T10-pre.2c-TallyNative imports ──
 import {
   buildVoucherPDFDoc, exportVoucherAsPDF,
   buildVoucherWordDoc, exportVoucherAsWord,
+  buildTallyVoucherXML, exportVoucherAsTallyXML,
+  buildTallyVoucherJSON, exportVoucherAsTallyJSON,
   type ExportRows,
 } from '@/lib/voucher-export-engine';
 import { buildExportFilename } from '@/lib/export-helpers';
 import { Packer } from 'docx';
+import type { Voucher } from '@/types/voucher';
+
+// [T-T10-pre.2c-TallyNative] Minimal fixture builder for smoke checks · returns
+// a Sales voucher with one ledger line (party Dr) + one inventory line. Used by
+// tally-1..tally-5 only — not seeded into storage.
+function buildTallyFixtureVoucher(): Voucher {
+  return {
+    id: 'tally-fix-1',
+    voucher_no: 'INV/TALLY/0001',
+    voucher_type_id: 'vt-sales',
+    voucher_type_name: 'Sales Invoice',
+    base_voucher_type: 'Sales',
+    entity_id: 'ent-1',
+    date: '2026-04-15',
+    party_id: 'cust-1',
+    party_code: 'C001',
+    party_name: 'Acme Industries Pvt Ltd',
+    party_gstin: '27AABCA1234A1Z5',
+    party_state_code: '27',
+    place_of_supply: '27',
+    is_inter_state: false,
+    ledger_lines: [{
+      id: 'll-1', ledger_id: 'led-acme', ledger_code: 'L001',
+      ledger_name: 'Acme Industries Pvt Ltd', ledger_group_code: 'SUNDRY_DEBTORS',
+      dr_amount: 11800, cr_amount: 0, narration: '',
+    }],
+    inventory_lines: [{
+      id: 'iv-1', item_id: 'itm-w', item_code: 'W-001', item_name: 'Widget',
+      hsn_sac_code: '8473', godown_id: 'g-main', godown_name: 'Main',
+      qty: 10, uom: 'NOS', rate: 1000,
+      discount_percent: 0, discount_amount: 0, taxable_value: 10000,
+      gst_rate: 18, cgst_rate: 9, sgst_rate: 9, igst_rate: 0, cess_rate: 0,
+      cgst_amount: 900, sgst_amount: 900, igst_amount: 0, cess_amount: 0,
+      total: 11800, gst_type: 'taxable', gst_source: 'item',
+    }],
+    gross_amount: 10000, total_discount: 0, total_taxable: 10000,
+    total_cgst: 900, total_sgst: 900, total_igst: 0, total_cess: 0,
+    total_tax: 1800, round_off: 0, net_amount: 11800,
+    tds_applicable: false,
+    narration: 'Smoke test fixture',
+    terms_conditions: '', payment_enforcement: '', payment_instrument: '',
+    status: 'posted',
+    created_by: 'smoke', created_at: '2026-04-15T00:00:00Z',
+    updated_at: '2026-04-15T00:00:00Z',
+  };
+}
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
