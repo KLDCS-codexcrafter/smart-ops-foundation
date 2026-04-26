@@ -235,6 +235,32 @@ const DEFAULT_WA: WhatsAppConfig = {
   waApiKey: '', waUserName: '', waCompanyNumber: '',
 };
 
+// ── T-T10-pre.2c-TallyNative · Tally Prime native export config ────────────
+// Storage: erp_comply360_tally_{entityId}
+// [JWT] GET/PATCH /api/compliance/comply360/tally/:entityId
+import type { TallyAction } from '@/lib/voucher-export-engine';
+
+export interface TallyExportConfig {
+  /** Default Tally export format. */
+  export_format: 'xml' | 'json' | 'both';
+  /** Default Tally action for new exports. */
+  default_action: TallyAction;
+  /** Whether to include <STATICVARIABLES><SVCURRENTCOMPANY> in envelope. */
+  include_static_variables: boolean;
+  /** Company name for <SVCURRENTCOMPANY> tag · pulls from entity master if blank. */
+  company_name: string;
+}
+
+export const DEFAULT_TALLY_EXPORT_CONFIG: TallyExportConfig = {
+  export_format: 'both',
+  default_action: 'Create',
+  include_static_variables: true,
+  company_name: '',
+};
+
+export const comply360TallyKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_tally_${entityId ?? 'default'}`;
+
 const DEFAULT_TDSP: TDSPayableConfig = {
   tdsPayableJournalVCH: '', tdsPayableLedger: '',
 };
