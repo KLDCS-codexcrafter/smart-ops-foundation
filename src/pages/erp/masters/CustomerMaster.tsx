@@ -1686,9 +1686,16 @@ export function CustomerMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Sundry Debtor — Trade Receivables (TREC)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Customer
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={CUSTOMER_IMPORT_SCHEMA}
+            records={customers as unknown as Array<Record<string, unknown>>}
+            onImported={() => setCustomers(loadCustomers())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Customer
+          </Button>
+        </div>
       </div>
 
       {/* S4.5 — Customer Intelligence Dashboard */}
