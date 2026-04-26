@@ -1260,9 +1260,16 @@ export function LogisticMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Transporter & Courier — Sundry Creditor (TPAY)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Logistic Party
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={LOGISTIC_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={logistics as unknown as Array<Record<string, unknown>>}
+            onImported={() => setLogistics(loadLogistics())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Logistic Party
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
