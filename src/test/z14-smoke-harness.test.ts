@@ -159,7 +159,7 @@ function makeVoucher(baseType: VoucherBaseType, date: string, drAmt: number, crA
     status: 'draft',
     created_at: new Date().toISOString(),
     created_by: getCurrentUserId(),
-  } as Voucher;
+  } as unknown as Voucher;
 }
 
 /** Reset entity-scoped storage between tests. */
@@ -192,7 +192,7 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
         thresholdAggregateAnnual: 30000,
         effectiveFrom: '2024-04-01',
         applicableForm: '26Q',
-      } as TDSSection,
+      } as unknown as TDSSection,
       {
         id: 'sec-194h',
         sectionCode: '194H',
@@ -206,7 +206,7 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
         thresholdAggregateAnnual: 15000,
         effectiveFrom: '2024-04-01',
         applicableForm: '26Q',
-      } as TDSSection,
+      } as unknown as TDSSection,
     ];
     localStorage.setItem('erp_tds_sections', JSON.stringify(tdsSections));
   });
