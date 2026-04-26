@@ -1352,9 +1352,16 @@ export function VendorMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Sundry Creditor — Trade Payables (TPAY)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Vendor
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={VENDOR_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={vendors as unknown as Array<Record<string, unknown>>}
+            onImported={() => setVendors(loadVendors())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Vendor
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
