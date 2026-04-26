@@ -102,7 +102,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
       qty: l.qty,
       uom: l.uom,
       rate: l.rate,
-      amount: +(l.qty * l.rate).toFixed(2),
+      amount: round2(dMul(l.qty, l.rate)),
     }));
     setItems(lines);
   }, [selectedInvoice]);
