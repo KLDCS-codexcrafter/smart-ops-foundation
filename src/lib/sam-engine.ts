@@ -270,8 +270,7 @@ export function calculateInvoiceCommission(
           primaryAgent, invLines, ledgerLines, ledgerFlags, invoiceDate, cfg
         );
         if (agentResult) {
-          const receiverAmt =
-            (agentResult.commission_amount * person.receiver_share_pct) / 100;
+          const receiverAmt = dPct(agentResult.commission_amount, person.receiver_share_pct);
           results.push({
             person_id: person.id,
             person_name: person.display_name,
