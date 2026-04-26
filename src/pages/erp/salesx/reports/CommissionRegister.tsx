@@ -138,11 +138,11 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const amt = Number(amountReceived);
     if (!amt || amt <= 0) return null;
     const ratio = active.invoice_amount > 0 ? amt / active.invoice_amount : 0;
-    const commissionOnReceipt = +(active.total_commission * ratio).toFixed(2);
+    const commissionOnReceipt = round2(dMul(active.total_commission, ratio));
     const tdsAmount = active.tds_applicable
-      ? +(commissionOnReceipt * active.tds_rate / 100).toFixed(2)
+      ? round2(dPct(commissionOnReceipt, active.tds_rate))
       : 0;
-    const netCommissionPaid = +(commissionOnReceipt - tdsAmount).toFixed(2);
+    const netCommissionPaid = round2(dSub(commissionOnReceipt, tdsAmount));
     return { commissionOnReceipt, tdsAmount, netCommissionPaid };
   }, [active, amountReceived]);
 
