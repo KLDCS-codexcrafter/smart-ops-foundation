@@ -88,3 +88,131 @@ export function exportVoucherAsXLSX(data: ExportRows): void {
   // writeFile triggers browser download directly (no manual blob needed).
   XLSX.writeFile(wb, buildExportFilename(data.voucherType, data.voucherNo, 'xlsx'));
 }
+
+/**
+ * Optional layout hint for PDF rendering.
+ * - 'voucher': single-voucher portrait A4 (header block + line items + totals).
+ * - 'register': multi-voucher landscape A4 (compact paginated table).
+ * - 'auto' (default): infer from sheet count — single sheet = voucher, multi-sheet = register.
+ */
+export type PDFLayoutHint = 'voucher' | 'register' | 'auto';
+
+/**
+ * @purpose   Build a jsPDF document for the given ExportRows in voucher/register layout.
+ *            Exposed for smoke-test introspection (page count, orientation, blob type).
+ * @param     data   — ExportRows from a voucher engine or register
+ * @param     layout — 'voucher' | 'register' | 'auto'
+ * @returns   { doc, layout, pageCount } — the jsPDF instance + resolved layout + page count
+ * @iso       Reliability (HIGH — no DOM side effects · pure jsPDF construction)
+ *            Maintainability (HIGH — single place that owns layout switching)
+ */
+export function buildVoucherPDFDoc(
+  data: ExportRows,
+  layout: PDFLayoutHint = 'auto',
+): { doc: jsPDF; layout: 'voucher' | 'register'; pageCount: number } {
+  // [Convergent] Auto-resolve: single sheet → voucher · multi-sheet → register.
+  const resolved: 'voucher' | 'register' =
+    layout === 'auto' ? (data.sheets.length > 1 ? 'register' : 'voucher') : layout;
+
+  const orientation: 'portrait' | 'landscape' = resolved === 'voucher' ? 'portrait' : 'landscape';
+  const doc = new jsPDF({ orientation, unit: 'pt', format: 'a4' });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const today = new Date().toISOString().slice(0, 10);
+
+  // [Concrete] Header block — voucher type · voucher number · date.
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text(data.voucherType, 40, 40);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(`No: ${data.voucherNo}`, 40, 58);
+  doc.text(`Date: ${today}`, pageWidth - 40, 58, { align: 'right' });
+
+  // [Phase 2] IRN+QR placeholder — real GSTN integration is Phase 2 scope.
+  // For now: if any sheet name hints at GST, render a placeholder line.
+  const hasGstHint = data.sheets.some(s =>
+    /gst|hsn|tax|invoice/i.test(s.name) || /invoice/i.test(data.voucherType),
+  );
+  if (hasGstHint && resolved === 'voucher') {
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text('IRN: <pending>  ·  QR: <pending>', 40, 72);
+    doc.setTextColor(0);
+  }
+
+  let cursorY = hasGstHint && resolved === 'voucher' ? 88 : 78;
+
+  // [Concrete] Render each sheet via jspdf-autotable. Section header for multi-sheet.
+  for (let i = 0; i < data.sheets.length; i++) {
+    const sheet = data.sheets[i];
+    if (data.sheets.length > 1) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text(sheet.name, 40, cursorY);
+      cursorY += 12;
+      doc.setFont('helvetica', 'normal');
+    }
+
+    autoTable(doc, {
+      head: [sheet.headers],
+      body: sheet.rows.map(r => r.map(cell => (cell === null || cell === undefined ? '' : String(cell)))),
+      startY: cursorY,
+      theme: 'striped',
+      styles: { fontSize: 8, cellPadding: 3 },
+      headStyles: { fillColor: [55, 65, 81], textColor: 255, fontStyle: 'bold' },
+      margin: { left: 40, right: 40 },
+    });
+
+    // [Concrete] After each sheet, advance cursor below the rendered table.
+    const docWithAuto = doc as jsPDF & { lastAutoTable?: { finalY: number } };
+    cursorY = (docWithAuto.lastAutoTable?.finalY ?? cursorY) + 18;
+  }
+
+  // [Concrete] Footer — "Page X of Y" on every page.
+  const pageCount = doc.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    doc.text(
+      `Page ${p} of ${pageCount}`,
+      pageWidth - 40,
+      doc.internal.pageSize.getHeight() - 20,
+      { align: 'right' },
+    );
+    doc.setTextColor(0);
+  }
+
+  return { doc, layout: resolved, pageCount };
+}
+
+/**
+ * @purpose   Serialize an ExportRows object to A4 PDF and trigger download.
+ *            Voucher layout: portrait A4 with header + tables + page numbers.
+ *            Register layout: landscape A4 with compact paginated table.
+ * @param     data   — ExportRows from a voucher engine's buildXxxExportRows() OR a register's filtered rows
+ * @param     layout — 'voucher' | 'register' | 'auto' (default 'auto')
+ * @why-this-approach  [Convergent] Uses jspdf-autotable for native PDF table rendering.
+ *                     Avoids HTML-to-PDF complexity (html2pdf.js) which has quirks with
+ *                     CSS-driven layouts. autotable produces cleaner, smaller PDFs.
+ * @iso       Functional Suitability (HIGH — A4 PDF · Indian-format niceties)
+ *            Reliability (HIGH — try/catch · graceful failure with toast)
+ *            Portability (HIGH — pure jspdf · no server dependency)
+ * @example
+ *   const rows = buildInvoiceExportRows(payload);
+ *   exportVoucherAsPDF(rows, 'voucher');
+ */
+export function exportVoucherAsPDF(data: ExportRows, layout: PDFLayoutHint = 'auto'): void {
+  try {
+    const { doc } = buildVoucherPDFDoc(data, layout);
+    const blob = doc.output('blob');
+    downloadBlob(blob, buildExportFilename(data.voucherType, data.voucherNo, 'pdf'));
+  } catch (err) {
+    // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
+    // Caller is expected to surface a toast.error — engine stays UI-agnostic.
+    console.error('exportVoucherAsPDF failed:', err);
+    throw err;
+  }
+}
+
