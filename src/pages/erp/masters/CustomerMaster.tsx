@@ -47,6 +47,8 @@ import {
   type CustomerKPI,
 } from '@/features/party-master';
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+import type { ImportSchema } from '@/lib/master-import-engine';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -201,6 +203,89 @@ const saveCustomers = (items: CustomerMasterDefinition[]) => {
   // [JWT] POST /api/masters/customers
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   // [JWT] PUT /api/group/masters/customer
+};
+
+// ─── Z9 — Master Import/Export Schema (inline · self-documenting) ────
+// Subset of representative fields · users can export current data, edit, re-import.
+// Records keyed by partyCode for dedup. Untouched fields preserved on update via
+// engine's shallow merge (existing record + parsed updates).
+const CUSTOMER_IMPORT_SCHEMA: ImportSchema<CustomerMasterDefinition> = {
+  entityName: 'Customer',
+  storageKey: STORAGE_KEY,
+  primaryKey: 'partyCode',
+  columns: [
+    { header: 'Customer Code', field: 'partyCode', required: true, type: 'string' },
+    { header: 'Customer Name', field: 'partyName', required: true, type: 'string' },
+    { header: 'Customer Type', field: 'customerType', required: true, type: 'string' },
+    { header: 'GSTIN', field: 'gstin', required: false, type: 'string' },
+    { header: 'PAN', field: 'pan', required: false, type: 'string' },
+    { header: 'Mailing Name', field: 'mailingName', required: false, type: 'string' },
+    { header: 'Website', field: 'website', required: false, type: 'string' },
+    { header: 'Opening Balance', field: 'openingBalance', required: false, type: 'number' },
+    { header: 'Credit Limit', field: 'creditLimit', required: false, type: 'number' },
+    { header: 'Credit Days', field: 'creditDays', required: false, type: 'number' },
+    { header: 'Sale Type', field: 'saleType', required: false, type: 'string' },
+    { header: 'Default Currency', field: 'default_currency', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string' },
+  ],
+  rowToRecord: (row) => {
+    const code = String(row['Customer Code'] ?? '').trim();
+    return {
+      id: `cust-imp-${code}-${Date.now().toString(36)}`,
+      partyCode: code,
+      customerType: (String(row['Customer Type'] ?? 'other').trim() || 'other') as CustomerType,
+      gstin: String(row['GSTIN'] ?? ''),
+      pan: String(row['PAN'] ?? ''),
+      cin: '', aadhaar: '',
+      partyName: String(row['Customer Name'] ?? ''),
+      mailingName: String(row['Mailing Name'] ?? ''),
+      contacts: [], addresses: [],
+      website: String(row['Website'] ?? ''),
+      birthday: '', anniversary: '',
+      openingBalance: Number(row['Opening Balance'] ?? 0) || 0,
+      creditLimit: Number(row['Credit Limit'] ?? 0) || 0,
+      warningLimit: 0,
+      creditDays: Number(row['Credit Days'] ?? 0) || 0,
+      warningDays: 0,
+      modeOfPaymentId: '', termsOfPaymentId: '',
+      saleType: (String(row['Sale Type'] ?? 'credit').trim() || 'credit') as CustomerMasterDefinition['saleType'],
+      freightArrangement: 'charged_separately',
+      agreedFreightBasis: null,
+      agreedFreightRate: 0,
+      freightRateTolerance: 0,
+      defaultTransporterId: '', defaultCourierId: '',
+      gstRegistrationType: 'regular', gstStateCode: '',
+      gstFilingType: 'monthly',
+      einvoiceApplicable: false, tdsApplicable: false, tdsSection: '',
+      defaultBranch: '',
+      businessMode: 'b2b',
+      typeOfBusinessEntity: 'other',
+      natureOfBusiness: '', businessActivity: '', businessActivityCustom: '',
+      operatingScale: '',
+      referredBy: '', associatedDealer: '', otherReference: '',
+      default_salesman_id: null, default_salesman_name: null,
+      default_agent_id: null, default_agent_name: null,
+      default_reference_id: null, default_reference_name: null,
+      default_telecaller_id: null, default_telecaller_name: null,
+      salesman_assignment_mode: 'select_at_voucher',
+      businessHours: '', termsOfDeliveryId: '',
+      dispatchMode: '',
+      status: (String(row['Status'] ?? 'active').trim() || 'active') as 'active' | 'inactive',
+      default_currency: String(row['Default Currency'] ?? 'INR') || 'INR',
+      country: 'IN',
+      lut_number: '',
+      is_tds_deductor: false, tan_number: '',
+      territory_id: null, beat_ids: [], latitude: null, longitude: null,
+      credit_hold_mode: null, credit_hold_notes: '',
+      hierarchy_node_id: null, upstream_customer_id: null,
+      hierarchy_role: null, portal_enabled: false,
+    };
+  },
+  validateRow: (rec, line) => {
+    const errs: string[] = [];
+    if (!rec.partyCode) errs.push(`Line ${line}: Customer Code is empty`);
+    return errs;
+  },
 };
 
 const genPartyCode = (all: CustomerMasterDefinition[]): string =>
@@ -1601,9 +1686,16 @@ export function CustomerMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Sundry Debtor — Trade Receivables (TREC)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Customer
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={CUSTOMER_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={customers as unknown as Array<Record<string, unknown>>}
+            onImported={() => setCustomers(loadCustomers())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Customer
+          </Button>
+        </div>
       </div>
 
       {/* S4.5 — Customer Intelligence Dashboard */}

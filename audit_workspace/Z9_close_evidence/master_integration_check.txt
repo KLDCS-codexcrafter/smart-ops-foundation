@@ -1,0 +1,20 @@
+=== src/pages/erp/masters/CustomerMaster.tsx ===
+50:import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+212:const CUSTOMER_IMPORT_SCHEMA: ImportSchema<CustomerMasterDefinition> = {
+1690:          <MasterImportExportButtons
+1691:            schema={CUSTOMER_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+=== src/pages/erp/masters/VendorMaster.tsx ===
+44:import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+161:const VENDOR_IMPORT_SCHEMA: ImportSchema<VendorMasterDefinition> = {
+1356:          <MasterImportExportButtons
+1357:            schema={VENDOR_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+=== src/pages/erp/masters/LogisticMaster.tsx ===
+45:import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+156:const LOGISTIC_IMPORT_SCHEMA: ImportSchema<LogisticMasterDefinition> = {
+1264:          <MasterImportExportButtons
+1265:            schema={LOGISTIC_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+=== src/pages/erp/masters/SchemeMaster.tsx ===
+32:import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+70:const SCHEME_IMPORT_SCHEMA: ImportSchema<Scheme> = {
+255:          <MasterImportExportButtons
+256:            schema={SCHEME_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}

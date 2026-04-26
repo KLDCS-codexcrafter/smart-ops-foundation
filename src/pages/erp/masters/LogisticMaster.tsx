@@ -42,6 +42,8 @@ import {
   type BankAccount, type OpeningBill, type PartyLeaf,
 } from '@/features/party-master';
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+import type { ImportSchema } from '@/lib/master-import-engine';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -148,6 +150,63 @@ const saveLogistics = (items: LogisticMasterDefinition[]) => {
   // [JWT] POST /api/masters/logistics
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   // [JWT] PUT /api/group/masters/logistic
+};
+
+// ─── Z9 — Master Import/Export Schema (inline · self-documenting) ────
+const LOGISTIC_IMPORT_SCHEMA: ImportSchema<LogisticMasterDefinition> = {
+  entityName: 'Logistic',
+  storageKey: STORAGE_KEY,
+  primaryKey: 'partyCode',
+  columns: [
+    { header: 'Logistic Code', field: 'partyCode', required: true, type: 'string' },
+    { header: 'Logistic Name', field: 'partyName', required: true, type: 'string' },
+    { header: 'Logistic Type', field: 'logisticType', required: true, type: 'string' },
+    { header: 'GSTIN', field: 'gstin', required: false, type: 'string' },
+    { header: 'PAN', field: 'pan', required: false, type: 'string' },
+    { header: 'GTA RCM Applicable', field: 'gtaRcmApplicable', required: false, type: 'boolean' },
+    { header: 'Opening Balance', field: 'openingBalance', required: false, type: 'number' },
+    { header: 'Credit Days', field: 'creditDays', required: false, type: 'number' },
+    { header: 'Status', field: 'status', required: false, type: 'string' },
+  ],
+  rowToRecord: (row) => {
+    const code = String(row['Logistic Code'] ?? '').trim();
+    const gtaRaw = String(row['GTA RCM Applicable'] ?? '').toLowerCase();
+    const gta = gtaRaw === 'true' || gtaRaw === 'yes' || gtaRaw === '1';
+    return {
+      id: `log-imp-${code}-${Date.now().toString(36)}`,
+      partyCode: code,
+      logisticType: (String(row['Logistic Type'] ?? 'transporter').trim() || 'transporter') as LogisticType,
+      gstin: String(row['GSTIN'] ?? ''),
+      pan: String(row['PAN'] ?? ''),
+      partyName: String(row['Logistic Name'] ?? ''),
+      mailingName: '',
+      transporterId: '',
+      contacts: [],
+      addressLine: '', stateCode: '', stateName: '', gstStateCode: '',
+      districtCode: '', districtName: '', cityCode: '', cityName: '', pinCode: '',
+      website: '',
+      openingBalance: Number(row['Opening Balance'] ?? 0) || 0,
+      creditDays: Number(row['Credit Days'] ?? 0) || 0,
+      modeOfPaymentId: '', termsOfPaymentId: '',
+      gstRegistrationType: 'regular',
+      gtaRcmApplicable: gta,
+      rcmGstRate: null,
+      tdsApplicable: false, tdsSection: '',
+      businessMode: 'b2b',
+      typeOfBusinessEntity: 'other',
+      natureOfBusiness: '', businessActivity: '', businessActivityCustom: '',
+      operatingScale: '',
+      otherReference: '',
+      freightRates: [],
+      freightRateTolerance: 0,
+      status: (String(row['Status'] ?? 'active').trim() || 'active') as 'active' | 'inactive',
+    };
+  },
+  validateRow: (rec, line) => {
+    const errs: string[] = [];
+    if (!rec.partyCode) errs.push(`Line ${line}: Logistic Code is empty`);
+    return errs;
+  },
 };
 
 const genPartyCode = (all: LogisticMasterDefinition[]): string =>
@@ -1201,9 +1260,16 @@ export function LogisticMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Transporter & Courier — Sundry Creditor (TPAY)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Logistic Party
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={LOGISTIC_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={logistics as unknown as Array<Record<string, unknown>>}
+            onImported={() => setLogistics(loadLogistics())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Logistic Party
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

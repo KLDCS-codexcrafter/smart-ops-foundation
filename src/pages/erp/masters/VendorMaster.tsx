@@ -41,6 +41,8 @@ import {
   type BankAccount, type OpeningBill, type PartyLeaf,
 } from '@/features/party-master';
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
+import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
+import type { ImportSchema } from '@/lib/master-import-engine';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -153,6 +155,79 @@ const saveVendors = (items: VendorMasterDefinition[]) => {
   // [JWT] POST /api/masters/vendors
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   // [JWT] PUT /api/group/masters/vendor
+};
+
+// ─── Z9 — Master Import/Export Schema (inline · self-documenting) ────
+const VENDOR_IMPORT_SCHEMA: ImportSchema<VendorMasterDefinition> = {
+  entityName: 'Vendor',
+  storageKey: STORAGE_KEY,
+  primaryKey: 'partyCode',
+  columns: [
+    { header: 'Vendor Code', field: 'partyCode', required: true, type: 'string' },
+    { header: 'Vendor Name', field: 'partyName', required: true, type: 'string' },
+    { header: 'Vendor Type', field: 'vendorType', required: true, type: 'string' },
+    { header: 'GSTIN', field: 'gstin', required: false, type: 'string' },
+    { header: 'PAN', field: 'pan', required: false, type: 'string' },
+    { header: 'MSME Registered', field: 'msmeRegistered', required: false, type: 'boolean' },
+    { header: 'MSME Udyam No', field: 'msmeUdyamNo', required: false, type: 'string' },
+    { header: 'Opening Balance', field: 'openingBalance', required: false, type: 'number' },
+    { header: 'Credit Days', field: 'creditDays', required: false, type: 'number' },
+    { header: 'TDS Section', field: 'tdsSection', required: false, type: 'string' },
+    { header: 'Default Currency', field: 'default_currency', required: false, type: 'string' },
+    { header: 'Status', field: 'status', required: false, type: 'string' },
+  ],
+  rowToRecord: (row) => {
+    const code = String(row['Vendor Code'] ?? '').trim();
+    const msmeRaw = String(row['MSME Registered'] ?? '').toLowerCase();
+    const msme = msmeRaw === 'true' || msmeRaw === 'yes' || msmeRaw === '1';
+    return {
+      id: `ven-imp-${code}-${Date.now().toString(36)}`,
+      partyCode: code,
+      vendorType: (String(row['Vendor Type'] ?? 'other').trim() || 'other') as VendorType,
+      gstin: String(row['GSTIN'] ?? ''),
+      pan: String(row['PAN'] ?? ''),
+      cin: '', aadhaar: '',
+      partyName: String(row['Vendor Name'] ?? ''),
+      mailingName: '',
+      contacts: [],
+      addressLine: '', stateCode: '', stateName: '', gstStateCode: '',
+      districtCode: '', districtName: '', cityCode: '', cityName: '', pinCode: '',
+      website: '', birthday: '', anniversary: '',
+      openingBalance: Number(row['Opening Balance'] ?? 0) || 0,
+      creditDays: Number(row['Credit Days'] ?? 0) || 0,
+      modeOfPaymentId: '', termsOfPaymentId: '',
+      msmeRegistered: msme,
+      msmeUdyamNo: String(row['MSME Udyam No'] ?? ''),
+      msmeCategory: null,
+      bankAccountHolder: '', bankAccountNo: '', bankIfsc: '',
+      bankName: '', bankBranchName: '', bankBranchCity: '',
+      gstRegistrationType: 'regular', gstStateCode2: '',
+      gstFilingType: 'monthly',
+      einvoiceApplicable: false, tdsApplicable: false,
+      tdsSection: String(row['TDS Section'] ?? ''),
+      lower_deduction_cert: '', lower_deduction_rate: 0, lower_deduction_expiry: '',
+      defaultBranch: '',
+      businessMode: 'b2b',
+      typeOfBusinessEntity: 'other',
+      natureOfBusiness: '', businessActivity: '', businessActivityCustom: '',
+      operatingScale: '',
+      referredBy: '', associatedDealer: '', otherReference: '',
+      businessHours: '',
+      saleType: 'credit',
+      termsOfDeliveryId: '',
+      dispatchMode: '',
+      defaultTransporterId: '', defaultCourierId: '',
+      primary_division_id: '', primary_department_id: '',
+      is_related_party: false,
+      status: (String(row['Status'] ?? 'active').trim() || 'active') as 'active' | 'inactive',
+      default_currency: String(row['Default Currency'] ?? 'INR') || 'INR',
+    };
+  },
+  validateRow: (rec, line) => {
+    const errs: string[] = [];
+    if (!rec.partyCode) errs.push(`Line ${line}: Vendor Code is empty`);
+    return errs;
+  },
 };
 
 const genPartyCode = (all: VendorMasterDefinition[]): string =>
@@ -1277,9 +1352,16 @@ export function VendorMasterPanel() {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Sundry Creditor — Trade Payables (TPAY)</p>
         </div>
-        <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
-          <Plus className="h-3.5 w-3.5" /> Add Vendor
-        </Button>
+        <div className="flex items-center gap-2">
+          <MasterImportExportButtons
+            schema={VENDOR_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={vendors as unknown as Array<Record<string, unknown>>}
+            onImported={() => setVendors(loadVendors())}
+          />
+          <Button onClick={() => { setForm(defaultForm); setAddOpen(true); }} className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> Add Vendor
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
