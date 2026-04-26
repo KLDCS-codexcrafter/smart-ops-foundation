@@ -1,0 +1,17 @@
+{
+  "id": "z10-bank-template",
+  "description": "Bank ledger template includes Account Type · IFSC · Account No",
+  "pass": true,
+  "expected": "headers contain Account Type + IFSC + Account No",
+  "actual": {
+    "headers": [
+      "Code",
+      "Name",
+      "Account Type",
+      "Account No",
+      "IFSC"
+    ],
+    "hasBankFields": true
+  },
+  "timestamp": "2026-04-26T11:47:48.153Z"
+}

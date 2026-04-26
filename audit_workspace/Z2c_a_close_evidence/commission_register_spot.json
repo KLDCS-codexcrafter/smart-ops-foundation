@@ -1,0 +1,20 @@
+{
+  "id": "z2c-a-commission",
+  "description": "Commission ₹5k · TDS ₹250 · Net ₹4,750 (Decimal.equals)",
+  "pass": true,
+  "expected": "commission=5000 · tds=250 · net=4750",
+  "actual": {
+    "commission": "5000",
+    "commissionPass": true,
+    "tds": "250",
+    "tdsPass": true,
+    "net": "4750",
+    "netPass": true,
+    "round2Helpers": {
+      "commission": 5000,
+      "tds": 250,
+      "net": 4750
+    }
+  },
+  "timestamp": "2026-04-26T11:47:48.137Z"
+}

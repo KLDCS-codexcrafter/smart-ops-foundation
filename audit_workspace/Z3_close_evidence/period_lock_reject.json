@@ -1,0 +1,14 @@
+{
+  "id": "z3-period-lock-reject",
+  "description": "Sales Invoice dated 2026-03-15 rejected by period lock",
+  "pass": true,
+  "expected": "valid=false · errors[] contains period-lock message",
+  "actual": {
+    "valid": false,
+    "errors": [
+      "Cannot post voucher dated 2026-03-15: accounting period is locked through 2026-03-31."
+    ],
+    "isPeriodLocked": true
+  },
+  "timestamp": "2026-04-26T11:47:48.139Z"
+}

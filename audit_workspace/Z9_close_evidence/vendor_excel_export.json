@@ -1,0 +1,23 @@
+{
+  "id": "z9-vendor-excel",
+  "description": "Vendor schema column count + record-key parity",
+  "pass": true,
+  "expected": "columns=4 · all field keys present in each record",
+  "actual": {
+    "headers": [
+      "Vendor Code",
+      "Vendor Name",
+      "GSTIN",
+      "PAN"
+    ],
+    "fieldKeys": [
+      "partyCode",
+      "partyName",
+      "gstin",
+      "pan"
+    ],
+    "recordCount": 2,
+    "recordKeyParity": true
+  },
+  "timestamp": "2026-04-26T11:47:48.143Z"
+}

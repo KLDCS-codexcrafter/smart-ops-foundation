@@ -1,0 +1,18 @@
+{
+  "id": "z9-logistic-template",
+  "description": "Logistic template headers match schema columns",
+  "pass": true,
+  "expected": "headers contain Logistic Code + Name · 2 required",
+  "actual": {
+    "headers": [
+      "Logistic Code",
+      "Logistic Name",
+      "Transporter ID"
+    ],
+    "requiredHeaders": [
+      "Logistic Code",
+      "Logistic Name"
+    ]
+  },
+  "timestamp": "2026-04-26T11:47:48.143Z"
+}

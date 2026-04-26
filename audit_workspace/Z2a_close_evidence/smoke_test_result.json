@@ -1,0 +1,82 @@
+{
+  "id": "z2a-smoke",
+  "description": "All 14 voucher types validate correctly",
+  "pass": true,
+  "expected": "14/14 valid",
+  "actual": {
+    "passCount": 14,
+    "perType": [
+      {
+        "type": "Contra",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Payment",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Receipt",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Journal",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Sales",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Purchase",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Debit Note",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Credit Note",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Delivery Note",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Receipt Note",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Sales Order",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Purchase Order",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Stock Journal",
+        "valid": true,
+        "errors": []
+      },
+      {
+        "type": "Payroll",
+        "valid": true,
+        "errors": []
+      }
+    ]
+  },
+  "timestamp": "2026-04-26T11:47:48.130Z"
+}

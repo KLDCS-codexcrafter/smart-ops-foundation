@@ -1,0 +1,11 @@
+{
+  "id": "z3-actor-thread",
+  "description": "Voucher created_by === accountant1",
+  "pass": true,
+  "expected": "accountant1",
+  "actual": {
+    "stored_created_by": "accountant1",
+    "voucher_no": "SMK/ACT1"
+  },
+  "timestamp": "2026-04-26T11:47:48.138Z"
+}

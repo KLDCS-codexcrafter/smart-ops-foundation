@@ -1,0 +1,14 @@
+{
+  "id": "z3-period-lock-set",
+  "description": "Period lock 2026-03-31 persisted",
+  "pass": true,
+  "expected": "lockedThrough=2026-03-31 · lastModifiedBy=admin1",
+  "actual": {
+    "config": {
+      "lockedThrough": "2026-03-31",
+      "lastModifiedAt": "2026-04-26T11:47:48.139Z",
+      "lastModifiedBy": "admin1"
+    }
+  },
+  "timestamp": "2026-04-26T11:47:48.139Z"
+}
