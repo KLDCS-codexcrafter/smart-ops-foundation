@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText, FileDown } from 'lucide-react';
+import { FileSpreadsheet, Search, FileText, FileDown, FileType2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ import type { Voucher } from '@/types/voucher';
 import { useVouchers } from '@/hooks/useVouchers';
 import { today } from '@/pages/erp/finecore/reports/reportUtils';
 import {
-  exportVoucherAsXLSX, exportVoucherAsPDF,
+  exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord,
   type ExportRows, type ExportSheet,
 } from '@/lib/voucher-export-engine';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
@@ -200,6 +200,18 @@ export function RegisterGrid({
     }
   };
 
+  // [T-T10-pre.2c-Word] Word export alongside Excel + PDF. Uses 'register' layout (landscape A4).
+  const handleWordExport = () => {
+    try {
+      exportVoucherAsWord(buildRegisterExportRows(), 'register');
+      toast.success(`Exported ${filtered.length} rows as Word`);
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
+      toast.error('Word export failed. Check console for details.');
+      console.error('Register Word export error:', err);
+    }
+  };
+
   const handleRowClick = (v: Voucher) => {
     // [Convergent] D-136: drill-down lands in DayBook, pre-filtered. Preserves context.
     onNavigateToDayBook({
@@ -225,6 +237,9 @@ export function RegisterGrid({
           </Button>
           <Button variant="outline" size="sm" onClick={handlePDFExport} disabled={filtered.length === 0}>
             <FileDown className="h-3.5 w-3.5 mr-1" /> Export PDF
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleWordExport} disabled={filtered.length === 0}>
+            <FileType2 className="h-3.5 w-3.5 mr-1" /> Export Word
           </Button>
         </div>
       </div>

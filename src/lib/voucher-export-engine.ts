@@ -13,6 +13,11 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+  WidthType, AlignmentType, HeadingLevel, Footer, PageNumber,
+  PageOrientation, BorderStyle,
+} from 'docx';
 import { downloadBlob, csvEscapeCell, buildExportFilename } from '@/lib/export-helpers';
 
 /**
@@ -212,6 +217,172 @@ export function exportVoucherAsPDF(data: ExportRows, layout: PDFLayoutHint = 'au
     // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
     // Caller is expected to surface a toast.error — engine stays UI-agnostic.
     console.error('exportVoucherAsPDF failed:', err);
+    throw err;
+  }
+}
+
+/**
+ * Optional layout hint for Word/Docx rendering.
+ * - 'voucher': single-voucher portrait A4 (header block + line items table + totals + signature)
+ * - 'register': multi-voucher landscape A4 (compact paginated table for register exports)
+ * - 'auto' (default): infer from sheet count — single sheet = voucher, multi-sheet = register
+ */
+export type WordLayoutHint = 'voucher' | 'register' | 'auto';
+
+/**
+ * @purpose   Build a docx Document from ExportRows. Auto-resolves layout (voucher vs register).
+ *            Mirrors buildVoucherPDFDoc pattern from T-T10-pre.2c-PDF (Sprint A.2).
+ * @param     data — ExportRows from a voucher engine OR a register's filtered rows
+ * @param     layout — Layout hint (default 'auto')
+ * @returns   { doc, layout } — the docx Document instance + resolved layout
+ * @iso       Reliability (HIGH — no DOM side effects · pure docx construction)
+ *            Maintainability (HIGH — single place that owns layout switching for Word)
+ */
+export function buildVoucherWordDoc(
+  data: ExportRows,
+  layout: WordLayoutHint = 'auto',
+): { doc: Document; layout: 'voucher' | 'register' } {
+  // [Convergent] Auto-resolve: single sheet → voucher · multi-sheet → register.
+  const resolved: 'voucher' | 'register' =
+    layout === 'auto' ? (data.sheets.length > 1 ? 'register' : 'voucher') : layout;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const orientation = resolved === 'voucher' ? PageOrientation.PORTRAIT : PageOrientation.LANDSCAPE;
+
+  // [Concrete] Standard cell border — light grey grid for default Word table look.
+  const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: '999999' };
+  const cellBorders = {
+    top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder,
+  };
+
+  // [Concrete] Build the document body — header block, then per-sheet content.
+  const children: (Paragraph | Table)[] = [];
+
+  // [Concrete] Header block — voucher type centered, then No / Date row.
+  children.push(new Paragraph({
+    heading: HeadingLevel.HEADING_1,
+    alignment: AlignmentType.CENTER,
+    children: [new TextRun({ text: data.voucherType, bold: true, size: 32 })],
+  }));
+  children.push(new Paragraph({
+    children: [new TextRun({ text: `No: ${data.voucherNo}`, size: 22 })],
+  }));
+  children.push(new Paragraph({
+    alignment: AlignmentType.RIGHT,
+    children: [new TextRun({ text: `Date: ${today}`, size: 22 })],
+  }));
+  // [Phase 1.5] Logo placeholder — image embedding is Phase 1.5 polish.
+  children.push(new Paragraph({
+    children: [new TextRun({ text: '[Company Logo]', italics: true, color: '888888', size: 18 })],
+  }));
+  children.push(new Paragraph({ children: [new TextRun('')] }));
+
+  // [Concrete] Render each sheet — section heading + Word Table.
+  for (const sheet of data.sheets) {
+    if (data.sheets.length > 1) {
+      children.push(new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        children: [new TextRun({ text: sheet.name, bold: true, size: 26 })],
+      }));
+    }
+
+    const headerRow = new TableRow({
+      tableHeader: true,
+      children: sheet.headers.map(h => new TableCell({
+        borders: cellBorders,
+        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 20 })] })],
+      })),
+    });
+
+    const bodyRows = sheet.rows.map(row => new TableRow({
+      children: row.map(cell => new TableCell({
+        borders: cellBorders,
+        children: [new Paragraph({
+          children: [new TextRun({
+            text: cell === null || cell === undefined ? '' : String(cell), size: 20,
+          })],
+        })],
+      })),
+    }));
+
+    children.push(new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [headerRow, ...bodyRows],
+    }));
+    children.push(new Paragraph({ children: [new TextRun('')] }));
+  }
+
+  // [Phase 1.5] Voucher layout: signature line at the end. Register layout omits.
+  if (resolved === 'voucher') {
+    children.push(new Paragraph({ children: [new TextRun('')] }));
+    children.push(new Paragraph({
+      alignment: AlignmentType.RIGHT,
+      children: [new TextRun({ text: 'Authorized Signatory: ___________________', size: 20 })],
+    }));
+  }
+
+  // [Concrete] Footer with "Page X of Y" via PageNumber field.
+  const footer = new Footer({
+    children: [new Paragraph({
+      alignment: AlignmentType.RIGHT,
+      children: [
+        new TextRun({ text: 'Page ', size: 18 }),
+        new TextRun({ children: [PageNumber.CURRENT], size: 18 }),
+        new TextRun({ text: ' of ', size: 18 }),
+        new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 18 }),
+      ],
+    })],
+  });
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        page: {
+          size: {
+            // [Concrete] A4 in DXA: 11906 x 16838. docx swaps for landscape internally.
+            width: 11906, height: 16838, orientation,
+          },
+          margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 },
+        },
+      },
+      footers: { default: footer },
+      children,
+    }],
+  });
+
+  return { doc, layout: resolved };
+}
+
+/**
+ * @purpose   Serialize an ExportRows object to A4 .docx and trigger download.
+ *            Voucher layout: portrait, header + line items table + totals + signature.
+ *            Register layout: landscape, compact paginated table.
+ * @param     data — ExportRows from a voucher engine's buildXxxExportRows() OR register's filtered rows
+ * @param     layout — Layout hint (default 'auto')
+ * @why-this-approach  [Convergent] Uses 'docx' npm package for native .docx generation.
+ *                     Avoids HTML-to-Word complexity (which produces fragile .docx via fake headers).
+ *                     'docx' produces clean .docx that Word/LibreOffice/Google Docs all open natively.
+ * @iso       Functional Suitability (HIGH — A4 .docx · matches Word/LibreOffice/Google Docs)
+ *            Reliability (HIGH — try/catch · graceful failure with toast at caller)
+ *            Portability (HIGH — pure docx · no server dependency)
+ * @example
+ *   const rows = buildInvoiceExportRows(payload);
+ *   exportVoucherAsWord(rows, 'voucher');
+ */
+export function exportVoucherAsWord(data: ExportRows, layout: WordLayoutHint = 'auto'): void {
+  try {
+    const { doc } = buildVoucherWordDoc(data, layout);
+    // [Concrete] Packer.toBlob is async — chain via .then so callers stay sync-friendly.
+    Packer.toBlob(doc).then(blob => {
+      downloadBlob(blob, buildExportFilename(data.voucherType, data.voucherNo, 'docx'));
+    }).catch(err => {
+      // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
+      console.error('exportVoucherAsWord (Packer) failed:', err);
+      throw err;
+    });
+  } catch (err) {
+    // [Analytical] Engine stays UI-agnostic — caller surfaces toast.error.
+    console.error('exportVoucherAsWord failed:', err);
     throw err;
   }
 }

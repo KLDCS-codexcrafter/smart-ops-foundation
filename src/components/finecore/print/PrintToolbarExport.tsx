@@ -12,10 +12,10 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText, FileType2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  exportVoucherAsXLSX, exportVoucherAsPDF, type ExportRows,
+  exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord, type ExportRows,
 } from '@/lib/voucher-export-engine';
 
 export interface PrintToolbarExportProps {
@@ -33,6 +33,8 @@ export interface PrintToolbarExportProps {
   label?: string;
   /** Optional override for the PDF button label. Default: "PDF". */
   pdfLabel?: string;
+  /** Optional override for the Word button label. Default: "Word". */
+  wordLabel?: string;
 }
 
 /**
@@ -49,7 +51,7 @@ export interface PrintToolbarExportProps {
  * @iso       Reliability (HIGH — try/catch with toast fallback) · Maintainability (HIGH)
  */
 export function PrintToolbarExport({
-  payload, buildRows, label = 'Excel', pdfLabel = 'PDF',
+  payload, buildRows, label = 'Excel', pdfLabel = 'PDF', wordLabel = 'Word',
 }: PrintToolbarExportProps) {
   const handleExcelClick = () => {
     try {
@@ -75,6 +77,18 @@ export function PrintToolbarExport({
     }
   };
 
+  const handleWordClick = () => {
+    try {
+      const rows = buildRows(payload);
+      exportVoucherAsWord(rows, 'voucher');
+      toast.success('Exported as Word');
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern rule targets console.log, not console.error.
+      toast.error('Word export failed. Check console for details.');
+      console.error('Print-toolbar Word export error:', err);
+    }
+  };
+
   return (
     <>
       <Button variant="outline" size="sm" onClick={handleExcelClick}>
@@ -82,6 +96,9 @@ export function PrintToolbarExport({
       </Button>
       <Button variant="outline" size="sm" onClick={handlePDFClick}>
         <FileText className="h-3.5 w-3.5 mr-1" /> {pdfLabel}
+      </Button>
+      <Button variant="outline" size="sm" onClick={handleWordClick}>
+        <FileType2 className="h-3.5 w-3.5 mr-1" /> {wordLabel}
       </Button>
     </>
   );

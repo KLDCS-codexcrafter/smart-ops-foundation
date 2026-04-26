@@ -42,11 +42,14 @@ import { computeAgingReport } from '@/features/loan-emi/lib/advance-aging';
 import { findNotionalDuplicate } from '@/features/loan-emi/lib/notional-interest-log';
 import { planMonthlyNotional } from '@/features/loan-emi/engines/notional-interest-engine';
 import type { AdvanceEntry } from '@/types/compliance';
-// ── T-T10-pre.2c-PDF imports ──
+// ── T-T10-pre.2c-PDF + T-T10-pre.2c-Word imports ──
 import {
-  buildVoucherPDFDoc, exportVoucherAsPDF, type ExportRows,
+  buildVoucherPDFDoc, exportVoucherAsPDF,
+  buildVoucherWordDoc, exportVoucherAsWord,
+  type ExportRows,
 } from '@/lib/voucher-export-engine';
 import { buildExportFilename } from '@/lib/export-helpers';
+import { Packer } from 'docx';
 
 type CheckStatus = 'pending' | 'pass' | 'fail';
 interface CheckResult {
@@ -75,7 +78,9 @@ function readObj(key: string): unknown {
 
 interface CheckSpec {
   id: string; section: string; name: string;
-  run: (entityCode: string) => { actual: number | string; expected: number | string; pass: boolean; details: string };
+  run: (entityCode: string) =>
+    | { actual: number | string; expected: number | string; pass: boolean; details: string }
+    | Promise<{ actual: number | string; expected: number | string; pass: boolean; details: string }>;
 }
 
 const CHECKS: CheckSpec[] = [
@@ -1111,6 +1116,87 @@ const CHECKS: CheckSpec[] = [
         expected: 'matches Sales_Invoice_INV_2026_0099_<date>.pdf',
         pass: ok, details: 'Filename helper reused · no bespoke pattern' };
     } },
+
+  // ── T-T10-pre.2c-Word · 5 smoke checks for Word/Docx export hook ──
+  // Mirror of pdf-1..pdf-5 · uses Packer.toBlob (async) so checks return Promises.
+  { id: 'word-1', section: 'Word Export',
+    name: 'Voucher Word export produces .docx blob with correct MIME type',
+    run: async () => {
+      const data: ExportRows = {
+        voucherType: 'Sales Invoice', voucherNo: 'INV-WORD-1',
+        sheets: [{ name: 'Lines', headers: ['Item', 'Qty', 'Rate', 'Amount'],
+          rows: [['Widget', 10, 100, 1000], ['Gadget', 5, 200, 1000]] }],
+      };
+      const { doc } = buildVoucherWordDoc(data, 'voucher');
+      const blob = await Packer.toBlob(doc);
+      const expectedType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const ok = blob.type === expectedType;
+      return { actual: `type=${blob.type}`, expected: expectedType,
+        pass: ok, details: `blob size=${blob.size} bytes` };
+    } },
+
+  { id: 'word-2', section: 'Word Export',
+    name: 'Register Word export produces .docx blob with correct MIME type',
+    run: async () => {
+      const data: ExportRows = {
+        voucherType: 'Sales Register', voucherNo: '2026-04-01_to_2026-04-30',
+        sheets: [
+          { name: 'Vouchers', headers: ['Date', 'No', 'Party', 'Total'],
+            rows: [['2026-04-05', 'INV/0001', 'Acme', 12500],
+              ['2026-04-08', 'INV/0002', 'Beta', 7800]] },
+          { name: 'Summary', headers: ['Metric', 'Value'],
+            rows: [['Count', 2], ['Grand Total', 20300]] },
+        ],
+      };
+      const { doc } = buildVoucherWordDoc(data, 'register');
+      const blob = await Packer.toBlob(doc);
+      const expectedType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const ok = blob.type === expectedType;
+      return { actual: `type=${blob.type}`, expected: expectedType,
+        pass: ok, details: `blob size=${blob.size} bytes` };
+    } },
+
+  { id: 'word-3', section: 'Word Export',
+    name: 'Single-sheet ExportRows in auto mode → voucher layout',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'Receipt', voucherNo: 'RCP-WORD-3',
+        sheets: [{ name: 'Lines', headers: ['Account', 'Amount'],
+          rows: [['Cash', 5000], ['Bank', 2500]] }],
+      };
+      const { layout } = buildVoucherWordDoc(data, 'auto');
+      const ok = layout === 'voucher';
+      return { actual: `layout=${layout}`, expected: 'layout=voucher',
+        pass: ok, details: 'Auto mode infers single-sheet → voucher (portrait A4)' };
+    } },
+
+  { id: 'word-4', section: 'Word Export',
+    name: 'Multi-sheet ExportRows in auto mode → register layout',
+    run: () => {
+      const data: ExportRows = {
+        voucherType: 'GST Invoice', voucherNo: 'GST-WORD-4',
+        sheets: [
+          { name: 'Lines', headers: ['Item', 'Qty'], rows: [['A', 1]] },
+          { name: 'HSN Summary', headers: ['HSN', 'Total'], rows: [['1234', 100]] },
+        ],
+      };
+      const { layout } = buildVoucherWordDoc(data, 'auto');
+      const ok = layout === 'register';
+      return { actual: `layout=${layout}`, expected: 'layout=register',
+        pass: ok, details: 'Auto mode infers multi-sheet → register (landscape A4)' };
+    } },
+
+  { id: 'word-5', section: 'Word Export',
+    name: 'Word filename matches buildExportFilename pattern with .docx',
+    run: () => {
+      const expected = buildExportFilename('Sales Invoice', 'INV/2026/0099', 'docx');
+      const matchesPattern = /^Sales_Invoice_INV_2026_0099_\d{4}-\d{2}-\d{2}\.docx$/.test(expected);
+      const hooked = typeof exportVoucherAsWord === 'function';
+      const ok = matchesPattern && hooked;
+      return { actual: `filename=${expected}, hooked=${hooked}`,
+        expected: 'matches Sales_Invoice_INV_2026_0099_<date>.docx',
+        pass: ok, details: 'Filename helper reused · no bespoke pattern' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
@@ -1136,20 +1222,21 @@ export default function SmokeTestRunner() {
 
   const runAll = useCallback(() => {
     setRunning(true);
-    setTimeout(() => {
-      const next: CheckResult[] = CHECKS.map(c => {
+    setTimeout(async () => {
+      // [T-T10-pre.2c-Word] Some checks (Word/docx Packer) are async — await all results.
+      const next: CheckResult[] = await Promise.all(CHECKS.map(async c => {
         try {
-          const r = c.run(entityCode);
+          const r = await c.run(entityCode);
           return {
             id: c.id, section: c.section, name: c.name,
-            status: r.pass ? 'pass' : 'fail',
+            status: (r.pass ? 'pass' : 'fail') as CheckStatus,
             expected: r.expected, actual: r.actual, details: r.details,
           };
         } catch (err) {
           return { id: c.id, section: c.section, name: c.name,
-            status: 'fail', expected: '-', actual: 'error', details: (err as Error).message };
+            status: 'fail' as CheckStatus, expected: '-', actual: 'error', details: (err as Error).message };
         }
-      });
+      }));
       setResults(next);
       setRunning(false);
       const passed = next.filter(r => r.status === 'pass').length;
