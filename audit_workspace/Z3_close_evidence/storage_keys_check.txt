@@ -1,0 +1,9 @@
+src/lib/period-lock-engine.ts:15: *   periodLockKey(entityCode) = `erp_period_lock_${entityCode}`
+src/lib/period-lock-engine.ts:30:export const periodLockKey = (entityCode: string): string =>
+src/lib/period-lock-engine.ts:39:    const raw = localStorage.getItem(periodLockKey(entityCode));
+src/lib/period-lock-engine.ts:61:  localStorage.setItem(periodLockKey(entityCode), JSON.stringify(config));
+src/lib/auth-helpers.ts:16: *   mockAuthKey = `erp_mock_auth_user` (singleton · not entity-scoped)
+src/lib/auth-helpers.ts:28:export const mockAuthKey = 'erp_mock_auth_user';
+src/lib/auth-helpers.ts:45:    const raw = localStorage.getItem(mockAuthKey);
+src/lib/auth-helpers.ts:64:  localStorage.setItem(mockAuthKey, JSON.stringify(user));
+src/lib/auth-helpers.ts:70:  localStorage.removeItem(mockAuthKey);

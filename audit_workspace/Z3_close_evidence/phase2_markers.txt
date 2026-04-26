@@ -1,0 +1,3 @@
+src/pages/erp/accounting/MockAuthDevPanel.tsx:12: * PHASE 2 REMOVE: This file + its route entry are removed when real auth lands in Phase 2.
+src/App.tsx:71:// PHASE 2 REMOVE — Mock auth dev panel is dropped when real auth lands
+src/App.tsx:326:              {/* PHASE 2 REMOVE — Mock auth dev panel route */}
