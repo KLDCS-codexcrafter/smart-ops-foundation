@@ -67,9 +67,9 @@ export function triggerCommissionOnReceipt(
   );
 
   const totalOutstanding = eligible.reduce(
-    (s, e) => s + Math.max(0, e.net_invoice_amount - e.amount_received_to_date),
-    0,
-  );
+    (s, e) => s.plus(Decimal.max(0, new Decimal(e.net_invoice_amount ?? 0).minus(new Decimal(e.amount_received_to_date ?? 0)))),
+    new Decimal(0),
+  ).toNumber();
 
   if (totalOutstanding <= 0 || eligible.length === 0) {
     return {
