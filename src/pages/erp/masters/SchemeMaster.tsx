@@ -252,6 +252,11 @@ export function SchemeMasterPanel() {
           <Badge className="text-[10px] bg-violet-500/10 text-violet-600 border-violet-500/20">Sprint 12</Badge>
         </div>
         <div className="flex gap-2">
+          <MasterImportExportButtons
+            schema={SCHEME_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            records={list as unknown as Array<Record<string, unknown>>}
+            onImported={() => setList(readSchemes())}
+          />
           <Button onClick={handleNew} variant="outline" size="sm">
             <Plus className="h-3.5 w-3.5 mr-1" /> New Scheme
           </Button>
