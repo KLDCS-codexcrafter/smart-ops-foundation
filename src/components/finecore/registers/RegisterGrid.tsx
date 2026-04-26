@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText } from 'lucide-react';
+import { FileSpreadsheet, Search, FileText, FileDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ import type { Voucher } from '@/types/voucher';
 import { useVouchers } from '@/hooks/useVouchers';
 import { today } from '@/pages/erp/finecore/reports/reportUtils';
 import {
-  exportVoucherAsXLSX,
+  exportVoucherAsXLSX, exportVoucherAsPDF,
   type ExportRows, type ExportSheet,
 } from '@/lib/voucher-export-engine';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
