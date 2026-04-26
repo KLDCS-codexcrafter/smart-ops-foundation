@@ -14,7 +14,7 @@ import { BarChart3 } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
-import { computeITActReport, computeCompaniesActReport } from '@/lib/depreciationEngine';
+import { computeITActReport, computeCompaniesActReport } from '@/lib/depreciation-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {

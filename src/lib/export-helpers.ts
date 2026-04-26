@@ -15,7 +15,7 @@
  * @param     blob — file content as a Blob (text/csv, application/vnd.openxmlformats, etc.)
  * @param     filename — file name shown in browser's download prompt
  * @why-this-approach  [Convergent] One function used by all exporters. Matches the pattern
- *                     already used in gstPortalService.ts and PayrollProcessing.tsx.
+ *                     already used in gst-portal-service.ts and PayrollProcessing.tsx.
  * @iso       Reliability (HIGH — revokes ObjectURL after click to prevent leak)
  * @example
  *   downloadBlob(new Blob(['hello'], { type: 'text/plain' }), 'test.txt');

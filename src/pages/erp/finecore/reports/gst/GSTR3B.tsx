@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr } from '../reportUtils';
-import { buildGSTR3BPayload, submitGSTR3B } from '@/lib/gstPortalService';
+import { buildGSTR3BPayload, submitGSTR3B } from '@/lib/gst-portal-service';
 
 interface GSTR3BPanelProps { entityCode: string; }
 

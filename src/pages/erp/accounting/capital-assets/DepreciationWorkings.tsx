@@ -16,7 +16,7 @@ import { Calculator, CheckCircle2 } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord, DepreciationEntry } from '@/types/fixed-asset';
 import { faUnitsKey, faDeprKey } from '@/types/fixed-asset';
-import { computeDepreciationForUnits } from '@/lib/depreciationEngine';
+import { computeDepreciationForUnits } from '@/lib/depreciation-engine';
 import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';

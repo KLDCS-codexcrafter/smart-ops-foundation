@@ -28,7 +28,7 @@ import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import {
   computeClause9, computeClause26, computeClause34, computeClause44,
   runCrossValidations, type CrossValidationResult,
-} from '@/lib/auditEngine';
+} from '@/lib/audit-engine';
 import type { TDSDeductionEntry, TDSReceivableEntry, ChallanEntry } from '@/types/compliance';
 import { tdsDeductionsKey, tdsReceivableKey, challansKey } from '@/types/compliance';
 

@@ -1,5 +1,5 @@
 /**
- * auditEngine.ts — Tax Audit computation engine for Form 3CD
+ * audit-engine.ts — Tax Audit computation engine for Form 3CD
  * Pure functions — no side effects, no localStorage writes.
  * All panels import from this file.
  */
