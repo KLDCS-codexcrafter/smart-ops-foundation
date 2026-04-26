@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText } from 'lucide-react';
+import { FileSpreadsheet, Search, FileText, FileDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ import type { Voucher } from '@/types/voucher';
 import { useVouchers } from '@/hooks/useVouchers';
 import { today } from '@/pages/erp/finecore/reports/reportUtils';
 import {
-  exportVoucherAsXLSX,
+  exportVoucherAsXLSX, exportVoucherAsPDF,
   type ExportRows, type ExportSheet,
 } from '@/lib/voucher-export-engine';
 import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
@@ -149,38 +149,54 @@ export function RegisterGrid({
     if (page > totalPages) setPage(1);
   }, [totalPages, page]);
 
+  // [Convergent] D-128: reuse 2c's voucher-export-engine.
+  // A register export is a single-sheet "register summary" — one row per voucher.
+  // Exported cells come from columns[].exportKey; columns without exportKey are skipped.
+  // [T10-pre.2d-C] D-138: Export honors column-visibility toggles — hidden columns don't appear in Excel.
+  const buildRegisterExportRows = (): ExportRows => {
+    const exportable = visibleColumns.filter(c => c.exportKey !== undefined);
+    const headers = exportable.map(c => c.exportLabel ?? c.label);
+    const rows: (string | number | null)[][] = filtered.map(v =>
+      exportable.map(c => {
+        if (typeof c.exportKey === 'function') return c.exportKey(v);
+        if (c.exportKey) {
+          const val = v[c.exportKey];
+          if (val === null || val === undefined) return null;
+          if (typeof val === 'string' || typeof val === 'number') return val;
+          return String(val);
+        }
+        return null;
+      })
+    );
+    const sheet: ExportSheet = { name: meta.title.slice(0, 31), headers, rows };
+    return {
+      voucherType: meta.title,
+      voucherNo: `${filters.dateFrom}_to_${filters.dateTo}`,
+      sheets: [sheet],
+    };
+  };
+
   const handleExport = () => {
     try {
-      // [Convergent] D-128: reuse 2c's voucher-export-engine.
-      // A register export is a single-sheet "register summary" — one row per voucher.
-      // Exported cells come from columns[].exportKey; columns without exportKey are skipped.
-      // [T10-pre.2d-C] D-138: Export honors column-visibility toggles — hidden columns don't appear in Excel.
-      const exportable = visibleColumns.filter(c => c.exportKey !== undefined);
-      const headers = exportable.map(c => c.exportLabel ?? c.label);
-      const rows: (string | number | null)[][] = filtered.map(v =>
-        exportable.map(c => {
-          if (typeof c.exportKey === 'function') return c.exportKey(v);
-          if (c.exportKey) {
-            const val = v[c.exportKey];
-            if (val === null || val === undefined) return null;
-            if (typeof val === 'string' || typeof val === 'number') return val;
-            return String(val);
-          }
-          return null;
-        })
-      );
-      const sheet: ExportSheet = { name: meta.title.slice(0, 31), headers, rows };
-      const data: ExportRows = {
-        voucherType: meta.title,
-        voucherNo: `${filters.dateFrom}_to_${filters.dateTo}`,
-        sheets: [sheet],
-      };
-      exportVoucherAsXLSX(data);
+      exportVoucherAsXLSX(buildRegisterExportRows());
       toast.success(`Exported ${filtered.length} rows as Excel`);
     } catch (err) {
       // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
       toast.error('Export failed. Check console for details.');
       console.error('Register export error:', err);
+    }
+  };
+
+  // [T-T10-pre.2c-PDF] PDF export alongside Excel. Uses 'register' layout (landscape A4)
+  // since this is a multi-row register view, not a single voucher.
+  const handlePDFExport = () => {
+    try {
+      exportVoucherAsPDF(buildRegisterExportRows(), 'register');
+      toast.success(`Exported ${filtered.length} rows as PDF`);
+    } catch (err) {
+      // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
+      toast.error('PDF export failed. Check console for details.');
+      console.error('Register PDF export error:', err);
     }
   };
 
@@ -203,9 +219,14 @@ export function RegisterGrid({
           <h2 className="text-lg font-bold">{meta.title}</h2>
           <Badge variant="outline" className="text-[10px]">{filtered.length} rows</Badge>
         </div>
-        <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
-          <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
+            <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={handlePDFExport} disabled={filtered.length === 0}>
+            <FileDown className="h-3.5 w-3.5 mr-1" /> Export PDF
+          </Button>
+        </div>
       </div>
 
       {/* Filter bar */}
