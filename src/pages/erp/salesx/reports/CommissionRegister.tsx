@@ -411,7 +411,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     const gst = Number(agentInvGST);
     if (!agentInvNo.trim()) { toast.error('Agent invoice number required'); return; }
     if (!gross || gross <= 0) { toast.error('Gross amount must be positive'); return; }
-    const variance = +(gross - gst - entry.commission_earned_to_date).toFixed(2);
+    const variance = round2(dSub(dSub(gross, gst), entry.commission_earned_to_date));
     const list = loadRegister(entityCode);
     const idx = list.findIndex(e => e.id === entry.id);
     if (idx < 0) return;
