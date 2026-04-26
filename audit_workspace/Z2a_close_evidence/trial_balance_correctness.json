@@ -1,0 +1,13 @@
+{
+  "id": "z2a-trial-balance",
+  "description": "Trial balance Dr - Cr === 0 (Decimal.equals)",
+  "pass": true,
+  "expected": "0",
+  "actual": {
+    "totalDr": "1234.86",
+    "totalCr": "1234.86",
+    "diff": "0",
+    "journalLineCount": 6
+  },
+  "timestamp": "2026-04-26T11:48:36.288Z"
+}

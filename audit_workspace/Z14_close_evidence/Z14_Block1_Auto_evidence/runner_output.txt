@@ -1,0 +1,17 @@
+Z14 smoke: 16/16 pass · 0 fail
+  [PASS] z2a-smoke · All 14 voucher types validate correctly
+  [PASS] z2a-trial-balance · Trial balance Dr - Cr === 0 (Decimal.equals)
+  [PASS] z2b-tds · TDS on ₹100k @ 10% === ₹10,000.00 exactly
+  [PASS] z2c-a-commission · Commission ₹5k · TDS ₹250 · Net ₹4,750 (Decimal.equals)
+  [PASS] z3-mock-auth · Mock auth switch updates active user
+  [PASS] z3-actor-thread · Voucher created_by === accountant1
+  [PASS] z3-period-lock-set · Period lock 2026-03-31 persisted
+  [PASS] z3-period-lock-reject · Sales Invoice dated 2026-03-15 rejected by period lock
+  [PASS] z3-period-lock-accept · Sales Invoice dated 2026-04-15 accepted (post-lock)
+  [PASS] z9-customer-roundtrip · Customer import: 1 new + 1 update · 0 errors
+  [PASS] z9-vendor-excel · Vendor schema column count + record-key parity
+  [PASS] z9-logistic-template · Logistic template headers match schema columns
+  [PASS] z9-scheme-error · Scheme CSV with empty Code → error "Code is required" on line 2
+  [PASS] z10-cash-roundtrip · Cash import: importedCount=1 · cashDefs.length += 1
+  [PASS] z10-bank-template · Bank ledger template includes Account Type · IFSC · Account No
+  [PASS] z10-asset-error · Asset CSV with empty Code → error "Code is required"

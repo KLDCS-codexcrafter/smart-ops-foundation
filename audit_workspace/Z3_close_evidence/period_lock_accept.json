@@ -1,0 +1,12 @@
+{
+  "id": "z3-period-lock-accept",
+  "description": "Sales Invoice dated 2026-04-15 accepted (post-lock)",
+  "pass": true,
+  "expected": "valid=true · errors=[]",
+  "actual": {
+    "valid": true,
+    "errors": [],
+    "isPeriodLocked": false
+  },
+  "timestamp": "2026-04-26T11:48:36.295Z"
+}

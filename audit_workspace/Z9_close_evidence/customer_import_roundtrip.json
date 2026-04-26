@@ -1,0 +1,23 @@
+{
+  "id": "z9-customer-roundtrip",
+  "description": "Customer import: 1 new + 1 update · 0 errors",
+  "pass": true,
+  "expected": "importedCount=1 · updatedCount=1",
+  "actual": {
+    "importedCount": 1,
+    "updatedCount": 1,
+    "finalStored": [
+      {
+        "partyCode": "C001",
+        "partyName": "Acme",
+        "email": "new@acme.in"
+      },
+      {
+        "partyCode": "C002",
+        "partyName": "Bharat Co",
+        "email": "b@bharat.in"
+      }
+    ]
+  },
+  "timestamp": "2026-04-26T11:48:36.297Z"
+}

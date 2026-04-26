@@ -1,0 +1,19 @@
+{
+  "id": "z3-mock-auth",
+  "description": "Mock auth switch updates active user",
+  "pass": true,
+  "expected": "before.id=admin1 · after.id=accountant1",
+  "actual": {
+    "before": {
+      "id": "admin1",
+      "displayName": "Admin One",
+      "role": "admin"
+    },
+    "after": {
+      "id": "accountant1",
+      "displayName": "Accountant One",
+      "role": "accountant"
+    }
+  },
+  "timestamp": "2026-04-26T11:48:36.291Z"
+}

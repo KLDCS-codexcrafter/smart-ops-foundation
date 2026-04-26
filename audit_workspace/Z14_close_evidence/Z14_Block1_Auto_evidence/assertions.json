@@ -1,0 +1,342 @@
+{
+  "sprint": "T-H1.5-Z-Z14-Block1-Auto",
+  "timestamp": "2026-04-26T11:48:36.303Z",
+  "totalAssertions": 16,
+  "pass": 16,
+  "fail": 0,
+  "results": [
+    {
+      "id": "z2a-smoke",
+      "description": "All 14 voucher types validate correctly",
+      "pass": true,
+      "expected": "14/14 valid",
+      "actual": {
+        "passCount": 14,
+        "perType": [
+          {
+            "type": "Contra",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Payment",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Receipt",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Journal",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Sales",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Purchase",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Debit Note",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Credit Note",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Delivery Note",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Receipt Note",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Sales Order",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Purchase Order",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Stock Journal",
+            "valid": true,
+            "errors": []
+          },
+          {
+            "type": "Payroll",
+            "valid": true,
+            "errors": []
+          }
+        ]
+      },
+      "timestamp": "2026-04-26T11:48:36.284Z"
+    },
+    {
+      "id": "z2a-trial-balance",
+      "description": "Trial balance Dr - Cr === 0 (Decimal.equals)",
+      "pass": true,
+      "expected": "0",
+      "actual": {
+        "totalDr": "1234.86",
+        "totalCr": "1234.86",
+        "diff": "0",
+        "journalLineCount": 6
+      },
+      "timestamp": "2026-04-26T11:48:36.288Z"
+    },
+    {
+      "id": "z2b-tds",
+      "description": "TDS on ₹100k @ 10% === ₹10,000.00 exactly",
+      "pass": true,
+      "expected": "10000",
+      "actual": {
+        "computedTDS": 10000,
+        "rate": 10,
+        "applicable": true,
+        "decimalString": "10000"
+      },
+      "timestamp": "2026-04-26T11:48:36.290Z"
+    },
+    {
+      "id": "z2c-a-commission",
+      "description": "Commission ₹5k · TDS ₹250 · Net ₹4,750 (Decimal.equals)",
+      "pass": true,
+      "expected": "commission=5000 · tds=250 · net=4750",
+      "actual": {
+        "commission": "5000",
+        "commissionPass": true,
+        "tds": "250",
+        "tdsPass": true,
+        "net": "4750",
+        "netPass": true,
+        "round2Helpers": {
+          "commission": 5000,
+          "tds": 250,
+          "net": 4750
+        }
+      },
+      "timestamp": "2026-04-26T11:48:36.291Z"
+    },
+    {
+      "id": "z3-mock-auth",
+      "description": "Mock auth switch updates active user",
+      "pass": true,
+      "expected": "before.id=admin1 · after.id=accountant1",
+      "actual": {
+        "before": {
+          "id": "admin1",
+          "displayName": "Admin One",
+          "role": "admin"
+        },
+        "after": {
+          "id": "accountant1",
+          "displayName": "Accountant One",
+          "role": "accountant"
+        }
+      },
+      "timestamp": "2026-04-26T11:48:36.291Z"
+    },
+    {
+      "id": "z3-actor-thread",
+      "description": "Voucher created_by === accountant1",
+      "pass": true,
+      "expected": "accountant1",
+      "actual": {
+        "stored_created_by": "accountant1",
+        "voucher_no": "SMK/ACT1"
+      },
+      "timestamp": "2026-04-26T11:48:36.292Z"
+    },
+    {
+      "id": "z3-period-lock-set",
+      "description": "Period lock 2026-03-31 persisted",
+      "pass": true,
+      "expected": "lockedThrough=2026-03-31 · lastModifiedBy=admin1",
+      "actual": {
+        "config": {
+          "lockedThrough": "2026-03-31",
+          "lastModifiedAt": "2026-04-26T11:48:36.292Z",
+          "lastModifiedBy": "admin1"
+        }
+      },
+      "timestamp": "2026-04-26T11:48:36.293Z"
+    },
+    {
+      "id": "z3-period-lock-reject",
+      "description": "Sales Invoice dated 2026-03-15 rejected by period lock",
+      "pass": true,
+      "expected": "valid=false · errors[] contains period-lock message",
+      "actual": {
+        "valid": false,
+        "errors": [
+          "Cannot post voucher dated 2026-03-15: accounting period is locked through 2026-03-31."
+        ],
+        "isPeriodLocked": true
+      },
+      "timestamp": "2026-04-26T11:48:36.294Z"
+    },
+    {
+      "id": "z3-period-lock-accept",
+      "description": "Sales Invoice dated 2026-04-15 accepted (post-lock)",
+      "pass": true,
+      "expected": "valid=true · errors=[]",
+      "actual": {
+        "valid": true,
+        "errors": [],
+        "isPeriodLocked": false
+      },
+      "timestamp": "2026-04-26T11:48:36.295Z"
+    },
+    {
+      "id": "z9-customer-roundtrip",
+      "description": "Customer import: 1 new + 1 update · 0 errors",
+      "pass": true,
+      "expected": "importedCount=1 · updatedCount=1",
+      "actual": {
+        "importedCount": 1,
+        "updatedCount": 1,
+        "finalStored": [
+          {
+            "partyCode": "C001",
+            "partyName": "Acme",
+            "email": "new@acme.in"
+          },
+          {
+            "partyCode": "C002",
+            "partyName": "Bharat Co",
+            "email": "b@bharat.in"
+          }
+        ]
+      },
+      "timestamp": "2026-04-26T11:48:36.297Z"
+    },
+    {
+      "id": "z9-vendor-excel",
+      "description": "Vendor schema column count + record-key parity",
+      "pass": true,
+      "expected": "columns=4 · all field keys present in each record",
+      "actual": {
+        "headers": [
+          "Vendor Code",
+          "Vendor Name",
+          "GSTIN",
+          "PAN"
+        ],
+        "fieldKeys": [
+          "partyCode",
+          "partyName",
+          "gstin",
+          "pan"
+        ],
+        "recordCount": 2,
+        "recordKeyParity": true
+      },
+      "timestamp": "2026-04-26T11:48:36.298Z"
+    },
+    {
+      "id": "z9-logistic-template",
+      "description": "Logistic template headers match schema columns",
+      "pass": true,
+      "expected": "headers contain Logistic Code + Name · 2 required",
+      "actual": {
+        "headers": [
+          "Logistic Code",
+          "Logistic Name",
+          "Transporter ID"
+        ],
+        "requiredHeaders": [
+          "Logistic Code",
+          "Logistic Name"
+        ]
+      },
+      "timestamp": "2026-04-26T11:48:36.298Z"
+    },
+    {
+      "id": "z9-scheme-error",
+      "description": "Scheme CSV with empty Code → error \"Code is required\" on line 2",
+      "pass": true,
+      "expected": "errors[] contains Code is required at line 2",
+      "actual": {
+        "totalRows": 2,
+        "errors": [
+          {
+            "line": 2,
+            "message": "Code is required"
+          }
+        ],
+        "codeErrorFound": true,
+        "errorLine": 2
+      },
+      "timestamp": "2026-04-26T11:48:36.301Z"
+    },
+    {
+      "id": "z10-cash-roundtrip",
+      "description": "Cash import: importedCount=1 · cashDefs.length += 1",
+      "pass": true,
+      "expected": "importedCount=1 · stored.length increased by 1",
+      "actual": {
+        "before": 1,
+        "after": 2,
+        "importedCount": 1,
+        "updatedCount": 0
+      },
+      "timestamp": "2026-04-26T11:48:36.301Z"
+    },
+    {
+      "id": "z10-bank-template",
+      "description": "Bank ledger template includes Account Type · IFSC · Account No",
+      "pass": true,
+      "expected": "headers contain Account Type + IFSC + Account No",
+      "actual": {
+        "headers": [
+          "Code",
+          "Name",
+          "Account Type",
+          "Account No",
+          "IFSC"
+        ],
+        "hasBankFields": true
+      },
+      "timestamp": "2026-04-26T11:48:36.302Z"
+    },
+    {
+      "id": "z10-asset-error",
+      "description": "Asset CSV with empty Code → error \"Code is required\"",
+      "pass": true,
+      "expected": "errors[] contains Code is required",
+      "actual": {
+        "totalRows": 2,
+        "errors": [
+          {
+            "line": 2,
+            "message": "Code is required"
+          }
+        ]
+      },
+      "timestamp": "2026-04-26T11:48:36.303Z"
+    }
+  ],
+  "bonusEvidence": {
+    "decimalHelpersSanity": {
+      "dAdd_0_1_plus_0_2": 0.3,
+      "dSub_1_minus_0_9": 0.1,
+      "round2_1_005": 1.01
+    }
+  }
+}

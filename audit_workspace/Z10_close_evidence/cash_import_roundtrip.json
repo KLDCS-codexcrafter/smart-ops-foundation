@@ -1,0 +1,13 @@
+{
+  "id": "z10-cash-roundtrip",
+  "description": "Cash import: importedCount=1 · cashDefs.length += 1",
+  "pass": true,
+  "expected": "importedCount=1 · stored.length increased by 1",
+  "actual": {
+    "before": 1,
+    "after": 2,
+    "importedCount": 1,
+    "updatedCount": 0
+  },
+  "timestamp": "2026-04-26T11:48:36.301Z"
+}
