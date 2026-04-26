@@ -1688,7 +1688,7 @@ export function CustomerMasterPanel() {
         </div>
         <div className="flex items-center gap-2">
           <MasterImportExportButtons
-            schema={CUSTOMER_IMPORT_SCHEMA}
+            schema={CUSTOMER_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
             records={customers as unknown as Array<Record<string, unknown>>}
             onImported={() => setCustomers(loadCustomers())}
           />
