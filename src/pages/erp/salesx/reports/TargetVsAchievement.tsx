@@ -86,7 +86,9 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
       } else if (t.dimension === 'order_volume') {
         actual = vouchers.filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted').length;
       }
-      const pct = t.target_value > 0 ? +(actual / t.target_value * 100).toFixed(2) : 0;
+      const pct = t.target_value > 0
+        ? round2(new Decimal(actual).dividedBy(t.target_value).times(100).toNumber())
+        : 0;
       return { target: t, actual, pct, status: computeStatus(pct) };
     });
   }, [entityCode]);
