@@ -12,10 +12,10 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText, FileType2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  exportVoucherAsXLSX, exportVoucherAsPDF, type ExportRows,
+  exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord, type ExportRows,
 } from '@/lib/voucher-export-engine';
 
 export interface PrintToolbarExportProps {
