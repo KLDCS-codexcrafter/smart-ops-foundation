@@ -31,6 +31,7 @@ import {
   type ROIBenchmark, type SavingsOpportunity,
   DEFAULT_ROI_BENCHMARK, roiBenchmarkKey,
 } from '@/types/transporter-scorecard';
+import Decimal from 'decimal.js';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; }
