@@ -11,6 +11,7 @@ import { faUnitsKey, IT_ACT_RATES } from '@/types/fixed-asset';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
 import { eventBus } from './event-bus';
 import { loadTenantConfig } from './tenant-config-engine';
+import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -59,6 +60,14 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
   if (!voucher.date) errors.push('Date is required');
   if (!voucher.base_voucher_type) errors.push('Voucher type is required');
   if (!voucher.entity_id) errors.push('Entity is required');
+
+  // PERIOD LOCK CHECK (T-H1.5-Z-Z3 · additive only · graceful degradation)
+  if (voucher.date && voucher.entity_id) {
+    if (isPeriodLocked(voucher.date, voucher.entity_id)) {
+      const msg = periodLockMessage(voucher.date, voucher.entity_id);
+      if (msg) errors.push(msg);
+    }
+  }
 
   // Dr = Cr check for journal lines
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
