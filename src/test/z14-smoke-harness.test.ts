@@ -59,7 +59,7 @@ import {
   getCurrentUserId,
 } from '@/lib/auth-helpers';
 import {
-  importMasterFile,
+  validateRows,
   upsertRecords,
   type ImportSchema,
 } from '@/lib/master-import-engine';
