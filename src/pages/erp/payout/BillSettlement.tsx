@@ -77,7 +77,6 @@ export default function BillSettlement() {
   const groupedAdvances = useMemo(() => {
     if (!entityCode) return new Map<string, AdvanceEntry[]>();
     return getUnmatchedAdvancesAllVendors(entityCode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, refreshKey]);
 
   const vendorIds = useMemo(
@@ -98,19 +97,16 @@ export default function BillSettlement() {
   const invoices = useMemo(() => {
     if (!entityCode || !selectedVendorId) return [] as Voucher[];
     return getOpenInvoicesForVendor(entityCode, selectedVendorId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, selectedVendorId, refreshKey]);
 
   const suggestions = useMemo(() => {
     if (!entityCode) return [];
     return suggestAdvanceMatches(entityCode, selectedVendorId || undefined).slice(0, 5);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, selectedVendorId, refreshKey]);
 
   const history = useMemo<AdvanceAdjustment[]>(() => {
     if (!entityCode) return [];
     return getSettlementHistory(entityCode).slice(-10).reverse();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, refreshKey]);
 
   const advancesForVendor = selectedVendorId
