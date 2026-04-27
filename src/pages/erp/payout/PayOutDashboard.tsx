@@ -51,7 +51,7 @@ export default function PayOutDashboard() {
   const cards = [
     { label: 'Pending Payments', value: String(stats.pendingCount), icon: Clock, tone: 'text-amber-600', sub: 'Drafts awaiting post' },
     { label: "Today's Outflow",  value: inr(stats.todaysOutflow), icon: ArrowRightCircle, tone: 'text-violet-600', sub: 'Posted today' },
-    { label: 'MSME Alerts',      value: String(stats.msmePlaceholder), icon: AlertTriangle, tone: 'text-muted-foreground', sub: 'B.5 — 43B(h) tracker' },
+    { label: 'MSME Alerts',      value: String(stats.msmePlaceholder), icon: AlertTriangle, tone: stats.msmePlaceholder > 0 ? 'text-destructive' : 'text-muted-foreground', sub: '43B(h) breached invoices' },
     { label: 'Open Advances',    value: String(stats.openAdvances), icon: Wallet, tone: 'text-blue-600', sub: 'Vendor advances pending settlement' },
   ];
 
