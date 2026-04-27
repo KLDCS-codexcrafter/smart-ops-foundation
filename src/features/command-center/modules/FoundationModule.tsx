@@ -4,10 +4,12 @@
  * [JWT] Replace MOCK object with real API queries.
  */
 import { useNavigate } from 'react-router-dom';
-import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, CheckCircle, AlertCircle, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BranchOffice } from '@/types/branch-office';
+// [T-T8.0-OrgTagFoundation] Org-Tag Coverage badge · derived metadata table (D-128 preserved).
+import { getOrgTagCoverage } from '@/lib/voucher-org-tag-engine';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
@@ -90,6 +92,9 @@ export function FoundationModule() {
     return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
   } catch { return 0; } })();
 
+  // [T-T8.0-OrgTagFoundation] Org-Tag Coverage = % of vouchers with derived 5-tier metadata.
+  const orgTagCoverage = getOrgTagCoverage();
+
   return (
     <div className="space-y-6">
       <div>
@@ -171,6 +176,17 @@ export function FoundationModule() {
           status="empty"
           href="/erp/foundation/geography"
           description="Countries, states, cities, ports, and sales regions."
+        />
+        {/* T-T8.0-OrgTagFoundation — Org-Tag Coverage badge (NEW · additive · derived metadata table) */}
+        <StatCard
+          icon={<Database className="h-5 w-5" />}
+          title="Org-Tag Coverage"
+          value={orgTagCoverage.total === 0
+            ? 'No vouchers yet'
+            : `${orgTagCoverage.coveragePct}% (${orgTagCoverage.tagged}/${orgTagCoverage.total})`}
+          status={orgTagCoverage.coveragePct >= 95 ? 'ok' : orgTagCoverage.coveragePct >= 50 ? 'warn' : 'empty'}
+          href="/erp/smoke-test"
+          description="Vouchers tagged with org context (Entity + Branch + BU + Division + Department) — enables 5-tier reports."
         />
       </div>
     </div>

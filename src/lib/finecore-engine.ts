@@ -12,6 +12,8 @@ import { mapUOMtoUQC } from '@/lib/uqcMap';
 import { eventBus } from './event-bus';
 import { loadTenantConfig } from './tenant-config-engine';
 import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
+// [T-T8.0-OrgTagFoundation] Auto-tag derived metadata · enables 5-tier slicing without voucher.ts schema change.
+import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -189,6 +191,9 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
   vouchers.push({ ...voucher, status: 'posted', posted_at: now, updated_at: now });
   ss(vouchersKey(entityCode), vouchers);
+
+  // [T-T8.0-OrgTagFoundation] Auto-tag · ensures both useVouchers and direct postVoucher paths populate metadata.
+  tagVoucher(voucher.id, getOperatorContext(voucher.entity_id, voucher.department_id));
 
   // 2. Write journal lines
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
