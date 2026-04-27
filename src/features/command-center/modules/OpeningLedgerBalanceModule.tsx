@@ -268,6 +268,57 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
     ob.upsertBill(next);
   };
 
+  // [T-T8.1-LedgerSeed-Triggers] Re-run Defaults — re-triggers runEntitySetup for the current entity.
+  // Existing duplicate-prevention in createDefaultLedgers + loadIndustryPack guarantees idempotent behavior.
+  // Per Q-DD (a) · gives the operator agency to restore deleted defaults or pick up newly-shipped packs (e.g., D&C).
+  const [coverageTick, setCoverageTick] = useState(0);
+  const coverage = useMemo(() => {
+    void coverageTick; // recompute when re-run completes
+    return getDefaultLedgerCoverage();
+  }, [coverageTick]);
+
+  const handleReRunDefaults = useCallback(() => {
+    try {
+      // [JWT] GET /api/entities/setup/:entityId
+      const entitiesRaw = localStorage.getItem('erp_group_entities');
+      const entities: Array<{
+        id: string; name: string; shortCode: string;
+        type?: 'parent' | 'subsidiary' | 'branch';
+        businessEntity?: string; industry?: string; businessActivity?: string;
+      }> = entitiesRaw ? JSON.parse(entitiesRaw) : [];
+      const ent = entities.find(e => e.shortCode === entityCode);
+      if (!ent) {
+        toast.error('Entity not found in registry');
+        return;
+      }
+      const before = getDefaultLedgerCoverage();
+      const opts: SetupOptions = {
+        entityId: ent.id,
+        entityName: ent.name,
+        shortCode: ent.shortCode,
+        entityType: ent.type ?? 'parent',
+        businessEntity: ent.businessEntity ?? 'Private Limited',
+        industry: ent.industry ?? 'common',
+        businessActivity: ent.businessActivity ?? 'Trading',
+        loadIndustryPack: true,
+        siblingEntities: entities.filter(e => e.id !== ent.id) as never,
+        autoSeedDemo: false, // never re-seed demo data on manual re-run
+      };
+      runEntitySetup(opts);
+      const after = getDefaultLedgerCoverage();
+      const created = after.total - before.total;
+      setCoverageTick(t => t + 1);
+      if (created > 0) {
+        toast.success(`Re-run complete: ${created} new default ledger(s) added · ${before.total} existing preserved`);
+      } else {
+        toast.info(`Re-run complete: All defaults already present (0 new · ${before.total} existing preserved)`);
+      }
+    } catch (err) {
+      console.error('[T-T8.1] Re-run defaults failed:', err);
+      toast.error('Re-run defaults failed · check console');
+    }
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="space-y-4 animate-fade-in">
       {/* STICKY BALANCE BAR */}
