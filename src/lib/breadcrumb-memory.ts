@@ -56,14 +56,22 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'maintainpro':     '/erp/maintainpro',
   'requestx':        '/erp/requestx',
   'frontdesk':       '/erp/frontdesk',
-  // Legacy alias for backward compat (supports D-194 Phase 1.1.0 rename)
-  'backoffice':      '/erp/frontdesk',
   'servicedesk':     '/erp/servicedesk',
   'dispatch-hub':    '/erp/frontdesk/dispatch',
 };
 
+/**
+ * Legacy card-id aliases for backward compat (T-Phase-1.1.0 · D-194 rename).
+ * Old localStorage breadcrumbs (e.g. cardId='backoffice') still resolve via
+ * buildCardRoute() — see lookup below. Untyped on purpose: these IDs no
+ * longer exist in CardId by design.
+ */
+export const LEGACY_CARD_ROUTE_ALIASES: Record<string, string> = {
+  'backoffice': '/erp/frontdesk',
+};
+
 export function buildCardRoute(cardId: CardId): string {
-  const base = CARD_BASE_ROUTES[cardId];
+  const base = CARD_BASE_ROUTES[cardId] ?? LEGACY_CARD_ROUTE_ALIASES[cardId as string];
   const mod = recallModule(cardId);
   return mod ? `${base}#${mod}` : base;
 }
