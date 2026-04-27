@@ -12,6 +12,8 @@ import { mapUOMtoUQC } from '@/lib/uqcMap';
 import { eventBus } from './event-bus';
 import { loadTenantConfig } from './tenant-config-engine';
 import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
+// [T-T8.0-OrgTagFoundation] Auto-tag derived metadata · enables 5-tier slicing without voucher.ts schema change.
+import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
