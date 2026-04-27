@@ -2,17 +2,20 @@
  * Form26Q.tsx — Form 26Q (Non-salary domestic TDS)
  * [JWT] All data via localStorage
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, AlertTriangle } from 'lucide-react';
+import { Download, AlertTriangle, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { inr, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
+// [T-T8.5-MSME-Compliance] Generate-from-PayOut pulls statutory_tds requisitions
+import type { PaymentRequisition } from '@/types/payment-requisition';
+import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
@@ -61,11 +64,34 @@ export function Form26QPanel({ entityCode }: Props) {
     toast.success('Exported');
   };
 
+  // [T-T8.5-MSME-Compliance · per Q-EE a] Generate from PayOut · pulls statutory_tds
+  // PaymentRequisitions paid in current quarter · feeds operator awareness · no mutation.
+  const handleGenerateFromPayOut = useCallback(() => {
+    try {
+      // [JWT] GET /api/payout/requisitions/:entity?type=statutory_tds&status=paid
+      const raw = localStorage.getItem(paymentRequisitionsKey(entityCode));
+      const reqs: PaymentRequisition[] = raw ? JSON.parse(raw) : [];
+      const tdsReqs = reqs.filter(r => r.request_type === 'statutory_tds' && r.status === 'paid');
+      if (tdsReqs.length === 0) {
+        toast.info('No paid TDS requisitions found in PayOut for this entity.');
+        return;
+      }
+      const total = tdsReqs.reduce((s, r) => s + r.amount, 0);
+      toast.success(`Found ${tdsReqs.length} paid TDS requisition(s) · ₹${total.toLocaleString('en-IN')} · ready for 26Q reconciliation.`);
+    } catch {
+      toast.error('Failed to read PayOut requisitions');
+    }
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div><h2 className="text-xl font-bold">Form 26Q (Non-salary)</h2><p className="text-xs text-muted-foreground">Quarterly TDS Return — Non-salary domestic deductions</p></div>
-        <Button data-primary variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+        <div className="flex gap-2">
+          <Button data-primary variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+          {/* T-T8.5-MSME-Compliance · per Q-EE (a) — additive · no parallel report */}
+          <Button variant="outline" size="sm" onClick={handleGenerateFromPayOut}><Layers className="h-4 w-4 mr-1" />Generate from PayOut</Button>
+        </div>
       </div>
 
       {tanMissing && (
