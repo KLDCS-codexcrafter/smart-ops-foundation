@@ -375,8 +375,10 @@ export default function VendorPaymentEntry() {
               ))}
             </div>
           )}
-          {/* [B.3] advance balance display will populate here once advance auto-tag engine ships */}
-          <p className="text-[10px] text-muted-foreground italic">Advance available: — (Coming in B.3)</p>
+          {/* [T-T8.3-AdvanceIntel] post-hoc advance settlement now lives in BillSettlement screen */}
+          <p className="text-[10px] text-muted-foreground italic">
+            Open advances? See banner above (auto-shown when vendor has unmatched balance) or use Bill Settlement.
+          </p>
         </CardContent>
       </Card>
 
