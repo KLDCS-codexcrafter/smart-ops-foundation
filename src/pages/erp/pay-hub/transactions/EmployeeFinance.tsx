@@ -128,6 +128,8 @@ function computeEMI(principal: number, tenureMonths: number, annualRatePct: numb
 interface EmployeeFinancePanelProps { defaultTab?: FinanceTab; }
 
 export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePanelProps) {
+  // [T-T8.4-Requisition-Universal] navigate used by additive Request Payment buttons
+  const navigate = useNavigate();
 
   // ── Cross-module reads ───────────────────────────────────────
   const activeEmployees = useMemo<Employee[]>(() => {
