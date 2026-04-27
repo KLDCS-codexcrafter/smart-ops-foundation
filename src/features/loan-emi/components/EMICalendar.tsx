@@ -7,8 +7,10 @@
  * @finding  CC-064
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { CalendarDays } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -135,6 +137,11 @@ export function EMICalendar() {
                         <Badge variant="outline" className={`text-[10px] ${due.tone}`}>
                           {due.text}
                         </Badge>
+                        {/* [T-T8.4-Requisition-Universal] Request EMI Payment · additive */}
+                        <Button size="sm" variant="outline" className="h-6 text-[10px]"
+                          onClick={() => navigate(`/erp/payout/requisition?type=loan_emi&linkedId=${r.ledgerId}-${r.emiNumber}`)}>
+                          Request Payment
+                        </Button>
                       </div>
                     </div>
                   );

@@ -36,8 +36,10 @@ const PAYOUT_MENU: PayOutMenuItem[] = [
   { id: 'po-payment-register',  label: 'Payment Register',    icon: ClipboardList,   route: '/erp/payout/payment-register' },
   // [T-T8.3-AdvanceIntel] Bill Settlement · post-hoc advance allocation · ACTIVATED
   { id: 'po-bill-settlement',   label: 'Bill Settlement',     icon: Receipt,         route: '/erp/payout/bill-settlement' },
-  // [B.4 stub] Universal Payment Requisition
-  { id: 'po-requisition',       label: 'Payment Requisition', icon: FileText,        comingSoon: 'B.4' },
+  // [T-T8.4-Requisition-Universal] Universal Payment Requisition · ACTIVATED
+  { id: 'po-requisition',       label: 'Payment Requisition', icon: FileText,        route: '/erp/payout/requisition' },
+  { id: 'po-requisition-inbox', label: 'Requisition Inbox',   icon: FileText,        route: '/erp/payout/requisition-inbox' },
+  { id: 'po-requisition-hist',  label: 'Requisition History', icon: FileText,        route: '/erp/payout/requisition-history' },
   // [B.5 stub] MSME 43B(h) compliance
   { id: 'po-msme',              label: 'MSME Compliance',     icon: AlertTriangle,   comingSoon: 'B.5' },
   // [B.6 stub] 5-tier Vendor Analytics

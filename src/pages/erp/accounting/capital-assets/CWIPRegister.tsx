@@ -4,6 +4,7 @@
  * [JWT] Replace with GET /api/fixed-assets/units?status=cwip
  */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -35,6 +36,7 @@ const ss = <T,>(k: string, d: T[]) => {
 interface Props { entityCode: string; }
 
 export function CWIPRegisterPanel({ entityCode }: Props) {
+  const navigate = useNavigate();
   const [units, setUnits] = useState<AssetUnitRecord[]>(() => ls<AssetUnitRecord>(faUnitsKey(entityCode)).filter(u => u.entity_id === entityCode && u.status === 'cwip'));
   const [ptuOpen, setPtuOpen] = useState(false);
   const [ptuUnit, setPtuUnit] = useState<AssetUnitRecord | null>(null);
@@ -91,9 +93,16 @@ export function CWIPRegisterPanel({ entityCode }: Props) {
                   </TableCell>
                   <TableCell className="text-xs">{u.location}</TableCell>
                   <TableCell>
-                    <Button data-primary size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => { setPtuUnit(u); setPtuDate(''); setPtuOpen(true); }}>
-                      <CheckCircle2 className="h-3 w-3 mr-1" /> Capitalise
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button data-primary size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => { setPtuUnit(u); setPtuDate(''); setPtuOpen(true); }}>
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Capitalise
+                      </Button>
+                      {/* [T-T8.4-Requisition-Universal] Request Capex Payment · additive */}
+                      <Button size="sm" variant="outline" className="h-6 text-[10px]"
+                        onClick={() => navigate(`/erp/payout/requisition?type=capital_expenditure&linkedId=${u.id}`)}>
+                        Request Payment
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );

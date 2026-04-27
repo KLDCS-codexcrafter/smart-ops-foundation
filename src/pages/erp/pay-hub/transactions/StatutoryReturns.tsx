@@ -907,6 +907,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                     <TableHead className="text-xs">Challan No</TableHead>
                     <TableHead className="text-xs">Status</TableHead>
                     <TableHead className="text-xs">Payment Date</TableHead>
+                    <TableHead className="text-xs">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -924,6 +925,14 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
                         </Badge>
                       </TableCell>
                       <TableCell className="text-xs">{c.paymentDate || '—'}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        {/* [T-T8.4-Requisition-Universal] Add to Payment Queue · additive */}
+                        <Button size="sm" variant="outline" className="h-6 text-[10px]"
+                          onClick={() => {
+                            const t = c.challanType === 'EPF' ? 'pf' : c.challanType === 'ESI' ? 'esi' : c.challanType === 'PT' ? 'pt' : 'tds';
+                            window.location.href = `/erp/payout/requisition?type=statutory_${t}&linkedId=${c.id}`;
+                          }}>Add to Payment Queue</Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

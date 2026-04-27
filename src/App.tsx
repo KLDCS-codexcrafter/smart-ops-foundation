@@ -109,6 +109,10 @@ const VendorPaymentEntry = lazy(() => import('./pages/erp/payout/VendorPaymentEn
 const PaymentRegisterRoute = lazy(() => import('./pages/erp/payout/PaymentRegisterRoute'));
 // [T-T8.3-AdvanceIntel] Bill Settlement screen · post-hoc advance allocation
 const BillSettlement = lazy(() => import('./pages/erp/payout/BillSettlement'));
+// [T-T8.4-Requisition-Universal] Universal Payment Requisition · 21 types · 2-level approval
+const PaymentRequisitionEntry = lazy(() => import('./pages/erp/payout/PaymentRequisitionEntry'));
+const RequisitionInbox = lazy(() => import('./pages/erp/payout/RequisitionInbox'));
+const RequisitionHistory = lazy(() => import('./pages/erp/payout/RequisitionHistory'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -357,6 +361,10 @@ const App = () => (
                 <Route path="payment-register" element={<PaymentRegisterRoute />} />
                 {/* T-T8.3-AdvanceIntel · Bill Settlement screen */}
                 <Route path="bill-settlement" element={<BillSettlement />} />
+                {/* T-T8.4-Requisition-Universal · 3 routes */}
+                <Route path="requisition" element={<PaymentRequisitionEntry />} />
+                <Route path="requisition-inbox" element={<RequisitionInbox />} />
+                <Route path="requisition-history" element={<RequisitionHistory />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
