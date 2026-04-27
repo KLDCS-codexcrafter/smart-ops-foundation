@@ -1462,7 +1462,7 @@ const CHECKS: CheckSpec[] = [
       const receipt: Voucher = {
         ...buildTallyFixtureVoucher(), id: 'rcpt-1', voucher_no: 'RCPT/0001',
         base_voucher_type: 'Receipt', voucher_type_name: 'Receipt',
-        bill_references: [{ voucher_id: sales.id, voucher_no: sales.voucher_no, voucher_date: sales.date, amount: 11800, type: 'against' }],
+        bill_references: [{ voucher_id: sales.id, voucher_no: sales.voucher_no, voucher_date: sales.date, amount: 11800, type: 'against_ref' }],
       };
       const m = computeReconMatch(sales, [receipt], 'sales_register', 'receipt_register');
       const ok = m.status === 'matched' && m.targets.length === 1;
