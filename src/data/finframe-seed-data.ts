@@ -40,7 +40,8 @@ export interface L4IndustryGroup {
   name: string;
   l3Code: string;
   nature: 'Dr' | 'Cr';
-  industry: 'manufacturing' | 'trading' | 'services' | 'common';
+  // [T-T8.1-LedgerSeed-Triggers] Added 'd_and_c' to support Construction / D&C / Engineering & Construction industry pack.
+  industry: 'manufacturing' | 'trading' | 'services' | 'common' | 'd_and_c';
 }
 
 // ─── L1 Primary Groups — 5 records ──────────────────────────────
@@ -290,11 +291,25 @@ const SERVICES_PACK: L4IndustryGroup[] = [
   { name: 'Marketing & Branding',          l3Code: 'SELL',   nature: 'Dr', industry: 'services' },
 ];
 
+// [T-T8.1-LedgerSeed-Triggers] D&C Pack — loads when businessActivity = Construction / D&C / Engineering & Construction (8 groups).
+// All l3Code values reference existing L3_FINANCIAL_GROUPS entries (INV · STLA · TREC · TPAY) — no new L3 codes invented.
+const DC_PACK: L4IndustryGroup[] = [
+  { name: 'Project Work-in-Progress',                l3Code: 'INV',  nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Site Stores Stock-in-Hand',               l3Code: 'INV',  nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Material at Site (Off-Books)',            l3Code: 'INV',  nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Mobilization Advance Paid',               l3Code: 'STLA', nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Retention Money Receivable',              l3Code: 'TREC', nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Performance Bank Guarantee — Receivable', l3Code: 'STLA', nature: 'Dr', industry: 'd_and_c' },
+  { name: 'Subcontractor Payable',                   l3Code: 'TPAY', nature: 'Cr', industry: 'd_and_c' },
+  { name: 'Retention Money Payable',                 l3Code: 'TPAY', nature: 'Cr', industry: 'd_and_c' },
+];
+
 export const L4_INDUSTRY_PACKS = {
   common: COMMON_PACK,
   manufacturing: MANUFACTURING_PACK,
   trading: TRADING_PACK,
   services: SERVICES_PACK,
+  d_and_c: DC_PACK,  // [T-T8.1-LedgerSeed-Triggers]
 };
 
 // ── Numeric Code Derivation — Single Source of Truth ──────────────

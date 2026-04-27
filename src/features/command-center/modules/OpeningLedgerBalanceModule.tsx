@@ -4,7 +4,7 @@
  * Tab 2: Party Bills (bill-by-bill bill entry for party ledgers)
  * [JWT] All localStorage keys are entity-scoped via useOpeningBalances hook.
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,15 +12,16 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Plus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Plus, Trash2, Lock, CheckCircle2, RefreshCw, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOpeningBalances } from '@/hooks/useOpeningBalances';
 import { onEnterNext, toIndianFormat, amountInputProps } from '@/lib/keyboard';
 import type { OpeningBillEntry } from '@/types/opening-balance';
-import { L3_FINANCIAL_GROUPS, L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
+import { L3_FINANCIAL_GROUPS, L2_PARENT_GROUPS, L4_INDUSTRY_PACKS } from '@/data/finframe-seed-data';
 import { loadEntities } from '@/data/mock-entities';
+import { runEntitySetup, type SetupOptions } from '@/services/entity-setup-service';
 
 interface EntityLedgerInstance {
   id: string;
@@ -42,6 +43,27 @@ interface LedgerDef {
 const _PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
 void _PARTY_GROUPS;
 
+// [T-T8.1-LedgerSeed-Triggers] Default-ledger coverage stats for the status badge.
+// Heuristic: a ledger whose name matches a seed pack (common + manufacturing + trading + services + d_and_c)
+// is considered "seed". Everything else is "custom" (operator-added or renamed).
+function getDefaultLedgerCoverage(): { seed: number; custom: number; total: number } {
+  try {
+    // [JWT] GET /api/accounting/ledger-definitions
+    const raw = localStorage.getItem('erp_group_ledger_definitions');
+    const all: Array<{ name: string }> = raw ? JSON.parse(raw) : [];
+    const seedNames = new Set<string>([
+      ...L4_INDUSTRY_PACKS.common.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.manufacturing.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.trading.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.services.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.d_and_c.map(p => p.name.toLowerCase()),
+    ]);
+    const seed = all.filter(l => seedNames.has((l.name ?? '').toLowerCase())).length;
+    return { seed, custom: all.length - seed, total: all.length };
+  } catch {
+    return { seed: 0, custom: 0, total: 0 };
+  }
+}
 export function OpeningLedgerBalanceModule() {
   const { entityCode } = useEntityCode();
   if (!entityCode) {
@@ -246,6 +268,57 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
     ob.upsertBill(next);
   };
 
+  // [T-T8.1-LedgerSeed-Triggers] Re-run Defaults — re-triggers runEntitySetup for the current entity.
+  // Existing duplicate-prevention in createDefaultLedgers + loadIndustryPack guarantees idempotent behavior.
+  // Per Q-DD (a) · gives the operator agency to restore deleted defaults or pick up newly-shipped packs (e.g., D&C).
+  const [coverageTick, setCoverageTick] = useState(0);
+  const coverage = useMemo(() => {
+    void coverageTick; // recompute when re-run completes
+    return getDefaultLedgerCoverage();
+  }, [coverageTick]);
+
+  const handleReRunDefaults = useCallback(() => {
+    try {
+      // [JWT] GET /api/entities/setup/:entityId
+      const entitiesRaw = localStorage.getItem('erp_group_entities');
+      const entities: Array<{
+        id: string; name: string; shortCode: string;
+        type?: 'parent' | 'subsidiary' | 'branch';
+        businessEntity?: string; industry?: string; businessActivity?: string;
+      }> = entitiesRaw ? JSON.parse(entitiesRaw) : [];
+      const ent = entities.find(e => e.shortCode === entityCode);
+      if (!ent) {
+        toast.error('Entity not found in registry');
+        return;
+      }
+      const before = getDefaultLedgerCoverage();
+      const opts: SetupOptions = {
+        entityId: ent.id,
+        entityName: ent.name,
+        shortCode: ent.shortCode,
+        entityType: ent.type ?? 'parent',
+        businessEntity: ent.businessEntity ?? 'Private Limited',
+        industry: ent.industry ?? 'common',
+        businessActivity: ent.businessActivity ?? 'Trading',
+        loadIndustryPack: true,
+        siblingEntities: entities.filter(e => e.id !== ent.id) as never,
+        autoSeedDemo: false, // never re-seed demo data on manual re-run
+      };
+      runEntitySetup(opts);
+      const after = getDefaultLedgerCoverage();
+      const created = after.total - before.total;
+      setCoverageTick(t => t + 1);
+      if (created > 0) {
+        toast.success(`Re-run complete: ${created} new default ledger(s) added · ${before.total} existing preserved`);
+      } else {
+        toast.info(`Re-run complete: All defaults already present (0 new · ${before.total} existing preserved)`);
+      }
+    } catch (err) {
+      console.error('[T-T8.1] Re-run defaults failed:', err);
+      toast.error('Re-run defaults failed · check console');
+    }
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="space-y-4 animate-fade-in">
       {/* STICKY BALANCE BAR */}
@@ -280,11 +353,26 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
         </div>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Opening Ledger Balances</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Entity: <span className="font-mono text-foreground">{entityCode}</span> · {entity?.name}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Opening Ledger Balances</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Entity: <span className="font-mono text-foreground">{entityCode}</span> · {entity?.name}
+          </p>
+        </div>
+        {/* [T-T8.1-LedgerSeed-Triggers] Default Ledger Coverage badge + Re-run Defaults trigger */}
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1.5">
+            <Info className="h-3 w-3" />
+            <span className="font-mono text-[11px]">
+              Default Ledgers: {coverage.seed} seed · {coverage.custom} custom · {coverage.total} total
+            </span>
+          </Badge>
+          <Button variant="outline" size="sm" onClick={handleReRunDefaults}>
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            Re-run Defaults
+          </Button>
+        </div>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as 'ledgers' | 'bills')}>
