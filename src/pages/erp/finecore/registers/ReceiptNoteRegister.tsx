@@ -33,7 +33,7 @@ const primaryGodown = (lines?: VoucherInventoryLine[]) => {
 export function ReceiptNoteRegisterPanel({ entityCode, onNavigate }: ReceiptNoteRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',     label: 'Date',          render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',      label: 'Voucher No',    render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',      label: 'Voucher No',    render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'party',    label: 'Vendor',        render: v => v.party_name ?? '—', exportKey: 'party_name', toggleKey: 'showPartyColumn' },
     { key: 'challan',  label: 'Vendor Challan',render: v => v.vendor_bill_no ?? v.ref_no ?? '—', exportKey: v => v.vendor_bill_no ?? v.ref_no ?? '' },
     { key: 'items',    label: 'Items',         render: v => v.inventory_lines?.length ?? 0, exportKey: v => v.inventory_lines?.length ?? 0, toggleKey: 'showLineItemCount', align: 'right', width: 'w-16' },
@@ -48,6 +48,7 @@ export function ReceiptNoteRegisterPanel({ entityCode, onNavigate }: ReceiptNote
     title: 'Receipt Note Register',
     voucherFilter: v => v.base_voucher_type === 'Receipt Note',
     drillDownType: 'Receipt Note',
+    reconciliationTarget: 'purchase_register',
   }), []);
 
   const summaryBuilder = (filtered: Voucher[]): SummaryCard[] => {
