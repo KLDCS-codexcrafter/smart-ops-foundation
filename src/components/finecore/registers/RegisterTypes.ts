@@ -46,6 +46,12 @@ export interface RegisterColumn<T = Voucher> {
   exportKey?: keyof T | ((row: T) => string | number | null);
   /** Optional export header override. Default: label. */
   exportLabel?: string;
+  /**
+   * [T-T10-pre.2d-D] When true, the cell becomes a clickable button that
+   * invokes RegisterGrid's onNavigateToVoucher callback. Used for voucher-no
+   * cells to drill to source voucher in read-only mode.
+   */
+  clickable?: boolean;
 }
 
 /**
