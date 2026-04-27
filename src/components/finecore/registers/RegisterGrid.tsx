@@ -459,8 +459,15 @@ export function RegisterGrid({
         </div>
       )}
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* [T-T10-pre.2d-D] Reconciliation View — split-pane match status. */}
+      {reconMode && meta.reconciliationTarget ? (
+        <ReconciliationPanel
+          sourceVouchers={filtered}
+          sourceRegister={meta.registerCode}
+          targetRegister={meta.reconciliationTarget}
+          entityCode={entityCode}
+        />
+      ) : filtered.length === 0 ? (
         <Card><CardContent className="p-10 text-center">
           <FileText className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
           <p className="text-sm text-muted-foreground">No vouchers in this period</p>
@@ -487,7 +494,19 @@ export function RegisterGrid({
                     {visibleColumns.map(col => (
                       <TableCell key={col.key}
                         className={`text-xs ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''}`}>
-                        {col.render(v)}
+                        {/* [T-T10-pre.2d-D] Drill-to-source — when col.clickable + onNavigateToVoucher both set,
+                            cell becomes a button. e.stopPropagation prevents row-click DayBook drill from also firing. */}
+                        {col.clickable && onNavigateToVoucher ? (
+                          <button
+                            type="button"
+                            onClick={(e) => handleVoucherNoClick(e, v)}
+                            className="text-primary hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                          >
+                            {col.render(v)}
+                          </button>
+                        ) : (
+                          col.render(v)
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -519,6 +538,88 @@ export function RegisterGrid({
           </p>
         </>
       )}
+
+      {/* [T-T10-pre.2d-D] Save Current View dialog */}
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save current view</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="view-name" className="text-xs">View name</Label>
+              <Input
+                id="view-name"
+                value={newViewName}
+                onChange={e => setNewViewName(e.target.value)}
+                placeholder="e.g. April GST review"
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="view-default"
+                checked={newViewIsDefault}
+                onCheckedChange={c => setNewViewIsDefault(c === true)}
+              />
+              <Label htmlFor="view-default" className="text-xs cursor-pointer">
+                Set as default (auto-applies on register open)
+              </Label>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Captures current filters · column toggles · grouping. Stored per entity + register.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
+            <Button data-primary size="sm" onClick={handleSaveView}>Save view</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* [T-T10-pre.2d-D] Manage Views dialog */}
+      <Dialog open={manageDialogOpen} onOpenChange={setManageDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage saved views</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {savedViews.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-6">No saved views yet</p>
+            )}
+            {savedViews.map(v => (
+              <div key={v.id} className="flex items-center justify-between gap-2 p-2 border rounded-md">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  {v.isDefault && <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />}
+                  <span className="text-sm truncate">{v.name}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSetDefault(v.id)}
+                    disabled={v.isDefault}
+                    className="text-[10px] h-7"
+                  >
+                    Set default
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteView(v.id)}
+                    className="h-7 w-7 p-0"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setManageDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
