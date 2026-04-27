@@ -4,7 +4,7 @@
  * Tab 2: Party Bills (bill-by-bill bill entry for party ledgers)
  * [JWT] All localStorage keys are entity-scoped via useOpeningBalances hook.
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,15 +12,16 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Plus, Trash2, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Plus, Trash2, Lock, CheckCircle2, RefreshCw, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useOpeningBalances } from '@/hooks/useOpeningBalances';
 import { onEnterNext, toIndianFormat, amountInputProps } from '@/lib/keyboard';
 import type { OpeningBillEntry } from '@/types/opening-balance';
-import { L3_FINANCIAL_GROUPS, L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
+import { L3_FINANCIAL_GROUPS, L2_PARENT_GROUPS, L4_INDUSTRY_PACKS } from '@/data/finframe-seed-data';
 import { loadEntities } from '@/data/mock-entities';
+import { runEntitySetup, type SetupOptions } from '@/services/entity-setup-service';
 
 interface EntityLedgerInstance {
   id: string;
