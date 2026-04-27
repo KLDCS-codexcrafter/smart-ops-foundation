@@ -82,7 +82,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('production', 'locked'),
     one('maintainpro', 'locked'),
     one('requestx', 'locked'),
-    one('backoffice', 'locked'),
+    one('frontdesk', 'locked'),
     one('servicedesk', 'locked'),
   ];
 }

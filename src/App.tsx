@@ -385,7 +385,7 @@ const App = () => (
                 <Route path="smart-ap/cash-flow" element={<SmartAPHub />} />
                 <Route path="smart-ap/forecast" element={<SmartAPHub />} />
                 <Route path="smart-ap/bank-files" element={<SmartAPHub />} />
-                {/* Direct deep-links to sub-screens (bypass hub tabs · legacy/back-office) */}
+                {/* Direct deep-links to sub-screens (bypass hub tabs · legacy/frontdesk) */}
                 <Route path="smart-ap-bulk-pay" element={<BulkPayBuilder />} />
                 <Route path="smart-ap-auto-pay-rules" element={<AutoPayRulesEditor />} />
                 <Route path="smart-ap-cash-flow" element={<CashFlowDashboard />} />
@@ -445,8 +445,14 @@ const App = () => (
               <Route path="/erp/distributor-hub" element={<P><DistributorHubPage /></P>} />
               <Route path="/erp/customer-hub" element={<P><CustomerHubPage /></P>} />
               <Route path="/erp/customer-hub/*" element={<P><CustomerHubPage /></P>} />
-              <Route path="/erp/backoffice/dispatch" element={<P><DispatchHubPage /></P>} />
-              <Route path="/erp/backoffice/dispatch/*" element={<P><DispatchHubPage /></P>} />
+              {/* T-Phase-1.1.0 · Backward-compat redirects: legacy /erp/backoffice/* → /erp/frontdesk */}
+              <Route path="/erp/backoffice/dispatch" element={<Navigate to="/erp/frontdesk/dispatch" replace />} />
+              <Route path="/erp/backoffice/dispatch/*" element={<Navigate to="/erp/frontdesk/dispatch" replace />} />
+              <Route path="/erp/backoffice/*" element={<Navigate to="/erp/frontdesk" replace />} />
+              <Route path="/erp/backoffice" element={<Navigate to="/erp/frontdesk" replace />} />
+              {/* New canonical routes */}
+              <Route path="/erp/frontdesk/dispatch" element={<P><DispatchHubPage /></P>} />
+              <Route path="/erp/frontdesk/dispatch/*" element={<P><DispatchHubPage /></P>} />
               <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
               <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
               <Route path="/erp/distributor/cart" element={<DistributorCart />} />

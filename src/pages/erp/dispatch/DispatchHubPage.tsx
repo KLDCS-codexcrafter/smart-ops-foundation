@@ -93,7 +93,7 @@ export default function DispatchHubPage() {
       ref_id: activeModule,
       title: `Dispatch Hub · ${activeModule}`,
       subtitle: null,
-      deep_link: `/erp/backoffice/dispatch#${activeModule}`,
+      deep_link: `/erp/frontdesk/dispatch#${activeModule}`,
     });
   }, [activeModule, entityCode, userId]);
 

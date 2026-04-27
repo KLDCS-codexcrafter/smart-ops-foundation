@@ -9,7 +9,7 @@ export type CardId =
   | 'command-center' | 'salesx' | 'distributor-hub' | 'customer-hub'
   | 'finecore' | 'receivx' | 'peoplepay' | 'payout' | 'insightx'
   | 'procure360' | 'inventory-hub' | 'qulicheak' | 'gateflow'
-  | 'production' | 'maintainpro' | 'requestx' | 'backoffice'
+  | 'production' | 'maintainpro' | 'requestx' | 'frontdesk'
   | 'servicedesk'
   | 'dispatch-hub';
 
