@@ -353,11 +353,26 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
         </div>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Opening Ledger Balances</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Entity: <span className="font-mono text-foreground">{entityCode}</span> · {entity?.name}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Opening Ledger Balances</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Entity: <span className="font-mono text-foreground">{entityCode}</span> · {entity?.name}
+          </p>
+        </div>
+        {/* [T-T8.1-LedgerSeed-Triggers] Default Ledger Coverage badge + Re-run Defaults trigger */}
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1.5">
+            <Info className="h-3 w-3" />
+            <span className="font-mono text-[11px]">
+              Default Ledgers: {coverage.seed} seed · {coverage.custom} custom · {coverage.total} total
+            </span>
+          </Badge>
+          <Button variant="outline" size="sm" onClick={handleReRunDefaults}>
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            Re-run Defaults
+          </Button>
+        </div>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as 'ledgers' | 'bills')}>
