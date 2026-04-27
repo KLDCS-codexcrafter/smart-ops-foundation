@@ -76,7 +76,7 @@ const LANES: Array<{
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx', 'distributor-hub', 'customer-hub', 'projx', 'storex', 'unicomm'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub', 'projx', 'webstorex', 'unicomm'],
   },
   {
     id: 'people',
@@ -90,7 +90,7 @@ const LANES: Array<{
     label: 'Support & back office',
     borderColor: 'border-l-slate-400',
     labelColor: 'text-slate-500 dark:text-slate-400',
-    ids: ['backoffice', 'servicedesk', 'taskflow', 'docvault'],
+    ids: ['frontdesk', 'servicedesk', 'taskflow', 'docvault'],
   },
 ];
 

@@ -5,7 +5,7 @@ export type AppCategory =
   | 'Sales Hub'
   | 'Fin Hub'
   | 'Pay Hub'
-  | 'BackOffice Hub'
+  | 'FrontDesk Hub'
   | 'Support Hub'
   | 'InsightX'
   | 'International Trade';
@@ -25,7 +25,7 @@ export const CATEGORY_COLORS: Record<AppCategory, string> = {
   'Sales Hub':          'bg-amber-500/15 text-amber-400',
   'Fin Hub':            'bg-indigo-500/15 text-indigo-400',
   'Pay Hub':            'bg-violet-500/15 text-violet-400',
-  'BackOffice Hub':     'bg-purple-500/15 text-purple-400',
+  'FrontDesk Hub':      'bg-purple-500/15 text-purple-400',
   'Support Hub':        'bg-teal-500/15 text-teal-400',
   'InsightX':           'bg-sky-500/15 text-sky-400',
   'International Trade':'bg-rose-500/15 text-rose-400',
@@ -36,7 +36,7 @@ export const ALL_CATEGORIES: AppCategory[] = [
   'Sales Hub',
   'Fin Hub',
   'Pay Hub',
-  'BackOffice Hub',
+  'FrontDesk Hub',
   'Support Hub',
   'InsightX',
   'International Trade',
@@ -158,11 +158,11 @@ export const applications: AppDefinition[] = [
     status: 'coming_soon',
   },
   {
-    id: 'storex',
-    name: 'StoreX',
+    id: 'webstorex',
+    name: 'WebStoreX',
     description: 'Your own online storefront — catalog, cart, checkout, customer accounts, and payments. Orders flow into FineCore automatically.',
     category: 'Sales Hub',
-    route: '/erp/storex',
+    route: '/erp/webstorex',
     icon: 'ShoppingBag',
     status: 'coming_soon',
   },
@@ -231,16 +231,16 @@ export const applications: AppDefinition[] = [
     name: 'Logistics Hub',
     description: 'Inward + outward freight management — transporter master, LR, POD, courier, freight reconciliation, packing consumables, and logistic partner portal',
     category: 'Ops Hub',
-    route: '/erp/backoffice/dispatch',
+    route: '/erp/frontdesk/dispatch',
     icon: 'Truck',
     status: 'active',
   },
   {
-    id: 'backoffice',
-    name: 'Back Office Pro',
+    id: 'frontdesk',
+    name: 'FrontDesk',
     description: 'Front desk — visitor check-in, room booking and desk reservation',
-    category: 'BackOffice Hub',
-    route: '/erp/backoffice',
+    category: 'FrontDesk Hub',
+    route: '/erp/frontdesk',
     icon: 'Building2',
     status: 'coming_soon',
   },

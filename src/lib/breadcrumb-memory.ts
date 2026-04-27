@@ -55,9 +55,11 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'production':      '/erp/production',
   'maintainpro':     '/erp/maintainpro',
   'requestx':        '/erp/requestx',
-  'backoffice':      '/erp/backoffice',
+  'frontdesk':       '/erp/frontdesk',
+  // Legacy alias for backward compat (supports D-194 Phase 1.1.0 rename)
+  'backoffice':      '/erp/frontdesk',
   'servicedesk':     '/erp/servicedesk',
-  'dispatch-hub':    '/erp/backoffice/dispatch',
+  'dispatch-hub':    '/erp/frontdesk/dispatch',
 };
 
 export function buildCardRoute(cardId: CardId): string {

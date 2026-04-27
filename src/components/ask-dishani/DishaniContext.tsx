@@ -30,7 +30,7 @@ THE OPERIX PLATFORM — 14 MODULES:
 - SalesX Hub (/erp/salesx): Sales, CRM, Telecaller, Field Force — pipeline, visits, proforma, geo-tracking
 - FineCore (/erp/finecore): Financial operations — bank reconciliation, payables, receivables, treasury
 - PeoplePay (/erp/peoplepay): Full HR and Payroll — employees, attendance, leaves, payroll, statutory compliance
-- Back Office Pro (/erp/backoffice): Front desk — visitor check-in, room booking, desk reservation
+- FrontDesk (/erp/frontdesk): Front desk — visitor check-in, room booking, desk reservation
 - ServiceDesk (/erp/servicedesk): Support ticketing — SLA, escalations, knowledge base
 - InsightX (/erp/insightx): Business analytics — DataViz Pro, ReportGen, Trend Analyzer, Metrics Hub
 
