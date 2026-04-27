@@ -2462,6 +2462,250 @@ const CHECKS: CheckSpec[] = [
           pass: false, details: 'Engine must be exception-safe on empty data' };
       }
     } },
+
+  // ── T-T8.7-SmartAP · Bulk Pay · Maker-Checker · Auto-Pay · Cash-Flow · Bank Files ──
+  { id: 'smartap-1', section: 'Smart AP',
+    name: 'createBulkBatch from 3 approved requisitions · status=draft',
+    run: async () => {
+      const { createBulkBatch } = await import('@/lib/bulk-pay-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_SAP1__';
+      const reqs = ['r1', 'r2', 'r3'].map(id => ({
+        id, entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u1', requested_by_name: 'U1',
+        department_id: 'd1', department_name: 'Dept', amount: 10000,
+        purpose: 'Test', attachments: [], status: 'approved',
+        approval_chain: [], created_at: '2025-04-01', updated_at: '2025-04-01',
+      }));
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify(reqs));
+      localStorage.removeItem(`erp_smart_ap_batches_${ent}`);
+      const b = createBulkBatch({ entityCode: ent, requisitionIds: ['r1', 'r2', 'r3'] });
+      const ok = b.status === 'draft' && b.count === 3 && b.total_amount === 30000;
+      return { actual: `status=${b.status}, count=${b.count}, total=${b.total_amount}`,
+        expected: 'status=draft, count=3, total=30000',
+        pass: ok, details: 'Batch creation aggregates approved requisitions and sets draft status' };
+    } },
+
+  { id: 'smartap-2', section: 'Smart AP',
+    name: 'approveByChecker with same user as maker throws (separation of duties)',
+    run: async () => {
+      const { createBulkBatch, signByMaker, approveByChecker } = await import('@/lib/bulk-pay-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_SAP2__';
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify([{
+        id: 'r1', entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u', requested_by_name: 'U',
+        department_id: 'd', department_name: 'D', amount: 5000, purpose: 'p',
+        attachments: [], status: 'approved', approval_chain: [],
+        created_at: '2025-04-01', updated_at: '2025-04-01',
+      }]));
+      localStorage.removeItem(`erp_smart_ap_batches_${ent}`);
+      const b = createBulkBatch({ entityCode: ent, requisitionIds: ['r1'] });
+      signByMaker(ent, b.id, 'sign');
+      let threw = false;
+      try { approveByChecker(ent, b.id, 'approve'); }
+      catch (e) { threw = (e as Error).message.includes('Separation-of-duties'); }
+      return { actual: `threw=${threw}`, expected: 'threw=true',
+        pass: threw, details: 'Checker cannot be same user as maker · field-level enforcement' };
+    } },
+
+  { id: 'smartap-3', section: 'Smart AP',
+    name: 'executeBatch records per-requisition individual_results array',
+    run: async () => {
+      const { createBulkBatch, signByMaker, approveByChecker, executeBatch, getBatch } =
+        await import('@/lib/bulk-pay-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const { setCurrentUser } = await import('@/lib/auth-helpers');
+      const ent = '__SMK_SAP3__';
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify([{
+        id: 'r1', entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u', requested_by_name: 'U',
+        department_id: 'd', department_name: 'D', amount: 5000, purpose: 'p',
+        attachments: [], status: 'approved', approval_chain: [],
+        created_at: '2025-04-01', updated_at: '2025-04-01',
+      }]));
+      localStorage.removeItem(`erp_smart_ap_batches_${ent}`);
+      setCurrentUser({ id: 'maker-u', displayName: 'Maker' });
+      const b = createBulkBatch({ entityCode: ent, requisitionIds: ['r1'] });
+      signByMaker(ent, b.id, 'sign');
+      setCurrentUser({ id: 'checker-u', displayName: 'Checker' });
+      approveByChecker(ent, b.id, 'approve');
+      executeBatch(ent, b.id);
+      const final = getBatch(ent, b.id);
+      const ok = !!final && final.individual_results.length === 1
+        && (final.status === 'executed' || final.status === 'failed_during_execution');
+      return { actual: `status=${final?.status}, results=${final?.individual_results.length}`,
+        expected: 'status=executed|failed_during_execution, results=1',
+        pass: ok, details: 'Loops payment-engine.processVendorPayment per requisition · captures result' };
+    } },
+
+  { id: 'smartap-4', section: 'Smart AP',
+    name: 'Auto-Pay recurring rule fires when next_run_at <= now',
+    run: async () => {
+      const { createRule, evaluateRulesNow, updateRule } = await import('@/lib/auto-pay-engine');
+      const ent = '__SMK_SAP4__';
+      localStorage.removeItem(`erp_smart_ap_auto_pay_rules_${ent}`);
+      const r = createRule({
+        entityCode: ent, name: 'Daily test', trigger_type: 'recurring',
+        recurring_schedule: { cadence: 'daily' },
+      });
+      // Force next_run_at to past
+      const past = new Date(Date.now() - 60000).toISOString();
+      updateRule(ent, r.id, { next_run_at: past });
+      const cands = evaluateRulesNow(ent);
+      const ok = cands.length === 1 && cands[0].rule.id === r.id;
+      return { actual: `candidates=${cands.length}`, expected: 'candidates=1',
+        pass: ok, details: 'Recurring trigger evaluated via next_run_at <= now' };
+    } },
+
+  { id: 'smartap-5', section: 'Smart AP',
+    name: 'Auto-Pay threshold rule fires for matching approved requisition',
+    run: async () => {
+      const { createRule, evaluateRulesNow } = await import('@/lib/auto-pay-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_SAP5__';
+      localStorage.removeItem(`erp_smart_ap_auto_pay_rules_${ent}`);
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify([{
+        id: 'rq', entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u', requested_by_name: 'U',
+        department_id: 'd', department_name: 'D', amount: 4000, purpose: 'p',
+        attachments: [], status: 'approved', approval_chain: [],
+        created_at: '2025-04-01', updated_at: '2025-04-01',
+      }]));
+      createRule({ entityCode: ent, name: 'Small auto', trigger_type: 'threshold', threshold_amount: 5000 });
+      const cands = evaluateRulesNow(ent);
+      const ok = cands.length === 1 && cands[0].matched_requisition_id === 'rq';
+      return { actual: `candidates=${cands.length}, matched=${cands[0]?.matched_requisition_id}`,
+        expected: 'candidates=1, matched=rq',
+        pass: ok, details: 'Threshold rule matches when approved requisition amount <= threshold' };
+    } },
+
+  { id: 'smartap-6', section: 'Smart AP',
+    name: 'Cash-flow projection arithmetic: closing = opening + receivables - committed',
+    run: async () => {
+      const { computeCashFlowProjection } = await import('@/lib/cash-flow-engine');
+      const ent = '__SMK_SAP6__';
+      // Empty masters · projection runs · all rows have closing == opening (no movement)
+      localStorage.removeItem(`erp_group_ledger_definitions_${ent}`);
+      localStorage.removeItem(`erp_group_vouchers_${ent}`);
+      localStorage.removeItem(`erp_payment_requisitions_${ent}`);
+      const proj = computeCashFlowProjection(ent, 5);
+      const ok = proj.length === 5
+        && proj.every(p => p.closing_balance === p.opening_balance + p.receivables - p.committed_payments);
+      return { actual: `len=${proj.length}, arithmetic_ok=${ok}`,
+        expected: 'len=5, closing = opening + receivables - committed for every row',
+        pass: ok, details: 'Daily projection arithmetic invariant' };
+    } },
+
+  { id: 'smartap-7', section: 'Smart AP',
+    name: 'suggestPaymentTiming flags MSME breach as priority (today)',
+    run: async () => {
+      const { suggestPaymentTiming } = await import('@/lib/cash-flow-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_SAP7__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'vm7', name: 'Micro Vendor', msmeRegistered: true, msmeCategory: 'micro', creditDays: 0 },
+      ]));
+      // Old purchase · auto-breached
+      const longAgo = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'pi7', voucher_no: 'PI/7', date: longAgo, party_id: 'vm7',
+          base_voucher_type: 'Purchase', net_amount: 50000, gross_amount: 50000, status: 'posted' },
+      ]));
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify([{
+        id: 'r7', entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u', requested_by_name: 'U',
+        department_id: 'd', department_name: 'D', amount: 50000, purpose: 'p',
+        attachments: [], status: 'approved', approval_chain: [],
+        vendor_id: 'vm7', vendor_name: 'Micro Vendor',
+        created_at: '2025-04-01', updated_at: '2025-04-01',
+      }]));
+      const s = suggestPaymentTiming(ent, 'r7');
+      const ok = !!s && s.msme_priority === true;
+      return { actual: `priority=${s?.msme_priority}, date=${s?.suggested_date}`,
+        expected: 'priority=true, date=today',
+        pass: ok, details: 'MSME breach vendor gets immediate priority via B.5 reuse' };
+    } },
+
+  { id: 'smartap-8', section: 'Smart AP',
+    name: 'forecastByWeek returns 13-week array with valid week boundaries',
+    run: async () => {
+      const { forecastByWeek } = await import('@/lib/cash-flow-engine');
+      const ent = '__SMK_SAP8__';
+      localStorage.removeItem(`erp_group_vouchers_${ent}`);
+      localStorage.removeItem(`erp_payment_requisitions_${ent}`);
+      const wk = forecastByWeek(ent, 13);
+      const ok = wk.length === 13
+        && wk.every(w => w.week_start <= w.week_end)
+        && wk.every(w => w.net === w.receivables - w.committed - w.auto_pay_predicted);
+      return { actual: `len=${wk.length}`, expected: 'len=13 weeks, net invariant holds',
+        pass: ok, details: '13-week forecast aggregates daily projection into weekly buckets' };
+    } },
+
+  { id: 'smartap-9', section: 'Smart AP',
+    name: 'HDFC NEFT bank file uses CSV delimiter and 7 standard columns',
+    run: async () => {
+      const { getBankSpec } = await import('@/lib/bank-file-engine');
+      const spec = getBankSpec('HDFC');
+      const ok = !!spec && spec.delimiter === ',' && spec.column_order.length === 7
+        && spec.supported_formats.includes('NEFT');
+      return { actual: `delim=${spec?.delimiter}, cols=${spec?.column_order.length}`,
+        expected: 'delim=, , cols=7',
+        pass: ok, details: 'HDFC spec is standard CSV with 7 columns' };
+    } },
+
+  { id: 'smartap-10', section: 'Smart AP',
+    name: 'SBI bank file uses PIPE delimiter (|)',
+    run: async () => {
+      const { getBankSpec } = await import('@/lib/bank-file-engine');
+      const spec = getBankSpec('SBI');
+      const ok = !!spec && spec.delimiter === '|' && spec.file_extension === 'txt';
+      return { actual: `delim=${spec?.delimiter}, ext=${spec?.file_extension}`,
+        expected: 'delim=|, ext=txt',
+        pass: ok, details: 'SBI uses pipe-delimited .txt format' };
+    } },
+
+  { id: 'smartap-11', section: 'Smart AP',
+    name: 'listSupportedBanks returns exactly 12 banks',
+    run: async () => {
+      const { listSupportedBanks } = await import('@/lib/bank-file-engine');
+      const banks = listSupportedBanks();
+      const codes = banks.map(b => b.bank_code).sort();
+      const expected = ['AXIS', 'BOB', 'CANARA', 'FEDERAL', 'HDFC', 'ICICI',
+        'INDUSIND', 'KOTAK', 'PNB', 'RBL', 'SBI', 'YES'];
+      const ok = banks.length === 12 && JSON.stringify(codes) === JSON.stringify(expected);
+      return { actual: `count=${banks.length}, codes=${codes.join(',')}`,
+        expected: `count=12, codes=${expected.join(',')}`,
+        pass: ok, details: 'Exactly 12 Indian banks in Phase 1 file format coverage' };
+    } },
+
+  { id: 'smartap-12', section: 'Smart AP',
+    name: 'validateBatchForBank rejects requisition with missing IFSC',
+    run: async () => {
+      const { createBulkBatch } = await import('@/lib/bulk-pay-engine');
+      const { validateBatchForBank } = await import('@/lib/bank-file-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_SAP12__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'vbad', name: 'No IFSC Vendor', bankAccountNo: '12345', bankAccountHolder: 'X' },
+      ]));
+      localStorage.setItem(paymentRequisitionsKey(ent), JSON.stringify([{
+        id: 'r12', entity_id: ent, request_type: 'vendor_invoice',
+        requested_by: 'u', requested_by_name: 'U',
+        department_id: 'd', department_name: 'D', amount: 1000, purpose: 'p',
+        attachments: [], status: 'approved', approval_chain: [],
+        vendor_id: 'vbad', vendor_name: 'No IFSC Vendor',
+        created_at: '2025-04-01', updated_at: '2025-04-01',
+      }]));
+      localStorage.removeItem(`erp_smart_ap_batches_${ent}`);
+      const b = createBulkBatch({ entityCode: ent, requisitionIds: ['r12'] });
+      const errs = validateBatchForBank(ent, b.id, 'HDFC');
+      const ok = errs.some(e => e.field === 'bankIfsc');
+      return { actual: `errors=${errs.length}, ifsc_err=${errs.some(e => e.field === 'bankIfsc')}`,
+        expected: 'errors>=1 with field=bankIfsc',
+        pass: ok, details: 'Validator surfaces missing/invalid IFSC per requisition' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
