@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey, postVoucher, cancelVoucher as cancelEngine, validateVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
+// [T-T8.0-OrgTagFoundation] Derived metadata table · enables 5-tier slicing without voucher.ts schema change (D-128 preserved).
+import { tagVoucher, getOperatorContext } from '@/lib/voucher-org-tag-engine';
 
 function ls<T>(key: string): T[] {
   try {
