@@ -1973,6 +1973,170 @@ const CHECKS: CheckSpec[] = [
         expected: 'entry exists with type=BILL_SETTLEMENT, amount=30000',
         pass: !!ok, details: 'Audit trail captured · settlement traceability preserved' };
     } },
+
+  // ── [T-T8.4-Requisition-Universal · I-44] Universal Payment Requisition smoke checks ──
+  { id: 'req-1', section: 'Payment Requisition',
+    name: 'ROUTING_RULES covers all 21 payment types · hardcoded per Q-HH',
+    run: async () => {
+      const { ROUTING_RULES } = await import('@/lib/payment-requisition-engine');
+      const { PAYMENT_TYPE_LABELS } = await import('@/types/payment-requisition');
+      const ruleKeys = Object.keys(ROUTING_RULES);
+      const labelKeys = Object.keys(PAYMENT_TYPE_LABELS);
+      const ok = ruleKeys.length === 21 && labelKeys.length === 21
+        && ruleKeys.every(k => labelKeys.includes(k));
+      return { actual: `rules=${ruleKeys.length}, labels=${labelKeys.length}`,
+        expected: 'rules=21, labels=21, every rule has matching label',
+        pass: ok, details: 'Hardcoded routing covers all 21 payment types · sophisticated config-driven engine deferred per Q-HH' };
+    } },
+
+  { id: 'req-2', section: 'Payment Requisition',
+    name: 'createRequisition for vendor_invoice → status=pending_dept_head (2-level routing)',
+    run: async () => {
+      const { createRequisition, getRequisition } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ2__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const r = createRequisition({
+        entityCode: ent, request_type: 'vendor_invoice',
+        department_id: 'dept-1', department_name: 'Procurement',
+        amount: 50000, purpose: 'Smoke test vendor invoice',
+        vendor_id: 'v-1', vendor_name: 'Test Vendor',
+      });
+      const req = r.requisitionId ? getRequisition(ent, r.requisitionId) : null;
+      const ok = r.ok && r.status === 'pending_dept_head' && req?.approval_chain.length === 2;
+      return { actual: `ok=${r.ok}, status=${r.status}, chain=${req?.approval_chain.length}`,
+        expected: 'ok=true, status=pending_dept_head, chain=2 (submit + routed)',
+        pass: !!ok, details: 'vendor_invoice (2-level) lands in dept-head queue · awaiting first approval' };
+    } },
+
+  { id: 'req-3', section: 'Payment Requisition',
+    name: 'createRequisition for statutory_tds → auto-approved → attempts voucher creation',
+    run: async () => {
+      const { createRequisition, getRequisition } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ3__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const r = createRequisition({
+        entityCode: ent, request_type: 'statutory_tds',
+        department_id: 'dept-fin', department_name: 'Finance',
+        amount: 12000, purpose: 'TDS challan Q4 26-Apr',
+      });
+      const req = r.requisitionId ? getRequisition(ent, r.requisitionId) : null;
+      // Auto-approved · final status is either 'approved' (if voucher creation failed cleanly) or 'paid' (if it linked)
+      const ok = r.ok && (req?.status === 'approved' || req?.status === 'paid');
+      const hasAutoApprove = req?.approval_chain.some(e => e.action === 'approve' && e.approver_role === 'system');
+      return { actual: `status=${req?.status}, autoApprove=${hasAutoApprove}`,
+        expected: 'status=approved or paid, system-auto-approve entry present',
+        pass: !!ok && !!hasAutoApprove, details: 'Statutory TDS routes with levels=0 autoApprove=true · zero human gates per Q-HH' };
+    } },
+
+  { id: 'req-4', section: 'Payment Requisition',
+    name: 'createRequisition for director_drawings → 1-level founder routing',
+    run: async () => {
+      const { createRequisition, ROUTING_RULES } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ4__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const r = createRequisition({
+        entityCode: ent, request_type: 'director_drawings',
+        department_id: 'dept-mgt', department_name: 'Management',
+        amount: 200000, purpose: 'Director monthly drawings',
+      });
+      const rule = ROUTING_RULES.director_drawings;
+      const ok = r.ok && r.status === 'pending_dept_head' && rule.levels === 1 && rule.level1 === 'founder';
+      return { actual: `status=${r.status}, levels=${rule.levels}, level1=${rule.level1}`,
+        expected: 'status=pending_dept_head (founder queue), levels=1, level1=founder',
+        pass: !!ok, details: 'Director payments require founder-only approval · single-level routing' };
+    } },
+
+  { id: 'req-5', section: 'Payment Requisition',
+    name: 'approveDeptLevel on 2-level type → status=pending_accounts',
+    run: async () => {
+      const { createRequisition, approveDeptLevel, getRequisition } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ5__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const c = createRequisition({
+        entityCode: ent, request_type: 'employee_reimbursement',
+        department_id: 'dept-ops', department_name: 'Operations',
+        amount: 8500, purpose: 'Travel reimbursement',
+        employee_id: 'e-1', employee_name: 'Ravi K',
+      });
+      const a = approveDeptLevel(ent, c.requisitionId!, 'OK by HOD');
+      const req = getRequisition(ent, c.requisitionId!);
+      const ok = a.ok && req?.status === 'pending_accounts' && req.approval_chain.length === 3;
+      return { actual: `status=${req?.status}, chain=${req?.approval_chain.length}`,
+        expected: 'status=pending_accounts, chain=3 (submit + dept-route + dept-approve)',
+        pass: !!ok, details: 'Dept-head approval on 2-level type forwards to accounts queue' };
+    } },
+
+  { id: 'req-6', section: 'Payment Requisition',
+    name: 'approveAccountsLevel completes flow → status=approved (or paid if voucher succeeded)',
+    run: async () => {
+      const { createRequisition, approveDeptLevel, approveAccountsLevel, getRequisition } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ6__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const c = createRequisition({
+        entityCode: ent, request_type: 'professional_fees',
+        department_id: 'dept-fin', department_name: 'Finance',
+        amount: 35000, purpose: 'CA quarterly fees',
+        vendor_id: 'v-ca-1', vendor_name: 'Mehta & Co',
+      });
+      approveDeptLevel(ent, c.requisitionId!, 'Approved by HOD');
+      const a = approveAccountsLevel(ent, c.requisitionId!, 'Approved by accounts');
+      const req = getRequisition(ent, c.requisitionId!);
+      const ok = a.ok && (req?.status === 'approved' || req?.status === 'paid');
+      return { actual: `status=${req?.status}, voucherNo=${a.voucherNo ?? '(none)'}`,
+        expected: 'status=approved or paid · voucher creation attempted via payment-engine',
+        pass: !!ok, details: 'Final approval triggers tryCreatePaymentVoucher → delegates to existing processVendorPayment (D-146 reuse)' };
+    } },
+
+  { id: 'req-7', section: 'Payment Requisition',
+    name: 'rejectRequisition from pending_dept_head → status=rejected',
+    run: async () => {
+      const { createRequisition, rejectRequisition, getRequisition } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ7__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      const c = createRequisition({
+        entityCode: ent, request_type: 'capital_expenditure',
+        department_id: 'dept-it', department_name: 'IT',
+        amount: 150000, purpose: 'New servers',
+      });
+      const r = rejectRequisition(ent, c.requisitionId!, 'Budget exhausted');
+      const req = getRequisition(ent, c.requisitionId!);
+      const reject = req?.approval_chain.find(e => e.action === 'reject');
+      const ok = r.ok && req?.status === 'rejected' && reject?.comment === 'Budget exhausted';
+      return { actual: `status=${req?.status}, reason=${reject?.comment}`,
+        expected: 'status=rejected, audit comment preserved',
+        pass: !!ok, details: 'Reject path captures reason in approval_chain · audit-grade trail' };
+    } },
+
+  { id: 'req-8', section: 'Payment Requisition',
+    name: 'getRequisitionsForApprover routes correctly by role',
+    run: async () => {
+      const { createRequisition, getRequisitionsForApprover } = await import('@/lib/payment-requisition-engine');
+      const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
+      const ent = '__SMK_REQ8__';
+      localStorage.removeItem(paymentRequisitionsKey(ent));
+      // Create 3 distinct types: 2-level vendor, 1-level director, 0-level statutory
+      createRequisition({ entityCode: ent, request_type: 'vendor_invoice', department_id: 'd1', department_name: 'D1', amount: 1000, purpose: 'p1' });
+      createRequisition({ entityCode: ent, request_type: 'director_drawings', department_id: 'd2', department_name: 'D2', amount: 2000, purpose: 'p2' });
+      createRequisition({ entityCode: ent, request_type: 'statutory_gst', department_id: 'd3', department_name: 'D3', amount: 3000, purpose: 'p3' });
+      const deptQ = getRequisitionsForApprover(ent, 'department_head');
+      const founderQ = getRequisitionsForApprover(ent, 'founder');
+      const acctQ = getRequisitionsForApprover(ent, 'accounts');
+      // Dept head sees vendor_invoice (pending_dept_head, level1=dept_head)
+      // Founder sees director_drawings (pending_dept_head, level1=founder)
+      // Accounts queue currently empty (none have reached pending_accounts)
+      const ok = deptQ.length === 1 && deptQ[0].request_type === 'vendor_invoice'
+        && founderQ.length === 1 && founderQ[0].request_type === 'director_drawings'
+        && acctQ.length === 0;
+      return { actual: `dept=${deptQ.length}/${deptQ[0]?.request_type}, founder=${founderQ.length}/${founderQ[0]?.request_type}, accounts=${acctQ.length}`,
+        expected: 'dept=1/vendor_invoice, founder=1/director_drawings, accounts=0',
+        pass: ok, details: 'Inbox routing splits queues by role per ROUTING_RULES · statutory bypasses all queues' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
