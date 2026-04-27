@@ -47,6 +47,7 @@ function dueLabel(daysUntil: number): { text: string; tone: string } {
 }
 
 export function EMICalendar() {
+  const navigate = useNavigate();
   const { ledgers } = useLedgerStore<BorrowingLike>('borrowing');
   const [windowDays, setWindowDays] = useState<'30' | '60' | '90'>('30');
 
