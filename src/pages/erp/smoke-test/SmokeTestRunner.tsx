@@ -2734,7 +2734,7 @@ const CHECKS: CheckSpec[] = [
         ['vendor-analytics-engine.getTopVendorsBySpend', typeof (mods[6] as Record<string, unknown>).getTopVendorsBySpend === 'function'],
         ['bulk-pay-engine.createBulkBatch',             typeof (mods[7] as Record<string, unknown>).createBulkBatch === 'function'],
         ['auto-pay-engine.evaluateRulesNow',            typeof (mods[8] as Record<string, unknown>).evaluateRulesNow === 'function'],
-        ['cash-flow-engine.computeDailyProjection',     typeof (mods[9] as Record<string, unknown>).computeDailyProjection === 'function'],
+        ['cash-flow-engine.computeCashFlowProjection', typeof (mods[9] as Record<string, unknown>).computeCashFlowProjection === 'function'],
         ['bank-file-engine.validateBatchForBank',       typeof (mods[10] as Record<string, unknown>).validateBatchForBank === 'function'],
       ];
       const failed = checks.filter(([, ok]) => !ok).map(([n]) => n);
