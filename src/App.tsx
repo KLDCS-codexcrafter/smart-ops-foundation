@@ -117,6 +117,11 @@ const RequisitionHistory = lazy(() => import('./pages/erp/payout/RequisitionHist
 const MSMEAlerts = lazy(() => import('./pages/erp/payout/MSMEAlerts'));
 // [T-T8.6-VendorAnalytics] 5-tier Vendor Analytics dashboard
 const VendorAnalytics = lazy(() => import('./pages/erp/payout/VendorAnalytics'));
+// [T-T8.7-SmartAP] Smart AP suite — Bulk Pay · Auto-Pay · Cash-Flow · Forecast · Bank Files
+const SmartAPHub = lazy(() => import('./pages/erp/payout/SmartAPHub'));
+const BulkPayBuilder = lazy(() => import('./pages/erp/payout/BulkPayBuilder'));
+const AutoPayRulesEditor = lazy(() => import('./pages/erp/payout/AutoPayRulesEditor'));
+const CashFlowDashboard = lazy(() => import('./pages/erp/payout/CashFlowDashboard'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -373,6 +378,17 @@ const App = () => (
                 <Route path="msme-alerts" element={<MSMEAlerts />} />
                 {/* T-T8.6-VendorAnalytics · 5-tier vendor performance analytics */}
                 <Route path="vendor-analytics" element={<VendorAnalytics />} />
+                {/* T-T8.7-SmartAP · 5 industry firsts (hub + 4 sub-screens) */}
+                <Route path="smart-ap" element={<SmartAPHub />} />
+                <Route path="smart-ap/bulk-pay" element={<SmartAPHub />} />
+                <Route path="smart-ap/auto-pay-rules" element={<SmartAPHub />} />
+                <Route path="smart-ap/cash-flow" element={<SmartAPHub />} />
+                <Route path="smart-ap/forecast" element={<SmartAPHub />} />
+                <Route path="smart-ap/bank-files" element={<SmartAPHub />} />
+                {/* Direct deep-links to sub-screens (bypass hub tabs · legacy/back-office) */}
+                <Route path="smart-ap-bulk-pay" element={<BulkPayBuilder />} />
+                <Route path="smart-ap-auto-pay-rules" element={<AutoPayRulesEditor />} />
+                <Route path="smart-ap-cash-flow" element={<CashFlowDashboard />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />

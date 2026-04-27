@@ -44,8 +44,8 @@ const PAYOUT_MENU: PayOutMenuItem[] = [
   { id: 'po-msme',              label: 'MSME Compliance',     icon: AlertTriangle,   route: '/erp/payout/msme-alerts' },
   // [T-T8.6-VendorAnalytics] 5-tier Vendor Analytics · ACTIVATED
   { id: 'po-vendor-analytics',  label: 'Vendor Analytics',    icon: BarChart3,       route: '/erp/payout/vendor-analytics' },
-  // [B.7 stub] Bulk Pay · maker-checker · Smart AP
-  { id: 'po-smart-ap',          label: 'Smart AP',            icon: Zap,             comingSoon: 'B.7' },
+  // [T-T8.7-SmartAP] Bulk Pay · Maker-Checker · Auto-Pay · Cash-Flow · Bank Files · ACTIVATED
+  { id: 'po-smart-ap',          label: 'Smart AP',            icon: Zap,             route: '/erp/payout/smart-ap' },
 ];
 
 export function PayOutSidebar() {
