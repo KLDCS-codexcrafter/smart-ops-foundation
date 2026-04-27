@@ -15,7 +15,7 @@
 
 import type { ReactNode } from 'react';
 import type { Voucher } from '@/types/voucher';
-import type { RegisterTypeCode, RegisterToggles } from '@/types/register-config';
+import type { RegisterTypeCode, RegisterToggles, RegisterGroupKey } from '@/types/register-config';
 
 /**
  * [Abstract] Generic register column. Each register supplies its own column array.
