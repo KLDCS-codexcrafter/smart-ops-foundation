@@ -1567,6 +1567,162 @@ const CHECKS: CheckSpec[] = [
         expected: 'all numeric, pct between 0 and 100',
         pass: ok, details: 'Coverage badge reads valid stats from engine' };
     } },
+
+  // ── [T-T8.1-LedgerSeed-Triggers · I-26] Ledger Seed smoke checks ──
+  { id: 'seed-1', section: 'Ledger Seed',
+    name: 'runEntitySetup creates default ledgers for fresh entity',
+    run: async () => {
+      const { runEntitySetup } = await import('@/services/entity-setup-service');
+      const beforeRaw = localStorage.getItem('erp_group_ledger_definitions');
+      const before: Array<{ name: string }> = beforeRaw ? JSON.parse(beforeRaw) : [];
+      const beforeCount = before.length;
+      const result = runEntitySetup({
+        entityId: '__smoke_seed_1__',
+        entityName: 'SMOKE SEED 1',
+        shortCode: '__SK1__',
+        entityType: 'parent',
+        businessEntity: 'Private Limited',
+        industry: 'common',
+        businessActivity: 'Trading',
+        loadIndustryPack: true,
+        siblingEntities: [],
+        autoSeedDemo: false,
+      });
+      const afterRaw = localStorage.getItem('erp_group_ledger_definitions');
+      const after: Array<{ name: string }> = afterRaw ? JSON.parse(afterRaw) : [];
+      const created = after.length - beforeCount;
+      const ok = created >= 15 && result.ledgersCreated >= 0;
+      return { actual: `created=${created}, l4Groups=${result.l4GroupsCreated}`,
+        expected: 'created≥15 (default ledgers seeded for fresh entity)',
+        pass: ok, details: 'runEntitySetup orchestrator wired correctly' };
+    } },
+
+  { id: 'seed-2', section: 'Ledger Seed',
+    name: 'Re-run is idempotent · second call adds 0 new ledgers',
+    run: async () => {
+      const { runEntitySetup } = await import('@/services/entity-setup-service');
+      const opts = {
+        entityId: '__smoke_seed_2__',
+        entityName: 'SMOKE SEED 2',
+        shortCode: '__SK2__',
+        entityType: 'parent' as const,
+        businessEntity: 'Private Limited',
+        industry: 'common',
+        businessActivity: 'Trading',
+        loadIndustryPack: true,
+        siblingEntities: [],
+        autoSeedDemo: false,
+      };
+      runEntitySetup(opts);
+      const midRaw = localStorage.getItem('erp_group_ledger_definitions');
+      const mid: Array<{ name: string }> = midRaw ? JSON.parse(midRaw) : [];
+      const midCount = mid.length;
+      runEntitySetup(opts);
+      const finalRaw = localStorage.getItem('erp_group_ledger_definitions');
+      const final: Array<{ name: string }> = finalRaw ? JSON.parse(finalRaw) : [];
+      const delta = final.length - midCount;
+      const ok = delta === 0;
+      return { actual: `delta=${delta}, total=${final.length}`,
+        expected: 'delta=0 (idempotent · existing dedupe holds)',
+        pass: ok, details: 'existingNames.has() in createDefaultLedgers + loadIndustryPack works' };
+    } },
+
+  { id: 'seed-3', section: 'Ledger Seed',
+    name: 'Manufacturing industry pack adds L4 groups',
+    run: async () => {
+      const { runEntitySetup } = await import('@/services/entity-setup-service');
+      const beforeRaw = localStorage.getItem('erp_group_finframe_l4_groups');
+      const before: unknown[] = beforeRaw ? JSON.parse(beforeRaw) : [];
+      const beforeCount = before.length;
+      runEntitySetup({
+        entityId: '__smoke_seed_3__',
+        entityName: 'SMOKE SEED 3',
+        shortCode: '__SK3__',
+        entityType: 'parent',
+        businessEntity: 'Private Limited',
+        industry: 'manufacturing',
+        businessActivity: 'Manufacturing',
+        loadIndustryPack: true,
+        siblingEntities: [],
+        autoSeedDemo: false,
+      });
+      const afterRaw = localStorage.getItem('erp_group_finframe_l4_groups');
+      const after: unknown[] = afterRaw ? JSON.parse(afterRaw) : [];
+      const added = after.length - beforeCount;
+      const ok = added >= 1; // common+manufacturing may already exist from seed-1/2; tolerate
+      return { actual: `added=${added}, total=${after.length}`,
+        expected: 'added≥1 (Manufacturing pack wired into loadIndustryPack)',
+        pass: ok, details: 'Manufacturing industry pack key resolves correctly' };
+    } },
+
+  { id: 'seed-4', section: 'Ledger Seed',
+    name: 'D&C industry pack adds Construction-specific L4 groups',
+    run: async () => {
+      const { runEntitySetup } = await import('@/services/entity-setup-service');
+      const { L4_INDUSTRY_PACKS } = await import('@/data/finframe-seed-data');
+      const dcPackSize = L4_INDUSTRY_PACKS.d_and_c?.length ?? 0;
+      if (dcPackSize === 0) {
+        return { actual: 'd_and_c pack missing', expected: 'd_and_c pack with 8 ledgers',
+          pass: false, details: 'L4_INDUSTRY_PACKS.d_and_c not exported' };
+      }
+      runEntitySetup({
+        entityId: '__smoke_seed_4__',
+        entityName: 'SMOKE SEED 4',
+        shortCode: '__SK4__',
+        entityType: 'parent',
+        businessEntity: 'Private Limited',
+        industry: 'd_and_c',
+        businessActivity: 'Construction', // resolves via loadIndustryPack to 'd_and_c'
+        loadIndustryPack: true,
+        siblingEntities: [],
+        autoSeedDemo: false,
+      });
+      const afterRaw = localStorage.getItem('erp_group_finframe_l4_groups');
+      const after: Array<{ name: string }> = afterRaw ? JSON.parse(afterRaw) : [];
+      const dcLedgers = ['Project Work-in-Progress', 'Mobilization Advance Paid', 'Retention Money Receivable', 'Subcontractor Payable'];
+      const found = dcLedgers.filter(n => after.some(l => l.name === n)).length;
+      const ok = dcPackSize === 8 && found >= 3;
+      return { actual: `dcPackSize=${dcPackSize}, foundDCLedgers=${found}`,
+        expected: 'dcPackSize=8, foundDCLedgers≥3',
+        pass: ok, details: 'D&C pack contains Construction-specific ledgers · businessActivity match recognises Construction' };
+    } },
+
+  { id: 'seed-5', section: 'Ledger Seed',
+    name: 'Operator-renamed ledger preserved on re-run · original re-created alongside',
+    run: async () => {
+      const { runEntitySetup } = await import('@/services/entity-setup-service');
+      const opts = {
+        entityId: '__smoke_seed_5__',
+        entityName: 'SMOKE SEED 5',
+        shortCode: '__SK5__',
+        entityType: 'parent' as const,
+        businessEntity: 'Private Limited',
+        industry: 'common',
+        businessActivity: 'Trading',
+        loadIndustryPack: true,
+        siblingEntities: [],
+        autoSeedDemo: false,
+      };
+      runEntitySetup(opts);
+      const raw = localStorage.getItem('erp_group_ledger_definitions');
+      const all: Array<{ name: string; id: string }> = raw ? JSON.parse(raw) : [];
+      const idx = all.findIndex(l => l.name === 'Cash');
+      if (idx === -1) {
+        return { actual: 'Cash ledger not found', expected: 'Cash ledger exists',
+          pass: false, details: 'Seed missing Cash · cannot test rename' };
+      }
+      all[idx].name = 'Cash on Hand (Renamed)';
+      localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
+      runEntitySetup(opts);
+      const finalRaw = localStorage.getItem('erp_group_ledger_definitions');
+      const final: Array<{ name: string }> = finalRaw ? JSON.parse(finalRaw) : [];
+      const hasRenamed = final.some(l => l.name === 'Cash on Hand (Renamed)');
+      const hasOriginal = final.some(l => l.name === 'Cash');
+      const ok = hasRenamed && hasOriginal;
+      return { actual: `renamed=${hasRenamed}, original=${hasOriginal}, total=${final.length}`,
+        expected: 'renamed=true, original=true (rename preserved · default re-created · matches Tally Update Defaults)',
+        pass: ok, details: 'Operator rename preserved · original default re-created on re-run' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
