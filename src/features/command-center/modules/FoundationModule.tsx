@@ -177,6 +177,17 @@ export function FoundationModule() {
           href="/erp/foundation/geography"
           description="Countries, states, cities, ports, and sales regions."
         />
+        {/* T-T8.0-OrgTagFoundation — Org-Tag Coverage badge (NEW · additive · derived metadata table) */}
+        <StatCard
+          icon={<Database className="h-5 w-5" />}
+          title="Org-Tag Coverage"
+          value={orgTagCoverage.total === 0
+            ? 'No vouchers yet'
+            : `${orgTagCoverage.coveragePct}% (${orgTagCoverage.tagged}/${orgTagCoverage.total})`}
+          status={orgTagCoverage.coveragePct >= 95 ? 'ok' : orgTagCoverage.coveragePct >= 50 ? 'warn' : 'empty'}
+          href="/erp/smoke-test"
+          description="Vouchers tagged with org context (Entity + Branch + BU + Division + Department) — enables 5-tier reports."
+        />
       </div>
     </div>
   );
