@@ -25,7 +25,7 @@ interface PurchaseRegisterProps {
 export function PurchaseRegisterPanel({ entityCode, onNavigate }: PurchaseRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',   label: 'Date',       render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'party',  label: 'Vendor',     render: v => v.party_name ?? '—', exportKey: 'party_name', toggleKey: 'showPartyColumn' },
     { key: 'gstin',  label: 'GSTIN',      render: v => v.party_gstin ?? '—', exportKey: 'party_gstin', width: 'w-36' },
     { key: 'items',  label: 'Items',      render: v => v.inventory_lines?.length ?? 0, exportKey: v => v.inventory_lines?.length ?? 0, toggleKey: 'showLineItemCount', align: 'right', width: 'w-16' },
@@ -43,6 +43,7 @@ export function PurchaseRegisterPanel({ entityCode, onNavigate }: PurchaseRegist
     title: 'Purchase Register',
     voucherFilter: v => v.base_voucher_type === 'Purchase',
     drillDownType: 'Purchase',
+    reconciliationTarget: 'payment_register',
   }), []);
 
   const summaryBuilder = (filtered: Voucher[]): SummaryCard[] => {

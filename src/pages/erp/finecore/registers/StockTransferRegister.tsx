@@ -26,7 +26,7 @@ const totalQty = (lines?: VoucherInventoryLine[]) =>
 export function StockTransferRegisterPanel({ entityCode, onNavigate }: StockTransferRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',    label: 'Date',         render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',     label: 'Voucher No',   render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',     label: 'Voucher No',   render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'from',    label: 'From Godown',  render: v => v.from_godown_name ?? v.dispatch_dept_name ?? '—', exportKey: v => v.from_godown_name ?? v.dispatch_dept_name ?? '', toggleKey: 'showGodownColumn' },
     { key: 'to',      label: 'To Godown',    render: v => v.to_godown_name ?? v.receive_dept_name ?? '—', exportKey: v => v.to_godown_name ?? v.receive_dept_name ?? '', toggleKey: 'showGodownColumn' },
     { key: 'items',   label: 'Items',        render: v => v.inventory_lines?.length ?? 0, exportKey: v => v.inventory_lines?.length ?? 0, toggleKey: 'showLineItemCount', align: 'right', width: 'w-16' },

@@ -24,7 +24,7 @@ interface PaymentRegisterProps {
 export function PaymentRegisterPanel({ entityCode, onNavigate }: PaymentRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',   label: 'Date',          render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',    label: 'Voucher No',    render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',    label: 'Voucher No',    render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'party',  label: 'Party',         render: v => v.party_name ?? '—', exportKey: 'party_name', toggleKey: 'showPartyColumn' },
     { key: 'instr',  label: 'Instrument',    render: v => v.instrument_type ?? '—', exportKey: 'instrument_type', width: 'w-28' },
     { key: 'bank',   label: 'Bank',          render: v => v.bank_name ?? v.from_ledger_name ?? '—', exportKey: v => v.bank_name ?? v.from_ledger_name ?? '' },

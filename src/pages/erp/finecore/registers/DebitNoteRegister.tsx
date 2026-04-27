@@ -23,7 +23,7 @@ interface DebitNoteRegisterProps {
 export function DebitNoteRegisterPanel({ entityCode, onNavigate }: DebitNoteRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',   label: 'Date',       render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'party',  label: 'Vendor',     render: v => v.party_name ?? '—', exportKey: 'party_name', toggleKey: 'showPartyColumn' },
     { key: 'gstin',  label: 'GSTIN',      render: v => v.party_gstin ?? '—', exportKey: 'party_gstin', width: 'w-36' },
     { key: 'ref',    label: 'Ref Invoice',render: v => v.ref_voucher_no ?? '—', exportKey: 'ref_voucher_no', width: 'w-28' },

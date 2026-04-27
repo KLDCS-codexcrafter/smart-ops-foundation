@@ -34,7 +34,7 @@ const primaryGodown = (lines?: VoucherInventoryLine[]) => {
 export function StockAdjustmentRegisterPanel({ entityCode, onNavigate }: StockAdjustmentRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',    label: 'Date',           render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',     label: 'Voucher No',     render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',     label: 'Voucher No',     render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'dept',    label: 'Department',     render: v => v.department_name ?? '—', exportKey: 'department_name' },
     { key: 'items',   label: 'Items',          render: v => v.inventory_lines?.length ?? 0, exportKey: v => v.inventory_lines?.length ?? 0, toggleKey: 'showLineItemCount', align: 'right', width: 'w-16' },
     { key: 'netqty',  label: 'Net Qty Adjust', render: v => netQtyAdjust(v.inventory_lines).toFixed(2), exportKey: v => netQtyAdjust(v.inventory_lines), align: 'right' },

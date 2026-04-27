@@ -14,12 +14,17 @@
  * @consumers 13 register panels
  */
 
-import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText, FileDown, FileType2, FileCode } from 'lucide-react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  FileSpreadsheet, Search, FileText, FileDown, FileType2, FileCode,
+  Eye, Star, Trash2, GitMerge,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -30,6 +35,9 @@ import {
   Pagination, PaginationContent, PaginationItem, PaginationLink,
   PaginationPrevious, PaginationNext,
 } from '@/components/ui/pagination';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import type { Voucher } from '@/types/voucher';
@@ -42,12 +50,19 @@ import {
 } from '@/lib/voucher-export-engine';
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
+import type {
+  RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard, RegisterSavedView,
+} from './RegisterTypes';
 import {
   loadRegisterConfig, resolveToggles, resolveDefaultGroup,
 } from '@/lib/register-config-storage';
+import {
+  loadSavedViews, saveView, deleteView, setDefaultView,
+} from '@/lib/register-saved-views-storage';
 import { resolveGroupValue } from './RegisterGroupResolver';
+import { ReconciliationPanel } from './ReconciliationPanel';
 
 export interface RegisterGridProps {
   /** Active entity code — passed from FinCorePage. */
@@ -66,6 +81,13 @@ export interface RegisterGridProps {
    * Parent FinCorePage wires this to setActiveModule + DayBookPanel's initialFilters prop.
    */
   onNavigateToDayBook: (initialFilters: Partial<RegisterFilters> & { typeFilter?: string }) => void;
+  /**
+   * [T-T10-pre.2d-D] Optional drill-to-source-voucher callback. Fires when a
+   * column with `clickable: true` (typically the voucher-no cell) is clicked.
+   * When undefined, clickable cells gracefully degrade to plain text — backward
+   * compat preserved for parent pages that have not wired this prop yet.
+   */
+  onNavigateToVoucher?: (voucherId: string) => void;
 }
 
 const ROWS_PER_PAGE = 50;
@@ -77,7 +99,7 @@ const ROWS_PER_PAGE = 50;
  * @iso       Functional Suitability (HIGH) — all register concerns in one place.
  */
 export function RegisterGrid({
-  entityCode, meta, columns, summaryBuilder, onNavigateToDayBook,
+  entityCode, meta, columns, summaryBuilder, onNavigateToDayBook, onNavigateToVoucher,
 }: RegisterGridProps) {
   const { vouchers } = useVouchers(entityCode);
 
@@ -109,6 +131,72 @@ export function RegisterGrid({
     statusFilter: 'all',
   });
   const [page, setPage] = useState(1);
+
+  // [T-T10-pre.2d-D] Saved-view state. Loads on mount; default view auto-applies
+  // its filter snapshot exactly once per (entityCode, registerCode) change.
+  const [savedViews, setSavedViews] = useState<RegisterSavedView[]>(
+    () => loadSavedViews(entityCode, meta.registerCode),
+  );
+  useEffect(() => {
+    const views = loadSavedViews(entityCode, meta.registerCode);
+    setSavedViews(views);
+    const def = views.find(v => v.isDefault);
+    if (def) setFilters(def.filters);
+    // Effect intentionally narrow-scoped — re-runs only on entity/register switch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityCode, meta.registerCode]);
+
+  // [T-T10-pre.2d-D] Save / manage dialog state.
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [manageDialogOpen, setManageDialogOpen] = useState(false);
+  const [newViewName, setNewViewName] = useState('');
+  const [newViewIsDefault, setNewViewIsDefault] = useState(false);
+
+  // [T-T10-pre.2d-D] Reconciliation mode toggle. Only visible when meta declares
+  // a reconciliationTarget; renders <ReconciliationPanel> instead of the table.
+  const [reconMode, setReconMode] = useState(false);
+
+  const applyView = useCallback((view: RegisterSavedView) => {
+    setFilters(view.filters);
+    toast.success(`Applied view: ${view.name}`);
+  }, []);
+
+  const handleSaveView = useCallback(() => {
+    const name = newViewName.trim();
+    if (!name) { toast.error('Enter a view name'); return; }
+    const view: RegisterSavedView = {
+      id: `view-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name,
+      filters,
+      columnToggles: effectiveToggles,
+      groupBy: effectiveGroup,
+      createdAt: new Date().toISOString(),
+      isDefault: newViewIsDefault,
+    };
+    saveView(entityCode, meta.registerCode, view);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    setSaveDialogOpen(false);
+    setNewViewName('');
+    setNewViewIsDefault(false);
+    toast.success(`Saved view: ${name}`);
+  }, [entityCode, meta.registerCode, filters, effectiveToggles, effectiveGroup, newViewName, newViewIsDefault]);
+
+  const handleDeleteView = useCallback((viewId: string) => {
+    deleteView(entityCode, meta.registerCode, viewId);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    toast.success('View deleted');
+  }, [entityCode, meta.registerCode]);
+
+  const handleSetDefault = useCallback((viewId: string) => {
+    setDefaultView(entityCode, meta.registerCode, viewId);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    toast.success('Default view updated');
+  }, [entityCode, meta.registerCode]);
+
+  const handleVoucherNoClick = useCallback((e: React.MouseEvent, v: Voucher) => {
+    e.stopPropagation(); // preserve existing row-click → DayBook drill
+    if (onNavigateToVoucher) onNavigateToVoucher(v.id);
+  }, [onNavigateToVoucher]);
 
   // [Analytical] Scope → date range → search → status → sort chronological
   const filtered = useMemo(() => {
@@ -249,7 +337,54 @@ export function RegisterGrid({
           <h2 className="text-lg font-bold">{meta.title}</h2>
           <Badge variant="outline" className="text-[10px]">{filtered.length} rows</Badge>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* [T-T10-pre.2d-D] Saved Views dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Eye className="h-3.5 w-3.5 mr-1" /> Views
+                {savedViews.length > 0 && (
+                  <Badge variant="outline" className="ml-1 text-[9px] h-4">{savedViews.length}</Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+              {savedViews.length === 0 && (
+                <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                  No saved views yet
+                </DropdownMenuItem>
+              )}
+              {savedViews.map(v => (
+                <DropdownMenuItem key={v.id} onClick={() => applyView(v)} className="text-xs">
+                  {v.isDefault && <Star className="h-3 w-3 mr-1 text-amber-500 fill-amber-500" />}
+                  {v.name}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setSaveDialogOpen(true)} className="text-xs">
+                + Save current view
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setManageDialogOpen(true)}
+                disabled={savedViews.length === 0}
+                className="text-xs"
+              >
+                Manage views…
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* [T-T10-pre.2d-D] Reconciliation View toggle (only when meta declares a target) */}
+          {meta.reconciliationTarget && (
+            <Button
+              variant={reconMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setReconMode(m => !m)}
+            >
+              <GitMerge className="h-3.5 w-3.5 mr-1" /> Reconciliation
+            </Button>
+          )}
+
           <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
             <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
           </Button>
@@ -324,8 +459,15 @@ export function RegisterGrid({
         </div>
       )}
 
-      {/* Table */}
-      {filtered.length === 0 ? (
+      {/* [T-T10-pre.2d-D] Reconciliation View — split-pane match status. */}
+      {reconMode && meta.reconciliationTarget ? (
+        <ReconciliationPanel
+          sourceVouchers={filtered}
+          sourceRegister={meta.registerCode}
+          targetRegister={meta.reconciliationTarget}
+          entityCode={entityCode}
+        />
+      ) : filtered.length === 0 ? (
         <Card><CardContent className="p-10 text-center">
           <FileText className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
           <p className="text-sm text-muted-foreground">No vouchers in this period</p>
@@ -352,7 +494,19 @@ export function RegisterGrid({
                     {visibleColumns.map(col => (
                       <TableCell key={col.key}
                         className={`text-xs ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''}`}>
-                        {col.render(v)}
+                        {/* [T-T10-pre.2d-D] Drill-to-source — when col.clickable + onNavigateToVoucher both set,
+                            cell becomes a button. e.stopPropagation prevents row-click DayBook drill from also firing. */}
+                        {col.clickable && onNavigateToVoucher ? (
+                          <button
+                            type="button"
+                            onClick={(e) => handleVoucherNoClick(e, v)}
+                            className="text-primary hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                          >
+                            {col.render(v)}
+                          </button>
+                        ) : (
+                          col.render(v)
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -384,6 +538,88 @@ export function RegisterGrid({
           </p>
         </>
       )}
+
+      {/* [T-T10-pre.2d-D] Save Current View dialog */}
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save current view</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="view-name" className="text-xs">View name</Label>
+              <Input
+                id="view-name"
+                value={newViewName}
+                onChange={e => setNewViewName(e.target.value)}
+                placeholder="e.g. April GST review"
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="view-default"
+                checked={newViewIsDefault}
+                onCheckedChange={c => setNewViewIsDefault(c === true)}
+              />
+              <Label htmlFor="view-default" className="text-xs cursor-pointer">
+                Set as default (auto-applies on register open)
+              </Label>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Captures current filters · column toggles · grouping. Stored per entity + register.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
+            <Button data-primary size="sm" onClick={handleSaveView}>Save view</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* [T-T10-pre.2d-D] Manage Views dialog */}
+      <Dialog open={manageDialogOpen} onOpenChange={setManageDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage saved views</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {savedViews.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-6">No saved views yet</p>
+            )}
+            {savedViews.map(v => (
+              <div key={v.id} className="flex items-center justify-between gap-2 p-2 border rounded-md">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  {v.isDefault && <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500 shrink-0" />}
+                  <span className="text-sm truncate">{v.name}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSetDefault(v.id)}
+                    disabled={v.isDefault}
+                    className="text-[10px] h-7"
+                  >
+                    Set default
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteView(v.id)}
+                    className="h-7 w-7 p-0"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setManageDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -15,7 +15,7 @@
 
 import type { ReactNode } from 'react';
 import type { Voucher } from '@/types/voucher';
-import type { RegisterTypeCode, RegisterToggles } from '@/types/register-config';
+import type { RegisterTypeCode, RegisterToggles, RegisterGroupKey } from '@/types/register-config';
 
 /**
  * [Abstract] Generic register column. Each register supplies its own column array.
@@ -46,6 +46,12 @@ export interface RegisterColumn<T = Voucher> {
   exportKey?: keyof T | ((row: T) => string | number | null);
   /** Optional export header override. Default: label. */
   exportLabel?: string;
+  /**
+   * [T-T10-pre.2d-D] When true, the cell becomes a clickable button that
+   * invokes RegisterGrid's onNavigateToVoucher callback. Used for voucher-no
+   * cells to drill to source voucher in read-only mode.
+   */
+  clickable?: boolean;
 }
 
 /**
@@ -84,4 +90,40 @@ export interface RegisterMeta {
    * If drillDownType is set and user clicks a row, DayBook opens with typeFilter = drillDownType.
    */
   drillDownType: string;
+  /**
+   * [T-T10-pre.2d-D] Optional reconciliation target register-code.
+   * When set, the "Reconciliation" toggle button is enabled in the toolbar.
+   * When undefined, the toggle is hidden. The 4 declared pairs are:
+   *  - sales_register      → receipt_register   (paid/unpaid via bill_references)
+   *  - purchase_register   → payment_register   (paid/unpaid via bill_references)
+   *  - delivery_note_register → sales_register  (delivered-but-not-invoiced via so_ref)
+   *  - receipt_note_register  → purchase_register (received-but-not-billed via po_ref / vendor_bill_no)
+   */
+  reconciliationTarget?: RegisterTypeCode;
+}
+
+/**
+ * [T-T10-pre.2d-D] Saved view snapshot — captures filters + group key (column
+ * toggles live in RegisterConfig; this snapshot also stores them so per-view
+ * column visibility works without mutating the entity-wide config).
+ *
+ * Persisted per (entityCode, registerType) via register-saved-views-storage.
+ * Exactly one view per (entity, registerType) may have isDefault === true;
+ * the storage layer enforces this invariant.
+ */
+export interface RegisterSavedView {
+  /** Stable id (e.g. `view-${Date.now()}-${rand}`). */
+  id: string;
+  /** User-editable display name. */
+  name: string;
+  /** Filter snapshot at save time. */
+  filters: RegisterFilters;
+  /** Column-toggle snapshot at save time (full RegisterToggles map). */
+  columnToggles: RegisterToggles;
+  /** Group-by snapshot at save time. */
+  groupBy: RegisterGroupKey;
+  /** ISO timestamp. */
+  createdAt: string;
+  /** When true, this view auto-applies on register open. At most one per (entity, registerType). */
+  isDefault: boolean;
 }
