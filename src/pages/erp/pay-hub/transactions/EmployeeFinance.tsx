@@ -682,6 +682,9 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                       {adv.status === 'approved' && (
                         <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => recoverAdvance(adv.id)}>Recovered</Button>
                       )}
+                      {/* [T-T8.4-Requisition-Universal] Request Payment button · additive */}
+                      <Button size="sm" variant="outline" className="h-7 text-[10px]"
+                        onClick={() => navigate(`/erp/payout/requisition?type=employee_advance&linkedId=${adv.id}`)}>Request Payment</Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -733,6 +736,9 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                       {exp.status === 'approved' && (
                         <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => reimburseExpense(exp.id)}>Reimburse</Button>
                       )}
+                      {/* [T-T8.4-Requisition-Universal] Request Payment button · additive */}
+                      <Button size="sm" variant="outline" className="h-7 text-[10px]"
+                        onClick={() => navigate(`/erp/payout/requisition?type=employee_reimbursement&linkedId=${exp.id}`)}>Request Payment</Button>
                     </div>
                   </TableCell>
                 </TableRow>
