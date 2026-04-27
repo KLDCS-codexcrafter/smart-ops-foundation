@@ -4,10 +4,12 @@
  * [JWT] Replace MOCK object with real API queries.
  */
 import { useNavigate } from 'react-router-dom';
-import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { Building, Building2, GitBranch, Layers, MapPin, Network, ArrowRight, CheckCircle, AlertCircle, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BranchOffice } from '@/types/branch-office';
+// [T-T8.0-OrgTagFoundation] Org-Tag Coverage badge · derived metadata table (D-128 preserved).
+import { getOrgTagCoverage } from '@/lib/voucher-org-tag-engine';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
