@@ -2294,6 +2294,174 @@ const CHECKS: CheckSpec[] = [
         expected: 'vendors=2, open=2, breached=1, breached_amt=40000, disallowed=40000, open_amt=100000',
         pass: ok, details: 'Aggregate KPIs feed PayOutDashboard MSME Alerts card and MSMEAlerts dashboard' };
     } },
+
+  // ── T-T8.6-VendorAnalytics · 5-tier vendor performance analytics ────────────
+  { id: 'analytics-1', section: 'Vendor Analytics',
+    name: 'getTopVendorsBySpend orders vendors by spend desc within entity slice',
+    run: async () => {
+      const { getTopVendorsBySpend } = await import('@/lib/vendor-analytics-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { VOUCHER_ORG_TAGS_KEY } = await import('@/types/voucher-org-tag');
+      const ent = '__SMK_ANL1__';
+      const entityId = 'ent-anl1';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'va1', name: 'Vendor A', msmeRegistered: false, msmeCategory: null, creditDays: 30 },
+        { id: 'vb1', name: 'Vendor B', msmeRegistered: false, msmeCategory: null, creditDays: 30 },
+      ]));
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'pi-a1', voucher_no: 'PI/A1', date: '2025-04-01', party_id: 'va1', entity_id: entityId,
+          base_voucher_type: 'Purchase', net_amount: 100000, gross_amount: 100000, status: 'posted' },
+        { id: 'pi-b1', voucher_no: 'PI/B1', date: '2025-04-02', party_id: 'vb1', entity_id: entityId,
+          base_voucher_type: 'Purchase', net_amount: 50000,  gross_amount: 50000,  status: 'posted' },
+      ]));
+      localStorage.setItem(VOUCHER_ORG_TAGS_KEY, JSON.stringify([
+        { voucher_id: 'pi-a1', entity_id: entityId, tagged_by: 'tester', tagged_at: '2025-04-01' },
+        { voucher_id: 'pi-b1', entity_id: entityId, tagged_by: 'tester', tagged_at: '2025-04-02' },
+      ]));
+      const top = getTopVendorsBySpend(ent, { entity_id: entityId }, 10);
+      const ok = top.length === 2 && top[0].vendor_id === 'va1' && top[1].vendor_id === 'vb1'
+        && top[0].rank === 1 && top[0].total_spend === 100000;
+      return { actual: `len=${top.length}, first=${top[0]?.vendor_id}/${top[0]?.total_spend}, second=${top[1]?.vendor_id}/${top[1]?.total_spend}`,
+        expected: 'len=2, first=va1/100000, second=vb1/50000',
+        pass: ok, details: 'Top-N ordering by total Purchase+Payment net_amount desc' };
+    } },
+
+  { id: 'analytics-2', section: 'Vendor Analytics',
+    name: 'getVendorPaymentCycleTime computes days via against_ref bill_references',
+    run: async () => {
+      const { getVendorPaymentCycleTime } = await import('@/lib/vendor-analytics-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_ANL2__';
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'pi-2', voucher_no: 'PI/2', date: '2025-04-01', party_id: 'vc2',
+          base_voucher_type: 'Purchase', net_amount: 80000, gross_amount: 80000, status: 'posted' },
+        { id: 'pv-2', voucher_no: 'PV/2', date: '2025-05-01', party_id: 'vc2',
+          base_voucher_type: 'Payment',  net_amount: 80000, gross_amount: 80000, status: 'posted',
+          bill_references: [{ voucher_id: 'pi-2', voucher_no: 'PI/2', voucher_date: '2025-04-01',
+            amount: 80000, type: 'against_ref' }] },
+      ]));
+      const cycle = getVendorPaymentCycleTime(ent, 'vc2');
+      const ok = cycle === 30;
+      return { actual: `cycle=${cycle}`, expected: 'cycle=30 (Apr 1 → May 1)',
+        pass: ok, details: 'Cycle = days between Purchase Invoice and earliest against_ref Payment' };
+    } },
+
+  { id: 'analytics-3', section: 'Vendor Analytics',
+    name: 'getVendorAdvanceUtilization correct from AdvanceEntry adjustments',
+    run: async () => {
+      const { getVendorAdvanceUtilization } = await import('@/lib/vendor-analytics-engine');
+      const { advancesKey } = await import('@/types/compliance');
+      const ent = '__SMK_ANL3__';
+      localStorage.setItem(advancesKey(ent), JSON.stringify([
+        { id: 'a1', advance_ref_no: 'ADVP/26/0001', entity_id: ent, party_type: 'vendor',
+          party_id: 'vd3', party_name: 'Vendor D', date: '2025-04-01',
+          source_voucher_id: 'pv-a1', source_voucher_no: 'PV/A1',
+          advance_amount: 100000, tds_amount: 0, net_amount: 100000,
+          adjustments: [
+            { invoice_id: 'inv-x', invoice_no: 'PI/X', amount_adjusted: 60000, tds_adjusted: 0, date: '2025-05-01' },
+          ],
+          balance_amount: 40000, tds_balance: 0,
+          status: 'partial', tds_status: 'na',
+          created_at: '2025-04-01', updated_at: '2025-05-01' },
+      ]));
+      const util = getVendorAdvanceUtilization(ent, 'vd3');
+      const ok = util === 60;
+      return { actual: `util=${util}%`, expected: 'util=60% (60000/100000)',
+        pass: ok, details: 'Advance utilization = Σ adjustments / Σ advance_amount × 100' };
+    } },
+
+  { id: 'analytics-4', section: 'Vendor Analytics',
+    name: 'getVendorMSMEBreachRate reuses B.5 engine · per-vendor breach %',
+    run: async () => {
+      const { getVendorMSMEBreachRate } = await import('@/lib/vendor-analytics-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_ANL4__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 've4', name: 'Vendor E Micro', msmeRegistered: true,
+          msmeCategory: 'micro', creditDays: 0 },
+      ]));
+      const longAgo = new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10);
+      const recent  = new Date(Date.now() - 2  * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'pi-e4-old', voucher_no: 'PI/E4/01', date: longAgo, party_id: 've4',
+          base_voucher_type: 'Purchase', net_amount: 30000, gross_amount: 30000, status: 'posted' },
+        { id: 'pi-e4-new', voucher_no: 'PI/E4/02', date: recent, party_id: 've4',
+          base_voucher_type: 'Purchase', net_amount: 30000, gross_amount: 30000, status: 'posted' },
+      ]));
+      const rate = getVendorMSMEBreachRate(ent, 've4');
+      const ok = rate === 50;
+      return { actual: `rate=${rate}%`, expected: 'rate=50% (1 breached / 2 invoices)',
+        pass: ok, details: 'Per-vendor breach rate uses B.5 getMSMEBreaches output' };
+    } },
+
+  { id: 'analytics-5', section: 'Vendor Analytics',
+    name: 'getVoucherIdsForSlice with department filter uses B.0 getVouchersByDepartment',
+    run: async () => {
+      const { getVoucherIdsForSlice } = await import('@/lib/vendor-analytics-engine');
+      const { VOUCHER_ORG_TAGS_KEY } = await import('@/types/voucher-org-tag');
+      const entityId = 'ent-anl5';
+      const deptId = 'dept-finance';
+      localStorage.setItem(VOUCHER_ORG_TAGS_KEY, JSON.stringify([
+        { voucher_id: 'v-d1', entity_id: entityId, department_id: deptId, tagged_by: 't', tagged_at: 'x' },
+        { voucher_id: 'v-d2', entity_id: entityId, department_id: 'dept-other', tagged_by: 't', tagged_at: 'x' },
+        { voucher_id: 'v-d3', entity_id: entityId, department_id: deptId, tagged_by: 't', tagged_at: 'x' },
+      ]));
+      const ids = getVoucherIdsForSlice({ entity_id: entityId, department_id: deptId });
+      const ok = ids.size === 2 && ids.has('v-d1') && ids.has('v-d3') && !ids.has('v-d2');
+      return { actual: `size=${ids.size}, members=[${[...ids].sort().join(',')}]`,
+        expected: 'size=2, members=[v-d1,v-d3]',
+        pass: ok, details: 'Department slice intersects entity set with B.0 getVouchersByDepartment' };
+    } },
+
+  { id: 'analytics-6', section: 'Vendor Analytics',
+    name: 'Multi-tier slice (entity + department) returns Set intersection · excludes mismatched',
+    run: async () => {
+      const { getVoucherIdsForSlice } = await import('@/lib/vendor-analytics-engine');
+      const { VOUCHER_ORG_TAGS_KEY } = await import('@/types/voucher-org-tag');
+      const entityA = 'ent-A';
+      const entityB = 'ent-B';
+      const deptId = 'dept-IT';
+      localStorage.setItem(VOUCHER_ORG_TAGS_KEY, JSON.stringify([
+        { voucher_id: 'v-1', entity_id: entityA, department_id: deptId, tagged_by: 't', tagged_at: 'x' },
+        { voucher_id: 'v-2', entity_id: entityB, department_id: deptId, tagged_by: 't', tagged_at: 'x' },
+        { voucher_id: 'v-3', entity_id: entityA, tagged_by: 't', tagged_at: 'x' },
+      ]));
+      const ids = getVoucherIdsForSlice({ entity_id: entityA, department_id: deptId });
+      const ok = ids.size === 1 && ids.has('v-1');
+      return { actual: `size=${ids.size}, members=[${[...ids].join(',')}]`,
+        expected: 'size=1, members=[v-1]',
+        pass: ok, details: 'Set intersection of entity ∩ department · cross-entity tag excluded' };
+    } },
+
+  { id: 'analytics-7', section: 'Vendor Analytics',
+    name: 'Empty data graceful · all functions return [] / 0 / null without throwing',
+    run: async () => {
+      const eng = await import('@/lib/vendor-analytics-engine');
+      const ent = '__SMK_ANL7__';
+      localStorage.removeItem('erp_group_vendor_master');
+      localStorage.removeItem(`erp_group_vouchers_${ent}`);
+      localStorage.removeItem(`erp_advances_${ent}`);
+      const slice = { entity_id: 'ent-empty' };
+      try {
+        const top    = eng.getTopVendorsBySpend(ent, slice);
+        const cycle  = eng.getVendorPaymentCycleTime(ent, 'no-vendor');
+        const util   = eng.getVendorAdvanceUtilization(ent, 'no-vendor');
+        const breach = eng.getVendorMSMEBreachRate(ent, 'no-vendor');
+        const tds    = eng.getVendorTDSCompliance(ent, 'no-vendor');
+        const all    = eng.getVendorAnalyticsForSlice(ent, slice);
+        const dist   = eng.getVendorCountByDimension(ent, 'department', slice);
+        const ok = Array.isArray(top) && top.length === 0
+          && cycle === null && util === 0 && breach === 0 && tds === 100
+          && all.length === 0 && Array.isArray(dist) && dist.length === 0;
+        return { actual: `top=${top.length}, cycle=${cycle}, util=${util}, breach=${breach}, tds=${tds}, all=${all.length}, dist=${dist.length}`,
+          expected: 'top=0, cycle=null, util=0, breach=0, tds=100, all=0, dist=0',
+          pass: ok, details: 'Pure-query engine returns safe defaults when storage empty · zero exceptions' };
+      } catch (err) {
+        return { actual: `threw: ${(err as Error).message}`,
+          expected: 'no exception',
+          pass: false, details: 'Engine must be exception-safe on empty data' };
+      }
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
