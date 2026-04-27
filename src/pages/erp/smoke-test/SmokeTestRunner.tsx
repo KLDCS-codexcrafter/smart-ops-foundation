@@ -1251,7 +1251,7 @@ const CHECKS: CheckSpec[] = [
 
   // ── T-T10-pre.2c-TallyNative · 5 smoke checks for Tally XML + JSON export ──
   { id: 'tally-1', section: 'Tally Export',
-    name: 'Tally XML envelope contains required Tally headers',
+    name: 'Tally XML envelope contains required Tally headers + parses as well-formed XML',
     run: () => {
       const v = buildTallyFixtureVoucher();
       const { xml } = buildTallyVoucherXML(v, 'Create', 'Acme Pvt Ltd');
@@ -1259,14 +1259,18 @@ const CHECKS: CheckSpec[] = [
       const hasImport = xml.includes('<TALLYREQUEST>Import</TALLYREQUEST>');
       const hasMsg = xml.includes('<TALLYMESSAGE');
       const hasCompany = xml.includes('<SVCURRENTCOMPANY>Acme Pvt Ltd</SVCURRENTCOMPANY>');
-      const ok = hasEnv && hasImport && hasMsg && hasCompany;
-      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}`,
-        expected: 'all four envelope markers present',
-        pass: ok, details: `XML length=${xml.length}` };
+      // [D-3 · I-28] DOMParser well-formedness check — no <parsererror> nodes.
+      const doc = new DOMParser().parseFromString(xml, 'application/xml');
+      const parserErrors = doc.getElementsByTagName('parsererror').length;
+      const wellFormed = parserErrors === 0;
+      const ok = hasEnv && hasImport && hasMsg && hasCompany && wellFormed;
+      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}, parserErrors=${parserErrors}`,
+        expected: 'all four envelope markers + 0 parser errors',
+        pass: ok, details: `XML length=${xml.length} · DOMParser parsererror count=${parserErrors}` };
     } },
 
   { id: 'tally-2', section: 'Tally Export',
-    name: 'Tally JSON envelope mirrors XML hierarchy',
+    name: 'Tally JSON envelope mirrors XML hierarchy + survives JSON round-trip',
     run: () => {
       const v = buildTallyFixtureVoucher();
       const { json } = buildTallyVoucherJSON(v, 'Create', 'Acme Pvt Ltd');
@@ -1275,10 +1279,14 @@ const CHECKS: CheckSpec[] = [
       const hasHeader = env?.HEADER?.TALLYREQUEST === 'Import';
       const msgs = env?.BODY?.DATA?.TALLYMESSAGE;
       const hasMsg = Array.isArray(msgs) && msgs.length === 1;
-      const ok = hasHeader && hasMsg;
-      return { actual: `header=${hasHeader}, messages=${Array.isArray(msgs) ? msgs.length : 'n/a'}`,
-        expected: 'header=true, messages=1',
-        pass: ok, details: 'JSON envelope shape matches XML' };
+      // [D-4 · I-29] Round-trip safety — re-serialised JSON must equal original.
+      const serialised = JSON.stringify(json);
+      const roundTripped = JSON.parse(serialised);
+      const roundTripOk = JSON.stringify(roundTripped) === serialised;
+      const ok = hasHeader && hasMsg && roundTripOk;
+      return { actual: `header=${hasHeader}, messages=${Array.isArray(msgs) ? msgs.length : 'n/a'}, roundTrip=${roundTripOk}`,
+        expected: 'header=true, messages=1, roundTrip=true',
+        pass: ok, details: `JSON envelope shape matches XML · serialised length=${serialised.length}` };
     } },
 
   { id: 'tally-3', section: 'Tally Export',
@@ -1318,6 +1326,73 @@ const CHECKS: CheckSpec[] = [
       return { actual: `xml=${xmlName}, json=${jsonName}, hooked=${hooked}`,
         expected: 'both filenames match · both hooks wired',
         pass: ok, details: 'Filename helper reused · no bespoke pattern' };
+    } },
+
+  // [D-2 · I-27] Three additional smoke checks (tally-6 .. tally-8) to bring
+  // the Tally Export section to the spec-mandated 8 checks.
+  { id: 'tally-6', section: 'Tally Export',
+    name: 'Receipt voucher (no inventory) emits ledger entries only',
+    run: () => {
+      const receipt: Voucher = {
+        ...buildTallyFixtureVoucher(),
+        id: 'tally-fix-rcpt', voucher_no: 'RCPT/TALLY/0001',
+        voucher_type_id: 'vt-receipt', voucher_type_name: 'Receipt',
+        base_voucher_type: 'Receipt',
+        ledger_lines: [
+          { id: 'rl-1', ledger_id: 'led-bank', ledger_code: 'L900',
+            ledger_name: 'HDFC Bank', ledger_group_code: 'BANK_ACCOUNTS',
+            dr_amount: 11800, cr_amount: 0, narration: '' },
+          { id: 'rl-2', ledger_id: 'led-acme', ledger_code: 'L001',
+            ledger_name: 'Acme Industries Pvt Ltd', ledger_group_code: 'SUNDRY_DEBTORS',
+            dr_amount: 0, cr_amount: 11800, narration: '' },
+        ],
+        inventory_lines: [],
+        total_taxable: 0, total_cgst: 0, total_sgst: 0, total_igst: 0,
+        total_cess: 0, total_tax: 0, gross_amount: 11800, net_amount: 11800,
+      };
+      const { xml } = buildTallyVoucherXML(receipt, 'Create');
+      const hasLedger = xml.includes('<ALLLEDGERENTRIES.LIST>');
+      const hasInventory = xml.includes('<ALLINVENTORYENTRIES.LIST>');
+      const ok = hasLedger && !hasInventory;
+      return { actual: `ledger=${hasLedger}, inventory=${hasInventory}`,
+        expected: 'ledger=true, inventory=false',
+        pass: ok, details: 'Receipt voucher correctly omits ALLINVENTORYENTRIES.LIST' };
+    } },
+
+  { id: 'tally-7', section: 'Tally Export',
+    name: 'Manufacturing Journal emits BOMNAME + multiple inventory entries',
+    run: () => {
+      const base = buildTallyFixtureVoucher();
+      const mj: Voucher = {
+        ...base,
+        id: 'tally-fix-mj', voucher_no: 'MJ/TALLY/0001',
+        voucher_type_id: 'vt-mj', voucher_type_name: 'Manufacturing Journal',
+        base_voucher_type: 'Manufacturing Journal',
+        bom_id: 'bom-1',
+        inventory_lines: [
+          { ...base.inventory_lines![0], id: 'mi-1', item_code: 'RM-001', item_name: 'Steel Rod' },
+          { ...base.inventory_lines![0], id: 'mi-2', item_code: 'RM-002', item_name: 'Copper Wire' },
+        ],
+      };
+      const { xml } = buildTallyVoucherXML(mj, 'Create');
+      const hasBom = xml.includes('<BOMNAME>');
+      const inventoryCount = (xml.match(/<ALLINVENTORYENTRIES\.LIST>/g) || []).length;
+      const ok = hasBom && inventoryCount >= 2;
+      return { actual: `bom=${hasBom}, inventoryEntries=${inventoryCount}`,
+        expected: 'bom=true, inventoryEntries≥2',
+        pass: ok, details: 'Manufacturing Journal carries BOMNAME + multi-component inventory' };
+    } },
+
+  { id: 'tally-8', section: 'Tally Export',
+    name: 'TallyExportConfig defaults match contract (format/action/staticVars)',
+    run: () => {
+      const formatOk = DEFAULT_TALLY_EXPORT_CONFIG.export_format === 'both';
+      const actionOk = DEFAULT_TALLY_EXPORT_CONFIG.default_action === 'Create';
+      const staticOk = DEFAULT_TALLY_EXPORT_CONFIG.include_static_variables === true;
+      const ok = formatOk && actionOk && staticOk;
+      return { actual: `format=${DEFAULT_TALLY_EXPORT_CONFIG.export_format}, action=${DEFAULT_TALLY_EXPORT_CONFIG.default_action}, static=${DEFAULT_TALLY_EXPORT_CONFIG.include_static_variables}`,
+        expected: 'format=both, action=Create, static=true',
+        pass: ok, details: 'ComplianceSettingsAutomation seed matches T10 spec contract' };
     } },
 ];
 
