@@ -3,6 +3,7 @@
  * 4-tab screen: Loans & Advances · Salary Advance · Expense Claims · Flexi Benefits
  */
 import React, { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, addMonths, parseISO } from 'date-fns';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
