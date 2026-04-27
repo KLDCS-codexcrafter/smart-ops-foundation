@@ -28,6 +28,8 @@ import { computeTDS } from '@/lib/tds-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import { processVendorPayment } from '@/lib/payment-engine';
 import type { BillReference } from '@/types/voucher';
+// [T-T8.3-AdvanceIntel] Advance toggle + proactive banner (additive)
+import { UnmatchedAdvanceBanner } from '@/components/payout/UnmatchedAdvanceBanner';
 
 interface VendorRef {
   id: string;
@@ -73,6 +75,9 @@ export default function VendorPaymentEntry() {
   const [tdsAmount, setTdsAmount] = useState(0);
   const [departmentId, setDepartmentId] = useState('');
   const [bills, setBills] = useState<BillReference[]>([]);
+  // [T-T8.3-AdvanceIntel] Payment purpose · 'advance' triggers finecore-engine
+  // auto-create AdvanceEntry via bill_references[].type='advance' at line 452-475.
+  const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
   const [saving, setSaving] = useState(false);
   const lastSavedRef = useRef(false);
 
