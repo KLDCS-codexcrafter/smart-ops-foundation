@@ -43,6 +43,27 @@ interface LedgerDef {
 const _PARTY_GROUPS = ['TREC', 'TPAY', 'STLA', 'LTLA', 'ADVRC'];
 void _PARTY_GROUPS;
 
+// [T-T8.1-LedgerSeed-Triggers] Default-ledger coverage stats for the status badge.
+// Heuristic: a ledger whose name matches a seed pack (common + manufacturing + trading + services + d_and_c)
+// is considered "seed". Everything else is "custom" (operator-added or renamed).
+function getDefaultLedgerCoverage(): { seed: number; custom: number; total: number } {
+  try {
+    // [JWT] GET /api/accounting/ledger-definitions
+    const raw = localStorage.getItem('erp_group_ledger_definitions');
+    const all: Array<{ name: string }> = raw ? JSON.parse(raw) : [];
+    const seedNames = new Set<string>([
+      ...L4_INDUSTRY_PACKS.common.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.manufacturing.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.trading.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.services.map(p => p.name.toLowerCase()),
+      ...L4_INDUSTRY_PACKS.d_and_c.map(p => p.name.toLowerCase()),
+    ]);
+    const seed = all.filter(l => seedNames.has((l.name ?? '').toLowerCase())).length;
+    return { seed, custom: all.length - seed, total: all.length };
+  } catch {
+    return { seed: 0, custom: 0, total: 0 };
+  }
+}
 export function OpeningLedgerBalanceModule() {
   const { entityCode } = useEntityCode();
   if (!entityCode) {
