@@ -113,6 +113,8 @@ const BillSettlement = lazy(() => import('./pages/erp/payout/BillSettlement'));
 const PaymentRequisitionEntry = lazy(() => import('./pages/erp/payout/PaymentRequisitionEntry'));
 const RequisitionInbox = lazy(() => import('./pages/erp/payout/RequisitionInbox'));
 const RequisitionHistory = lazy(() => import('./pages/erp/payout/RequisitionHistory'));
+// [T-T8.5-MSME-Compliance] MSME 43B(h) Alerts dashboard
+const MSMEAlerts = lazy(() => import('./pages/erp/payout/MSMEAlerts'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -365,6 +367,8 @@ const App = () => (
                 <Route path="requisition" element={<PaymentRequisitionEntry />} />
                 <Route path="requisition-inbox" element={<RequisitionInbox />} />
                 <Route path="requisition-history" element={<RequisitionHistory />} />
+                {/* T-T8.5-MSME-Compliance · MSME 43B(h) Alerts */}
+                <Route path="msme-alerts" element={<MSMEAlerts />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />

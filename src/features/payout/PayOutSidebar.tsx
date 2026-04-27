@@ -40,8 +40,8 @@ const PAYOUT_MENU: PayOutMenuItem[] = [
   { id: 'po-requisition',       label: 'Payment Requisition', icon: FileText,        route: '/erp/payout/requisition' },
   { id: 'po-requisition-inbox', label: 'Requisition Inbox',   icon: FileText,        route: '/erp/payout/requisition-inbox' },
   { id: 'po-requisition-hist',  label: 'Requisition History', icon: FileText,        route: '/erp/payout/requisition-history' },
-  // [B.5 stub] MSME 43B(h) compliance
-  { id: 'po-msme',              label: 'MSME Compliance',     icon: AlertTriangle,   comingSoon: 'B.5' },
+  // [T-T8.5-MSME-Compliance] MSME 43B(h) compliance · ACTIVATED
+  { id: 'po-msme',              label: 'MSME Compliance',     icon: AlertTriangle,   route: '/erp/payout/msme-alerts' },
   // [B.6 stub] 5-tier Vendor Analytics
   { id: 'po-vendor-analytics',  label: 'Vendor Analytics',    icon: BarChart3,       comingSoon: 'B.6' },
   // [B.7 stub] Bulk Pay · maker-checker · Smart AP

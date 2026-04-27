@@ -12,6 +12,8 @@ import { Wallet, Clock, AlertTriangle, ArrowRightCircle, Plus, ListChecks } from
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
+// [T-T8.5-MSME-Compliance] live 43B(h) breach count for MSME Alerts KPI
+import { compute43BhSummary } from '@/lib/msme-43bh-engine';
 
 function ls<T>(key: string): T[] {
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }
@@ -35,10 +37,12 @@ export default function PayOutDashboard() {
     const recent = [...vouchers]
       .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''))
       .slice(0, 5);
+    // [T-T8.5-MSME-Compliance] real breach count from msme-43bh-engine (pure query)
+    const msmeSummary = compute43BhSummary(entityCode);
     return {
       pendingCount: drafts.length,
       todaysOutflow: todays.reduce((s, v) => s + (v.net_amount || 0), 0),
-      msmePlaceholder: 0, // [B.5] populated by MSME 43B(h) engine
+      msmePlaceholder: msmeSummary.breached_count,
       openAdvances: advances.length,
       recent,
     };
@@ -47,7 +51,7 @@ export default function PayOutDashboard() {
   const cards = [
     { label: 'Pending Payments', value: String(stats.pendingCount), icon: Clock, tone: 'text-amber-600', sub: 'Drafts awaiting post' },
     { label: "Today's Outflow",  value: inr(stats.todaysOutflow), icon: ArrowRightCircle, tone: 'text-violet-600', sub: 'Posted today' },
-    { label: 'MSME Alerts',      value: String(stats.msmePlaceholder), icon: AlertTriangle, tone: 'text-muted-foreground', sub: 'B.5 — 43B(h) tracker' },
+    { label: 'MSME Alerts',      value: String(stats.msmePlaceholder), icon: AlertTriangle, tone: stats.msmePlaceholder > 0 ? 'text-destructive' : 'text-muted-foreground', sub: '43B(h) breached invoices' },
     { label: 'Open Advances',    value: String(stats.openAdvances), icon: Wallet, tone: 'text-blue-600', sub: 'Vendor advances pending settlement' },
   ];
 

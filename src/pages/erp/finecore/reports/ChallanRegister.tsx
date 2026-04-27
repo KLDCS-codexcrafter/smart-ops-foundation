@@ -14,12 +14,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertTriangle, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today } from './reportUtils';
 import type { ChallanEntry, TDSDeductionEntry } from '@/types/compliance';
 import { challansKey, tdsDeductionsKey } from '@/types/compliance';
+// [T-T8.5-MSME-Compliance] Generate-from-PayOut pulls statutory PaymentRequisitions
+import type { PaymentRequisition } from '@/types/payment-requisition';
+import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 
@@ -101,11 +104,37 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
 
   const totalDeposited = challans.filter(c => c.status === 'paid').reduce((s, c) => s + c.amount, 0);
 
+  // [T-T8.5-MSME-Compliance · per Q-EE a] Generate from PayOut · pulls
+  // paid statutory_* PaymentRequisitions and pre-fills challan amount.
+  const handleGenerateFromPayOut = useCallback(() => {
+    try {
+      // [JWT] GET /api/payout/requisitions/:entity?type=statutory_*&status=paid
+      const raw = localStorage.getItem(paymentRequisitionsKey(entityCode));
+      const reqs: PaymentRequisition[] = raw ? JSON.parse(raw) : [];
+      const statReqs = reqs.filter(r => r.request_type.startsWith('statutory_') && r.status === 'paid');
+      if (statReqs.length === 0) {
+        toast.info('No paid statutory requisitions to generate from');
+        return;
+      }
+      const total = statReqs.reduce((s, r) => s + r.amount, 0);
+      setForm(f => ({ ...f, amount: total }));
+      setEditId(null);
+      setSheetOpen(true);
+      toast.success(`Pre-filled challan with ₹${total.toLocaleString('en-IN')} from ${statReqs.length} requisition(s)`);
+    } catch {
+      toast.error('Failed to read PayOut requisitions');
+    }
+  }, [entityCode]);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div><h2 className="text-xl font-bold">Challan Register</h2><p className="text-xs text-muted-foreground">TDS challan deposit tracking</p></div>
-        <Button data-primary onClick={() => { setForm(emptyForm()); setEditId(null); setSheetOpen(true); }}><Plus className="h-4 w-4 mr-1" />Add New Challan</Button>
+        <div className="flex gap-2">
+          <Button data-primary onClick={() => { setForm(emptyForm()); setEditId(null); setSheetOpen(true); }}><Plus className="h-4 w-4 mr-1" />Add New Challan</Button>
+          {/* T-T8.5-MSME-Compliance · per Q-EE (a) — additive · no parallel register */}
+          <Button variant="outline" onClick={handleGenerateFromPayOut}><Layers className="h-4 w-4 mr-1" />Generate from PayOut</Button>
+        </div>
       </div>
 
       {dueAlerts.map(a => (

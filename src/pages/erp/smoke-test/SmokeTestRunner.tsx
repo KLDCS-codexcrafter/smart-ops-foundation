@@ -2137,6 +2137,163 @@ const CHECKS: CheckSpec[] = [
         expected: 'dept=1/vendor_invoice, founder=1/director_drawings, accounts=0',
         pass: ok, details: 'Inbox routing splits queues by role per ROUTING_RULES · statutory bypasses all queues' };
     } },
+
+  // ── [T-T8.5-MSME-Compliance · I-34] MSME 43B(h) engine smoke checks ──
+  { id: 'msme-1', section: 'MSME 43B(h)',
+    name: '15-day rule applies when vendor has no written agreement (creditDays <= 15)',
+    run: async () => {
+      const { getMSMEDeadlineForVendor } = await import('@/lib/msme-43bh-engine');
+      const vendor = { id: 'v-msme1', name: 'Micro Vendor 1', msmeRegistered: true,
+        msmeCategory: 'micro' as const, creditDays: 0 };
+      const d = getMSMEDeadlineForVendor(vendor, '2026-04-01');
+      // 2026-04-01 + 15 = 2026-04-16
+      const ok = d.days_allowed === 15 && d.rule === 'no_agreement_15_days' && d.deadline_date === '2026-04-16';
+      return { actual: `days=${d.days_allowed}, rule=${d.rule}, deadline=${d.deadline_date}`,
+        expected: 'days=15, rule=no_agreement_15_days, deadline=2026-04-16',
+        pass: ok, details: '43B(h) statute: 15-day window when no written agreement (proxy: creditDays <= 15)' };
+    } },
+
+  { id: 'msme-2', section: 'MSME 43B(h)',
+    name: '45-day rule applies when written agreement exists (creditDays > 15)',
+    run: async () => {
+      const { getMSMEDeadlineForVendor } = await import('@/lib/msme-43bh-engine');
+      const vendor = { id: 'v-msme2', name: 'Small Vendor 2', msmeRegistered: true,
+        msmeCategory: 'small' as const, creditDays: 45 };
+      const d = getMSMEDeadlineForVendor(vendor, '2026-04-01');
+      // 2026-04-01 + 45 = 2026-05-16
+      const ok = d.days_allowed === 45 && d.rule === 'with_agreement_45_days' && d.deadline_date === '2026-05-16';
+      return { actual: `days=${d.days_allowed}, rule=${d.rule}, deadline=${d.deadline_date}`,
+        expected: 'days=45, rule=with_agreement_45_days, deadline=2026-05-16',
+        pass: ok, details: 'creditDays > 15 proxies "written agreement" · 45-day window per statute (capped)' };
+    } },
+
+  { id: 'msme-3', section: 'MSME 43B(h)',
+    name: 'Breach detection · unsettled invoice past deadline returns status=breached',
+    run: async () => {
+      const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_MSME3__';
+      // Seed vendor master (writes only to test entity vendor key)
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'v-msme3', name: 'Acme Micro Pvt Ltd', msmeRegistered: true,
+          msmeCategory: 'micro', msmeUdyamNo: 'UDYAM-XX', creditDays: 0 },
+      ]));
+      // Purchase invoice 30 days ago · no payment voucher · 15-day rule → breach (15+ days overdue)
+      const invDate = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'inv-msme3', voucher_no: 'PI/26/0030', date: invDate, party_id: 'v-msme3',
+          party_name: 'Acme Micro Pvt Ltd', base_voucher_type: 'Purchase',
+          net_amount: 100000, gross_amount: 100000, status: 'posted' },
+      ]));
+      const breaches = getMSMEBreaches(ent);
+      const b = breaches.find(x => x.invoice_id === 'inv-msme3');
+      const ok = !!b && b.status === 'breached' && b.unpaid_amount === 100000 && b.days_overdue > 0;
+      return { actual: `found=${!!b}, status=${b?.status}, unpaid=${b?.unpaid_amount}, overdue=${b?.days_overdue}`,
+        expected: 'found, status=breached, unpaid=100000, overdue>0',
+        pass: !!ok, details: 'Engine flags unsettled MSME invoice past 15-day deadline · operational layer for 43B(h)' };
+    } },
+
+  { id: 'msme-4', section: 'MSME 43B(h)',
+    name: 'No breach · invoice fully settled within deadline (against_ref Payment voucher)',
+    run: async () => {
+      const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_MSME4__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'v-msme4', name: 'Beta Small Co', msmeRegistered: true,
+          msmeCategory: 'small', creditDays: 30 },
+      ]));
+      // Invoice 5 days ago · paid in full via against_ref · should NOT be a breach
+      const invDate = new Date(Date.now() - 5 * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'inv-msme4', voucher_no: 'PI/26/0040', date: invDate, party_id: 'v-msme4',
+          party_name: 'Beta Small Co', base_voucher_type: 'Purchase',
+          net_amount: 50000, gross_amount: 50000, status: 'posted' },
+        { id: 'pv-msme4', voucher_no: 'PV/26/0040', date: invDate, party_id: 'v-msme4',
+          party_name: 'Beta Small Co', base_voucher_type: 'Payment',
+          net_amount: 50000, gross_amount: 50000, status: 'posted',
+          bill_references: [{ voucher_id: 'inv-msme4', voucher_no: 'PI/26/0040',
+            voucher_date: invDate, amount: 50000, type: 'against_ref' }] },
+      ]));
+      const breaches = getMSMEBreaches(ent);
+      const b = breaches.find(x => x.invoice_id === 'inv-msme4');
+      const ok = !b; // Fully settled invoices are excluded from breach list
+      return { actual: `found=${!!b}, breaches.length=${breaches.length}`,
+        expected: 'fully-paid invoice excluded from breach list (no entry)',
+        pass: ok, details: 'Payment voucher with against_ref clears the invoice · engine excludes settled bills' };
+    } },
+
+  { id: 'msme-5', section: 'MSME 43B(h)',
+    name: 'Only micro/small flagged · medium MSME excluded from breach detection',
+    run: async () => {
+      const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_MSME5__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'v-medium', name: 'Medium Co', msmeRegistered: true,
+          msmeCategory: 'medium', creditDays: 0 },
+        { id: 'v-micro', name: 'Micro Co', msmeRegistered: true,
+          msmeCategory: 'micro', creditDays: 0 },
+      ]));
+      const invDate = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'inv-med', voucher_no: 'PI/26/0050', date: invDate, party_id: 'v-medium',
+          party_name: 'Medium Co', base_voucher_type: 'Purchase',
+          net_amount: 75000, gross_amount: 75000, status: 'posted' },
+        { id: 'inv-mic', voucher_no: 'PI/26/0051', date: invDate, party_id: 'v-micro',
+          party_name: 'Micro Co', base_voucher_type: 'Purchase',
+          net_amount: 25000, gross_amount: 25000, status: 'posted' },
+      ]));
+      const breaches = getMSMEBreaches(ent);
+      const hasMedium = breaches.some(b => b.vendor_id === 'v-medium');
+      const hasMicro = breaches.some(b => b.vendor_id === 'v-micro');
+      const ok = !hasMedium && hasMicro;
+      return { actual: `medium_breach=${hasMedium}, micro_breach=${hasMicro}, total=${breaches.length}`,
+        expected: 'medium_breach=false, micro_breach=true (Sec 43B(h) applies only to micro/small)',
+        pass: ok, details: 'Statute scope: medium-MSME vendors excluded · only micro and small trigger 43B(h) disallowance' };
+    } },
+
+  { id: 'msme-6', section: 'MSME 43B(h)',
+    name: 'compute43BhSummary aggregates KPIs across multiple vendors and invoices',
+    run: async () => {
+      const { compute43BhSummary } = await import('@/lib/msme-43bh-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_MSME6__';
+      localStorage.setItem('erp_group_vendor_master', JSON.stringify([
+        { id: 'v6a', name: 'V6A Micro', msmeRegistered: true, msmeCategory: 'micro', creditDays: 0 },
+        { id: 'v6b', name: 'V6B Small', msmeRegistered: true, msmeCategory: 'small', creditDays: 30 },
+        { id: 'v6c', name: 'V6C Med',   msmeRegistered: true, msmeCategory: 'medium', creditDays: 0 },
+      ]));
+      const longAgo = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+      const recent  = new Date(Date.now() - 2  * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        // Breached: 30-day-old micro · 15-day rule
+        { id: 'inv6a', voucher_no: 'PI/26/0060', date: longAgo, party_id: 'v6a',
+          party_name: 'V6A Micro', base_voucher_type: 'Purchase',
+          net_amount: 40000, gross_amount: 40000, status: 'posted' },
+        // Within deadline: 2-day-old small · 45-day rule
+        { id: 'inv6b', voucher_no: 'PI/26/0061', date: recent, party_id: 'v6b',
+          party_name: 'V6B Small', base_voucher_type: 'Purchase',
+          net_amount: 60000, gross_amount: 60000, status: 'posted' },
+        // Excluded: medium category
+        { id: 'inv6c', voucher_no: 'PI/26/0062', date: longAgo, party_id: 'v6c',
+          party_name: 'V6C Med', base_voucher_type: 'Purchase',
+          net_amount: 99000, gross_amount: 99000, status: 'posted' },
+      ]));
+      const s = compute43BhSummary(ent);
+      // Vendors: only micro+small are loaded → 2 (v6c excluded by loadVendors filter)
+      // Open bills: inv6a (breached) + inv6b (within deadline) = 2
+      // Breached: inv6a only · 40000 disallowed
+      const ok = s.total_msme_vendors === 2
+        && s.open_msme_bills_count === 2
+        && s.breached_count === 1
+        && s.breached_amount === 40000
+        && s.disallowed_amount === 40000
+        && s.open_msme_bills_amount === 100000;
+      return { actual: `vendors=${s.total_msme_vendors}, open=${s.open_msme_bills_count}, breached=${s.breached_count}, breached_amt=${s.breached_amount}, disallowed=${s.disallowed_amount}, open_amt=${s.open_msme_bills_amount}`,
+        expected: 'vendors=2, open=2, breached=1, breached_amt=40000, disallowed=40000, open_amt=100000',
+        pass: ok, details: 'Aggregate KPIs feed PayOutDashboard MSME Alerts card and MSMEAlerts dashboard' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
