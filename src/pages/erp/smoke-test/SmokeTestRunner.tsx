@@ -1502,6 +1502,71 @@ const CHECKS: CheckSpec[] = [
       return { actual: `cb=${cb === undefined ? 'undefined' : 'defined'}`, expected: 'cb=undefined',
         pass: ok, details: 'Existing 13 register pages compile without wiring onNavigateToVoucher' };
     } },
+
+  // ── [T-T8.0-OrgTagFoundation · I-22] Voucher Org-Tag smoke checks ──
+  { id: 'orgtag-1', section: 'Org Tags',
+    name: 'tagVoucher round-trips through localStorage (write → read)',
+    run: async () => {
+      const { tagVoucher, getVoucherTags } = await import('@/lib/voucher-org-tag-engine');
+      const voucherId = '__smoke_orgtag_1__';
+      tagVoucher(voucherId, {
+        entity_id: 'ent-1', branch_id: 'br-1', business_unit_id: 'bu-1',
+        division_id: 'div-1', department_id: 'dept-1',
+      });
+      const loaded = getVoucherTags(voucherId);
+      const ok = loaded?.entity_id === 'ent-1' &&
+                 loaded?.branch_id === 'br-1' &&
+                 loaded?.business_unit_id === 'bu-1' &&
+                 loaded?.division_id === 'div-1' &&
+                 loaded?.department_id === 'dept-1';
+      return { actual: `entity=${loaded?.entity_id}, branch=${loaded?.branch_id}, dept=${loaded?.department_id}`,
+        expected: 'all 5 tiers persist',
+        pass: !!ok, details: 'VoucherOrgTag round-trip preserves all 5 dimensions' };
+    } },
+
+  { id: 'orgtag-2', section: 'Org Tags',
+    name: 'tagVoucher is idempotent · re-tag REPLACES previous',
+    run: async () => {
+      const { tagVoucher, getVoucherTags } = await import('@/lib/voucher-org-tag-engine');
+      const voucherId = '__smoke_orgtag_2__';
+      tagVoucher(voucherId, { entity_id: 'ent-A' });
+      tagVoucher(voucherId, { entity_id: 'ent-B', division_id: 'div-X' });
+      const loaded = getVoucherTags(voucherId);
+      const ok = loaded?.entity_id === 'ent-B' && loaded?.division_id === 'div-X';
+      return { actual: `entity=${loaded?.entity_id}, division=${loaded?.division_id}`,
+        expected: 'entity=ent-B, division=div-X',
+        pass: !!ok, details: 'Re-tagging replaces previous · idempotent write' };
+    } },
+
+  { id: 'orgtag-3', section: 'Org Tags',
+    name: 'getVouchersByEntity / getVouchersByDivision return correct subsets',
+    run: async () => {
+      const { tagVoucher, getVouchersByEntity, getVouchersByDivision } = await import('@/lib/voucher-org-tag-engine');
+      tagVoucher('__smoke_orgtag_3a__', { entity_id: 'ent-3', division_id: 'div-3' });
+      tagVoucher('__smoke_orgtag_3b__', { entity_id: 'ent-3', division_id: 'div-4' });
+      tagVoucher('__smoke_orgtag_3c__', { entity_id: 'ent-OTHER' });
+      const ent3 = getVouchersByEntity('ent-3');
+      const div3 = getVouchersByDivision('div-3');
+      const ok = ent3.length >= 2 && ent3.includes('__smoke_orgtag_3a__') && ent3.includes('__smoke_orgtag_3b__') &&
+                 div3.length >= 1 && div3.includes('__smoke_orgtag_3a__') && !div3.includes('__smoke_orgtag_3b__');
+      return { actual: `ent3=${ent3.length}, div3=${div3.length}`,
+        expected: 'ent3≥2, div3≥1 (excludes div-4 vouchers)',
+        pass: ok, details: 'Entity and division filters return correct subsets' };
+    } },
+
+  { id: 'orgtag-4', section: 'Org Tags',
+    name: 'getOrgTagCoverage returns valid stats for FoundationModule badge',
+    run: async () => {
+      const { getOrgTagCoverage } = await import('@/lib/voucher-org-tag-engine');
+      const cov = getOrgTagCoverage();
+      const ok = typeof cov.total === 'number' &&
+                 typeof cov.tagged === 'number' &&
+                 typeof cov.coveragePct === 'number' &&
+                 cov.coveragePct >= 0 && cov.coveragePct <= 100;
+      return { actual: `total=${cov.total}, tagged=${cov.tagged}, pct=${cov.coveragePct}`,
+        expected: 'all numeric, pct between 0 and 100',
+        pass: ok, details: 'Coverage badge reads valid stats from engine' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
