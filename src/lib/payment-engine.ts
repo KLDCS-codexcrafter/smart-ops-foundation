@@ -26,6 +26,7 @@
 import type { Voucher, BillReference } from '@/types/voucher';
 import { postVoucher, validateVoucher, generateVoucherNo } from '@/lib/finecore-engine';
 import { computeTDS } from '@/lib/tds-engine';
+import { getCurrentUserId } from '@/lib/auth-helpers';
 
 export interface VendorPaymentInput {
   entityCode: string;
