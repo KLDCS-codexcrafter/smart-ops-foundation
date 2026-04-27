@@ -33,7 +33,7 @@ const netQty = (lines?: VoucherInventoryLine[]) =>
 export function StockJournalRegisterPanel({ entityCode, onNavigate }: StockJournalRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',    label: 'Date',              render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',     label: 'Voucher No',        render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',     label: 'Voucher No',        render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'purpose', label: 'Purpose',           render: v => v.purpose ?? '—', exportKey: 'purpose' },
     { key: 'cons',    label: 'Consumption Items', render: v => consumptionLines(v.inventory_lines), exportKey: v => consumptionLines(v.inventory_lines), align: 'right', width: 'w-32' },
     { key: 'prod',    label: 'Production Items',  render: v => productionLines(v.inventory_lines), exportKey: v => productionLines(v.inventory_lines), align: 'right', width: 'w-32' },

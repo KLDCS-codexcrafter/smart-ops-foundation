@@ -24,7 +24,7 @@ interface ContraRegisterProps {
 export function ContraRegisterPanel({ entityCode, onNavigate }: ContraRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',   label: 'Date',       render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',    label: 'Voucher No', render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'instr',  label: 'Instrument', render: v => v.instrument_type ?? '—', exportKey: 'instrument_type', width: 'w-28' },
     { key: 'ref',    label: 'Ref No',     render: v => v.instrument_ref_no ?? v.ref_no ?? '—', exportKey: v => v.instrument_ref_no ?? v.ref_no ?? '' },
     { key: 'dr',     label: 'Dr Amount',  render: v => inr(v.net_amount), exportKey: 'net_amount', toggleKey: 'showDrCrColumns', align: 'right' },

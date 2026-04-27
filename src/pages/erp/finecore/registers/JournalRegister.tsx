@@ -31,7 +31,7 @@ const ledgerSummary = (v: Voucher) => {
 export function JournalRegisterPanel({ entityCode, onNavigate }: JournalRegisterProps) {
   const columns: RegisterColumn<Voucher>[] = useMemo(() => [
     { key: 'date',    label: 'Date',           render: v => fmtDate(v.date), exportKey: 'date', width: 'w-24' },
-    { key: 'vno',     label: 'Voucher No',     render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28' },
+    { key: 'vno',     label: 'Voucher No',     render: v => <span className="font-mono">{v.voucher_no}</span>, exportKey: 'voucher_no', width: 'w-28', clickable: true },
     { key: 'ledgers', label: 'Ledger Summary', render: v => ledgerSummary(v), exportKey: v => ledgerSummary(v) },
     { key: 'dr',      label: 'Dr Total',       render: v => inr(sumDr(v)), exportKey: v => sumDr(v), toggleKey: 'showDrCrColumns', align: 'right' },
     { key: 'cr',      label: 'Cr Total',       render: v => inr(sumCr(v)), exportKey: v => sumCr(v), toggleKey: 'showDrCrColumns', align: 'right' },
