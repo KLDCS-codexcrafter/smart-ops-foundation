@@ -14,12 +14,17 @@
  * @consumers 13 register panels
  */
 
-import { useState, useMemo, useEffect } from 'react';
-import { FileSpreadsheet, Search, FileText, FileDown, FileType2, FileCode } from 'lucide-react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  FileSpreadsheet, Search, FileText, FileDown, FileType2, FileCode,
+  Eye, Star, Trash2, GitMerge,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -30,6 +35,9 @@ import {
   Pagination, PaginationContent, PaginationItem, PaginationLink,
   PaginationPrevious, PaginationNext,
 } from '@/components/ui/pagination';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import type { Voucher } from '@/types/voucher';
@@ -42,12 +50,19 @@ import {
 } from '@/lib/voucher-export-engine';
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import type { RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard } from './RegisterTypes';
+import type {
+  RegisterColumn, RegisterMeta, RegisterFilters, SummaryCard, RegisterSavedView,
+} from './RegisterTypes';
 import {
   loadRegisterConfig, resolveToggles, resolveDefaultGroup,
 } from '@/lib/register-config-storage';
+import {
+  loadSavedViews, saveView, deleteView, setDefaultView,
+} from '@/lib/register-saved-views-storage';
 import { resolveGroupValue } from './RegisterGroupResolver';
+import { ReconciliationPanel } from './ReconciliationPanel';
 
 export interface RegisterGridProps {
   /** Active entity code — passed from FinCorePage. */
