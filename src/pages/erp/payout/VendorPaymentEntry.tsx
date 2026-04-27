@@ -28,6 +28,8 @@ import { computeTDS } from '@/lib/tds-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import { processVendorPayment } from '@/lib/payment-engine';
 import type { BillReference } from '@/types/voucher';
+// [T-T8.3-AdvanceIntel] Advance toggle + proactive banner (additive)
+import { UnmatchedAdvanceBanner } from '@/components/payout/UnmatchedAdvanceBanner';
 
 interface VendorRef {
   id: string;
@@ -73,6 +75,9 @@ export default function VendorPaymentEntry() {
   const [tdsAmount, setTdsAmount] = useState(0);
   const [departmentId, setDepartmentId] = useState('');
   const [bills, setBills] = useState<BillReference[]>([]);
+  // [T-T8.3-AdvanceIntel] Payment purpose · 'advance' triggers finecore-engine
+  // auto-create AdvanceEntry via bill_references[].type='advance' at line 452-475.
+  const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
   const [saving, setSaving] = useState(false);
   const lastSavedRef = useRef(false);
 
@@ -142,6 +147,14 @@ export default function VendorPaymentEntry() {
     if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
     setSaving(true);
+    // [T-T8.3-AdvanceIntel] When purpose='advance' · write a single advance
+    // bill_reference · finecore-engine line 452-475 auto-creates AdvanceEntry.
+    const effectiveBillRefs: BillReference[] = paymentPurpose === 'advance'
+      ? [{
+          voucher_id: '', voucher_no: '', voucher_date: date,
+          amount, type: 'advance',
+        }]
+      : bills;
     const result = processVendorPayment({
       entityCode,
       vendorId: partyId,
@@ -158,7 +171,7 @@ export default function VendorPaymentEntry() {
       chequeDate: chequeDate || undefined,
       bankName: bankName || undefined,
       narration,
-      billReferences: bills,
+      billReferences: effectiveBillRefs,
       applyTDS: isTdsApplicable && tdsAmount > 0,
       tdsSection: tdsSection || undefined,
       deducteeType,
@@ -167,7 +180,8 @@ export default function VendorPaymentEntry() {
     });
     setSaving(false);
     if (result.ok) {
-      toast.success(`Vendor Payment ${result.voucherNo} posted`);
+      const purposeLabel = paymentPurpose === 'advance' ? ' · advance auto-tagged' : '';
+      toast.success(`Vendor Payment ${result.voucherNo} posted${purposeLabel}`);
       lastSavedRef.current = true;
     } else {
       toast.error(result.errors?.[0] ?? 'Save failed');
@@ -175,7 +189,7 @@ export default function VendorPaymentEntry() {
     }
   }, [entityCode, partyId, partyName, selectedVendor, bankCashLedgerId, bankCashLedgerName,
       amount, date, refNo, paymentMode, instrumentType, instrumentRef, chequeDate, bankName,
-      narration, bills, isTdsApplicable, tdsAmount, tdsSection, deducteeType, departmentId]);
+      narration, bills, paymentPurpose, isTdsApplicable, tdsAmount, tdsSection, deducteeType, departmentId]);
 
   const handleSaveAndNew = useCallback(async () => {
     await handleSave();
@@ -290,7 +304,46 @@ export default function VendorPaymentEntry() {
         </CardContent>
       </Card>
 
-      {/* Bill Allocation */}
+      {/* [T-T8.3-AdvanceIntel] Payment Purpose + Unmatched Advance Banner */}
+      <Card>
+        <CardContent className="pt-5 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs">Payment Purpose</Label>
+              <Select value={paymentPurpose} onValueChange={v => setPaymentPurpose(v as 'regular' | 'advance')}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="regular">Regular Payment (against bills)</SelectItem>
+                  <SelectItem value="advance">Advance Payment (on-account)</SelectItem>
+                </SelectContent>
+              </Select>
+              {paymentPurpose === 'advance' && (
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Will auto-create AdvanceEntry (ADVP/FY/XXXX) on save · settle later via Bill Settlement screen.
+                </p>
+              )}
+            </div>
+            <div className="flex items-end">
+              {paymentPurpose === 'advance' && (
+                <Badge variant="outline" className="text-[10px] border-violet-500/40 text-violet-600 dark:text-violet-300">
+                  Advance Mode · finecore auto-tag active
+                </Badge>
+              )}
+            </div>
+          </div>
+          {partyId && paymentPurpose === 'regular' && (
+            <UnmatchedAdvanceBanner
+              entityCode={entityCode}
+              vendorId={partyId}
+              onApplyAdvance={(adv) => {
+                toast.info(
+                  `Advance ${adv.advance_ref_no} (${adv.balance_amount.toLocaleString('en-IN')}) noted · settle via Bill Settlement after invoice posted`,
+                );
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="pt-5 space-y-3">
           <div className="flex items-center justify-between">
@@ -322,8 +375,10 @@ export default function VendorPaymentEntry() {
               ))}
             </div>
           )}
-          {/* [B.3] advance balance display will populate here once advance auto-tag engine ships */}
-          <p className="text-[10px] text-muted-foreground italic">Advance available: — (Coming in B.3)</p>
+          {/* [T-T8.3-AdvanceIntel] post-hoc advance settlement now lives in BillSettlement screen */}
+          <p className="text-[10px] text-muted-foreground italic">
+            Open advances? See banner above (auto-shown when vendor has unmatched balance) or use Bill Settlement.
+          </p>
         </CardContent>
       </Card>
 

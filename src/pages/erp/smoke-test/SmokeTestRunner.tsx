@@ -1840,6 +1840,139 @@ const CHECKS: CheckSpec[] = [
         expected: 'status=active, route=/erp/payout',
         pass: ok, details: 'PayOut card live in Operix Core grid · operators can launch hub' };
     } },
+
+  // ── [T-T8.3-AdvanceIntel · I-36] Advance Tagger + Bill Settlement smoke checks ──
+  { id: 'advance-1', section: 'Advance Tagger',
+    name: 'getUnmatchedAdvancesForVendor returns open and partial advances',
+    run: async () => {
+      const { advancesKey } = await import('@/types/compliance');
+      const { getUnmatchedAdvancesForVendor } = await import('@/lib/advance-tagger-engine');
+      const ent = '__SMK_ADV1__';
+      localStorage.setItem(advancesKey(ent), JSON.stringify([
+        { id: 'a1', advance_ref_no: 'ADVP/26/0001', entity_id: ent, party_type: 'vendor', party_id: 'v-1', party_name: 'V1', date: '2026-04-01', source_voucher_id: 'sv1', source_voucher_no: 'PV/26/0001', advance_amount: 50000, tds_amount: 0, net_amount: 50000, adjustments: [], balance_amount: 50000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
+        { id: 'a2', advance_ref_no: 'ADVP/26/0002', entity_id: ent, party_type: 'vendor', party_id: 'v-1', party_name: 'V1', date: '2026-04-02', source_voucher_id: 'sv2', source_voucher_no: 'PV/26/0002', advance_amount: 30000, tds_amount: 0, net_amount: 30000, adjustments: [], balance_amount: 0, tds_balance: 0, status: 'adjusted', tds_status: 'na', created_at: '2026-04-02', updated_at: '2026-04-02' },
+        { id: 'a3', advance_ref_no: 'ADVP/26/0003', entity_id: ent, party_type: 'vendor', party_id: 'v-2', party_name: 'V2', date: '2026-04-03', source_voucher_id: 'sv3', source_voucher_no: 'PV/26/0003', advance_amount: 25000, tds_amount: 0, net_amount: 25000, adjustments: [], balance_amount: 25000, tds_balance: 0, status: 'partial', tds_status: 'na', created_at: '2026-04-03', updated_at: '2026-04-03' },
+      ]));
+      const v1 = getUnmatchedAdvancesForVendor(ent, 'v-1');
+      const v2 = getUnmatchedAdvancesForVendor(ent, 'v-2');
+      const ok = v1.length === 1 && v1[0].id === 'a1' && v2.length === 1 && v2[0].id === 'a3';
+      return { actual: `v1=${v1.length}, v2=${v2.length}`,
+        expected: 'v1=1 (excludes adjusted), v2=1 (includes partial)',
+        pass: ok, details: 'Tagger correctly filters by status + balance + party_id' };
+    } },
+
+  { id: 'advance-2', section: 'Advance Tagger',
+    name: 'UnmatchedAdvanceBanner module loads and exports component',
+    run: async () => {
+      const mod = await import('@/components/payout/UnmatchedAdvanceBanner');
+      const ok = !!mod.UnmatchedAdvanceBanner;
+      return { actual: `component=${typeof mod.UnmatchedAdvanceBanner}`,
+        expected: 'component exported',
+        pass: ok, details: 'UnmatchedAdvanceBanner module loads cleanly · used by VendorPaymentEntry' };
+    } },
+
+  { id: 'advance-3', section: 'Advance Tagger',
+    name: 'Vendor Payment with bill_references[].type=advance triggers AdvanceEntry auto-create',
+    run: async () => {
+      const { processVendorPayment } = await import('@/lib/payment-engine');
+      const { advancesKey } = await import('@/types/compliance');
+      const ent = '__SMK_ADV3__';
+      localStorage.removeItem(advancesKey(ent));
+      const result = processVendorPayment({
+        entityCode: ent, vendorId: 'v-adv-3', vendorName: 'ADV TEST V3',
+        bankCashLedgerId: 'bank-1', bankCashLedgerName: 'HDFC',
+        amount: 75000, date: '2026-04-27',
+        paymentMode: 'bank', instrumentType: 'NEFT', instrumentRef: 'NEFT-3',
+        narration: 'Advance payment test',
+        billReferences: [{ voucher_id: '', voucher_no: '', voucher_date: '2026-04-27', amount: 75000, type: 'advance' }],
+        applyTDS: false, deducteeType: 'company',
+      });
+      const raw = localStorage.getItem(advancesKey(ent));
+      const advances: Array<{ source_voucher_id: string; status: string; balance_amount: number }> = raw ? JSON.parse(raw) : [];
+      const created = advances.find(a => a.source_voucher_id === result.voucherId);
+      const ok = result.ok && !!created && created.status === 'open' && created.balance_amount === 75000;
+      return { actual: `voucher=${result.ok}, advance=${!!created}, status=${created?.status}, balance=${created?.balance_amount}`,
+        expected: 'voucher saved + AdvanceEntry auto-created with status=open balance=75000',
+        pass: ok, details: 'finecore-engine line 452-475 auto-create works · bill_references[].type=advance is the trigger' };
+    } },
+
+  { id: 'advance-4', section: 'Bill Settlement',
+    name: 'applyAdvanceToInvoice is idempotent · re-call does not double-apply',
+    run: async () => {
+      const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
+      const { advancesKey } = await import('@/types/compliance');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_ADV4__';
+      localStorage.setItem(advancesKey(ent), JSON.stringify([
+        { id: 'a4', advance_ref_no: 'ADVP/26/0004', entity_id: ent, party_type: 'vendor', party_id: 'v-4', party_name: 'V4', date: '2026-04-01', source_voucher_id: 'sv4', source_voucher_no: 'PV/26/0004', advance_amount: 100000, tds_amount: 0, net_amount: 100000, adjustments: [], balance_amount: 100000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
+      ]));
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'sv4', voucher_no: 'PV/26/0004', date: '2026-04-01', party_id: 'v-4', party_name: 'V4', base_voucher_type: 'Payment', net_amount: 100000, gross_amount: 100000, status: 'posted', bill_references: [{ voucher_id: '', voucher_no: '', voucher_date: '2026-04-01', amount: 100000, type: 'advance' }] },
+        { id: 'inv4', voucher_no: 'PI/26/0004', date: '2026-04-15', party_id: 'v-4', party_name: 'V4', base_voucher_type: 'Purchase', net_amount: 50000, gross_amount: 50000, status: 'posted' },
+      ]));
+      const r1 = applyAdvanceToInvoice({ entityCode: ent, advanceId: 'a4', invoiceId: 'inv4', amountToApply: 50000 });
+      const r2 = applyAdvanceToInvoice({ entityCode: ent, advanceId: 'a4', invoiceId: 'inv4', amountToApply: 50000 });
+      const advRaw = localStorage.getItem(advancesKey(ent));
+      const advs: Array<{ id: string; balance_amount: number; adjustments: unknown[] }> = advRaw ? JSON.parse(advRaw) : [];
+      const adv = advs.find(a => a.id === 'a4');
+      const ok = r1.ok && r2.ok && !!r2.noOp && !!adv && adv.balance_amount === 50000 && adv.adjustments.length === 1;
+      return { actual: `r1=${r1.ok}, r2.noOp=${r2.noOp}, balance=${adv?.balance_amount}, adjustments=${adv?.adjustments.length}`,
+        expected: 'first call settles · second call no-ops · balance=50000 · 1 adjustment',
+        pass: !!ok, details: 'Idempotency check · double-call protection works' };
+    } },
+
+  { id: 'advance-5', section: 'Bill Settlement',
+    name: 'applyAdvanceToInvoice flips bill_references type advance→against_ref + updates AdvanceEntry status',
+    run: async () => {
+      const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
+      const { advancesKey } = await import('@/types/compliance');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_ADV5__';
+      localStorage.setItem(advancesKey(ent), JSON.stringify([
+        { id: 'a5', advance_ref_no: 'ADVP/26/0005', entity_id: ent, party_type: 'vendor', party_id: 'v-5', party_name: 'V5', date: '2026-04-01', source_voucher_id: 'sv5', source_voucher_no: 'PV/26/0005', advance_amount: 80000, tds_amount: 0, net_amount: 80000, adjustments: [], balance_amount: 80000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
+      ]));
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'sv5', voucher_no: 'PV/26/0005', date: '2026-04-01', party_id: 'v-5', party_name: 'V5', base_voucher_type: 'Payment', net_amount: 80000, gross_amount: 80000, status: 'posted', bill_references: [{ voucher_id: '', voucher_no: '', voucher_date: '2026-04-01', amount: 80000, type: 'advance' }] },
+        { id: 'inv5', voucher_no: 'PI/26/0005', date: '2026-04-15', party_id: 'v-5', party_name: 'V5', base_voucher_type: 'Purchase', net_amount: 80000, gross_amount: 80000, status: 'posted' },
+      ]));
+      applyAdvanceToInvoice({ entityCode: ent, advanceId: 'a5', invoiceId: 'inv5', amountToApply: 80000 });
+      const advRaw = localStorage.getItem(advancesKey(ent));
+      const advs: Array<{ id: string; status: string; balance_amount: number }> = advRaw ? JSON.parse(advRaw) : [];
+      const adv = advs.find(a => a.id === 'a5');
+      const vRaw = localStorage.getItem(vouchersKey(ent));
+      const vs: Array<{ id: string; bill_references?: Array<{ type: string; voucher_id: string }> }> = vRaw ? JSON.parse(vRaw) : [];
+      const sv = vs.find(v => v.id === 'sv5');
+      const ref = sv?.bill_references?.[0];
+      const ok = adv?.status === 'adjusted' && adv?.balance_amount === 0 && ref?.type === 'against_ref' && ref?.voucher_id === 'inv5';
+      return { actual: `status=${adv?.status}, balance=${adv?.balance_amount}, refType=${ref?.type}, refVoucher=${ref?.voucher_id}`,
+        expected: 'status=adjusted, balance=0, refType=against_ref, refVoucher=inv5',
+        pass: !!ok, details: 'Settlement flips bill_references type + updates AdvanceEntry · industry-first auto-tag pattern works' };
+    } },
+
+  { id: 'advance-6', section: 'Bill Settlement',
+    name: 'Audit trail entry created on settlement',
+    run: async () => {
+      const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
+      const { advancesKey } = await import('@/types/compliance');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_ADV6__';
+      localStorage.setItem(advancesKey(ent), JSON.stringify([
+        { id: 'a6', advance_ref_no: 'ADVP/26/0006', entity_id: ent, party_type: 'vendor', party_id: 'v-6', party_name: 'V6', date: '2026-04-01', source_voucher_id: 'sv6', source_voucher_no: 'PV/26/0006', advance_amount: 30000, tds_amount: 0, net_amount: 30000, adjustments: [], balance_amount: 30000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
+      ]));
+      localStorage.setItem(vouchersKey(ent), JSON.stringify([
+        { id: 'sv6', voucher_no: 'PV/26/0006', date: '2026-04-01', party_id: 'v-6', party_name: 'V6', base_voucher_type: 'Payment', net_amount: 30000, gross_amount: 30000, status: 'posted', bill_references: [{ voucher_id: '', voucher_no: '', voucher_date: '2026-04-01', amount: 30000, type: 'advance' }] },
+        { id: 'inv6', voucher_no: 'PI/26/0006', date: '2026-04-15', party_id: 'v-6', party_name: 'V6', base_voucher_type: 'Purchase', net_amount: 30000, gross_amount: 30000, status: 'posted' },
+      ]));
+      localStorage.removeItem(`erp_audit_log_${ent}`);
+      applyAdvanceToInvoice({ entityCode: ent, advanceId: 'a6', invoiceId: 'inv6', amountToApply: 30000, notes: 'Audit smoke test' });
+      const auditRaw = localStorage.getItem(`erp_audit_log_${ent}`);
+      const log: Array<{ type: string; advance_id: string; amount: number }> = auditRaw ? JSON.parse(auditRaw) : [];
+      const entry = log.find(e => e.type === 'BILL_SETTLEMENT');
+      const ok = !!entry && entry.advance_id === 'a6' && entry.amount === 30000;
+      return { actual: `entries=${log.length}, type=${entry?.type}, amount=${entry?.amount}`,
+        expected: 'entry exists with type=BILL_SETTLEMENT, amount=30000',
+        pass: !!ok, details: 'Audit trail captured · settlement traceability preserved' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {

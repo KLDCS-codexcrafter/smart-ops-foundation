@@ -107,6 +107,8 @@ const PayOutPage = lazy(() => import('./features/payout/PayOutPage'));
 const PayOutDashboard = lazy(() => import('./pages/erp/payout/PayOutDashboard'));
 const VendorPaymentEntry = lazy(() => import('./pages/erp/payout/VendorPaymentEntry'));
 const PaymentRegisterRoute = lazy(() => import('./pages/erp/payout/PaymentRegisterRoute'));
+// [T-T8.3-AdvanceIntel] Bill Settlement screen · post-hoc advance allocation
+const BillSettlement = lazy(() => import('./pages/erp/payout/BillSettlement'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -353,6 +355,8 @@ const App = () => (
                 <Route path="dashboard" element={<PayOutDashboard />} />
                 <Route path="vendor-payment" element={<VendorPaymentEntry />} />
                 <Route path="payment-register" element={<PaymentRegisterRoute />} />
+                {/* T-T8.3-AdvanceIntel · Bill Settlement screen */}
+                <Route path="bill-settlement" element={<BillSettlement />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
