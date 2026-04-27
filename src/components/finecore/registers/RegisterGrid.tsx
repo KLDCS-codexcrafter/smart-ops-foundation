@@ -132,6 +132,72 @@ export function RegisterGrid({
   });
   const [page, setPage] = useState(1);
 
+  // [T-T10-pre.2d-D] Saved-view state. Loads on mount; default view auto-applies
+  // its filter snapshot exactly once per (entityCode, registerCode) change.
+  const [savedViews, setSavedViews] = useState<RegisterSavedView[]>(
+    () => loadSavedViews(entityCode, meta.registerCode),
+  );
+  useEffect(() => {
+    const views = loadSavedViews(entityCode, meta.registerCode);
+    setSavedViews(views);
+    const def = views.find(v => v.isDefault);
+    if (def) setFilters(def.filters);
+    // Effect intentionally narrow-scoped — re-runs only on entity/register switch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityCode, meta.registerCode]);
+
+  // [T-T10-pre.2d-D] Save / manage dialog state.
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [manageDialogOpen, setManageDialogOpen] = useState(false);
+  const [newViewName, setNewViewName] = useState('');
+  const [newViewIsDefault, setNewViewIsDefault] = useState(false);
+
+  // [T-T10-pre.2d-D] Reconciliation mode toggle. Only visible when meta declares
+  // a reconciliationTarget; renders <ReconciliationPanel> instead of the table.
+  const [reconMode, setReconMode] = useState(false);
+
+  const applyView = useCallback((view: RegisterSavedView) => {
+    setFilters(view.filters);
+    toast.success(`Applied view: ${view.name}`);
+  }, []);
+
+  const handleSaveView = useCallback(() => {
+    const name = newViewName.trim();
+    if (!name) { toast.error('Enter a view name'); return; }
+    const view: RegisterSavedView = {
+      id: `view-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name,
+      filters,
+      columnToggles: effectiveToggles,
+      groupBy: effectiveGroup,
+      createdAt: new Date().toISOString(),
+      isDefault: newViewIsDefault,
+    };
+    saveView(entityCode, meta.registerCode, view);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    setSaveDialogOpen(false);
+    setNewViewName('');
+    setNewViewIsDefault(false);
+    toast.success(`Saved view: ${name}`);
+  }, [entityCode, meta.registerCode, filters, effectiveToggles, effectiveGroup, newViewName, newViewIsDefault]);
+
+  const handleDeleteView = useCallback((viewId: string) => {
+    deleteView(entityCode, meta.registerCode, viewId);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    toast.success('View deleted');
+  }, [entityCode, meta.registerCode]);
+
+  const handleSetDefault = useCallback((viewId: string) => {
+    setDefaultView(entityCode, meta.registerCode, viewId);
+    setSavedViews(loadSavedViews(entityCode, meta.registerCode));
+    toast.success('Default view updated');
+  }, [entityCode, meta.registerCode]);
+
+  const handleVoucherNoClick = useCallback((e: React.MouseEvent, v: Voucher) => {
+    e.stopPropagation(); // preserve existing row-click → DayBook drill
+    if (onNavigateToVoucher) onNavigateToVoucher(v.id);
+  }, [onNavigateToVoucher]);
+
   // [Analytical] Scope → date range → search → status → sort chronological
   const filtered = useMemo(() => {
     let result = vouchers.filter(meta.voucherFilter);
