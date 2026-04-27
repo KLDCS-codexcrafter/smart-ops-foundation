@@ -279,6 +279,7 @@ const loadIndustryPack = (businessActivity: string): number => {
   const packKey = businessActivity === 'Manufacturing' ? 'manufacturing'
     : ['Trading', 'Import / Export', 'Distribution'].includes(businessActivity) ? 'trading'
     : ['Services', 'IT Services', 'Consulting'].includes(businessActivity) ? 'services'
+    : ['Construction', 'D&C', 'Design & Construction', 'Engineering & Construction'].includes(businessActivity) ? 'd_and_c'  // [T-T8.1-LedgerSeed-Triggers]
     : null;
 
   // [JWT] GET /api/entities/setup/:entityId
