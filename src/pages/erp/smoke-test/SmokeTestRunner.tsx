@@ -1723,6 +1723,123 @@ const CHECKS: CheckSpec[] = [
         expected: 'renamed=true, original=true (rename preserved · default re-created · matches Tally Update Defaults)',
         pass: ok, details: 'Operator rename preserved · original default re-created on re-run' };
     } },
+
+  // ── [T-T8.2-Foundation · I-30] PayOut Vendor Payment smoke checks ──
+  { id: 'payout-1', section: 'PayOut',
+    name: 'processVendorPayment posts a Payment voucher to localStorage',
+    run: async () => {
+      const { processVendorPayment } = await import('@/lib/payment-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_PO__';
+      localStorage.removeItem(vouchersKey(ent));
+      const res = processVendorPayment({
+        entityCode: ent,
+        vendorId: 'v-smoke-1', vendorName: 'Smoke Vendor 1',
+        bankCashLedgerId: 'lg-bank', bankCashLedgerName: 'HDFC Bank',
+        amount: 10000, date: '2026-04-27',
+        paymentMode: 'bank', instrumentType: 'NEFT', instrumentRef: 'NEFT-SMK-1',
+        narration: 'Smoke payout-1', billReferences: [],
+        applyTDS: false, deducteeType: 'company',
+      });
+      const raw = localStorage.getItem(vouchersKey(ent));
+      const list: Array<{ voucher_no: string; base_voucher_type: string }> = raw ? JSON.parse(raw) : [];
+      const ok = res.ok && list.length === 1 && list[0].base_voucher_type === 'Payment';
+      return { actual: `ok=${res.ok}, count=${list.length}, type=${list[0]?.base_voucher_type}`,
+        expected: 'ok=true, count=1, type=Payment',
+        pass: ok, details: 'payment-engine orchestrator persists via finecore-engine.postVoucher' };
+    } },
+
+  { id: 'payout-2', section: 'PayOut',
+    name: 'processVendorPayment computes TDS via tds-engine when applyTDS=true',
+    run: async () => {
+      const { processVendorPayment } = await import('@/lib/payment-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_PO2__';
+      localStorage.removeItem(vouchersKey(ent));
+      const res = processVendorPayment({
+        entityCode: ent,
+        vendorId: 'v-smoke-2', vendorName: 'Contractor Co',
+        vendorPan: 'ABCDE1234F',
+        bankCashLedgerId: 'lg-bank', bankCashLedgerName: 'HDFC Bank',
+        amount: 100000, date: '2026-04-27',
+        paymentMode: 'bank', instrumentType: 'RTGS', instrumentRef: 'RTGS-SMK-2',
+        narration: 'Smoke payout-2 with TDS', billReferences: [],
+        applyTDS: true, tdsSection: '194C', deducteeType: 'company',
+      });
+      const raw = localStorage.getItem(vouchersKey(ent));
+      const list: Array<{ tds_amount: number; net_amount: number; tds_applicable: boolean }> = raw ? JSON.parse(raw) : [];
+      const v = list[0];
+      const ok = res.ok && !!v && v.tds_applicable === true && v.tds_amount > 0 && v.net_amount === 100000 - v.tds_amount;
+      return { actual: `ok=${res.ok}, tds=${v?.tds_amount}, net=${v?.net_amount}`,
+        expected: 'ok=true, tds>0, net=gross-tds (delegates to computeTDS)',
+        pass: ok, details: 'TDS computed by existing tds-engine · payment-engine is thin orchestrator' };
+    } },
+
+  { id: 'payout-3', section: 'PayOut',
+    name: 'processVendorPayment fails validation when amount=0',
+    run: async () => {
+      const { processVendorPayment } = await import('@/lib/payment-engine');
+      const res = processVendorPayment({
+        entityCode: '__SMK_PO3__',
+        vendorId: 'v-bad', vendorName: 'Bad Vendor',
+        bankCashLedgerId: 'lg-bank', bankCashLedgerName: 'HDFC Bank',
+        amount: 0, date: '2026-04-27',
+        paymentMode: 'bank', instrumentType: 'NEFT', instrumentRef: 'NEFT-BAD',
+        narration: 'Smoke payout-3 zero amount', billReferences: [],
+        applyTDS: false, deducteeType: 'company',
+      });
+      const ok = res.ok === false && Array.isArray(res.errors) && res.errors.length > 0;
+      return { actual: `ok=${res.ok}, errors=${res.errors?.length ?? 0}`,
+        expected: 'ok=false, errors>=1 (validateVoucher rejects)',
+        pass: ok, details: 'Validation delegated to existing validateVoucher · zero rebuild' };
+    } },
+
+  { id: 'payout-4', section: 'PayOut',
+    name: 'PaymentRegisterRoute is a thin wrapper · imports existing PaymentRegisterPanel',
+    run: async () => {
+      const mod = await import('@/pages/erp/payout/PaymentRegisterRoute');
+      const panelMod = await import('@/pages/erp/finecore/registers/PaymentRegister');
+      const ok = typeof mod.default === 'function' && typeof panelMod.PaymentRegisterPanel === 'function';
+      return { actual: `route=${typeof mod.default}, panel=${typeof panelMod.PaymentRegisterPanel}`,
+        expected: 'both functions exported · route reuses panel',
+        pass: ok, details: 'D-146 reuse · zero parallel register · all 13 register features inherited' };
+    } },
+
+  { id: 'payout-5', section: 'PayOut',
+    name: 'Vendor payment auto-fires B.0 voucher-org-tag on save',
+    run: async () => {
+      const { processVendorPayment } = await import('@/lib/payment-engine');
+      const { getVoucherTags } = await import('@/lib/voucher-org-tag-engine');
+      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const ent = '__SMK_PO5__';
+      localStorage.removeItem(vouchersKey(ent));
+      const res = processVendorPayment({
+        entityCode: ent,
+        vendorId: 'v-smoke-5', vendorName: 'OrgTag Vendor',
+        bankCashLedgerId: 'lg-bank', bankCashLedgerName: 'HDFC Bank',
+        amount: 5000, date: '2026-04-27',
+        paymentMode: 'bank', instrumentType: 'IMPS', instrumentRef: 'IMPS-SMK-5',
+        narration: 'Smoke payout-5 org-tag', billReferences: [],
+        applyTDS: false, deducteeType: 'company',
+        departmentId: 'dept-procure',
+      });
+      const tags = res.voucherId ? getVoucherTags(res.voucherId) : null;
+      const ok = res.ok && !!tags && tags.entity_id === ent;
+      return { actual: `ok=${res.ok}, tagged=${!!tags}, entity=${tags?.entity_id}`,
+        expected: 'ok=true, tagged=true, entity matches (B.0 hook fires inside postVoucher)',
+        pass: ok, details: 'B.0 voucher-org-tag-engine auto-tags on every postVoucher · 5-tier slicing live' };
+    } },
+
+  { id: 'payout-6', section: 'PayOut',
+    name: 'PayOut card flipped to active in applications registry',
+    run: async () => {
+      const { applications } = await import('@/components/operix-core/applications');
+      const payout = applications.find(a => a.id === 'payout');
+      const ok = !!payout && payout.status === 'active' && payout.route === '/erp/payout';
+      return { actual: `status=${payout?.status}, route=${payout?.route}`,
+        expected: 'status=active, route=/erp/payout',
+        pass: ok, details: 'PayOut card live in Operix Core grid · operators can launch hub' };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {

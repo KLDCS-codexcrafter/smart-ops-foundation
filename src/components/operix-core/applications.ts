@@ -199,7 +199,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/payout',
     icon: 'Wallet',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'receivx',
