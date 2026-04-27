@@ -115,6 +115,8 @@ const RequisitionInbox = lazy(() => import('./pages/erp/payout/RequisitionInbox'
 const RequisitionHistory = lazy(() => import('./pages/erp/payout/RequisitionHistory'));
 // [T-T8.5-MSME-Compliance] MSME 43B(h) Alerts dashboard
 const MSMEAlerts = lazy(() => import('./pages/erp/payout/MSMEAlerts'));
+// [T-T8.6-VendorAnalytics] 5-tier Vendor Analytics dashboard
+const VendorAnalytics = lazy(() => import('./pages/erp/payout/VendorAnalytics'));
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -369,6 +371,8 @@ const App = () => (
                 <Route path="requisition-history" element={<RequisitionHistory />} />
                 {/* T-T8.5-MSME-Compliance · MSME 43B(h) Alerts */}
                 <Route path="msme-alerts" element={<MSMEAlerts />} />
+                {/* T-T8.6-VendorAnalytics · 5-tier vendor performance analytics */}
+                <Route path="vendor-analytics" element={<VendorAnalytics />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />
