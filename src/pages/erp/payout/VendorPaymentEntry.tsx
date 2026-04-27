@@ -147,6 +147,14 @@ export default function VendorPaymentEntry() {
     if (!bankCashLedgerId) { toast.error('Bank/Cash ledger is required'); return; }
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
     setSaving(true);
+    // [T-T8.3-AdvanceIntel] When purpose='advance' · write a single advance
+    // bill_reference · finecore-engine line 452-475 auto-creates AdvanceEntry.
+    const effectiveBillRefs: BillReference[] = paymentPurpose === 'advance'
+      ? [{
+          voucher_id: '', voucher_no: '', voucher_date: date,
+          amount, type: 'advance',
+        }]
+      : bills;
     const result = processVendorPayment({
       entityCode,
       vendorId: partyId,
@@ -163,7 +171,7 @@ export default function VendorPaymentEntry() {
       chequeDate: chequeDate || undefined,
       bankName: bankName || undefined,
       narration,
-      billReferences: bills,
+      billReferences: effectiveBillRefs,
       applyTDS: isTdsApplicable && tdsAmount > 0,
       tdsSection: tdsSection || undefined,
       deducteeType,
@@ -172,7 +180,8 @@ export default function VendorPaymentEntry() {
     });
     setSaving(false);
     if (result.ok) {
-      toast.success(`Vendor Payment ${result.voucherNo} posted`);
+      const purposeLabel = paymentPurpose === 'advance' ? ' · advance auto-tagged' : '';
+      toast.success(`Vendor Payment ${result.voucherNo} posted${purposeLabel}`);
       lastSavedRef.current = true;
     } else {
       toast.error(result.errors?.[0] ?? 'Save failed');
@@ -180,7 +189,7 @@ export default function VendorPaymentEntry() {
     }
   }, [entityCode, partyId, partyName, selectedVendor, bankCashLedgerId, bankCashLedgerName,
       amount, date, refNo, paymentMode, instrumentType, instrumentRef, chequeDate, bankName,
-      narration, bills, isTdsApplicable, tdsAmount, tdsSection, deducteeType, departmentId]);
+      narration, bills, paymentPurpose, isTdsApplicable, tdsAmount, tdsSection, deducteeType, departmentId]);
 
   const handleSaveAndNew = useCallback(async () => {
     await handleSave();
