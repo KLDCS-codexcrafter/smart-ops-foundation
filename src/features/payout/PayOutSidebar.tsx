@@ -34,8 +34,8 @@ const PAYOUT_MENU: PayOutMenuItem[] = [
   { id: 'po-dashboard',         label: 'Dashboard',           icon: LayoutDashboard, route: '/erp/payout/dashboard' },
   { id: 'po-vendor-payment',    label: 'Vendor Payment',      icon: Wallet,          route: '/erp/payout/vendor-payment' },
   { id: 'po-payment-register',  label: 'Payment Register',    icon: ClipboardList,   route: '/erp/payout/payment-register' },
-  // [B.3 stub] Bill Settlement · advance settlement
-  { id: 'po-bill-settlement',   label: 'Bill Settlement',     icon: Receipt,         comingSoon: 'B.3' },
+  // [T-T8.3-AdvanceIntel] Bill Settlement · post-hoc advance allocation · ACTIVATED
+  { id: 'po-bill-settlement',   label: 'Bill Settlement',     icon: Receipt,         route: '/erp/payout/bill-settlement' },
   // [B.4 stub] Universal Payment Requisition
   { id: 'po-requisition',       label: 'Payment Requisition', icon: FileText,        comingSoon: 'B.4' },
   // [B.5 stub] MSME 43B(h) compliance
