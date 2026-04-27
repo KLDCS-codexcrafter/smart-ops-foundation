@@ -9,7 +9,7 @@
  * Reads exclusively via vendor-analytics-engine (pure query). No mutations.
  * Recharts already imported in 5+ existing reports · NO new dep.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   BarChart3, Users, IndianRupee, Clock, AlertOctagon, ShieldCheck, Download,
 } from 'lucide-react';
@@ -147,7 +147,7 @@ function VendorAnalyticsPanel({ entityCode, entityId }: PanelProps) {
   }, [topMetric, topVendors, vendorMetrics]);
 
   // Distribution data labelling
-  const dimensionLabel = (id: string): string => {
+  const dimensionLabel = useCallback((id: string): string => {
     if (id === 'unassigned') return 'Unassigned';
     switch (pieDimension) {
       case 'branch':        return branches.find(b => b.id === id)?.name ?? id;
@@ -156,13 +156,13 @@ function VendorAnalyticsPanel({ entityCode, entityId }: PanelProps) {
       case 'department':    return departments.find(d => d.id === id)?.name ?? id;
     }
     return id;
-  };
+  }, [pieDimension, branches, businessUnits, divisions, departments]);
 
   const pieData = useMemo(() => distribution.map(d => ({
     name: dimensionLabel(d.dimension_label),
     value: d.vendor_count,
     spend: d.total_spend,
-  })), [distribution, pieDimension, branches, businessUnits, divisions, departments]);
+  })), [distribution, dimensionLabel]);
 
   // Sortable drill table
   const sortedRows = useMemo(() => {
