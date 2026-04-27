@@ -111,7 +111,7 @@ function BulkPayBuilderPanel({ entityCode }: Props) {
   );
 
   useEffect(() => {
-    if (!supportedFormats.includes(fileFormat)) setFileFormat(supportedFormats[0]);
+    if (!supportedFormats.includes(fileFormat)) setFileFormat(supportedFormats[0] as BankFileFormat);
   }, [supportedFormats, fileFormat]);
 
   // ── Actions ─────────────────────────────────────────────────────────

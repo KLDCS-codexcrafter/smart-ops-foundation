@@ -201,7 +201,7 @@ function CashFlowDashboardPanel({ entityCode, mode = 'all' }: Props) {
       )}
 
       {/* Suggested timing */}
-      {(showCashFlow || mode === 'all') && (
+      {showCashFlow && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
