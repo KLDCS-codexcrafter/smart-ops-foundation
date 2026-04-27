@@ -94,6 +94,16 @@ function buildTallyFixtureVoucher(): Voucher {
     total_cgst: 900, total_sgst: 900, total_igst: 0, total_cess: 0,
     total_tax: 1800, round_off: 0, net_amount: 11800,
     tds_applicable: false,
+    // [T-T10-pre.2c-TallyNative-fix2] bill_references exercises BILLALLOCATIONS.LIST
+    // path in mapVoucherToTallySchema → billAllocToXML so tally-1 regression guard
+    // can assert <NAME> tag (not <n>) is emitted. Guards against D-1 reappearing.
+    bill_references: [{
+      voucher_id: 'tally-fix-1',
+      voucher_no: 'INV/TALLY/0001',
+      voucher_date: '2026-04-15',
+      amount: 11800,
+      type: 'new',
+    }],
     narration: 'Smoke test fixture',
     terms_conditions: '', payment_enforcement: '', payment_instrument: '',
     status: 'posted',
@@ -1263,10 +1273,16 @@ const CHECKS: CheckSpec[] = [
       const doc = new DOMParser().parseFromString(xml, 'application/xml');
       const parserErrors = doc.getElementsByTagName('parsererror').length;
       const wellFormed = parserErrors === 0;
-      const ok = hasEnv && hasImport && hasMsg && hasCompany && wellFormed;
-      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}, parserErrors=${parserErrors}`,
-        expected: 'all four envelope markers + 0 parser errors',
-        pass: ok, details: `XML length=${xml.length} · DOMParser parsererror count=${parserErrors}` };
+      // [T-T10-pre.2c-TallyNative-fix2 · D-1 regression guard] BILLALLOCATIONS.LIST
+      // must emit <NAME>...</NAME> (Tally schema), never the broken <n>...</n>.
+      const hasBillAlloc = xml.includes('<BILLALLOCATIONS.LIST>');
+      const hasNameTag = xml.includes('<NAME>') && xml.includes('</NAME>');
+      const hasNoLowercaseN = !xml.includes('<n>') && !xml.includes('</n>');
+      const billAllocOk = hasBillAlloc && hasNameTag && hasNoLowercaseN;
+      const ok = hasEnv && hasImport && hasMsg && hasCompany && wellFormed && billAllocOk;
+      return { actual: `env=${hasEnv}, import=${hasImport}, msg=${hasMsg}, company=${hasCompany}, parserErrors=${parserErrors}, billAlloc=${hasBillAlloc}, nameTag=${hasNameTag}, noLowercaseN=${hasNoLowercaseN}`,
+        expected: 'all envelope markers + 0 parser errors + BILLALLOCATIONS.LIST.NAME uppercase tag',
+        pass: ok, details: `XML length=${xml.length} · parsererror=${parserErrors} · billAllocOk=${billAllocOk}` };
     } },
 
   { id: 'tally-2', section: 'Tally Export',
