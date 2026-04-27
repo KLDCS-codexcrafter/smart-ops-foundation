@@ -2706,6 +2706,46 @@ const CHECKS: CheckSpec[] = [
         expected: 'errors>=1 with field=bankIfsc',
         pass: ok, details: 'Validator surfaces missing/invalid IFSC per requisition' };
     } },
+
+  // ── Group B Horizon Close · cumulative engine reachability ─────────────
+  { id: 'groupb-close-1', section: 'Group B Close',
+    name: 'All 11 Group B engines import + key exports resolve',
+    run: async () => {
+      const mods = await Promise.all([
+        import('@/lib/voucher-org-tag-engine'),
+        import('@/lib/payment-engine'),
+        import('@/lib/payment-requisition-engine'),
+        import('@/lib/advance-tagger-engine'),
+        import('@/lib/bill-settlement-engine'),
+        import('@/lib/msme-43bh-engine'),
+        import('@/lib/vendor-analytics-engine'),
+        import('@/lib/bulk-pay-engine'),
+        import('@/lib/auto-pay-engine'),
+        import('@/lib/cash-flow-engine'),
+        import('@/lib/bank-file-engine'),
+      ]);
+      const checks: Array<[string, boolean]> = [
+        ['voucher-org-tag-engine.tagVoucher',           typeof (mods[0] as Record<string, unknown>).tagVoucher === 'function'],
+        ['payment-engine.processVendorPayment',         typeof (mods[1] as Record<string, unknown>).processVendorPayment === 'function'],
+        ['payment-requisition-engine.createRequisition', typeof (mods[2] as Record<string, unknown>).createRequisition === 'function'],
+        ['advance-tagger-engine.suggestAdvanceMatches', typeof (mods[3] as Record<string, unknown>).suggestAdvanceMatches === 'function'],
+        ['bill-settlement-engine.settleBills',          typeof (mods[4] as Record<string, unknown>).settleBills === 'function'],
+        ['msme-43bh-engine.getMSMEBreaches',            typeof (mods[5] as Record<string, unknown>).getMSMEBreaches === 'function'],
+        ['vendor-analytics-engine.computeVendorScorecards', typeof (mods[6] as Record<string, unknown>).computeVendorScorecards === 'function'],
+        ['bulk-pay-engine.createBulkBatch',             typeof (mods[7] as Record<string, unknown>).createBulkBatch === 'function'],
+        ['auto-pay-engine.evaluateRulesNow',            typeof (mods[8] as Record<string, unknown>).evaluateRulesNow === 'function'],
+        ['cash-flow-engine.computeDailyProjection',     typeof (mods[9] as Record<string, unknown>).computeDailyProjection === 'function'],
+        ['bank-file-engine.validateBatchForBank',       typeof (mods[10] as Record<string, unknown>).validateBatchForBank === 'function'],
+      ];
+      const failed = checks.filter(([, ok]) => !ok).map(([n]) => n);
+      const ok = failed.length === 0;
+      return {
+        actual: ok ? 'all 11 engines reachable' : `missing: ${failed.join(', ')}`,
+        expected: '11/11 Group B engines import + key export resolves',
+        pass: ok,
+        details: 'Cumulative reachability check across the entire Group B engine surface (B.0 → B.7)',
+      };
+    } },
 ];
 
 function useCtrlS(handler: () => void) {
