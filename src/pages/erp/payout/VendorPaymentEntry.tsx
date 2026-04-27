@@ -304,7 +304,46 @@ export default function VendorPaymentEntry() {
         </CardContent>
       </Card>
 
-      {/* Bill Allocation */}
+      {/* [T-T8.3-AdvanceIntel] Payment Purpose + Unmatched Advance Banner */}
+      <Card>
+        <CardContent className="pt-5 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs">Payment Purpose</Label>
+              <Select value={paymentPurpose} onValueChange={v => setPaymentPurpose(v as 'regular' | 'advance')}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="regular">Regular Payment (against bills)</SelectItem>
+                  <SelectItem value="advance">Advance Payment (on-account)</SelectItem>
+                </SelectContent>
+              </Select>
+              {paymentPurpose === 'advance' && (
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Will auto-create AdvanceEntry (ADVP/FY/XXXX) on save · settle later via Bill Settlement screen.
+                </p>
+              )}
+            </div>
+            <div className="flex items-end">
+              {paymentPurpose === 'advance' && (
+                <Badge variant="outline" className="text-[10px] border-violet-500/40 text-violet-600 dark:text-violet-300">
+                  Advance Mode · finecore auto-tag active
+                </Badge>
+              )}
+            </div>
+          </div>
+          {partyId && paymentPurpose === 'regular' && (
+            <UnmatchedAdvanceBanner
+              entityCode={entityCode}
+              vendorId={partyId}
+              onApplyAdvance={(adv) => {
+                toast.info(
+                  `Advance ${adv.advance_ref_no} (${adv.balance_amount.toLocaleString('en-IN')}) noted · settle via Bill Settlement after invoice posted`,
+                );
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="pt-5 space-y-3">
           <div className="flex items-center justify-between">
