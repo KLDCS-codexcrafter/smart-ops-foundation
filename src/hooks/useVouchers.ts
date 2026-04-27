@@ -58,12 +58,16 @@ export function useVouchers(entityCode: string) {
         return null;
       }
       postVoucher(enrichedVoucher, entityCode);
+      // [T-T8.0-OrgTagFoundation] Auto-tag · idempotent · enables 5-tier slicing in B.6.
+      tagVoucher(enrichedVoucher.id, getOperatorContext(enrichedVoucher.entity_id, enrichedVoucher.department_id));
       toast.success(`${enrichedVoucher.voucher_type_name} ${enrichedVoucher.voucher_no} posted`);
     } else {
       const existing = ls<Voucher>(key);
       existing.push({ ...enrichedVoucher, status: 'draft' });
       // [JWT] POST /api/accounting/vouchers (draft)
       localStorage.setItem(key, JSON.stringify(existing));
+      // [T-T8.0-OrgTagFoundation] Auto-tag draft path · idempotent · same context resolver.
+      tagVoucher(enrichedVoucher.id, getOperatorContext(enrichedVoucher.entity_id, enrichedVoucher.department_id));
       toast.success(`${enrichedVoucher.voucher_type_name} saved as draft`);
     }
     reload();
