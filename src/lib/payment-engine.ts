@@ -128,6 +128,7 @@ export function processVendorPayment(input: VendorPaymentInput): VendorPaymentRe
     bill_references: input.billReferences,
     department_id: input.departmentId,
     status: 'draft',
+    created_by: getCurrentUserId(),
     created_at: now,
     updated_at: now,
     ref_no: input.refNo || undefined,
