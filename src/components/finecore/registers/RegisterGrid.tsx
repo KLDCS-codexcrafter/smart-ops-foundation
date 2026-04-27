@@ -81,6 +81,13 @@ export interface RegisterGridProps {
    * Parent FinCorePage wires this to setActiveModule + DayBookPanel's initialFilters prop.
    */
   onNavigateToDayBook: (initialFilters: Partial<RegisterFilters> & { typeFilter?: string }) => void;
+  /**
+   * [T-T10-pre.2d-D] Optional drill-to-source-voucher callback. Fires when a
+   * column with `clickable: true` (typically the voucher-no cell) is clicked.
+   * When undefined, clickable cells gracefully degrade to plain text — backward
+   * compat preserved for parent pages that have not wired this prop yet.
+   */
+  onNavigateToVoucher?: (voucherId: string) => void;
 }
 
 const ROWS_PER_PAGE = 50;
@@ -92,7 +99,7 @@ const ROWS_PER_PAGE = 50;
  * @iso       Functional Suitability (HIGH) — all register concerns in one place.
  */
 export function RegisterGrid({
-  entityCode, meta, columns, summaryBuilder, onNavigateToDayBook,
+  entityCode, meta, columns, summaryBuilder, onNavigateToDayBook, onNavigateToVoucher,
 }: RegisterGridProps) {
   const { vouchers } = useVouchers(entityCode);
 
