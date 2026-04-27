@@ -192,6 +192,9 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
   vouchers.push({ ...voucher, status: 'posted', posted_at: now, updated_at: now });
   ss(vouchersKey(entityCode), vouchers);
 
+  // [T-T8.0-OrgTagFoundation] Auto-tag · ensures both useVouchers and direct postVoucher paths populate metadata.
+  tagVoucher(voucher.id, getOperatorContext(voucher.entity_id, voucher.department_id));
+
   // 2. Write journal lines
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
     const entries = ls<JournalEntry>(journalKey(entityCode));
