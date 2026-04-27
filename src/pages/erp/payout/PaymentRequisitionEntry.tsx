@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import {
-  FileText, Wallet, Users, Receipt, Building2, AlertCircle, ArrowLeft, Send,
+  FileText, Wallet, Users, Receipt, AlertCircle, ArrowLeft, Send,
   Banknote, Briefcase, Heart, RefreshCw, Coins, HardHat, Phone, Repeat,
 } from 'lucide-react';
 import {
