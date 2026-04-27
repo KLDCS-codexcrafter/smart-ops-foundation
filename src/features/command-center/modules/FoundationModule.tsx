@@ -92,6 +92,9 @@ export function FoundationModule() {
     return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
   } catch { return 0; } })();
 
+  // [T-T8.0-OrgTagFoundation] Org-Tag Coverage = % of vouchers with derived 5-tier metadata.
+  const orgTagCoverage = getOrgTagCoverage();
+
   return (
     <div className="space-y-6">
       <div>
