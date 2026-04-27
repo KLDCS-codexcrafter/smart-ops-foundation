@@ -582,6 +582,9 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
                         {loan.status === 'disbursed' && loan.remainingBalance <= 0 && (
                           <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => closeLoan(loan.id)}>Close</Button>
                         )}
+                        {/* [T-T8.4-Requisition-Universal] Request Payment button · additive */}
+                        <Button size="sm" variant="outline" className="h-7 text-[10px]"
+                          onClick={() => navigate(`/erp/payout/requisition?type=employee_loan_disbursement&linkedId=${loan.id}`)}>Request Payment</Button>
                         <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setEmiLoanId(emiLoanId === loan.id ? null : loan.id)}>
                           {emiLoanId === loan.id ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                         </Button>
