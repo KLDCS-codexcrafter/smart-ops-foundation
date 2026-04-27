@@ -337,7 +337,54 @@ export function RegisterGrid({
           <h2 className="text-lg font-bold">{meta.title}</h2>
           <Badge variant="outline" className="text-[10px]">{filtered.length} rows</Badge>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* [T-T10-pre.2d-D] Saved Views dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Eye className="h-3.5 w-3.5 mr-1" /> Views
+                {savedViews.length > 0 && (
+                  <Badge variant="outline" className="ml-1 text-[9px] h-4">{savedViews.length}</Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[200px]">
+              {savedViews.length === 0 && (
+                <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                  No saved views yet
+                </DropdownMenuItem>
+              )}
+              {savedViews.map(v => (
+                <DropdownMenuItem key={v.id} onClick={() => applyView(v)} className="text-xs">
+                  {v.isDefault && <Star className="h-3 w-3 mr-1 text-amber-500 fill-amber-500" />}
+                  {v.name}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setSaveDialogOpen(true)} className="text-xs">
+                + Save current view
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setManageDialogOpen(true)}
+                disabled={savedViews.length === 0}
+                className="text-xs"
+              >
+                Manage views…
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* [T-T10-pre.2d-D] Reconciliation View toggle (only when meta declares a target) */}
+          {meta.reconciliationTarget && (
+            <Button
+              variant={reconMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setReconMode(m => !m)}
+            >
+              <GitMerge className="h-3.5 w-3.5 mr-1" /> Reconciliation
+            </Button>
+          )}
+
           <Button data-primary variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
             <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Export Excel
           </Button>
