@@ -43,7 +43,7 @@ function loadSAMConfig(entityCode: string): SAMConfig | null {
   } catch { return null; }
 }
 
-export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Props) {
+export function SalesXSidebar({ activeModule, onModuleChange, entityCode, activeGroup }: Props) {
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
   const [reportsOpen, setReportsOpen] = useState(false);
