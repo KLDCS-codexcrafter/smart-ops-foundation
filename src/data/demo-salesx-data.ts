@@ -14,6 +14,7 @@ import type { Quotation, QuotationStage } from '@/types/quotation';
 import type { CommissionEntry } from '@/types/commission-register';
 import type { SupplyRequestMemo } from '@/types/supply-request-memo';
 import type { Order } from '@/types/order';
+import type { Campaign } from '@/types/campaign';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type Tagged<T> = T & { _archetype: DemoArchetype };
