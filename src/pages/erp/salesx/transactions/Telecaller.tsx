@@ -259,6 +259,22 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
       is_active: true,
     };
     createSession(session);
+    // Update agent stats for live monitoring + gamification
+    incCallCount(currentTelecaller.id);
+    let pts = rule.call_made;
+    if (disposition === 'interested') pts += rule.call_interested;
+    else if (disposition === 'converted') pts += rule.call_converted;
+    else if (disposition === 'callback') pts += rule.call_callback;
+    if (lastWaSent) pts += rule.wa_template_sent;
+    awardPoints(
+      currentTelecaller.id, currentTelecaller.display_name, pts,
+      'call_made', 'call_session', null,
+      { isConversion: disposition === 'converted',
+        isWaSend: !!lastWaSent,
+        callTime: new Date() },
+    );
+    // Move agent into wrap_up after each call
+    transitionTo(currentTelecaller.id, currentTelecaller.display_name, 'wrap_up');
     const fu: EnquiryFollowUp = {
       id: `fu-${tsId}`,
       date: todayISO(), time: nowHHMM(),
@@ -295,6 +311,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     createSession, addFollowUp, idx, queue,
     isRecording, recordingConsent, dialerActive, currentDialerSession,
     dialerIdx, dialerTargets, lastWaSent, incrementDialerSession, endDialerSession,
+    currentTelecaller, incCallCount, awardPoints, transitionTo, rule,
   ]);
 
   const isFormActive = sessionActive || !!notes.trim();
