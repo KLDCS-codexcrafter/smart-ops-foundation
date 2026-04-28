@@ -32,7 +32,7 @@ export default function MobileCampaignPerformancePage() {
 
   const campaigns = useMemo(() => {
     if (!session) return [];
-    return loadList<CampaignLite>(campaignsKey(session.entity_code))
+    return loadList<Campaign>(campaignsKey(session.entity_code))
       .sort((a, b) => (b.performance_metrics?.roi_pct ?? 0) - (a.performance_metrics?.roi_pct ?? 0));
   }, [session]);
 

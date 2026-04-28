@@ -25,7 +25,7 @@ function loadList<T>(key: string): T[] {
   } catch { return []; }
 }
 
-const callReviewsKey = (e: string) => `erp_call_reviews_${e}`;
+
 
 export default function MobileQualityReviewsPage() {
   const navigate = useNavigate();
