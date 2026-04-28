@@ -31,6 +31,8 @@ import {
   DEMO_WEBINARS, DEMO_WEBINAR_PARTICIPANTS,
   DEMO_LEADS, DEMO_WA_TEMPLATES,
   DEMO_AGENT_STATUSES, DEMO_AGENT_PROFILES, DEMO_POINTS_TRANSACTIONS,
+  DEMO_QUALITY_CRITERIA, DEMO_CALL_REVIEWS, DEMO_COACHING_FEEDBACK,
+  DEMO_DISTRIBUTION_CONFIG, DEMO_TELECALLER_CAPACITIES, DEMO_DISTRIBUTION_LOGS,
 } from '@/data/demo-salesx-data';
 import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
 import {
@@ -107,6 +109,12 @@ export function seedEntityDemoData(
   safeSetArray(`erp_agent_status_${entityCode}`, DEMO_AGENT_STATUSES.map(a => ({ ...a, entity_id: entityCode })));
   safeSetArray(`erp_agent_profiles_${entityCode}`, DEMO_AGENT_PROFILES.map(a => ({ ...a, entity_id: entityCode })));
   safeSetArray(`erp_points_transactions_${entityCode}`, DEMO_POINTS_TRANSACTIONS.map(t => ({ ...t, entity_id: entityCode })));
+  safeSetArray(`erp_quality_criteria_${entityCode}`, DEMO_QUALITY_CRITERIA.map(c => ({ ...c, entity_id: entityCode })));
+  safeSetArray(`erp_call_reviews_${entityCode}`, DEMO_CALL_REVIEWS.map(r => ({ ...r, entity_id: entityCode })));
+  safeSetArray(`erp_coaching_feedback_${entityCode}`, DEMO_COACHING_FEEDBACK.map(f => ({ ...f, entity_id: entityCode })));
+  safeSetObj(`erp_distribution_config_${entityCode}`, { ...DEMO_DISTRIBUTION_CONFIG, entity_id: entityCode });
+  safeSetArray(`erp_telecaller_capacities_${entityCode}`, DEMO_TELECALLER_CAPACITIES.map(c => ({ ...c, entity_id: entityCode })));
+  safeSetArray(`erp_distribution_logs_${entityCode}`, DEMO_DISTRIBUTION_LOGS.map(l => ({ ...l, entity_id: entityCode })));
   safeSetArray(`erp_sam_targets_${entityCode}`, DEMO_TARGETS);
   const enquiries = safeSetArray(
     `erp_enquiries_${entityCode}`,
