@@ -141,6 +141,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-webinar' as SalesXModule,
+      label: 'Webinar Manager',
+      icon: Video,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
