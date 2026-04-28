@@ -122,6 +122,10 @@ export function VisitTrackingPanel({ entityCode }: Props) {
   const [checkingIn, setCheckingIn] = useState(false);
   const [activeVisitId, setActiveVisitId] = useState<string | null>(null);
 
+  const signaturePadRef = useRef<SignaturePadHandle>(null);
+  const [signatureCaptured, setSignatureCaptured] = useState<string | null>(null);
+  const [signatureEmpty, setSignatureEmpty] = useState(true);
+
   useEffect(() => {
     setVisits(loadVisits(entityCode));
     setSalesmen(loadSalesmen(entityCode));
