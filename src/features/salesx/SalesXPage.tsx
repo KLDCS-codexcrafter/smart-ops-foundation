@@ -233,7 +233,43 @@ function renderModule(
 export default function SalesXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
   const entityCode = selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE;
-  const [activeModule, setActiveModule] = useState<SalesXModule>('sx-hub');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const moduleFromUrl = (searchParams.get('m') as SalesXModule | null) ?? 'sx-hub';
+  const groupFromUrl = (searchParams.get('g') as SalesXGroup | null) ?? getModuleGroup(moduleFromUrl);
+
+  const [activeModule, setActiveModuleState] = useState<SalesXModule>(moduleFromUrl);
+  const [activeGroup, setActiveGroupState] = useState<SalesXGroup>(groupFromUrl);
+
+  const setActiveModule = useCallback((m: SalesXModule) => {
+    const g = getModuleGroup(m);
+    setActiveModuleState(m);
+    setActiveGroupState(g);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('m', m);
+      next.set('g', g);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
+  const setActiveGroup = useCallback((g: SalesXGroup) => {
+    const defaultModule = SALESX_GROUP_DEFAULT_MODULE[g];
+    setActiveGroupState(g);
+    setActiveModuleState(defaultModule);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('m', defaultModule);
+      next.set('g', g);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
+  useEffect(() => {
+    const m = (searchParams.get('m') as SalesXModule | null) ?? 'sx-hub';
+    const g = (searchParams.get('g') as SalesXGroup | null) ?? getModuleGroup(m);
+    if (m !== activeModule) setActiveModuleState(m);
+    if (g !== activeGroup) setActiveGroupState(g);
+  }, [searchParams, activeModule, activeGroup]);
   const { entityCode: entCode, userId } = useCardEntitlement();
 
   useEffect(() => {
