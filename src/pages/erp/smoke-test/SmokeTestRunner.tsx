@@ -55,7 +55,7 @@ import { Packer } from 'docx';
 import type { Voucher } from '@/types/voucher';
 // [T-T10-pre.2c-TallyNative-fix1 · D-2] Pull live config defaults so tally-8
 // catches drift between spec contract and ComplianceSettingsAutomation seed.
-import { DEFAULT_TALLY_EXPORT_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { DEFAULT_TALLY_EXPORT_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 // [T-T10-pre.2c-TallyNative] Minimal fixture builder for smoke checks · returns
 // a Sales voucher with one ledger line (party Dr) + one inventory line. Used by
