@@ -28,6 +28,12 @@ import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/
 import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/scheme-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
+import { useStockAvailability } from '@/hooks/useStockAvailability';
+import {
+  upsertQuoteReservation,
+  releaseQuoteReservations,
+  createOrderReservations,
+} from '@/lib/stock-reservation-engine';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -118,6 +124,13 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     return list.slice().sort((a, b) => b.quotation_date.localeCompare(a.quotation_date));
   }, [quotations, stageFilter]);
 
+  // Sprint T-Phase-1.1.1m · Stock availability for item grid (D-186 · Operix MOAT #19)
+  const itemNames = useMemo(
+    () => form.items.map(it => it.item_name).filter(n => n && n.trim()),
+    [form.items],
+  );
+  const { availabilityMap, refresh: refreshAvailability } = useStockAvailability(entityCode, itemNames);
+
   const handleNew = () => {
     setEditingId(null); setForm(blank()); setView('form'); setSnapshotId(null);
   };
@@ -130,10 +143,21 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   const handleSave = useCallback(() => {
     if (!form.customer_id) { toast.error('Customer required'); return; }
     if (form.items.length === 0) { toast.error('Add at least one item'); return; }
+    const qid = editingId ?? `q-${Date.now()}`;
     if (editingId) updateQuotation(editingId, form);
     else createQuotation(form);
+    // Sprint T-Phase-1.1.1m · upsert quote-level soft-hold reservation
+    upsertQuoteReservation(
+      entityCode,
+      qid,
+      '', // quotation_no assigned by useQuotations; refresh on next mount
+      form.customer_name,
+      null, // salesman: Phase 2
+      form.items.map(it => ({ item_name: it.item_name, qty: it.qty })),
+    );
+    refreshAvailability();
     setView('list');
-  }, [form, editingId, updateQuotation, createQuotation]);
+  }, [form, editingId, updateQuotation, createQuotation, entityCode, refreshAvailability]);
 
   useCtrlS(view === 'form' ? handleSave : () => {});
 
@@ -221,9 +245,19 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     });
     if (result) {
       updateQuotation(editingId, { quotation_stage: 'confirmed' });
+      // Sprint T-Phase-1.1.1m · release quote-level hold · create order-level hold
+      releaseQuoteReservations(entityCode, editingId);
+      createOrderReservations(
+        entityCode,
+        result.id,
+        result.order_no,
+        q.customer_name,
+        q.items.map(it => ({ item_name: it.item_name, qty: it.qty })),
+      );
+      refreshAvailability();
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
     }
-  }, [editingId, quotations, createOrder, entityCode, updateQuotation]);
+  }, [editingId, quotations, createOrder, entityCode, updateQuotation, refreshAvailability]);
 
   /**
    * Quotation → Proforma conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
@@ -567,6 +601,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                     <TableHead>Description</TableHead>
                     <TableHead className="w-16">Qty</TableHead>
                     <TableHead className="w-16">UOM</TableHead>
+                    <TableHead className="w-20 text-xs">Avail</TableHead>
                     <TableHead className="w-24">Rate</TableHead>
                     <TableHead className="w-16">Disc%</TableHead>
                     <TableHead className="w-24">Sub Total</TableHead>
@@ -583,6 +618,26 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                       <TableCell><Input value={it.description ?? ''} onChange={e => updateLine(i, { description: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input type="number" value={it.qty} onChange={e => updateLine(i, { qty: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input value={it.uom ?? ''} onChange={e => updateLine(i, { uom: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
+                      {/* Sprint T-Phase-1.1.1m · Avail badge · green ≥ qty · amber 0 < avail < qty · red = 0 */}
+                      <TableCell>
+                        {(() => {
+                          const trimmed = it.item_name.trim();
+                          const avail = trimmed ? availabilityMap.get(trimmed) : undefined;
+                          if (!trimmed || !avail) {
+                            return <span className="text-muted-foreground text-xs">—</span>;
+                          }
+                          const cls = avail.available >= it.qty
+                            ? 'bg-green-500/15 text-green-700 border-green-500/30'
+                            : avail.available > 0
+                              ? 'bg-amber-500/15 text-amber-700 border-amber-500/30'
+                              : 'bg-destructive/15 text-destructive border-destructive/30';
+                          return (
+                            <Badge variant="outline" className={cn('text-xs font-mono', cls)}>
+                              {avail.available.toLocaleString('en-IN')}
+                            </Badge>
+                          );
+                        })()}
+                      </TableCell>
                       <TableCell><Input type="number" value={it.rate} onChange={e => updateLine(i, { rate: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input type="number" value={it.discount_pct} onChange={e => updateLine(i, { discount_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell className="font-mono text-xs">₹{it.sub_total.toLocaleString('en-IN')}</TableCell>

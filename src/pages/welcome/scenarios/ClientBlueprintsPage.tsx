@@ -180,6 +180,12 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_delivery_memos_${entityCode}`,
     `erp_invoice_memos_${entityCode}`,
     `erp_salesx_conversion_log_${entityCode}`,
+    // Sprint T-Phase-1.1.1m · Stock reservations
+    `erp_stock_reservations_${entityCode}`,
+    // Sprint T-Phase-1.1.1n · Three Memo doc-sequence keys
+    `erp_doc_seq_SRQM_${entityCode}`,
+    `erp_doc_seq_DM_${entityCode}`,
+    `erp_doc_seq_IM_${entityCode}`,
   ];
 }
 

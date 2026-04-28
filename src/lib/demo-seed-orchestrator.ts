@@ -39,6 +39,7 @@ import { loadSalesXTransactions } from '@/data/demo-transactions-salesx';
 import {
   DEMO_TERRITORIES, DEMO_BEAT_ROUTES, DEMO_VISIT_LOGS, DEMO_SECONDARY_SALES,
 } from '@/data/demo-field-force-data';
+import type { StockReservation } from '@/types/stock-reservation';
 
 export interface SeedResult {
   entityCode: string;
@@ -139,6 +140,57 @@ export function seedEntityDemoData(
   safeSetArray(`erp_supply_request_memos_${entityCode}`, srmData);
   const dmData = DEMO_DELIVERY_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
   safeSetArray(`erp_delivery_memos_${entityCode}`, dmData);
+
+  // Stock Reservations (Sprint T-Phase-1.1.1m · D-186)
+  // Seeds 2 demo reservations so QuotationEntry Avail column shows realistic data.
+  // Item names match seeded inventory items (Demo Item A/C are conceptual labels —
+  // we anchor to actual archetype item names so opening_stock minus reserved is meaningful).
+  const itemSet = itemsForArchetype(archetype);
+  const itemA = itemSet[0];
+  const itemC = itemSet[2] ?? itemSet[1] ?? itemSet[0];
+  const nowIso = new Date().toISOString();
+  const demoReservations: StockReservation[] = [];
+  if (itemA) {
+    demoReservations.push({
+      id: `res-demo-q-${entityCode}`,
+      entity_id: entityCode,
+      item_name: itemA.itemName,
+      reserved_qty: 10,
+      level: 'quote',
+      status: 'active',
+      source_type: 'quotation',
+      source_id: 'q-demo-1',
+      source_no: 'RFQ/25-26/0001',
+      customer_name: 'Demo Customer A',
+      salesman_name: 'Demo Salesman',
+      reserved_at: nowIso,
+      expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+      released_at: null,
+      created_at: nowIso,
+      updated_at: nowIso,
+    });
+  }
+  if (itemC) {
+    demoReservations.push({
+      id: `res-demo-o-${entityCode}`,
+      entity_id: entityCode,
+      item_name: itemC.itemName,
+      reserved_qty: 20,
+      level: 'order',
+      status: 'active',
+      source_type: 'sales_order',
+      source_id: 'so-demo-1',
+      source_no: 'SO/25-26/0001',
+      customer_name: 'Demo Customer B',
+      salesman_name: 'Demo Salesman',
+      reserved_at: nowIso,
+      expires_at: null,
+      released_at: null,
+      created_at: nowIso,
+      updated_at: nowIso,
+    });
+  }
+  safeSetArray(`erp_stock_reservations_${entityCode}`, demoReservations);
 
   return {
     entityCode, archetype,
