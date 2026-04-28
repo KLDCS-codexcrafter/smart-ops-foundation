@@ -1,17 +1,18 @@
 /**
  * MobileSalesmanHome.tsx — Salesman role landing (9-tile mobile CRM)
- * Sprint T-Phase-1.1.1l-a
+ * Sprint T-Phase-1.1.1l-a · 1.1.1l-c adds live location tracking toggle
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Navigation, MapPin, PhoneIncoming, Briefcase, Users,
-  ClipboardList, ShoppingBag, Target, IndianRupee, LogOut,
+  ClipboardList, ShoppingBag, Target, IndianRupee, LogOut, Activity,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
+import { startTracking, stopTracking } from '@/lib/location-tracker-engine';
 
 function readSession(): MobileSession | null {
   try {
@@ -35,6 +36,22 @@ const TILES = [
 export default function MobileSalesmanHome() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
+  const [trackingOn, setTrackingOn] = useState(false);
+
+  useEffect(() => {
+    if (!session) return;
+    startTracking({
+      entityCode: session.entity_code,
+      userId: session.user_id ?? '',
+      userName: session.display_name,
+      userRole: 'salesman',
+    });
+    setTrackingOn(true);
+    return () => {
+      stopTracking();
+      setTrackingOn(false);
+    };
+  }, [session]);
 
   if (!session) return null;
 
@@ -44,8 +61,24 @@ export default function MobileSalesmanHome() {
   };
 
   const handleLogout = () => {
+    stopTracking();
     try { sessionStorage.removeItem('opx_mobile_session'); } catch { /* ignore */ }
     navigate('/mobile/login', { replace: true });
+  };
+
+  const handleToggleTracking = () => {
+    if (trackingOn) {
+      stopTracking();
+      setTrackingOn(false);
+    } else {
+      startTracking({
+        entityCode: session.entity_code,
+        userId: session.user_id ?? '',
+        userName: session.display_name,
+        userRole: 'salesman',
+      });
+      setTrackingOn(true);
+    }
   };
 
   return (
@@ -55,9 +88,20 @@ export default function MobileSalesmanHome() {
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Salesman</p>
           <p className="font-semibold text-sm">{session.display_name}</p>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant={trackingOn ? 'default' : 'outline'}
+            className={trackingOn ? 'bg-green-600 hover:bg-green-700 h-7 text-[10px] px-2' : 'h-7 text-[10px] px-2'}
+            onClick={handleToggleTracking}
+          >
+            <Activity className="h-3 w-3 mr-1" />
+            {trackingOn ? 'Tracking On' : 'Tracking Off'}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3">

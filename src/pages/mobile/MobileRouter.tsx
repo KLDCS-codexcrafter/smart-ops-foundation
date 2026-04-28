@@ -48,6 +48,23 @@ import MobileTelecallerRemindersPage from './telecaller/MobileTelecallerReminder
 import MobileWaTemplatesPage from './telecaller/MobileWaTemplatesPage';
 import MobileTelecallerStatsPage from './telecaller/MobileTelecallerStatsPage';
 import MobileTelecallerCallLogPage from './telecaller/MobileTelecallerCallLogPage';
+import MobileSupervisorHome from './supervisor/MobileSupervisorHome';
+import MobileTeamLiveViewPage from './supervisor/MobileTeamLiveViewPage';
+import MobileApprovalsPage from './supervisor/MobileApprovalsPage';
+import MobileCoverageMapPage from './supervisor/MobileCoverageMapPage';
+import MobileQualityReviewsPage from './supervisor/MobileQualityReviewsPage';
+import MobileLeadDistributionPage from './supervisor/MobileLeadDistributionPage';
+import MobileVisitLogReviewPage from './supervisor/MobileVisitLogReviewPage';
+import MobileComplianceAlertsPage from './supervisor/MobileComplianceAlertsPage';
+import MobileSupervisorTeamStatsPage from './supervisor/MobileSupervisorTeamStatsPage';
+import MobileManagerHome from './manager/MobileManagerHome';
+import MobilePipelineHealthPage from './manager/MobilePipelineHealthPage';
+import MobileSmartInsightsPage from './manager/MobileSmartInsightsPage';
+import MobileManagerTargetsPage from './manager/MobileManagerTargetsPage';
+import MobileRevenueTrendPage from './manager/MobileRevenueTrendPage';
+import MobileCampaignPerformancePage from './manager/MobileCampaignPerformancePage';
+import MobileCrossDeptHandoffPage from './manager/MobileCrossDeptHandoffPage';
+import MobileManagerTeamStatsPage from './manager/MobileManagerTeamStatsPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
@@ -73,6 +90,27 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/telecaller/wa-templates') return <MobileWaTemplatesPage />;
   if (pathname === '/mobile/telecaller/stats') return <MobileTelecallerStatsPage />;
   if (pathname === '/mobile/telecaller/call-log') return <MobileTelecallerCallLogPage />;
+  if (pathname === '/mobile/telecaller/call-log') return <MobileTelecallerCallLogPage />;
+  // Supervisor routes
+  if (pathname === '/mobile/supervisor' || pathname === '/mobile/supervisor/') return <MobileSupervisorHome />;
+  if (pathname === '/mobile/supervisor/team-live') return <MobileTeamLiveViewPage />;
+  if (pathname === '/mobile/supervisor/approvals') return <MobileApprovalsPage />;
+  if (pathname === '/mobile/supervisor/coverage-map') return <MobileCoverageMapPage />;
+  if (pathname === '/mobile/supervisor/quality-reviews') return <MobileQualityReviewsPage />;
+  if (pathname === '/mobile/supervisor/lead-distribution') return <MobileLeadDistributionPage />;
+  if (pathname === '/mobile/supervisor/visit-log-review') return <MobileVisitLogReviewPage />;
+  if (pathname === '/mobile/supervisor/compliance-alerts') return <MobileComplianceAlertsPage />;
+  if (pathname === '/mobile/supervisor/team-stats') return <MobileSupervisorTeamStatsPage />;
+  // Sales Manager routes
+  if (pathname === '/mobile/manager' || pathname === '/mobile/manager/') return <MobileManagerHome />;
+  if (pathname === '/mobile/manager/pipeline-health') return <MobilePipelineHealthPage />;
+  if (pathname === '/mobile/manager/smart-insights') return <MobileSmartInsightsPage />;
+  if (pathname === '/mobile/manager/targets') return <MobileManagerTargetsPage />;
+  if (pathname === '/mobile/manager/revenue-trend') return <MobileRevenueTrendPage />;
+  if (pathname === '/mobile/manager/campaign-performance') return <MobileCampaignPerformancePage />;
+  if (pathname === '/mobile/manager/cross-dept-handoff') return <MobileCrossDeptHandoffPage />;
+  if (pathname === '/mobile/manager/team-stats') return <MobileManagerTeamStatsPage />;
+  if (pathname === '/mobile/manager/compliance-alerts') return <MobileComplianceAlertsPage />;
   return <MobileHome />;
 }
 
@@ -185,14 +223,18 @@ export default function MobileRouter() {
       navigate('/mobile/login', { replace: true });
     } else if (s && location.pathname === '/mobile/login') {
       const dest =
-        s.role === 'salesman'   ? '/mobile/salesman' :
-        s.role === 'telecaller' ? '/mobile/telecaller' :
+        s.role === 'salesman'      ? '/mobile/salesman' :
+        s.role === 'telecaller'    ? '/mobile/telecaller' :
+        s.role === 'supervisor'    ? '/mobile/supervisor' :
+        s.role === 'sales_manager' ? '/mobile/manager' :
         '/mobile/home';
       navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
       const dest = s
-        ? (s.role === 'salesman'   ? '/mobile/salesman' :
-           s.role === 'telecaller' ? '/mobile/telecaller' :
+        ? (s.role === 'salesman'      ? '/mobile/salesman' :
+           s.role === 'telecaller'    ? '/mobile/telecaller' :
+           s.role === 'supervisor'    ? '/mobile/supervisor' :
+           s.role === 'sales_manager' ? '/mobile/manager' :
            '/mobile/home')
         : '/mobile/login';
       navigate(dest, { replace: true });

@@ -161,8 +161,10 @@ export default function MobileLogin() {
 
     toast.success(`Welcome, ${identity.display_name}`);
     const dest =
-      identity.role === 'salesman'   ? '/mobile/salesman' :
-      identity.role === 'telecaller' ? '/mobile/telecaller' :
+      identity.role === 'salesman'      ? '/mobile/salesman' :
+      identity.role === 'telecaller'    ? '/mobile/telecaller' :
+      identity.role === 'supervisor'    ? '/mobile/supervisor' :
+      identity.role === 'sales_manager' ? '/mobile/manager' :
       '/mobile/home';
     navigate(dest, { replace: true });
   };
