@@ -678,50 +678,60 @@ export function WebinarMasterPanel({ entityCode }: Props) {
                 <div className="text-[10px] text-muted-foreground bg-muted/50 p-2 rounded">
                   5-category budget · planned vs actual
                 </div>
-                {(['platform_cost', 'speaker_fee', 'promotion', 'production', 'misc'] as const).map(k => (
-                  <div key={k} className="grid grid-cols-3 gap-2 items-center">
-                    <Label className="text-[10px] capitalize">{k.replace('_', ' ')}</Label>
+                {([
+                  { key: 'platform_cost', actual: 'actual_platform_cost', label: 'Platform Cost' },
+                  { key: 'speaker_fee',   actual: 'actual_speaker_fee',   label: 'Speaker Fee' },
+                  { key: 'promotion',     actual: 'actual_promotion',     label: 'Promotion' },
+                  { key: 'production',    actual: 'actual_production',    label: 'Production' },
+                  { key: 'misc',          actual: 'actual_misc',          label: 'Misc' },
+                ] as const).map(row => (
+                  <div key={row.key} className="grid grid-cols-3 gap-2 items-center">
+                    <Label className="text-[10px]">{row.label}</Label>
                     <Input
                       type="number" className="h-7 text-xs font-mono"
                       placeholder="Planned"
-                      value={form.budget[k]}
+                      value={form.budget[row.key]}
                       onChange={e => setForm(p => ({
-                        ...p, budget: computeWebinarBudget({ ...p.budget, [k]: Number(e.target.value) }),
+                        ...p, budget: computeWebinarBudget({ ...p.budget, [row.key]: Number(e.target.value) }),
                       }))}
                     />
                     <Input
                       type="number" className="h-7 text-xs font-mono"
                       placeholder="Actual"
-                      value={k === 'platform_cost' ? form.budget.total_actual : ''}
-                      onChange={e => {
-                        if (k === 'platform_cost') {
-                          setForm(p => ({
-                            ...p,
-                            budget: computeWebinarBudget({ ...p.budget, total_actual: Number(e.target.value) }),
-                          }));
-                        }
-                      }}
-                      disabled={k !== 'platform_cost'}
+                      value={form[row.actual]}
+                      onChange={e => setForm(p => ({ ...p, [row.actual]: e.target.value }))}
                     />
                   </div>
                 ))}
-                <div className="border-t pt-2 space-y-1 font-mono text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Planned</span>
-                    <span className="font-bold text-orange-600">₹ {form.budget.total_planned.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Actual</span>
-                    <span className="font-bold">₹ {form.budget.total_actual.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Variance</span>
-                    <span className={cn('font-bold', form.budget.variance > 0 ? 'text-destructive' : 'text-green-600')}>
-                      ₹ {form.budget.variance.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                </div>
+                {(() => {
+                  const liveActual =
+                    Number(form.actual_platform_cost || 0) +
+                    Number(form.actual_speaker_fee || 0) +
+                    Number(form.actual_promotion || 0) +
+                    Number(form.actual_production || 0) +
+                    Number(form.actual_misc || 0);
+                  const variance = liveActual - form.budget.total_planned;
+                  return (
+                    <div className="border-t pt-2 space-y-1 font-mono text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Planned</span>
+                        <span className="font-bold text-orange-600">₹ {form.budget.total_planned.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Actual</span>
+                        <span className="font-bold">₹ {liveActual.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Variance</span>
+                        <span className={cn('font-bold', variance > 0 ? 'text-destructive' : 'text-green-600')}>
+                          ₹ {variance.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
               </TabsContent>
+
 
               {/* PARTICIPANTS */}
               <TabsContent value="participants" className="space-y-3 mt-3">
