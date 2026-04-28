@@ -292,39 +292,43 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
           </div>
         )}
 
-        <Collapsible open={txnOpen} onOpenChange={setTxnOpen} className="px-2">
-          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
-            <ChevronRight className={cn(
-              'h-3 w-3 text-muted-foreground/90 transition-transform',
-              txnOpen && 'rotate-90',
-            )} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
-              Transactions
-            </span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenu className="px-1 space-y-0.5">
-              {txnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
-            </SidebarMenu>
-          </CollapsibleContent>
-        </Collapsible>
+        {filteredTxnItems.length > 0 && (
+          <Collapsible open={txnOpen} onOpenChange={setTxnOpen} className="px-2">
+            <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+              <ChevronRight className={cn(
+                'h-3 w-3 text-muted-foreground/90 transition-transform',
+                txnOpen && 'rotate-90',
+              )} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+                Transactions
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenu className="px-1 space-y-0.5">
+                {filteredTxnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
+              </SidebarMenu>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
-        <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="px-2">
-          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
-            <ChevronRight className={cn(
-              'h-3 w-3 text-muted-foreground/90 transition-transform',
-              reportsOpen && 'rotate-90',
-            )} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
-              Reports
-            </span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenu className="px-1 space-y-0.5">
-              {reportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
-            </SidebarMenu>
-          </CollapsibleContent>
-        </Collapsible>
+        {filteredReportItems.length > 0 && (
+          <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="px-2">
+            <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+              <ChevronRight className={cn(
+                'h-3 w-3 text-muted-foreground/90 transition-transform',
+                reportsOpen && 'rotate-90',
+              )} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+                Reports
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenu className="px-1 space-y-0.5">
+                {filteredReportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
+              </SidebarMenu>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-3">
