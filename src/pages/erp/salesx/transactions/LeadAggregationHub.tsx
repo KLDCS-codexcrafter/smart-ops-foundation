@@ -924,12 +924,46 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
               <Textarea rows={6} value={importText} onChange={e => setImportText(e.target.value)}
                 className="font-mono text-xs" />
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={handleParse}>Parse & Preview</Button>
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="outline" onClick={handleAnalyzeImport} disabled={!importText.trim()}>
+                <Search className="h-3.5 w-3.5 mr-1" /> Analyze CSV
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleParse} disabled={importHeaders.length === 0}>
+                <FileText className="h-3.5 w-3.5 mr-1" /> Generate Preview
+              </Button>
               <Button size="sm" onClick={handleImport} disabled={importPreview.length === 0}>
                 Import {importPreview.length || ''} leads
               </Button>
+              <Button size="sm" variant="ghost" onClick={() => { setImportHeaders([]); setColumnMap({}); setImportPreview([]); }}>
+                Reset
+              </Button>
             </div>
+            {importHeaders.length > 0 && (
+              <Card className="border-blue-500/40">
+                <CardHeader className="py-2"><CardTitle className="text-xs">Map your columns to Operix fields</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    {TARGET_FIELDS.map(t => (
+                      <div key={t.key} className="flex items-center gap-2">
+                        <span className="w-32 font-medium">
+                          {t.label}{t.required && <span className="text-destructive">*</span>}
+                        </span>
+                        <select
+                          value={columnMap[t.key] ?? ''}
+                          onChange={e => setColumnMap(m => ({ ...m, [t.key]: e.target.value }))}
+                          className="flex-1 text-xs border rounded px-2 py-1 bg-background"
+                        >
+                          <option value="">— Not mapped —</option>
+                          {importHeaders.map(h => (
+                            <option key={h} value={h}>{h}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             {importPreview.length > 0 && (
               <div className="border rounded-md overflow-x-auto">
                 <Table>
