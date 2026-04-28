@@ -57,7 +57,8 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'requestx':        '/erp/requestx',
   'frontdesk':       '/erp/frontdesk',
   'servicedesk':     '/erp/servicedesk',
-  'dispatch-hub':    '/erp/frontdesk/dispatch',
+  'dispatch-hub':    '/erp/logistics',
+  'dispatch-ops':    '/erp/dispatch',
 };
 
 /**
