@@ -25,6 +25,8 @@ import { TelecallerPanel } from '@/pages/erp/salesx/transactions/Telecaller';
 import { QuotationEntryPanel } from '@/pages/erp/salesx/transactions/QuotationEntry';
 import { SupplyRequestMemoPanel } from '@/pages/erp/salesx/transactions/SupplyRequestMemo';
 import { InvoiceMemoPanel } from '@/pages/erp/salesx/transactions/InvoiceMemo';
+import { SampleOutwardMemoPanel } from '@/pages/erp/salesx/transactions/SampleOutwardMemo';
+import { DemoOutwardMemoPanel } from '@/pages/erp/salesx/transactions/DemoOutwardMemo';
 import { CommissionRegisterPanel } from '@/pages/erp/salesx/reports/CommissionRegister';
 import { EnquiryRegisterReportPanel } from '@/pages/erp/salesx/reports/EnquiryRegisterReport';
 import { PipelineSummaryPanel } from '@/pages/erp/salesx/reports/PipelineSummary';
@@ -64,6 +66,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-quotation':          'Quotation',
   'sx-t-supply-memo':        'Supply Request Memo',
   'sx-t-invoice-memo':       'Invoice Memo',
+  'sx-t-sample-outward':     'Sample Outward Memo',
+  'sx-t-demo-outward':       'Demo Outward Memo',
   'sx-t-return-memo':        'Sales Return Memo',
   'sx-t-visit':              'Visit Tracking',
   'sx-t-secondary':          'Secondary Sales',
@@ -133,6 +137,10 @@ function renderModule(
       return <SupplyRequestMemoPanel entityCode={entityCode} />;
     case 'sx-t-invoice-memo':
       return <InvoiceMemoPanel entityCode={entityCode} />;
+    case 'sx-t-sample-outward':
+      return <SampleOutwardMemoPanel entityCode={entityCode} />;
+    case 'sx-t-demo-outward':
+      return <DemoOutwardMemoPanel entityCode={entityCode} />;
     case 'sx-t-return-memo':
       return <SalesReturnMemoPanel entityCode={entityCode} />;
     case 'sx-r-return-memo-register':
