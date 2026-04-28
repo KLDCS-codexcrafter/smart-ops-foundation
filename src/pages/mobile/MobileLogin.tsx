@@ -159,7 +159,8 @@ export default function MobileLogin() {
     }
 
     toast.success(`Welcome, ${identity.display_name}`);
-    navigate('/mobile/home', { replace: true });
+    const dest = identity.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+    navigate(dest, { replace: true });
   };
 
   const handleQRPayload = (qrCredential: string, _qrToken: string) => {
