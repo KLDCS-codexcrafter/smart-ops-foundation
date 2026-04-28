@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Home, Truck, Route, ClipboardEdit, AlertTriangle,
+  Home, Truck, Route, ClipboardEdit,
   BarChart3, Database, ChevronRight, ArrowLeft, Send,
   TrendingUp,
   FileSpreadsheet, AlertCircle, Scale,
@@ -119,18 +119,6 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
                     <Badge variant="outline" className="ml-auto text-[9px] h-4 px-1">CC</Badge>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                {MASTERS_INTERNAL.map(i => (
-                  <SidebarMenuItem key={i.module}>
-                    <SidebarMenuButton
-                      onClick={() => onModuleChange(i.module)}
-                      isActive={activeModule === i.module}
-                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
-                    >
-                      <i.icon className="h-3.5 w-3.5" />
-                      <span className="text-[13px]">{i.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
               </CollapsibleContent>
             </SidebarMenuItem>
           </SidebarMenu>
