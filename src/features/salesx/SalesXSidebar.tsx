@@ -11,7 +11,7 @@ import {
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
-  Package, Presentation,
+  Package, Presentation, Video,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
