@@ -99,6 +99,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-webinar-report':       'Webinar Report',
   'sx-t-call-quality':         'Call Quality',
   'sx-t-lead-distribution':    'Lead Distribution',
+  'sx-t-smart-insights':       'Smart Insights',
+  'sx-t-campaign-templates':   'Campaign Templates',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
