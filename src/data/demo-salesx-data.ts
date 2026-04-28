@@ -12,6 +12,7 @@ import type { SAMPerson, SAMPersonType } from '@/types/sam-person';
 import type { Enquiry, EnquiryStatus, EnquiryPriority } from '@/types/enquiry';
 import type { Quotation, QuotationStage } from '@/types/quotation';
 import type { CommissionEntry } from '@/types/commission-register';
+import type { SupplyRequestMemo } from '@/types/supply-request-memo';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type Tagged<T> = T & { _archetype: DemoArchetype };
