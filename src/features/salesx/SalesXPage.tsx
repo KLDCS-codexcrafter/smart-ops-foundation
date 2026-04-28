@@ -52,6 +52,8 @@ import { CallQualityHubPanel } from '@/pages/erp/salesx/transactions/CallQuality
 import { LeadDistributionHubPanel } from '@/pages/erp/salesx/transactions/LeadDistributionHub';
 import { SmartInsightsPanelComponent } from '@/pages/erp/salesx/transactions/SmartInsightsPanel';
 import { CampaignTemplatesPanelComponent } from '@/pages/erp/salesx/transactions/CampaignTemplatesPanel';
+import { PITrackerPanelComponent } from '@/pages/erp/salesx/transactions/PITrackerPanel';
+import { OrderDeskPanelComponent } from '@/pages/erp/salesx/transactions/OrderDeskPanel';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
