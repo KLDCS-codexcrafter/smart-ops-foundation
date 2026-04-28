@@ -2,13 +2,20 @@
  * SalesXPage.tsx — Main SalesX Hub container
  * Mirrors PayHubPage.tsx. Orange-500 accent.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { SalesXSidebar } from './SalesXSidebar';
 import type { SalesXModule } from './SalesXSidebar.types';
+import {
+  SALESX_GROUP_DEFAULT_MODULE, SALESX_GROUP_ORDER,
+  SALESX_GROUP_LABELS, getModuleGroup,
+} from './SalesXSidebar.groups';
+import type { SalesXGroup } from './SalesXSidebar.groups';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
