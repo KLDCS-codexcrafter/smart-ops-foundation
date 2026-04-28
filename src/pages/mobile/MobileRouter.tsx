@@ -36,6 +36,18 @@ import MobileSalesmanVisitLogPage from './salesman/MobileSalesmanVisitLogPage';
 import MobileSecondarySalesPage from './salesman/MobileSecondarySalesPage';
 import MobileSalesmanTargetsPage from './salesman/MobileSalesmanTargetsPage';
 import MobileSalesmanCommissionPage from './salesman/MobileSalesmanCommissionPage';
+import MobileTelecallerHome from './telecaller/MobileTelecallerHome';
+import MobileCallQueuePage from './telecaller/MobileCallQueuePage';
+import MobileActiveCallPage from './telecaller/MobileActiveCallPage';
+import MobileTelecallerQuickEnquiryPage from './telecaller/MobileTelecallerQuickEnquiryPage';
+import MobileTelecallerPipelinePage from './telecaller/MobileTelecallerPipelinePage';
+import MobileQuoteQuickSendPage from './telecaller/MobileQuoteQuickSendPage';
+import MobileTelecallerCustomersPage from './telecaller/MobileTelecallerCustomersPage';
+import MobileLeadInboxPage from './telecaller/MobileLeadInboxPage';
+import MobileTelecallerRemindersPage from './telecaller/MobileTelecallerRemindersPage';
+import MobileWaTemplatesPage from './telecaller/MobileWaTemplatesPage';
+import MobileTelecallerStatsPage from './telecaller/MobileTelecallerStatsPage';
+import MobileTelecallerCallLogPage from './telecaller/MobileTelecallerCallLogPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
@@ -48,6 +60,19 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman/secondary-sales') return <MobileSecondarySalesPage />;
   if (pathname === '/mobile/salesman/targets') return <MobileSalesmanTargetsPage />;
   if (pathname === '/mobile/salesman/commission') return <MobileSalesmanCommissionPage />;
+  // Telecaller routes
+  if (pathname === '/mobile/telecaller' || pathname === '/mobile/telecaller/') return <MobileTelecallerHome />;
+  if (pathname === '/mobile/telecaller/queue') return <MobileCallQueuePage />;
+  if (pathname.startsWith('/mobile/telecaller/active-call')) return <MobileActiveCallPage />;
+  if (pathname === '/mobile/telecaller/quick-enquiry') return <MobileTelecallerQuickEnquiryPage />;
+  if (pathname === '/mobile/telecaller/pipeline') return <MobileTelecallerPipelinePage />;
+  if (pathname === '/mobile/telecaller/quote-send') return <MobileQuoteQuickSendPage />;
+  if (pathname === '/mobile/telecaller/customers') return <MobileTelecallerCustomersPage />;
+  if (pathname === '/mobile/telecaller/leads') return <MobileLeadInboxPage />;
+  if (pathname === '/mobile/telecaller/reminders') return <MobileTelecallerRemindersPage />;
+  if (pathname === '/mobile/telecaller/wa-templates') return <MobileWaTemplatesPage />;
+  if (pathname === '/mobile/telecaller/stats') return <MobileTelecallerStatsPage />;
+  if (pathname === '/mobile/telecaller/call-log') return <MobileTelecallerCallLogPage />;
   return <MobileHome />;
 }
 
