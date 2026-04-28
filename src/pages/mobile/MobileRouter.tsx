@@ -184,11 +184,16 @@ export default function MobileRouter() {
     if (!s && location.pathname !== '/mobile/login') {
       navigate('/mobile/login', { replace: true });
     } else if (s && location.pathname === '/mobile/login') {
-      const dest = s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+      const dest =
+        s.role === 'salesman'   ? '/mobile/salesman' :
+        s.role === 'telecaller' ? '/mobile/telecaller' :
+        '/mobile/home';
       navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
       const dest = s
-        ? (s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home')
+        ? (s.role === 'salesman'   ? '/mobile/salesman' :
+           s.role === 'telecaller' ? '/mobile/telecaller' :
+           '/mobile/home')
         : '/mobile/login';
       navigate(dest, { replace: true });
     }
