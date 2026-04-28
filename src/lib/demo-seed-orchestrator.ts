@@ -39,6 +39,7 @@ import { loadSalesXTransactions } from '@/data/demo-transactions-salesx';
 import {
   DEMO_TERRITORIES, DEMO_BEAT_ROUTES, DEMO_VISIT_LOGS, DEMO_SECONDARY_SALES,
 } from '@/data/demo-field-force-data';
+import type { StockReservation } from '@/types/stock-reservation';
 
 export interface SeedResult {
   entityCode: string;
