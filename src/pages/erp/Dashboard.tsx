@@ -58,6 +58,13 @@ const LANES: Array<{
     ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx', 'supplyx', 'dispatch-hub'],
   },
   {
+    id: 'dispatch',
+    label: 'Dispatch',
+    borderColor: 'border-l-orange-500',
+    labelColor: 'text-orange-600 dark:text-orange-400',
+    ids: ['dispatch-ops'],
+  },
+  {
     id: 'finance',
     label: 'Finance',
     borderColor: 'border-l-indigo-500',
