@@ -273,7 +273,7 @@ function makeEnquiries(arche: DemoArchetype, count: number, prefix: string): Dem
       enquiry_source_id: src?.id ?? null,
       enquiry_source_name: src?.name ?? null,
       priority: priorities[i % priorities.length],
-      campaign: DEMO_CAMPAIGNS[i % DEMO_CAMPAIGNS.length]?.code ?? null,
+      campaign: DEMO_CAMPAIGNS[i % DEMO_CAMPAIGNS.length]?.campaign_code ?? null,
       customer_id: null,
       customer_name: partyName,
       prospectus_id: null,
