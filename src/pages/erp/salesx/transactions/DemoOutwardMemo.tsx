@@ -102,6 +102,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
   const addLine = () => setItems(prev => [...prev, {
     id: `dom-it-${Date.now()}`,
     item_name: '', description: null, qty: 1, uom: 'NOS', serial_no: null,
+    unit_value: 0, amount: 0,
   }]);
 
   const [attachments, setAttachments] = useState<string[]>([]);
@@ -165,6 +166,15 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       attachments,
       status,
       dispatched_at: (status === 'dispatched' || status === 'demo_active') ? now : null,
+      // Sprint T-Phase-1.1.1p-v2 — party / godown / dispatch fields default empty.
+      customer_id: null, customer_name: null,
+      salesman_id: null, salesman_name: null,
+      agent_id: null, agent_name: null,
+      broker_id: null, broker_name: null,
+      engineer_emp_id: null, engineer_name: null,
+      outward_godown_id: null, outward_godown_name: null,
+      issued_by_dispatch: false,
+      dispatch_issued_at: null, dispatch_issued_by: null,
       created_at: now,
       updated_at: now,
       ...extras,

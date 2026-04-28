@@ -97,6 +97,7 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
   const addLine = () => setItems(prev => [...prev, {
     id: `som-it-${Date.now()}`,
     item_name: '', description: null, qty: 1, uom: 'NOS',
+    unit_value: 0, amount: 0,
   }]);
 
   const [attachments, setAttachments] = useState<string[]>([]);
@@ -144,6 +145,18 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
       status,
       dispatched_at: status === 'dispatched' ? now : null,
       completed_at: status === 'completed' ? now : null,
+      // Sprint T-Phase-1.1.1p-v2 — party / refundable / dispatch fields default empty.
+      // SalesX raises only; Dispatch fills these on issue.
+      customer_id: null, customer_name: null,
+      salesman_id: null, salesman_name: null,
+      agent_id: null, agent_name: null,
+      broker_id: null, broker_name: null,
+      engineer_emp_id: null, engineer_name: null,
+      is_refundable: false,
+      outward_godown_id: null, outward_godown_name: null,
+      issued_by_dispatch: false,
+      dispatch_issued_at: null, dispatch_issued_by: null,
+      unit_value: 0, total_value: 0,
       created_at: now,
       updated_at: now,
     };
