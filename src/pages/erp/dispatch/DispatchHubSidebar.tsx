@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 export type DispatchHubModule =
   | 'dh-welcome'
   | 'dh-m-packing-material' | 'dh-m-packing-bom'
+  | 'dh-t-delivery-memo'
   | 'dh-t-lr-tracker' | 'dh-t-lr-update' | 'dh-t-packing-slip-print'
   | 'dh-t-exceptions'
   | 'dh-r-dispatch-summary'
@@ -51,6 +52,7 @@ interface MenuItem {
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
+  { label: 'Delivery Memo',        module: 'dh-t-delivery-memo',       icon: Truck },
   { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
   { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
   { label: 'Packing Slip Print',   module: 'dh-t-packing-slip-print',  icon: Printer },

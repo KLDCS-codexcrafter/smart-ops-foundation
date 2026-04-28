@@ -14,6 +14,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 
 import { DispatchHubWelcomePanel } from './DispatchHubWelcome';
+import { DeliveryMemoEntryPanel } from './transactions/DeliveryMemoEntry';
 import { LRTrackerPanel } from './transactions/LRTracker';
 import { LRUpdatePanel } from './transactions/LRUpdate';
 import { DispatchExceptionsPanel } from './transactions/DispatchExceptions';
@@ -47,6 +48,7 @@ function renderModule(
 ): React.ReactElement {
   switch (mod) {
     case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
+    case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode="OPX" />;
     case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
     case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
     case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
