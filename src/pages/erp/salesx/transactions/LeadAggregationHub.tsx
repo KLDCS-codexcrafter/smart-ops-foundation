@@ -169,6 +169,8 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
   const [importPlatform, setImportPlatform] = useState<LeadPlatform>('indiamart');
   const [importText, setImportText] = useState(SAMPLE_CSV);
   const [importPreview, setImportPreview] = useState<LeadImportRow[]>([]);
+  const [importHeaders, setImportHeaders] = useState<string[]>([]);
+  const [columnMap, setColumnMap] = useState<Record<string, string>>({});
 
   const [convertingLead, setConvertingLead] = useState<Lead | null>(null);
   const [convertType, setConvertType] = useState<EnquiryType>('prospect');
