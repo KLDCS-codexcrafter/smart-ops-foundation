@@ -85,8 +85,29 @@ export function CRMPipelinePanel({ entityCode }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(blank(pipelineType));
   const [salesmanFilter, setSalesmanFilter] = useState<string>('all');
+  const [draggedOppId, setDraggedOppId] = useState<string | null>(null);
+  const [dragOverStageId, setDragOverStageId] = useState<string | null>(null);
 
   const update = useCallback((p: Partial<typeof form>) => setForm(prev => ({ ...prev, ...p })), []);
+
+  const moveStage = useCallback((oppId: string, newStageId: string) => {
+    const opp = opportunities.find(o => o.id === oppId);
+    if (!opp) return;
+    if (opp.stage === newStageId) return;
+    const patch: Partial<Opportunity> = { stage: newStageId as DealStage };
+    if (newStageId === 'won') {
+      patch.won_at = todayISO();
+      patch.probability = 100;
+    } else if (newStageId === 'lost') {
+      patch.lost_at = todayISO();
+      patch.probability = 0;
+    } else {
+      patch.won_at = null;
+      patch.lost_at = null;
+    }
+    updateOpportunity(oppId, patch);
+    toast.success(`Moved to ${stages.find(s => s.id === newStageId)?.label ?? newStageId}`);
+  }, [opportunities, updateOpportunity, stages]);
 
   const filtered = useMemo(() => {
     if (salesmanFilter === 'all') return opportunities;
