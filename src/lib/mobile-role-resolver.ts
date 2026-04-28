@@ -38,6 +38,7 @@ export interface ResolvedIdentity {
   plan_tier: PlanTier;
   distributor?: Distributor;
   customer?: CustomerLite;
+  salesperson?: SAMPerson;
   failure_reason?: string;
 }
 
