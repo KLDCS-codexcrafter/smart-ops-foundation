@@ -38,6 +38,7 @@ import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
 import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
 import { CrossDeptHandoffTrackerPanel } from '@/pages/erp/salesx/reports/CrossDeptHandoffTracker';
 import { CampaignPerformanceReportPanel } from '@/pages/erp/salesx/reports/CampaignPerformanceReport';
+import { WebinarMasterPanel } from '@/pages/erp/salesx/transactions/WebinarMaster';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
