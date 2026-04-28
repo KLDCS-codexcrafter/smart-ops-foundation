@@ -225,8 +225,7 @@ export function ClientBlueprintsPagePanel() {
   );
 
   const handleResetEntity = useCallback((entityCode: string, clientName: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm(`Reset ALL demo data for ${clientName}? This clears entity-scoped localStorage keys for ${entityCode}. Shared masters (customers/vendors/items) are preserved.`)) return;
+    if (!window.confirm(`Reset ALL demo data for ${clientName}? This clears entity-scoped localStorage keys for ${entityCode}. Shared masters (customers/vendors/items) are preserved.`)) return;
 
     const keysToReset = entityScopedKeys(entityCode);
     keysToReset.forEach((k) => {
