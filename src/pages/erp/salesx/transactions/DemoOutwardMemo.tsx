@@ -230,7 +230,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
   const existingDOMs = useMemo(() => ls<DemoOutwardMemo>(demoOutwardMemosKey(entityCode)), [entityCode]);
   const lastIssued = useMemo(
     () => existingDOMs.find(m => m.memo_no === memoNo && m.issued_by_dispatch) ?? null,
-    [existingDOMs],
+    [existingDOMs, memoNo],
   );
 
   return (
