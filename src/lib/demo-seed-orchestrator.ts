@@ -199,6 +199,82 @@ export function seedEntityDemoData(
   }
   safeSetArray(`erp_stock_reservations_${entityCode}`, demoReservations);
 
+  // Sample & Demo Outward (Sprint T-Phase-1.1.1p · D-192 + D-193)
+  const nowSeed = new Date().toISOString();
+  const sampleSeed: SampleOutwardMemo[] = [{
+    id: `som-demo-${entityCode}`,
+    entity_id: entityCode,
+    memo_no: `SOM/25-26/0001`,
+    memo_date: nowSeed.split('T')[0],
+    raised_by_person_id: 'sm-m1',
+    raised_by_person_name: 'Manish Gupta',
+    raised_by_person_type: 'salesman',
+    recipient_name: 'Ar. Rajesh Khanna',
+    recipient_company: 'Khanna Architects',
+    recipient_phone: '+919811000888',
+    recipient_address: 'Mumbai, Maharashtra',
+    purpose: 'architect_trial',
+    purpose_note: 'Trial sample for upcoming residential project',
+    items: [{
+      id: 'som-it-seed-1',
+      item_name: itemA?.itemName ?? 'Demo Item A',
+      description: 'Sample swatch',
+      qty: 2,
+      uom: 'NOS',
+    }],
+    expect_return: false,
+    return_due_date: null,
+    returned_at: null,
+    attachments: [],
+    status: 'dispatched',
+    dispatched_at: nowSeed,
+    completed_at: null,
+    created_at: nowSeed,
+    updated_at: nowSeed,
+  }];
+  safeSetArray(`erp_sample_outward_memos_${entityCode}`, sampleSeed);
+  safeSetObj(`erp_doc_seq_SOM_${entityCode}`, 1);
+
+  const overdueStart = '2026-02-19'; // 60+ days before today (Apr 28, 2026 + buffer)
+  const demoSeed: DemoOutwardMemo[] = [{
+    id: `dom-demo-${entityCode}`,
+    entity_id: entityCode,
+    memo_no: `DOM/25-26/0001`,
+    memo_date: overdueStart,
+    raised_by_person_id: 'sm-m1',
+    raised_by_person_name: 'Manish Gupta',
+    raised_by_person_type: 'salesman',
+    recipient_name: 'Mr. Sandeep Verma',
+    recipient_company: 'Verma Industries',
+    recipient_phone: '+919811000999',
+    recipient_address: 'Pune, Maharashtra',
+    items: [{
+      id: 'dom-it-seed-1',
+      item_name: itemC?.itemName ?? 'Demo Item C',
+      description: 'Full demo unit',
+      qty: 1,
+      uom: 'NOS',
+      serial_no: 'SN-DEMO-0001',
+    }],
+    demo_period_days: 14,
+    demo_start_date: overdueStart,
+    demo_end_date: '2026-03-05',
+    return_condition: null,
+    returned_at: null,
+    converted_so_no: null,
+    converted_at: null,
+    lost_reason: null,
+    // [JWT] Phase 1.5.5d stub
+    service_desk_ticket_id: null,
+    attachments: [],
+    status: 'overdue',
+    dispatched_at: `${overdueStart}T10:00:00.000Z`,
+    created_at: `${overdueStart}T10:00:00.000Z`,
+    updated_at: nowSeed,
+  }];
+  safeSetArray(`erp_demo_outward_memos_${entityCode}`, demoSeed);
+  safeSetObj(`erp_doc_seq_DOM_${entityCode}`, 1);
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
