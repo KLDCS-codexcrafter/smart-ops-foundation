@@ -48,6 +48,8 @@ export type SalesXModule =
   | 'sx-r-so-tracker'
   | 'sx-r-handoff-tracker'
   | 'sx-r-campaign-performance'
+  | 'sx-t-exhibition'
+  | 'sx-r-exhibition-report'
   | 'sx-t-webinar'
   | 'sx-r-webinar-report';
 
@@ -89,6 +91,8 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-so-tracker',
   'sx-r-handoff-tracker',
   'sx-r-campaign-performance',
+  'sx-t-exhibition',
+  'sx-r-exhibition-report',
   'sx-t-webinar',
   'sx-r-webinar-report',
 ];
