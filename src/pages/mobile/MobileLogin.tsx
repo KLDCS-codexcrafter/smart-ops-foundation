@@ -105,6 +105,7 @@ export default function MobileLogin() {
       password,
       readDistributors(),
       readCustomers(),
+      readSAMPersons(),
       ENTITY_CODE,
       DEFAULT_PLAN,
     );
@@ -135,7 +136,7 @@ export default function MobileLogin() {
       entityCode: ENTITY_CODE,
       userId: identity.user_id ?? 'mobile-user',
       userName: identity.display_name,
-      cardId: identity.role === 'distributor' ? 'distributor-hub' : 'customer-hub',
+      cardId: ROLE_TO_CARD_ID[identity.role] as unknown as Parameters<typeof logAudit>[0]['cardId'],
       action: 'card_open',
       refType: 'mobile_session',
       refId: identity.user_id,
