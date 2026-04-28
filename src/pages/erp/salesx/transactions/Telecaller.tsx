@@ -88,6 +88,33 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     templates: waTemplates, saveTemplate: saveWaTemplate,
     deleteTemplate: deleteWaTemplate, sendTemplate,
   } = useWaTemplates(entityCode);
+  const {
+    statuses: agentStatuses, transitionTo, incrementCallCount: incCallCount,
+  } = useAgentStatus(entityCode);
+  const {
+    profiles, rule, awardPoints, updateRule, leaderboard, getLeaderboardForPeriod,
+  } = useGamification(entityCode);
+
+  // Identity for current user — Phase 1 hardcoded as first telecaller in seeded SAM persons
+  // (Phase 2 reads from auth)
+  const samPersons = useMemo<{ id: string; display_name: string; person_type: string }[]>(() => {
+    try {
+      // [JWT] GET /api/salesx/sam-persons
+      return JSON.parse(localStorage.getItem(`erp_sam_persons_${entityCode}`) || '[]');
+    } catch { return []; }
+  }, [entityCode]);
+  const currentTelecaller = useMemo(() => {
+    const t = samPersons.find(p => p.id.startsWith('tc-'));
+    return t ?? { id: 'me', display_name: 'Current User', person_type: 'reference' };
+  }, [samPersons]);
+
+  const currentStatus = useMemo(() =>
+    agentStatuses.find(s => s.telecaller_id === currentTelecaller.id),
+  [agentStatuses, currentTelecaller.id]);
+
+  const currentProfile = useMemo(() =>
+    profiles.find(p => p.telecaller_id === currentTelecaller.id),
+  [profiles, currentTelecaller.id]);
 
   const queue = useMemo(() => {
     const open = enquiries.filter(e => ['new', 'assigned', 'pending', 'in_process'].includes(e.status));
