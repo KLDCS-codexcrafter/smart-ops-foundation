@@ -267,7 +267,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
           {btn('sx-hub', 'Hub Overview', LayoutDashboard, true, 'Hub Overview')}
         </SidebarMenu>
 
-        {masterItems.length > 0 && (
+        {filteredMasterItems.length > 0 && (
           <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
             <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
               <ChevronRight className={cn(
@@ -280,13 +280,13 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarMenu className="px-1 space-y-0.5">
-                {masterItems.map(item => btn(item.id, item.label, item.icon, true))}
+                {filteredMasterItems.map(item => btn(item.id, item.label, item.icon, true))}
               </SidebarMenu>
             </CollapsibleContent>
           </Collapsible>
         )}
 
-        {!cfg?.enableSalesActivityModule && (
+        {!cfg?.enableSalesActivityModule && activeGroup === 'master' && (
           <div className="px-3 py-2 text-[10px] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
             Configure SAM in Comply360 to unlock SAM masters.
           </div>
