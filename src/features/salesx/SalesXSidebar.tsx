@@ -212,6 +212,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
   ];
 
+  const filteredMasterItems = useMemo(() =>
+    masterItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [masterItems, activeGroup]);
+
+  const filteredTxnItems = useMemo(() =>
+    txnItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [txnItems, activeGroup]);
+
+  const filteredReportItems = useMemo(() =>
+    reportItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [reportItems, activeGroup]);
+
   const btn = (
     id: SalesXModule, label: string, Icon: React.ElementType,
     live: boolean, tooltip?: string,
