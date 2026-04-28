@@ -930,3 +930,64 @@ export const DEMO_LEADS: Lead[] = [
     is_active: true, created_at: '2026-04-15T12:00:00Z', updated_at: '2026-04-15T15:00:00Z',
   },
 ];
+
+import type { WaTemplate } from '@/types/wa-template';
+
+export const DEMO_WA_TEMPLATES: WaTemplate[] = [
+  {
+    id: 'wat-001', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'INTRO-01', template_name: 'First Contact Introduction',
+    category: 'introduction', language: 'en',
+    body: 'Hello {contact}, this is {salesman} from {entity}. I noticed your enquiry for {product}. Would you have 5 minutes to discuss? Thanks!',
+    is_active: true, use_count: 12,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-01T10:00:00Z',
+  },
+  {
+    id: 'wat-002', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'FU-01', template_name: 'Routine Follow-up',
+    category: 'follow_up', language: 'en',
+    body: 'Hi {contact}, following up on our discussion about {product}. As discussed, scheduling next call on {follow_up_date}. Please confirm. — {salesman}, {entity}',
+    is_active: true, use_count: 47,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-15T10:00:00Z',
+  },
+  {
+    id: 'wat-003', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'QUOTE-01', template_name: 'Quotation Sent',
+    category: 'quotation', language: 'en',
+    body: 'Dear {contact}, as discussed, we have prepared the quotation for {product} totalling {amount}. Please review and let me know if you have any questions. — {salesman}',
+    is_active: true, use_count: 23,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-10T10:00:00Z',
+  },
+  {
+    id: 'wat-004', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'REM-01', template_name: 'Appointment Reminder',
+    category: 'reminder', language: 'en',
+    body: 'Hi {contact}, gentle reminder of our scheduled call on {follow_up_date}. Looking forward to our discussion. — {salesman}, {entity}',
+    is_active: true, use_count: 31,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-20T10:00:00Z',
+  },
+  {
+    id: 'wat-005', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'INTRO-HI-01', template_name: 'Hindi Introduction',
+    category: 'introduction', language: 'hi',
+    body: 'नमस्ते {contact} जी, मैं {salesman} {entity} से बात कर रहा हूं। आपकी {product} संबंधी पूछताछ पर बात करनी थी। क्या आप 5 मिनट निकाल सकते हैं?',
+    is_active: true, use_count: 8,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-05T10:00:00Z',
+  },
+  {
+    id: 'wat-006', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'PROD-INFO-01', template_name: 'Product Catalogue Share',
+    category: 'product_info', language: 'mixed',
+    body: 'Dear {contact}, sharing our product catalogue. Aap mujhe {follow_up_date} ko call kar sakte hain to discuss further. Best regards, {salesman}',
+    is_active: true, use_count: 15,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-03-25T10:00:00Z',
+  },
+  {
+    id: 'wat-007', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    template_code: 'TY-01', template_name: 'Post-Call Thank You',
+    category: 'thank_you', language: 'en',
+    body: 'Thanks {contact} for taking the time today. Will share details by {follow_up_date} as discussed. — {salesman}',
+    is_active: true, use_count: 19,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-18T10:00:00Z',
+  },
+];

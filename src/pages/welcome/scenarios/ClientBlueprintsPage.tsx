@@ -200,6 +200,11 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_webinar_participants_${entityCode}`,
     // Sprint T-Phase-1.1.1f · Lead Aggregation
     `erp_leads_${entityCode}`,
+    // Sprint T-Phase-1.1.1g · Telecaller UX
+    `erp_wa_templates_${entityCode}`,
+    `erp_call_sessions_${entityCode}`,
+    `erp_dialer_sessions_${entityCode}`,
+    `erp_recording_consent_${entityCode}`,
   ];
 }
 
