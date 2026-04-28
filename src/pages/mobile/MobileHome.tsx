@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, ShoppingCart, FileText, IndianRupee, CreditCard,
   Network, Gift, Mic, Package, Sparkles, LogOut, Download,
+  Navigation, MapPin, Target, Users, PhoneIncoming, Briefcase, ClipboardList,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
