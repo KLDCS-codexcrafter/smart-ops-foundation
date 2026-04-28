@@ -32,11 +32,6 @@ import {
   type ReconMatchStatus,
 } from './ReconciliationPanel.helpers';
 
-// Re-export helpers from the sibling module so existing import paths keep working.
-// (Sprint T-Phase-1.1.1a-pre · lint hygiene · zero behaviour change)
-export { computeReconMatch } from './ReconciliationPanel.helpers';
-export type { ReconMatchStatus } from './ReconciliationPanel.helpers';
-
 /** Map RegisterTypeCode → base_voucher_type used by useVouchers entries. */
 const REGISTER_TO_BASE_TYPE: Partial<Record<RegisterTypeCode, Voucher['base_voucher_type']>> = {
   sales_register: 'Sales',
