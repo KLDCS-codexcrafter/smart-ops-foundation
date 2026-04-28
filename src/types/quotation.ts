@@ -88,6 +88,11 @@ export interface Quotation {
   proforma_date: string | null;
   proforma_converted_at: string | null;
 
+  // Sprint 1.1.1k-followup — Sales Order conversion
+  so_id: string | null;                    // Order.id once converted
+  so_no: string | null;                    // SO/YY-YY/NNNN
+  so_converted_at: string | null;
+
   // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
   // Phase 1.1.2 ProjX page wires this real. Existing localStorage records
   // without this field are read with `q.project_id ?? null` fallback.
