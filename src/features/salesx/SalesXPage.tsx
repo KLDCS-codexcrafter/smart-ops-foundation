@@ -40,6 +40,7 @@ import { CrossDeptHandoffTrackerPanel } from '@/pages/erp/salesx/reports/CrossDe
 import { CampaignPerformanceReportPanel } from '@/pages/erp/salesx/reports/CampaignPerformanceReport';
 import { WebinarMasterPanel } from '@/pages/erp/salesx/transactions/WebinarMaster';
 import { ExhibitionMasterPanel } from '@/pages/erp/salesx/transactions/ExhibitionMaster';
+import { LeadAggregationHubPanel } from '@/pages/erp/salesx/transactions/LeadAggregationHub';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
@@ -74,6 +75,7 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-return-memo':        'Sales Return Memo',
   'sx-t-visit':              'Visit Tracking',
   'sx-t-secondary':          'Secondary Sales',
+  'sx-t-lead-agg':           'Lead Inbox',
   'sx-r-commission':         'Commission Register',
   'sx-r-enquiry-register':   'Enquiry Register Report',
   'sx-r-pipeline-summary':   'Pipeline Summary',
@@ -161,6 +163,8 @@ function renderModule(
       return <VisitTrackingPanel entityCode={entityCode} />;
     case 'sx-t-secondary':
       return <SecondarySalesPanel entityCode={entityCode} />;
+    case 'sx-t-lead-agg':
+      return <LeadAggregationHubPanel entityCode={entityCode} />;
     case 'sx-r-beat-productivity':
       return <BeatProductivityReportPanel entityCode={entityCode} />;
     case 'sx-r-coverage':
