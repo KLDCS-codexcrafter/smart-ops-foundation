@@ -35,7 +35,7 @@ const ENGINEERING_TOOLS: EngineeringTool[] = [
     details:
       'Phase 1 ships: live Fixture Coverage Heatmap + scenario library wireframe + mode selector wireframe. Phase 3 ships: full deterministic seed generator with time-travel + reset-to-layer + leak injector.',
     route: '/welcome/dev-tools/seed-lab',
-    phase: 'phase2',
+    phase: 'live',
   },
   {
     id: 'time-travel',
