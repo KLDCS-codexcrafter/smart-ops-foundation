@@ -58,7 +58,7 @@ export default function MobileCampaignPerformancePage() {
         {campaigns.map(c => (
           <Card key={c.id} className="p-3 space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium truncate">{c.campaign_name ?? c.name ?? 'Campaign'}</p>
+              <p className="text-sm font-medium truncate">{c.campaign_name || 'Campaign'}</p>
               <Badge variant="outline" className="text-[10px]">{CAMPAIGN_TYPE_LABELS[c.campaign_type]}</Badge>
             </div>
             <div className="flex items-center justify-between text-[11px]">
