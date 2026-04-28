@@ -75,8 +75,8 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
             <Send className="h-4 w-4 text-blue-600" />
           </div>
           <div className="group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-bold text-foreground leading-tight">Dispatch Hub</p>
-            <p className="text-[10px] text-muted-foreground leading-tight">LR · POD · Packing</p>
+            <p className="text-sm font-bold text-foreground leading-tight">Logistics Hub</p>
+            <p className="text-[10px] text-muted-foreground leading-tight">LR · POD · Transporter</p>
           </div>
         </div>
       </SidebarHeader>

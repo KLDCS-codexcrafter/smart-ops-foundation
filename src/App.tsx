@@ -186,6 +186,7 @@ const DistributorUpdates = lazy(() => import('./pages/erp/distributor/Distributo
 const DistributorHubPage = lazy(() => import('./pages/erp/distributor-hub/DistributorHubPage'));
 const CustomerHubPage = lazy(() => import('./pages/erp/customer-hub/CustomerHubPage'));
 const DispatchHubPage = lazy(() => import('./pages/erp/dispatch/DispatchHubPage'));
+const DispatchOpsPage = lazy(() => import('./pages/erp/dispatch/DispatchOpsPage'));
 const DistributorGoMobile = lazy(() => import('./pages/mobile/DistributorGoMobile'));
 // Sprint 14a — OperixGo PWA shell
 const MobileRouter = lazy(() => import('./pages/mobile/MobileRouter'));
@@ -446,13 +447,18 @@ const App = () => (
               <Route path="/erp/customer-hub" element={<P><CustomerHubPage /></P>} />
               <Route path="/erp/customer-hub/*" element={<P><CustomerHubPage /></P>} />
               {/* T-Phase-1.1.0 · Backward-compat redirects: legacy /erp/backoffice/* → /erp/frontdesk */}
-              <Route path="/erp/backoffice/dispatch" element={<Navigate to="/erp/frontdesk/dispatch" replace />} />
-              <Route path="/erp/backoffice/dispatch/*" element={<Navigate to="/erp/frontdesk/dispatch" replace />} />
+              <Route path="/erp/backoffice/dispatch" element={<Navigate to="/erp/logistics" replace />} />
+              <Route path="/erp/backoffice/dispatch/*" element={<Navigate to="/erp/logistics" replace />} />
               <Route path="/erp/backoffice/*" element={<Navigate to="/erp/frontdesk" replace />} />
               <Route path="/erp/backoffice" element={<Navigate to="/erp/frontdesk" replace />} />
+              {/* Sprint T-Phase-1.1.1p-v2 — backward-compat redirect old logistics path */}
+              <Route path="/erp/frontdesk/dispatch" element={<Navigate to="/erp/logistics" replace />} />
+              <Route path="/erp/frontdesk/dispatch/*" element={<Navigate to="/erp/logistics" replace />} />
               {/* New canonical routes */}
-              <Route path="/erp/frontdesk/dispatch" element={<P><DispatchHubPage /></P>} />
-              <Route path="/erp/frontdesk/dispatch/*" element={<P><DispatchHubPage /></P>} />
+              <Route path="/erp/logistics" element={<P><DispatchHubPage /></P>} />
+              <Route path="/erp/logistics/*" element={<P><DispatchHubPage /></P>} />
+              <Route path="/erp/dispatch" element={<P><DispatchOpsPage /></P>} />
+              <Route path="/erp/dispatch/*" element={<P><DispatchOpsPage /></P>} />
               <Route path="/erp/distributor/dashboard" element={<DistributorDashboard />} />
               <Route path="/erp/distributor/catalog" element={<DistributorCatalog />} />
               <Route path="/erp/distributor/cart" element={<DistributorCart />} />
