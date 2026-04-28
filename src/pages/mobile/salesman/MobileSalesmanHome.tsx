@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Navigation, MapPin, PhoneIncoming, Briefcase, Users,
   ClipboardList, ShoppingBag, Target, IndianRupee, LogOut, Activity,
+  CheckSquare, Receipt,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
@@ -31,6 +32,8 @@ const TILES = [
   { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales', color: 'text-amber-600' },
   { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets',         color: 'text-red-600' },
   { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission',      color: 'text-emerald-600' },
+  { label: 'Attendance',      icon: CheckSquare,   to: '/mobile/shared/attendance',        color: 'text-sky-600' },
+  { label: 'Expenses',        icon: Receipt,       to: '/mobile/shared/expenses',          color: 'text-violet-600' },
 ];
 
 export default function MobileSalesmanHome() {
