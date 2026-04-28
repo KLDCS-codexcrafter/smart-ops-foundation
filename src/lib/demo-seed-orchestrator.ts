@@ -40,6 +40,8 @@ import {
   DEMO_TERRITORIES, DEMO_BEAT_ROUTES, DEMO_VISIT_LOGS, DEMO_SECONDARY_SALES,
 } from '@/data/demo-field-force-data';
 import type { StockReservation } from '@/types/stock-reservation';
+import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
+import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
 
 export interface SeedResult {
   entityCode: string;
