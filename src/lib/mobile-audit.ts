@@ -12,11 +12,20 @@ import { getPlatform } from './platform-engine';
 import type { CardAuditAction } from '@/types/card-audit';
 import type { CardId } from '@/types/card-entitlement';
 
+export type MobileAuditRole =
+  | 'salesman'
+  | 'telecaller'
+  | 'supervisor'
+  | 'sales_manager'
+  | 'distributor'
+  | 'customer'
+  | 'unknown';
+
 interface MobileAuditInput {
   entityCode: string;
   userId: string;
   userName?: string;
-  role: 'distributor' | 'customer' | 'unknown';
+  role: MobileAuditRole;
   action: CardAuditAction;
   moduleId?: string;
   refType?: string;
