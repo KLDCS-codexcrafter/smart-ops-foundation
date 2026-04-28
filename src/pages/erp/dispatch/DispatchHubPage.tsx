@@ -45,10 +45,11 @@ function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
 function renderModule(
   mod: DispatchHubModule,
   onModuleChange: (m: DispatchHubModule) => void,
+  entityCode: string,
 ): React.ReactElement {
   switch (mod) {
     case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
-    case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode="OPX" />;
+    case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode={entityCode} />;
     case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
     case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
     case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
