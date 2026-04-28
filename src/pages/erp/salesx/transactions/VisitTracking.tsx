@@ -248,6 +248,8 @@ export function VisitTrackingPanel({ entityCode }: Props) {
       outcome,
       notes,
       order_captured_value: outcome === 'order_captured' ? Number(orderValue) || 0 : 0,
+      signature_data_url: signatureCaptured,
+      signature_captured_at: signatureCaptured ? NOW() : null,
     };
     const next = visits.map(v => v.id === activeVisit.id ? updated : v);
     saveVisits(entityCode, next);
@@ -256,8 +258,11 @@ export function VisitTrackingPanel({ entityCode }: Props) {
     setNotes('');
     setOrderValue('0');
     setOutcome('order_captured');
+    setSignatureCaptured(null);
+    setSignatureEmpty(true);
+    signaturePadRef.current?.clear();
     toast.success('Checked-out');
-  }, [activeVisit, outcome, notes, orderValue, visits, entityCode]);
+  }, [activeVisit, outcome, notes, orderValue, visits, entityCode, signatureCaptured]);
 
   useCtrlS(() => {
     if (activeVisit && !activeVisit.check_out_time) {
