@@ -167,6 +167,9 @@ export function CRMPipelinePanel({ entityCode }: Props) {
           <p className="text-sm text-muted-foreground">
             {pipelineType === 'solutions' ? 'Solutions pipeline' : 'Standard pipeline'} · Total weighted ₹{totalWeighted.toLocaleString('en-IN')}
           </p>
+          <p className="text-[10px] text-muted-foreground">
+            Tip: drag any card between columns to change stage
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={salesmanFilter} onValueChange={setSalesmanFilter}>
