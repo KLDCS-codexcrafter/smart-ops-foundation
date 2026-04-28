@@ -361,7 +361,7 @@ export function CampaignMasterPanel({ entityCode }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-4 h-8">
                 <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
                 <TabsTrigger value="budget" className="text-xs">Budget</TabsTrigger>
