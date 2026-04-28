@@ -103,4 +103,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-webinar-report',
   'sx-t-call-quality',
   'sx-t-lead-distribution',
+  'sx-t-smart-insights',
+  'sx-t-campaign-templates',
 ];
