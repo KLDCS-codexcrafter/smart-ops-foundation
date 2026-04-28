@@ -130,3 +130,30 @@ export const comply360FeaturesKey = (e: string) => `erp_comply360_features_${e}`
 export const comply360SettlementKey = (e: string) => `erp_comply360_settlement_${e}`;
 // preserved bytes-identical from original (was L326)
 export const comply360OutstandingKey = (e: string) => `erp_comply360_outstanding_${e}`;
+
+// ─── Tally Export Config (moved from ComplianceSettingsAutomation.tsx) ───────
+// Sprint T-Phase-1.1.1a-pre · lint hygiene · D-127 storage-key value preserved.
+import type { TallyAction } from '@/lib/voucher-export-engine';
+
+// [JWT] GET/PATCH /api/compliance/comply360/tally/:entityId
+export interface TallyExportConfig {
+  /** Default Tally export format. */
+  export_format: 'xml' | 'json' | 'both';
+  /** Default Tally action for new exports. */
+  default_action: TallyAction;
+  /** Whether to include <STATICVARIABLES><SVCURRENTCOMPANY> in envelope. */
+  include_static_variables: boolean;
+  /** Company name for <SVCURRENTCOMPANY> tag · pulls from entity master if blank. */
+  company_name: string;
+}
+
+export const DEFAULT_TALLY_EXPORT_CONFIG: TallyExportConfig = {
+  export_format: 'both',
+  default_action: 'Create',
+  include_static_variables: true,
+  company_name: '',
+};
+
+// preserved bytes-identical from original (was ComplianceSettingsAutomation.tsx L262)
+export const comply360TallyKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_tally_${entityId ?? 'default'}`;

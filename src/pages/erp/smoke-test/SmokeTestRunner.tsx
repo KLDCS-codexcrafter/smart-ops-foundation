@@ -55,7 +55,7 @@ import { Packer } from 'docx';
 import type { Voucher } from '@/types/voucher';
 // [T-T10-pre.2c-TallyNative-fix1 · D-2] Pull live config defaults so tally-8
 // catches drift between spec contract and ComplianceSettingsAutomation seed.
-import { DEFAULT_TALLY_EXPORT_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
+import { DEFAULT_TALLY_EXPORT_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 // [T-T10-pre.2c-TallyNative] Minimal fixture builder for smoke checks · returns
 // a Sales voucher with one ledger line (party Dr) + one inventory line. Used by
@@ -1457,7 +1457,7 @@ const CHECKS: CheckSpec[] = [
   { id: 'recon-1', section: 'Register Views',
     name: 'Sales→Receipt match: bill_reference covers full amount → matched',
     run: async () => {
-      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel');
+      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel.helpers');
       const sales = buildTallyFixtureVoucher();
       const receipt: Voucher = {
         ...buildTallyFixtureVoucher(), id: 'rcpt-1', voucher_no: 'RCPT/0001',
@@ -1473,7 +1473,7 @@ const CHECKS: CheckSpec[] = [
   { id: 'recon-2', section: 'Register Views',
     name: 'DeliveryNote→Sales match: target.so_ref === source.voucher_no',
     run: async () => {
-      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel');
+      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel.helpers');
       const dn: Voucher = { ...buildTallyFixtureVoucher(), id: 'dn-1', voucher_no: 'DN/0001', base_voucher_type: 'Delivery Note', voucher_type_name: 'Delivery Note' };
       const inv: Voucher = { ...buildTallyFixtureVoucher(), id: 'inv-2', voucher_no: 'INV/0002', so_ref: 'DN/0001' };
       const m = computeReconMatch(dn, [inv], 'delivery_note_register', 'sales_register');

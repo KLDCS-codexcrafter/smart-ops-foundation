@@ -36,8 +36,10 @@ import {
   COMPLY360_GROUP_KEY, comply360RCMKey, comply360TDSPKey, comply360TDSRKey,
   comply360LCKey, comply360EximKey, comply360SAMKey, comply360WAKey,
   comply360SettlementKey, comply360OutstandingKey,
-  type SAMConfig,
+  comply360TallyKey, DEFAULT_TALLY_EXPORT_CONFIG,
+  type SAMConfig, type TallyExportConfig,
 } from './ComplianceSettingsAutomation.constants';
+import type { TallyAction } from '@/lib/voucher-export-engine';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
@@ -237,29 +239,8 @@ const DEFAULT_WA: WhatsAppConfig = {
 
 // ── T-T10-pre.2c-TallyNative · Tally Prime native export config ────────────
 // Storage: erp_comply360_tally_{entityId}
-// [JWT] GET/PATCH /api/compliance/comply360/tally/:entityId
-import type { TallyAction } from '@/lib/voucher-export-engine';
-
-export interface TallyExportConfig {
-  /** Default Tally export format. */
-  export_format: 'xml' | 'json' | 'both';
-  /** Default Tally action for new exports. */
-  default_action: TallyAction;
-  /** Whether to include <STATICVARIABLES><SVCURRENTCOMPANY> in envelope. */
-  include_static_variables: boolean;
-  /** Company name for <SVCURRENTCOMPANY> tag · pulls from entity master if blank. */
-  company_name: string;
-}
-
-export const DEFAULT_TALLY_EXPORT_CONFIG: TallyExportConfig = {
-  export_format: 'both',
-  default_action: 'Create',
-  include_static_variables: true,
-  company_name: '',
-};
-
-export const comply360TallyKey = (entityId: string | null | undefined): string =>
-  `erp_comply360_tally_${entityId ?? 'default'}`;
+// TallyExportConfig + DEFAULT_TALLY_EXPORT_CONFIG + comply360TallyKey moved
+// to ComplianceSettingsAutomation.constants.ts (Sprint T-Phase-1.1.1a-pre lint hygiene)
 
 const DEFAULT_TDSP: TDSPayableConfig = {
   tdsPayableJournalVCH: '', tdsPayableLedger: '',

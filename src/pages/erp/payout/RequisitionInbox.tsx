@@ -41,8 +41,10 @@ export default function RequisitionInbox() {
 
   const refresh = useCallback(() => setRefreshTick(t => t + 1), []);
 
+  // `refreshTick` is an intentional cache-buster — bumping it must re-run listRequisitions.
   const all = useMemo<PaymentRequisition[]>(
     () => listRequisitions(entityCode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, refreshTick],
   );
 

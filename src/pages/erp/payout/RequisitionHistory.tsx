@@ -31,6 +31,8 @@ export default function RequisitionHistory() {
   const [typeFilter, setTypeFilter] = useState<PaymentRequestType | 'all'>('all');
   const [selected, setSelected] = useState<PaymentRequisition | null>(null);
 
+  // `tick` is an intentional cache-buster — bumping it must re-run listRequisitions.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const all = useMemo(() => listRequisitions(entityCode), [entityCode, tick]);
 
   const filtered = useMemo(() => {
