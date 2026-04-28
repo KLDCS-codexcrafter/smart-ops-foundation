@@ -1,6 +1,7 @@
 /**
  * MobileSalesmanTargetsPage.tsx — Target vs achievement (read-only)
- * Sprint T-Phase-1.1.1l-a · Reads DEMO_TARGETS shape from localStorage
+ * Sprint T-Phase-1.1.1l-a · Reuses real SalesTarget + targetsKey
+ * Achievement is COMPUTED from confirmed/proforma/sales_order quotations
  */
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,16 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Target } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
-
-interface SalesTargetRow {
-  id: string;
-  sam_person_id: string;
-  sam_person_name: string;
-  period: string;
-  target_amount: number;
-  achieved_amount: number;
-  status: string;
-}
+import { type SalesTarget, targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
+import { type Quotation, quotationsKey } from '@/types/quotation';
+import { type Enquiry, enquiriesKey } from '@/types/enquiry';
 
 function readSession(): MobileSession | null {
   try {
@@ -27,11 +21,10 @@ function readSession(): MobileSession | null {
   } catch { return null; }
 }
 
-function loadTargets(entityCode: string): SalesTargetRow[] {
+function loadList<T>(key: string): T[] {
   try {
-    // [JWT] GET /api/salesx/targets
-    const raw = localStorage.getItem(`erp_sales_targets_${entityCode}`);
-    return raw ? (JSON.parse(raw) as SalesTargetRow[]) : [];
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T[]) : [];
   } catch { return []; }
 }
 
@@ -41,14 +34,41 @@ function paceTone(pct: number): string {
   return 'bg-red-500/15 text-red-700 border-red-500/40';
 }
 
+const ACHIEVED_STAGES = new Set(['confirmed', 'proforma', 'sales_order']);
+
 export default function MobileSalesmanTargetsPage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
 
-  const myTargets = useMemo(() => {
-    if (!session) return [];
-    return loadTargets(session.entity_code).filter(t => t.sam_person_id === session.user_id);
-  }, [session]);
+  const targets = useMemo(
+    () => session ? loadList<SalesTarget>(targetsKey(session.entity_code)) : [],
+    [session],
+  );
+  const enquiries = useMemo(
+    () => session ? loadList<Enquiry>(enquiriesKey(session.entity_code)) : [],
+    [session],
+  );
+  const quotations = useMemo(
+    () => session ? loadList<Quotation>(quotationsKey(session.entity_code)) : [],
+    [session],
+  );
+
+  const myTargets = useMemo(
+    () => targets.filter(t => t.is_active && t.person_id === session?.user_id),
+    [targets, session],
+  );
+
+  const myEnquiryIds = useMemo(() =>
+    new Set(enquiries.filter(e => e.assigned_executive_id === session?.user_id).map(e => e.id)),
+    [enquiries, session],
+  );
+
+  const achievedValue = useMemo(() =>
+    quotations
+      .filter(q => q.enquiry_id && myEnquiryIds.has(q.enquiry_id) && ACHIEVED_STAGES.has(q.quotation_stage))
+      .reduce((sum, q) => sum + q.total_amount, 0),
+    [quotations, myEnquiryIds],
+  );
 
   if (!session) return null;
 
@@ -70,16 +90,24 @@ export default function MobileSalesmanTargetsPage() {
       ) : (
         <div className="space-y-2">
           {myTargets.map(t => {
-            const pct = t.target_amount > 0 ? Math.min(100, (t.achieved_amount / t.target_amount) * 100) : 0;
+            const achieved = t.dimension === 'sales_value' ? achievedValue : 0;
+            const pct = t.target_value > 0 ? Math.min(100, (achieved / t.target_value) * 100) : 0;
             return (
               <Card key={t.id} className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{t.period}</p>
-                  <Badge variant="outline" className={`text-[10px] ${paceTone(pct)}`}>{pct.toFixed(0)}%</Badge>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{t.period_label}</p>
+                    <p className="text-[10px] text-muted-foreground capitalize">
+                      {t.dimension.replace('_', ' ')} · {t.period}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className={`text-[10px] shrink-0 ${paceTone(pct)}`}>
+                    {pct.toFixed(0)}%
+                  </Badge>
                 </div>
                 <div className="text-[11px] text-muted-foreground space-y-0.5 font-mono">
-                  <p>Target: ₹{t.target_amount.toLocaleString('en-IN')}</p>
-                  <p>Achieved: ₹{t.achieved_amount.toLocaleString('en-IN')}</p>
+                  <p>Target: ₹{t.target_value.toLocaleString('en-IN')}</p>
+                  <p>Achieved: ₹{achieved.toLocaleString('en-IN')}</p>
                 </div>
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
@@ -87,6 +115,11 @@ export default function MobileSalesmanTargetsPage() {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
+                {t.dimension !== 'sales_value' && (
+                  <p className="text-[10px] text-amber-600">
+                    Note: live tracking for this dimension is wired in Phase 2.
+                  </p>
+                )}
               </Card>
             );
           })}
