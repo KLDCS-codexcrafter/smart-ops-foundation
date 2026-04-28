@@ -21,7 +21,7 @@ import {
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import {
   Plus, Save, Trash2, X, Search, Inbox, Upload, ChevronDown, ChevronUp,
-  ArrowRightCircle, Copy, AlertCircle,
+  ArrowRightCircle, Copy, AlertCircle, FileText,
 } from 'lucide-react';
 import { useLeads } from '@/hooks/useLeads';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -108,24 +108,43 @@ Ravi Kumar,Kumar Builders,+919811001001,ravi@kumarbuilders.in,Delhi,Wall Putty,L
 Priya Singh,Singh Interiors,+919822002002,priya@singhinteriors.com,Mumbai,Texture Paint,Need samples first
 Mohan Das,,+919833003003,,Jaipur,Primer,`;
 
-function parseCsv(text: string, platform: LeadPlatform): LeadImportRow[] {
+const TARGET_FIELDS = [
+  { key: 'contact_name',     label: 'Contact Name',     required: true },
+  { key: 'company_name',     label: 'Company Name',     required: false },
+  { key: 'phone',            label: 'Phone',            required: false },
+  { key: 'email',            label: 'Email',            required: false },
+  { key: 'city',             label: 'City',             required: false },
+  { key: 'product_interest', label: 'Product Interest', required: false },
+  { key: 'portal_query',     label: 'Portal Query',     required: false },
+] as const;
+
+function parseCsvWithMapping(
+  text: string,
+  platform: LeadPlatform,
+  mapping: Record<string, string>,
+): LeadImportRow[] {
   const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
   if (lines.length <= 1) return [];
   const headers = lines[0].split(',').map(h => h.trim());
   const rows: LeadImportRow[] = [];
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(',').map(c => c.trim());
-    const rec: Record<string, string> = {};
-    headers.forEach((h, idx) => { rec[h] = cols[idx] ?? ''; });
-    if (!rec.contact_name) continue;
+    const get = (key: string): string => {
+      const userCol = mapping[key];
+      if (!userCol) return '';
+      const idx = headers.indexOf(userCol);
+      return idx >= 0 ? cols[idx] ?? '' : '';
+    };
+    const contact_name = get('contact_name');
+    if (!contact_name) continue;
     rows.push({
-      contact_name: rec.contact_name,
-      company_name: rec.company_name || undefined,
-      phone: rec.phone || undefined,
-      email: rec.email || undefined,
-      city: rec.city || undefined,
-      product_interest: rec.product_interest || undefined,
-      portal_query: rec.portal_query || undefined,
+      contact_name,
+      company_name: get('company_name') || undefined,
+      phone: get('phone') || undefined,
+      email: get('email') || undefined,
+      city: get('city') || undefined,
+      product_interest: get('product_interest') || undefined,
+      portal_query: get('portal_query') || undefined,
       platform,
     });
   }
@@ -150,6 +169,8 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
   const [importPlatform, setImportPlatform] = useState<LeadPlatform>('indiamart');
   const [importText, setImportText] = useState(SAMPLE_CSV);
   const [importPreview, setImportPreview] = useState<LeadImportRow[]>([]);
+  const [importHeaders, setImportHeaders] = useState<string[]>([]);
+  const [columnMap, setColumnMap] = useState<Record<string, string>>({});
 
   const [convertingLead, setConvertingLead] = useState<Lead | null>(null);
   const [convertType, setConvertType] = useState<EnquiryType>('prospect');
@@ -287,19 +308,45 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
     toast.success('Marked as duplicate');
   };
 
+  const detectHeaders = useCallback((text: string) => {
+    const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length === 0) return [];
+    return lines[0].split(',').map(h => h.trim());
+  }, []);
+
+  const handleAnalyzeImport = () => {
+    const headers = detectHeaders(importText);
+    if (headers.length === 0) { toast.error('No CSV headers detected'); return; }
+    setImportHeaders(headers);
+    const auto: Record<string, string> = {};
+    TARGET_FIELDS.forEach(t => {
+      const lc = t.key.toLowerCase().replace(/_/g, ' ');
+      const match = headers.find(h => {
+        const hl = h.toLowerCase();
+        return hl === t.key || hl === lc ||
+               hl.includes(t.key) || hl.includes(lc) ||
+               (t.key === 'contact_name' && (hl.includes('name') || hl.includes('customer'))) ||
+               (t.key === 'company_name' && (hl.includes('firm') || hl.includes('business'))) ||
+               (t.key === 'phone' && (hl.includes('mobile') || hl.includes('contact'))) ||
+               (t.key === 'product_interest' && (hl.includes('product') || hl.includes('item') || hl.includes('interest')));
+      });
+      if (match) auto[t.key] = match;
+    });
+    setColumnMap(auto);
+    toast.success(`Detected ${headers.length} columns`);
+  };
+
   const handleParse = () => {
-    const rows = parseCsv(importText, importPlatform);
+    if (!columnMap.contact_name) { toast.error('Map Contact Name first'); return; }
+    const rows = parseCsvWithMapping(importText, importPlatform, columnMap);
     setImportPreview(rows);
-    if (rows.length === 0) {
-      toast.error('No valid rows found');
-    } else {
-      toast.success(`Parsed ${rows.length} rows`);
-    }
+    if (rows.length === 0) toast.error('No valid rows found');
+    else toast.success(`${rows.length} rows ready for import`);
   };
 
   const handleImport = () => {
     if (importPreview.length === 0) {
-      toast.error('Click Parse & Preview first');
+      toast.error('Generate preview first');
       return;
     }
     const res = bulkImport(importPreview, importPlatform);
@@ -877,12 +924,46 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
               <Textarea rows={6} value={importText} onChange={e => setImportText(e.target.value)}
                 className="font-mono text-xs" />
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={handleParse}>Parse & Preview</Button>
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="outline" onClick={handleAnalyzeImport} disabled={!importText.trim()}>
+                <Search className="h-3.5 w-3.5 mr-1" /> Analyze CSV
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleParse} disabled={importHeaders.length === 0}>
+                <FileText className="h-3.5 w-3.5 mr-1" /> Generate Preview
+              </Button>
               <Button size="sm" onClick={handleImport} disabled={importPreview.length === 0}>
                 Import {importPreview.length || ''} leads
               </Button>
+              <Button size="sm" variant="ghost" onClick={() => { setImportHeaders([]); setColumnMap({}); setImportPreview([]); }}>
+                Reset
+              </Button>
             </div>
+            {importHeaders.length > 0 && (
+              <Card className="border-blue-500/40">
+                <CardHeader className="py-2"><CardTitle className="text-xs">Map your columns to Operix fields</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    {TARGET_FIELDS.map(t => (
+                      <div key={t.key} className="flex items-center gap-2">
+                        <span className="w-32 font-medium">
+                          {t.label}{t.required && <span className="text-destructive">*</span>}
+                        </span>
+                        <select
+                          value={columnMap[t.key] ?? ''}
+                          onChange={e => setColumnMap(m => ({ ...m, [t.key]: e.target.value }))}
+                          className="flex-1 text-xs border rounded px-2 py-1 bg-background"
+                        >
+                          <option value="">— Not mapped —</option>
+                          {importHeaders.map(h => (
+                            <option key={h} value={h}>{h}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             {importPreview.length > 0 && (
               <div className="border rounded-md overflow-x-auto">
                 <Table>

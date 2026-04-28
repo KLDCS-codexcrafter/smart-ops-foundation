@@ -33,6 +33,7 @@ import {
   DEMO_AGENT_STATUSES, DEMO_AGENT_PROFILES, DEMO_POINTS_TRANSACTIONS,
   DEMO_QUALITY_CRITERIA, DEMO_CALL_REVIEWS, DEMO_COACHING_FEEDBACK,
   DEMO_DISTRIBUTION_CONFIG, DEMO_TELECALLER_CAPACITIES, DEMO_DISTRIBUTION_LOGS,
+  DEMO_CAMPAIGN_TEMPLATES,
 } from '@/data/demo-salesx-data';
 import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
 import {
@@ -115,6 +116,7 @@ export function seedEntityDemoData(
   safeSetObj(`erp_distribution_config_${entityCode}`, { ...DEMO_DISTRIBUTION_CONFIG, entity_id: entityCode });
   safeSetArray(`erp_telecaller_capacities_${entityCode}`, DEMO_TELECALLER_CAPACITIES.map(c => ({ ...c, entity_id: entityCode })));
   safeSetArray(`erp_distribution_logs_${entityCode}`, DEMO_DISTRIBUTION_LOGS.map(l => ({ ...l, entity_id: entityCode })));
+  safeSetArray(`erp_campaign_templates_${entityCode}`, DEMO_CAMPAIGN_TEMPLATES.map(t => ({ ...t, entity_id: entityCode })));
   safeSetArray(`erp_sam_targets_${entityCode}`, DEMO_TARGETS);
   const enquiries = safeSetArray(
     `erp_enquiries_${entityCode}`,

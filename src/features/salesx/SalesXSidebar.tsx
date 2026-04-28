@@ -12,6 +12,7 @@ import {
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
   Package, Presentation, Video, Store, Inbox, ClipboardCheck,
+  Sparkles, Layers,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -168,6 +169,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       id: 'sx-t-lead-distribution' as SalesXModule,
       label: 'Lead Distribution',
       icon: Network,
+      live: true,
+    },
+    {
+      id: 'sx-t-smart-insights' as SalesXModule,
+      label: 'Smart Insights',
+      icon: Sparkles,
+      live: true,
+    },
+    {
+      id: 'sx-t-campaign-templates' as SalesXModule,
+      label: 'Campaign Templates',
+      icon: Layers,
       live: true,
     },
     {

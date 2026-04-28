@@ -216,6 +216,7 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_distribution_config_${entityCode}`,
     `erp_telecaller_capacities_${entityCode}`,
     `erp_distribution_logs_${entityCode}`,
+    `erp_campaign_templates_${entityCode}`,
   ];
 }
 
