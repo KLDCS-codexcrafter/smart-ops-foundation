@@ -24,12 +24,15 @@ import { cn } from '@/lib/utils';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SalesXModule } from './SalesXSidebar.types';
+import type { SalesXGroup } from './SalesXSidebar.groups';
+import { getModuleGroup } from './SalesXSidebar.groups';
 
 
 interface Props {
   activeModule: SalesXModule;
   onModuleChange: (m: SalesXModule) => void;
   entityCode: string;
+  activeGroup: SalesXGroup;
 }
 
 function loadSAMConfig(entityCode: string): SAMConfig | null {
