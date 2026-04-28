@@ -192,9 +192,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
       icon: BarChart3,
       live: true,
     },
-  ];
+  ], [cfg]);
 
-  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = [
+  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = useMemo(() => [
     { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet,        live: true },
     { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks,    live: true },
     { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
@@ -210,7 +210,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-campaign-performance',label: 'Campaign Performance', icon: Megaphone,     live: true },
     { id: 'sx-r-exhibition-report',   label: 'Exhibition Report',    icon: Store,         live: true },
     { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
-  ];
+  ], [cfg]);
 
   const filteredMasterItems = useMemo(() =>
     masterItems.filter(i => getModuleGroup(i.id) === activeGroup),
