@@ -344,12 +344,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     return queue;
   }, [overdueEnquiries, enquiries, today, queue]);
 
-  const FILTER_LABELS: Record<typeof dialerFilter, string> = {
-    overdue: 'Overdue follow-ups',
-    today: "Today's follow-ups",
-    new7: 'New leads (last 7 days)',
-    all: 'All open enquiries',
-  };
+
 
   const handleStartDialer = useCallback(() => {
     const targets = buildDialerTargets(dialerFilter);
