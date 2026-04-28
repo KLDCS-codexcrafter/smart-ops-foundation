@@ -29,7 +29,7 @@ import {
   DEMO_SUPPLY_REQUEST_MEMOS, DEMO_ORDERS,
   DEMO_EXHIBITIONS, DEMO_EXHIBITION_VISITORS,
   DEMO_WEBINARS, DEMO_WEBINAR_PARTICIPANTS,
-  DEMO_LEADS,
+  DEMO_LEADS, DEMO_WA_TEMPLATES,
 } from '@/data/demo-salesx-data';
 import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
 import {
@@ -102,6 +102,7 @@ export function seedEntityDemoData(
   safeSetArray(`erp_webinars_${entityCode}`, DEMO_WEBINARS.map(w => ({ ...w, entity_id: entityCode })));
   safeSetArray(`erp_webinar_participants_${entityCode}`, DEMO_WEBINAR_PARTICIPANTS);
   safeSetArray(`erp_leads_${entityCode}`, DEMO_LEADS.map(l => ({ ...l, entity_id: entityCode })));
+  safeSetArray(`erp_wa_templates_${entityCode}`, DEMO_WA_TEMPLATES.map(t => ({ ...t, entity_id: entityCode })));
   safeSetArray(`erp_sam_targets_${entityCode}`, DEMO_TARGETS);
   const enquiries = safeSetArray(
     `erp_enquiries_${entityCode}`,
