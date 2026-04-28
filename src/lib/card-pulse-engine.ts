@@ -41,15 +41,61 @@ export function computeCardPulse(cardId: CardId, entityCode: string): CardPulse 
       };
     }
     case 'salesx': {
-      const enquiries = readList(`erp_enquiries_${entityCode}`);
-      const quotations = readList(`erp_quotations_${entityCode}`);
+      // Sprint T-Phase-1.1.1a — pulse reflects pipeline health.
+      const enquiries = readList<{
+        status?: string;
+        enquiry_date?: string;
+        follow_ups?: Array<{ follow_up_date?: string | null }>;
+      }>(`erp_enquiries_${entityCode}`);
+      const quotations = readList<{
+        quotation_stage?: string;
+        valid_until_date?: string | null;
+      }>(`erp_quotations_${entityCode}`);
+
+      const todayMs = Date.now();
+      const dayMs = 1000 * 60 * 60 * 24;
+
+      // Stuck enquiries: pending state with no follow-up activity in 7+ days.
+      const stuck = enquiries.filter(e => {
+        const isPending = ['new', 'assigned', 'pending', 'in_process'].includes(
+          e.status ?? '',
+        );
+        if (!isPending) return false;
+        const lastDate =
+          e.follow_ups?.[e.follow_ups.length - 1]?.follow_up_date ??
+          e.enquiry_date;
+        if (!lastDate) return false;
+        const daysSince = (todayMs - new Date(lastDate).getTime()) / dayMs;
+        return daysSince > 7;
+      }).length;
+
+      // Expired quotations: open stage past valid_until_date.
+      const expired = quotations.filter(q => {
+        const isOpen = ['draft', 'negotiation', 'on_hold'].includes(
+          q.quotation_stage ?? '',
+        );
+        if (!isOpen || !q.valid_until_date) return false;
+        return new Date(q.valid_until_date).getTime() < todayMs;
+      }).length;
+
+      const status: CardStatus =
+        stuck === 0 && expired === 0 ? 'green'
+          : stuck + expired < 5 ? 'amber'
+            : 'red';
+
+      const status_note = status === 'green'
+        ? 'pipeline flowing'
+        : `${stuck} stuck · ${expired} expired`;
+
       return {
         metrics: [
           { label: 'Enquiries', value: String(enquiries.length) },
           { label: 'Quotations', value: String(quotations.length) },
+          ...(stuck > 0 ? [{ label: 'Stuck', value: String(stuck) }] : []),
+          ...(expired > 0 ? [{ label: 'Expired', value: String(expired) }] : []),
         ],
-        status: 'green',
-        status_note: 'pipeline flowing',
+        status,
+        status_note,
       };
     }
     case 'receivx': {

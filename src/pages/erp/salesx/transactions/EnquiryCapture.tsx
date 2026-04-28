@@ -432,9 +432,21 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
-          <Save className="h-4 w-4 mr-2" />Save Enquiry
-        </Button>
+        <div className="flex items-center gap-2">
+          {editingId && form.status !== 'lost' && form.status !== 'sold' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-blue-500/40 text-blue-700 hover:bg-blue-500/10"
+              onClick={handleConvertToQuotation}
+            >
+              <ArrowRight className="h-4 w-4 mr-1.5" />Convert to Quotation
+            </Button>
+          )}
+          <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
+            <Save className="h-4 w-4 mr-2" />Save Enquiry
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="details">
