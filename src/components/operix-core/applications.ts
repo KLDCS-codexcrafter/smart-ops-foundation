@@ -8,7 +8,8 @@ export type AppCategory =
   | 'FrontDesk Hub'
   | 'Support Hub'
   | 'InsightX'
-  | 'International Trade';
+  | 'International Trade'
+  | 'Dispatch Hub';
 
 export interface AppDefinition {
   id: string;
@@ -29,6 +30,7 @@ export const CATEGORY_COLORS: Record<AppCategory, string> = {
   'Support Hub':        'bg-teal-500/15 text-teal-400',
   'InsightX':           'bg-sky-500/15 text-sky-400',
   'International Trade':'bg-rose-500/15 text-rose-400',
+  'Dispatch Hub':       'bg-orange-500/15 text-orange-500',
 };
 
 export const ALL_CATEGORIES: AppCategory[] = [
@@ -40,6 +42,7 @@ export const ALL_CATEGORIES: AppCategory[] = [
   'Support Hub',
   'InsightX',
   'International Trade',
+  'Dispatch Hub',
 ];
 
 export const applications: AppDefinition[] = [
@@ -229,10 +232,19 @@ export const applications: AppDefinition[] = [
   {
     id: 'dispatch-hub',
     name: 'Logistics Hub',
-    description: 'Inward + outward freight management — transporter master, LR, POD, courier, freight reconciliation, packing consumables, and logistic partner portal',
+    description: 'Transporter & courier management — LR tracking, freight reconciliation, transporter portal, POD, domestic & international logistics',
     category: 'Ops Hub',
-    route: '/erp/frontdesk/dispatch',
+    route: '/erp/logistics',
     icon: 'Truck',
+    status: 'active',
+  },
+  {
+    id: 'dispatch-ops',
+    name: 'Dispatch Hub',
+    description: 'Inward & outward operations — delivery memo, packing slip, sample/demo outward issue, movement report, dispatch exceptions',
+    category: 'Dispatch Hub',
+    route: '/erp/dispatch',
+    icon: 'PackageCheck',
     status: 'active',
   },
   {
