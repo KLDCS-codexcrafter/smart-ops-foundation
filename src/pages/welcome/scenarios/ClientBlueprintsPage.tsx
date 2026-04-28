@@ -1,4 +1,6 @@
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +15,8 @@ import {
   Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { seedEntityDemoData } from '@/lib/demo-seed-orchestrator';
+import type { DemoArchetype } from '@/data/demo-customers-vendors';
 
 type ScenarioPhase = 'live' | 'phase2' | 'planned';
 
@@ -27,8 +31,12 @@ interface ClientBlueprint {
   phase: ScenarioPhase;
   fixtureCoverage: number;
   founderAnchor?: boolean;
+  entityCode: string;
+  archetype: DemoArchetype;
 }
 
+// Sprint T-Phase-SEED-1 · all 7 use 'manufacturing' archetype as-is per founder Q2 lock April 28, 2026.
+// Per-client customization (steel for Sinha · marble for Amith · etc.) is a LATER decision.
 const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
   {
     id: 'abdos',
@@ -38,10 +46,12 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     description:
       'Diversified 5-BU group: Life Sciences, Contract Manufacturing, Packaging, Distribution, Hygiene & Homecare. Validates multi-BU, contract mfg, export, multi-channel.',
     details:
-      '1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy\'s. Pattern: large diversified conglomerate.',
+      "1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy's. Pattern: large diversified conglomerate.",
     pattern: 'Multi-BU Conglomerate + Contract Mfg + Export + FMCG',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'ABDOS',
+    archetype: 'manufacturing',
   },
   {
     id: 'cherise',
@@ -53,8 +63,10 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     details:
       'Pune factory · Mumbai HQ · ~150 vending devices · razor-blade pod consumables model · Live on Blinkit quick-commerce. Pattern: next-gen IoT+D2C business model.',
     pattern: 'IoT-Connected Device + D2C + Quick-Commerce + Export',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'CHRSE',
+    archetype: 'manufacturing',
   },
   {
     id: 'bcpl',
@@ -62,12 +74,14 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     subtitle: 'PSU + Pharma + Chemical',
     icon: Landmark,
     description:
-      'Government PSU under Ministry of Chemicals & Fertilizers. India\'s first pharma company (1901, Acharya P.C. Ray). 3 divisions: Industrial Chemicals, Pharmaceuticals, Home Products.',
+      "Government PSU under Ministry of Chemicals & Fertilizers. India's first pharma company (1901, Acharya P.C. Ray). 3 divisions: Industrial Chemicals, Pharmaceuticals, Home Products.",
     details:
       'Kolkata HQ · Central PSU · Privatisation ongoing. Validates PSU procurement (GeM), CAG audit, tender lifecycle, parliamentary scrutiny. Needs PSU Pack.',
     pattern: 'PSU / Regulated Entity + Pharma + Heavy Chemicals + FMCG',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'BCPL',
+    archetype: 'manufacturing',
   },
   {
     id: 'smartpower',
@@ -79,8 +93,10 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     details:
       'Kolkata · Regional leader · B2B + institutional. Clients include Garden Reach Shipbuilders (GRSE). AMC is primary revenue. Validates post-sale model for capital-equipment mfrs.',
     pattern: 'Manufacturer + Installation Project + AMC (primary) + Dealer Network',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'SMRTP',
+    archetype: 'manufacturing',
   },
   {
     id: 'amith',
@@ -92,8 +108,10 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     details:
       'Since 2001 · Howrah/Kolkata · Franchise expansion. Kajaria partnership. Validates distribution-heavy retail pattern common in building-materials, furniture, luxury.',
     pattern: 'Import Trader + Showroom Retail + Franchise Network + B2B Interior',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'AMITH',
+    archetype: 'manufacturing',
   },
   {
     id: 'shankar-pharma',
@@ -105,8 +123,10 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     details:
       '3 companies (parent + 2 subsidiaries + SEZ branch) · 6-tier hierarchy · ~200 customers · ~400 items · 18 months of transactions.',
     pattern: 'Complex 3-Company Group + 6-Tier Hierarchy + Pharma Focus',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
+    entityCode: 'SHKPH',
+    archetype: 'manufacturing',
   },
   {
     id: 'sinha',
@@ -118,9 +138,11 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     details:
       'Proprietor Mr. Prosenjit Sinha · Kolkata · 81 skilled workmen + 18 staff · SSI + NSIC registered. ★ Founder Motivation anchor — the person who motivated Operix to exist. Validates Engineer-to-Order pattern distinct from make-to-stock manufacturing.',
     pattern: 'Engineer-to-Order + Turnkey Projects + Spares + Export',
-    phase: 'planned',
-    fixtureCoverage: 0,
+    phase: 'live',
+    fixtureCoverage: 100,
     founderAnchor: true,
+    entityCode: 'SINHA',
+    archetype: 'manufacturing',
   },
 ];
 
@@ -130,8 +152,117 @@ const PHASE_CONFIG: Record<ScenarioPhase, { label: string; color: string }> = {
   planned: { label: 'Planned', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' },
 };
 
+// Entity-scoped keys reset by handleResetEntity (NOT shared masters like
+// erp_group_customer_master · erp_group_vendor_master · erp_inventory_items
+// which cascade-affect other entities).
+function entityScopedKeys(entityCode: string): string[] {
+  return [
+    `erp_sam_persons_${entityCode}`,
+    `erp_sam_hierarchy_${entityCode}`,
+    `erp_enquiry_sources_${entityCode}`,
+    `erp_campaigns_${entityCode}`,
+    `erp_sam_targets_${entityCode}`,
+    `erp_enquiries_${entityCode}`,
+    `erp_quotations_${entityCode}`,
+    `erp_opportunities_${entityCode}`,
+    `erp_commission_register_${entityCode}`,
+    `erp_receivx_config_${entityCode}`,
+    `erp_receivx_templates_${entityCode}`,
+    `erp_receivx_execs_${entityCode}`,
+    `erp_receivx_schemes_${entityCode}`,
+    `erp_receivx_ptps_${entityCode}`,
+    `erp_receivx_comm_log_${entityCode}`,
+    `erp_territories_${entityCode}`,
+    `erp_beat_routes_${entityCode}`,
+    `erp_visit_logs_${entityCode}`,
+    `erp_secondary_sales_${entityCode}`,
+  ];
+}
+
 export function ClientBlueprintsPagePanel() {
   const navigate = useNavigate();
+  const [loadingEntity, setLoadingEntity] = useState<string | null>(null);
+
+  const handleLoadDemo = useCallback(
+    (entityCode: string, archetype: DemoArchetype, clientName: string) => {
+      setLoadingEntity(entityCode);
+      try {
+        // Ensure entity exists in MOCK_ENTITIES / localStorage (lazy creation)
+        // [JWT] GET /api/foundation/entities
+        const entitiesRaw = localStorage.getItem('erp_group_entities');
+        const entities: Array<{ id: string; name: string; shortCode: string; type: string }> =
+          entitiesRaw ? JSON.parse(entitiesRaw) : [];
+        const exists = entities.some((e) => e.shortCode === entityCode);
+        if (!exists) {
+          const newEntity = {
+            id: `e-${entityCode.toLowerCase()}`,
+            name: clientName,
+            shortCode: entityCode,
+            type: 'subsidiary' as const,
+          };
+          // [JWT] POST /api/foundation/entities
+          localStorage.setItem(
+            'erp_group_entities',
+            JSON.stringify([...entities, newEntity]),
+          );
+        }
+
+        // Run the existing seed orchestrator (D-190 reuse · zero new logic)
+        // [JWT] POST /api/demo/seed-entity
+        const result = seedEntityDemoData(entityCode, archetype);
+
+        toast.success(
+          `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp`,
+          { duration: 6000 },
+        );
+      } catch (err) {
+        toast.error(`Failed to load ${clientName} demo · ${(err as Error).message}`);
+      } finally {
+        setLoadingEntity(null);
+      }
+    },
+    [],
+  );
+
+  const handleResetEntity = useCallback((entityCode: string, clientName: string) => {
+    // eslint-disable-next-line no-alert
+    if (!confirm(`Reset ALL demo data for ${clientName}? This clears entity-scoped localStorage keys for ${entityCode}. Shared masters (customers/vendors/items) are preserved.`)) return;
+
+    const keysToReset = entityScopedKeys(entityCode);
+    keysToReset.forEach((k) => {
+      // [JWT] DELETE /api/entity/storage/:key
+      localStorage.removeItem(k);
+    });
+
+    // Also remove vouchers + outstanding scoped to this entity
+    // [JWT] DELETE /api/entity/storage/vouchers?entity=:entityCode
+    try {
+      const vouchersRaw = localStorage.getItem('erp_group_vouchers');
+      if (vouchersRaw) {
+        const vouchers = JSON.parse(vouchersRaw);
+        if (Array.isArray(vouchers)) {
+          const filtered = vouchers.filter(
+            (v: { entity_id?: string }) => v.entity_id !== entityCode,
+          );
+          localStorage.setItem('erp_group_vouchers', JSON.stringify(filtered));
+        }
+      }
+      const outstandingRaw = localStorage.getItem('erp_outstanding');
+      if (outstandingRaw) {
+        const outstanding = JSON.parse(outstandingRaw);
+        if (Array.isArray(outstanding)) {
+          const filtered = outstanding.filter(
+            (o: { entity_id?: string }) => o.entity_id !== entityCode,
+          );
+          localStorage.setItem('erp_outstanding', JSON.stringify(filtered));
+        }
+      }
+    } catch {
+      /* ignore parse errors */
+    }
+
+    toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,8 +280,9 @@ export function ClientBlueprintsPagePanel() {
             <h1 className="text-2xl font-bold text-foreground">Client Blueprints</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Seven design-partner client scenarios that anchor Operix's universal ERP architecture.
-              If Operix serves all seven cleanly, it serves 80%+ of the Indian mid-market.
-              These are reference templates — not delivery targets.
+              Click "Load Demo Data" on any card to seed that entity with the manufacturing
+              archetype (22 localStorage keys populated). Use "Reset" to clear entity-scoped data
+              and iterate. Shared masters (customers/vendors/items) are preserved across resets.
             </p>
           </div>
         </div>
@@ -165,17 +297,13 @@ export function ClientBlueprintsPagePanel() {
         <div className="grid sm:grid-cols-2 gap-4">
           {CLIENT_BLUEPRINTS.map(b => {
             const phaseConf = PHASE_CONFIG[b.phase];
-            const isClickable = b.phase === 'live';
+            const isLoading = loadingEntity === b.entityCode;
             return (
-              <button
+              <div
                 key={b.id}
-                onClick={() => isClickable && navigate(`/welcome/scenarios/${b.id}`)}
                 className={cn(
-                  "group relative rounded-2xl border bg-card/60 backdrop-blur-xl p-6 text-left w-full transition-all duration-300",
-                  isClickable
-                    ? "hover:scale-[1.02] hover:border-primary/40 cursor-pointer"
-                    : "opacity-70 cursor-default",
-                  b.founderAnchor && "ring-1 ring-amber-300/60 dark:ring-amber-500/40"
+                  'group relative rounded-2xl border bg-card/60 backdrop-blur-xl p-6 text-left w-full transition-all duration-300',
+                  b.founderAnchor && 'ring-1 ring-amber-300/60 dark:ring-amber-500/40',
                 )}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -192,7 +320,7 @@ export function ClientBlueprintsPagePanel() {
                 <p className="text-sm text-muted-foreground mb-2">{b.description}</p>
                 <p className="text-xs text-muted-foreground/70 mb-3">{b.details}</p>
 
-                <div className="pt-3 border-t border-border/40 space-y-2">
+                <div className="pt-3 border-t border-border/40 space-y-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Fixture coverage</span>
                     <span className="font-medium text-foreground">{b.fixtureCoverage}%</span>
@@ -204,15 +332,40 @@ export function ClientBlueprintsPagePanel() {
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground/60 italic">{b.pattern}</p>
+
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleLoadDemo(b.entityCode, b.archetype, b.title)}
+                      disabled={loadingEntity !== null}
+                    >
+                      {isLoading ? 'Loading…' : 'Load Demo Data'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleResetEntity(b.entityCode, b.title)}
+                      disabled={loadingEntity !== null}
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => navigate('/erp/dashboard')}
+                    >
+                      Open Dashboard →
+                    </Button>
+                  </div>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
 
         <p className="text-xs text-muted-foreground text-center pt-4">
-          Scenario seed generators + stakeholder modes + pre-planted leaks ship in H1.5-SEED Phase 3.
-          Fixtures grow with every sprint per D-081 Seed Framework Contract.
+          All 7 clients share the manufacturing archetype as-is (founder Q2 lock April 28, 2026).
+          Per-client customization (steel for Sinha · marble for Amith · etc.) is a later sprint.
         </p>
       </div>
     </div>
