@@ -227,6 +227,10 @@ function renderModule(
       return <SmartInsightsPanelComponent entityCode={entityCode} />;
     case 'sx-t-campaign-templates':
       return <CampaignTemplatesPanelComponent entityCode={entityCode} />;
+    case 'sx-t-pi-tracker':
+      return <PITrackerPanelComponent entityCode={entityCode} />;
+    case 'sx-t-order-desk':
+      return <OrderDeskPanelComponent entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
