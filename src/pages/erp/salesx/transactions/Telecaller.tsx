@@ -1,7 +1,7 @@
 /**
  * Telecaller.tsx — Samvad-parity industry-leading telecaller UX
- * 6 tabs: Call Screen · Incoming · Autodialer · WA Templates · Reminders · Recording
- * [JWT] GET/POST /api/salesx/call-sessions · /api/salesx/dialer-sessions · /api/salesx/wa-templates
+ * 8 tabs: Call Screen · Incoming · Autodialer · WA Templates · Reminders · Recording · Live · Gamification
+ * [JWT] GET/POST /api/salesx/call-sessions · /api/salesx/dialer-sessions · /api/salesx/wa-templates · /api/salesx/agent-status · /api/salesx/gamification
  */
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ import {
   Phone, ChevronLeft, ChevronRight, Lock, Save, MessageCircle, Mail,
   PhoneIncoming, PhoneCall, MessageSquare, Bell, Mic, Search, Send,
   FileText, Plus, Trash2, X,
+  Activity, Award, Trophy, Flame, TrendingUp, Coffee, PhoneOff, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
@@ -32,6 +33,12 @@ import {
   WA_TEMPLATE_CATEGORY_LABELS, fillTemplate,
 } from '@/types/wa-template';
 import type { WaTemplateCategory } from '@/types/wa-template';
+import { useAgentStatus } from '@/hooks/useAgentStatus';
+import { useGamification } from '@/hooks/useGamification';
+import type { AgentState } from '@/types/agent-status';
+import { AGENT_STATE_LABELS, AGENT_STATE_COLORS } from '@/types/agent-status';
+import type { PointsRule } from '@/types/gamification';
+import { BADGE_CATALOG, LEVEL_NAMES, pointsToNextLevel } from '@/types/gamification';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -66,7 +73,7 @@ const nowHHMM = () => {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 };
 
-type TabId = 'call' | 'reminders' | 'incoming' | 'autodialer' | 'wa-templates' | 'recording';
+type TabId = 'call' | 'reminders' | 'incoming' | 'autodialer' | 'wa-templates' | 'recording' | 'live' | 'gamification';
 
 export function TelecallerPanel({ entityCode, onNavigate }: Props) {
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
