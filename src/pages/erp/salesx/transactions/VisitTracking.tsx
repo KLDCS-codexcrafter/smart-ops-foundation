@@ -522,7 +522,16 @@ export function VisitTrackingPanel({ entityCode }: Props) {
                     <TableCell className="text-xs font-mono">
                       {new Date(v.check_in_time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                     </TableCell>
-                    <TableCell className="text-xs">{v.customer_name}</TableCell>
+                    <TableCell className="text-xs">
+                      <span className="inline-flex items-center gap-1.5">
+                        {v.customer_name}
+                        {v.signature_data_url && (
+                          <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/30">
+                            ✓ Signed
+                          </Badge>
+                        )}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-xs">{VISIT_PURPOSE_LABELS[v.purpose]}</TableCell>
                     <TableCell className="text-xs">
                       <Badge variant="outline" className="text-[10px]">
