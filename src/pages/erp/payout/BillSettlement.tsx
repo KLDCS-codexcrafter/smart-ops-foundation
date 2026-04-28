@@ -75,10 +75,10 @@ export default function BillSettlement() {
   const [pendingNotes, setPendingNotes] = useState('');
 
   // `refreshKey` is an intentional cache-buster — bumping it must re-fetch from storage.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const groupedAdvances = useMemo(() => {
     if (!entityCode) return new Map<string, AdvanceEntry[]>();
     return getUnmatchedAdvancesAllVendors(entityCode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, refreshKey]);
 
   const vendorIds = useMemo(
@@ -96,22 +96,22 @@ export default function BillSettlement() {
     }
   }, [vendorIds, selectedVendorId]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const invoices = useMemo(() => {
     if (!entityCode || !selectedVendorId) return [] as Voucher[];
     return getOpenInvoicesForVendor(entityCode, selectedVendorId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, selectedVendorId, refreshKey]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const suggestions = useMemo(() => {
     if (!entityCode) return [];
     return suggestAdvanceMatches(entityCode, selectedVendorId || undefined).slice(0, 5);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, selectedVendorId, refreshKey]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const history = useMemo<AdvanceAdjustment[]>(() => {
     if (!entityCode) return [];
     return getSettlementHistory(entityCode).slice(-10).reverse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, refreshKey]);
 
   const advancesForVendor = useMemo(
