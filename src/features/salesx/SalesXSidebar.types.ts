@@ -46,7 +46,8 @@ export type SalesXModule =
   | 'sx-r-target'
   | 'sx-analytics'
   | 'sx-r-so-tracker'
-  | 'sx-r-handoff-tracker';
+  | 'sx-r-handoff-tracker'
+  | 'sx-r-campaign-performance';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
