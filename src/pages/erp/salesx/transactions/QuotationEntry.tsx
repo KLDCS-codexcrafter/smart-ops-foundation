@@ -450,7 +450,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
               <Printer className="h-3 w-3 mr-1" /> Print Proforma
             </Button>
           )}
-          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'proforma') && (
+          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'proforma') && !form.so_id && (
             <Button
               size="sm"
               variant="outline"
@@ -459,6 +459,11 @@ export function QuotationEntryPanel({ entityCode }: Props) {
             >
               Convert to Sales Order
             </Button>
+          )}
+          {editingId && form.so_id && form.so_no && (
+            <Badge variant="outline" className="text-[10px] bg-purple-500/10 text-purple-700 border-purple-500/30 self-center">
+              → {form.so_no}
+            </Badge>
           )}
         </div>
       </div>
