@@ -474,8 +474,8 @@ export const DEMO_SUPPLY_REQUEST_MEMOS: SupplyRequestMemo[] = [
 // ─── Demo Sales Orders (Sprint T-Phase-1.1.1o) ──────────────────────────
 // Aligned with DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no so the
 // Cross-Dept Handoff Tracker assembles complete pipeline rows.
-// SO #1: Quote QT-T-0001 → SO/25-26/0001 → SRM/25-26/0001 (raised)
-// SO #2: Quote QT-T-0002 → SO/25-26/0002 → SRM/25-26/0002 → DM/25-26/0001 (delivered)
+// SO #1: Quote QT-M-0001 → SO/25-26/0001 → SRM/25-26/0001 (raised)
+// SO #2: Quote QT-M-0002 → SO/25-26/0002 → SRM/25-26/0002 → DM/25-26/0001 (delivered)
 export const DEMO_ORDERS: Order[] = [
   {
     id: 'so-demo-1',
@@ -485,7 +485,7 @@ export const DEMO_ORDERS: Order[] = [
     date: '2026-01-10',
     party_id: 'cust-demo-a',
     party_name: 'Demo Customer A',
-    ref_no: 'QT-T-0001',
+    ref_no: 'QT-M-0001',
     ref_date: '2026-01-08',
     lines: [
       {
@@ -522,7 +522,7 @@ export const DEMO_ORDERS: Order[] = [
     date: '2026-01-28',
     party_id: 'cust-demo-b',
     party_name: 'Demo Customer B',
-    ref_no: 'QT-T-0002',
+    ref_no: 'QT-M-0002',
     ref_date: '2026-01-25',
     lines: [
       {
