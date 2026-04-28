@@ -74,11 +74,11 @@ function readSAMPersons(): SAMPerson[] {
   }
 }
 
-const ROLE_TO_CARD_ID: Record<ResolvedRole, 'distributor-hub' | 'customer-hub' | 'salesx-hub'> = {
-  salesman: 'salesx-hub',
-  telecaller: 'salesx-hub',
-  supervisor: 'salesx-hub',
-  sales_manager: 'salesx-hub',
+const ROLE_TO_CARD_ID: Record<ResolvedRole, CardId> = {
+  salesman: 'salesx',
+  telecaller: 'salesx',
+  supervisor: 'salesx',
+  sales_manager: 'salesx',
   distributor: 'distributor-hub',
   customer: 'customer-hub',
   unknown: 'customer-hub',
