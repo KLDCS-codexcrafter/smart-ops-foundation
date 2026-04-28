@@ -102,6 +102,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
   const addLine = () => setItems(prev => [...prev, {
     id: `dom-it-${Date.now()}`,
     item_name: '', description: null, qty: 1, uom: 'NOS', serial_no: null,
+    unit_value: 0, amount: 0,
   }]);
 
   const [attachments, setAttachments] = useState<string[]>([]);
@@ -165,6 +166,15 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       attachments,
       status,
       dispatched_at: (status === 'dispatched' || status === 'demo_active') ? now : null,
+      // Sprint T-Phase-1.1.1p-v2 — party / godown / dispatch fields default empty.
+      customer_id: null, customer_name: null,
+      salesman_id: null, salesman_name: null,
+      agent_id: null, agent_name: null,
+      broker_id: null, broker_name: null,
+      engineer_emp_id: null, engineer_name: null,
+      outward_godown_id: null, outward_godown_name: null,
+      issued_by_dispatch: false,
+      dispatch_issued_at: null, dispatch_issued_by: null,
       created_at: now,
       updated_at: now,
       ...extras,
@@ -216,6 +226,13 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
 
   useCtrlS(handleDispatch);
 
+  // Sprint T-Phase-1.1.1p-v2 — read-only banner for last DOM issued by Dispatch.
+  const existingDOMs = useMemo(() => ls<DemoOutwardMemo>(demoOutwardMemosKey(entityCode)), [entityCode]);
+  const lastIssued = useMemo(
+    () => existingDOMs.slice().reverse().find(m => m.issued_by_dispatch) ?? null,
+    [existingDOMs],
+  );
+
   return (
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
@@ -227,6 +244,25 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
         </div>
         <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
       </div>
+
+      {lastIssued && (
+        <Card className="border-blue-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">
+              Last issued by Dispatch · {lastIssued.memo_no}
+              <Badge variant="secondary" className="ml-2 text-[10px]">read-only</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+            <div><span className="text-muted-foreground">Customer: </span>{lastIssued.customer_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Salesman: </span>{lastIssued.salesman_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Agent / Broker: </span>{lastIssued.agent_name ?? lastIssued.broker_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Engineer: </span>{lastIssued.engineer_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Godown: </span>{lastIssued.outward_godown_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Demo Period: </span>{lastIssued.demo_period_days} days</div>
+          </CardContent>
+        </Card>
+      )}
 
       {isOverdue && (
         <Alert variant="destructive">

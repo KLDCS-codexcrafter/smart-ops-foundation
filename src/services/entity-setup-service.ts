@@ -33,6 +33,9 @@ export interface SetupResult {
   bdLedgersCreated: number;
   entityRegistered: boolean;
   uomsCreated: number;
+  /** Sprint T-Phase-1.1.1p-v2 — true when the auto-created
+   *  "Samples & Demos - Out with 3rd Party" godown was added this run. */
+  samplesGodownCreated: boolean;
   supportingMastersCreated: {
     modeOfPayment: number;
     termsOfPayment: number;
@@ -445,12 +448,53 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     } catch { /* demo module optional */ }
   }
 
+  // 9. Sprint T-Phase-1.1.1p-v2 — Auto-create
+  //    "Samples & Demos - Out with 3rd Party" godown.
+  //    Ownership type: third_party_our_stock (Our stock at customer's premises).
+  //    Tracks all sample/demo units in circulation. Idempotent.
+  let samplesGodownCreated = false;
+  try {
+    const GODOWN_KEY = 'erp_godowns';
+    // [JWT] GET /api/inventory/godowns?entityCode=:entityCode
+    const existing: Array<{ name: string }> = JSON.parse(
+      localStorage.getItem(GODOWN_KEY) || '[]',
+    );
+    const alreadyExists = existing.some(
+      g => g.name === 'Samples & Demos - Out with 3rd Party',
+    );
+    if (!alreadyExists) {
+      const nowIso = new Date().toISOString();
+      const samplesGodown = {
+        id: `gd-samples-${opts.shortCode}-${Date.now()}`,
+        code: `${opts.shortCode}-SMPL-GD`,
+        name: 'Samples & Demos - Out with 3rd Party',
+        ownership_type: 'third_party_our_stock' as const,
+        party_id: null,
+        party_name: null,
+        address: null, city: null, state: null, pincode: null,
+        country: 'India',
+        latitude: null, longitude: null,
+        total_capacity: null, capacity_unit: null,
+        contact_person: null, contact_phone: null, contact_email: null,
+        gst_number: null,
+        description: 'Auto-created for tracking sample & demo units in circulation with customers / prospects. Non-refundable samples are booked as consumed. Refundable units return to main store on receipt.',
+        status: 'active' as const,
+        zones: [], agreements: [],
+        created_at: nowIso, updated_at: nowIso,
+      };
+      // [JWT] POST /api/inventory/godowns
+      localStorage.setItem(GODOWN_KEY, JSON.stringify([...existing, samplesGodown]));
+      samplesGodownCreated = true;
+    }
+  } catch { /* ignore */ }
+
   return {
     ledgersCreated,
     l4GroupsCreated,
     bdLedgersCreated,
     entityRegistered: true,
     uomsCreated,
+    samplesGodownCreated,
     supportingMastersCreated: {
       modeOfPayment: mopCreated,
       termsOfPayment: topCreated,
