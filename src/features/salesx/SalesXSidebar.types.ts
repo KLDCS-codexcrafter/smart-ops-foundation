@@ -86,4 +86,5 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-analytics',
   'sx-r-so-tracker',
   'sx-r-handoff-tracker',
+  'sx-r-campaign-performance',
 ];
