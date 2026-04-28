@@ -110,6 +110,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-lead-distribution':    'Lead Distribution',
   'sx-t-smart-insights':       'Smart Insights',
   'sx-t-campaign-templates':   'Campaign Templates',
+  'sx-t-pi-tracker':           'PI Tracker',
+  'sx-t-order-desk':           'Order Desk',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
