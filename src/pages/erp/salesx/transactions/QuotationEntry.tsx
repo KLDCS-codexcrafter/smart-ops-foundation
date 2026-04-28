@@ -601,6 +601,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                     <TableHead>Description</TableHead>
                     <TableHead className="w-16">Qty</TableHead>
                     <TableHead className="w-16">UOM</TableHead>
+                    <TableHead className="w-20 text-xs">Avail</TableHead>
                     <TableHead className="w-24">Rate</TableHead>
                     <TableHead className="w-16">Disc%</TableHead>
                     <TableHead className="w-24">Sub Total</TableHead>
@@ -617,6 +618,26 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                       <TableCell><Input value={it.description ?? ''} onChange={e => updateLine(i, { description: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input type="number" value={it.qty} onChange={e => updateLine(i, { qty: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input value={it.uom ?? ''} onChange={e => updateLine(i, { uom: e.target.value })} onKeyDown={onEnterNext} /></TableCell>
+                      {/* Sprint T-Phase-1.1.1m · Avail badge · green ≥ qty · amber 0 < avail < qty · red = 0 */}
+                      <TableCell>
+                        {(() => {
+                          const trimmed = it.item_name.trim();
+                          const avail = trimmed ? availabilityMap.get(trimmed) : undefined;
+                          if (!trimmed || !avail) {
+                            return <span className="text-muted-foreground text-xs">—</span>;
+                          }
+                          const cls = avail.available >= it.qty
+                            ? 'bg-green-500/15 text-green-700 border-green-500/30'
+                            : avail.available > 0
+                              ? 'bg-amber-500/15 text-amber-700 border-amber-500/30'
+                              : 'bg-destructive/15 text-destructive border-destructive/30';
+                          return (
+                            <Badge variant="outline" className={cn('text-xs font-mono', cls)}>
+                              {avail.available.toLocaleString('en-IN')}
+                            </Badge>
+                          );
+                        })()}
+                      </TableCell>
                       <TableCell><Input type="number" value={it.rate} onChange={e => updateLine(i, { rate: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input type="number" value={it.discount_pct} onChange={e => updateLine(i, { discount_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell className="font-mono text-xs">₹{it.sub_total.toLocaleString('en-IN')}</TableCell>
