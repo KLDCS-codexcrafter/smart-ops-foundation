@@ -187,6 +187,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
       live: true,
     },
     {
+      id: 'sx-t-pi-tracker' as SalesXModule,
+      label: 'PI Tracker',
+      icon: Receipt,
+      live: true,
+    },
+    {
+      id: 'sx-t-order-desk' as SalesXModule,
+      label: 'Order Desk',
+      icon: Package,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
