@@ -159,9 +159,13 @@ export default function MobileRouter() {
     if (!s && location.pathname !== '/mobile/login') {
       navigate('/mobile/login', { replace: true });
     } else if (s && location.pathname === '/mobile/login') {
-      navigate('/mobile/home', { replace: true });
+      const dest = s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+      navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
-      navigate(s ? '/mobile/home' : '/mobile/login', { replace: true });
+      const dest = s
+        ? (s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home')
+        : '/mobile/login';
+      navigate(dest, { replace: true });
     }
   }, [location.pathname, navigate]);
 
