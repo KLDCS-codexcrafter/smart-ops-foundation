@@ -26,6 +26,30 @@ import { setAppBadgeCount } from '@/lib/app-shortcut-bridge';
 import { getQueueSize } from '@/lib/offline-queue-engine';
 import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
+import MobileSalesmanHome from './salesman/MobileSalesmanHome';
+import MobileSalesmanBeatPage from './salesman/MobileSalesmanBeatPage';
+import MobileVisitCheckInPage from './salesman/MobileVisitCheckInPage';
+import MobileQuickEnquiryPage from './salesman/MobileQuickEnquiryPage';
+import MobileSalesmanPipelinePage from './salesman/MobileSalesmanPipelinePage';
+import MobileSalesmanCustomersPage from './salesman/MobileSalesmanCustomersPage';
+import MobileSalesmanVisitLogPage from './salesman/MobileSalesmanVisitLogPage';
+import MobileSecondarySalesPage from './salesman/MobileSecondarySalesPage';
+import MobileSalesmanTargetsPage from './salesman/MobileSalesmanTargetsPage';
+import MobileSalesmanCommissionPage from './salesman/MobileSalesmanCommissionPage';
+
+function renderRoleRoute(pathname: string): React.ReactElement {
+  if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
+  if (pathname === '/mobile/salesman/beat') return <MobileSalesmanBeatPage />;
+  if (pathname.startsWith('/mobile/salesman/check-in')) return <MobileVisitCheckInPage />;
+  if (pathname === '/mobile/salesman/quick-enquiry') return <MobileQuickEnquiryPage />;
+  if (pathname === '/mobile/salesman/pipeline') return <MobileSalesmanPipelinePage />;
+  if (pathname === '/mobile/salesman/customers') return <MobileSalesmanCustomersPage />;
+  if (pathname === '/mobile/salesman/visit-log') return <MobileSalesmanVisitLogPage />;
+  if (pathname === '/mobile/salesman/secondary-sales') return <MobileSecondarySalesPage />;
+  if (pathname === '/mobile/salesman/targets') return <MobileSalesmanTargetsPage />;
+  if (pathname === '/mobile/salesman/commission') return <MobileSalesmanCommissionPage />;
+  return <MobileHome />;
+}
 
 export interface MobileSession {
   role:
