@@ -93,7 +93,7 @@ export function seedEntityDemoData(
   );
   safeSetArray(`erp_sam_hierarchy_${entityCode}`, DEMO_SAM_HIERARCHY);
   safeSetArray(`erp_enquiry_sources_${entityCode}`, DEMO_ENQUIRY_SOURCES);
-  safeSetArray(`erp_campaigns_${entityCode}`, DEMO_CAMPAIGNS);
+  safeSetArray(`erp_campaigns_${entityCode}`, DEMO_CAMPAIGNS.map(c => ({ ...c, entity_id: entityCode })));
   safeSetArray(`erp_sam_targets_${entityCode}`, DEMO_TARGETS);
   const enquiries = safeSetArray(
     `erp_enquiries_${entityCode}`,

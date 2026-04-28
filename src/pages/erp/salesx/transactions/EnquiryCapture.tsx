@@ -22,6 +22,7 @@ import { canConvertEnquiryToQuotation } from '@/lib/salesx-conversion-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { useEnquirySources } from '@/hooks/useEnquirySources';
+import { useCampaigns } from '@/hooks/useCampaigns';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
@@ -150,6 +151,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
     convertEnquiryToQuotation,
   } = useEnquiries(entityCode);
   const { sources: enquirySources } = useEnquirySources(entityCode);
+  const { campaigns } = useCampaigns(entityCode);
   const { findByCompanyName } = useProspects(entityCode);
 
   const samPersons = useMemo(() => loadSAMPersons(entityCode), [entityCode]);
@@ -625,11 +627,22 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
                 </div>
                 <div>
                   <label className="text-xs font-medium">Campaign</label>
-                  <Input
-                    value={form.campaign ?? ''}
-                    onChange={e => update({ campaign: e.target.value })}
-                    onKeyDown={onEnterNext}
-                  />
+                  <Select
+                    value={form.campaign ?? '__none__'}
+                    onValueChange={v => update({ campaign: v === '__none__' ? null : v })}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Select campaign…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">— None —</SelectItem>
+                      {campaigns.filter(c => c.is_active).map(c => (
+                        <SelectItem key={c.id} value={c.campaign_code}>
+                          {c.campaign_code} · {c.campaign_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
