@@ -67,7 +67,7 @@ export default function MobileSalesmanHome() {
             className="aspect-square p-3 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-orange-500/40 active:scale-95 transition-transform"
             onClick={() => handleTile(t.to, t.label)}
           >
-            <t.icon className="h-7 w-7 text-slate-700" />
+            <t.icon className={`h-7 w-7 ${t.color}`} />
             <p className="text-[11px] text-center leading-tight font-medium">{t.label}</p>
           </Card>
         ))}
