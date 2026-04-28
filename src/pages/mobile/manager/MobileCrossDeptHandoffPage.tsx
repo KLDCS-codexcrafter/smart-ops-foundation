@@ -70,7 +70,7 @@ export default function MobileCrossDeptHandoffPage() {
       <div className="space-y-2">
         {rows.map(r => {
           const hasQuot = r.quots.length > 0;
-          const hasSO = r.quots.some(q => q.stage === 'sales_order' || q.stage === 'proforma');
+          const hasSO = r.quots.some(q => q.quotation_stage === 'sales_order' || q.quotation_stage === 'proforma');
           return (
             <Card key={r.e.id} className="p-3 space-y-2">
               <div className="flex items-center justify-between">

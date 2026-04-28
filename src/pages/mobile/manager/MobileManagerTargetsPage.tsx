@@ -45,8 +45,7 @@ export default function MobileManagerTargetsPage() {
     const quotations = loadList<Quotation>(quotationsKey(session.entity_code));
     return targets.map(t => {
       const achieved = quotations
-        .filter(q => ACHIEVED_STAGES.has(q.stage)
-          && (t.target_type === 'company' || q.salesman_id === t.person_id))
+        .filter(q => ACHIEVED_STAGES.has(q.quotation_stage))
         .reduce((s, q) => s + (q.total_amount ?? 0), 0);
       const pct = t.target_value > 0 ? (achieved / t.target_value) * 100 : 0;
       return { t, achieved, pct };

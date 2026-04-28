@@ -37,7 +37,7 @@ export default function MobilePipelineHealthPage() {
     const quotations = loadList<Quotation>(quotationsKey(session.entity_code));
     const orders = loadList<Order>(ordersKey(session.entity_code))
       .filter(o => o.base_voucher_type === 'Sales Order');
-    const enqValue = enquiries.reduce((s, e) => s + (e.amount ?? 0), 0);
+    const enqValue = enquiries.reduce((s, e) => s + (e.items ?? []).reduce((ss, it) => ss + (it.amount ?? 0), 0), 0);
     const quoValue = quotations.reduce((s, q) => s + (q.total_amount ?? 0), 0);
     const orderValue = orders.reduce((s, o) => s + (o.net_amount ?? 0), 0);
     return {
