@@ -69,6 +69,7 @@ export default function MobileAttendancePage() {
   const [busy, setBusy] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const allRecords = useMemo(() => loadRecords(), [reloadKey]);
 
   const myRecords = useMemo(

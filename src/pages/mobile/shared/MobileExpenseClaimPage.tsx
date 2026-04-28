@@ -49,6 +49,7 @@ export default function MobileExpenseClaimPage() {
   const session = useMemo(() => readSession(), []);
   const [reloadKey, setReloadKey] = useState(0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const allClaims = useMemo(() => loadClaims(), [reloadKey]);
   const myClaims = useMemo(
     () => allClaims
