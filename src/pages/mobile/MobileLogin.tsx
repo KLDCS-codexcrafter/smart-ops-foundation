@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { resolveIdentity, type CustomerLite, type ResolvedRole } from '@/lib/mobile-role-resolver';
+import type { CardId } from '@/types/card-entitlement';
 import type { Distributor } from '@/types/distributor';
 import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { logAudit } from '@/lib/card-audit-engine';
@@ -73,11 +74,11 @@ function readSAMPersons(): SAMPerson[] {
   }
 }
 
-const ROLE_TO_CARD_ID: Record<ResolvedRole, 'distributor-hub' | 'customer-hub' | 'salesx-hub'> = {
-  salesman: 'salesx-hub',
-  telecaller: 'salesx-hub',
-  supervisor: 'salesx-hub',
-  sales_manager: 'salesx-hub',
+const ROLE_TO_CARD_ID: Record<ResolvedRole, CardId> = {
+  salesman: 'salesx',
+  telecaller: 'salesx',
+  supervisor: 'salesx',
+  sales_manager: 'salesx',
   distributor: 'distributor-hub',
   customer: 'customer-hub',
   unknown: 'customer-hub',
@@ -136,7 +137,7 @@ export default function MobileLogin() {
       entityCode: ENTITY_CODE,
       userId: identity.user_id ?? 'mobile-user',
       userName: identity.display_name,
-      cardId: ROLE_TO_CARD_ID[identity.role] as unknown as Parameters<typeof logAudit>[0]['cardId'],
+      cardId: ROLE_TO_CARD_ID[identity.role],
       action: 'card_open',
       refType: 'mobile_session',
       refId: identity.user_id,
