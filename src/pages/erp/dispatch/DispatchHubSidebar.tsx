@@ -6,12 +6,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Home, Truck, Route, ClipboardEdit, Printer, AlertTriangle,
+  Home, Truck, Route, ClipboardEdit, AlertTriangle,
   BarChart3, Database, ChevronRight, ArrowLeft, Send,
-  Package, ListChecks, TrendingUp, Users,
+  TrendingUp,
   FileSpreadsheet, AlertCircle, Scale,
   FileUp, Award,
-  PackageCheck, Presentation, ArrowUpRight,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -25,14 +24,7 @@ import { cn } from '@/lib/utils';
 
 export type DispatchHubModule =
   | 'dh-welcome'
-  | 'dh-m-packing-material' | 'dh-m-packing-bom'
-  | 'dh-t-sample-outward-issue' | 'dh-t-demo-outward-issue'
-  | 'dh-t-delivery-memo'
-  | 'dh-t-lr-tracker' | 'dh-t-lr-update' | 'dh-t-packing-slip-print'
-  | 'dh-t-exceptions'
-  | 'dh-r-dispatch-summary'
-  | 'dh-r-packing-consumption' | 'dh-r-packer-performance'
-  | 'dh-r-outward-movement'
+  | 'dh-t-lr-tracker' | 'dh-t-lr-update'
   // Sprint 15c-1
   | 'dh-t-transporter-invoice'
   | 'dh-t-dispute-queue'
@@ -55,31 +47,17 @@ interface MenuItem {
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'Sample Outward Issue', module: 'dh-t-sample-outward-issue', icon: PackageCheck },
-  { label: 'Demo Outward Issue',   module: 'dh-t-demo-outward-issue',   icon: Presentation },
-  { label: 'Delivery Memo',        module: 'dh-t-delivery-memo',       icon: Truck },
   { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
   { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
-  { label: 'Packing Slip Print',   module: 'dh-t-packing-slip-print',  icon: Printer },
   { label: 'Transporter Invoices', module: 'dh-t-transporter-invoice', icon: FileSpreadsheet },
   { label: 'PDF Invoice Upload',   module: 'dh-t-pdf-invoice-upload',  icon: FileUp },
   { label: 'Dispute Queue',        module: 'dh-t-dispute-queue',       icon: AlertCircle },
-  { label: 'Dispatch Exceptions',  module: 'dh-t-exceptions',          icon: AlertTriangle },
-];
-
-const MASTERS_INTERNAL: MenuItem[] = [
-  { label: 'Packing Materials',  module: 'dh-m-packing-material', icon: Package },
-  { label: 'Packing BOM',        module: 'dh-m-packing-bom',      icon: ListChecks },
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Outward Movement',       module: 'dh-r-outward-movement',       icon: ArrowUpRight },
-  { label: 'Packing Consumption',    module: 'dh-r-packing-consumption',    icon: TrendingUp },
-  { label: 'Packer Performance',     module: 'dh-r-packer-performance',     icon: Users },
   { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale },
   { label: 'Transporter Scorecard',  module: 'dh-r-transporter-scorecard',  icon: Award },
   { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp },
-  { label: 'Dispatch Summary',       module: 'dh-r-dispatch-summary',       icon: BarChart3, badge: 'Soon' },
 ];
 
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {

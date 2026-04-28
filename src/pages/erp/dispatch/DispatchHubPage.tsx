@@ -14,16 +14,8 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 
 import { DispatchHubWelcomePanel } from './DispatchHubWelcome';
-import { DeliveryMemoEntryPanel } from './transactions/DeliveryMemoEntry';
 import { LRTrackerPanel } from './transactions/LRTracker';
 import { LRUpdatePanel } from './transactions/LRUpdate';
-import { DispatchExceptionsPanel } from './transactions/DispatchExceptions';
-import { PackingSlipPrintPanel } from './transactions/PackingSlipPrint';
-// Sprint 15b
-import { PackingMaterialMasterPanel } from './masters/PackingMaterialMaster';
-import { PackingBOMMasterPanel } from './masters/PackingBOMMaster';
-import { PackingConsumptionReportPanel } from './reports/PackingConsumptionReport';
-import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport';
 // Sprint 15c-1
 import { TransporterInvoiceInboxPanel } from './transactions/TransporterInvoiceInbox';
 import { DisputeQueuePanel } from './transactions/DisputeQueue';
@@ -32,10 +24,6 @@ import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummar
 import { PDFInvoiceUploadPanel } from './transactions/PDFInvoiceUpload';
 import { TransporterScorecardPanel } from './reports/TransporterScorecard';
 import { SavingsROIDashboardPanel } from './reports/SavingsROIDashboard';
-// Sprint T-Phase-1.1.1p-v2
-import { SampleOutwardIssuePanel } from './transactions/SampleOutwardIssue';
-import { DemoOutwardIssuePanel } from './transactions/DemoOutwardIssue';
-import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -49,22 +37,13 @@ function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
 function renderModule(
   mod: DispatchHubModule,
   onModuleChange: (m: DispatchHubModule) => void,
-  entityCode: string,
+  _entityCode: string,
 ): React.ReactElement {
+  void _entityCode;
   switch (mod) {
-    case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
-    case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode={entityCode} />;
-    case 'dh-t-sample-outward-issue': return <SampleOutwardIssuePanel entityCode={entityCode} />;
-    case 'dh-t-demo-outward-issue':   return <DemoOutwardIssuePanel entityCode={entityCode} />;
-    case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
-    case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
-    case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
-    case 'dh-t-lr-update':          return <LRUpdatePanel onModuleChange={onModuleChange} />;
-    case 'dh-t-packing-slip-print': return <PackingSlipPrintPanel />;
-    case 'dh-t-exceptions':         return <DispatchExceptionsPanel />;
-    case 'dh-r-packing-consumption': return <PackingConsumptionReportPanel />;
-    case 'dh-r-packer-performance':  return <PackerPerformanceReportPanel />;
-    case 'dh-r-outward-movement':    return <OutwardMovementReportPanel entityCode={entityCode} />;
+    case 'dh-welcome':                  return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
+    case 'dh-t-lr-tracker':             return <LRTrackerPanel onModuleChange={onModuleChange} />;
+    case 'dh-t-lr-update':              return <LRUpdatePanel onModuleChange={onModuleChange} />;
     case 'dh-t-transporter-invoice':    return <TransporterInvoiceInboxPanel />;
     case 'dh-t-dispute-queue':          return <DisputeQueuePanel />;
     case 'dh-r-reconciliation-summary': return <ReconciliationSummaryReportPanel />;
@@ -101,9 +80,9 @@ export default function DispatchHubPage() {
     recordActivity(entityCode, userId, {
       card_id: 'dispatch-hub' as never, kind: 'module',
       ref_id: activeModule,
-      title: `Dispatch Hub · ${activeModule}`,
+      title: `Logistics Hub · ${activeModule}`,
       subtitle: null,
-      deep_link: `/erp/frontdesk/dispatch#${activeModule}`,
+      deep_link: `/erp/logistics#${activeModule}`,
     });
   }, [activeModule, entityCode, userId]);
 
