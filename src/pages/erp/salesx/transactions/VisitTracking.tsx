@@ -440,6 +440,46 @@ export function VisitTrackingPanel({ entityCode }: Props) {
                 </div>
               </div>
 
+              <div className="border-t pt-3">
+                <p className="text-xs font-semibold mb-2">Customer Signature (optional but recommended)</p>
+                {signatureCaptured ? (
+                  <div className="space-y-2">
+                    <img
+                      src={signatureCaptured}
+                      alt="Captured signature"
+                      className="border rounded bg-white"
+                      style={{ maxWidth: 360 }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setSignatureCaptured(null); setSignatureEmpty(true); signaturePadRef.current?.clear(); }}
+                    >
+                      Re-sign
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <SignaturePad
+                      ref={signaturePadRef}
+                      onChange={empty => setSignatureEmpty(empty)}
+                    />
+                    <Button
+                      size="sm"
+                      disabled={signatureEmpty}
+                      onClick={() => {
+                        if (signaturePadRef.current && !signaturePadRef.current.isEmpty()) {
+                          setSignatureCaptured(signaturePadRef.current.toDataURL());
+                          toast.success('Signature captured');
+                        }
+                      }}
+                    >
+                      <Check className="h-3.5 w-3.5 mr-1" /> Confirm Signature
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end">
                 <Button
                   data-primary
