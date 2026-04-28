@@ -61,6 +61,11 @@ interface FormState {
   is_active: boolean;
   budget: WebinarBudget;
   outcome: WebinarOutcome;
+  actual_platform_cost: string;
+  actual_speaker_fee: string;
+  actual_promotion: string;
+  actual_production: string;
+  actual_misc: string;
   editingId: string | null;
 }
 
@@ -89,6 +94,11 @@ const blankForm = (): FormState => ({
   is_active: true,
   budget: defaultWebinarBudget(),
   outcome: defaultWebinarOutcome(),
+  actual_platform_cost: '',
+  actual_speaker_fee: '',
+  actual_promotion: '',
+  actual_production: '',
+  actual_misc: '',
   editingId: null,
 });
 
