@@ -28,6 +28,12 @@ import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/
 import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/scheme-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
+import { useStockAvailability } from '@/hooks/useStockAvailability';
+import {
+  upsertQuoteReservation,
+  releaseQuoteReservations,
+  createOrderReservations,
+} from '@/lib/stock-reservation-engine';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
