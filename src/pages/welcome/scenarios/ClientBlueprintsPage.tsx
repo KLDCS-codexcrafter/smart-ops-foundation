@@ -210,6 +210,12 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_agent_profiles_${entityCode}`,
     `erp_points_transactions_${entityCode}`,
     `erp_points_rule_${entityCode}`,
+    `erp_quality_criteria_${entityCode}`,
+    `erp_call_reviews_${entityCode}`,
+    `erp_coaching_feedback_${entityCode}`,
+    `erp_distribution_config_${entityCode}`,
+    `erp_telecaller_capacities_${entityCode}`,
+    `erp_distribution_logs_${entityCode}`,
   ];
 }
 

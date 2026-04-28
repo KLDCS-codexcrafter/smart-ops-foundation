@@ -41,6 +41,8 @@ import { CampaignPerformanceReportPanel } from '@/pages/erp/salesx/reports/Campa
 import { WebinarMasterPanel } from '@/pages/erp/salesx/transactions/WebinarMaster';
 import { ExhibitionMasterPanel } from '@/pages/erp/salesx/transactions/ExhibitionMaster';
 import { LeadAggregationHubPanel } from '@/pages/erp/salesx/transactions/LeadAggregationHub';
+import { CallQualityHubPanel } from '@/pages/erp/salesx/transactions/CallQualityHub';
+import { LeadDistributionHubPanel } from '@/pages/erp/salesx/transactions/LeadDistributionHub';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
@@ -95,6 +97,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-exhibition-report':    'Exhibition Report',
   'sx-t-webinar':              'Webinar Manager',
   'sx-r-webinar-report':       'Webinar Report',
+  'sx-t-call-quality':         'Call Quality',
+  'sx-t-lead-distribution':    'Lead Distribution',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -202,6 +206,10 @@ function renderModule(
     case 'sx-t-webinar':
     case 'sx-r-webinar-report':
       return <WebinarMasterPanel entityCode={entityCode} />;
+    case 'sx-t-call-quality':
+      return <CallQualityHubPanel entityCode={entityCode} />;
+    case 'sx-t-lead-distribution':
+      return <LeadDistributionHubPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

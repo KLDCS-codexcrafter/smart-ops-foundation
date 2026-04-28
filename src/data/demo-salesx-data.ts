@@ -1063,3 +1063,139 @@ export const DEMO_POINTS_TRANSACTIONS: PointsTransaction[] = [
     points: 8, reason: 'call_callback', source_type: 'call_session', source_id: null,
     awarded_at: new Date(Date.now() - 60 * 60000).toISOString(), created_at: new Date(Date.now() - 60 * 60000).toISOString() },
 ];
+
+import type { QualityCriterion, CallReview, CoachingFeedback } from '@/types/call-quality';
+import type { DistributionConfig, TelecallerCapacity, DistributionLog } from '@/types/lead-distribution';
+
+export const DEMO_QUALITY_CRITERIA: QualityCriterion[] = [
+  { id: 'qc-001', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'GREET', criterion_name: 'Greeting & Opening', description: 'Professional greeting within first 10 seconds', weight_pct: 10, is_active: true, display_order: 1, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+  { id: 'qc-002', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'NEEDS', criterion_name: 'Needs Assessment', description: 'Asks open-ended questions', weight_pct: 20, is_active: true, display_order: 2, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+  { id: 'qc-003', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'KNOW', criterion_name: 'Product Knowledge', description: 'Accurate product and pricing knowledge', weight_pct: 25, is_active: true, display_order: 3, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+  { id: 'qc-004', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'OBJECT', criterion_name: 'Objection Handling', description: 'Addresses concerns calmly', weight_pct: 15, is_active: true, display_order: 4, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+  { id: 'qc-005', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'CLOSE', criterion_name: 'Closing & Next Steps', description: 'Confirms next action with timeline', weight_pct: 20, is_active: true, display_order: 5, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+  { id: 'qc-006', entity_id: DEFAULT_ENTITY_SHORTCODE, criterion_code: 'COMPL', criterion_name: 'Compliance & Disclosure', description: 'Recording disclosure, accurate quote', weight_pct: 10, is_active: true, display_order: 6, created_at: '2026-02-01T10:00:00Z', updated_at: '2026-02-01T10:00:00Z' },
+];
+
+export const DEMO_CALL_REVIEWS: CallReview[] = [
+  {
+    id: 'rv-001', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    call_session_id: 'cs-demo-1', call_session_no: 'CALL/2026-2027/0001',
+    telecaller_id: 'tc-m1', telecaller_name: 'Anjali Desai',
+    reviewer_id: 'supervisor', reviewer_name: 'Vivek Soni (Supervisor)',
+    reviewed_at: '2026-04-22T15:30:00Z',
+    scores: [
+      { criterion_id: 'qc-001', criterion_code: 'GREET',  criterion_name: 'Greeting & Opening',     weight_pct: 10, score: 95, comment: 'Strong opening' },
+      { criterion_id: 'qc-002', criterion_code: 'NEEDS',  criterion_name: 'Needs Assessment',       weight_pct: 20, score: 80, comment: 'Good but rushed' },
+      { criterion_id: 'qc-003', criterion_code: 'KNOW',   criterion_name: 'Product Knowledge',      weight_pct: 25, score: 90, comment: 'Excellent' },
+      { criterion_id: 'qc-004', criterion_code: 'OBJECT', criterion_name: 'Objection Handling',     weight_pct: 15, score: 70, comment: 'Hesitated on price' },
+      { criterion_id: 'qc-005', criterion_code: 'CLOSE',  criterion_name: 'Closing & Next Steps',   weight_pct: 20, score: 85, comment: 'Clear next step' },
+      { criterion_id: 'qc-006', criterion_code: 'COMPL',  criterion_name: 'Compliance & Disclosure',weight_pct: 10, score: 100,comment: 'Perfect' },
+    ],
+    total_score: 86, status: 'completed',
+    overall_comment: 'Strong overall. Work on objection-handling.',
+    agent_acknowledged: true, agent_acknowledged_at: '2026-04-22T17:00:00Z',
+    created_at: '2026-04-22T15:30:00Z', updated_at: '2026-04-22T17:00:00Z',
+  },
+  {
+    id: 'rv-002', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    call_session_id: 'cs-demo-2', call_session_no: 'CALL/2026-2027/0002',
+    telecaller_id: 'tc-m2', telecaller_name: 'Meera Iyer',
+    reviewer_id: 'supervisor', reviewer_name: 'Vivek Soni (Supervisor)',
+    reviewed_at: '2026-04-23T11:00:00Z',
+    scores: [
+      { criterion_id: 'qc-001', criterion_code: 'GREET',  criterion_name: 'Greeting & Opening',     weight_pct: 10, score: 70, comment: null },
+      { criterion_id: 'qc-002', criterion_code: 'NEEDS',  criterion_name: 'Needs Assessment',       weight_pct: 20, score: 65, comment: 'Jumped to pitch' },
+      { criterion_id: 'qc-003', criterion_code: 'KNOW',   criterion_name: 'Product Knowledge',      weight_pct: 25, score: 75, comment: 'Weak on pricing' },
+      { criterion_id: 'qc-004', criterion_code: 'OBJECT', criterion_name: 'Objection Handling',     weight_pct: 15, score: 60, comment: 'Defensive' },
+      { criterion_id: 'qc-005', criterion_code: 'CLOSE',  criterion_name: 'Closing & Next Steps',   weight_pct: 20, score: 70, comment: null },
+      { criterion_id: 'qc-006', criterion_code: 'COMPL',  criterion_name: 'Compliance & Disclosure',weight_pct: 10, score: 80, comment: null },
+    ],
+    total_score: 70, status: 'completed',
+    overall_comment: 'Needs coaching on consultative selling.',
+    agent_acknowledged: false, agent_acknowledged_at: null,
+    created_at: '2026-04-23T11:00:00Z', updated_at: '2026-04-23T11:00:00Z',
+  },
+];
+
+export const DEMO_COACHING_FEEDBACK: CoachingFeedback[] = [
+  {
+    id: 'cf-001', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    review_id: 'rv-001',
+    telecaller_id: 'tc-m1', telecaller_name: 'Anjali Desai',
+    coach_id: 'supervisor', coach_name: 'Vivek Soni',
+    feedback_date: '2026-04-23',
+    strengths: 'Strong product knowledge. Excellent compliance. Natural rapport-building.',
+    improvements: 'Build confidence on price objections. Slow down during needs assessment.',
+    action_items: [
+      { id: 'ai-1', text: 'Complete role-play module on price objection',  due_date: '2026-04-30', status: 'in_progress', completed_at: null },
+      { id: 'ai-2', text: 'Shadow 3 calls of senior closer',               due_date: '2026-05-05', status: 'open',        completed_at: null },
+    ],
+    agent_response: 'Thanks for the feedback.',
+    is_acknowledged: true, acknowledged_at: '2026-04-23T16:30:00Z',
+    created_at: '2026-04-23T15:00:00Z', updated_at: '2026-04-23T16:30:00Z',
+  },
+  {
+    id: 'cf-002', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    review_id: 'rv-002',
+    telecaller_id: 'tc-m2', telecaller_name: 'Meera Iyer',
+    coach_id: 'supervisor', coach_name: 'Vivek Soni',
+    feedback_date: '2026-04-24',
+    strengths: 'Punctual, fast learner. Good at WhatsApp follow-ups.',
+    improvements: 'Develop consultative selling. Avoid jumping to pitch.',
+    action_items: [
+      { id: 'ai-3', text: 'Read SPIN Selling Chapter 3', due_date: '2026-05-01', status: 'open', completed_at: null },
+      { id: 'ai-4', text: 'Practice 5 mock calls',       due_date: '2026-05-08', status: 'open', completed_at: null },
+      { id: 'ai-5', text: 'Memorize pricing slabs',      due_date: '2026-04-30', status: 'open', completed_at: null },
+    ],
+    agent_response: null,
+    is_acknowledged: false, acknowledged_at: null,
+    created_at: '2026-04-24T10:00:00Z', updated_at: '2026-04-24T10:00:00Z',
+  },
+];
+
+export const DEMO_DISTRIBUTION_CONFIG: DistributionConfig = {
+  id: `dc-${DEFAULT_ENTITY_SHORTCODE}`,
+  entity_id: DEFAULT_ENTITY_SHORTCODE,
+  strategy: 'round_robin',
+  rotation_cursor: 3,
+  weights: { 'tc-m1': 7, 'tc-m2': 4 },
+  skills: {
+    'tc-m1': ['wall putty', 'texture', 'premium'],
+    'tc-m2': ['primer', 'economy', 'distemper'],
+  },
+  auto_redistribute_enabled: true,
+  redistribute_when_overcap_pct: 110,
+  last_distributed_at: '2026-04-27T16:30:00Z',
+  last_distributed_by: 'supervisor',
+  created_at: '2026-02-01T10:00:00Z',
+  updated_at: '2026-04-27T16:30:00Z',
+};
+
+export const DEMO_TELECALLER_CAPACITIES: TelecallerCapacity[] = [
+  {
+    id: 'cap-tc-m1', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m1', telecaller_name: 'Anjali Desai',
+    daily_capacity: 35, weekly_capacity: 175,
+    active: true,
+    product_skills: ['wall putty', 'texture', 'premium'],
+    current_daily_load: 14, current_weekly_load: 62,
+    utilisation_pct: 40,
+    created_at: '2026-02-01T10:00:00Z', updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'cap-tc-m2', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m2', telecaller_name: 'Meera Iyer',
+    daily_capacity: 25, weekly_capacity: 125,
+    active: true,
+    product_skills: ['primer', 'economy', 'distemper'],
+    current_daily_load: 9, current_weekly_load: 38,
+    utilisation_pct: 36,
+    created_at: '2026-02-15T10:00:00Z', updated_at: new Date().toISOString(),
+  },
+];
+
+export const DEMO_DISTRIBUTION_LOGS: DistributionLog[] = [
+  { id: 'dl-001', entity_id: DEFAULT_ENTITY_SHORTCODE, distributed_at: '2026-04-27T16:30:00Z', strategy: 'round_robin', lead_id: 'lead-001', lead_no: 'LEAD/SINHA/25-26/0001', assigned_telecaller_id: 'tc-m1', assigned_telecaller_name: 'Anjali Desai', reason: 'Round-robin position 1/2', created_at: '2026-04-27T16:30:00Z' },
+  { id: 'dl-002', entity_id: DEFAULT_ENTITY_SHORTCODE, distributed_at: '2026-04-27T16:35:00Z', strategy: 'round_robin', lead_id: 'lead-002', lead_no: 'LEAD/SINHA/25-26/0002', assigned_telecaller_id: 'tc-m2', assigned_telecaller_name: 'Meera Iyer', reason: 'Round-robin position 2/2', created_at: '2026-04-27T16:35:00Z' },
+  { id: 'dl-003', entity_id: DEFAULT_ENTITY_SHORTCODE, distributed_at: '2026-04-28T09:15:00Z', strategy: 'skill_based', lead_id: 'lead-003', lead_no: 'LEAD/SINHA/25-26/0003', assigned_telecaller_id: 'tc-m1', assigned_telecaller_name: 'Anjali Desai', reason: 'Skill match · load 40%', created_at: '2026-04-28T09:15:00Z' },
+];
