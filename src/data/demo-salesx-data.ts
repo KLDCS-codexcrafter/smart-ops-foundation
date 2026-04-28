@@ -409,7 +409,6 @@ export const DEMO_COMMISSION_ENTRIES: DemoCommissionEntry[] = [
 ];
 
 // ─── Supply Request Memos (Sprint T-Phase-1.1.1n) ───────────────────────
-import type { SupplyRequestMemo } from '@/types/supply-request-memo';
 
 export const DEMO_SUPPLY_REQUEST_MEMOS: SupplyRequestMemo[] = [
   {
