@@ -26,9 +26,40 @@ import { setAppBadgeCount } from '@/lib/app-shortcut-bridge';
 import { getQueueSize } from '@/lib/offline-queue-engine';
 import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
+import MobileSalesmanHome from './salesman/MobileSalesmanHome';
+import MobileSalesmanBeatPage from './salesman/MobileSalesmanBeatPage';
+import MobileVisitCheckInPage from './salesman/MobileVisitCheckInPage';
+import MobileQuickEnquiryPage from './salesman/MobileQuickEnquiryPage';
+import MobileSalesmanPipelinePage from './salesman/MobileSalesmanPipelinePage';
+import MobileSalesmanCustomersPage from './salesman/MobileSalesmanCustomersPage';
+import MobileSalesmanVisitLogPage from './salesman/MobileSalesmanVisitLogPage';
+import MobileSecondarySalesPage from './salesman/MobileSecondarySalesPage';
+import MobileSalesmanTargetsPage from './salesman/MobileSalesmanTargetsPage';
+import MobileSalesmanCommissionPage from './salesman/MobileSalesmanCommissionPage';
+
+function renderRoleRoute(pathname: string): React.ReactElement {
+  if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
+  if (pathname === '/mobile/salesman/beat') return <MobileSalesmanBeatPage />;
+  if (pathname.startsWith('/mobile/salesman/check-in')) return <MobileVisitCheckInPage />;
+  if (pathname === '/mobile/salesman/quick-enquiry') return <MobileQuickEnquiryPage />;
+  if (pathname === '/mobile/salesman/pipeline') return <MobileSalesmanPipelinePage />;
+  if (pathname === '/mobile/salesman/customers') return <MobileSalesmanCustomersPage />;
+  if (pathname === '/mobile/salesman/visit-log') return <MobileSalesmanVisitLogPage />;
+  if (pathname === '/mobile/salesman/secondary-sales') return <MobileSecondarySalesPage />;
+  if (pathname === '/mobile/salesman/targets') return <MobileSalesmanTargetsPage />;
+  if (pathname === '/mobile/salesman/commission') return <MobileSalesmanCommissionPage />;
+  return <MobileHome />;
+}
 
 export interface MobileSession {
-  role: 'distributor' | 'customer' | 'unknown';
+  role:
+    | 'salesman'
+    | 'telecaller'
+    | 'supervisor'
+    | 'sales_manager'
+    | 'distributor'
+    | 'customer'
+    | 'unknown';
   user_id: string | null;
   display_name: string;
   entity_code: string;
@@ -128,9 +159,13 @@ export default function MobileRouter() {
     if (!s && location.pathname !== '/mobile/login') {
       navigate('/mobile/login', { replace: true });
     } else if (s && location.pathname === '/mobile/login') {
-      navigate('/mobile/home', { replace: true });
+      const dest = s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+      navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
-      navigate(s ? '/mobile/home' : '/mobile/login', { replace: true });
+      const dest = s
+        ? (s.role === 'salesman' ? '/mobile/salesman' : '/mobile/home')
+        : '/mobile/login';
+      navigate(dest, { replace: true });
     }
   }, [location.pathname, navigate]);
 
@@ -151,7 +186,7 @@ export default function MobileRouter() {
       )}
 
       <main className="flex-1">
-        {isLogin ? <MobileLogin /> : <MobileHome />}
+        {isLogin ? <MobileLogin /> : renderRoleRoute(location.pathname)}
       </main>
 
       <InstallPromptBanner />

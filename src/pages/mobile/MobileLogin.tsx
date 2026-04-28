@@ -11,8 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { resolveIdentity, type CustomerLite } from '@/lib/mobile-role-resolver';
+import { resolveIdentity, type CustomerLite, type ResolvedRole } from '@/lib/mobile-role-resolver';
 import type { Distributor } from '@/types/distributor';
+import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { logAudit } from '@/lib/card-audit-engine';
 import { QRCameraScanner } from '@/components/mobile/QRCameraScanner';
 import { BiometricLoginPrompt } from '@/components/mobile/BiometricLoginPrompt';
@@ -62,6 +63,26 @@ function readCustomers(): CustomerLite[] {
   }
 }
 
+function readSAMPersons(): SAMPerson[] {
+  try {
+    // [JWT] GET /api/salesx/sam-persons?entityCode=SMRT
+    const raw = localStorage.getItem(samPersonsKey(ENTITY_CODE));
+    return raw ? (JSON.parse(raw) as SAMPerson[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+const ROLE_TO_CARD_ID: Record<ResolvedRole, 'distributor-hub' | 'customer-hub' | 'salesx-hub'> = {
+  salesman: 'salesx-hub',
+  telecaller: 'salesx-hub',
+  supervisor: 'salesx-hub',
+  sales_manager: 'salesx-hub',
+  distributor: 'distributor-hub',
+  customer: 'customer-hub',
+  unknown: 'customer-hub',
+};
+
 export default function MobileLogin() {
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
@@ -84,6 +105,7 @@ export default function MobileLogin() {
       password,
       readDistributors(),
       readCustomers(),
+      readSAMPersons(),
       ENTITY_CODE,
       DEFAULT_PLAN,
     );
@@ -114,7 +136,7 @@ export default function MobileLogin() {
       entityCode: ENTITY_CODE,
       userId: identity.user_id ?? 'mobile-user',
       userName: identity.display_name,
-      cardId: identity.role === 'distributor' ? 'distributor-hub' : 'customer-hub',
+      cardId: ROLE_TO_CARD_ID[identity.role] as unknown as Parameters<typeof logAudit>[0]['cardId'],
       action: 'card_open',
       refType: 'mobile_session',
       refId: identity.user_id,
@@ -137,7 +159,8 @@ export default function MobileLogin() {
     }
 
     toast.success(`Welcome, ${identity.display_name}`);
-    navigate('/mobile/home', { replace: true });
+    const dest = identity.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+    navigate(dest, { replace: true });
   };
 
   const handleQRPayload = (qrCredential: string, _qrToken: string) => {
@@ -164,13 +187,13 @@ export default function MobileLogin() {
         <form onSubmit={onSubmit} className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="cred" className="text-xs">
-              Mobile / Email / Partner Code
+              Mobile / Email / Partner Code / Person Code
             </Label>
             <Input
               id="cred"
               inputMode="email"
               autoComplete="username"
-              placeholder="98765 43210"
+              placeholder="98765 43210 or SM-T01"
               value={credential}
               onChange={(e) => setCredential(e.target.value)}
               disabled={busy}

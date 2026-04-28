@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, ShoppingCart, FileText, IndianRupee, CreditCard,
   Network, Gift, Mic, Package, Sparkles, LogOut, Download,
+  Navigation, MapPin, Target, Users, PhoneIncoming, Briefcase, ClipboardList,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,19 @@ function tilesForRole(role: MobileSession['role']): Tile[] {
       { label: 'Rewards',         icon: Gift,        to: '/erp/customer-hub#ch-t-rewards',          feature: 'loyalty_visibility', showLocked: true },
       { label: 'Voice Complaint', icon: Mic,         to: '/erp/customer-hub#ch-t-voice-complaint',  feature: 'voice_order',        showLocked: true },
       { label: 'Sample Kits',     icon: Package,     to: '/erp/customer-hub#ch-t-sample-kits',      feature: 'catalog_browse' },
+    ];
+  }
+  if (role === 'salesman') {
+    return [
+      { label: "Today's Beat",    icon: Navigation,    to: '/mobile/salesman/beat' },
+      { label: 'Visit Check-In',  icon: MapPin,        to: '/mobile/salesman/check-in' },
+      { label: 'Quick Enquiry',   icon: PhoneIncoming, to: '/mobile/salesman/quick-enquiry' },
+      { label: 'My Pipeline',     icon: Briefcase,     to: '/mobile/salesman/pipeline' },
+      { label: 'My Customers',    icon: Users,         to: '/mobile/salesman/customers' },
+      { label: 'Visit Log',       icon: ClipboardList, to: '/mobile/salesman/visit-log' },
+      { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales' },
+      { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets' },
+      { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission' },
     ];
   }
   return [];

@@ -77,6 +77,9 @@ const SEED_ROWS: SeedRow[] = [
   // Telecallers map → 'reference' (closest match in production enum)
   { arche: 'manufacturing', id: 'tc-m1', person_type: 'reference', person_code: 'TC-M01', display_name: 'Anjali Desai', parent_group_code: 'REFR', phone: '+919811000061', email: 'aDesai@op.in', rate_pct: 0.5 },
   { arche: 'manufacturing', id: 'tc-m2', person_type: 'reference', person_code: 'TC-M02', display_name: 'Meera Iyer',   parent_group_code: 'REFR', phone: '+919811000062', email: 'mIyer@op.in',  rate_pct: 0.5 },
+  // Sprint 1.1.1l-a — Supervisor + Sales Manager (mapped to 'reference'; role determined via person_code prefix)
+  { arche: 'manufacturing', id: 'sup-m1', person_type: 'reference', person_code: 'SUP-M01', display_name: 'Rohit Sharma', parent_group_code: 'SLSM', phone: '+919811000071', email: 'rohit.sup@op.in', rate_pct: 0 },
+  { arche: 'manufacturing', id: 'mgr-m1', person_type: 'reference', person_code: 'MGR-M01', display_name: 'Sanjay Mehta', parent_group_code: 'SLSM', phone: '+919811000081', email: 'sanjay.mgr@op.in', rate_pct: 0 },
 ];
 
 export const DEMO_SAM_PERSONS: DemoSamPerson[] = SEED_ROWS.map(r => ({
