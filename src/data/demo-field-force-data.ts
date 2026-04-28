@@ -325,6 +325,8 @@ function makeVisitLogs(beats: BeatRoute[]): VisitLog[] {
           order_voucher_id: null,
           next_visit_date: outcome === 'follow_up_scheduled' ? dateOnlyDaysAgo(daysBack - 7) : null,
           photo_urls: [],
+          signature_data_url: null,
+          signature_captured_at: null,
           created_at: checkInTime,
         });
       }
