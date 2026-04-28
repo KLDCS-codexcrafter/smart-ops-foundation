@@ -63,6 +63,26 @@ function readCustomers(): CustomerLite[] {
   }
 }
 
+function readSAMPersons(): SAMPerson[] {
+  try {
+    // [JWT] GET /api/salesx/sam-persons?entityCode=SMRT
+    const raw = localStorage.getItem(samPersonsKey(ENTITY_CODE));
+    return raw ? (JSON.parse(raw) as SAMPerson[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+const ROLE_TO_CARD_ID: Record<ResolvedRole, 'distributor-hub' | 'customer-hub' | 'salesx-hub'> = {
+  salesman: 'salesx-hub',
+  telecaller: 'salesx-hub',
+  supervisor: 'salesx-hub',
+  sales_manager: 'salesx-hub',
+  distributor: 'distributor-hub',
+  customer: 'customer-hub',
+  unknown: 'customer-hub',
+};
+
 export default function MobileLogin() {
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
