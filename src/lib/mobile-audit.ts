@@ -55,7 +55,7 @@ export function logMobileLogin(
   entityCode: string,
   userId: string,
   userName: string,
-  role: 'distributor' | 'customer',
+  role: MobileAuditRole,
 ): void {
   logMobileAudit({
     entityCode,
@@ -72,7 +72,7 @@ export function logMobileLogin(
 export function logMobileTileClick(
   entityCode: string,
   userId: string,
-  role: 'distributor' | 'customer' | 'unknown',
+  role: MobileAuditRole,
   tileLabel: string,
   to: string,
 ): void {
