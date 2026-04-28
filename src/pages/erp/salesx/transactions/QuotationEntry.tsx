@@ -245,9 +245,19 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     });
     if (result) {
       updateQuotation(editingId, { quotation_stage: 'confirmed' });
+      // Sprint T-Phase-1.1.1m · release quote-level hold · create order-level hold
+      releaseQuoteReservations(entityCode, editingId);
+      createOrderReservations(
+        entityCode,
+        result.id,
+        result.order_no,
+        q.customer_name,
+        q.items.map(it => ({ item_name: it.item_name, qty: it.qty })),
+      );
+      refreshAvailability();
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
     }
-  }, [editingId, quotations, createOrder, entityCode, updateQuotation]);
+  }, [editingId, quotations, createOrder, entityCode, updateQuotation, refreshAvailability]);
 
   /**
    * Quotation → Proforma conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
