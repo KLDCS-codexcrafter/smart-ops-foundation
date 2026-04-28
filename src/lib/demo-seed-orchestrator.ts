@@ -26,7 +26,7 @@ import {
   DEMO_SAM_HIERARCHY, DEMO_SAM_PERSONS, DEMO_ENQUIRY_SOURCES,
   DEMO_CAMPAIGNS, DEMO_TARGETS, DEMO_ENQUIRIES, DEMO_QUOTATIONS,
   DEMO_OPPORTUNITIES, DEMO_COMMISSION_ENTRIES,
-  DEMO_SUPPLY_REQUEST_MEMOS,
+  DEMO_SUPPLY_REQUEST_MEMOS, DEMO_ORDERS,
 } from '@/data/demo-salesx-data';
 import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
 import {
@@ -140,6 +140,11 @@ export function seedEntityDemoData(
   safeSetArray(`erp_supply_request_memos_${entityCode}`, srmData);
   const dmData = DEMO_DELIVERY_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
   safeSetArray(`erp_delivery_memos_${entityCode}`, dmData);
+
+  // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
+  // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.
+  const orderData = DEMO_ORDERS.map(o => ({ ...o, entity_id: entityCode }));
+  safeSetArray(`erp_orders_${entityCode}`, orderData);
 
   // Stock Reservations (Sprint T-Phase-1.1.1m · D-186)
   // Seeds 2 demo reservations so QuotationEntry Avail column shows realistic data.

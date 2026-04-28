@@ -10,7 +10,7 @@ import {
   ChevronRight, UserPlus, Award, Megaphone, Compass,
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
-  FileMinus, MapPin, Route, Navigation, ListTree, MapPinned,
+  FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -147,6 +147,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-followup',            label: 'Follow-Up Register',   icon: CalendarClock, live: !!cfg?.enableSalesActivityModule },
     { id: 'sx-r-target',              label: 'Target vs Achievement',icon: Trophy,        live: !!(cfg?.enableSLSMTarget || cfg?.enableCompanyTarget) },
     { id: 'sx-r-so-tracker',          label: 'Sales Order Tracker',  icon: ClipboardList, live: true },
+    { id: 'sx-r-handoff-tracker',     label: 'Handoff Tracker',      icon: GitMerge,      live: true },
   ];
 
   const btn = (

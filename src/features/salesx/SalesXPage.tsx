@@ -34,6 +34,7 @@ import { TargetVsAchievementPanel } from '@/pages/erp/salesx/reports/TargetVsAch
 import { FollowUpRegisterReportPanel } from '@/pages/erp/salesx/reports/FollowUpRegisterReport';
 import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
 import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
+import { CrossDeptHandoffTrackerPanel } from '@/pages/erp/salesx/reports/CrossDeptHandoffTracker';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
@@ -79,6 +80,7 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-target':             'Target vs Achievement',
   'sx-analytics':            'SalesX Analytics',
   'sx-r-so-tracker':         'Sales Order Tracker',
+  'sx-r-handoff-tracker':    'Cross-Dept Handoff Tracker',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -170,6 +172,8 @@ function renderModule(
     case 'sx-r-so-tracker':
       return <SalesOrderTrackerReportPanel entityCode={entityCode}
         onNavigate={m => setActiveModule(m as SalesXModule)} />;
+    case 'sx-r-handoff-tracker':
+      return <CrossDeptHandoffTrackerPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

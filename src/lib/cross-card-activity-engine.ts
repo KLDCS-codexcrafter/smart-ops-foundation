@@ -7,6 +7,7 @@ import type {
 import {
   crossCardActivityKey, ACTIVITY_MAX,
 } from '@/types/cross-card-activity';
+import type { CardId } from '@/types/card-entitlement';
 
 export function recordActivity(
   entityCode: string, userId: string,
@@ -37,6 +38,16 @@ export function readActivity(entityCode: string, userId: string): CrossCardActiv
     const raw = localStorage.getItem(crossCardActivityKey(entityCode, userId));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
+}
+
+// Sprint T-Phase-1.1.1o · D-190 extend (read-only filter helper)
+export function readActivityForCard(
+  entityCode: string,
+  userId: string,
+  cardId: CardId,
+): CrossCardActivityItem[] {
+  // [JWT] GET /api/activity/recent?cardId=:cardId
+  return readActivity(entityCode, userId).filter(a => a.card_id === cardId);
 }
 
 export function clearActivity(entityCode: string, userId: string): void {
