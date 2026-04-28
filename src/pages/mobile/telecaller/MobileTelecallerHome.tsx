@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Phone, PhoneIncoming, Briefcase, Send, Users,
   Inbox, Bell, MessageSquare, BarChart3, History, LogOut,
+  CheckSquare, Receipt,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
@@ -31,6 +32,8 @@ const TILES = [
   { label: 'WA Templates',   icon: MessageSquare, to: '/mobile/telecaller/wa-templates',  color: 'text-emerald-600' },
   { label: 'My Stats',       icon: BarChart3,     to: '/mobile/telecaller/stats',         color: 'text-red-600' },
   { label: 'Call Log',       icon: History,       to: '/mobile/telecaller/call-log',      color: 'text-slate-600' },
+  { label: 'Attendance',     icon: CheckSquare,   to: '/mobile/shared/attendance',        color: 'text-sky-600' },
+  { label: 'Expenses',       icon: Receipt,       to: '/mobile/shared/expenses',          color: 'text-violet-600' },
 ];
 
 export default function MobileTelecallerHome() {
