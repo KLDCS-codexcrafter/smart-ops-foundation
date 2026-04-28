@@ -248,7 +248,14 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       terms_conditions: q.terms_conditions ?? '',
     });
     if (result) {
-      updateQuotation(editingId, { quotation_stage: 'confirmed' });
+      markConvertedToSO(editingId, result.id, result.order_no);
+      setForm(prev => ({
+        ...prev,
+        quotation_stage: 'sales_order',
+        so_id: result.id,
+        so_no: result.order_no,
+        so_converted_at: new Date().toISOString(),
+      }));
       // Sprint T-Phase-1.1.1m · release quote-level hold · create order-level hold
       releaseQuoteReservations(entityCode, editingId);
       createOrderReservations(
@@ -261,7 +268,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       refreshAvailability();
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
     }
-  }, [editingId, quotations, createOrder, entityCode, updateQuotation, refreshAvailability]);
+  }, [editingId, quotations, createOrder, entityCode, markConvertedToSO, refreshAvailability]);
 
   /**
    * Quotation → Proforma conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
