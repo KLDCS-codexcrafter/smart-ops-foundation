@@ -470,3 +470,77 @@ export const DEMO_SUPPLY_REQUEST_MEMOS: SupplyRequestMemo[] = [
     updated_at: '2026-02-08T14:00:00.000Z',
   },
 ];
+
+// ─── Demo Sales Orders (Sprint T-Phase-1.1.1o) ──────────────────────────
+// Aligned with DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no so the
+// Cross-Dept Handoff Tracker assembles complete pipeline rows.
+// SO #1: Quote QT-T-0001 → SO/25-26/0001 → SRM/25-26/0001 (raised)
+// SO #2: Quote QT-T-0002 → SO/25-26/0002 → SRM/25-26/0002 → DM/25-26/0001 (delivered)
+export const DEMO_ORDERS: Order[] = [
+  {
+    id: 'so-demo-1',
+    order_no: 'SO/25-26/0001',
+    base_voucher_type: 'Sales Order',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
+    date: '2026-01-10',
+    party_id: 'cust-demo-a',
+    party_name: 'Demo Customer A',
+    ref_no: 'QT-T-0001',
+    ref_date: '2026-01-08',
+    lines: [
+      {
+        id: 'so-demo-1-l1',
+        item_id: 'itm-a', item_code: 'ITM-A', item_name: 'Demo Item A',
+        hsn_sac_code: '7308',
+        qty: 10, uom: 'NOS',
+        rate: 500, discount_percent: 0,
+        taxable_value: 5000, gst_rate: 18,
+        pending_qty: 10, fulfilled_qty: 0, status: 'open',
+      },
+      {
+        id: 'so-demo-1-l2',
+        item_id: 'itm-b', item_code: 'ITM-B', item_name: 'Demo Item B',
+        hsn_sac_code: '7308',
+        qty: 5, uom: 'KG',
+        rate: 200, discount_percent: 0,
+        taxable_value: 1000, gst_rate: 18,
+        pending_qty: 5, fulfilled_qty: 0, status: 'open',
+      },
+    ],
+    gross_amount: 6000, total_tax: 1080, net_amount: 7080,
+    narration: 'Demo SO 1 (Sprint 1.1.1o handoff tracker chain)',
+    terms_conditions: '',
+    status: 'open',
+    created_at: '2026-01-10T10:00:00.000Z',
+    updated_at: '2026-01-15T10:00:00.000Z',
+  },
+  {
+    id: 'so-demo-2',
+    order_no: 'SO/25-26/0002',
+    base_voucher_type: 'Sales Order',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
+    date: '2026-01-28',
+    party_id: 'cust-demo-b',
+    party_name: 'Demo Customer B',
+    ref_no: 'QT-T-0002',
+    ref_date: '2026-01-25',
+    lines: [
+      {
+        id: 'so-demo-2-l1',
+        item_id: 'itm-c', item_code: 'ITM-C', item_name: 'Demo Item C',
+        hsn_sac_code: '7308',
+        qty: 20, uom: 'MTR',
+        rate: 150, discount_percent: 0,
+        taxable_value: 3000, gst_rate: 18,
+        pending_qty: 0, fulfilled_qty: 20, status: 'closed',
+      },
+    ],
+    gross_amount: 3000, total_tax: 540, net_amount: 3540,
+    narration: 'Demo SO 2 (full pipeline through DM)',
+    terms_conditions: '',
+    status: 'partial',
+    created_at: '2026-01-28T10:00:00.000Z',
+    updated_at: '2026-02-08T14:00:00.000Z',
+  },
+];
+
