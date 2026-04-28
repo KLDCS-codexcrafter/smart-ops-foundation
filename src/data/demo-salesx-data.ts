@@ -642,6 +642,78 @@ export const DEMO_ORDERS: Order[] = [
 ];
 
 
+import type { Exhibition, ExhibitionVisitor } from '@/types/exhibition';
+
+export const DEMO_EXHIBITIONS: Exhibition[] = [
+  {
+    id: 'exh-1', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    exhibition_code: 'IMPEX-26', exhibition_name: 'IMPEX 2026 — International Trade Fair',
+    category: 'trade_fair', organiser: 'ITPO',
+    venue_name: 'Pragati Maidan', venue_city: 'New Delhi', venue_state: 'Delhi',
+    start_date: '2026-06-10', end_date: '2026-06-13',
+    stall_no: 'Hall 5 · Stall 32', stall_size: '3m × 3m',
+    team_members: ['Rahul Sharma', 'Priya Mehta', 'Suresh Kumar'],
+    campaign_code: null,
+    budget: { booth: 120000, travel: 45000, meals: 30000, marketing: 80000, staff: 60000, misc: 15000, total_planned: 350000, total_actual: 0, variance: -350000 },
+    outcome: { total_visitors: 0, hot_leads: 0, warm_leads: 0, enquiries_created: 0, quotations_raised: 0, orders_converted: 0, revenue_attributed: 0 },
+    status: 'planned', description: 'Annual international trade exhibition.', is_active: true,
+    created_at: '2026-04-01T10:00:00Z', updated_at: '2026-04-15T10:00:00Z',
+  },
+  {
+    id: 'exh-2', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    exhibition_code: 'DEALER-MEET-26', exhibition_name: 'Annual Dealer Meet FY26',
+    category: 'dealer_meet', organiser: null,
+    venue_name: 'Taj Lands End', venue_city: 'Mumbai', venue_state: 'Maharashtra',
+    start_date: '2026-03-15', end_date: '2026-03-16',
+    stall_no: null, stall_size: null,
+    team_members: ['Vivek Soni', 'Manish Gupta'],
+    campaign_code: null,
+    budget: { booth: 0, travel: 80000, meals: 120000, marketing: 50000, staff: 40000, misc: 10000, total_planned: 300000, total_actual: 312000, variance: 12000 },
+    outcome: { total_visitors: 68, hot_leads: 22, warm_leads: 30, enquiries_created: 18, quotations_raised: 12, orders_converted: 7, revenue_attributed: 2100000 },
+    status: 'completed', description: 'Annual dealer meet — product showcase + incentive announcement.', is_active: true,
+    created_at: '2026-02-01T10:00:00Z', updated_at: '2026-03-20T10:00:00Z',
+  },
+  {
+    id: 'exh-3', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    exhibition_code: 'BUILDCON-25', exhibition_name: 'Buildcon 2025 — Construction Expo',
+    category: 'industry_expo', organiser: 'CII',
+    venue_name: 'Bombay Exhibition Centre', venue_city: 'Mumbai', venue_state: 'Maharashtra',
+    start_date: '2025-11-20', end_date: '2025-11-23',
+    stall_no: 'Gate 2 · B-14', stall_size: '6m × 4m',
+    team_members: ['Manish Gupta', 'Sneha Patil'],
+    campaign_code: null,
+    budget: { booth: 180000, travel: 35000, meals: 25000, marketing: 90000, staff: 50000, misc: 20000, total_planned: 400000, total_actual: 388000, variance: -12000 },
+    outcome: { total_visitors: 142, hot_leads: 38, warm_leads: 61, enquiries_created: 32, quotations_raised: 20, orders_converted: 9, revenue_attributed: 3600000 },
+    status: 'completed', description: 'Construction & building materials expo.', is_active: true,
+    created_at: '2025-10-01T10:00:00Z', updated_at: '2025-12-05T10:00:00Z',
+  },
+];
+
+export const DEMO_EXHIBITION_VISITORS: ExhibitionVisitor[] = [
+  {
+    id: 'vis-1', exhibition_id: 'exh-2',
+    visit_date: '2026-03-15', visit_time: '10:30', capture_method: 'business_card',
+    visitor_name: 'Rajesh Khanna', company_name: 'Khanna Trading Co.', designation: 'Proprietor',
+    mobile: '+919811000101', email: 'rajesh@khannatrading.in', city: 'Pune',
+    interest_level: 'hot', products_interested: ['Premium Range', 'Bulk Pack Scheme'],
+    estimated_value: 500000, notes: 'Currently buying from competitor — ready to switch',
+    enquiry_created: true, enquiry_id: null, follow_up_due: '2026-03-20',
+    assigned_salesman_id: null, assigned_salesman_name: null,
+    created_at: '2026-03-15T10:30:00Z', updated_at: '2026-03-15T10:30:00Z',
+  },
+  {
+    id: 'vis-2', exhibition_id: 'exh-3',
+    visit_date: '2025-11-21', visit_time: '11:00', capture_method: 'qr_scan',
+    visitor_name: 'Anil Sharma', company_name: 'Sharma Constructions Pvt Ltd', designation: 'Director',
+    mobile: '+919833000303', email: 'anil@sharmaconstructions.com', city: 'Mumbai',
+    interest_level: 'hot', products_interested: ['Industrial Grade', 'Waterproofing Series'],
+    estimated_value: 1200000, notes: 'Large upcoming project — confirmed budget',
+    enquiry_created: true, enquiry_id: null, follow_up_due: '2025-11-25',
+    assigned_salesman_id: null, assigned_salesman_name: null,
+    created_at: '2025-11-21T11:00:00Z', updated_at: '2025-11-21T11:00:00Z',
+  },
+];
+
 import type { Webinar, WebinarParticipant } from '@/types/webinar';
 
 export const DEMO_WEBINARS: Webinar[] = [
