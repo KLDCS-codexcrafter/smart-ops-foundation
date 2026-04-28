@@ -75,17 +75,45 @@ export function resolveFromCustomers(
   );
 }
 
+/** Match SAMPerson by person_code OR phone OR email. */
+export function resolveFromSAMPersons(
+  credential: string,
+  persons: SAMPerson[],
+): SAMPerson | null {
+  const c = credential.trim().toLowerCase();
+  if (!c) return null;
+  return (
+    persons.find(
+      (p) =>
+        (p.person_code ?? '').toLowerCase() === c ||
+        (p.phone ?? '').toLowerCase() === c ||
+        (p.email ?? '').toLowerCase() === c,
+    ) ?? null
+  );
+}
+
+/** Map a person_code prefix to a mobile role. */
+export function roleFromPersonCode(personCode: string): ResolvedRole {
+  const upper = personCode.toUpperCase();
+  if (upper.startsWith('SM-')) return 'salesman';
+  if (upper.startsWith('AG-')) return 'salesman';
+  if (upper.startsWith('BR-')) return 'salesman';
+  if (upper.startsWith('TC-')) return 'telecaller';
+  if (upper.startsWith('SUP-')) return 'supervisor';
+  if (upper.startsWith('MGR-')) return 'sales_manager';
+  return 'unknown';
+}
+
 /** Full resolution — returns role + identity data. */
 export function resolveIdentity(
   credential: string,
   password: string,
   distributors: Distributor[],
   customers: CustomerLite[],
+  persons: SAMPerson[],
   entityCode: string,
   planTier: PlanTier = 'starter',
 ): ResolvedIdentity {
-  // In production, password would hit an auth endpoint. For this PWA sprint
-  // we trust the admin has set a simple credential match (admin-panel model).
   void password;
 
   const dist = resolveFromDistributors(credential, distributors);
@@ -112,6 +140,21 @@ export function resolveIdentity(
     };
   }
 
+  const sp = resolveFromSAMPersons(credential, persons);
+  if (sp) {
+    const role = roleFromPersonCode(sp.person_code);
+    if (role !== 'unknown') {
+      return {
+        role,
+        user_id: sp.id,
+        display_name: sp.display_name,
+        entity_code: entityCode,
+        plan_tier: planTier,
+        salesperson: sp,
+      };
+    }
+  }
+
   return {
     role: 'unknown',
     user_id: null,
@@ -122,3 +165,4 @@ export function resolveIdentity(
       'Account not found. Contact your sales representative to set up your account.',
   };
 }
+
