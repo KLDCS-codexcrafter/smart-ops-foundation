@@ -23,6 +23,8 @@ import { EnquiryCapturePanel } from '@/pages/erp/salesx/transactions/EnquiryCapt
 import { CRMPipelinePanel } from '@/pages/erp/salesx/transactions/CRMPipeline';
 import { TelecallerPanel } from '@/pages/erp/salesx/transactions/Telecaller';
 import { QuotationEntryPanel } from '@/pages/erp/salesx/transactions/QuotationEntry';
+import { SupplyRequestMemoPanel } from '@/pages/erp/salesx/transactions/SupplyRequestMemo';
+import { InvoiceMemoPanel } from '@/pages/erp/salesx/transactions/InvoiceMemo';
 import { CommissionRegisterPanel } from '@/pages/erp/salesx/reports/CommissionRegister';
 import { EnquiryRegisterReportPanel } from '@/pages/erp/salesx/reports/EnquiryRegisterReport';
 import { PipelineSummaryPanel } from '@/pages/erp/salesx/reports/PipelineSummary';
@@ -59,6 +61,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-pipeline':           'CRM Pipeline',
   'sx-t-telecaller':         'Telecaller',
   'sx-t-quotation':          'Quotation',
+  'sx-t-supply-memo':        'Supply Request Memo',
+  'sx-t-invoice-memo':       'Invoice Memo',
   'sx-t-return-memo':        'Sales Return Memo',
   'sx-t-visit':              'Visit Tracking',
   'sx-t-secondary':          'Secondary Sales',
@@ -123,6 +127,10 @@ function renderModule(
       return <TelecallerPanel entityCode={entityCode} onNavigate={(m) => setActiveModule(m as SalesXModule)} />;
     case 'sx-t-quotation':
       return <QuotationEntryPanel entityCode={entityCode} />;
+    case 'sx-t-supply-memo':
+      return <SupplyRequestMemoPanel entityCode={entityCode} />;
+    case 'sx-t-invoice-memo':
+      return <InvoiceMemoPanel entityCode={entityCode} />;
     case 'sx-t-return-memo':
       return <SalesReturnMemoPanel entityCode={entityCode} />;
     case 'sx-r-return-memo-register':

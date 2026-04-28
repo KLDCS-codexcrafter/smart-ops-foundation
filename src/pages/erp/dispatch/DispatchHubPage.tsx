@@ -14,6 +14,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 
 import { DispatchHubWelcomePanel } from './DispatchHubWelcome';
+import { DeliveryMemoEntryPanel } from './transactions/DeliveryMemoEntry';
 import { LRTrackerPanel } from './transactions/LRTracker';
 import { LRUpdatePanel } from './transactions/LRUpdate';
 import { DispatchExceptionsPanel } from './transactions/DispatchExceptions';
@@ -44,9 +45,11 @@ function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
 function renderModule(
   mod: DispatchHubModule,
   onModuleChange: (m: DispatchHubModule) => void,
+  entityCode: string,
 ): React.ReactElement {
   switch (mod) {
     case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
+    case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode={entityCode} />;
     case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
     case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
     case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
@@ -119,7 +122,7 @@ export default function DispatchHubPage() {
         <ERPHeader />
         <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
           <div className="p-4 md:p-6 animate-fade-in">
-            {renderModule(activeModule, setActiveModule)}
+            {renderModule(activeModule, setActiveModule, entityCode)}
           </div>
         </ScrollArea>
       </SidebarInset>

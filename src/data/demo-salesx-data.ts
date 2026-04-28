@@ -12,6 +12,7 @@ import type { SAMPerson, SAMPersonType } from '@/types/sam-person';
 import type { Enquiry, EnquiryStatus, EnquiryPriority } from '@/types/enquiry';
 import type { Quotation, QuotationStage } from '@/types/quotation';
 import type { CommissionEntry } from '@/types/commission-register';
+import type { SupplyRequestMemo } from '@/types/supply-request-memo';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type Tagged<T> = T & { _archetype: DemoArchetype };
@@ -405,4 +406,66 @@ export const DEMO_COMMISSION_ENTRIES: DemoCommissionEntry[] = [
   ...makeCommissions('trading', 12, 8, 5, 'T'),
   ...makeCommissions('services', 6, 4, 3, 'S'),
   ...makeCommissions('manufacturing', 10, 6, 4, 'M'),
+];
+
+// ─── Supply Request Memos (Sprint T-Phase-1.1.1n) ───────────────────────
+
+export const DEMO_SUPPLY_REQUEST_MEMOS: SupplyRequestMemo[] = [
+  {
+    id: 'srm-demo-1',
+    entity_id: 'ENTITY',
+    memo_no: 'SRQM/25-26/0001',
+    memo_date: '2026-01-15',
+    sales_order_id: null,
+    sales_order_no: 'SO/25-26/0001',
+    customer_id: null,
+    customer_name: 'Demo Customer A',
+    raised_by_person_id: null,
+    raised_by_person_name: 'Demo Salesman',
+    raised_by_person_type: 'salesman',
+    expected_dispatch_date: '2026-01-20',
+    delivery_address: '123 Demo Street, Kolkata 700001',
+    special_instructions: 'Handle with care',
+    items: [
+      { id: 'sri-1', item_name: 'Demo Item A', description: null, qty: 10, uom: 'NOS', rate: 500, amount: 5000 },
+      { id: 'sri-2', item_name: 'Demo Item B', description: null, qty: 5, uom: 'KG', rate: 200, amount: 1000 },
+    ],
+    total_amount: 6000,
+    status: 'raised',
+    acknowledged_by: null,
+    acknowledged_at: null,
+    dispatched_at: null,
+    delivery_memo_id: null,
+    delivery_memo_no: null,
+    created_at: '2026-01-15T10:00:00.000Z',
+    updated_at: '2026-01-15T10:00:00.000Z',
+  },
+  {
+    id: 'srm-demo-2',
+    entity_id: 'ENTITY',
+    memo_no: 'SRQM/25-26/0002',
+    memo_date: '2026-02-01',
+    sales_order_id: null,
+    sales_order_no: 'SO/25-26/0002',
+    customer_id: null,
+    customer_name: 'Demo Customer B',
+    raised_by_person_id: null,
+    raised_by_person_name: 'Demo Salesman',
+    raised_by_person_type: 'salesman',
+    expected_dispatch_date: '2026-02-10',
+    delivery_address: '456 Test Road, Mumbai 400001',
+    special_instructions: null,
+    items: [
+      { id: 'sri-3', item_name: 'Demo Item C', description: null, qty: 20, uom: 'MTR', rate: 150, amount: 3000 },
+    ],
+    total_amount: 3000,
+    status: 'dispatched',
+    acknowledged_by: 'dispatch_user',
+    acknowledged_at: '2026-02-02T09:00:00.000Z',
+    dispatched_at: '2026-02-08T14:00:00.000Z',
+    delivery_memo_id: 'dm-demo-1',
+    delivery_memo_no: 'DM/25-26/0001',
+    created_at: '2026-02-01T10:00:00.000Z',
+    updated_at: '2026-02-08T14:00:00.000Z',
+  },
 ];

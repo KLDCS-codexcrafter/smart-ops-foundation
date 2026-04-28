@@ -26,6 +26,8 @@ export type SalesXModule =
   | 'sx-t-pipeline'
   | 'sx-t-telecaller'
   | 'sx-t-quotation'
+  | 'sx-t-supply-memo'
+  | 'sx-t-invoice-memo'
   | 'sx-t-return-memo'
   | 'sx-t-visit'
   | 'sx-t-secondary'
@@ -59,6 +61,8 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-t-pipeline',
   'sx-t-telecaller',
   'sx-t-quotation',
+  'sx-t-supply-memo',
+  'sx-t-invoice-memo',
   'sx-t-return-memo',
   'sx-t-visit',
   'sx-t-secondary',

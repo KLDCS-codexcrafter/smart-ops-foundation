@@ -26,7 +26,9 @@ import {
   DEMO_SAM_HIERARCHY, DEMO_SAM_PERSONS, DEMO_ENQUIRY_SOURCES,
   DEMO_CAMPAIGNS, DEMO_TARGETS, DEMO_ENQUIRIES, DEMO_QUOTATIONS,
   DEMO_OPPORTUNITIES, DEMO_COMMISSION_ENTRIES,
+  DEMO_SUPPLY_REQUEST_MEMOS,
 } from '@/data/demo-salesx-data';
+import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
 import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
   DEMO_COLLECTION_EXECS, DEMO_INCENTIVE_SCHEMES,
@@ -131,6 +133,12 @@ export function seedEntityDemoData(
   safeSetArray(`erp_beat_routes_${entityCode}`, DEMO_BEAT_ROUTES);
   safeSetArray(`erp_visit_logs_${entityCode}`, DEMO_VISIT_LOGS);
   safeSetArray(`erp_secondary_sales_${entityCode}`, DEMO_SECONDARY_SALES);
+
+  // Three Memo System (Sprint T-Phase-1.1.1n) — SRM + DM. IM created live.
+  const srmData = DEMO_SUPPLY_REQUEST_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
+  safeSetArray(`erp_supply_request_memos_${entityCode}`, srmData);
+  const dmData = DEMO_DELIVERY_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
+  safeSetArray(`erp_delivery_memos_${entityCode}`, dmData);
 
   return {
     entityCode, archetype,
