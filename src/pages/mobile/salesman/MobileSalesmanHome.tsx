@@ -21,15 +21,15 @@ function readSession(): MobileSession | null {
 }
 
 const TILES = [
-  { label: "Today's Beat",    icon: Navigation,    to: '/mobile/salesman/beat' },
-  { label: 'Visit Check-In',  icon: MapPin,        to: '/mobile/salesman/check-in' },
-  { label: 'Quick Enquiry',   icon: PhoneIncoming, to: '/mobile/salesman/quick-enquiry' },
-  { label: 'My Pipeline',     icon: Briefcase,     to: '/mobile/salesman/pipeline' },
-  { label: 'My Customers',    icon: Users,         to: '/mobile/salesman/customers' },
-  { label: 'Visit Log',       icon: ClipboardList, to: '/mobile/salesman/visit-log' },
-  { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales' },
-  { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets' },
-  { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission' },
+  { label: "Today's Beat",    icon: Navigation,    to: '/mobile/salesman/beat',            color: 'text-blue-600' },
+  { label: 'Visit Check-In',  icon: MapPin,        to: '/mobile/salesman/check-in',        color: 'text-green-600' },
+  { label: 'Quick Enquiry',   icon: PhoneIncoming, to: '/mobile/salesman/quick-enquiry',   color: 'text-orange-600' },
+  { label: 'My Pipeline',     icon: Briefcase,     to: '/mobile/salesman/pipeline',        color: 'text-purple-600' },
+  { label: 'My Customers',    icon: Users,         to: '/mobile/salesman/customers',       color: 'text-cyan-600' },
+  { label: 'Visit Log',       icon: ClipboardList, to: '/mobile/salesman/visit-log',       color: 'text-slate-600' },
+  { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales', color: 'text-amber-600' },
+  { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets',         color: 'text-red-600' },
+  { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission',      color: 'text-emerald-600' },
 ];
 
 export default function MobileSalesmanHome() {
