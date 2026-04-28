@@ -59,6 +59,9 @@ export interface VisitLog {
 
   // Attachments
   photo_urls: string[];
+  // Customer signature (data URL of canvas, captured at check-out)
+  signature_data_url: string | null;
+  signature_captured_at: string | null;
 
   created_at: string;
   // NO updated_at — append-only

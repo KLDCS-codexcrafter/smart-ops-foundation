@@ -85,8 +85,29 @@ export function CRMPipelinePanel({ entityCode }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(blank(pipelineType));
   const [salesmanFilter, setSalesmanFilter] = useState<string>('all');
+  const [draggedOppId, setDraggedOppId] = useState<string | null>(null);
+  const [dragOverStageId, setDragOverStageId] = useState<string | null>(null);
 
   const update = useCallback((p: Partial<typeof form>) => setForm(prev => ({ ...prev, ...p })), []);
+
+  const moveStage = useCallback((oppId: string, newStageId: string) => {
+    const opp = opportunities.find(o => o.id === oppId);
+    if (!opp) return;
+    if (opp.stage === newStageId) return;
+    const patch: Partial<Opportunity> = { stage: newStageId as DealStage };
+    if (newStageId === 'won') {
+      patch.won_at = todayISO();
+      patch.probability = 100;
+    } else if (newStageId === 'lost') {
+      patch.lost_at = todayISO();
+      patch.probability = 0;
+    } else {
+      patch.won_at = null;
+      patch.lost_at = null;
+    }
+    updateOpportunity(oppId, patch);
+    toast.success(`Moved to ${stages.find(s => s.id === newStageId)?.label ?? newStageId}`);
+  }, [opportunities, updateOpportunity, stages]);
 
   const filtered = useMemo(() => {
     if (salesmanFilter === 'all') return opportunities;
@@ -146,6 +167,9 @@ export function CRMPipelinePanel({ entityCode }: Props) {
           <p className="text-sm text-muted-foreground">
             {pipelineType === 'solutions' ? 'Solutions pipeline' : 'Standard pipeline'} · Total weighted ₹{totalWeighted.toLocaleString('en-IN')}
           </p>
+          <p className="text-[10px] text-muted-foreground">
+            Tip: drag any card between columns to change stage
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={salesmanFilter} onValueChange={setSalesmanFilter}>
@@ -168,7 +192,21 @@ export function CRMPipelinePanel({ entityCode }: Props) {
               const items = filtered.filter(o => o.stage === stage.id);
               const weighted = items.reduce((s, o) => s + (o.deal_value * o.probability) / 100, 0);
               return (
-                <div key={stage.id} className="flex-1 min-w-[220px] space-y-2">
+                <div
+                  key={stage.id}
+                  className={cn(
+                    'flex-1 min-w-[220px] space-y-2 transition-colors rounded-md',
+                    dragOverStageId === stage.id && 'bg-orange-500/10 ring-2 ring-orange-500/40',
+                  )}
+                  onDragOver={(e) => { e.preventDefault(); setDragOverStageId(stage.id); }}
+                  onDragLeave={() => setDragOverStageId(null)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (draggedOppId) moveStage(draggedOppId, stage.id);
+                    setDraggedOppId(null);
+                    setDragOverStageId(null);
+                  }}
+                >
                   <div className={cn('rounded-md border px-3 py-2', STAGE_BG[stage.color])}>
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-semibold">{stage.label}</p>
@@ -183,27 +221,44 @@ export function CRMPipelinePanel({ entityCode }: Props) {
                         o.probability < 75 ? 'bg-blue-500/15 text-blue-700' :
                         'bg-green-500/15 text-green-700';
                       return (
-                        <Card
-                          key={o.id} className="cursor-pointer hover:border-orange-500/40"
-                          onClick={() => handleEdit(o)}
+                        <div
+                          key={o.id}
+                          draggable
+                          onDragStart={(e) => {
+                            setDraggedOppId(o.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDragEnd={() => {
+                            setDraggedOppId(null);
+                            setDragOverStageId(null);
+                          }}
+                          className={cn(
+                            'cursor-grab active:cursor-grabbing',
+                            draggedOppId === o.id && 'opacity-40',
+                          )}
                         >
-                          <CardContent className="p-3 space-y-1">
-                            <p className="font-semibold text-sm">{o.deal_name}</p>
-                            <p className="text-xs text-muted-foreground">{o.customer_name ?? '—'}</p>
-                            <p className="text-xs text-orange-600 font-mono">₹{o.deal_value.toLocaleString('en-IN')}</p>
-                            <div className="flex items-center justify-between">
-                              <Badge variant="outline" className={cn('text-[10px]', probColor)}>
-                                {o.probability}%
-                              </Badge>
-                              {o.expected_close_date && (
-                                <span className="text-[10px] text-muted-foreground">{o.expected_close_date}</span>
+                          <Card
+                            className="cursor-pointer hover:border-orange-500/40"
+                            onClick={() => handleEdit(o)}
+                          >
+                            <CardContent className="p-3 space-y-1">
+                              <p className="font-semibold text-sm">{o.deal_name}</p>
+                              <p className="text-xs text-muted-foreground">{o.customer_name ?? '—'}</p>
+                              <p className="text-xs text-orange-600 font-mono">₹{o.deal_value.toLocaleString('en-IN')}</p>
+                              <div className="flex items-center justify-between">
+                                <Badge variant="outline" className={cn('text-[10px]', probColor)}>
+                                  {o.probability}%
+                                </Badge>
+                                {o.expected_close_date && (
+                                  <span className="text-[10px] text-muted-foreground">{o.expected_close_date}</span>
+                                )}
+                              </div>
+                              {o.sales_owner_name && (
+                                <p className="text-[10px] text-muted-foreground">{o.sales_owner_name}</p>
                               )}
-                            </div>
-                            {o.sales_owner_name && (
-                              <p className="text-[10px] text-muted-foreground">{o.sales_owner_name}</p>
-                            )}
-                          </CardContent>
-                        </Card>
+                            </CardContent>
+                          </Card>
+                        </div>
                       );
                     })}
                   </div>

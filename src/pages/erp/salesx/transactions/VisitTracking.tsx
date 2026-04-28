@@ -5,7 +5,7 @@
  * [JWT] GET /api/salesx/visit-logs?entityCode={entityCode}
  * [JWT] POST /api/salesx/visit-logs
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,8 @@ import {
 import {
   MapPin, LogIn, LogOut, CheckCircle2, AlertTriangle, Search, Navigation,
 } from 'lucide-react';
+import { SignaturePad, Check } from '@/components/ui/signature-pad';
+import type { SignaturePadHandle } from '@/components/ui/signature-pad';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
   type VisitLog, type VisitOutcome, type VisitPurpose, type GeoPoint,
@@ -120,6 +122,10 @@ export function VisitTrackingPanel({ entityCode }: Props) {
   const [checkingIn, setCheckingIn] = useState(false);
   const [activeVisitId, setActiveVisitId] = useState<string | null>(null);
 
+  const signaturePadRef = useRef<SignaturePadHandle>(null);
+  const [signatureCaptured, setSignatureCaptured] = useState<string | null>(null);
+  const [signatureEmpty, setSignatureEmpty] = useState(true);
+
   useEffect(() => {
     setVisits(loadVisits(entityCode));
     setSalesmen(loadSalesmen(entityCode));
@@ -212,6 +218,8 @@ export function VisitTrackingPanel({ entityCode }: Props) {
       order_voucher_id: null,
       next_visit_date: null,
       photo_urls: [],
+      signature_data_url: null,
+      signature_captured_at: null,
       created_at: NOW(),
     };
 
@@ -240,6 +248,8 @@ export function VisitTrackingPanel({ entityCode }: Props) {
       outcome,
       notes,
       order_captured_value: outcome === 'order_captured' ? Number(orderValue) || 0 : 0,
+      signature_data_url: signatureCaptured,
+      signature_captured_at: signatureCaptured ? NOW() : null,
     };
     const next = visits.map(v => v.id === activeVisit.id ? updated : v);
     saveVisits(entityCode, next);
@@ -248,8 +258,11 @@ export function VisitTrackingPanel({ entityCode }: Props) {
     setNotes('');
     setOrderValue('0');
     setOutcome('order_captured');
+    setSignatureCaptured(null);
+    setSignatureEmpty(true);
+    signaturePadRef.current?.clear();
     toast.success('Checked-out');
-  }, [activeVisit, outcome, notes, orderValue, visits, entityCode]);
+  }, [activeVisit, outcome, notes, orderValue, visits, entityCode, signatureCaptured]);
 
   useCtrlS(() => {
     if (activeVisit && !activeVisit.check_out_time) {
@@ -427,6 +440,46 @@ export function VisitTrackingPanel({ entityCode }: Props) {
                 </div>
               </div>
 
+              <div className="border-t pt-3">
+                <p className="text-xs font-semibold mb-2">Customer Signature (optional but recommended)</p>
+                {signatureCaptured ? (
+                  <div className="space-y-2">
+                    <img
+                      src={signatureCaptured}
+                      alt="Captured signature"
+                      className="border rounded bg-white"
+                      style={{ maxWidth: 360 }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setSignatureCaptured(null); setSignatureEmpty(true); signaturePadRef.current?.clear(); }}
+                    >
+                      Re-sign
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <SignaturePad
+                      ref={signaturePadRef}
+                      onChange={empty => setSignatureEmpty(empty)}
+                    />
+                    <Button
+                      size="sm"
+                      disabled={signatureEmpty}
+                      onClick={() => {
+                        if (signaturePadRef.current && !signaturePadRef.current.isEmpty()) {
+                          setSignatureCaptured(signaturePadRef.current.toDataURL());
+                          toast.success('Signature captured');
+                        }
+                      }}
+                    >
+                      <Check className="h-3.5 w-3.5 mr-1" /> Confirm Signature
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end">
                 <Button
                   data-primary
@@ -469,7 +522,16 @@ export function VisitTrackingPanel({ entityCode }: Props) {
                     <TableCell className="text-xs font-mono">
                       {new Date(v.check_in_time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                     </TableCell>
-                    <TableCell className="text-xs">{v.customer_name}</TableCell>
+                    <TableCell className="text-xs">
+                      <span className="inline-flex items-center gap-1.5">
+                        {v.customer_name}
+                        {v.signature_data_url && (
+                          <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/30">
+                            ✓ Signed
+                          </Badge>
+                        )}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-xs">{VISIT_PURPOSE_LABELS[v.purpose]}</TableCell>
                     <TableCell className="text-xs">
                       <Badge variant="outline" className="text-[10px]">

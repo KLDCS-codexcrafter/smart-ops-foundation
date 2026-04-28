@@ -24,12 +24,15 @@ import { cn } from '@/lib/utils';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SalesXModule } from './SalesXSidebar.types';
+import type { SalesXGroup } from './SalesXSidebar.groups';
+import { getModuleGroup } from './SalesXSidebar.groups';
 
 
 interface Props {
   activeModule: SalesXModule;
   onModuleChange: (m: SalesXModule) => void;
   entityCode: string;
+  activeGroup: SalesXGroup;
 }
 
 function loadSAMConfig(entityCode: string): SAMConfig | null {
@@ -40,7 +43,7 @@ function loadSAMConfig(entityCode: string): SAMConfig | null {
   } catch { return null; }
 }
 
-export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Props) {
+export function SalesXSidebar({ activeModule, onModuleChange, entityCode, activeGroup }: Props) {
   const [mastersOpen, setMastersOpen] = useState(true);
   const [txnOpen, setTxnOpen] = useState(false);
   const [reportsOpen, setReportsOpen] = useState(false);
@@ -74,7 +77,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     return items;
   }, [cfg]);
 
-  const txnItems = [
+  const txnItems = useMemo(() => [
     {
       id: 'sx-t-enquiry' as SalesXModule,
       label: 'Enquiry',
@@ -189,9 +192,9 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       icon: BarChart3,
       live: true,
     },
-  ];
+  ], [cfg]);
 
-  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = [
+  const reportItems: Array<{ id: SalesXModule; label: string; icon: React.ElementType; live: boolean }> = useMemo(() => [
     { id: 'sx-r-commission',          label: 'Commission Register',  icon: Wallet,        live: true },
     { id: 'sx-r-enquiry-register',    label: 'Enquiry Register',     icon: ListChecks,    live: true },
     { id: 'sx-r-pipeline-summary',    label: 'Pipeline Summary',     icon: GitBranch,     live: true },
@@ -207,7 +210,19 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-campaign-performance',label: 'Campaign Performance', icon: Megaphone,     live: true },
     { id: 'sx-r-exhibition-report',   label: 'Exhibition Report',    icon: Store,         live: true },
     { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
-  ];
+  ], [cfg]);
+
+  const filteredMasterItems = useMemo(() =>
+    masterItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [masterItems, activeGroup]);
+
+  const filteredTxnItems = useMemo(() =>
+    txnItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [txnItems, activeGroup]);
+
+  const filteredReportItems = useMemo(() =>
+    reportItems.filter(i => getModuleGroup(i.id) === activeGroup),
+  [reportItems, activeGroup]);
 
   const btn = (
     id: SalesXModule, label: string, Icon: React.ElementType,
@@ -252,7 +267,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
           {btn('sx-hub', 'Hub Overview', LayoutDashboard, true, 'Hub Overview')}
         </SidebarMenu>
 
-        {masterItems.length > 0 && (
+        {filteredMasterItems.length > 0 && (
           <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
             <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
               <ChevronRight className={cn(
@@ -265,51 +280,55 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarMenu className="px-1 space-y-0.5">
-                {masterItems.map(item => btn(item.id, item.label, item.icon, true))}
+                {filteredMasterItems.map(item => btn(item.id, item.label, item.icon, true))}
               </SidebarMenu>
             </CollapsibleContent>
           </Collapsible>
         )}
 
-        {!cfg?.enableSalesActivityModule && (
+        {!cfg?.enableSalesActivityModule && activeGroup === 'master' && (
           <div className="px-3 py-2 text-[10px] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
             Configure SAM in Comply360 to unlock SAM masters.
           </div>
         )}
 
-        <Collapsible open={txnOpen} onOpenChange={setTxnOpen} className="px-2">
-          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
-            <ChevronRight className={cn(
-              'h-3 w-3 text-muted-foreground/90 transition-transform',
-              txnOpen && 'rotate-90',
-            )} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
-              Transactions
-            </span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenu className="px-1 space-y-0.5">
-              {txnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
-            </SidebarMenu>
-          </CollapsibleContent>
-        </Collapsible>
+        {filteredTxnItems.length > 0 && (
+          <Collapsible open={txnOpen} onOpenChange={setTxnOpen} className="px-2">
+            <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+              <ChevronRight className={cn(
+                'h-3 w-3 text-muted-foreground/90 transition-transform',
+                txnOpen && 'rotate-90',
+              )} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+                Transactions
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenu className="px-1 space-y-0.5">
+                {filteredTxnItems.map(item => btn(item.id, item.label, item.icon, item.live))}
+              </SidebarMenu>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
-        <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="px-2">
-          <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
-            <ChevronRight className={cn(
-              'h-3 w-3 text-muted-foreground/90 transition-transform',
-              reportsOpen && 'rotate-90',
-            )} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
-              Reports
-            </span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenu className="px-1 space-y-0.5">
-              {reportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
-            </SidebarMenu>
-          </CollapsibleContent>
-        </Collapsible>
+        {filteredReportItems.length > 0 && (
+          <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="px-2">
+            <CollapsibleTrigger className="flex items-center gap-1 w-full px-2 py-1.5 group">
+              <ChevronRight className={cn(
+                'h-3 w-3 text-muted-foreground/90 transition-transform',
+                reportsOpen && 'rotate-90',
+              )} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+                Reports
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenu className="px-1 space-y-0.5">
+                {filteredReportItems.map(item => btn(item.id, item.label, item.icon, item.live))}
+              </SidebarMenu>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-3">

@@ -2,13 +2,20 @@
  * SalesXPage.tsx — Main SalesX Hub container
  * Mirrors PayHubPage.tsx. Orange-500 accent.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { SalesXSidebar } from './SalesXSidebar';
 import type { SalesXModule } from './SalesXSidebar.types';
+import {
+  SALESX_GROUP_DEFAULT_MODULE, SALESX_GROUP_ORDER,
+  SALESX_GROUP_LABELS, getModuleGroup,
+} from './SalesXSidebar.groups';
+import type { SalesXGroup } from './SalesXSidebar.groups';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
@@ -226,7 +233,43 @@ function renderModule(
 export default function SalesXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
   const entityCode = selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE;
-  const [activeModule, setActiveModule] = useState<SalesXModule>('sx-hub');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const moduleFromUrl = (searchParams.get('m') as SalesXModule | null) ?? 'sx-hub';
+  const groupFromUrl = (searchParams.get('g') as SalesXGroup | null) ?? getModuleGroup(moduleFromUrl);
+
+  const [activeModule, setActiveModuleState] = useState<SalesXModule>(moduleFromUrl);
+  const [activeGroup, setActiveGroupState] = useState<SalesXGroup>(groupFromUrl);
+
+  const setActiveModule = useCallback((m: SalesXModule) => {
+    const g = getModuleGroup(m);
+    setActiveModuleState(m);
+    setActiveGroupState(g);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('m', m);
+      next.set('g', g);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
+  const setActiveGroup = useCallback((g: SalesXGroup) => {
+    const defaultModule = SALESX_GROUP_DEFAULT_MODULE[g];
+    setActiveGroupState(g);
+    setActiveModuleState(defaultModule);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('m', defaultModule);
+      next.set('g', g);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
+  useEffect(() => {
+    const m = (searchParams.get('m') as SalesXModule | null) ?? 'sx-hub';
+    const g = (searchParams.get('g') as SalesXGroup | null) ?? getModuleGroup(m);
+    if (m !== activeModule) setActiveModuleState(m);
+    if (g !== activeGroup) setActiveGroupState(g);
+  }, [searchParams, activeModule, activeGroup]);
   const { entityCode: entCode, userId } = useCardEntitlement();
 
   useEffect(() => {
@@ -269,6 +312,7 @@ export default function SalesXPage() {
           activeModule={activeModule}
           onModuleChange={setActiveModule}
           entityCode={entityCode}
+          activeGroup={activeGroup}
         />
         <SidebarInset>
           <ERPHeader
@@ -277,6 +321,24 @@ export default function SalesXPage() {
             showDatePicker={false}
             showCompany={isMultiEntity}
           />
+          <div className="border-b bg-muted/30">
+            <div className="flex items-center gap-1 px-4 py-1 max-w-7xl">
+              {SALESX_GROUP_ORDER.map(g => (
+                <button
+                  key={g}
+                  onClick={() => setActiveGroup(g)}
+                  className={cn(
+                    'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                    activeGroup === g
+                      ? 'border-orange-500 text-orange-700'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-orange-300',
+                  )}
+                >
+                  {SALESX_GROUP_LABELS[g]}
+                </button>
+              ))}
+            </div>
+          </div>
           <ScrollArea className="flex-1">
             <div className="p-6 max-w-7xl mx-auto">
               {renderModule(activeModule, entityCode, setActiveModule)}
