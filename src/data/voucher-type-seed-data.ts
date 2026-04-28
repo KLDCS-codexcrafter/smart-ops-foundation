@@ -221,8 +221,9 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
   }),
   // Sprint T-Phase-1.1.1p-v2 · Sample / Demo Outward voucher types.
   // Phase 1: zero-touch. Phase 2 books expense for non-refundable samples.
+  // Reuses 'Material Out' base type (D-128 — no edits to voucher-type.ts).
   seed('vt-sample-outward', {
-    name: 'Sample Outward', abbreviation: 'SOM', base_voucher_type: 'Sample Outward', family: 'Inventory',
+    name: 'Sample Outward', abbreviation: 'SOM', base_voucher_type: 'Material Out', family: 'Inventory',
     is_active: true, activation_type: 'active',
     accounting_impact: false,   // Phase 2 books expense if non-refundable
     inventory_impact: true,     // stock moves to "Samples & Demos - Out with 3rd Party" godown
@@ -230,7 +231,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     numbering_prefix: 'SOM-', numbering_width: 4, current_sequence: 1,
   }),
   seed('vt-demo-outward', {
-    name: 'Demo Outward', abbreviation: 'DOM', base_voucher_type: 'Demo Outward', family: 'Inventory',
+    name: 'Demo Outward', abbreviation: 'DOM', base_voucher_type: 'Material Out', family: 'Inventory',
     is_active: true, activation_type: 'active',
     accounting_impact: false,
     inventory_impact: true,
