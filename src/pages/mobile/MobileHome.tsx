@@ -11,6 +11,8 @@ import {
   Network, Gift, Mic, Package, Sparkles, LogOut, Download,
   Navigation, MapPin, Target, Users, PhoneIncoming, Briefcase, ClipboardList,
   Phone, MessageSquare, Inbox, Bell, BarChart3, History, Send,
+  Users2, ShieldCheck, Map, Star, Activity, AlertTriangle,
+  TrendingUp, GitBranch, Megaphone,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -85,6 +87,30 @@ function tilesForRole(role: MobileSession['role']): Tile[] {
       { label: 'WA Templates',   icon: MessageSquare, to: '/mobile/telecaller/wa-templates' },
       { label: 'My Stats',       icon: BarChart3,     to: '/mobile/telecaller/stats' },
       { label: 'Call Log',       icon: History,       to: '/mobile/telecaller/call-log' },
+    ];
+  }
+  if (role === 'supervisor') {
+    return [
+      { label: 'Team Live View',     icon: Users2,        to: '/mobile/supervisor/team-live' },
+      { label: 'Approvals',          icon: ShieldCheck,   to: '/mobile/supervisor/approvals' },
+      { label: 'Coverage Map',       icon: Map,           to: '/mobile/supervisor/coverage-map' },
+      { label: 'Quality Reviews',    icon: Star,          to: '/mobile/supervisor/quality-reviews' },
+      { label: 'Lead Distribution',  icon: Network,       to: '/mobile/supervisor/lead-distribution' },
+      { label: 'Visit Log Review',   icon: ClipboardList, to: '/mobile/supervisor/visit-log-review' },
+      { label: 'Compliance Alerts',  icon: AlertTriangle, to: '/mobile/supervisor/compliance-alerts' },
+      { label: 'Team Stats',         icon: BarChart3,     to: '/mobile/supervisor/team-stats' },
+    ];
+  }
+  if (role === 'sales_manager') {
+    return [
+      { label: 'Pipeline Health',      icon: Activity,      to: '/mobile/manager/pipeline-health' },
+      { label: 'Smart Insights',       icon: Sparkles,      to: '/mobile/manager/smart-insights' },
+      { label: 'Team Targets',         icon: Target,        to: '/mobile/manager/targets' },
+      { label: 'Revenue Trend',        icon: TrendingUp,    to: '/mobile/manager/revenue-trend' },
+      { label: 'Campaign Performance', icon: Megaphone,     to: '/mobile/manager/campaign-performance' },
+      { label: 'Cross-Dept Handoff',   icon: GitBranch,     to: '/mobile/manager/cross-dept-handoff' },
+      { label: 'Team Stats',           icon: BarChart3,     to: '/mobile/manager/team-stats' },
+      { label: 'Compliance Alerts',    icon: AlertTriangle, to: '/mobile/manager/compliance-alerts' },
     ];
   }
   return [];
