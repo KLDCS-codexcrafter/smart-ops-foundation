@@ -2,6 +2,13 @@
  * demo-outward-memo.ts — Demo Outward Memo (D-193)
  * Salesman-initiated outbound full demo unit to a prospect for evaluation.
  * Mandatory return tracking. ServiceDesk hook is Phase 1.5.5d (Phase 1 = stub).
+ *
+ * Sprint T-Phase-1.1.1p-v2 EXTENSIONS:
+ *   - Full party fields filled by Dispatch on issue
+ *   - outward_godown linkage (always refundable by nature)
+ *   - issued_by_dispatch two-step flow
+ *   - unit_value / amount per item
+ *
  * [JWT] GET/POST/PATCH /api/salesx/demo-outward-memos
  */
 
@@ -41,6 +48,10 @@ export interface DemoOutwardMemoItem {
   qty: number;
   uom: string | null;
   serial_no: string | null;
+  /** Sprint T-Phase-1.1.1p-v2 — value per unit. */
+  unit_value: number;
+  /** Sprint T-Phase-1.1.1p-v2 — qty * unit_value. */
+  amount: number;
 }
 
 export interface DemoOutwardMemo {
@@ -80,6 +91,28 @@ export interface DemoOutwardMemo {
 
   status: DOMStatus;
   dispatched_at: string | null;
+
+  // ── Sprint T-Phase-1.1.1p-v2 · Full party fields (Dispatch fills on issue) ──
+  customer_id: string | null;
+  customer_name: string | null;
+  salesman_id: string | null;
+  salesman_name: string | null;
+  agent_id: string | null;
+  agent_name: string | null;
+  broker_id: string | null;
+  broker_name: string | null;
+  engineer_emp_id: string | null;
+  engineer_name: string | null;
+
+  // Demo units are always refundable by nature (mandatory return)
+  // but track the outward godown for stock purposes.
+  outward_godown_id: string | null;
+  outward_godown_name: string | null;
+
+  // Dispatch issue step
+  issued_by_dispatch: boolean;
+  dispatch_issued_at: string | null;
+  dispatch_issued_by: string | null;
 
   created_at: string;
   updated_at: string;
