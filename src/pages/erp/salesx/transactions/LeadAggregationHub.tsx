@@ -308,19 +308,45 @@ export function LeadAggregationHubPanel({ entityCode }: Props) {
     toast.success('Marked as duplicate');
   };
 
+  const detectHeaders = useCallback((text: string) => {
+    const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length === 0) return [];
+    return lines[0].split(',').map(h => h.trim());
+  }, []);
+
+  const handleAnalyzeImport = () => {
+    const headers = detectHeaders(importText);
+    if (headers.length === 0) { toast.error('No CSV headers detected'); return; }
+    setImportHeaders(headers);
+    const auto: Record<string, string> = {};
+    TARGET_FIELDS.forEach(t => {
+      const lc = t.key.toLowerCase().replace(/_/g, ' ');
+      const match = headers.find(h => {
+        const hl = h.toLowerCase();
+        return hl === t.key || hl === lc ||
+               hl.includes(t.key) || hl.includes(lc) ||
+               (t.key === 'contact_name' && (hl.includes('name') || hl.includes('customer'))) ||
+               (t.key === 'company_name' && (hl.includes('firm') || hl.includes('business'))) ||
+               (t.key === 'phone' && (hl.includes('mobile') || hl.includes('contact'))) ||
+               (t.key === 'product_interest' && (hl.includes('product') || hl.includes('item') || hl.includes('interest')));
+      });
+      if (match) auto[t.key] = match;
+    });
+    setColumnMap(auto);
+    toast.success(`Detected ${headers.length} columns`);
+  };
+
   const handleParse = () => {
-    const rows = parseCsv(importText, importPlatform);
+    if (!columnMap.contact_name) { toast.error('Map Contact Name first'); return; }
+    const rows = parseCsvWithMapping(importText, importPlatform, columnMap);
     setImportPreview(rows);
-    if (rows.length === 0) {
-      toast.error('No valid rows found');
-    } else {
-      toast.success(`Parsed ${rows.length} rows`);
-    }
+    if (rows.length === 0) toast.error('No valid rows found');
+    else toast.success(`${rows.length} rows ready for import`);
   };
 
   const handleImport = () => {
     if (importPreview.length === 0) {
-      toast.error('Click Parse & Preview first');
+      toast.error('Generate preview first');
       return;
     }
     const res = bulkImport(importPreview, importPlatform);
