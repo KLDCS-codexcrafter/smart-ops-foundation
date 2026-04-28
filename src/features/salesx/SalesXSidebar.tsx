@@ -172,6 +172,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-smart-insights' as SalesXModule,
+      label: 'Smart Insights',
+      icon: Sparkles,
+      live: true,
+    },
+    {
+      id: 'sx-t-campaign-templates' as SalesXModule,
+      label: 'Campaign Templates',
+      icon: Layers,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
