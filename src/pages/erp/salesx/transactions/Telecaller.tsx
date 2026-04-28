@@ -344,7 +344,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     return queue;
   }, [overdueEnquiries, enquiries, today, queue]);
 
-  const filterLabels: Record<typeof dialerFilter, string> = {
+  const FILTER_LABELS: Record<typeof dialerFilter, string> = {
     overdue: 'Overdue follow-ups',
     today: "Today's follow-ups",
     new7: 'New leads (last 7 days)',
@@ -354,7 +354,13 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
   const handleStartDialer = useCallback(() => {
     const targets = buildDialerTargets(dialerFilter);
     if (targets.length === 0) { toast.error('No targets match this filter'); return; }
-    const ds = startDialerSession(targets.length, filterLabels[dialerFilter]);
+    const labels: Record<typeof dialerFilter, string> = {
+      overdue: 'Overdue follow-ups',
+      today: "Today's follow-ups",
+      new7: 'New leads (last 7 days)',
+      all: 'All open enquiries',
+    };
+    const ds = startDialerSession(targets.length, labels[dialerFilter]);
     setDialerTargets(targets);
     setDialerIdx(0);
     setCurrentDialerSession(ds);
