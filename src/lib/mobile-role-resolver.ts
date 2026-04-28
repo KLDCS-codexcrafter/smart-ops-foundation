@@ -11,8 +11,16 @@
 
 import type { Distributor } from '@/types/distributor';
 import type { PlanTier } from '@/types/card-entitlement';
+import type { SAMPerson } from '@/types/sam-person';
 
-export type ResolvedRole = 'distributor' | 'customer' | 'unknown';
+export type ResolvedRole =
+  | 'salesman'
+  | 'telecaller'
+  | 'supervisor'
+  | 'sales_manager'
+  | 'distributor'
+  | 'customer'
+  | 'unknown';
 
 export interface CustomerLite {
   id: string;
