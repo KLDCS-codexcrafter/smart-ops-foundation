@@ -38,6 +38,7 @@ import { SalesXAnalyticsPanel } from '@/pages/erp/salesx/SalesXAnalytics';
 import { SalesOrderTrackerReportPanel } from '@/pages/erp/salesx/reports/SalesOrderTrackerReport';
 import { CrossDeptHandoffTrackerPanel } from '@/pages/erp/salesx/reports/CrossDeptHandoffTracker';
 import { CampaignPerformanceReportPanel } from '@/pages/erp/salesx/reports/CampaignPerformanceReport';
+import { WebinarMasterPanel } from '@/pages/erp/salesx/transactions/WebinarMaster';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
@@ -87,6 +88,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-so-tracker':         'Sales Order Tracker',
   'sx-r-handoff-tracker':    'Cross-Dept Handoff Tracker',
   'sx-r-campaign-performance': 'Campaign Performance',
+  'sx-t-webinar':              'Webinar Manager',
+  'sx-r-webinar-report':       'Webinar Report',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -186,6 +189,9 @@ function renderModule(
       return <CrossDeptHandoffTrackerPanel entityCode={entityCode} />;
     case 'sx-r-campaign-performance':
       return <CampaignPerformanceReportPanel entityCode={entityCode} />;
+    case 'sx-t-webinar':
+    case 'sx-r-webinar-report':
+      return <WebinarMasterPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

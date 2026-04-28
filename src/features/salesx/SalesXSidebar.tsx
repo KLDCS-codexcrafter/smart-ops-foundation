@@ -11,7 +11,7 @@ import {
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
-  Package, Presentation,
+  Package, Presentation, Video,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -141,6 +141,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-webinar' as SalesXModule,
+      label: 'Webinar Manager',
+      icon: Video,
+      live: true,
+    },
+    {
       id: 'sx-analytics' as SalesXModule,
       label: 'Analytics',
       icon: BarChart3,
@@ -162,6 +168,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
     { id: 'sx-r-so-tracker',          label: 'Sales Order Tracker',  icon: ClipboardList, live: true },
     { id: 'sx-r-handoff-tracker',     label: 'Handoff Tracker',      icon: GitMerge,      live: true },
     { id: 'sx-r-campaign-performance',label: 'Campaign Performance', icon: Megaphone,     live: true },
+    { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
   ];
 
   const btn = (
