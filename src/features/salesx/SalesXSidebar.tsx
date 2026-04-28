@@ -12,6 +12,7 @@ import {
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
   Package, Presentation, Video, Store, Inbox, ClipboardCheck,
+  Sparkles, Layers,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
