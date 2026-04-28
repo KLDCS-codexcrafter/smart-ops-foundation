@@ -55,9 +55,9 @@ export default function MobileDistributorPaymentsPage() {
             <Card key={p.id} className="p-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium font-mono truncate">{p.utr ?? p.id}</p>
+                  <p className="text-sm font-medium font-mono truncate">{p.utr_no ?? p.cheque_no ?? p.id}</p>
                   <p className="text-[10px] text-muted-foreground font-mono uppercase">
-                    {p.mode} · {(p.created_at ?? '').slice(0, 10)}
+                    {p.mode} · {(p.paid_on ?? p.created_at ?? '').slice(0, 10)}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
