@@ -56,8 +56,14 @@ function readList<T>(k: string): T[] {
 type SortKey = 'roi' | 'revenue' | 'enquiries' | 'orders';
 
 export function CampaignPerformanceReportPanel({ entityCode }: Props) {
-  const campaigns = readList<Campaign>(campaignsKey(entityCode));
-  const enquiries = readList<Enquiry>(enquiriesKey(entityCode));
+  const campaigns = useMemo(
+    () => readList<Campaign>(campaignsKey(entityCode)),
+    [entityCode],
+  );
+  const enquiries = useMemo(
+    () => readList<Enquiry>(enquiriesKey(entityCode)),
+    [entityCode],
+  );
 
   const [searchText, setSearchText] = useState('');
   const [typeFilter, setTypeFilter] = useState<CampaignType | 'all'>('all');

@@ -110,6 +110,7 @@ const fmtINR = (n: number | null | undefined) => n != null ? `₹${inrFmt.format
 export function CampaignMasterPanel({ entityCode }: Props) {
   const { campaigns, saveCampaign, deleteCampaign } = useCampaigns(entityCode);
   const [form, setForm] = useState<FormState>(blankForm);
+  const [activeTab, setActiveTab] = useState('basic');
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<CampaignType | 'all'>('all');
@@ -214,6 +215,7 @@ export function CampaignMasterPanel({ entityCode }: Props) {
       outcome: c.outcome_tracking ?? defaultOutcomeTracking(),
       editingId: c.id,
     });
+    setActiveTab('basic');
   };
 
   const livePreview = useMemo(
@@ -359,7 +361,7 @@ export function CampaignMasterPanel({ entityCode }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="basic">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-4 h-8">
                 <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
                 <TabsTrigger value="budget" className="text-xs">Budget</TabsTrigger>
@@ -655,7 +657,7 @@ export function CampaignMasterPanel({ entityCode }: Props) {
               <Button data-primary size="sm" onClick={handleSave} className="bg-orange-500 hover:bg-orange-600">
                 <Save className="h-3.5 w-3.5 mr-1" /> Save
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setForm(blankForm())}>
+              <Button size="sm" variant="outline" onClick={() => { setForm(blankForm()); setActiveTab('basic'); }}>
                 <X className="h-3.5 w-3.5 mr-1" /> Cancel
               </Button>
             </div>
