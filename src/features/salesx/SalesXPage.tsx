@@ -189,6 +189,9 @@ function renderModule(
       return <CrossDeptHandoffTrackerPanel entityCode={entityCode} />;
     case 'sx-r-campaign-performance':
       return <CampaignPerformanceReportPanel entityCode={entityCode} />;
+    case 'sx-t-webinar':
+    case 'sx-r-webinar-report':
+      return <WebinarMasterPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
