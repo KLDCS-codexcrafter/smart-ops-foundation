@@ -134,6 +134,12 @@ export function seedEntityDemoData(
   safeSetArray(`erp_visit_logs_${entityCode}`, DEMO_VISIT_LOGS);
   safeSetArray(`erp_secondary_sales_${entityCode}`, DEMO_SECONDARY_SALES);
 
+  // Three Memo System (Sprint T-Phase-1.1.1n) — SRM + DM. IM created live.
+  const srmData = DEMO_SUPPLY_REQUEST_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
+  safeSetArray(`erp_supply_request_memos_${entityCode}`, srmData);
+  const dmData = DEMO_DELIVERY_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
+  safeSetArray(`erp_delivery_memos_${entityCode}`, dmData);
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,

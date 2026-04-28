@@ -176,6 +176,10 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_beat_routes_${entityCode}`,
     `erp_visit_logs_${entityCode}`,
     `erp_secondary_sales_${entityCode}`,
+    `erp_supply_request_memos_${entityCode}`,
+    `erp_delivery_memos_${entityCode}`,
+    `erp_invoice_memos_${entityCode}`,
+    `erp_salesx_conversion_log_${entityCode}`,
   ];
 }
 
