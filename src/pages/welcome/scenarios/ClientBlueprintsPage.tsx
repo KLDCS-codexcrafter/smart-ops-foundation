@@ -187,6 +187,11 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_doc_seq_SRQM_${entityCode}`,
     `erp_doc_seq_DM_${entityCode}`,
     `erp_doc_seq_IM_${entityCode}`,
+    // Sprint T-Phase-1.1.1p · Sample & Demo Outward
+    `erp_sample_outward_memos_${entityCode}`,
+    `erp_demo_outward_memos_${entityCode}`,
+    `erp_doc_seq_SOM_${entityCode}`,
+    `erp_doc_seq_DOM_${entityCode}`,
   ];
 }
 

@@ -11,6 +11,7 @@ import {
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
+  Package, Presentation,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -107,6 +108,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       id: 'sx-t-invoice-memo' as SalesXModule,
       label: 'Invoice Memo',
       icon: FileText,
+      live: true,
+    },
+    {
+      id: 'sx-t-sample-outward' as SalesXModule,
+      label: 'Sample Outward',
+      icon: Package,
+      live: true,
+    },
+    {
+      id: 'sx-t-demo-outward' as SalesXModule,
+      label: 'Demo Outward',
+      icon: Presentation,
       live: true,
     },
     {
