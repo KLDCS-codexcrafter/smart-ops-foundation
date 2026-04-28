@@ -9,16 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Megaphone } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
-import { campaignsKey, CAMPAIGN_TYPE_LABELS, type CampaignType } from '@/types/campaign';
-
-interface CampaignLite {
-  id: string;
-  campaign_name?: string;
-  name?: string;
-  campaign_type: CampaignType;
-  performance_metrics?: { roi_pct?: number };
-  outcome_tracking?: { revenue_attributed?: number; orders_converted?: number };
-}
+import { type Campaign, campaignsKey, CAMPAIGN_TYPE_LABELS } from '@/types/campaign';
 
 function readSession(): MobileSession | null {
   try {
@@ -41,7 +32,7 @@ export default function MobileCampaignPerformancePage() {
 
   const campaigns = useMemo(() => {
     if (!session) return [];
-    return loadList<CampaignLite>(campaignsKey(session.entity_code))
+    return loadList<Campaign>(campaignsKey(session.entity_code))
       .sort((a, b) => (b.performance_metrics?.roi_pct ?? 0) - (a.performance_metrics?.roi_pct ?? 0));
   }, [session]);
 
@@ -67,7 +58,7 @@ export default function MobileCampaignPerformancePage() {
         {campaigns.map(c => (
           <Card key={c.id} className="p-3 space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium truncate">{c.campaign_name ?? c.name ?? 'Campaign'}</p>
+              <p className="text-sm font-medium truncate">{c.campaign_name || 'Campaign'}</p>
               <Badge variant="outline" className="text-[10px]">{CAMPAIGN_TYPE_LABELS[c.campaign_type]}</Badge>
             </div>
             <div className="flex items-center justify-between text-[11px]">
