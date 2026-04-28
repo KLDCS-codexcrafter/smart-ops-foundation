@@ -1,7 +1,7 @@
 /**
  * Telecaller.tsx — Samvad-parity industry-leading telecaller UX
- * 6 tabs: Call Screen · Incoming · Autodialer · WA Templates · Reminders · Recording
- * [JWT] GET/POST /api/salesx/call-sessions · /api/salesx/dialer-sessions · /api/salesx/wa-templates
+ * 8 tabs: Call Screen · Incoming · Autodialer · WA Templates · Reminders · Recording · Live · Gamification
+ * [JWT] GET/POST /api/salesx/call-sessions · /api/salesx/dialer-sessions · /api/salesx/wa-templates · /api/salesx/agent-status · /api/salesx/gamification
  */
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ import {
   Phone, ChevronLeft, ChevronRight, Lock, Save, MessageCircle, Mail,
   PhoneIncoming, PhoneCall, MessageSquare, Bell, Mic, Search, Send,
   FileText, Plus, Trash2, X,
+  Activity, Award, Trophy, Flame, TrendingUp, Coffee, PhoneOff, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
@@ -32,6 +33,12 @@ import {
   WA_TEMPLATE_CATEGORY_LABELS, fillTemplate,
 } from '@/types/wa-template';
 import type { WaTemplateCategory } from '@/types/wa-template';
+import { useAgentStatus } from '@/hooks/useAgentStatus';
+import { useGamification } from '@/hooks/useGamification';
+import type { AgentState } from '@/types/agent-status';
+import { AGENT_STATE_LABELS, AGENT_STATE_COLORS } from '@/types/agent-status';
+import type { PointsRule } from '@/types/gamification';
+import { BADGE_CATALOG, LEVEL_NAMES, pointsToNextLevel } from '@/types/gamification';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -66,7 +73,7 @@ const nowHHMM = () => {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 };
 
-type TabId = 'call' | 'reminders' | 'incoming' | 'autodialer' | 'wa-templates' | 'recording';
+type TabId = 'call' | 'reminders' | 'incoming' | 'autodialer' | 'wa-templates' | 'recording' | 'live' | 'gamification';
 
 export function TelecallerPanel({ entityCode, onNavigate }: Props) {
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
@@ -81,6 +88,33 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     templates: waTemplates, saveTemplate: saveWaTemplate,
     deleteTemplate: deleteWaTemplate, sendTemplate,
   } = useWaTemplates(entityCode);
+  const {
+    statuses: agentStatuses, transitionTo, incrementCallCount: incCallCount,
+  } = useAgentStatus(entityCode);
+  const {
+    profiles, rule, awardPoints, updateRule, leaderboard, getLeaderboardForPeriod,
+  } = useGamification(entityCode);
+
+  // Identity for current user — Phase 1 hardcoded as first telecaller in seeded SAM persons
+  // (Phase 2 reads from auth)
+  const samPersons = useMemo<{ id: string; display_name: string; person_type: string }[]>(() => {
+    try {
+      // [JWT] GET /api/salesx/sam-persons
+      return JSON.parse(localStorage.getItem(`erp_sam_persons_${entityCode}`) || '[]');
+    } catch { return []; }
+  }, [entityCode]);
+  const currentTelecaller = useMemo(() => {
+    const t = samPersons.find(p => p.id.startsWith('tc-'));
+    return t ?? { id: 'me', display_name: 'Current User', person_type: 'reference' };
+  }, [samPersons]);
+
+  const currentStatus = useMemo(() =>
+    agentStatuses.find(s => s.telecaller_id === currentTelecaller.id),
+  [agentStatuses, currentTelecaller.id]);
+
+  const currentProfile = useMemo(() =>
+    profiles.find(p => p.telecaller_id === currentTelecaller.id),
+  [profiles, currentTelecaller.id]);
 
   const queue = useMemo(() => {
     const open = enquiries.filter(e => ['new', 'assigned', 'pending', 'in_process'].includes(e.status));
@@ -128,6 +162,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     template_id: '', phone: '', contact: '', company: '', product: '',
   });
   const [waFilter, setWaFilter] = useState<WaTemplateCategory | 'all'>('all');
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState<'today' | 'week' | 'month' | 'all'>('all');
 
   const today = todayISO();
 
@@ -224,6 +259,22 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
       is_active: true,
     };
     createSession(session);
+    // Update agent stats for live monitoring + gamification
+    incCallCount(currentTelecaller.id);
+    let pts = rule.call_made;
+    if (disposition === 'interested') pts += rule.call_interested;
+    else if (disposition === 'converted') pts += rule.call_converted;
+    else if (disposition === 'callback') pts += rule.call_callback;
+    if (lastWaSent) pts += rule.wa_template_sent;
+    awardPoints(
+      currentTelecaller.id, currentTelecaller.display_name, pts,
+      'call_made', 'call_session', null,
+      { isConversion: disposition === 'converted',
+        isWaSend: !!lastWaSent,
+        callTime: new Date() },
+    );
+    // Move agent into wrap_up after each call
+    transitionTo(currentTelecaller.id, currentTelecaller.display_name, 'wrap_up');
     const fu: EnquiryFollowUp = {
       id: `fu-${tsId}`,
       date: todayISO(), time: nowHHMM(),
@@ -260,6 +311,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     createSession, addFollowUp, idx, queue,
     isRecording, recordingConsent, dialerActive, currentDialerSession,
     dialerIdx, dialerTargets, lastWaSent, incrementDialerSession, endDialerSession,
+    currentTelecaller, incCallCount, awardPoints, transitionTo, rule,
   ]);
 
   const isFormActive = sessionActive || !!notes.trim();
@@ -463,6 +515,8 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     { id: 'wa-templates' as const, label: 'WA Templates',icon: MessageSquare,   badge: 0 },
     { id: 'reminders' as const,    label: 'Reminders',   icon: Bell,            badge: overdueEnquiries.length },
     { id: 'recording' as const,    label: 'Recording',   icon: Mic,             badge: 0 },
+    { id: 'live' as const,         label: 'Live',          icon: Activity,        badge: 0 },
+    { id: 'gamification' as const, label: 'Gamification',  icon: Award,           badge: 0 },
   ];
 
   return (
@@ -520,7 +574,14 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
             </div>
             <div className="flex items-center gap-3">
               <Button
-                onClick={() => { if (sessionActive) setSessionActive(false); else { setSessionActive(true); setDuration(0); } }}
+                onClick={() => {
+                  if (sessionActive) {
+                    setSessionActive(false);
+                  } else {
+                    setSessionActive(true); setDuration(0);
+                    transitionTo(currentTelecaller.id, currentTelecaller.display_name, 'on_call');
+                  }
+                }}
                 className="bg-orange-500 hover:bg-orange-600"
               >
                 <Phone className="h-4 w-4 mr-2" />{sessionActive ? 'End Call' : 'Start Call'}
@@ -1026,6 +1087,224 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
               </table>
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {activeTab === 'live' && (
+        <div className="space-y-3">
+          <Card>
+            <CardHeader><CardTitle className="text-sm flex items-center gap-2">
+              <Activity className="h-4 w-4 text-orange-500" />
+              Your Status
+            </CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className={cn('text-xs', AGENT_STATE_COLORS[currentStatus?.state ?? 'offline'])}>
+                  {AGENT_STATE_LABELS[currentStatus?.state ?? 'offline']}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {currentTelecaller.display_name}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {(['available', 'break', 'offline'] as AgentState[]).map(s => (
+                  <Button key={s} size="sm" variant="outline"
+                    onClick={() => transitionTo(currentTelecaller.id, currentTelecaller.display_name, s)}>
+                    {s === 'available' && <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                    {s === 'break' && <Coffee className="h-3.5 w-3.5 mr-1" />}
+                    {s === 'offline' && <PhoneOff className="h-3.5 w-3.5 mr-1" />}
+                    {AGENT_STATE_LABELS[s]}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-sm">Team Live View ({agentStatuses.length} agents)</CardTitle></CardHeader>
+            <CardContent>
+              {agentStatuses.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">
+                  No agent activity yet. Click a state above to log in.
+                </p>
+              ) : (
+                <table className="w-full text-xs">
+                  <thead className="text-[10px] text-muted-foreground border-b">
+                    <tr>
+                      <th className="text-left py-1">Agent</th>
+                      <th className="text-left">State</th>
+                      <th className="text-left">Time in State</th>
+                      <th className="text-right">Calls Today</th>
+                      <th className="text-right">On Call</th>
+                      <th className="text-right">Break</th>
+                      <th className="text-right">Avail</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agentStatuses.map(s => {
+                      const minsInState = Math.floor((Date.now() - new Date(s.state_changed_at).getTime()) / 60000);
+                      const fmtSecs = (n: number) => `${Math.floor(n / 60)}m`;
+                      return (
+                        <tr key={s.id} className="border-b last:border-0">
+                          <td className="py-1.5 font-medium">{s.telecaller_name}</td>
+                          <td>
+                            <Badge variant="outline" className={cn('text-[10px]', AGENT_STATE_COLORS[s.state])}>
+                              {AGENT_STATE_LABELS[s.state]}
+                            </Badge>
+                            {s.state === 'break' && s.break_reason && (
+                              <span className="text-[10px] text-muted-foreground ml-1">({s.break_reason})</span>
+                            )}
+                          </td>
+                          <td className="font-mono text-[10px]">{minsInState}m</td>
+                          <td className="text-right font-mono">{s.calls_today}</td>
+                          <td className="text-right font-mono">{fmtSecs(s.on_call_seconds_today)}</td>
+                          <td className="text-right font-mono">{fmtSecs(s.break_seconds_today)}</td>
+                          <td className="text-right font-mono">{fmtSecs(s.available_seconds_today)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {activeTab === 'gamification' && (
+        <div className="space-y-3">
+          {currentProfile && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-amber-500" /> Your Profile · {currentProfile.telecaller_name}
+              </CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-3 mb-3">
+                  <div className="text-center p-2 rounded border">
+                    <div className="text-2xl font-bold text-orange-600">{currentProfile.level}</div>
+                    <div className="text-[10px] text-muted-foreground">{LEVEL_NAMES[currentProfile.level - 1]}</div>
+                  </div>
+                  <div className="text-center p-2 rounded border">
+                    <div className="text-2xl font-bold">{currentProfile.total_points}</div>
+                    <div className="text-[10px] text-muted-foreground">Total Points</div>
+                  </div>
+                  <div className="text-center p-2 rounded border">
+                    <div className="text-2xl font-bold flex items-center justify-center gap-1">
+                      <Flame className="h-5 w-5 text-orange-500" />{currentProfile.current_streak_days}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">Day Streak</div>
+                  </div>
+                  <div className="text-center p-2 rounded border">
+                    <div className="text-2xl font-bold text-green-600">{currentProfile.lifetime_conversions}</div>
+                    <div className="text-[10px] text-muted-foreground">Conversions</div>
+                  </div>
+                </div>
+                {(() => {
+                  const prog = pointsToNextLevel(currentProfile.total_points);
+                  return (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px] text-muted-foreground">
+                        <span>Lvl {currentProfile.level} → Lvl {Math.min(currentProfile.level + 1, 10)}</span>
+                        <span>{prog.current}/{prog.next} XP</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded">
+                        <div className="h-2 bg-orange-500 rounded transition-all" style={{ width: `${prog.pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader><CardTitle className="text-sm flex items-center gap-2">
+              <Award className="h-4 w-4 text-amber-500" /> Badges
+              ({currentProfile?.earned_badges.length ?? 0}/{BADGE_CATALOG.length})
+            </CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2">
+                {BADGE_CATALOG.map(b => {
+                  const earned = currentProfile?.earned_badges.includes(b.id) ?? false;
+                  return (
+                    <div key={b.id}
+                      className={cn('text-center p-2 rounded border', earned ? 'bg-amber-500/10 border-amber-500/40' : 'opacity-30 grayscale')}
+                      title={`${b.name} — ${b.description}`}
+                    >
+                      <div className="text-2xl">{b.icon}</div>
+                      <div className="text-[9px] font-medium truncate">{b.name}</div>
+                      <Badge variant="outline" className="text-[8px] mt-0.5 capitalize">{b.rarity}</Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-orange-500" /> Leaderboard</span>
+                <select
+                  value={leaderboardPeriod}
+                  onChange={e => setLeaderboardPeriod(e.target.value as 'today' | 'week' | 'month' | 'all')}
+                  className="text-xs border rounded px-2 py-0.5 bg-background"
+                >
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="all">All Time</option>
+                </select>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const board = leaderboardPeriod === 'all'
+                  ? leaderboard.map(p => ({ ...p, period_points: p.total_points }))
+                  : getLeaderboardForPeriod(leaderboardPeriod);
+                return board.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-6">No activity yet for this period</p>
+                ) : (
+                  <table className="w-full text-xs">
+                    <thead className="text-[10px] text-muted-foreground border-b">
+                      <tr><th className="text-left py-1 w-10">#</th><th className="text-left">Agent</th><th className="text-right">Points</th><th className="text-right">Calls</th><th className="text-right">Conv.</th><th className="text-right">Lvl</th></tr>
+                    </thead>
+                    <tbody>
+                      {board.map((p, i) => (
+                        <tr key={p.id}
+                          className={cn('border-b last:border-0', p.telecaller_id === currentTelecaller.id && 'bg-orange-500/10')}>
+                          <td className="py-1.5">
+                            {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
+                          </td>
+                          <td className="font-medium">{p.telecaller_name}</td>
+                          <td className="text-right font-mono font-bold">{p.period_points}</td>
+                          <td className="text-right font-mono">{p.fy_calls}</td>
+                          <td className="text-right font-mono text-green-600">{p.fy_conversions}</td>
+                          <td className="text-right">
+                            <Badge variant="outline" className="text-[10px]">L{p.level}</Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          <details className="border rounded">
+            <summary className="text-xs cursor-pointer p-3 font-semibold">Points Rules (admin)</summary>
+            <div className="p-3 grid grid-cols-2 gap-2 text-xs">
+              {(Object.keys(rule) as Array<keyof PointsRule>).map(k => (
+                <label key={k} className="flex items-center justify-between gap-2">
+                  <span className="capitalize">{k.replace(/_/g, ' ')}</span>
+                  <Input type="number" className="h-7 w-20 text-xs font-mono"
+                    value={rule[k]}
+                    onChange={e => updateRule({ ...rule, [k]: Number(e.target.value) })} />
+                </label>
+              ))}
+            </div>
+          </details>
         </div>
       )}
     </div>

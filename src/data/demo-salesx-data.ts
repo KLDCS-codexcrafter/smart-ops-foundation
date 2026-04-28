@@ -991,3 +991,75 @@ export const DEMO_WA_TEMPLATES: WaTemplate[] = [
     created_at: '2026-02-01T10:00:00Z', updated_at: '2026-04-18T10:00:00Z',
   },
 ];
+
+import type { AgentStatus } from '@/types/agent-status';
+import type { AgentProfile, PointsTransaction } from '@/types/gamification';
+
+// 2 telecallers seeded with realistic varying activity
+export const DEMO_AGENT_STATUSES: AgentStatus[] = [
+  {
+    id: 'as-tc-m1', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m1', telecaller_name: 'Anjali Desai',
+    state: 'available',
+    state_changed_at: new Date().toISOString(),
+    current_session_id: null, current_dialer_id: null, break_reason: null,
+    calls_today: 14, on_call_seconds_today: 3680, break_seconds_today: 920,
+    wrap_seconds_today: 280, available_seconds_today: 4200,
+    last_login_at: new Date(Date.now() - 4 * 3600000).toISOString(), last_logout_at: null,
+    is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'as-tc-m2', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m2', telecaller_name: 'Meera Iyer',
+    state: 'on_call',
+    state_changed_at: new Date(Date.now() - 5 * 60000).toISOString(),
+    current_session_id: null, current_dialer_id: null, break_reason: null,
+    calls_today: 9, on_call_seconds_today: 2120, break_seconds_today: 540,
+    wrap_seconds_today: 180, available_seconds_today: 3850,
+    last_login_at: new Date(Date.now() - 3 * 3600000).toISOString(), last_logout_at: null,
+    is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+  },
+];
+
+export const DEMO_AGENT_PROFILES: AgentProfile[] = [
+  {
+    id: 'prof-tc-m1', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m1', telecaller_name: 'Anjali Desai',
+    total_points: 1850, level: 5,
+    earned_badges: ['first_call', 'call_century', 'first_conversion', 'conversion_10', 'streak_7', 'team_player'],
+    current_streak_days: 12, longest_streak_days: 18,
+    last_active_date: new Date().toISOString().split('T')[0],
+    lifetime_calls: 247, lifetime_conversions: 18, lifetime_wa_sent: 64,
+    fy_points: 1850, fy_calls: 247, fy_conversions: 18,
+    created_at: '2026-02-01T10:00:00Z', updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'prof-tc-m2', entity_id: DEFAULT_ENTITY_SHORTCODE,
+    telecaller_id: 'tc-m2', telecaller_name: 'Meera Iyer',
+    total_points: 920, level: 4,
+    earned_badges: ['first_call', 'call_century', 'first_conversion', 'streak_7', 'early_bird'],
+    current_streak_days: 5, longest_streak_days: 9,
+    last_active_date: new Date().toISOString().split('T')[0],
+    lifetime_calls: 158, lifetime_conversions: 7, lifetime_wa_sent: 42,
+    fy_points: 920, fy_calls: 158, fy_conversions: 7,
+    created_at: '2026-02-15T10:00:00Z', updated_at: new Date().toISOString(),
+  },
+];
+
+export const DEMO_POINTS_TRANSACTIONS: PointsTransaction[] = [
+  { id: 'pt-001', entity_id: DEFAULT_ENTITY_SHORTCODE, telecaller_id: 'tc-m1',
+    points: 5, reason: 'call_made', source_type: 'call_session', source_id: null,
+    awarded_at: new Date(Date.now() - 30 * 60000).toISOString(), created_at: new Date(Date.now() - 30 * 60000).toISOString() },
+  { id: 'pt-002', entity_id: DEFAULT_ENTITY_SHORTCODE, telecaller_id: 'tc-m1',
+    points: 50, reason: 'call_converted', source_type: 'call_session', source_id: null,
+    awarded_at: new Date(Date.now() - 2 * 3600000).toISOString(), created_at: new Date(Date.now() - 2 * 3600000).toISOString() },
+  { id: 'pt-003', entity_id: DEFAULT_ENTITY_SHORTCODE, telecaller_id: 'tc-m1',
+    points: 10, reason: 'call_interested', source_type: 'call_session', source_id: null,
+    awarded_at: new Date(Date.now() - 90 * 60000).toISOString(), created_at: new Date(Date.now() - 90 * 60000).toISOString() },
+  { id: 'pt-004', entity_id: DEFAULT_ENTITY_SHORTCODE, telecaller_id: 'tc-m2',
+    points: 5, reason: 'call_made', source_type: 'call_session', source_id: null,
+    awarded_at: new Date(Date.now() - 15 * 60000).toISOString(), created_at: new Date(Date.now() - 15 * 60000).toISOString() },
+  { id: 'pt-005', entity_id: DEFAULT_ENTITY_SHORTCODE, telecaller_id: 'tc-m2',
+    points: 8, reason: 'call_callback', source_type: 'call_session', source_id: null,
+    awarded_at: new Date(Date.now() - 60 * 60000).toISOString(), created_at: new Date(Date.now() - 60 * 60000).toISOString() },
+];
