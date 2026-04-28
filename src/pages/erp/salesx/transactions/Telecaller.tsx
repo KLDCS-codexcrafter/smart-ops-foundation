@@ -162,6 +162,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     template_id: '', phone: '', contact: '', company: '', product: '',
   });
   const [waFilter, setWaFilter] = useState<WaTemplateCategory | 'all'>('all');
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState<'today' | 'week' | 'month' | 'all'>('all');
 
   const today = todayISO();
 
