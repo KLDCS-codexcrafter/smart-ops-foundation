@@ -111,5 +111,94 @@ export function useEnquiries(entityCode: string) {
     toast.success('Follow-up added');
   };
 
-  return { enquiries, createEnquiry, updateEnquiry, addFollowUp };
+  /**
+   * Sprint T-Phase-1.1.1a — Enquiry → Quotation forward-flow conversion.
+   * Pure orchestration: validates eligibility, builds draft via the
+   * salesx-conversion-engine, persists the new Quotation through
+   * existing localStorage keys, then back-fills the enquiry's
+   * quotation_ids[] + status='quote' + converted_at fields.
+   * D-194: localStorage only · [JWT] stubs preserved.
+   */
+  const convertEnquiryToQuotation = (
+    enquiryId: string,
+    userId: string,
+    validityDays = 30,
+  ): Quotation | null => {
+    const all = load(entityCode);
+    const enquiry = all.find(e => e.id === enquiryId);
+    if (!enquiry) {
+      toast.error('Enquiry not found');
+      return null;
+    }
+
+    const eligibility = canConvertEnquiryToQuotation(enquiry);
+    if (!eligibility.ok) {
+      toast.error(`Cannot convert: ${eligibility.reason}`);
+      return null;
+    }
+
+    const draft = mapEnquiryToQuotationDraft(enquiry, validityDays);
+    const now = new Date().toISOString();
+    // [JWT] GET /api/salesx/quotations?entityCode={entityCode}
+    let existingQuots: Quotation[] = [];
+    try {
+      existingQuots = JSON.parse(
+        localStorage.getItem(quotationsKey(entityCode)) || '[]',
+      );
+    } catch { existingQuots = []; }
+
+    // [JWT] GET/PATCH /api/procurement/sequences/RFQ/:entityCode
+    const quotation_no = generateDocNo('RFQ', entityCode);
+    const newQuotation: Quotation = {
+      ...draft,
+      id: `q-${Date.now()}`,
+      entity_id: entityCode,
+      quotation_no,
+      created_at: now,
+      updated_at: now,
+    };
+    // [JWT] POST /api/salesx/quotations
+    localStorage.setItem(
+      quotationsKey(entityCode),
+      JSON.stringify([...existingQuots, newQuotation]),
+    );
+
+    const updated = all.map(e =>
+      e.id === enquiryId
+        ? {
+            ...e,
+            quotation_ids: [...e.quotation_ids, newQuotation.id],
+            status: 'quote' as const,
+            converted_at: e.converted_at ?? now,
+            updated_at: now,
+          }
+        : e,
+    );
+    setEnquiries(updated);
+    save(entityCode, updated);
+    // [JWT] PATCH /api/salesx/enquiries/:id (forward-link back-fill)
+
+    logConversionEvent(
+      entityCode,
+      userId,
+      'enquiry_to_quotation',
+      enquiry.id,
+      enquiry.enquiry_no,
+      newQuotation.id,
+      newQuotation.quotation_no,
+    );
+
+    toast.success(
+      `Quotation ${newQuotation.quotation_no} created from Enquiry ${enquiry.enquiry_no}`,
+    );
+    return newQuotation;
+  };
+
+  return {
+    enquiries,
+    createEnquiry,
+    updateEnquiry,
+    addFollowUp,
+    convertEnquiryToQuotation,
+  };
 }
