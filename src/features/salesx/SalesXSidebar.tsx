@@ -77,7 +77,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     return items;
   }, [cfg]);
 
-  const txnItems = [
+  const txnItems = useMemo(() => [
     {
       id: 'sx-t-enquiry' as SalesXModule,
       label: 'Enquiry',
