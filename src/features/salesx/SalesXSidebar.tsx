@@ -11,7 +11,7 @@ import {
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
-  Package, Presentation, Video, Store,
+  Package, Presentation, Video, Store, Inbox,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -138,6 +138,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       id: 'sx-t-secondary' as SalesXModule,
       label: 'Secondary Sales',
       icon: ListTree,
+      live: true,
+    },
+    {
+      id: 'sx-t-lead-agg' as SalesXModule,
+      label: 'Lead Inbox',
+      icon: Inbox,
       live: true,
     },
     {

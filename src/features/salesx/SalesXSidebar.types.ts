@@ -33,6 +33,7 @@ export type SalesXModule =
   | 'sx-t-return-memo'
   | 'sx-t-visit'
   | 'sx-t-secondary'
+  | 'sx-t-lead-agg'
   | 'sx-r-commission'
   | 'sx-r-enquiry-register'
   | 'sx-r-pipeline-summary'
@@ -76,6 +77,7 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-t-return-memo',
   'sx-t-visit',
   'sx-t-secondary',
+  'sx-t-lead-agg',
   'sx-r-commission',
   'sx-r-enquiry-register',
   'sx-r-pipeline-summary',
