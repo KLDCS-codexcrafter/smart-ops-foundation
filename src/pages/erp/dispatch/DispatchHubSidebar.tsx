@@ -11,6 +11,7 @@ import {
   Package, ListChecks, TrendingUp, Users,
   FileSpreadsheet, AlertCircle, Scale,
   FileUp, Award,
+  PackageCheck, Presentation, ArrowUpRight,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -25,11 +26,13 @@ import { cn } from '@/lib/utils';
 export type DispatchHubModule =
   | 'dh-welcome'
   | 'dh-m-packing-material' | 'dh-m-packing-bom'
+  | 'dh-t-sample-outward-issue' | 'dh-t-demo-outward-issue'
   | 'dh-t-delivery-memo'
   | 'dh-t-lr-tracker' | 'dh-t-lr-update' | 'dh-t-packing-slip-print'
   | 'dh-t-exceptions'
   | 'dh-r-dispatch-summary'
   | 'dh-r-packing-consumption' | 'dh-r-packer-performance'
+  | 'dh-r-outward-movement'
   // Sprint 15c-1
   | 'dh-t-transporter-invoice'
   | 'dh-t-dispute-queue'
@@ -52,6 +55,8 @@ interface MenuItem {
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
+  { label: 'Sample Outward Issue', module: 'dh-t-sample-outward-issue', icon: PackageCheck },
+  { label: 'Demo Outward Issue',   module: 'dh-t-demo-outward-issue',   icon: Presentation },
   { label: 'Delivery Memo',        module: 'dh-t-delivery-memo',       icon: Truck },
   { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
   { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
@@ -68,6 +73,7 @@ const MASTERS_INTERNAL: MenuItem[] = [
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
+  { label: 'Outward Movement',       module: 'dh-r-outward-movement',       icon: ArrowUpRight },
   { label: 'Packing Consumption',    module: 'dh-r-packing-consumption',    icon: TrendingUp },
   { label: 'Packer Performance',     module: 'dh-r-packer-performance',     icon: Users },
   { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale },

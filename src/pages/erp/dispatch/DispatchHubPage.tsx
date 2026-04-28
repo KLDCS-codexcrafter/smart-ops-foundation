@@ -32,6 +32,10 @@ import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummar
 import { PDFInvoiceUploadPanel } from './transactions/PDFInvoiceUpload';
 import { TransporterScorecardPanel } from './reports/TransporterScorecard';
 import { SavingsROIDashboardPanel } from './reports/SavingsROIDashboard';
+// Sprint T-Phase-1.1.1p-v2
+import { SampleOutwardIssuePanel } from './transactions/SampleOutwardIssue';
+import { DemoOutwardIssuePanel } from './transactions/DemoOutwardIssue';
+import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -50,6 +54,8 @@ function renderModule(
   switch (mod) {
     case 'dh-welcome':              return <DispatchHubWelcomePanel onModuleChange={onModuleChange} />;
     case 'dh-t-delivery-memo':      return <DeliveryMemoEntryPanel entityCode={entityCode} />;
+    case 'dh-t-sample-outward-issue': return <SampleOutwardIssuePanel entityCode={entityCode} />;
+    case 'dh-t-demo-outward-issue':   return <DemoOutwardIssuePanel entityCode={entityCode} />;
     case 'dh-m-packing-material':   return <PackingMaterialMasterPanel />;
     case 'dh-m-packing-bom':        return <PackingBOMMasterPanel />;
     case 'dh-t-lr-tracker':         return <LRTrackerPanel onModuleChange={onModuleChange} />;
@@ -58,6 +64,7 @@ function renderModule(
     case 'dh-t-exceptions':         return <DispatchExceptionsPanel />;
     case 'dh-r-packing-consumption': return <PackingConsumptionReportPanel />;
     case 'dh-r-packer-performance':  return <PackerPerformanceReportPanel />;
+    case 'dh-r-outward-movement':    return <OutwardMovementReportPanel entityCode={entityCode} />;
     case 'dh-t-transporter-invoice':    return <TransporterInvoiceInboxPanel />;
     case 'dh-t-dispute-queue':          return <DisputeQueuePanel />;
     case 'dh-r-reconciliation-summary': return <ReconciliationSummaryReportPanel />;
