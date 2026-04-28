@@ -28,7 +28,14 @@ import MobileLogin from './MobileLogin';
 import MobileHome from './MobileHome';
 
 export interface MobileSession {
-  role: 'distributor' | 'customer' | 'unknown';
+  role:
+    | 'salesman'
+    | 'telecaller'
+    | 'supervisor'
+    | 'sales_manager'
+    | 'distributor'
+    | 'customer'
+    | 'unknown';
   user_id: string | null;
   display_name: string;
   entity_code: string;
