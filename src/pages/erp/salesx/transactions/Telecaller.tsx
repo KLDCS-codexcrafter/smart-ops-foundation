@@ -515,6 +515,8 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
     { id: 'wa-templates' as const, label: 'WA Templates',icon: MessageSquare,   badge: 0 },
     { id: 'reminders' as const,    label: 'Reminders',   icon: Bell,            badge: overdueEnquiries.length },
     { id: 'recording' as const,    label: 'Recording',   icon: Mic,             badge: 0 },
+    { id: 'live' as const,         label: 'Live',          icon: Activity,        badge: 0 },
+    { id: 'gamification' as const, label: 'Gamification',  icon: Award,           badge: 0 },
   ];
 
   return (
@@ -572,7 +574,14 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
             </div>
             <div className="flex items-center gap-3">
               <Button
-                onClick={() => { if (sessionActive) setSessionActive(false); else { setSessionActive(true); setDuration(0); } }}
+                onClick={() => {
+                  if (sessionActive) {
+                    setSessionActive(false);
+                  } else {
+                    setSessionActive(true); setDuration(0);
+                    transitionTo(currentTelecaller.id, currentTelecaller.display_name, 'on_call');
+                  }
+                }}
                 className="bg-orange-500 hover:bg-orange-600"
               >
                 <Phone className="h-4 w-4 mr-2" />{sessionActive ? 'End Call' : 'Start Call'}
