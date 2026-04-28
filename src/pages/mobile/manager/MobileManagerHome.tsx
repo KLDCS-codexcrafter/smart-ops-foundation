@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, Sparkles, Target, TrendingUp, Megaphone,
   GitBranch, BarChart3, AlertTriangle, LogOut,
+  CheckSquare, Receipt,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
@@ -29,6 +30,8 @@ const TILES = [
   { label: 'Cross-Dept Handoff',   icon: GitBranch,     to: '/mobile/manager/cross-dept-handoff',   color: 'text-purple-600' },
   { label: 'Team Stats',           icon: BarChart3,     to: '/mobile/manager/team-stats',           color: 'text-cyan-600' },
   { label: 'Compliance Alerts',    icon: AlertTriangle, to: '/mobile/manager/compliance-alerts',    color: 'text-rose-600' },
+  { label: 'Attendance',           icon: CheckSquare,   to: '/mobile/shared/attendance',            color: 'text-sky-600' },
+  { label: 'Expenses',             icon: Receipt,       to: '/mobile/shared/expenses',              color: 'text-violet-600' },
 ];
 
 export default function MobileManagerHome() {
