@@ -1,6 +1,8 @@
 /**
- * useEnquiries.ts — Enquiry CRUD + follow-up trail
+ * useEnquiries.ts — Enquiry CRUD + follow-up trail + forward-flow conversion
  * [JWT] GET/POST/PUT/PATCH /api/salesx/enquiries
+ *
+ * Sprint T-Phase-1.1.1a: added convertEnquiryToQuotation (D-185 gap closure).
  */
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -8,7 +10,14 @@ import type { Enquiry, EnquiryFollowUp } from '@/types/enquiry';
 import { enquiriesKey } from '@/types/enquiry';
 import type { Prospectus } from '@/types/prospectus';
 import { prospectsKey } from '@/types/prospectus';
+import type { Quotation } from '@/types/quotation';
+import { quotationsKey } from '@/types/quotation';
 import { generateDocNo } from '@/lib/finecore-engine';
+import {
+  mapEnquiryToQuotationDraft,
+  canConvertEnquiryToQuotation,
+  logConversionEvent,
+} from '@/lib/salesx-conversion-engine';
 
 function load(entityCode: string): Enquiry[] {
   try {
