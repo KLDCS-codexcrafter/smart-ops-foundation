@@ -151,6 +151,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
     convertEnquiryToQuotation,
   } = useEnquiries(entityCode);
   const { sources: enquirySources } = useEnquirySources(entityCode);
+  const { campaigns } = useCampaigns(entityCode);
   const { findByCompanyName } = useProspects(entityCode);
 
   const samPersons = useMemo(() => loadSAMPersons(entityCode), [entityCode]);
