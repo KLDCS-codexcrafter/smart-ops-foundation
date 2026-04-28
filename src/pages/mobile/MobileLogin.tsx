@@ -187,13 +187,13 @@ export default function MobileLogin() {
         <form onSubmit={onSubmit} className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="cred" className="text-xs">
-              Mobile / Email / Partner Code
+              Mobile / Email / Partner Code / Person Code
             </Label>
             <Input
               id="cred"
               inputMode="email"
               autoComplete="username"
-              placeholder="98765 43210"
+              placeholder="98765 43210 or SM-T01"
               value={credential}
               onChange={(e) => setCredential(e.target.value)}
               disabled={busy}
