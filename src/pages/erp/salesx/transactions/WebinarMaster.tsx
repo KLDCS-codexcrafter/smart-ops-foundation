@@ -224,6 +224,11 @@ export function WebinarMasterPanel({ entityCode }: Props) {
       is_active: w.is_active,
       budget: w.budget || defaultWebinarBudget(),
       outcome: w.outcome || defaultWebinarOutcome(),
+      actual_platform_cost: w.budget?.total_actual ? String(w.budget.total_actual) : '',
+      actual_speaker_fee: '',
+      actual_promotion: '',
+      actual_production: '',
+      actual_misc: '',
       editingId: w.id,
     });
     setActiveTab('details');
