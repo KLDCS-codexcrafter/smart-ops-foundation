@@ -5,7 +5,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText,
+  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText, PackageCheck,
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, ShoppingCart, Package, CheckSquare,
   DoorOpen, Factory, Wrench, ClipboardList, TrendingUp,
   Landmark, Calculator, Users, Building2, Headphones, BarChart3, Wallet,
-  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText,
+  Store, Heart, Truck, ShoppingBag, Network, Globe, FileText, PackageCheck,
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
@@ -56,6 +56,13 @@ const LANES: Array<{
     borderColor: 'border-l-cyan-500',
     labelColor: 'text-cyan-600 dark:text-cyan-400',
     ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx', 'supplyx', 'dispatch-hub'],
+  },
+  {
+    id: 'dispatch',
+    label: 'Dispatch',
+    borderColor: 'border-l-orange-500',
+    labelColor: 'text-orange-600 dark:text-orange-400',
+    ids: ['dispatch-ops'],
   },
   {
     id: 'finance',

@@ -139,6 +139,27 @@ export function computeCardPulse(cardId: CardId, entityCode: string): CardPulse 
         status_note: 'source of truth',
       };
     }
+    case 'dispatch-ops': {
+      // [JWT] GET /api/dispatch/ops-pulse?entityCode=:entityCode
+      const soms = readList<{ issued_by_dispatch?: boolean; status?: string }>(
+        `erp_sample_outward_memos_${entityCode}`)
+        .filter(m => !m.issued_by_dispatch && m.status === 'draft');
+      const doms = readList<{ issued_by_dispatch?: boolean; status?: string }>(
+        `erp_demo_outward_memos_${entityCode}`)
+        .filter(m => !m.issued_by_dispatch && m.status === 'draft');
+      const overdue = readList<{ status?: string }>(
+        `erp_demo_outward_memos_${entityCode}`)
+        .filter(m => m.status === 'overdue');
+      return {
+        metrics: [
+          { label: 'SOMs pending',  value: String(soms.length) },
+          { label: 'DOMs pending',  value: String(doms.length) },
+          { label: 'Overdue demos', value: String(overdue.length) },
+        ],
+        status: overdue.length > 0 ? 'red' : (soms.length + doms.length) > 0 ? 'amber' : 'green',
+        status_note: overdue.length > 0 ? 'overdue demos' : 'ops clear',
+      };
+    }
     default:
       return { metrics: [], status: 'grey', status_note: '' };
   }

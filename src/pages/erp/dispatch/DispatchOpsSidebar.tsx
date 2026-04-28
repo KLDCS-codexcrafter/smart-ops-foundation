@@ -1,16 +1,14 @@
 /**
- * DispatchHubSidebar.tsx — Blue-600 accent · MTR structure
- * Mirrors CustomerHubSidebar pattern.
+ * DispatchOpsSidebar.tsx — Orange-500 accent · Dispatch Hub (internal ops)
+ * Sprint T-Phase-1.1.1p-v2.
  */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Home, Truck, Route, ClipboardEdit,
-  BarChart3, Database, ChevronRight, ArrowLeft, Send,
-  TrendingUp,
-  FileSpreadsheet, AlertCircle, Scale,
-  FileUp, Award,
+  Home, Truck, ChevronRight, ArrowLeft, BarChart3, Database,
+  Package, ListChecks, TrendingUp, Users, AlertTriangle, Printer,
+  PackageCheck, ArrowUpRight, GitMerge, Route,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -22,73 +20,80 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
-export type DispatchHubModule =
-  | 'dh-welcome'
-  | 'dh-t-lr-tracker' | 'dh-t-lr-update'
-  // Sprint 15c-1
-  | 'dh-t-transporter-invoice'
-  | 'dh-t-dispute-queue'
-  | 'dh-r-reconciliation-summary'
-  // Sprint 15c-3
-  | 'dh-t-pdf-invoice-upload'
-  | 'dh-r-transporter-scorecard'
-  | 'dh-r-savings-roi';
+export type DispatchOpsModule =
+  | 'dops-welcome'
+  | 'dops-t-delivery-memo'
+  | 'dops-t-sample-outward-issue'
+  | 'dops-t-demo-outward-issue'
+  | 'dops-t-packing-slip'
+  | 'dops-t-exceptions'
+  | 'dops-m-packing-material'
+  | 'dops-m-packing-bom'
+  | 'dops-r-outward-movement'
+  | 'dops-r-packing-consumption'
+  | 'dops-r-packer-performance'
+  | 'dops-r-dispatch-summary';
 
-interface DispatchHubSidebarProps {
-  activeModule: DispatchHubModule;
-  onModuleChange: (m: DispatchHubModule) => void;
+interface DispatchOpsSidebarProps {
+  activeModule: DispatchOpsModule;
+  onModuleChange: (m: DispatchOpsModule) => void;
 }
 
 interface MenuItem {
   label: string;
-  module: DispatchHubModule;
+  module: DispatchOpsModule;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
-  { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
-  { label: 'Transporter Invoices', module: 'dh-t-transporter-invoice', icon: FileSpreadsheet },
-  { label: 'PDF Invoice Upload',   module: 'dh-t-pdf-invoice-upload',  icon: FileUp },
-  { label: 'Dispute Queue',        module: 'dh-t-dispute-queue',       icon: AlertCircle },
+  { label: 'Delivery Memo',         module: 'dops-t-delivery-memo',        icon: Truck },
+  { label: 'Sample Outward Issue',  module: 'dops-t-sample-outward-issue', icon: ArrowUpRight },
+  { label: 'Demo Outward Issue',    module: 'dops-t-demo-outward-issue',   icon: ArrowUpRight },
+  { label: 'Packing Slip Print',    module: 'dops-t-packing-slip',         icon: Printer },
+  { label: 'Dispatch Exceptions',   module: 'dops-t-exceptions',           icon: AlertTriangle },
+];
+
+const MASTERS_ITEMS: MenuItem[] = [
+  { label: 'Packing Materials', module: 'dops-m-packing-material', icon: Package },
+  { label: 'Packing BOM',       module: 'dops-m-packing-bom',      icon: ListChecks },
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale },
-  { label: 'Transporter Scorecard',  module: 'dh-r-transporter-scorecard',  icon: Award },
-  { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp },
+  { label: 'Outward Movement Report', module: 'dops-r-outward-movement',     icon: GitMerge },
+  { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',  icon: TrendingUp },
+  { label: 'Packer Performance',      module: 'dops-r-packer-performance',   icon: Users },
+  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',     icon: BarChart3, badge: 'Soon' },
 ];
 
-export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
+export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {
   const navigate = useNavigate();
   const { activeModule, onModuleChange } = props;
-  const [mastersOpen, setMastersOpen] = useState(activeModule.startsWith('dh-m-'));
-  const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
-  const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
+  const [mastersOpen, setMastersOpen] = useState(activeModule.startsWith('dops-m-'));
+  const [txOpen, setTxOpen] = useState(activeModule.startsWith('dops-t-'));
+  const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dops-r-'));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="p-3">
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-500/15">
-            <Send className="h-4 w-4 text-blue-600" />
+          <div className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-orange-500/15">
+            <PackageCheck className="h-4 w-4 text-orange-500" />
           </div>
           <div className="group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-bold text-foreground leading-tight">Logistics Hub</p>
-            <p className="text-[10px] text-muted-foreground leading-tight">LR · POD · Transporter</p>
+            <p className="text-sm font-bold text-foreground leading-tight">Dispatch Hub</p>
+            <p className="text-[10px] text-muted-foreground leading-tight">Inward · Outward · Packing</p>
           </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Welcome */}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              isActive={activeModule === 'dh-welcome'}
-              onClick={() => onModuleChange('dh-welcome')}
-              className={cn(activeModule === 'dh-welcome' && 'bg-blue-500/15 text-blue-600')}
+              isActive={activeModule === 'dops-welcome'}
+              onClick={() => onModuleChange('dops-welcome')}
+              className={cn(activeModule === 'dops-welcome' && 'bg-orange-500/15 text-orange-500')}
             >
               <Home className="h-4 w-4" />
               <span>Welcome</span>
@@ -96,7 +101,6 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {/* Masters (external link to Command Center) */}
         <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="mt-2">
           <SidebarMenu>
             <SidebarMenuItem>
@@ -104,34 +108,34 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
                 <SidebarMenuButton>
                   <Database className="h-4 w-4" />
                   <span>Masters</span>
-                  <Badge variant="outline" className="ml-auto text-[9px] h-4 px-1">CC</Badge>
-                  <ChevronRight className={`h-3 w-3 transition-transform ${mastersOpen ? 'rotate-90' : ''}`} />
+                  <ChevronRight className={`ml-auto h-3 w-3 transition-transform ${mastersOpen ? 'rotate-90' : ''}`} />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    onClick={() => navigate('/erp/masters/logistic')}
-                    className="pl-8"
-                  >
-                    <Truck className="h-3.5 w-3.5" />
-                    <span className="text-[13px]">Transporter Master</span>
-                    <Badge variant="outline" className="ml-auto text-[9px] h-4 px-1">CC</Badge>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                {MASTERS_ITEMS.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-orange-500/15 text-orange-500')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </CollapsibleContent>
             </SidebarMenuItem>
           </SidebarMenu>
         </Collapsible>
 
-        {/* Transactions */}
         <Collapsible open={txOpen} onOpenChange={setTxOpen} className="mt-2">
           <SidebarMenu>
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
-                  isActive={activeModule.startsWith('dh-t-')}
-                  className={cn(activeModule.startsWith('dh-t-') && 'bg-blue-500/15 text-blue-600')}
+                  isActive={activeModule.startsWith('dops-t-')}
+                  className={cn(activeModule.startsWith('dops-t-') && 'bg-orange-500/15 text-orange-500')}
                 >
                   <Route className="h-4 w-4" />
                   <span>Transactions</span>
@@ -144,7 +148,7 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
                     <SidebarMenuButton
                       onClick={() => onModuleChange(i.module)}
                       isActive={activeModule === i.module}
-                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                      className={cn('pl-8', activeModule === i.module && 'bg-orange-500/15 text-orange-500')}
                     >
                       <i.icon className="h-3.5 w-3.5" />
                       <span className="text-[13px]">{i.label}</span>
@@ -156,14 +160,13 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
           </SidebarMenu>
         </Collapsible>
 
-        {/* Reports */}
         <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="mt-2">
           <SidebarMenu>
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
-                  isActive={activeModule.startsWith('dh-r-')}
-                  className={cn(activeModule.startsWith('dh-r-') && 'bg-blue-500/15 text-blue-600')}
+                  isActive={activeModule.startsWith('dops-r-')}
+                  className={cn(activeModule.startsWith('dops-r-') && 'bg-orange-500/15 text-orange-500')}
                 >
                   <BarChart3 className="h-4 w-4" />
                   <span>Reports</span>
@@ -176,7 +179,7 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
                     <SidebarMenuButton
                       onClick={() => onModuleChange(i.module)}
                       isActive={activeModule === i.module}
-                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                      className={cn('pl-8', activeModule === i.module && 'bg-orange-500/15 text-orange-500')}
                     >
                       <i.icon className="h-3.5 w-3.5" />
                       <span className="text-[13px]">{i.label}</span>
@@ -210,4 +213,4 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   );
 }
 
-export default DispatchHubSidebar;
+export default DispatchOpsSidebar;
