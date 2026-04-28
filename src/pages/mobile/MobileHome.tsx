@@ -10,6 +10,7 @@ import {
   ShoppingBag, ShoppingCart, FileText, IndianRupee, CreditCard,
   Network, Gift, Mic, Package, Sparkles, LogOut, Download,
   Navigation, MapPin, Target, Users, PhoneIncoming, Briefcase, ClipboardList,
+  Phone, MessageSquare, Inbox, Bell, BarChart3, History, Send,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -70,6 +71,20 @@ function tilesForRole(role: MobileSession['role']): Tile[] {
       { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales' },
       { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets' },
       { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission' },
+    ];
+  }
+  if (role === 'telecaller') {
+    return [
+      { label: 'Call Queue',     icon: Phone,         to: '/mobile/telecaller/queue' },
+      { label: 'Quick Enquiry',  icon: PhoneIncoming, to: '/mobile/telecaller/quick-enquiry' },
+      { label: 'My Pipeline',    icon: Briefcase,     to: '/mobile/telecaller/pipeline' },
+      { label: 'Quote Send',     icon: Send,          to: '/mobile/telecaller/quote-send' },
+      { label: 'My Customers',   icon: Users,         to: '/mobile/telecaller/customers' },
+      { label: 'Lead Inbox',     icon: Inbox,         to: '/mobile/telecaller/leads' },
+      { label: 'Reminders',      icon: Bell,          to: '/mobile/telecaller/reminders' },
+      { label: 'WA Templates',   icon: MessageSquare, to: '/mobile/telecaller/wa-templates' },
+      { label: 'My Stats',       icon: BarChart3,     to: '/mobile/telecaller/stats' },
+      { label: 'Call Log',       icon: History,       to: '/mobile/telecaller/call-log' },
     ];
   }
   return [];

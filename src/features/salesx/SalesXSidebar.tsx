@@ -12,7 +12,7 @@ import {
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
   Package, Presentation, Video, Store, Inbox, ClipboardCheck,
-  Sparkles, Layers, Receipt,
+  Sparkles, Layers, Receipt, History,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -222,6 +222,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-campaign-performance',label: 'Campaign Performance', icon: Megaphone,     live: true },
     { id: 'sx-r-exhibition-report',   label: 'Exhibition Report',    icon: Store,         live: true },
     { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
+    { id: 'sx-r-call-log-history',    label: 'Call Log History',     icon: History,       live: true },
   ], [cfg]);
 
   const filteredMasterItems = useMemo(() =>

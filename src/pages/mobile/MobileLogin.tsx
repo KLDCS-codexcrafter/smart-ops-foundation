@@ -160,7 +160,10 @@ export default function MobileLogin() {
     }
 
     toast.success(`Welcome, ${identity.display_name}`);
-    const dest = identity.role === 'salesman' ? '/mobile/salesman' : '/mobile/home';
+    const dest =
+      identity.role === 'salesman'   ? '/mobile/salesman' :
+      identity.role === 'telecaller' ? '/mobile/telecaller' :
+      '/mobile/home';
     navigate(dest, { replace: true });
   };
 

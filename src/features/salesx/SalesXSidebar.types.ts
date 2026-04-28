@@ -58,7 +58,8 @@ export type SalesXModule =
   | 'sx-t-smart-insights'
   | 'sx-t-campaign-templates'
   | 'sx-t-pi-tracker'
-  | 'sx-t-order-desk';
+  | 'sx-t-order-desk'
+  | 'sx-r-call-log-history';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -109,4 +110,5 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-t-campaign-templates',
   'sx-t-pi-tracker',
   'sx-t-order-desk',
+  'sx-r-call-log-history',
 ];
