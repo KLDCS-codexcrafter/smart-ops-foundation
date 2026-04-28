@@ -28,7 +28,7 @@ import { useCallSessions } from '@/hooks/useCallSessions';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useCtrlS } from '@/lib/keyboard';
 import type {
-  QualityCriterion, CallReview, CoachingFeedback,
+  QualityCriterion, CallReview,
   CriterionScore, CoachingActionItem, CoachingActionStatus, ReviewStatus,
 } from '@/types/call-quality';
 import { REVIEW_STATUS_LABELS, REVIEW_STATUS_COLORS } from '@/types/call-quality';
