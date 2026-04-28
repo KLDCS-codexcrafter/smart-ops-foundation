@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { resolveIdentity, type CustomerLite, type ResolvedRole } from '@/lib/mobile-role-resolver';
+import type { CardId } from '@/types/card-entitlement';
 import type { Distributor } from '@/types/distributor';
 import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { logAudit } from '@/lib/card-audit-engine';
