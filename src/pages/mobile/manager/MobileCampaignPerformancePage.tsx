@@ -9,16 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Megaphone } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
-import { campaignsKey, CAMPAIGN_TYPE_LABELS, type CampaignType } from '@/types/campaign';
-
-interface CampaignLite {
-  id: string;
-  campaign_name?: string;
-  name?: string;
-  campaign_type: CampaignType;
-  performance_metrics?: { roi_pct?: number };
-  outcome_tracking?: { revenue_attributed?: number; orders_converted?: number };
-}
+import { type Campaign, campaignsKey, CAMPAIGN_TYPE_LABELS } from '@/types/campaign';
 
 function readSession(): MobileSession | null {
   try {

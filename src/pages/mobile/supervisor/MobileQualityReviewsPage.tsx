@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Star } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
-import { type CallReview, REVIEW_STATUS_LABELS, REVIEW_STATUS_COLORS } from '@/types/call-quality';
+import { type CallReview, REVIEW_STATUS_LABELS, REVIEW_STATUS_COLORS, callReviewsKey } from '@/types/call-quality';
 import { cn } from '@/lib/utils';
 
 function readSession(): MobileSession | null {
