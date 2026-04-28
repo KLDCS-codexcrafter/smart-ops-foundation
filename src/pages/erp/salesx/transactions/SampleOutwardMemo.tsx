@@ -178,6 +178,14 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
   const handleDispatch = useCallback(() => persist('dispatched'), [persist]);
   useCtrlS(handleDispatch);
 
+  // Sprint T-Phase-1.1.1p-v2 — Show issued-by-Dispatch info banner with party fields
+  // (read-only) when the most recent persisted SOM has been issued.
+  const existingMemos = useMemo(() => ls<SampleOutwardMemo>(sampleOutwardMemosKey(entityCode)), [entityCode]);
+  const lastIssued = useMemo(
+    () => existingMemos.slice().reverse().find(m => m.issued_by_dispatch) ?? null,
+    [existingMemos],
+  );
+
   return (
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
@@ -189,6 +197,25 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
         </div>
         <Badge variant={STATUS_VARIANT.draft} className="font-mono text-xs">{memoNo}</Badge>
       </div>
+
+      {lastIssued && (
+        <Card className="border-blue-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">
+              Last issued by Dispatch · {lastIssued.memo_no}
+              <Badge variant="secondary" className="ml-2 text-[10px]">read-only</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+            <div><span className="text-muted-foreground">Customer: </span>{lastIssued.customer_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Salesman: </span>{lastIssued.salesman_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Agent / Broker: </span>{lastIssued.agent_name ?? lastIssued.broker_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Engineer: </span>{lastIssued.engineer_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Refundable: </span>{lastIssued.is_refundable ? 'Yes' : 'No (consumed)'}</div>
+            <div><span className="text-muted-foreground">Godown: </span>{lastIssued.outward_godown_name ?? '—'}</div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
