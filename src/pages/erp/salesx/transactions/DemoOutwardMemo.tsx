@@ -229,7 +229,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
   // Sprint T-Phase-1.1.1p-v2 — read-only banner for last DOM issued by Dispatch.
   const existingDOMs = useMemo(() => ls<DemoOutwardMemo>(demoOutwardMemosKey(entityCode)), [entityCode]);
   const lastIssued = useMemo(
-    () => existingDOMs.slice().reverse().find(m => m.issued_by_dispatch) ?? null,
+    () => existingDOMs.find(m => m.memo_no === memoNo && m.issued_by_dispatch) ?? null,
     [existingDOMs],
   );
 

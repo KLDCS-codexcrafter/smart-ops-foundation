@@ -182,8 +182,8 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
   // (read-only) when the most recent persisted SOM has been issued.
   const existingMemos = useMemo(() => ls<SampleOutwardMemo>(sampleOutwardMemosKey(entityCode)), [entityCode]);
   const lastIssued = useMemo(
-    () => existingMemos.slice().reverse().find(m => m.issued_by_dispatch) ?? null,
-    [existingMemos],
+    () => existingMemos.find(m => m.memo_no === memoNo && m.issued_by_dispatch) ?? null,
+    [existingMemos, memoNo],
   );
 
   return (
