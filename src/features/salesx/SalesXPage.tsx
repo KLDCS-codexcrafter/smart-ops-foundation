@@ -312,6 +312,7 @@ export default function SalesXPage() {
           activeModule={activeModule}
           onModuleChange={setActiveModule}
           entityCode={entityCode}
+          activeGroup={activeGroup}
         />
         <SidebarInset>
           <ERPHeader
@@ -320,6 +321,24 @@ export default function SalesXPage() {
             showDatePicker={false}
             showCompany={isMultiEntity}
           />
+          <div className="border-b bg-muted/30">
+            <div className="flex items-center gap-1 px-4 py-1 max-w-7xl">
+              {SALESX_GROUP_ORDER.map(g => (
+                <button
+                  key={g}
+                  onClick={() => setActiveGroup(g)}
+                  className={cn(
+                    'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                    activeGroup === g
+                      ? 'border-orange-500 text-orange-700'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-orange-300',
+                  )}
+                >
+                  {SALESX_GROUP_LABELS[g]}
+                </button>
+              ))}
+            </div>
+          </div>
           <ScrollArea className="flex-1">
             <div className="p-6 max-w-7xl mx-auto">
               {renderModule(activeModule, entityCode, setActiveModule)}
