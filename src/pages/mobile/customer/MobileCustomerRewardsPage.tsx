@@ -39,7 +39,7 @@ export default function MobileCustomerRewardsPage() {
   if (!session) return null;
 
   const balance = myState?.points_balance ?? 0;
-  const tier = myState?.tier ?? 'bronze';
+  const tier = myState?.current_tier ?? 'bronze';
 
   return (
     <div className="p-4 max-w-md mx-auto space-y-3 pb-12">
