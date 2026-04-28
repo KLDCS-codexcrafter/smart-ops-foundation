@@ -124,6 +124,13 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     return list.slice().sort((a, b) => b.quotation_date.localeCompare(a.quotation_date));
   }, [quotations, stageFilter]);
 
+  // Sprint T-Phase-1.1.1m · Stock availability for item grid (D-186 · Operix MOAT #19)
+  const itemNames = useMemo(
+    () => form.items.map(it => it.item_name).filter(n => n && n.trim()),
+    [form.items],
+  );
+  const { availabilityMap, refresh: refreshAvailability } = useStockAvailability(entityCode, itemNames);
+
   const handleNew = () => {
     setEditingId(null); setForm(blank()); setView('form'); setSnapshotId(null);
   };
@@ -136,10 +143,21 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   const handleSave = useCallback(() => {
     if (!form.customer_id) { toast.error('Customer required'); return; }
     if (form.items.length === 0) { toast.error('Add at least one item'); return; }
+    const qid = editingId ?? `q-${Date.now()}`;
     if (editingId) updateQuotation(editingId, form);
     else createQuotation(form);
+    // Sprint T-Phase-1.1.1m · upsert quote-level soft-hold reservation
+    upsertQuoteReservation(
+      entityCode,
+      qid,
+      '', // quotation_no assigned by useQuotations; refresh on next mount
+      form.customer_name,
+      null, // salesman: Phase 2
+      form.items.map(it => ({ item_name: it.item_name, qty: it.qty })),
+    );
+    refreshAvailability();
     setView('list');
-  }, [form, editingId, updateQuotation, createQuotation]);
+  }, [form, editingId, updateQuotation, createQuotation, entityCode, refreshAvailability]);
 
   useCtrlS(view === 'form' ? handleSave : () => {});
 
