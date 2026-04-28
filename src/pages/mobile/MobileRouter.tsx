@@ -182,7 +182,7 @@ export default function MobileRouter() {
       )}
 
       <main className="flex-1">
-        {isLogin ? <MobileLogin /> : <MobileHome />}
+        {isLogin ? <MobileLogin /> : renderRoleRoute(location.pathname)}
       </main>
 
       <InstallPromptBanner />
