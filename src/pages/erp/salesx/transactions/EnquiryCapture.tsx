@@ -22,6 +22,7 @@ import { canConvertEnquiryToQuotation } from '@/lib/salesx-conversion-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { useEnquirySources } from '@/hooks/useEnquirySources';
+import { useCampaigns } from '@/hooks/useCampaigns';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
