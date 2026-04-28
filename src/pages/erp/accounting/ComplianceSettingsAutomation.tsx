@@ -36,8 +36,10 @@ import {
   COMPLY360_GROUP_KEY, comply360RCMKey, comply360TDSPKey, comply360TDSRKey,
   comply360LCKey, comply360EximKey, comply360SAMKey, comply360WAKey,
   comply360SettlementKey, comply360OutstandingKey,
-  type SAMConfig,
+  comply360TallyKey, DEFAULT_TALLY_EXPORT_CONFIG,
+  type SAMConfig, type TallyExportConfig,
 } from './ComplianceSettingsAutomation.constants';
+import type { TallyAction } from '@/lib/voucher-export-engine';
 
 // ─── Interfaces ───────────────────────────────────────────────────────
 
