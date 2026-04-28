@@ -143,7 +143,6 @@ export function RegisterGrid({
     const def = views.find(v => v.isDefault);
     if (def) setFilters(def.filters);
     // Effect intentionally narrow-scoped — re-runs only on entity/register switch.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, meta.registerCode]);
 
   // [T-T10-pre.2d-D] Save / manage dialog state.
