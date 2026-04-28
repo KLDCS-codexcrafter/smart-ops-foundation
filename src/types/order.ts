@@ -39,6 +39,9 @@ export interface Order {
   place_of_supply?: string; is_inter_state?: boolean;
   ref_no?: string; // SO: customer PO ref. PO: indent/RFQ ref
   ref_date?: string;
+  // Sprint 1.1.1k-followup — link to source Quotation (SO only)
+  quotation_id?: string | null;
+  quotation_no?: string | null;
   effective_date?: string;
   dispatch_details?: OrderDispatchDetails;
   lines: OrderLine[];

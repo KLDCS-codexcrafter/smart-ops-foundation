@@ -55,6 +55,8 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-t-webinar':              'crm',
   'sx-t-smart-insights':       'crm',
   'sx-t-campaign-templates':   'crm',
+  'sx-t-pi-tracker':           'crm',
+  'sx-t-order-desk':           'crm',
 
   // Reports
   'sx-r-commission':           'report',

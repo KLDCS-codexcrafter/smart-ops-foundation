@@ -28,6 +28,7 @@ const STAGE_COLOR: Record<QuotationStage, string> = {
   negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
   confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
   proforma: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
+  sales_order: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
   lost: 'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
 };

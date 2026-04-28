@@ -52,6 +52,7 @@ const STAGE_COLOR: Record<QuotationStage, string> = {
   negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
   confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
   proforma: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
+  sales_order: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
   lost: 'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
 };
@@ -91,6 +92,9 @@ const blank = (): FormState => ({
   proforma_no: null,
   proforma_date: null,
   proforma_converted_at: null,
+  so_id: null,
+  so_no: null,
+  so_converted_at: null,
   // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
   project_id: null,
   is_active: true,
@@ -103,7 +107,7 @@ function recalcLine(it: QuotationItem): QuotationItem {
 }
 
 export function QuotationEntryPanel({ entityCode }: Props) {
-  const { quotations, createQuotation, updateQuotation, createRevision } = useQuotations(entityCode);
+  const { quotations, createQuotation, updateQuotation, createRevision, markConvertedToSO } = useQuotations(entityCode);
   const { enquiries } = useEnquiries(entityCode);
   const { createOrder } = useOrders(entityCode);
   const customers = useMemo(() => loadCustomers(), []);
@@ -244,7 +248,14 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       terms_conditions: q.terms_conditions ?? '',
     });
     if (result) {
-      updateQuotation(editingId, { quotation_stage: 'confirmed' });
+      markConvertedToSO(editingId, result.id, result.order_no);
+      setForm(prev => ({
+        ...prev,
+        quotation_stage: 'sales_order',
+        so_id: result.id,
+        so_no: result.order_no,
+        so_converted_at: new Date().toISOString(),
+      }));
       // Sprint T-Phase-1.1.1m · release quote-level hold · create order-level hold
       releaseQuoteReservations(entityCode, editingId);
       createOrderReservations(
@@ -257,7 +268,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       refreshAvailability();
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
     }
-  }, [editingId, quotations, createOrder, entityCode, updateQuotation, refreshAvailability]);
+  }, [editingId, quotations, createOrder, entityCode, markConvertedToSO, refreshAvailability]);
 
   /**
    * Quotation → Proforma conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
@@ -439,7 +450,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
               <Printer className="h-3 w-3 mr-1" /> Print Proforma
             </Button>
           )}
-          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'proforma') && (
+          {editingId && (form.quotation_stage === 'confirmed' || form.quotation_stage === 'proforma') && !form.so_id && (
             <Button
               size="sm"
               variant="outline"
@@ -448,6 +459,11 @@ export function QuotationEntryPanel({ entityCode }: Props) {
             >
               Convert to Sales Order
             </Button>
+          )}
+          {editingId && form.so_id && form.so_no && (
+            <Badge variant="outline" className="text-[10px] bg-purple-500/10 text-purple-700 border-purple-500/30 self-center">
+              → {form.so_no}
+            </Badge>
           )}
         </div>
       </div>

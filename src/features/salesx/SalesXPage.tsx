@@ -52,6 +52,8 @@ import { CallQualityHubPanel } from '@/pages/erp/salesx/transactions/CallQuality
 import { LeadDistributionHubPanel } from '@/pages/erp/salesx/transactions/LeadDistributionHub';
 import { SmartInsightsPanelComponent } from '@/pages/erp/salesx/transactions/SmartInsightsPanel';
 import { CampaignTemplatesPanelComponent } from '@/pages/erp/salesx/transactions/CampaignTemplatesPanel';
+import { PITrackerPanelComponent } from '@/pages/erp/salesx/transactions/PITrackerPanel';
+import { OrderDeskPanelComponent } from '@/pages/erp/salesx/transactions/OrderDeskPanel';
 import { SalesReturnMemoPanel } from '@/pages/erp/salesx/transactions/SalesReturnMemo';
 import { SalesReturnMemoRegisterPanel } from '@/pages/erp/salesx/reports/SalesReturnMemoRegister';
 import { TerritoryMasterPanel } from '@/pages/erp/salesx/masters/TerritoryMaster';
@@ -110,6 +112,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-lead-distribution':    'Lead Distribution',
   'sx-t-smart-insights':       'Smart Insights',
   'sx-t-campaign-templates':   'Campaign Templates',
+  'sx-t-pi-tracker':           'PI Tracker',
+  'sx-t-order-desk':           'Order Desk',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -225,6 +229,10 @@ function renderModule(
       return <SmartInsightsPanelComponent entityCode={entityCode} />;
     case 'sx-t-campaign-templates':
       return <CampaignTemplatesPanelComponent entityCode={entityCode} />;
+    case 'sx-t-pi-tracker':
+      return <PITrackerPanelComponent entityCode={entityCode} />;
+    case 'sx-t-order-desk':
+      return <OrderDeskPanelComponent entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

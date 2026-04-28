@@ -93,6 +93,9 @@ export function mapEnquiryToQuotationDraft(
     proforma_no: null,
     proforma_date: null,
     proforma_converted_at: null,
+    so_id: null,
+    so_no: null,
+    so_converted_at: null,
     is_active: true,
     // ProjX hookpoint stub (D-171 dual-phase) · Phase 1.1.2 wires real
     project_id: null,

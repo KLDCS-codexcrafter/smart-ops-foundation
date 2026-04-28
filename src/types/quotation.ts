@@ -7,7 +7,7 @@
 export type QuotationType = 'original' | 'revised';
 export type QuotationStage =
   | 'draft' | 'on_hold' | 'negotiation'
-  | 'confirmed' | 'proforma'        // Sprint 6B — between confirmed and sales_order
+  | 'confirmed' | 'proforma' | 'sales_order'   // Sprint 1.1.1k-followup — SO conversion stage
   | 'lost' | 'cancelled';
 
 export const QUOTATION_STAGE_LABELS: Record<QuotationStage, string> = {
@@ -16,6 +16,7 @@ export const QUOTATION_STAGE_LABELS: Record<QuotationStage, string> = {
   negotiation: 'Negotiation',
   confirmed: 'Confirmed',
   proforma: 'Proforma Issued',
+  sales_order: 'SO Issued',
   lost: 'Lost',
   cancelled: 'Cancelled',
 };
@@ -26,6 +27,7 @@ export const QUOTATION_STAGE_COLOURS: Record<QuotationStage, string> = {
   negotiation: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
   confirmed: 'bg-green-500/15 text-green-700 border-green-500/30',
   proforma: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
+  sales_order: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
   lost: 'bg-destructive/15 text-destructive border-destructive/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
 };
@@ -85,6 +87,11 @@ export interface Quotation {
   proforma_no: string | null;              // PF/YY-YY/NNNN
   proforma_date: string | null;
   proforma_converted_at: string | null;
+
+  // Sprint 1.1.1k-followup — Sales Order conversion
+  so_id: string | null;                    // Order.id once converted
+  so_no: string | null;                    // SO/YY-YY/NNNN
+  so_converted_at: string | null;
 
   // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
   // Phase 1.1.2 ProjX page wires this real. Existing localStorage records
