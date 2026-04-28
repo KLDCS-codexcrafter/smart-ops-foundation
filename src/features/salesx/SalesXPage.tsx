@@ -88,6 +88,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-so-tracker':         'Sales Order Tracker',
   'sx-r-handoff-tracker':    'Cross-Dept Handoff Tracker',
   'sx-r-campaign-performance': 'Campaign Performance',
+  'sx-t-webinar':              'Webinar Manager',
+  'sx-r-webinar-report':       'Webinar Report',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
