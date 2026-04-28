@@ -5,7 +5,7 @@
  * [JWT] GET /api/salesx/visit-logs?entityCode={entityCode}
  * [JWT] POST /api/salesx/visit-logs
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
