@@ -98,6 +98,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       live: true,
     },
     {
+      id: 'sx-t-supply-memo' as SalesXModule,
+      label: 'Supply Request Memo',
+      icon: ClipboardList,
+      live: true,
+    },
+    {
+      id: 'sx-t-invoice-memo' as SalesXModule,
+      label: 'Invoice Memo',
+      icon: FileText,
+      live: true,
+    },
+    {
       id: 'sx-t-return-memo' as SalesXModule,
       label: 'Sales Return Memo',
       icon: FileMinus,
