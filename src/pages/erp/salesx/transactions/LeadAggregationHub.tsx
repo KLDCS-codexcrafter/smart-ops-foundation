@@ -21,7 +21,7 @@ import {
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import {
   Plus, Save, Trash2, X, Search, Inbox, Upload, ChevronDown, ChevronUp,
-  ArrowRightCircle, Copy, AlertCircle,
+  ArrowRightCircle, Copy, AlertCircle, FileText,
 } from 'lucide-react';
 import { useLeads } from '@/hooks/useLeads';
 import { useCampaigns } from '@/hooks/useCampaigns';
