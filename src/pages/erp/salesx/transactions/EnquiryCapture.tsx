@@ -13,10 +13,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Plus, Save, Trash2, ArrowLeft, Search, Edit2 } from 'lucide-react';
+import { Plus, Save, Trash2, ArrowLeft, Search, Edit2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
+import { canConvertEnquiryToQuotation } from '@/lib/salesx-conversion-engine';
+import { getCurrentUserId } from '@/lib/auth-helpers';
 import { useEnquirySources } from '@/hooks/useEnquirySources';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
@@ -140,7 +143,11 @@ const blankFollowUp = (): Omit<EnquiryFollowUp, 'id' | 'user_name'> => ({
 
 export function EnquiryCapturePanel({ entityCode }: Props) {
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
-  const { enquiries, createEnquiry, updateEnquiry, addFollowUp } = useEnquiries(entityCode);
+  const navigate = useNavigate();
+  const {
+    enquiries, createEnquiry, updateEnquiry, addFollowUp,
+    convertEnquiryToQuotation,
+  } = useEnquiries(entityCode);
   const { sources: enquirySources } = useEnquirySources(entityCode);
   const { findByCompanyName } = useProspects(entityCode);
 
@@ -207,6 +214,33 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
     }
     setView('list');
   }, [form, editingId, updateEnquiry, createEnquiry]);
+
+  /**
+   * Sprint T-Phase-1.1.1a — Push-side Enquiry → Quotation conversion.
+   * Closes the D-185 audit gap: Enquiry schema has quotation_ids[] +
+   * converted_at fields but no UI button populated them. This handler
+   * delegates to useEnquiries.convertEnquiryToQuotation (which calls
+   * salesx-conversion-engine pure mappers), then routes the user to
+   * the new Quotation in the transactions tab.
+   */
+  const handleConvertToQuotation = useCallback(() => {
+    if (!editingId) {
+      toast.error('Save the enquiry first');
+      return;
+    }
+    const enq = enquiries.find(e => e.id === editingId);
+    if (!enq) return;
+    const eligibility = canConvertEnquiryToQuotation(enq);
+    if (!eligibility.ok) {
+      toast.error(`Cannot convert: ${eligibility.reason}`);
+      return;
+    }
+    const result = convertEnquiryToQuotation(enq.id, getCurrentUserId(), 30);
+    if (result) {
+      // [JWT] navigation only · no API call
+      navigate(`/erp/salesx/transactions?tab=quotation&qid=${result.id}`);
+    }
+  }, [editingId, enquiries, convertEnquiryToQuotation, navigate]);
 
   useCtrlS(view === 'form' ? handleSave : () => {});
 
@@ -398,9 +432,21 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
-          <Save className="h-4 w-4 mr-2" />Save Enquiry
-        </Button>
+        <div className="flex items-center gap-2">
+          {editingId && form.status !== 'lost' && form.status !== 'sold' && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-blue-500/40 text-blue-700 hover:bg-blue-500/10"
+              onClick={handleConvertToQuotation}
+            >
+              <ArrowRight className="h-4 w-4 mr-1.5" />Convert to Quotation
+            </Button>
+          )}
+          <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
+            <Save className="h-4 w-4 mr-2" />Save Enquiry
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="details">

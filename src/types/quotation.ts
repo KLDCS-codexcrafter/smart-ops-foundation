@@ -86,6 +86,11 @@ export interface Quotation {
   proforma_date: string | null;
   proforma_converted_at: string | null;
 
+  // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
+  // Phase 1.1.2 ProjX page wires this real. Existing localStorage records
+  // without this field are read with `q.project_id ?? null` fallback.
+  project_id: string | null;
+
   is_active: boolean;
   created_at: string;
   updated_at: string;

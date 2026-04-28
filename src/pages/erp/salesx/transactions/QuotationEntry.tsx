@@ -85,6 +85,8 @@ const blank = (): FormState => ({
   proforma_no: null,
   proforma_date: null,
   proforma_converted_at: null,
+  // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
+  project_id: null,
   is_active: true,
 });
 
@@ -179,6 +181,12 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     }
   };
 
+  /**
+   * Quotation → Sales Order conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
+   * Uses useOrders.createOrder with base_voucher_type='Sales Order' (D-127/D-128 zero-touch preserved).
+   * Mapping is inline here (not in salesx-conversion-engine) because it composes the live
+   * `quotations` and `createOrder` runtime closures from this component.
+   */
   const handleConvertToSO = useCallback(() => {
     if (!editingId) return;
     const q = quotations.find(x => x.id === editingId);
@@ -217,6 +225,11 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     }
   }, [editingId, quotations, createOrder, entityCode, updateQuotation]);
 
+  /**
+   * Quotation → Proforma conversion · existing pattern verified by Sprint T-Phase-1.1.1a.
+   * Uses generateDocNo('PF', entityCode) — same sequence engine as other doc numbers.
+   * Stage transitions to 'proforma' on the existing Quotation record (no new entity).
+   */
   const handleConvertToProforma = useCallback(() => {
     if (!editingId) return;
     const q = quotations.find(x => x.id === editingId);

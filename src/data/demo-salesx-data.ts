@@ -274,6 +274,8 @@ function makeQuotations(arche: DemoArchetype, count: number, prefix: string): De
       proforma_no: null,
       proforma_date: null,
       proforma_converted_at: null,
+      // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
+      project_id: null,
       is_active: true,
       created_at: NOW_ISO,
       updated_at: NOW_ISO,
