@@ -11,7 +11,7 @@ import {
   Wallet, ListChecks, GitBranch, FileBarChart,
   CalendarClock, Trophy, BarChart3, ClipboardList,
   FileMinus, MapPin, Route, Navigation, ListTree, MapPinned, GitMerge,
-  Package, Presentation, Video, Store, Inbox,
+  Package, Presentation, Video, Store, Inbox, ClipboardCheck,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -156,6 +156,18 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode }: Prop
       id: 'sx-t-webinar' as SalesXModule,
       label: 'Webinar Manager',
       icon: Video,
+      live: true,
+    },
+    {
+      id: 'sx-t-call-quality' as SalesXModule,
+      label: 'Call Quality',
+      icon: ClipboardCheck,
+      live: true,
+    },
+    {
+      id: 'sx-t-lead-distribution' as SalesXModule,
+      label: 'Lead Distribution',
+      icon: Network,
       live: true,
     },
     {

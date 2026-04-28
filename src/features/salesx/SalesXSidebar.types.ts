@@ -52,7 +52,9 @@ export type SalesXModule =
   | 'sx-t-exhibition'
   | 'sx-r-exhibition-report'
   | 'sx-t-webinar'
-  | 'sx-r-webinar-report';
+  | 'sx-r-webinar-report'
+  | 'sx-t-call-quality'
+  | 'sx-t-lead-distribution';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -97,4 +99,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-exhibition-report',
   'sx-t-webinar',
   'sx-r-webinar-report',
+  'sx-t-call-quality',
+  'sx-t-lead-distribution',
 ];
