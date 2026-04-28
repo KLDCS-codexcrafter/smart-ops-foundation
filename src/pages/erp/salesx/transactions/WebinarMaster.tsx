@@ -256,7 +256,13 @@ export function WebinarMasterPanel({ entityCode }: Props) {
     );
     if (dup) { toast.error(`Code '${code}' already exists`); return; }
 
-    const budget = computeWebinarBudget(form.budget);
+    const total_actual =
+      Number(form.actual_platform_cost || 0) +
+      Number(form.actual_speaker_fee || 0) +
+      Number(form.actual_promotion || 0) +
+      Number(form.actual_production || 0) +
+      Number(form.actual_misc || 0);
+    const budget = computeWebinarBudget({ ...form.budget, total_actual });
     const speakers = form.speakers
       .split(',').map(s => s.trim()).filter(Boolean);
 
@@ -293,7 +299,8 @@ export function WebinarMasterPanel({ entityCode }: Props) {
     }
   }, [form, webinars, saveWebinar, entityCode]);
 
-  useCtrlS(handleSave);
+  const isFormActive = !!(form.webinar_title.trim() || form.editingId);
+  useCtrlS(isFormActive ? handleSave : () => {});
 
   const handleSaveParticipant = useCallback(() => {
     if (!form.editingId) { toast.error('Save the webinar first'); return; }
