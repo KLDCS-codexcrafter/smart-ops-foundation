@@ -214,6 +214,10 @@ function renderModule(
       return <CallQualityHubPanel entityCode={entityCode} />;
     case 'sx-t-lead-distribution':
       return <LeadDistributionHubPanel entityCode={entityCode} />;
+    case 'sx-t-smart-insights':
+      return <SmartInsightsPanelComponent entityCode={entityCode} />;
+    case 'sx-t-campaign-templates':
+      return <CampaignTemplatesPanelComponent entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
