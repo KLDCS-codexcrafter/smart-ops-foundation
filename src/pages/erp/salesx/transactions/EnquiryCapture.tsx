@@ -20,6 +20,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { canConvertEnquiryToQuotation } from '@/lib/salesx-conversion-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
+import { rememberModule } from '@/lib/breadcrumb-memory';
 import { useEnquirySources } from '@/hooks/useEnquirySources';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
@@ -238,7 +239,11 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
     const result = convertEnquiryToQuotation(enq.id, getCurrentUserId(), 30);
     if (result) {
       // [JWT] navigation only · no API call
-      navigate(`/erp/salesx/transactions?tab=quotation&qid=${result.id}`);
+      // Write the target module into breadcrumb memory so SalesXPage
+      // restores to 'sx-t-quotation' on mount. This is the existing
+      // pattern used by SalesXPage line 185 (rememberModule call).
+      rememberModule('salesx', 'sx-t-quotation');
+      navigate('/erp/salesx');
     }
   }, [editingId, enquiries, convertEnquiryToQuotation, navigate]);
 
