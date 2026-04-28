@@ -172,6 +172,8 @@ function renderModule(
     case 'sx-r-so-tracker':
       return <SalesOrderTrackerReportPanel entityCode={entityCode}
         onNavigate={m => setActiveModule(m as SalesXModule)} />;
+    case 'sx-r-handoff-tracker':
+      return <CrossDeptHandoffTrackerPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
