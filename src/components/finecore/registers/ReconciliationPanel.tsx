@@ -27,90 +27,15 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { GitMerge, ArrowRight } from 'lucide-react';
 import { fmtDate, inr } from '@/pages/erp/finecore/reports/reportUtils';
+import {
+  computeReconMatch,
+  type ReconMatchStatus,
+} from './ReconciliationPanel.helpers';
 
-/** Match status badges shown per source row + per matched-target row. */
-export type ReconMatchStatus = 'matched' | 'partial' | 'unmatched';
-
-interface MatchResult {
-  status: ReconMatchStatus;
-  /** Target vouchers that satisfied the match rule for this source. */
-  targets: Voucher[];
-  /** Sum of target amounts (for amount-based pairs: sales↔receipt / purchase↔payment). */
-  targetSumPaise: number;
-}
-
-/**
- * @purpose Compute match status for a single source voucher against a candidate
- *          target list. Pure function · O(target count) · used by the panel and
- *          by the recon-N smoke checks.
- *
- *  Match rules per declared pair (authoritative — see Sprint A.5 §1.5):
- *    sales_register      ↔ receipt_register   — match by source.bill_references[].voucher_no
- *                                                appearing in target.bill_references[].voucher_no.
- *                                                Matched when sum(target.amount) >= source.net_amount.
- *                                                Partial when 0 < sum < source.net_amount. Unmatched when 0.
- *    purchase_register   ↔ payment_register   — same logic mirrored.
- *    delivery_note_register ↔ sales_register  — match where target.so_ref === source.voucher_no.
- *                                                Matched when ≥1 target found; Unmatched otherwise.
- *    receipt_note_register  ↔ purchase_register — match where target.po_ref === source.voucher_no
- *                                                  OR target.vendor_bill_no === source.voucher_no.
- *                                                  Matched when ≥1 target found; Unmatched otherwise.
- */
-export function computeReconMatch(
-  source: Voucher,
-  targets: Voucher[],
-  sourceRegister: RegisterTypeCode,
-  targetRegister: RegisterTypeCode,
-): MatchResult {
-  // Sales↔Receipt and Purchase↔Payment: amount-based bill-reference matching.
-  if (
-    (sourceRegister === 'sales_register' && targetRegister === 'receipt_register') ||
-    (sourceRegister === 'purchase_register' && targetRegister === 'payment_register')
-  ) {
-    const sourceVno = source.voucher_no;
-    const matched = targets.filter(t =>
-      (t.bill_references ?? []).some(b => b.voucher_no === sourceVno)
-    );
-    const targetSum = matched.reduce((acc, t) => {
-      // Sum the bill-reference amounts that point at *this* source voucher.
-      const portion = (t.bill_references ?? [])
-        .filter(b => b.voucher_no === sourceVno)
-        .reduce((s, b) => s + (b.amount || 0), 0);
-      return acc + portion;
-    }, 0);
-    const expected = source.net_amount;
-    let status: ReconMatchStatus = 'unmatched';
-    if (targetSum > 0 && targetSum + 0.005 >= expected) status = 'matched';
-    else if (targetSum > 0) status = 'partial';
-    return { status, targets: matched, targetSumPaise: targetSum };
-  }
-
-  // DeliveryNote↔Sales — match where target.so_ref === source.voucher_no.
-  if (sourceRegister === 'delivery_note_register' && targetRegister === 'sales_register') {
-    const matched = targets.filter(t => t.so_ref && t.so_ref === source.voucher_no);
-    return {
-      status: matched.length > 0 ? 'matched' : 'unmatched',
-      targets: matched,
-      targetSumPaise: matched.reduce((s, t) => s + t.net_amount, 0),
-    };
-  }
-
-  // ReceiptNote↔Purchase — match where target.po_ref or target.vendor_bill_no === source.voucher_no.
-  if (sourceRegister === 'receipt_note_register' && targetRegister === 'purchase_register') {
-    const matched = targets.filter(t =>
-      (t.po_ref && t.po_ref === source.voucher_no) ||
-      (t.vendor_bill_no && t.vendor_bill_no === source.voucher_no)
-    );
-    return {
-      status: matched.length > 0 ? 'matched' : 'unmatched',
-      targets: matched,
-      targetSumPaise: matched.reduce((s, t) => s + t.net_amount, 0),
-    };
-  }
-
-  // No declared rule for this pair — render as unmatched (panel hidden anyway when target is undefined).
-  return { status: 'unmatched', targets: [], targetSumPaise: 0 };
-}
+// Re-export helpers from the sibling module so existing import paths keep working.
+// (Sprint T-Phase-1.1.1a-pre · lint hygiene · zero behaviour change)
+export { computeReconMatch } from './ReconciliationPanel.helpers';
+export type { ReconMatchStatus } from './ReconciliationPanel.helpers';
 
 /** Map RegisterTypeCode → base_voucher_type used by useVouchers entries. */
 const REGISTER_TO_BASE_TYPE: Partial<Record<RegisterTypeCode, Voucher['base_voucher_type']>> = {
