@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Home, Truck, ChevronRight, ArrowLeft, BarChart3, Database,
   Package, ListChecks, TrendingUp, Users, AlertTriangle, Printer,
-  PackageCheck, ArrowUpRight, Presentation, GitMerge, Route,
+  PackageCheck, ArrowUpRight, GitMerge, Route,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
