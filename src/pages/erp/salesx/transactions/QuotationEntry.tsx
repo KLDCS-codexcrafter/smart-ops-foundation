@@ -107,7 +107,7 @@ function recalcLine(it: QuotationItem): QuotationItem {
 }
 
 export function QuotationEntryPanel({ entityCode }: Props) {
-  const { quotations, createQuotation, updateQuotation, createRevision } = useQuotations(entityCode);
+  const { quotations, createQuotation, updateQuotation, createRevision, markConvertedToSO } = useQuotations(entityCode);
   const { enquiries } = useEnquiries(entityCode);
   const { createOrder } = useOrders(entityCode);
   const customers = useMemo(() => loadCustomers(), []);
