@@ -8,6 +8,8 @@ export interface DemoItem {
   id: string; itemCode: string; itemName: string;
   hsn: string; uom: string; gstRate: number;
   rate: number; openingStock: number;
+  /** Sprint T-Phase-1.1.1m · Phase 1 proxy for on-hand stock (defaults to openingStock at seed). */
+  on_hand_qty?: number;
   itemType: 'goods' | 'service' | 'raw_material' | 'finished';
   _archetype: DemoArchetype;
 }
