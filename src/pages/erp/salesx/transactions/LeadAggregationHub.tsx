@@ -108,24 +108,43 @@ Ravi Kumar,Kumar Builders,+919811001001,ravi@kumarbuilders.in,Delhi,Wall Putty,L
 Priya Singh,Singh Interiors,+919822002002,priya@singhinteriors.com,Mumbai,Texture Paint,Need samples first
 Mohan Das,,+919833003003,,Jaipur,Primer,`;
 
-function parseCsv(text: string, platform: LeadPlatform): LeadImportRow[] {
+const TARGET_FIELDS = [
+  { key: 'contact_name',     label: 'Contact Name',     required: true },
+  { key: 'company_name',     label: 'Company Name',     required: false },
+  { key: 'phone',            label: 'Phone',            required: false },
+  { key: 'email',            label: 'Email',            required: false },
+  { key: 'city',             label: 'City',             required: false },
+  { key: 'product_interest', label: 'Product Interest', required: false },
+  { key: 'portal_query',     label: 'Portal Query',     required: false },
+] as const;
+
+function parseCsvWithMapping(
+  text: string,
+  platform: LeadPlatform,
+  mapping: Record<string, string>,
+): LeadImportRow[] {
   const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
   if (lines.length <= 1) return [];
   const headers = lines[0].split(',').map(h => h.trim());
   const rows: LeadImportRow[] = [];
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(',').map(c => c.trim());
-    const rec: Record<string, string> = {};
-    headers.forEach((h, idx) => { rec[h] = cols[idx] ?? ''; });
-    if (!rec.contact_name) continue;
+    const get = (key: string): string => {
+      const userCol = mapping[key];
+      if (!userCol) return '';
+      const idx = headers.indexOf(userCol);
+      return idx >= 0 ? cols[idx] ?? '' : '';
+    };
+    const contact_name = get('contact_name');
+    if (!contact_name) continue;
     rows.push({
-      contact_name: rec.contact_name,
-      company_name: rec.company_name || undefined,
-      phone: rec.phone || undefined,
-      email: rec.email || undefined,
-      city: rec.city || undefined,
-      product_interest: rec.product_interest || undefined,
-      portal_query: rec.portal_query || undefined,
+      contact_name,
+      company_name: get('company_name') || undefined,
+      phone: get('phone') || undefined,
+      email: get('email') || undefined,
+      city: get('city') || undefined,
+      product_interest: get('product_interest') || undefined,
+      portal_query: get('portal_query') || undefined,
       platform,
     });
   }
