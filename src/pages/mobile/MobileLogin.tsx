@@ -137,7 +137,7 @@ export default function MobileLogin() {
       entityCode: ENTITY_CODE,
       userId: identity.user_id ?? 'mobile-user',
       userName: identity.display_name,
-      cardId: ROLE_TO_CARD_ID[identity.role] as unknown as Parameters<typeof logAudit>[0]['cardId'],
+      cardId: ROLE_TO_CARD_ID[identity.role],
       action: 'card_open',
       refType: 'mobile_session',
       refId: identity.user_id,
