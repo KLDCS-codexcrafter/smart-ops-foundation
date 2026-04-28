@@ -122,7 +122,7 @@ export default function DispatchHubPage() {
         <ERPHeader />
         <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
           <div className="p-4 md:p-6 animate-fade-in">
-            {renderModule(activeModule, setActiveModule)}
+            {renderModule(activeModule, setActiveModule, entityCode)}
           </div>
         </ScrollArea>
       </SidebarInset>
