@@ -96,5 +96,31 @@ export function useQuotations(entityCode: string) {
     return updated_q;
   };
 
-  return { quotations, createQuotation, updateQuotation, createRevision };
+  const markConvertedToSO = (
+    quotationId: string,
+    soId: string,
+    soNo: string,
+  ): void => {
+    const all = load(entityCode);
+    const idx = all.findIndex(q => q.id === quotationId);
+    if (idx < 0) {
+      toast.error('Quotation not found');
+      return;
+    }
+    const now = new Date().toISOString();
+    all[idx] = {
+      ...all[idx],
+      quotation_stage: 'sales_order',
+      so_id: soId,
+      so_no: soNo,
+      so_converted_at: now,
+      updated_at: now,
+    };
+    setQuotations(all);
+    save(entityCode, all);
+    // [JWT] PATCH /api/salesx/quotations/:id/convert-to-so
+    toast.success(`Linked to ${soNo}`);
+  };
+
+  return { quotations, createQuotation, updateQuotation, createRevision, markConvertedToSO };
 }
