@@ -223,14 +223,18 @@ export default function MobileRouter() {
       navigate('/mobile/login', { replace: true });
     } else if (s && location.pathname === '/mobile/login') {
       const dest =
-        s.role === 'salesman'   ? '/mobile/salesman' :
-        s.role === 'telecaller' ? '/mobile/telecaller' :
+        s.role === 'salesman'      ? '/mobile/salesman' :
+        s.role === 'telecaller'    ? '/mobile/telecaller' :
+        s.role === 'supervisor'    ? '/mobile/supervisor' :
+        s.role === 'sales_manager' ? '/mobile/manager' :
         '/mobile/home';
       navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
       const dest = s
-        ? (s.role === 'salesman'   ? '/mobile/salesman' :
-           s.role === 'telecaller' ? '/mobile/telecaller' :
+        ? (s.role === 'salesman'      ? '/mobile/salesman' :
+           s.role === 'telecaller'    ? '/mobile/telecaller' :
+           s.role === 'supervisor'    ? '/mobile/supervisor' :
+           s.role === 'sales_manager' ? '/mobile/manager' :
            '/mobile/home')
         : '/mobile/login';
       navigate(dest, { replace: true });
