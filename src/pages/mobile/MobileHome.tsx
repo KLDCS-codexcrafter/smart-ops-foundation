@@ -44,22 +44,22 @@ interface Tile {
 function tilesForRole(role: MobileSession['role']): Tile[] {
   if (role === 'distributor') {
     return [
-      { label: 'Catalog',         icon: ShoppingBag, to: '/erp/distributor/catalog',         feature: 'catalog_browse' },
-      { label: 'Cart',            icon: ShoppingCart, to: '/erp/distributor/cart',           feature: 'place_orders' },
-      { label: 'Invoices',        icon: FileText,    to: '/erp/distributor/invoices',        feature: 'payment_tracking' },
-      { label: 'Payments',        icon: IndianRupee, to: '/erp/distributor/payments',        feature: 'payment_tracking' },
-      { label: 'Credit Request',  icon: CreditCard,  to: '/erp/distributor/credit-request',  feature: 'credit_request', showLocked: true },
-      { label: 'Downstream View', icon: Network,     to: '/erp/distributor/downstream',      feature: 'distributor_hierarchy', showLocked: true },
+      { label: 'Catalog',         icon: ShoppingBag, to: '/mobile/distributor/catalog',         feature: 'catalog_browse' },
+      { label: 'Cart',            icon: ShoppingCart, to: '/mobile/distributor/cart',           feature: 'place_orders' },
+      { label: 'Invoices',        icon: FileText,    to: '/mobile/distributor/invoices',        feature: 'payment_tracking' },
+      { label: 'Payments',        icon: IndianRupee, to: '/mobile/distributor/payments',        feature: 'payment_tracking' },
+      { label: 'Credit Request',  icon: CreditCard,  to: '/mobile/distributor/credit-request',  feature: 'credit_request', showLocked: true },
+      { label: 'Visit Capture',   icon: MapPin,      to: '/mobile/distributor/visit-capture',   feature: 'distributor_hierarchy', showLocked: true },
     ];
   }
   if (role === 'customer') {
     return [
-      { label: 'Browse Catalog',  icon: ShoppingBag, to: '/erp/customer-hub#ch-t-catalog',         feature: 'catalog_browse' },
-      { label: 'My Cart',         icon: ShoppingCart, to: '/erp/customer-hub#ch-t-cart',            feature: 'place_orders' },
-      { label: 'My Orders',       icon: FileText,    to: '/erp/customer-hub#ch-t-orders',           feature: 'payment_tracking' },
-      { label: 'Rewards',         icon: Gift,        to: '/erp/customer-hub#ch-t-rewards',          feature: 'loyalty_visibility', showLocked: true },
-      { label: 'Voice Complaint', icon: Mic,         to: '/erp/customer-hub#ch-t-voice-complaint',  feature: 'voice_order',        showLocked: true },
-      { label: 'Sample Kits',     icon: Package,     to: '/erp/customer-hub#ch-t-sample-kits',      feature: 'catalog_browse' },
+      { label: 'Browse Catalog',  icon: ShoppingBag, to: '/mobile/customer/catalog',         feature: 'catalog_browse' },
+      { label: 'My Cart',         icon: ShoppingCart, to: '/mobile/customer/cart',            feature: 'place_orders' },
+      { label: 'My Orders',       icon: FileText,    to: '/mobile/customer/orders',          feature: 'payment_tracking' },
+      { label: 'Rewards',         icon: Gift,        to: '/mobile/customer/rewards',         feature: 'loyalty_visibility', showLocked: true },
+      { label: 'Voice Complaint', icon: Mic,         to: '/mobile/customer/voice-complaint', feature: 'voice_order',        showLocked: true },
+      { label: 'Sample Kits',     icon: Package,     to: '/mobile/customer/sample-kits',     feature: 'catalog_browse' },
     ];
   }
   if (role === 'salesman') {

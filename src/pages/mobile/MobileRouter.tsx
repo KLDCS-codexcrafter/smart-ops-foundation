@@ -65,6 +65,23 @@ import MobileRevenueTrendPage from './manager/MobileRevenueTrendPage';
 import MobileCampaignPerformancePage from './manager/MobileCampaignPerformancePage';
 import MobileCrossDeptHandoffPage from './manager/MobileCrossDeptHandoffPage';
 import MobileManagerTeamStatsPage from './manager/MobileManagerTeamStatsPage';
+// Distributor mobile pages
+import MobileDistributorCatalogPage from './distributor/MobileDistributorCatalogPage';
+import MobileDistributorCartPage from './distributor/MobileDistributorCartPage';
+import MobileDistributorInvoicesPage from './distributor/MobileDistributorInvoicesPage';
+import MobileDistributorPaymentsPage from './distributor/MobileDistributorPaymentsPage';
+import MobileDistributorCreditRequestPage from './distributor/MobileDistributorCreditRequestPage';
+import MobileDistributorVisitCapturePage from './distributor/MobileDistributorVisitCapturePage';
+// Customer mobile pages
+import MobileCustomerCatalogPage from './customer/MobileCustomerCatalogPage';
+import MobileCustomerCartPage from './customer/MobileCustomerCartPage';
+import MobileCustomerOrdersPage from './customer/MobileCustomerOrdersPage';
+import MobileCustomerRewardsPage from './customer/MobileCustomerRewardsPage';
+import MobileCustomerVoiceComplaintPage from './customer/MobileCustomerVoiceComplaintPage';
+import MobileCustomerSampleKitsPage from './customer/MobileCustomerSampleKitsPage';
+// Shared cross-role pages
+import MobileAttendancePage from './shared/MobileAttendancePage';
+import MobileExpenseClaimPage from './shared/MobileExpenseClaimPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
@@ -111,6 +128,23 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/manager/cross-dept-handoff') return <MobileCrossDeptHandoffPage />;
   if (pathname === '/mobile/manager/team-stats') return <MobileManagerTeamStatsPage />;
   if (pathname === '/mobile/manager/compliance-alerts') return <MobileComplianceAlertsPage />;
+  // Distributor routes
+  if (pathname === '/mobile/distributor/catalog') return <MobileDistributorCatalogPage />;
+  if (pathname === '/mobile/distributor/cart') return <MobileDistributorCartPage />;
+  if (pathname === '/mobile/distributor/invoices') return <MobileDistributorInvoicesPage />;
+  if (pathname === '/mobile/distributor/payments') return <MobileDistributorPaymentsPage />;
+  if (pathname === '/mobile/distributor/credit-request') return <MobileDistributorCreditRequestPage />;
+  if (pathname === '/mobile/distributor/visit-capture') return <MobileDistributorVisitCapturePage />;
+  // Customer routes
+  if (pathname === '/mobile/customer/catalog') return <MobileCustomerCatalogPage />;
+  if (pathname === '/mobile/customer/cart') return <MobileCustomerCartPage />;
+  if (pathname === '/mobile/customer/orders') return <MobileCustomerOrdersPage />;
+  if (pathname === '/mobile/customer/rewards') return <MobileCustomerRewardsPage />;
+  if (pathname === '/mobile/customer/voice-complaint') return <MobileCustomerVoiceComplaintPage />;
+  if (pathname === '/mobile/customer/sample-kits') return <MobileCustomerSampleKitsPage />;
+  // Shared routes (any field role can access)
+  if (pathname === '/mobile/shared/attendance') return <MobileAttendancePage />;
+  if (pathname === '/mobile/shared/expenses') return <MobileExpenseClaimPage />;
   return <MobileHome />;
 }
 
