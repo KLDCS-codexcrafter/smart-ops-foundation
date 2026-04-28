@@ -21,6 +21,8 @@ import {
 import {
   MapPin, LogIn, LogOut, CheckCircle2, AlertTriangle, Search, Navigation,
 } from 'lucide-react';
+import { SignaturePad, Check } from '@/components/ui/signature-pad';
+import type { SignaturePadHandle } from '@/components/ui/signature-pad';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
   type VisitLog, type VisitOutcome, type VisitPurpose, type GeoPoint,
