@@ -63,6 +63,7 @@ import { SecondarySalesPanel } from '@/pages/erp/salesx/transactions/SecondarySa
 import { BeatProductivityReportPanel } from '@/pages/erp/salesx/reports/BeatProductivityReport';
 import { CoverageReportPanel } from '@/pages/erp/salesx/reports/CoverageReport';
 import { SecondarySalesReportPanel } from '@/pages/erp/salesx/reports/SecondarySalesReport';
+import { CallLogHistoryReportPanel } from '@/pages/erp/salesx/reports/CallLogHistoryReport';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
@@ -114,6 +115,7 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-campaign-templates':   'Campaign Templates',
   'sx-t-pi-tracker':           'PI Tracker',
   'sx-t-order-desk':           'Order Desk',
+  'sx-r-call-log-history':     'Call Log History',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -233,6 +235,8 @@ function renderModule(
       return <PITrackerPanelComponent entityCode={entityCode} />;
     case 'sx-t-order-desk':
       return <OrderDeskPanelComponent entityCode={entityCode} />;
+    case 'sx-r-call-log-history':
+      return <CallLogHistoryReportPanel entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

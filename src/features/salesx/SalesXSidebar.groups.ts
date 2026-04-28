@@ -74,6 +74,7 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-campaign-performance': 'report',
   'sx-r-exhibition-report':    'report',
   'sx-r-webinar-report':       'report',
+  'sx-r-call-log-history':     'report',
   'sx-analytics':              'report',
 };
 
