@@ -206,7 +206,8 @@ const ENQ_LABEL: Record<EnquiryStatus, string> = {
 
 const QUOT_LABEL: Record<QuotationStage, string> = {
   draft: 'Draft', on_hold: 'On Hold', negotiation: 'Negotiation',
-  confirmed: 'Confirmed', proforma: 'Proforma', lost: 'Lost', cancelled: 'Cancelled',
+  confirmed: 'Confirmed', proforma: 'Proforma', sales_order: 'SO Issued',
+  lost: 'Lost', cancelled: 'Cancelled',
 };
 
 interface StageCellProps {
