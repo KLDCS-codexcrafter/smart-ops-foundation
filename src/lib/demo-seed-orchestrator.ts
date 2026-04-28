@@ -3,6 +3,20 @@
  * Pure — no UI, no toasts. Caller handles messaging.
  * Additive-only — never overwrites existing data.
  * [JWT] POST /api/demo/seed-entity
+ *
+ * STANDING RULE (Sprint T-Phase-SEED-1 · founder lock April 28, 2026):
+ * Every future Phase 1 sprint that adds new schema fields OR new transaction types
+ * MUST update the relevant demo-*.ts files in this same sprint to:
+ *   1. Add the new field with backward-compat default to existing seed entries
+ *   2. Add 2-3 NEW seed examples that exercise the new feature
+ *   3. Ensure 'Load Demo Data' produces testable data for the new feature
+ *
+ * Example: When 1.1.1a added project_id to Quotation interface, this file's
+ * DEMO_QUOTATIONS must keep project_id: null on existing entries and add at
+ * least one entry with a non-null project_id to test ProjX hookpoint visibility.
+ *
+ * The sprint prompt template now includes a 'Seed/Mock Data Update' section
+ * that lists what each sprint must add to seed data BEFORE Acceptance Criteria.
  */
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
