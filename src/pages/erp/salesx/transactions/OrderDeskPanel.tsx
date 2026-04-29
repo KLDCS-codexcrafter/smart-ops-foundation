@@ -244,6 +244,18 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
                               <strong>Terms:</strong> {o.terms_conditions}
                             </div>
                           )}
+                          <div className="mt-3 flex justify-end">
+                            {o.project_id ? (
+                              <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 border-indigo-500/30 gap-1">
+                                <Briefcase className="h-3 w-3" /> Linked: {o.project_no}
+                              </Badge>
+                            ) : (
+                              <Button size="sm" variant="outline" className="gap-1.5"
+                                onClick={(e) => { e.stopPropagation(); handleConvertToProject(o); }}>
+                                <Briefcase className="h-3.5 w-3.5" /> Convert to Project
+                              </Button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )}
