@@ -3,7 +3,7 @@
  * Sprint T-Phase-1.1.1l-d · Writes to existing EXPENSE_CLAIMS_KEY
  * Approval handled by PayHub Employee Finance module (no new workflow needed).
  */
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ import {
   EXPENSE_CLAIMS_KEY, EXPENSE_CATEGORY_LABELS, EXPENSE_STATUS_COLORS,
 } from '@/types/employee-finance';
 import { cn } from '@/lib/utils';
+import { capturePhoto } from '@/lib/camera-bridge';
 
 function readSession(): MobileSession | null {
   try {
@@ -67,18 +68,16 @@ export default function MobileExpenseClaimPage() {
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0, 10));
   const [receiptDataUrl, setReceiptDataUrl] = useState<string>('');
   const [busy, setBusy] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleReceiptChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Receipt image too large (max 2 MB)');
+  const handleCaptureReceipt = useCallback(async () => {
+    const result = await capturePhoto();
+    if (!result.ok) {
+      toast.error(result.reason ?? 'Camera unavailable');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => setReceiptDataUrl(typeof reader.result === 'string' ? reader.result : '');
-    reader.readAsDataURL(file);
+    if (result.data_url) {
+      setReceiptDataUrl(result.data_url);
+    }
   }, []);
 
   const resetForm = useCallback(() => {
@@ -198,15 +197,7 @@ export default function MobileExpenseClaimPage() {
 
           <div className="space-y-1.5">
             <Label className="text-xs">Receipt Photo (optional)</Label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleReceiptChange}
-              className="hidden"
-            />
-            <Button variant="outline" size="sm" className="w-full" onClick={() => fileInputRef.current?.click()}>
+            <Button variant="outline" size="sm" className="w-full" onClick={handleCaptureReceipt}>
               <Camera className="h-4 w-4 mr-2" />
               {receiptDataUrl ? 'Replace Receipt' : 'Capture Receipt'}
             </Button>
