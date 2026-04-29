@@ -125,7 +125,7 @@ export default function MobileExpenseClaimPage() {
     setBusy(false);
     resetForm();
     toast.success(`Claim submitted: ${fmtINR(amountN)}`);
-  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm]);
+  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm, refreshClaims]);
 
   if (!session) return null;
 
