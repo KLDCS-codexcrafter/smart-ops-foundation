@@ -269,6 +269,7 @@ export function seedEntityDemoData(
     dispatch_issued_by: 'dispatch_user',
     unit_value: 0,
     total_value: 0,
+    pending_expense_voucher: true, // Sprint T-Phase-1.1.1q · non-refundable seed
     created_at: nowSeed,
     updated_at: nowSeed,
   }];
@@ -324,6 +325,7 @@ export function seedEntityDemoData(
     issued_by_dispatch: true,
     dispatch_issued_at: '2026-02-19T10:00:00.000Z',
     dispatch_issued_by: 'dispatch_user',
+    pending_expense_voucher: false, // Sprint T-Phase-1.1.1q · demo refundable by nature
     created_at: `${overdueStart}T10:00:00.000Z`,
     updated_at: nowSeed,
   }];
