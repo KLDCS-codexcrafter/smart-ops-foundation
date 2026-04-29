@@ -346,6 +346,22 @@ export function seedEntityDemoData(
     localStorage.setItem(ASSET_CENTRE_SEQ_KEY(entityCode), String(DEMO_ASSET_CENTRES.length));
   }
 
+  // ProjX — Project Centres + Projects (Sprint T-Phase-1.1.2-a)
+  const pcSeeded = safeSetArray(
+    projectCentresKey(entityCode),
+    DEMO_PROJECT_CENTRES.map(pc => ({ ...pc, entity_id: entityCode })),
+  );
+  if (pcSeeded > 0) {
+    localStorage.setItem(PROJECT_CENTRE_SEQ_KEY(entityCode), String(DEMO_PROJECT_CENTRES.length));
+  }
+  const prjSeeded = safeSetArray(
+    projectsKey(entityCode),
+    DEMO_PROJECTS.map(p => ({ ...p, entity_id: entityCode })),
+  );
+  if (prjSeeded > 0) {
+    localStorage.setItem(PROJECT_SEQ_KEY(entityCode), String(DEMO_PROJECTS.length));
+  }
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
