@@ -37,7 +37,7 @@ const STATUS_COLORS: Record<Order['status'], string> = {
 
 export function OrderDeskPanelComponent({ entityCode }: Props) {
   const navigate = useNavigate();
-  const { orders } = useOrders(entityCode);
+  const { orders, updateOrder } = useOrders(entityCode);
   const { projects, createProject } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
 
