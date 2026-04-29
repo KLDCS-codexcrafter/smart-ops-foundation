@@ -254,6 +254,11 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
             <CardTitle className="text-sm">
               Last issued by Dispatch · {lastIssued.memo_no}
               <Badge variant="secondary" className="ml-2 text-[10px]">read-only</Badge>
+              {(lastIssued.pending_expense_voucher ?? false) && (
+                <Badge variant="outline" className="ml-2 text-[10px] bg-amber-500/10 text-amber-700 border-amber-500/30">
+                  Phase 2: expense voucher pending
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
