@@ -433,6 +433,7 @@ const GROUP_LABELS: Partial<Record<CommandCenterModule, string>> = {
 
 function getGroupLabel(m: CommandCenterModule): string {
   if (m.startsWith('finecore-')) return 'Finance & Compliance';
+  if (m.startsWith('projx-')) return 'Project Masters';
   if (m.startsWith('inventory-')) return 'Inventory Masters';
   if (m.startsWith('ph-')) return 'People Core';
   if (m.startsWith('opening-')) return 'Opening Balances';
