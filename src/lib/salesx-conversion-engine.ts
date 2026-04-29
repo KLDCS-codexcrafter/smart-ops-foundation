@@ -125,7 +125,8 @@ export function canConvertEnquiryToQuotation(enquiry: Enquiry): ConversionEligib
 export type ConversionType =
   | 'enquiry_to_quotation'
   | 'quotation_to_proforma'
-  | 'quotation_to_sales_order';
+  | 'quotation_to_sales_order'
+  | 'quotation_to_project';            // Sprint T-Phase-1.1.2-a · ProjX foundation
 
 export interface ConversionActivityEntry {
   id: string;
