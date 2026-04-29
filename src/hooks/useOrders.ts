@@ -70,7 +70,7 @@ export function useOrders(entityCode: string) {
     return order;
   }, [entityCode, key]);
 
-  const updateOrder = useCallback((id: string, data: Partial<Pick<Order, 'narration' | 'valid_till' | 'terms_conditions'>>) => {
+  const updateOrder = useCallback((id: string, data: Partial<Pick<Order, 'narration' | 'valid_till' | 'terms_conditions' | 'project_id' | 'project_no'>>) => {
     // [JWT] GET /api/orders/:entityCode
     const all = ls<Order>(key);
     const order = all.find(o => o.id === id);

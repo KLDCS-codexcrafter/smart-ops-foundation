@@ -37,7 +37,7 @@ const STATUS_COLORS: Record<Order['status'], string> = {
 
 export function OrderDeskPanelComponent({ entityCode }: Props) {
   const navigate = useNavigate();
-  const { orders } = useOrders(entityCode);
+  const { orders, updateOrder } = useOrders(entityCode);
   const { projects, createProject } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
 
@@ -77,6 +77,7 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
       description: `Auto-created from sales order ${o.order_no}`,
       is_active: true,
     }, { id: 'system', name: 'Order Desk' });
+    updateOrder(o.id, { project_id: created.id, project_no: created.project_no });
     logConversionEvent(entityCode, 'system', 'sales_order_to_project',
       o.id, o.order_no, created.id, created.project_no);
     toast.success(`Project ${created.project_no} created from ${o.order_no}`);
