@@ -21,6 +21,7 @@ import {
   type ComplianceAlertKind,
   complianceAlertsKey,
 } from '@/types/compliance-alert';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 interface TrackerSession {
   entityCode: string;
@@ -176,37 +177,37 @@ function checkOffline(session: TrackerSession): void {
 }
 
 function tick(): void {
-  if (!currentSession) return;
-  if (typeof navigator === 'undefined' || !navigator.geolocation) return;
   const sessionAtTick = currentSession;
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      if (!currentSession) return;
-      const battery = await readBattery();
-      const now = new Date().toISOString();
-      const breadcrumb: LocationBreadcrumb = {
-        id: `lb-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        entity_id: sessionAtTick.entityCode,
-        user_id: sessionAtTick.userId,
-        user_name: sessionAtTick.userName,
-        user_role: sessionAtTick.userRole,
-        captured_at: now,
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-        accuracy_meters: pos.coords.accuracy,
-        battery_pct: battery.pct,
-        is_charging: battery.charging,
-        online: typeof navigator !== 'undefined' ? navigator.onLine : true,
-        created_at: now,
-      };
-      appendBreadcrumb(breadcrumb, sessionAtTick.entityCode);
-      checkHalt(sessionAtTick);
+  if (!sessionAtTick) return;
+  void (async () => {
+    const reading = await getCurrentLocation();
+    const battery = await readBattery();
+    if (!reading.ok || reading.latitude === undefined || reading.longitude === undefined) {
       checkBattery(sessionAtTick, battery.pct);
       checkOffline(sessionAtTick);
-    },
-    () => { /* ignore — try next tick */ },
-    { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 },
-  );
+      return;
+    }
+    const now = new Date().toISOString();
+    const breadcrumb: LocationBreadcrumb = {
+      id: `lb-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      entity_id: sessionAtTick.entityCode,
+      user_id: sessionAtTick.userId,
+      user_name: sessionAtTick.userName,
+      user_role: sessionAtTick.userRole,
+      captured_at: now,
+      latitude: reading.latitude,
+      longitude: reading.longitude,
+      accuracy_meters: reading.accuracy_m ?? null,
+      battery_pct: battery.pct,
+      is_charging: battery.charging,
+      online: typeof navigator !== 'undefined' ? navigator.onLine : true,
+      created_at: now,
+    };
+    appendBreadcrumb(breadcrumb, sessionAtTick.entityCode);
+    checkHalt(sessionAtTick);
+    checkBattery(sessionAtTick, battery.pct);
+    checkOffline(sessionAtTick);
+  })();
 }
 
 export function startTracking(

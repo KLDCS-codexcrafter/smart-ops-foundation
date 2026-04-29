@@ -15,6 +15,7 @@ import type { MobileSession } from '../MobileRouter';
 import {
   type AttendanceRecord, ATTENDANCE_RECORDS_KEY,
 } from '@/types/attendance-entry';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 function readSession(): MobileSession | null {
   try {
@@ -50,17 +51,6 @@ function computeWorkHours(checkIn: string, checkOut: string): number {
   const [ho, mo] = checkOut.split(':').map(Number);
   const mins = (ho * 60 + mo) - (hi * 60 + mi);
   return Math.max(0, mins / 60);
-}
-
-async function getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
-  if (typeof navigator === 'undefined' || !navigator.geolocation) return null;
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
-  });
 }
 
 export default function MobileAttendancePage() {
