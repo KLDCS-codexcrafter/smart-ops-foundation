@@ -349,6 +349,8 @@ export interface OutstandingEntry {
   settled_amount: number;
   settlement_refs: Array<{ voucher_id: string; amount: number; date: string }>;
   status: 'open' | 'partial' | 'settled' | 'cancelled';
+  asset_centre_id?: string | null;        // NEW · D-218 two-master architecture · FK to AssetCentre.id
+  project_centre_id?: string | null;      // NEW · D-218 reserved for next sprint (T-Phase-1.1.2-a)
   created_at: string;
   updated_at: string;
 }

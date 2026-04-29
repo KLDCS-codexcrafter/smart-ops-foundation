@@ -5,7 +5,8 @@ export interface AssetTag {
   item_name: string;
   asset_tag_number: string;
   department: string;
-  cost_centre?: string | null;
+  cost_centre?: string | null;             // legacy free-text — kept for backward compat
+  asset_centre_id?: string | null;         // NEW · D-218 · FK to AssetCentre.id (preferred going forward)
   custodian_name: string;
   custodian_email?: string | null;
   physical_location: string;
