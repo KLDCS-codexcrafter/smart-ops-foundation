@@ -34,6 +34,7 @@ import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfP
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
+import { AssetCentreMasterPanel } from '@/pages/erp/finecore/masters/AssetCentreMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
@@ -138,6 +139,7 @@ export type CommandCenterModule =
   | 'finecore-terms-of-delivery'
   | 'finecore-fiscal-year'
   | 'finecore-business-unit'
+  | 'finecore-asset-centres'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -222,7 +224,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -313,6 +315,7 @@ export default function CommandCenterPage() {
       case 'finecore-terms-of-delivery': return <TermsOfDeliveryMasterPanel />;
       case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
       case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
+      case 'finecore-asset-centres': return <AssetCentreMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -450,6 +453,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'finecore-finframe': 'FinFrame',
     'finecore-gst-config': 'GST Config',
     'finecore-compliance-settings': 'Compliance Settings & Automation',
+    'finecore-asset-centres': 'Asset Centre Master',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

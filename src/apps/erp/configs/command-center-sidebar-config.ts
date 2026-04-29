@@ -79,6 +79,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-terms-of-delivery', requiredCards: ['command-center'] },
       { id: 'finecore-fiscal-year', type: 'item', label: 'Fiscal Year Calendar',
         moduleId: 'finecore-fiscal-year', requiredCards: ['command-center'] },
+      { id: 'finecore-asset-centres', type: 'item', label: 'Asset Centres', icon: Building2,
+        moduleId: 'finecore-asset-centres', requiredCards: ['command-center'] },
     ],
   },
   {

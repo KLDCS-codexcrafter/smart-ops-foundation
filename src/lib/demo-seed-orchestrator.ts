@@ -49,6 +49,8 @@ import {
 import type { StockReservation } from '@/types/stock-reservation';
 import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
 import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
+import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
+import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
 
 export interface SeedResult {
   entityCode: string;
@@ -331,6 +333,15 @@ export function seedEntityDemoData(
   }];
   safeSetArray(`erp_demo_outward_memos_${entityCode}`, demoSeed);
   safeSetObj(`erp_doc_seq_DOM_${entityCode}`, 1);
+
+  // Asset Centres (Sprint T-Phase-1.1.2-pre · D-218 two-master architecture)
+  const acSeeded = safeSetArray(
+    assetCentresKey(entityCode),
+    DEMO_ASSET_CENTRES.map(ac => ({ ...ac, entity_id: entityCode })),
+  );
+  if (acSeeded > 0) {
+    localStorage.setItem(ASSET_CENTRE_SEQ_KEY(entityCode), String(DEMO_ASSET_CENTRES.length));
+  }
 
   return {
     entityCode, archetype,
