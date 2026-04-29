@@ -96,7 +96,7 @@ export function ProjectEntryPanel() {
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects, createProject, updateProject, transitionStatus } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
-  const { quotations } = useQuotations();
+  const { quotations } = useQuotations(entityCode);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | ProjectStatus>('all');
