@@ -71,6 +71,7 @@ const MASTERS_LINKS: LinkOutItem[] = [
   { label: 'Currency Master', icon: IndianRupee, hash: '#finecore-currency' },
   { label: 'GST / TDS Config', icon: Shield, hash: '#finecore-gst-config' },
   { label: 'Compliance Settings & Automation', icon: Shield, hash: '#finecore-compliance-settings' },
+  { label: 'Asset Centres', icon: Package, hash: '#finecore-asset-centres' },
 ];
 
 const TXN_ITEMS: SidebarItem[] = [
