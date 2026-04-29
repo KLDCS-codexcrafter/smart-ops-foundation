@@ -15,8 +15,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Package, ChevronDown, ChevronRight, ExternalLink,
+  Package, ChevronDown, ChevronRight, ExternalLink, Briefcase,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useProjects } from '@/hooks/useProjects';
+import { useProjectCentres } from '@/hooks/useProjectCentres';
+import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { useOrders } from '@/hooks/useOrders';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';
@@ -34,10 +38,51 @@ const STATUS_COLORS: Record<Order['status'], string> = {
 export function OrderDeskPanelComponent({ entityCode }: Props) {
   const navigate = useNavigate();
   const { orders } = useOrders(entityCode);
+  const { projects, createProject } = useProjects(entityCode);
+  const { centres } = useProjectCentres(entityCode);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | Order['status']>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const handleConvertToProject = (o: Order) => {
+    if (o.project_id) {
+      toast.info(`Already linked to project ${o.project_no ?? o.project_id}`);
+      return;
+    }
+    if (centres.length === 0) {
+      toast.error('Create a Project Centre first (Command Center → Project Masters)');
+      return;
+    }
+    const defaultCentre = centres[0];
+    const today = new Date().toISOString().slice(0, 10);
+    const targetEnd = new Date(); targetEnd.setMonth(targetEnd.getMonth() + 3);
+    const created = createProject({
+      project_name: `Project for ${o.party_name} — ${o.order_no}`,
+      project_code: o.order_no.replace(/[^A-Z0-9]/gi, '-').slice(0, 20),
+      project_type: 'product_implementation',
+      status: 'planning',
+      customer_id: o.party_id ?? null,
+      customer_name: o.party_name,
+      project_centre_id: defaultCentre.id,
+      source_quotation_id: null, source_quotation_no: null,
+      source_so_id: o.id, source_so_no: o.order_no,
+      reference_project_id: null, estimation_snapshot_id: null, is_export_project: false,
+      start_date: today,
+      target_end_date: targetEnd.toISOString().slice(0, 10),
+      original_contract_value: o.net_amount,
+      current_contract_value: o.net_amount,
+      contract_value: o.net_amount,
+      project_manager_id: null, project_manager_name: null,
+      description: `Auto-created from sales order ${o.order_no}`,
+      is_active: true,
+    }, { id: 'system', name: 'Order Desk' });
+    logConversionEvent(entityCode, 'system', 'sales_order_to_project',
+      o.id, o.order_no, created.id, created.project_no);
+    toast.success(`Project ${created.project_no} created from ${o.order_no}`);
+  };
+
+  void projects;
 
   const salesOrders = useMemo(() =>
     orders.filter(o => o.base_voucher_type === 'Sales Order'),
@@ -199,6 +244,18 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
                               <strong>Terms:</strong> {o.terms_conditions}
                             </div>
                           )}
+                          <div className="mt-3 flex justify-end">
+                            {o.project_id ? (
+                              <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 border-indigo-500/30 gap-1">
+                                <Briefcase className="h-3 w-3" /> Linked: {o.project_no}
+                              </Badge>
+                            ) : (
+                              <Button size="sm" variant="outline" className="gap-1.5"
+                                onClick={(e) => { e.stopPropagation(); handleConvertToProject(o); }}>
+                                <Briefcase className="h-3.5 w-3.5" /> Convert to Project
+                              </Button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )}

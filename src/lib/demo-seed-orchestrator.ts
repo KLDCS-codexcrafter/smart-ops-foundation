@@ -51,9 +51,17 @@ import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
 import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
 import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
-import { DEMO_PROJECT_CENTRES, DEMO_PROJECTS } from '@/data/demo-projects';
+import {
+  DEMO_PROJECT_CENTRES, DEMO_PROJECTS,
+  DEMO_PROJECT_MILESTONES, DEMO_PROJECT_RESOURCES,
+  DEMO_TIME_ENTRIES, DEMO_PROJECT_INVOICE_SCHEDULES,
+} from '@/data/demo-projects';
 import { projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { projectsKey, PROJECT_SEQ_KEY } from '@/types/projx/project';
+import { projectMilestonesKey } from '@/types/projx/project-milestone';
+import { projectResourcesKey } from '@/types/projx/project-resource';
+import { timeEntriesKey } from '@/types/projx/time-entry';
+import { projectInvoiceScheduleKey } from '@/types/projx/project-invoice-schedule';
 import { quotationsKey } from '@/types/quotation';
 import type { Quotation } from '@/types/quotation';
 
@@ -363,6 +371,16 @@ export function seedEntityDemoData(
   if (prjSeeded > 0) {
     localStorage.setItem(PROJECT_SEQ_KEY(entityCode), String(DEMO_PROJECTS.length));
   }
+
+  // ProjX 1.1.2-b — Milestones, Resources, Time Entries, Invoice Schedules
+  safeSetArray(projectMilestonesKey(entityCode),
+    DEMO_PROJECT_MILESTONES.map(m => ({ ...m, entity_id: entityCode })));
+  safeSetArray(projectResourcesKey(entityCode),
+    DEMO_PROJECT_RESOURCES.map(r => ({ ...r, entity_id: entityCode })));
+  safeSetArray(timeEntriesKey(entityCode),
+    DEMO_TIME_ENTRIES.map(t => ({ ...t, entity_id: entityCode })));
+  safeSetArray(projectInvoiceScheduleKey(entityCode),
+    DEMO_PROJECT_INVOICE_SCHEDULES.map(s => ({ ...s, entity_id: entityCode })));
 
   // ProjX — Backfill 5 quotations with project_id linkage
   // (so "Convert from Quotation" UI has demo data on Day 1 showing both linked + unlinked)

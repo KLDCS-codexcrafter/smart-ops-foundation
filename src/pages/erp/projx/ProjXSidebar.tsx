@@ -18,7 +18,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import type { ProjXModule } from './ProjXSidebar.types';
 
-const LIVE_MODULES: ProjXModule[] = ['welcome', 't-project-entry', 'm-project-centres'];
+const LIVE_MODULES: ProjXModule[] = [
+  'welcome', 't-project-entry', 'm-project-centres',
+  't-milestone-tracker', 't-resource-allocation', 't-time-entry', 't-invoice-scheduling',
+  'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
+];
 
 interface SidebarItem {
   id: ProjXModule;
@@ -38,17 +42,17 @@ const MASTERS_LINKS: LinkOutItem[] = [
 
 const TXN_ITEMS: SidebarItem[] = [
   { id: 't-project-entry', label: 'Project Entry', icon: Briefcase },
-  { id: 't-milestone-tracker-disabled', label: 'Milestone Tracker', icon: Milestone },
-  { id: 't-resource-allocation-disabled', label: 'Resource Allocation', icon: Users },
-  { id: 't-time-entry-disabled', label: 'Time Entry', icon: Clock },
-  { id: 't-invoice-scheduling-disabled', label: 'Invoice Scheduling', icon: FileText },
+  { id: 't-milestone-tracker', label: 'Milestone Tracker', icon: Milestone },
+  { id: 't-resource-allocation', label: 'Resource Allocation', icon: Users },
+  { id: 't-time-entry', label: 'Time Entry', icon: Clock },
+  { id: 't-invoice-scheduling', label: 'Invoice Scheduling', icon: FileText },
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
-  { id: 'r-project-pnl-disabled', label: 'Project P&L', icon: PieChart },
-  { id: 'r-resource-utilization-disabled', label: 'Resource Utilization', icon: Activity },
-  { id: 'r-milestone-status-disabled', label: 'Milestone Status', icon: BarChart3 },
-  { id: 'r-project-margin-disabled', label: 'Project Margin', icon: TrendingUp },
+  { id: 'r-project-pnl', label: 'Project P&L', icon: PieChart },
+  { id: 'r-resource-utilization', label: 'Resource Utilization', icon: Activity },
+  { id: 'r-milestone-status', label: 'Milestone Status', icon: BarChart3 },
+  { id: 'r-project-margin', label: 'Project Margin', icon: TrendingUp },
 ];
 
 interface ProjXSidebarProps {
