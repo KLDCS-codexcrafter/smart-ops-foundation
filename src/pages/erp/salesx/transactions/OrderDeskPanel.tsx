@@ -15,8 +15,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Package, ChevronDown, ChevronRight, ExternalLink,
+  Package, ChevronDown, ChevronRight, ExternalLink, Briefcase,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useProjects } from '@/hooks/useProjects';
+import { useProjectCentres } from '@/hooks/useProjectCentres';
+import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { useOrders } from '@/hooks/useOrders';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';
