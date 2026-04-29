@@ -14,6 +14,7 @@ import { ScanLine, Plus, Search, Edit2, Trash2, ArrowRightLeft, CheckSquare } fr
 import { toast } from 'sonner';
 import type { AssetTag, CustodyTransfer } from '@/types/asset-tag';
 import type { InventoryItem } from '@/types/inventory-item';
+import { useAssetCentres } from '@/hooks/useAssetCentres';
 
 const KEY = 'erp_asset_tags';
 const CTKEY = 'erp_custody_transfers';
@@ -25,7 +26,8 @@ const DEPTS = ['Administration', 'Finance', 'HR', 'IT', 'Operations', 'Productio
 
 const BLANK: Omit<AssetTag, 'id' | 'created_at' | 'updated_at'> = {
   item_id: '', item_code: '', item_name: '', asset_tag_number: '',
-  department: '', cost_centre: null, custodian_name: '', custodian_email: null,
+  department: '', cost_centre: null, asset_centre_id: null,
+  custodian_name: '', custodian_email: null,
   physical_location: '', purchase_date: null, warranty_expiry: null,
   last_verified_date: null, last_verified_by: null,
   barcode_type: 'QR', label_template_id: null, qr_url: null,
@@ -34,6 +36,8 @@ const BLANK: Omit<AssetTag, 'id' | 'created_at' | 'updated_at'> = {
 
 export function AssetTagManagerPanel() {
   const [tags, setTags] = useState<AssetTag[]>(ls(KEY));
+  const { centres: assetCentres } = useAssetCentres();
+  const activeAssetCentres = useMemo(() => assetCentres.filter(c => c.status === 'active'), [assetCentres]);
   // [JWT] GET /api/labels/asset-tags
   const [fixedAssets] = useState<InventoryItem[]>(ls<InventoryItem>(IKEY).filter(i => i.item_type === 'Fixed Asset'));
   const [search, setSearch] = useState('');
@@ -62,7 +66,9 @@ export function AssetTagManagerPanel() {
   const openE = (t: AssetTag) => {
     setForm({
       item_id: t.item_id, item_code: t.item_code, item_name: t.item_name, asset_tag_number: t.asset_tag_number,
-      department: t.department, cost_centre: t.cost_centre || null, custodian_name: t.custodian_name,
+      department: t.department, cost_centre: t.cost_centre || null,
+      asset_centre_id: t.asset_centre_id || null,
+      custodian_name: t.custodian_name,
       custodian_email: t.custodian_email || null, physical_location: t.physical_location,
       purchase_date: t.purchase_date || null, warranty_expiry: t.warranty_expiry || null,
       last_verified_date: t.last_verified_date || null, last_verified_by: t.last_verified_by || null,
@@ -261,8 +267,33 @@ export function AssetTagManagerPanel() {
                   <SelectContent>{DEPTS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <div className="space-y-1.5 col-span-2">
+                <Label>Asset Centre <span className="text-[10px] text-muted-foreground">(FineCore master)</span></Label>
+                <Select
+                  value={form.asset_centre_id ?? 'none'}
+                  onValueChange={v => {
+                    const id = v === 'none' ? null : v;
+                    const picked = id ? activeAssetCentres.find(c => c.id === id) : null;
+                    setForm(f => ({
+                      ...f,
+                      asset_centre_id: id,
+                      // Auto-fill legacy cost_centre with code only if currently empty
+                      cost_centre: f.cost_centre && f.cost_centre.trim() ? f.cost_centre : (picked ? picked.code : f.cost_centre),
+                    }));
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select Asset Centre..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {activeAssetCentres.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.code} — {c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[10px] text-muted-foreground/80">Preferred · legacy free-text Cost Centre below for old data</p>
+              </div>
               <div className="space-y-1.5">
-                <Label>Cost Centre</Label>
+                <Label>Cost Centre <span className="text-[10px] text-muted-foreground">(legacy)</span></Label>
                 <Input placeholder="e.g. CC-001" value={form.cost_centre || ''}
                   onChange={e => setForm(f => ({ ...f, cost_centre: e.target.value || null }))} />
               </div>
