@@ -42,6 +42,9 @@ export interface Order {
   // Sprint 1.1.1k-followup — link to source Quotation (SO only)
   quotation_id?: string | null;
   quotation_no?: string | null;
+  // Sprint 1.1.2-b — ProjX linkage (D-128 sibling field precedent · same as D-171 Quotation.project_id)
+  project_id?: string | null;
+  project_no?: string | null;
   effective_date?: string;
   dispatch_details?: OrderDispatchDetails;
   lines: OrderLine[];
