@@ -35,6 +35,7 @@ import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsO
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 import { AssetCentreMasterPanel } from '@/pages/erp/finecore/masters/AssetCentreMaster';
+import { ProjectCentreMasterPanel } from '@/pages/erp/projx/masters/ProjectCentreMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
