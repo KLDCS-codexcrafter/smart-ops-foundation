@@ -318,6 +318,7 @@ export default function CommandCenterPage() {
       case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
       case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
       case 'finecore-asset-centres': return <AssetCentreMasterPanel />;
+      case 'projx-project-centres': return <ProjectCentreMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
