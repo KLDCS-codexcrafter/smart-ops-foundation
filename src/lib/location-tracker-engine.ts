@@ -21,6 +21,7 @@ import {
   type ComplianceAlertKind,
   complianceAlertsKey,
 } from '@/types/compliance-alert';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 interface TrackerSession {
   entityCode: string;
@@ -196,7 +197,7 @@ function tick(): void {
       captured_at: now,
       latitude: reading.latitude,
       longitude: reading.longitude,
-      accuracy_meters: reading.accuracy_m ?? 0,
+      accuracy_meters: reading.accuracy_m ?? null,
       battery_pct: battery.pct,
       is_charging: battery.charging,
       online: typeof navigator !== 'undefined' ? navigator.onLine : true,
