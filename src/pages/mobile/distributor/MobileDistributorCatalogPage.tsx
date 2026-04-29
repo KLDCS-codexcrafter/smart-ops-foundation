@@ -1,24 +1,23 @@
 /**
  * MobileDistributorCatalogPage.tsx — Mobile distributor catalog browse
- * Sprint T-Phase-1.1.1l-d · Reads inventory items, supports search + add to mobile cart.
- * Mobile cart uses session-scoped localStorage key for offline use; web cart uses IndexedDB.
+ * Sprint T-Phase-1.1.1l-d · Audit fix round 1.
+ * Writes into the SAME IndexedDB cart store as the web (distributor-cart-store)
+ * so the cart syncs across web + mobile.
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Search, Plus, Package } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Package, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { MobileSession } from '../MobileRouter';
 import type { InventoryItem } from '@/types/inventory-item';
+import { upsertLine, isAvailable } from '@/lib/distributor-cart-store';
+import type { DistributorOrderLine } from '@/types/distributor-order';
 
 const CATALOG_KEY = 'erp_inventory_items';
-const mobileCartKey = (entity: string, userId: string) =>
-  `opx_mobile_distributor_cart_${entity}_${userId}`;
-
-interface MobileCartLine { item_id: string; item_code: string; item_name: string; uom: string; qty: number; rate_paise: number; }
 
 function readSession(): MobileSession | null {
   try { const raw = sessionStorage.getItem('opx_mobile_session'); return raw ? (JSON.parse(raw) as MobileSession) : null; } catch { return null; }
@@ -31,6 +30,7 @@ export default function MobileDistributorCatalogPage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
   const [search, setSearch] = useState('');
+  const [busyItemId, setBusyItemId] = useState<string | null>(null);
 
   const items = useMemo<InventoryItem[]>(() => loadList<InventoryItem>(CATALOG_KEY), []);
 
@@ -40,26 +40,41 @@ export default function MobileDistributorCatalogPage() {
     return items.filter(i => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)).slice(0, 100);
   }, [items, search]);
 
-  const handleAdd = useCallback((item: InventoryItem) => {
-    if (!session) return;
-    const key = mobileCartKey(session.entity_code, session.user_id ?? 'anon');
-    const cart = loadList<MobileCartLine>(key);
-    const idx = cart.findIndex(l => l.item_id === item.id);
-    if (idx >= 0) {
-      cart[idx] = { ...cart[idx], qty: cart[idx].qty + 1 };
-    } else {
-      cart.push({
+  useEffect(() => {
+    if (!isAvailable()) toast.error('Offline cart unavailable in this browser');
+  }, []);
+
+  const handleAdd = useCallback(async (item: InventoryItem) => {
+    if (!session || !session.user_id) return;
+    if (!isAvailable()) return;
+    setBusyItemId(item.id);
+    try {
+      const ratePaise = Math.round((item.std_selling_rate ?? 0) * 100);
+      const taxable = ratePaise; // qty 1
+      const line: DistributorOrderLine = {
+        id: `pol_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         item_id: item.id,
         item_code: item.code,
         item_name: item.name,
         uom: item.primary_uom_symbol ?? 'NOS',
         qty: 1,
-        rate_paise: Math.round((item.std_selling_rate ?? 0) * 100),
-      });
+        rate_paise: ratePaise,
+        discount_percent: 0,
+        taxable_paise: taxable,
+        cgst_paise: 0,
+        sgst_paise: 0,
+        igst_paise: 0,
+        total_paise: taxable,
+        hsn_sac: null,
+      };
+      // [JWT] POST /api/distributor/cart-lines
+      await upsertLine(session.user_id, session.entity_code, line);
+      toast.success(`Added ${item.name}`);
+    } catch (e) {
+      toast.error('Could not add', { description: e instanceof Error ? e.message : 'Storage error' });
+    } finally {
+      setBusyItemId(null);
     }
-    // [JWT] POST /api/distributor/cart-lines
-    localStorage.setItem(key, JSON.stringify(cart));
-    toast.success(`Added ${item.name}`);
   }, [session]);
 
   if (!session) return null;
@@ -98,8 +113,8 @@ export default function MobileDistributorCatalogPage() {
                     {fmtINR(Math.round((item.std_selling_rate ?? 0) * 100))}
                   </p>
                 </div>
-                <Button size="sm" variant="outline" onClick={() => handleAdd(item)}>
-                  <Plus className="h-3.5 w-3.5" />
+                <Button size="sm" variant="outline" disabled={busyItemId === item.id} onClick={() => void handleAdd(item)}>
+                  {busyItemId === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
                 </Button>
               </div>
             </Card>
