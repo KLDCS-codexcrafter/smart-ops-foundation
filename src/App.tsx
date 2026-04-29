@@ -351,6 +351,8 @@ const App = () => (
               <Route path="/erp/accounting/mock-auth" element={<P><MockAuthDevPanel /></P>} />
               <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
               <Route path="/erp/finecore/masters/asset-centres" element={<P><AssetCentreMasterPage /></P>} />
+              <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
+              <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/finecore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/finecore/payment-print" element={<P><PaymentPrint /></P>} />
