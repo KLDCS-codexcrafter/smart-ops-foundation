@@ -51,6 +51,9 @@ import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
 import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
 import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
+import { DEMO_PROJECT_CENTRES, DEMO_PROJECTS } from '@/data/demo-projects';
+import { projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
+import { projectsKey, PROJECT_SEQ_KEY } from '@/types/projx/project';
 
 export interface SeedResult {
   entityCode: string;
