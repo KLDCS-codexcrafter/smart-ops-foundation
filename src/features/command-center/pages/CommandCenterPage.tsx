@@ -457,6 +457,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'finecore-gst-config': 'GST Config',
     'finecore-compliance-settings': 'Compliance Settings & Automation',
     'finecore-asset-centres': 'Asset Centre Master',
+    'projx-project-centres': 'Project Centre Master',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
