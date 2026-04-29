@@ -4,7 +4,7 @@
  * Shared by salesman, telecaller, supervisor, sales_manager.
  * Writes to existing ATTENDANCE_RECORDS_KEY (compatible with PayHub).
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,10 +67,11 @@ export default function MobileAttendancePage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
   const [busy, setBusy] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [allRecords, setAllRecords] = useState<AttendanceRecord[]>(() => loadRecords());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const allRecords = useMemo(() => loadRecords(), [reloadKey]);
+  const refreshRecords = useCallback(() => {
+    setAllRecords(loadRecords());
+  }, []);
 
   const myRecords = useMemo(
     () => allRecords
@@ -122,10 +123,10 @@ export default function MobileAttendancePage() {
     const all = loadRecords();
     all.push(record);
     saveRecords(all);
-    setReloadKey(k => k + 1);
+    refreshRecords();
     setBusy(false);
     toast.success(`Checked in at ${record.checkIn}`);
-  }, [session]);
+  }, [session, refreshRecords]);
 
   const handleCheckOut = useCallback(async () => {
     if (!session || !todayRecord) return;
@@ -144,10 +145,10 @@ export default function MobileAttendancePage() {
       };
       saveRecords(all);
     }
-    setReloadKey(k => k + 1);
+    refreshRecords();
     setBusy(false);
     toast.success(`Checked out at ${checkOut}`);
-  }, [session, todayRecord]);
+  }, [session, todayRecord, refreshRecords]);
 
   if (!session) return null;
 

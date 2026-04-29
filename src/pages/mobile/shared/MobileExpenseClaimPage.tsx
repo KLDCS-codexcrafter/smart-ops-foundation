@@ -47,10 +47,12 @@ const fmtINR = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 export default function MobileExpenseClaimPage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [allClaims, setAllClaims] = useState<ExpenseClaim[]>(() => loadClaims());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const allClaims = useMemo(() => loadClaims(), [reloadKey]);
+  const refreshClaims = useCallback(() => {
+    setAllClaims(loadClaims());
+  }, []);
+
   const myClaims = useMemo(
     () => allClaims
       .filter(c => c.employeeId === session?.user_id)
@@ -119,11 +121,11 @@ export default function MobileExpenseClaimPage() {
     const all = loadClaims();
     all.push(claim);
     saveClaims(all);
-    setReloadKey(k => k + 1);
+    refreshClaims();
     setBusy(false);
     resetForm();
     toast.success(`Claim submitted: ${fmtINR(amountN)}`);
-  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm]);
+  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm, refreshClaims]);
 
   if (!session) return null;
 
