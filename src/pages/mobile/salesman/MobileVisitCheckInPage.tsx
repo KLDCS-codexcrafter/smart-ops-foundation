@@ -183,51 +183,43 @@ export default function MobileVisitCheckInPage() {
     reader.readAsDataURL(file);
   }, [photoUrls]);
 
-  const handleCheckOut = useCallback(() => {
+  const handleCheckOut = useCallback(async () => {
     if (!session || !activeVisitId) return;
     setPhase('submitting');
-    if (!navigator.geolocation) {
-      toast.error('GPS not available');
+    const reading = await getCurrentLocation();
+    if (!reading.ok || reading.latitude === undefined || reading.longitude === undefined) {
+      toast.error(reading.reason ?? 'GPS unavailable');
       setPhase('checked-in');
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const outGeo: GeoPoint = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy_meters: pos.coords.accuracy,
-        };
-        const all = loadVisits(session.entity_code);
-        const idx = all.findIndex(v => v.id === activeVisitId);
-        if (idx < 0) {
-          toast.error('Visit not found');
-          setPhase('checked-in');
-          return;
-        }
-        // APPEND-ONLY: only check_out fields + outcome details mutated; check-in fields untouched.
-        all[idx] = {
-          ...all[idx],
-          check_out_time: new Date().toISOString(),
-          check_out_geo: outGeo,
-          purpose,
-          outcome,
-          notes,
-          order_captured_value: outcome === 'order_captured' ? Number(orderValue) || 0 : 0,
-          photo_urls: photoUrls,
-          signature_data_url: signatureCaptured,
-          signature_captured_at: signatureCaptured ? new Date().toISOString() : null,
-        };
-        saveVisits(session.entity_code, all);
-        toast.success('Visit logged');
-        navigate('/mobile/salesman/visit-log');
-      },
-      (err) => {
-        toast.error(`GPS error: ${err.message}`);
-        setPhase('checked-in');
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
+    const outGeo: GeoPoint = {
+      latitude: reading.latitude,
+      longitude: reading.longitude,
+      accuracy_meters: reading.accuracy_m ?? null,
+    };
+    const all = loadVisits(session.entity_code);
+    const idx = all.findIndex(v => v.id === activeVisitId);
+    if (idx < 0) {
+      toast.error('Visit not found');
+      setPhase('checked-in');
+      return;
+    }
+    // APPEND-ONLY: only check_out fields + outcome details mutated; check-in fields untouched.
+    all[idx] = {
+      ...all[idx],
+      check_out_time: new Date().toISOString(),
+      check_out_geo: outGeo,
+      purpose,
+      outcome,
+      notes,
+      order_captured_value: outcome === 'order_captured' ? Number(orderValue) || 0 : 0,
+      photo_urls: photoUrls,
+      signature_data_url: signatureCaptured,
+      signature_captured_at: signatureCaptured ? new Date().toISOString() : null,
+    };
+    saveVisits(session.entity_code, all);
+    toast.success('Visit logged');
+    navigate('/mobile/salesman/visit-log');
   }, [session, activeVisitId, purpose, outcome, notes, orderValue, photoUrls, signatureCaptured, navigate]);
 
   if (!session) return null;
