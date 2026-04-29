@@ -35,6 +35,7 @@ import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsO
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 import { AssetCentreMasterPanel } from '@/pages/erp/finecore/masters/AssetCentreMaster';
+import { ProjectCentreMasterPanel } from '@/pages/erp/projx/masters/ProjectCentreMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
 import { SerialGridPanel } from '@/pages/erp/inventory/SerialGrid';
@@ -140,6 +141,7 @@ export type CommandCenterModule =
   | 'finecore-fiscal-year'
   | 'finecore-business-unit'
   | 'finecore-asset-centres'
+  | 'projx-project-centres'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -224,7 +226,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -316,6 +318,7 @@ export default function CommandCenterPage() {
       case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
       case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
       case 'finecore-asset-centres': return <AssetCentreMasterPanel />;
+      case 'projx-project-centres': return <ProjectCentreMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -430,6 +433,7 @@ const GROUP_LABELS: Partial<Record<CommandCenterModule, string>> = {
 
 function getGroupLabel(m: CommandCenterModule): string {
   if (m.startsWith('finecore-')) return 'Finance & Compliance';
+  if (m.startsWith('projx-')) return 'Project Masters';
   if (m.startsWith('inventory-')) return 'Inventory Masters';
   if (m.startsWith('ph-')) return 'People Core';
   if (m.startsWith('opening-')) return 'Opening Balances';
@@ -454,6 +458,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'finecore-gst-config': 'GST Config',
     'finecore-compliance-settings': 'Compliance Settings & Automation',
     'finecore-asset-centres': 'Asset Centre Master',
+    'projx-project-centres': 'Project Centre Master',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

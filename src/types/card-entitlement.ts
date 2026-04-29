@@ -12,7 +12,8 @@ export type CardId =
   | 'production' | 'maintainpro' | 'requestx' | 'frontdesk'
   | 'servicedesk'
   | 'dispatch-hub'
-  | 'dispatch-ops';
+  | 'dispatch-ops'
+  | 'projx';                  // Sprint T-Phase-1.1.2-a · ProjX Foundation
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'trial';
 

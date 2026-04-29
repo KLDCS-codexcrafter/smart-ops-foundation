@@ -51,6 +51,9 @@ import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
 import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
 import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
+import { DEMO_PROJECT_CENTRES, DEMO_PROJECTS } from '@/data/demo-projects';
+import { projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
+import { projectsKey, PROJECT_SEQ_KEY } from '@/types/projx/project';
 
 export interface SeedResult {
   entityCode: string;
@@ -341,6 +344,22 @@ export function seedEntityDemoData(
   );
   if (acSeeded > 0) {
     localStorage.setItem(ASSET_CENTRE_SEQ_KEY(entityCode), String(DEMO_ASSET_CENTRES.length));
+  }
+
+  // ProjX — Project Centres + Projects (Sprint T-Phase-1.1.2-a)
+  const pcSeeded = safeSetArray(
+    projectCentresKey(entityCode),
+    DEMO_PROJECT_CENTRES.map(pc => ({ ...pc, entity_id: entityCode })),
+  );
+  if (pcSeeded > 0) {
+    localStorage.setItem(PROJECT_CENTRE_SEQ_KEY(entityCode), String(DEMO_PROJECT_CENTRES.length));
+  }
+  const prjSeeded = safeSetArray(
+    projectsKey(entityCode),
+    DEMO_PROJECTS.map(p => ({ ...p, entity_id: entityCode })),
+  );
+  if (prjSeeded > 0) {
+    localStorage.setItem(PROJECT_SEQ_KEY(entityCode), String(DEMO_PROJECTS.length));
   }
 
   return {

@@ -11,7 +11,7 @@ import {
   Package, LayoutTemplate, QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
-  Truck, Network, Layers,
+  Truck, Network, Layers, Briefcase,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -81,6 +81,13 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-fiscal-year', requiredCards: ['command-center'] },
       { id: 'finecore-asset-centres', type: 'item', label: 'Asset Centres', icon: Building2,
         moduleId: 'finecore-asset-centres', requiredCards: ['command-center'] },
+    ],
+  },
+  {
+    id: 'projx-masters-group', type: 'group', label: 'Project Masters', icon: Briefcase,
+    children: [
+      { id: 'projx-project-centres', type: 'item', label: 'Project Centres', icon: Briefcase,
+        moduleId: 'projx-project-centres', requiredCards: ['command-center'] },
     ],
   },
   {
