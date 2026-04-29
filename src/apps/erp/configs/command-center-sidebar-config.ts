@@ -84,6 +84,13 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'projx-masters-group', type: 'group', label: 'Project Masters', icon: Briefcase,
+    children: [
+      { id: 'projx-project-centres', type: 'item', label: 'Project Centres', icon: Briefcase,
+        moduleId: 'projx-project-centres', requiredCards: ['command-center'] },
+    ],
+  },
+  {
     id: 'inventory-group', type: 'group', label: 'Inventory Masters', icon: Package,
     children: [
       { id: 'inventory-parametric', type: 'item', label: 'Parametric Hub', icon: Settings2,
