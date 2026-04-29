@@ -15,6 +15,7 @@ import type { MobileSession } from '../MobileRouter';
 import {
   type AttendanceRecord, ATTENDANCE_RECORDS_KEY,
 } from '@/types/attendance-entry';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 function readSession(): MobileSession | null {
   try {

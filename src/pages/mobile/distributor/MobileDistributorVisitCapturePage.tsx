@@ -20,22 +20,12 @@ import {
   type VisitLog, type VisitOutcome, type VisitPurpose,
   visitLogsKey, VISIT_OUTCOME_LABELS, VISIT_PURPOSE_LABELS,
 } from '@/types/visit-log';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 function readSession(): MobileSession | null {
   try { const raw = sessionStorage.getItem('opx_mobile_session'); return raw ? (JSON.parse(raw) as MobileSession) : null; } catch { return null; }
 }
 function loadList<T>(key: string): T[] { try { const raw = localStorage.getItem(key); return raw ? (JSON.parse(raw) as T[]) : []; } catch { return []; } }
-
-async function getCurrentLocation(): Promise<{ lat: number; lng: number } | null> {
-  if (typeof navigator === 'undefined' || !navigator.geolocation) return null;
-  return new Promise(resolve => {
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
-  });
-}
 
 export default function MobileDistributorVisitCapturePage() {
   const navigate = useNavigate();
@@ -60,7 +50,10 @@ export default function MobileDistributorVisitCapturePage() {
     if (!session) return;
     if (!customerName.trim()) { toast.error('Customer name required'); return; }
     setBusy(true);
-    const loc = await getCurrentLocation();
+    const reading = await getCurrentLocation();
+    const lat = reading.ok && reading.latitude !== undefined ? reading.latitude : 0;
+    const lng = reading.ok && reading.longitude !== undefined ? reading.longitude : 0;
+    const acc = reading.ok && reading.accuracy_m !== undefined ? reading.accuracy_m : null;
     const now = new Date().toISOString();
     const log: VisitLog = {
       id: `vl-${Date.now()}`,
@@ -71,9 +64,9 @@ export default function MobileDistributorVisitCapturePage() {
       customer_name: customerName.trim(),
       beat_id: null,
       check_in_time: now,
-      check_in_geo: { latitude: loc?.lat ?? 0, longitude: loc?.lng ?? 0, accuracy_meters: null },
+      check_in_geo: { latitude: lat, longitude: lng, accuracy_meters: acc },
       check_out_time: now,
-      check_out_geo: { latitude: loc?.lat ?? 0, longitude: loc?.lng ?? 0, accuracy_meters: null },
+      check_out_geo: { latitude: lat, longitude: lng, accuracy_meters: acc },
       customer_geo: null,
       distance_from_customer_meters: null,
       within_radius: true,
