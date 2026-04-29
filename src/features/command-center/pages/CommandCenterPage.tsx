@@ -141,6 +141,7 @@ export type CommandCenterModule =
   | 'finecore-fiscal-year'
   | 'finecore-business-unit'
   | 'finecore-asset-centres'
+  | 'projx-project-centres'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
