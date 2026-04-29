@@ -21,8 +21,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Save, Send, CheckCircle2 } from 'lucide-react';
+import { Save, Send, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dMul, round2 } from '@/lib/decimal-helpers';
@@ -246,6 +247,17 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
           <div>
             <Label className="text-xs">Memo Date</Label>
             <SmartDateInput value={memoDate} onChange={setMemoDate} />
+            {memoDate && isPeriodLocked(memoDate, entityCode) && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-2 mt-1">
+                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                <div className="text-[11px] text-amber-800 dark:text-amber-300">
+                  <p className="font-medium">Period locked</p>
+                  <p className="text-amber-700 dark:text-amber-400">
+                    {periodLockMessage(memoDate, entityCode)} The downstream voucher will fail unless the period lock is lifted. You can still save this memo as a draft.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <Label className="text-xs">Invoice Date</Label>

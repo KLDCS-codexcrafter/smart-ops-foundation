@@ -34,6 +34,7 @@ import {
   releaseQuoteReservations,
   createOrderReservations,
 } from '@/lib/stock-reservation-engine';
+import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -267,6 +268,16 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       );
       refreshAvailability();
       toast.success(`Sales Order ${result.order_no} created. Link to Sales Invoice when dispatching.`);
+      // Sprint T-Phase-1.1.1q · Fix 4 — log QUOT→SO conversion event
+      logConversionEvent(
+        entityCode,
+        'system', // [JWT] Phase 2: replace with auth.userId
+        'quotation_to_sales_order',
+        q.id,
+        q.quotation_no,
+        result.id,
+        result.order_no,
+      );
     }
   }, [editingId, quotations, createOrder, entityCode, markConvertedToSO, refreshAvailability]);
 

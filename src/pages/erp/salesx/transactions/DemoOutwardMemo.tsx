@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import {
   demoOutwardMemosKey,
@@ -175,6 +176,8 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       outward_godown_id: null, outward_godown_name: null,
       issued_by_dispatch: false,
       dispatch_issued_at: null, dispatch_issued_by: null,
+      // Sprint T-Phase-1.1.1q · Demo units are always refundable by nature.
+      pending_expense_voucher: false,
       created_at: now,
       updated_at: now,
       ...extras,
@@ -251,6 +254,11 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
             <CardTitle className="text-sm">
               Last issued by Dispatch · {lastIssued.memo_no}
               <Badge variant="secondary" className="ml-2 text-[10px]">read-only</Badge>
+              {(lastIssued.pending_expense_voucher ?? false) && (
+                <Badge variant="outline" className="ml-2 text-[10px] bg-amber-500/10 text-amber-700 border-amber-500/30">
+                  Phase 2: expense voucher pending
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
@@ -284,6 +292,17 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
           <div>
             <Label className="text-xs">Memo Date</Label>
             <SmartDateInput value={memoDate} onChange={setMemoDate} />
+            {memoDate && isPeriodLocked(memoDate, entityCode) && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-2 mt-1">
+                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                <div className="text-[11px] text-amber-800 dark:text-amber-300">
+                  <p className="font-medium">Period locked</p>
+                  <p className="text-amber-700 dark:text-amber-400">
+                    {periodLockMessage(memoDate, entityCode)} The downstream voucher will fail unless the period lock is lifted. You can still save this memo as a draft.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

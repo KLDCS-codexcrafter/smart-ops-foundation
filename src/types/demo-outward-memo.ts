@@ -114,6 +114,10 @@ export interface DemoOutwardMemo {
   dispatch_issued_at: string | null;
   dispatch_issued_by: string | null;
 
+  // Sprint T-Phase-1.1.1q · Phase 2 hookpoint — flips true when a demo unit is
+  // marked lost/converted (instead of returned), triggering Marketing Expense voucher.
+  pending_expense_voucher: boolean;
+
   created_at: string;
   updated_at: string;
 }
