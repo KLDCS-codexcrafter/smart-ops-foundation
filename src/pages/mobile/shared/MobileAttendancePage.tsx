@@ -126,7 +126,7 @@ export default function MobileAttendancePage() {
     refreshRecords();
     setBusy(false);
     toast.success(`Checked in at ${record.checkIn}`);
-  }, [session]);
+  }, [session, refreshRecords]);
 
   const handleCheckOut = useCallback(async () => {
     if (!session || !todayRecord) return;
@@ -148,7 +148,7 @@ export default function MobileAttendancePage() {
     refreshRecords();
     setBusy(false);
     toast.success(`Checked out at ${checkOut}`);
-  }, [session, todayRecord]);
+  }, [session, todayRecord, refreshRecords]);
 
   if (!session) return null;
 
