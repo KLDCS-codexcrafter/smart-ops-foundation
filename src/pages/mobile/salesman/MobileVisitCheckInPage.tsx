@@ -22,6 +22,7 @@ import {
   visitLogsKey, VISIT_OUTCOME_LABELS, VISIT_PURPOSE_LABELS,
   DEFAULT_CHECK_IN_RADIUS_METERS,
 } from '@/types/visit-log';
+import { getCurrentLocation } from '@/lib/geolocation-bridge';
 
 function readSession(): MobileSession | null {
   try {
@@ -112,65 +113,58 @@ export default function MobileVisitCheckInPage() {
     ? true
     : distanceFromCustomer <= DEFAULT_CHECK_IN_RADIUS_METERS;
 
-  const handleCheckIn = useCallback(() => {
+  const handleCheckIn = useCallback(async () => {
     if (!session || !customer) {
       toast.error('Select a customer first');
       return;
     }
-    if (!navigator.geolocation) {
-      toast.error('GPS not available on this device');
+    setPhase('getting-location');
+    const reading = await getCurrentLocation();
+    if (!reading.ok || reading.latitude === undefined || reading.longitude === undefined) {
+      toast.error(reading.reason ?? 'GPS unavailable');
+      setPhase('idle');
       return;
     }
-    setPhase('getting-location');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const geo: GeoPoint = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy_meters: pos.coords.accuracy,
-        };
-        setCheckInGeo(geo);
-        const newVisit: VisitLog = {
-          id: `vl-${Date.now()}`,
-          entity_id: session.entity_code,
-          salesman_id: session.user_id ?? '',
-          salesman_name: session.display_name,
-          customer_id: customer.id,
-          customer_name: customer.name,
-          beat_id: null,
-          check_in_time: new Date().toISOString(),
-          check_in_geo: geo,
-          check_out_time: null,
-          check_out_geo: null,
-          customer_geo: customer.geo_lat != null && customer.geo_lng != null
-            ? { latitude: customer.geo_lat, longitude: customer.geo_lng, accuracy_meters: null }
-            : null,
-          distance_from_customer_meters: distanceFromCustomer,
-          within_radius: withinRadius,
-          purpose: 'regular_visit',
-          outcome: 'order_captured',
-          notes: '',
-          order_captured_value: 0,
-          order_voucher_id: null,
-          next_visit_date: null,
-          photo_urls: [],
-          signature_data_url: null,
-          signature_captured_at: null,
-          created_at: new Date().toISOString(),
-        };
-        const all = loadVisits(session.entity_code);
-        all.push(newVisit);
-        saveVisits(session.entity_code, all);
-        setActiveVisitId(newVisit.id);
-        setPhase('checked-in');
-        toast.success('Checked in');
-      },
-      (err) => {
-        toast.error(`GPS error: ${err.message}`);
-        setPhase('idle');
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
+    const geo: GeoPoint = {
+      latitude: reading.latitude,
+      longitude: reading.longitude,
+      accuracy_meters: reading.accuracy_m ?? null,
+    };
+    setCheckInGeo(geo);
+    const newVisit: VisitLog = {
+      id: `vl-${Date.now()}`,
+      entity_id: session.entity_code,
+      salesman_id: session.user_id ?? '',
+      salesman_name: session.display_name,
+      customer_id: customer.id,
+      customer_name: customer.name,
+      beat_id: null,
+      check_in_time: new Date().toISOString(),
+      check_in_geo: geo,
+      check_out_time: null,
+      check_out_geo: null,
+      customer_geo: customer.geo_lat != null && customer.geo_lng != null
+        ? { latitude: customer.geo_lat, longitude: customer.geo_lng, accuracy_meters: null }
+        : null,
+      distance_from_customer_meters: distanceFromCustomer,
+      within_radius: withinRadius,
+      purpose: 'regular_visit',
+      outcome: 'order_captured',
+      notes: '',
+      order_captured_value: 0,
+      order_voucher_id: null,
+      next_visit_date: null,
+      photo_urls: [],
+      signature_data_url: null,
+      signature_captured_at: null,
+      created_at: new Date().toISOString(),
+    };
+    const all = loadVisits(session.entity_code);
+    all.push(newVisit);
+    saveVisits(session.entity_code, all);
+    setActiveVisitId(newVisit.id);
+    setPhase('checked-in');
+    toast.success('Checked in');
   }, [session, customer, distanceFromCustomer, withinRadius]);
 
   const handlePhotoCapture = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
