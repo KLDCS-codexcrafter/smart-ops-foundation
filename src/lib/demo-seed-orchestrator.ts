@@ -54,6 +54,8 @@ import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-ce
 import { DEMO_PROJECT_CENTRES, DEMO_PROJECTS } from '@/data/demo-projects';
 import { projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { projectsKey, PROJECT_SEQ_KEY } from '@/types/projx/project';
+import { quotationsKey } from '@/types/quotation';
+import type { Quotation } from '@/types/quotation';
 
 export interface SeedResult {
   entityCode: string;
@@ -360,6 +362,35 @@ export function seedEntityDemoData(
   );
   if (prjSeeded > 0) {
     localStorage.setItem(PROJECT_SEQ_KEY(entityCode), String(DEMO_PROJECTS.length));
+  }
+
+  // ProjX — Backfill 5 quotations with project_id linkage
+  // (so "Convert from Quotation" UI has demo data on Day 1 showing both linked + unlinked)
+  if (prjSeeded > 0 && quotations > 0) {
+    const seededProjects = DEMO_PROJECTS.map(p => ({ ...p, entity_id: entityCode }));
+    const stored = localStorage.getItem(quotationsKey(entityCode));
+    if (stored) {
+      try {
+        const allQuotations: Quotation[] = JSON.parse(stored);
+        let backfilled = 0;
+        for (const proj of seededProjects) {
+          if (backfilled >= 5) break;
+          const idx = allQuotations.findIndex(q =>
+            q.project_id === null &&
+            q.customer_id === proj.customer_id
+          );
+          if (idx !== -1) {
+            allQuotations[idx] = { ...allQuotations[idx], project_id: proj.id };
+            backfilled++;
+          }
+        }
+        if (backfilled > 0) {
+          localStorage.setItem(quotationsKey(entityCode), JSON.stringify(allQuotations));
+        }
+      } catch {
+        // ignore — backfill is best-effort
+      }
+    }
   }
 
   return {
