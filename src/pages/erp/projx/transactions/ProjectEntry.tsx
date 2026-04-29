@@ -22,13 +22,16 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from '@/components/ui/sheet';
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle,
+  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
@@ -94,7 +97,7 @@ const BLANK: FormState = {
 
 export function ProjectEntryPanel() {
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
-  const { projects, createProject, updateProject, transitionStatus } = useProjects(entityCode);
+  const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);
 
@@ -105,6 +108,8 @@ export function ProjectEntryPanel() {
   const [form, setForm] = useState<FormState>(BLANK);
   const [convertSheetOpen, setConvertSheetOpen] = useState(false);
   const [convertQuotationId, setConvertQuotationId] = useState<string>('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletionReason, setDeletionReason] = useState('');
 
   useEffect(() => {
     if (sheetOpen) {
