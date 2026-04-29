@@ -22,13 +22,16 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from '@/components/ui/sheet';
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle,
+  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
@@ -94,7 +97,7 @@ const BLANK: FormState = {
 
 export function ProjectEntryPanel() {
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
-  const { projects, createProject, updateProject, transitionStatus } = useProjects(entityCode);
+  const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);
 
@@ -105,6 +108,8 @@ export function ProjectEntryPanel() {
   const [form, setForm] = useState<FormState>(BLANK);
   const [convertSheetOpen, setConvertSheetOpen] = useState(false);
   const [convertQuotationId, setConvertQuotationId] = useState<string>('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletionReason, setDeletionReason] = useState('');
 
   useEffect(() => {
     if (sheetOpen) {
@@ -466,35 +471,43 @@ export function ProjectEntryPanel() {
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setSheetOpen(false)}>Cancel</Button>
-              <Button onClick={() => {
-                const wasConversion = !editing && form.source_quotation_id && form.source_quotation_no;
-                const sourceId = form.source_quotation_id;
-                const sourceNo = form.source_quotation_no;
-                handleSave();
-                // Log conversion AFTER save (only on new-from-quotation)
-                if (wasConversion && sourceId && sourceNo) {
-                  // Look up newly created project — last project for this entity in storage
-                  // Phase 2 will return the created object; for now use a delayed re-read.
-                  setTimeout(() => {
-                    try {
-                      const raw = localStorage.getItem(`erp_projects_${entityCode}`);
-                      const arr: Project[] = raw ? JSON.parse(raw) : [];
-                      const justCreated = arr[arr.length - 1];
-                      if (justCreated) {
-                        logConversionEvent(
-                          entityCode, 'system', 'quotation_to_project',
-                          sourceId, sourceNo,
-                          justCreated.id, justCreated.project_no,
-                        );
+            <div className="flex items-center justify-between gap-2 pt-2">
+              <div>
+                {editing && (
+                  <Button variant="destructive" size="sm" className="gap-1.5"
+                    onClick={() => { setDeletionReason(''); setDeleteOpen(true); }}>
+                    <Trash2 className="h-4 w-4" /> Delete project
+                  </Button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setSheetOpen(false)}>Cancel</Button>
+                <Button onClick={() => {
+                  const wasConversion = !editing && form.source_quotation_id && form.source_quotation_no;
+                  const sourceId = form.source_quotation_id;
+                  const sourceNo = form.source_quotation_no;
+                  handleSave();
+                  // Log conversion AFTER save (only on new-from-quotation)
+                  if (wasConversion && sourceId && sourceNo) {
+                    setTimeout(() => {
+                      try {
+                        const raw = localStorage.getItem(`erp_projects_${entityCode}`);
+                        const arr: Project[] = raw ? JSON.parse(raw) : [];
+                        const justCreated = arr[arr.length - 1];
+                        if (justCreated) {
+                          logConversionEvent(
+                            entityCode, 'system', 'quotation_to_project',
+                            sourceId, sourceNo,
+                            justCreated.id, justCreated.project_no,
+                          );
+                        }
+                      } catch {
+                        // best effort — never block UI
                       }
-                    } catch {
-                      // best effort — never block UI
-                    }
-                  }, 0);
-                }
-              }}>{editing ? 'Update' : 'Create'}</Button>
+                    }, 0);
+                  }
+                }}>{editing ? 'Update' : 'Create'}</Button>
+              </div>
             </div>
           </div>
         </SheetContent>
@@ -530,6 +543,37 @@ export function ProjectEntryPanel() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Delete confirmation */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete project?</DialogTitle>
+            <DialogDescription>
+              This soft-deletes the project. The record is retained for audit but hidden from default views. Vouchers and time entries already tagged with this project's centre keep their linkage.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label>Deletion reason <span className="text-destructive">*</span></Label>
+            <Textarea rows={3} value={deletionReason}
+              onChange={e => setDeletionReason(e.target.value)}
+              placeholder="Why is this project being deleted?" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+            <Button variant="destructive" disabled={!deletionReason.trim()}
+              onClick={() => {
+                if (!editing) return;
+                const result = softDelete(editing.id, { id: 'system', name: 'System' }, deletionReason.trim());
+                if (!result.ok) { toast.error(result.reason); return; }
+                toast.success('Project soft-deleted. Audit trail preserved.');
+                setDeleteOpen(false);
+                setSheetOpen(false);
+                setEditing(null);
+              }}>Confirm Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

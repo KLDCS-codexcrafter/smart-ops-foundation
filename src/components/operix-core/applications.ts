@@ -158,7 +158,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/projx',
     icon: 'ClipboardList',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'webstorex',
