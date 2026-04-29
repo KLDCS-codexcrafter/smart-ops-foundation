@@ -126,7 +126,8 @@ export type ConversionType =
   | 'enquiry_to_quotation'
   | 'quotation_to_proforma'
   | 'quotation_to_sales_order'
-  | 'quotation_to_project';            // Sprint T-Phase-1.1.2-a · ProjX foundation
+  | 'quotation_to_project'             // Sprint T-Phase-1.1.2-a · ProjX foundation
+  | 'sales_order_to_project';          // Sprint T-Phase-1.1.2-b · ProjX OrderDesk conversion
 
 export interface ConversionActivityEntry {
   id: string;
