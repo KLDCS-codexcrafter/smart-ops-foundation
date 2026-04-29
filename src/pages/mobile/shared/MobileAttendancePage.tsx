@@ -4,7 +4,7 @@
  * Shared by salesman, telecaller, supervisor, sales_manager.
  * Writes to existing ATTENDANCE_RECORDS_KEY (compatible with PayHub).
  */
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -123,7 +123,7 @@ export default function MobileAttendancePage() {
     const all = loadRecords();
     all.push(record);
     saveRecords(all);
-    setReloadKey(k => k + 1);
+    refreshRecords();
     setBusy(false);
     toast.success(`Checked in at ${record.checkIn}`);
   }, [session]);
@@ -145,7 +145,7 @@ export default function MobileAttendancePage() {
       };
       saveRecords(all);
     }
-    setReloadKey(k => k + 1);
+    refreshRecords();
     setBusy(false);
     toast.success(`Checked out at ${checkOut}`);
   }, [session, todayRecord]);
