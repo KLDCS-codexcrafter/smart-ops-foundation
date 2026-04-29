@@ -158,6 +158,8 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
       issued_by_dispatch: false,
       dispatch_issued_at: null, dispatch_issued_by: null,
       unit_value: 0, total_value: 0,
+      // Sprint T-Phase-1.1.1q · Phase 2 expense voucher posting flag.
+      pending_expense_voucher: true,
       created_at: now,
       updated_at: now,
     };

@@ -176,6 +176,8 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       outward_godown_id: null, outward_godown_name: null,
       issued_by_dispatch: false,
       dispatch_issued_at: null, dispatch_issued_by: null,
+      // Sprint T-Phase-1.1.1q · Demo units are always refundable by nature.
+      pending_expense_voucher: false,
       created_at: now,
       updated_at: now,
       ...extras,
