@@ -67,10 +67,11 @@ export default function MobileAttendancePage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
   const [busy, setBusy] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [allRecords, setAllRecords] = useState<AttendanceRecord[]>(() => loadRecords());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const allRecords = useMemo(() => loadRecords(), [reloadKey]);
+  const refreshRecords = useCallback(() => {
+    setAllRecords(loadRecords());
+  }, []);
 
   const myRecords = useMemo(
     () => allRecords
