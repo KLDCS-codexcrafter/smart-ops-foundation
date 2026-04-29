@@ -121,7 +121,7 @@ export default function MobileExpenseClaimPage() {
     const all = loadClaims();
     all.push(claim);
     saveClaims(all);
-    setReloadKey(k => k + 1);
+    refreshClaims();
     setBusy(false);
     resetForm();
     toast.success(`Claim submitted: ${fmtINR(amountN)}`);
