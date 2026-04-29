@@ -87,6 +87,8 @@ const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
 const FinCorePage = lazy(() => import('./pages/erp/finecore/FinCorePage'));
 const AssetCentreMasterPage = lazy(() => import('./pages/erp/finecore/masters/AssetCentreMaster'));
+const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
+const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
