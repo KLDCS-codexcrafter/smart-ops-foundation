@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n-engine';
 
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 

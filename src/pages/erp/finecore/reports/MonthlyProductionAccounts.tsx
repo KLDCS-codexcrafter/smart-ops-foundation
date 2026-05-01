@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Factory, AlertCircle } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { consumptionEntriesKey, type ConsumptionEntry } from '@/types/consumption';
+import { useT } from '@/lib/i18n-engine';
 
 interface CompanyLite {
   entityCode?: string;

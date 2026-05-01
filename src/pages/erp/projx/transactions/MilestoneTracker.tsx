@@ -23,6 +23,7 @@ import {
 import type { ProjectMilestone, MilestoneStatus } from '@/types/projx/project-milestone';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;

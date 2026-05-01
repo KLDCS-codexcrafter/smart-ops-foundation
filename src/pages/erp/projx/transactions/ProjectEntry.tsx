@@ -48,6 +48,7 @@ import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { CreateProjectInput } from '@/hooks/useProjects';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;

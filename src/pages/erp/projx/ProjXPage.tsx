@@ -24,6 +24,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import type { ProjXModule } from './ProjXSidebar.types';
+import { useT } from '@/lib/i18n-engine';
 
 export default function ProjXPage() {
   const [activeModule, setActiveModule] = useState<ProjXModule>('welcome');

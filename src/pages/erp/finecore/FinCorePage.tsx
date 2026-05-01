@@ -86,6 +86,7 @@ import { StockJournalRegisterPanel } from './registers/StockJournalRegister';
 import { StockTransferRegisterPanel } from './registers/StockTransferRegister';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useT } from '@/lib/i18n-engine';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-hub': 'Hub Overview',
