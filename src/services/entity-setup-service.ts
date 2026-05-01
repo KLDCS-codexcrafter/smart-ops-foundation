@@ -714,6 +714,10 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       'vt-project-invoice',            // ProjX billing
       'vt-project-advance-receipt',    // ProjX advance
       'vt-retention-settlement',       // ProjX retention (1.5.7)
+      // Sprint T-Phase-1.2.4 · GRN multi-variant — every entity gets all 3 (founder lock)
+      'vt-receipt-note-domestic',
+      'vt-receipt-note-import',
+      'vt-receipt-note-subcon',
     ];
     let changed = false;
     toActivate.forEach(vtId => {
