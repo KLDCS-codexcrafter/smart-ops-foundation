@@ -258,7 +258,7 @@ export function GRNEntryPanel() {
       batch_no: l.batch_no || null,
       serial_nos: l.serial_nos.split('\n').map(s => s.trim()).filter(Boolean),
       heat_no: l.heat_no || null,
-      bin_id: null,
+      bin_id: l.bin_id || null,
       qc_result: l.qc_result,
       qc_notes: l.qc_notes,
     }));
