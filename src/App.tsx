@@ -142,7 +142,8 @@ const TermsOfDeliveryMaster = lazy(() => import('./pages/erp/masters/supporting/
 const LogisticMaster = lazy(() => import('./pages/erp/masters/LogisticMaster'));
 const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
-const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHub'));
+const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
+const InventoryHubLegacy = lazy(() => import('./pages/erp/inventory/InventoryHub'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
 const SerialGrid = lazy(() => import('./pages/erp/inventory/SerialGrid'));
