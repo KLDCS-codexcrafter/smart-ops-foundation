@@ -41,6 +41,7 @@ import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
 import {
   grnsKey, stockBalanceKey,
   GRN_STATUS_LABELS, GRN_STATUS_COLORS,
