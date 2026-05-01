@@ -296,9 +296,11 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     ],
   }),
   // ── PROJECT BILLING FAMILY (Feature-based · activates when ProjX card enabled per entity) ─────
+  // Note: family 'Accounting' + base 'Sales'/'Receipt' used to honor D-128 byte-identical schemas.
+  // Logical family identity is encoded via id-prefix + name + abbreviation; UI can group by abbreviation.
   seed('vt-project-invoice', {
     name: 'Project Invoice', abbreviation: 'PINV',
-    base_voucher_type: 'Sales Invoice', family: 'Project Billing',
+    base_voucher_type: 'Sales', family: 'Accounting',
     is_active: false, activation_type: 'feature_based',
     accounting_impact: true, inventory_impact: false,
     numbering_prefix: 'PINV-', numbering_width: 4, current_sequence: 1,
@@ -311,7 +313,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
   }),
   seed('vt-project-advance-receipt', {
     name: 'Project Advance Receipt', abbreviation: 'PADV',
-    base_voucher_type: 'Receipt', family: 'Project Billing',
+    base_voucher_type: 'Receipt', family: 'Accounting',
     is_active: false, activation_type: 'feature_based',
     accounting_impact: true, inventory_impact: false,
     numbering_prefix: 'PADV-', numbering_width: 4, current_sequence: 1,
@@ -323,7 +325,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
   }),
   seed('vt-retention-settlement', {
     name: 'Retention Settlement', abbreviation: 'RETN',
-    base_voucher_type: 'Receipt', family: 'Project Billing',
+    base_voucher_type: 'Receipt', family: 'Accounting',
     is_active: false, activation_type: 'feature_based',
     accounting_impact: true, inventory_impact: false,
     numbering_prefix: 'RETN-', numbering_width: 4, current_sequence: 1,
