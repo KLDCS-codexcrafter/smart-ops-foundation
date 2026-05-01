@@ -273,9 +273,10 @@ export function ItemCraftPanel() {
       : f.warranty_unit === 'Years' ? Number(f.warranty_period) * 12
       : f.warranty_unit === 'Days' ? Math.round(Number(f.warranty_period) / 30)
       : Number(f.warranty_period);
-    // Heat tracking auto-on for steel/metal Raw Material (Sinha-critical).
-    const is_heat_tracked = f.item_type === 'Raw Material'
+    // Heat tracking — explicit toggle wins; otherwise auto-on for steel/metal Raw Material (Sinha-critical).
+    const autoHeat = f.item_type === 'Raw Material'
       && /steel|metal|tmt|rod|plate|sheet|bar|ingot/i.test(`${f.name} ${f.stock_group_name || ''}`);
+    const is_heat_tracked = f.is_heat_tracked === true ? true : autoHeat;
     return {
       is_batch_tracked: !!f.batch_tracking,
       is_serial_tracked: !!f.serial_tracking,
