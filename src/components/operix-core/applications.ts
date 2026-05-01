@@ -188,6 +188,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/finecore',
     icon: 'Calculator',
+    status: 'active',
   },
   {
     id: 'comply360',
