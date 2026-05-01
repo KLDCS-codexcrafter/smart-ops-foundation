@@ -3,7 +3,7 @@
  * Sprint T-Phase-1.1.2-b
  * [JWT] /api/projx/time-entries
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { TimeEntry, TimeEntryStatus } from '@/types/projx/time-entry';
 import { timeEntriesKey } from '@/types/projx/time-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';

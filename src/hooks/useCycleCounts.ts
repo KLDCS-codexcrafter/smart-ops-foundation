@@ -7,7 +7,7 @@
  *
  * [JWT] Replace localStorage with REST endpoints under /api/inventory/cycle-counts
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { CycleCount, CycleCountSuggestion } from '@/types/cycle-count';
 import { cycleCountsKey } from '@/types/cycle-count';
@@ -168,7 +168,7 @@ export function useCycleCounts(entityCode: string) {
     entityCode,
     auditEntityType: 'cycle_count',
     sourceModule: 'inventory',
-    recordLabel: r => (r.count_no as string) ?? r.id,
+    recordLabel: (r: Record<string, unknown> & { id: string }) => (r.count_no as string) ?? r.id,
   }), [entityCode]);
 
   const submitForReview = useCallback((id: string, counterId: string, counterName: string) => {
