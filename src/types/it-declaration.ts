@@ -102,3 +102,8 @@ export function getCurrentFY(): string {
   const year = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
   return `${year}-${String(year + 1).slice(2)}`;
 }
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/it-declarations?entityCode={e}
+export const itDeclarationsKey = (e: string): string =>
+  e ? `erp_it_declarations_${e}` : 'erp_it_declarations';

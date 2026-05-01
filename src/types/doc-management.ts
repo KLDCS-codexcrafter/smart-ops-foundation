@@ -299,3 +299,11 @@ export const SEEDED_TEMPLATES: SeedTemplate[] = [
 </div>`,
   },
 ];
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/employee-docs?entityCode={e}
+export const employeeDocsKey = (e: string): string =>
+  e ? `erp_employee_documents_${e}` : 'erp_employee_documents';
+// [JWT] GET /api/peoplepay/doc-templates?entityCode={e}
+export const docTemplatesKey = (e: string): string =>
+  e ? `erp_doc_templates_${e}` : 'erp_doc_templates';

@@ -153,3 +153,16 @@ export const REQ_STATUS_COLORS: Record<RequisitionStatus, string> = {
   closed:           'bg-violet-500/10 text-violet-600 border-violet-400/30',
   cancelled:        'bg-red-500/10 text-red-700 border-red-500/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration ─────────────────
+// Bucket B (per-entity) — recruitment data is entity-specific:
+// [JWT] GET /api/peoplepay/job-requisitions?entityCode={e}
+export const jobRequisitionsKey = (e: string): string =>
+  e ? `erp_job_requisitions_${e}` : 'erp_job_requisitions';
+// [JWT] GET /api/peoplepay/job-applications?entityCode={e}
+export const jobApplicationsKey = (e: string): string =>
+  e ? `erp_job_applications_${e}` : 'erp_job_applications';
+// Bucket C (per-entity) — generic HR documents:
+// [JWT] GET /api/peoplepay/hr-documents?entityCode={e}
+export const hrDocumentsKey = (e: string): string =>
+  e ? `erp_documents_${e}` : 'erp_documents';
