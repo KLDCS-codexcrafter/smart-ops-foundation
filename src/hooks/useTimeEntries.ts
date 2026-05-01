@@ -53,6 +53,13 @@ export function useTimeEntries(entityCode: string = DEFAULT_ENTITY_SHORTCODE) {
     const all = [...ls<TimeEntry>(key), t];
     ss(key, all);
     setEntries(all);
+    // Sprint T-Phase-1.2.5h-c1 · Audit trail for create (engine handles state transitions)
+    logAudit({
+      entityCode, action: 'create', entityType: 'time_entry',
+      recordId: t.id, recordLabel: `TE ${t.person_name ?? t.person_id}`,
+      beforeState: null, afterState: { ...t },
+      sourceModule: 'projx',
+    });
     // [JWT] POST /api/projx/time-entries
     return t;
   }, [key, entityCode]);
