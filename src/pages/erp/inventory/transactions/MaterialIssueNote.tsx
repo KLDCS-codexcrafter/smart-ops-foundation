@@ -454,11 +454,11 @@ export function MaterialIssueNotePanel() {
           </div>
           <div>
             <Label className="text-xs">Project (optional)</Label>
-            <Select disabled={readonly} value={header.project_centre_id ?? ''}
-              onValueChange={v => setHeader(h => ({ ...h, project_centre_id: v || null }))}>
+            <Select disabled={readonly} value={header.project_centre_id ?? '__none'}
+              onValueChange={v => setHeader(h => ({ ...h, project_centre_id: v === '__none' ? null : v }))}>
               <SelectTrigger><SelectValue placeholder="No project" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="__none">None</SelectItem>
                 {centres.filter(c => c.status === 'active').map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
                 ))}
