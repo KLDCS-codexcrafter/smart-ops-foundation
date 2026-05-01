@@ -42,6 +42,15 @@ export default function MobileSalesmanHome() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
   const [trackingOn, setTrackingOn] = useState(false);
+  const { getResourcesByPerson } = useProjectResources(session?.entity_code ?? '');
+  const hasProjectAllocations = useMemo(
+    () => session?.user_id ? getResourcesByPerson(session.user_id).length > 0 : false,
+    [session, getResourcesByPerson],
+  );
+  const visibleTiles = useMemo(
+    () => TILES.filter(t => !t.requiresProjectAllocation || hasProjectAllocations),
+    [hasProjectAllocations],
+  );
 
   useEffect(() => {
     if (!session) return;
@@ -110,7 +119,7 @@ export default function MobileSalesmanHome() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {TILES.map(t => (
+        {visibleTiles.map(t => (
           <Card
             key={t.to}
             className="aspect-square p-3 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-orange-500/40 active:scale-95 transition-transform"
