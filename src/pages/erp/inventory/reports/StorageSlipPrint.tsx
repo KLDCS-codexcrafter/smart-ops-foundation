@@ -19,6 +19,7 @@ import {
 import { Printer, FileText, Warehouse } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { grnsKey, type GRN } from '@/types/grn';
+import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarrationHeader';
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -108,6 +109,13 @@ export function StorageSlipPrintPanel() {
           </CardHeader>
 
           <CardContent className="space-y-4 pt-4">
+            <PrintNarrationHeader
+              voucherTypeId={grn.voucher_type_id ?? null}
+              voucherTypeName={grn.voucher_type_name ?? 'Receipt Note (GRN)'}
+              baseVoucherType="Receipt Note"
+              voucherNo={grn.grn_no}
+              fallbackTitle={`Storage Slip · ${grn.grn_no}`}
+            />
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <p className="font-semibold uppercase tracking-wider text-black/60 mb-1">Vendor</p>

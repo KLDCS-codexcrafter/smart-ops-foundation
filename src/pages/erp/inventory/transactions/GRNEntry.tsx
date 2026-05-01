@@ -20,6 +20,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StorageSlipPrintPanel } from '../reports/StorageSlipPrint';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -28,7 +29,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye, Printer, RotateCcw,
+  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye, Printer, RotateCcw, Truck, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
@@ -39,13 +40,14 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
+import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
 import {
   grnsKey, stockBalanceKey,
   GRN_STATUS_LABELS, GRN_STATUS_COLORS,
   type GRN, type GRNLine, type GRNStatus, type GRNQCResult, type StockBalanceEntry,
 } from '@/types/grn';
-import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
+import type { VoucherType } from '@/types/voucher-type';
+import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -79,6 +81,10 @@ interface FormHeader {
   godown_name: string;
   project_centre_id: string | null;
   narration: string;
+  // Sprint T-Phase-1.2.4 · Multi-VT GRN + GIT (two-stage receipt)
+  voucher_type_id: string;
+  voucher_type_name: string;
+  receipt_mode: 'direct' | 'two_stage';
 }
 
 const BLANK_HEADER: FormHeader = {
@@ -91,6 +97,9 @@ const BLANK_HEADER: FormHeader = {
   godown_id: '', godown_name: '',
   project_centre_id: null,
   narration: '',
+  voucher_type_id: 'vt-receipt-note-domestic',
+  voucher_type_name: 'Goods Receipt Note (Domestic)',
+  receipt_mode: 'direct',
 };
 
 interface FormLine {
@@ -151,6 +160,35 @@ export function GRNEntryPanel() {
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
   const [printGrn, setPrintGrn] = useState<GRN | null>(null);
+  const [showStage2, setShowStage2] = useState<GRN | null>(null);
+  const [stage2DestId, setStage2DestId] = useState<string>('');
+
+  // Sprint T-Phase-1.2.4 · Load active GRN voucher types (Receipt Note family) for multi-VT dropdown.
+  const grnVoucherTypes = useMemo<VoucherType[]>(() => {
+    try {
+      // [JWT] GET /api/accounting/voucher-types?base=Receipt+Note&active=true
+      const all: VoucherType[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+      return all.filter(vt => vt.is_active && vt.base_voucher_type === 'Receipt Note');
+    } catch { return []; }
+  }, []);
+
+  // Sprint T-Phase-1.2.4 · Resolve system GIT godown for two-stage receipts.
+  const gitGodown = useMemo<Godown | null>(() => {
+    try {
+      const all: Godown[] = JSON.parse(localStorage.getItem('erp_godowns') || '[]');
+      return all.find(g => g.ownership_type === 'goods_in_transit') ?? null;
+    } catch { return null; }
+  }, []);
+
+  // Map VT id → generateDocNo prefix (DGRN/IGRN/SCGRN/GRN fallback)
+  const prefixForVt = (vtId: string): 'DGRN' | 'IGRN' | 'SCGRN' | 'GRN' => {
+    if (vtId === 'vt-receipt-note-domestic') return 'DGRN';
+    if (vtId === 'vt-receipt-note-import') return 'IGRN';
+    if (vtId === 'vt-receipt-note-subcon') return 'SCGRN';
+    return 'GRN';
+  };
+  // dSub kept for future Stage-2 reverse moves; void to silence unused-var lint.
+  void dSub;
 
   // Sprint T-Phase-1.2.3-fix · Resolve preferred godown/bin for the draft line item.
   // Founder ask: "while receiving item or issuing item it should pick the location as sets in item."
@@ -220,6 +258,9 @@ export function GRNEntryPanel() {
       godown_id: g.godown_id, godown_name: g.godown_name,
       project_centre_id: g.project_centre_id,
       narration: g.narration,
+      voucher_type_id: g.voucher_type_id ?? 'vt-receipt-note-domestic',
+      voucher_type_name: g.voucher_type_name ?? 'Goods Receipt Note (Domestic)',
+      receipt_mode: g.receipt_mode ?? 'direct',
     });
     setLines(g.lines.map(l => ({
       id: l.id, item_id: l.item_id, item_code: l.item_code,
@@ -285,10 +326,11 @@ export function GRNEntryPanel() {
       qc_result: l.qc_result,
       qc_notes: l.qc_notes,
     }));
+    const docPrefix = prefixForVt(header.voucher_type_id);
     return {
       id: existing?.id ?? `grn-${Date.now()}`,
       entity_id: safeEntity,
-      grn_no: existing?.grn_no ?? generateDocNo('GRN', safeEntity),
+      grn_no: existing?.grn_no ?? generateDocNo(docPrefix, safeEntity),
       status,
       po_id: null, po_no: header.po_no || null,
       vendor_id: header.vendor_id, vendor_name: header.vendor_name,
@@ -304,6 +346,15 @@ export function GRNEntryPanel() {
       total_value: totals.value,
       has_discrepancy: totals.discrepancy,
       narration: header.narration,
+      voucher_type_id: header.voucher_type_id || null,
+      voucher_type_name: header.voucher_type_name || null,
+      receipt_mode: header.receipt_mode,
+      invoice_received_at: status === 'in_transit'
+        ? (existing?.invoice_received_at ?? now)
+        : (existing?.invoice_received_at ?? null),
+      physical_received_at: status === 'posted' && existing?.status === 'in_transit'
+        ? now
+        : (existing?.physical_received_at ?? null),
       created_at: existing?.created_at ?? now,
       updated_at: now,
       posted_at: status === 'posted' ? now : (existing?.posted_at ?? null),
@@ -567,6 +618,77 @@ export function GRNEntryPanel() {
         </div>
         <Button variant="outline" size="sm" onClick={() => setView('list')}>← Back to List</Button>
       </div>
+
+      {/* Sprint T-Phase-1.2.4 · GRN Type + Receipt Mode */}
+      <Card><CardHeader className="pb-2"><CardTitle className="text-sm">GRN Type & Receipt Mode</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5"><Label>GRN Type *</Label>
+            <Select
+              disabled={readonly || !!editingId}
+              value={header.voucher_type_id}
+              onValueChange={v => {
+                const vt = grnVoucherTypes.find(x => x.id === v);
+                setHeader(h => ({
+                  ...h,
+                  voucher_type_id: v,
+                  voucher_type_name: vt?.name ?? '',
+                }));
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Select GRN type" /></SelectTrigger>
+              <SelectContent>
+                {grnVoucherTypes.length === 0 ? (
+                  <SelectItem value="vt-receipt-note-domestic">Goods Receipt Note (Domestic)</SelectItem>
+                ) : grnVoucherTypes.map(vt => (
+                  <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5"><Label>Receipt Mode *</Label>
+            <Tabs
+              value={header.receipt_mode}
+              onValueChange={v => {
+                const mode = v as 'direct' | 'two_stage';
+                setHeader(h => {
+                  if (mode === 'two_stage' && gitGodown) {
+                    return { ...h, receipt_mode: mode, godown_id: gitGodown.id, godown_name: gitGodown.name };
+                  }
+                  return { ...h, receipt_mode: mode };
+                });
+              }}
+            >
+              <TabsList>
+                <TabsTrigger value="direct" disabled={readonly}>
+                  <FileText className="h-3.5 w-3.5 mr-1" /> Direct Receipt
+                </TabsTrigger>
+                <TabsTrigger value="two_stage" disabled={readonly}>
+                  <Truck className="h-3.5 w-3.5 mr-1" /> Two-Stage (Invoice First)
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {header.receipt_mode === 'two_stage' && gitGodown && (
+              <p className="text-[10px] text-amber-700 dark:text-amber-400 flex items-center gap-1 mt-1">
+                <Truck className="h-3 w-3" />
+                Stock will be staged in <b>{gitGodown.name}</b>. Confirm physical receipt to move it to destination.
+              </p>
+            )}
+            {editingId && grns.find(g => g.id === editingId)?.status === 'in_transit' && (
+              <Button
+                size="sm"
+                variant="default"
+                className="mt-2 gap-1 h-7 text-xs"
+                onClick={() => {
+                  const g = grns.find(x => x.id === editingId);
+                  if (g) { setShowStage2(g); setStage2DestId(''); }
+                }}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" /> Confirm Physical Receipt
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {totals.discrepancy && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs">
@@ -865,6 +987,101 @@ export function GRNEntryPanel() {
             </Button>
           </div>
           <StorageSlipPrintPanel />
+        </DialogContent>
+      </Dialog>
+
+      {/* Sprint T-Phase-1.2.4 · Stage-2 Confirm Physical Receipt dialog */}
+      <Dialog open={!!showStage2} onOpenChange={v => !v && setShowStage2(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              Confirm Physical Receipt · {showStage2?.grn_no}
+            </DialogTitle>
+            <DialogDescription>
+              Material has arrived. Select destination godown — stock will move from
+              Goods-in-Transit to the destination godown.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Label>Destination Godown *</Label>
+            <Select value={stage2DestId} onValueChange={setStage2DestId}>
+              <SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger>
+              <SelectContent>
+                {godowns
+                  .filter(g => g.status === 'active' && g.ownership_type !== 'goods_in_transit')
+                  .map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.code} — {g.name}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowStage2(null)}>Cancel</Button>
+            <Button
+              disabled={!stage2DestId || !showStage2}
+              onClick={() => {
+                if (!showStage2 || !stage2DestId) return;
+                const dest = godowns.find(g => g.id === stage2DestId);
+                if (!dest) return;
+                const now = new Date().toISOString();
+                // Move stock GIT → destination
+                const balances = loadJson<StockBalanceEntry>(stockBalanceKey(safeEntity));
+                for (const ln of showStage2.lines) {
+                  if (ln.received_qty <= 0) continue;
+                  // Deduct from GIT
+                  const gIdx = balances.findIndex(b => b.item_id === ln.item_id && b.godown_id === showStage2.godown_id);
+                  if (gIdx !== -1) {
+                    const ex = balances[gIdx];
+                    const newQty = round2(dAdd(ex.qty, -ln.received_qty));
+                    const newVal = round2(dAdd(ex.value, -dMul(ln.received_qty, ex.weighted_avg_rate)));
+                    balances[gIdx] = { ...ex, qty: newQty, value: newVal, updated_at: now };
+                  }
+                  // Credit destination
+                  const dIdx = balances.findIndex(b => b.item_id === ln.item_id && b.godown_id === dest.id);
+                  if (dIdx === -1) {
+                    balances.push({
+                      item_id: ln.item_id, item_code: ln.item_code, item_name: ln.item_name,
+                      godown_id: dest.id, godown_name: dest.name,
+                      qty: ln.received_qty,
+                      value: round2(dMul(ln.received_qty, ln.unit_rate)),
+                      weighted_avg_rate: ln.unit_rate,
+                      last_grn_id: showStage2.id, last_grn_no: showStage2.grn_no,
+                      updated_at: now,
+                    });
+                  } else {
+                    const ex = balances[dIdx];
+                    const newQty = round2(dAdd(ex.qty, ln.received_qty));
+                    const newVal = round2(dAdd(ex.value, dMul(ln.received_qty, ln.unit_rate)));
+                    balances[dIdx] = {
+                      ...ex, qty: newQty, value: newVal,
+                      weighted_avg_rate: newQty > 0 ? round2(newVal / newQty) : ln.unit_rate,
+                      last_grn_id: showStage2.id, last_grn_no: showStage2.grn_no,
+                      updated_at: now,
+                    };
+                  }
+                }
+                saveJson(stockBalanceKey(safeEntity), balances);
+                // Update GRN status → posted, set physical_received_at, godown=dest
+                const updated: GRN = {
+                  ...showStage2,
+                  status: 'posted',
+                  godown_id: dest.id,
+                  godown_name: dest.name,
+                  physical_received_at: now,
+                  posted_at: now,
+                  updated_at: now,
+                };
+                const next = grns.map(g => g.id === updated.id ? updated : g);
+                persist(next);
+                toast.success(`Stock moved to ${dest.name} · ${showStage2.grn_no} posted`);
+                setShowStage2(null);
+                setView('list');
+              }}
+            >
+              Confirm & Move Stock
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

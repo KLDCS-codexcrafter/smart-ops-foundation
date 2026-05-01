@@ -19,6 +19,7 @@ export const INVENTORY_MODULE_GROUP: Record<
   'r-consumption-summary': 'reports',
   'r-storage-slip': 'reports',
   'r-bin-slip': 'reports',
+  'r-aged-git': 'reports',
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',

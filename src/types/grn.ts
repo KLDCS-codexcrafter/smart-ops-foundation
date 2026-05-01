@@ -13,7 +13,7 @@
  * [JWT] GET/POST/PATCH /api/inventory/grns
  */
 
-export type GRNStatus = 'draft' | 'received' | 'inspected' | 'posted' | 'cancelled';
+export type GRNStatus = 'draft' | 'received' | 'inspected' | 'posted' | 'cancelled' | 'in_transit';
 
 export type GRNQCResult = 'pending' | 'pass' | 'fail' | 'partial';
 
@@ -78,6 +78,17 @@ export interface GRN {
   // Narration
   narration: string;
 
+  // Sprint T-Phase-1.2.4 · Multi-variant + GIT support
+  /** FK to VoucherType.id — 'vt-receipt-note-domestic' / 'import' / 'subcon'. Optional for backward compat. */
+  voucher_type_id?: string | null;
+  voucher_type_name?: string | null;
+  /** Receipt mode — 'direct' (current behavior) or 'two_stage' (invoice first, GRN later) */
+  receipt_mode?: 'direct' | 'two_stage';
+  /** Stage 1: invoice-received-material-pending date · Stage 2 confirmation moves stock GIT → destination */
+  invoice_received_at?: string | null;
+  /** Stage 2: physical receipt confirmation timestamp */
+  physical_received_at?: string | null;
+
   // Audit
   created_at: string;
   updated_at: string;
@@ -109,17 +120,19 @@ export interface StockBalanceEntry {
 export const stockBalanceKey = (entityCode: string) => `erp_stock_balance_${entityCode}`;
 
 export const GRN_STATUS_LABELS: Record<GRNStatus, string> = {
-  draft:     'Draft',
-  received:  'Received',
-  inspected: 'Inspected',
-  posted:    'Posted',
-  cancelled: 'Cancelled',
+  draft:      'Draft',
+  received:   'Received',
+  inspected:  'Inspected',
+  posted:     'Posted',
+  cancelled:  'Cancelled',
+  in_transit: 'In Transit (Invoice Booked, Material Pending)',
 };
 
 export const GRN_STATUS_COLORS: Record<GRNStatus, string> = {
-  draft:     'bg-slate-500/10 text-slate-600',
-  received:  'bg-blue-500/10 text-blue-700',
-  inspected: 'bg-amber-500/10 text-amber-700',
-  posted:    'bg-emerald-500/10 text-emerald-700',
-  cancelled: 'bg-rose-500/10 text-rose-700',
+  draft:      'bg-slate-500/10 text-slate-600',
+  received:   'bg-blue-500/10 text-blue-700',
+  inspected:  'bg-amber-500/10 text-amber-700',
+  posted:     'bg-emerald-500/10 text-emerald-700',
+  cancelled:  'bg-rose-500/10 text-rose-700',
+  in_transit: 'bg-amber-500/10 text-amber-700 border-amber-500/30',
 };

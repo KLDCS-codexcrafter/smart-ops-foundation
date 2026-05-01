@@ -14,6 +14,8 @@ export type InventoryHubModule =
   | 'r-consumption-summary'
   | 'r-storage-slip'
   | 'r-bin-slip'
+  // Sprint T-Phase-1.2.4 · Aged Goods-in-Transit report
+  | 'r-aged-git'
   | 'm-item-master'
   | 'm-godown-master'
   | 'm-stock-groups'

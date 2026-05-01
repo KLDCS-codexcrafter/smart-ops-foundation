@@ -169,6 +169,71 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     allow_line_narration: false,
     numbering_prefix: 'GRN-', numbering_width: 4, current_sequence: 1,
   }),
+  // Sprint T-Phase-1.2.4 · GRN multi-variant (Domestic / Import / Subcontract)
+  // All share base_voucher_type: 'Receipt Note' · different abbreviations + numbering for separate sequences
+  seed('vt-receipt-note-domestic', {
+    name: 'Goods Receipt Note (Domestic)', abbreviation: 'DGRN',
+    base_voucher_type: 'Receipt Note', family: 'Inventory',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: false, inventory_impact: true,
+    allow_line_narration: false,
+    numbering_prefix: 'DGRN-', numbering_width: 4, current_sequence: 1,
+    print_after_save: true, print_title: 'Goods Receipt Note (Domestic)',
+    behaviour_rules: [
+      validationRule(true),
+      {
+        id: 'rule-dgrn-narration', rule_type: 'narration_template',
+        label: 'Print narration parent > current > voucher no',
+        is_active: true, sequence: 2,
+        config: {
+          template: '{base_voucher_type} > {voucher_type_name} > {voucher_no}',
+          variables: ['base_voucher_type', 'voucher_type_name', 'voucher_no'],
+        },
+      },
+    ],
+  }),
+  seed('vt-receipt-note-import', {
+    name: 'Goods Receipt Note (Import)', abbreviation: 'IGRN',
+    base_voucher_type: 'Receipt Note', family: 'Inventory',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: false, inventory_impact: true,
+    allow_line_narration: false,
+    numbering_prefix: 'IGRN-', numbering_width: 4, current_sequence: 1,
+    print_after_save: true, print_title: 'Goods Receipt Note (Import)',
+    behaviour_rules: [
+      validationRule(true),
+      {
+        id: 'rule-igrn-narration', rule_type: 'narration_template',
+        label: 'Print narration parent > current > voucher no',
+        is_active: true, sequence: 2,
+        config: {
+          template: '{base_voucher_type} > {voucher_type_name} > {voucher_no}',
+          variables: ['base_voucher_type', 'voucher_type_name', 'voucher_no'],
+        },
+      },
+    ],
+  }),
+  seed('vt-receipt-note-subcon', {
+    name: 'Goods Receipt Note (Subcontract)', abbreviation: 'SCGRN',
+    base_voucher_type: 'Receipt Note', family: 'Inventory',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: false, inventory_impact: true,
+    allow_line_narration: false,
+    numbering_prefix: 'SCGRN-', numbering_width: 4, current_sequence: 1,
+    print_after_save: true, print_title: 'Goods Receipt Note (Subcontract)',
+    behaviour_rules: [
+      validationRule(false),
+      {
+        id: 'rule-scgrn-narration', rule_type: 'narration_template',
+        label: 'Print narration parent > current > voucher no',
+        is_active: true, sequence: 2,
+        config: {
+          template: '{base_voucher_type} > {voucher_type_name} > {voucher_no}',
+          variables: ['base_voucher_type', 'voucher_type_name', 'voucher_no'],
+        },
+      },
+    ],
+  }),
   seed('vt-rejections-in', {
     name: 'Rejections In', abbreviation: 'RJI', base_voucher_type: 'Rejections In', family: 'Inventory',
     is_active: false, activation_type: 'on_use',
