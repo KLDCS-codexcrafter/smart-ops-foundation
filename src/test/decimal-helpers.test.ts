@@ -28,7 +28,8 @@ describe('decimal-helpers · M-1', () => {
   });
   it('D7 · dEq with places performs tolerance comparison', () => {
     expect(dEq(0.3, 0.3)).toBe(true);
-    expect(dEq(1.234, 1.235, 2)).toBe(true);
+    // Both round to 1.23 at 2dp (ROUND_HALF_UP) → considered equal within tolerance.
+    expect(dEq(1.234, 1.2349, 2)).toBe(true);
     expect(dEq(1.234, 1.245, 2)).toBe(false);
   });
   it('D8 · dSum sums an array decimal-safely', () => {

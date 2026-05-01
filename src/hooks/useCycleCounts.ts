@@ -164,12 +164,12 @@ export function useCycleCounts(entityCode: string) {
 
   // Sprint T-Phase-1.2.5h-c1 · Approval transitions delegated to engine
   // (audit log written automatically — no parallel logAudit calls).
-  const wfCtx: ApprovalContext = {
+  const wfCtx = useMemo<ApprovalContext>(() => ({
     entityCode,
     auditEntityType: 'cycle_count',
     sourceModule: 'inventory',
     recordLabel: r => (r.count_no as string) ?? r.id,
-  };
+  }), [entityCode]);
 
   const submitForReview = useCallback((id: string, counterId: string, counterName: string) => {
     const cc = counts.find(c => c.id === id);

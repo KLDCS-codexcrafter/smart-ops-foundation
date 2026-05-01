@@ -89,19 +89,20 @@ export function useTimeEntries(entityCode: string = DEFAULT_ENTITY_SHORTCODE) {
     return { ok: true };
   }, [key]);
 
-  // Sprint T-Phase-1.2.5h-c1 · Approval transitions delegated to engine.
-  // Time entries use approved_by_* (not approver_*) — field map preserves D-128.
-  const wfFields: Partial<ApprovalFieldMap> = {
-    approverId: 'approved_by_id',
-    approverName: 'approved_by_name',
-    approvedAt: 'approved_at',
-  };
-  const wfCtx: ApprovalContext = {
-    entityCode,
-    auditEntityType: 'time_entry',
-    sourceModule: 'projx',
-    fields: wfFields,
-  };
+  const wfCtx = useMemo<ApprovalContext>(() => {
+    // Time entries use approved_by_* (not approver_*) — field map preserves D-128.
+    const wfFields: Partial<ApprovalFieldMap> = {
+      approverId: 'approved_by_id',
+      approverName: 'approved_by_name',
+      approvedAt: 'approved_at',
+    };
+    return {
+      entityCode,
+      auditEntityType: 'time_entry',
+      sourceModule: 'projx',
+      fields: wfFields,
+    };
+  }, [entityCode]);
 
   const submitTimeEntry = useCallback((id: string): { ok: true } | { ok: false; reason: string } => {
     const all = ls<TimeEntry>(key);
