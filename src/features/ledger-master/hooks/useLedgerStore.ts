@@ -9,6 +9,8 @@
  * @finding  CC-059
  */
 import { useCallback, useEffect, useState } from 'react';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export type LedgerStoreType =
   | 'cash' | 'bank' | 'asset' | 'liability' | 'capital'
@@ -20,6 +22,7 @@ const STORAGE_KEY = 'erp_group_ledger_definitions';
 export function useLedgerStore<T extends { id: string; ledgerType: LedgerStoreType }>(
   ledgerType: LedgerStoreType,
 ) {
+  const { entityCode } = useEntityCode();
   const [ledgers, setLedgers] = useState<T[]>([]);
 
   const reload = useCallback(() => {
@@ -56,23 +59,71 @@ export function useLedgerStore<T extends { id: string; ledgerType: LedgerStoreTy
       persist(next);
       return next;
     });
-  }, [persist]);
+    // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+    logAudit({
+      entityCode: entityCode || 'GLOBAL',
+      action: 'create',
+      entityType: 'ledger',
+      recordId: draft.id,
+      recordLabel: (draft as unknown as { name?: string }).name ?? draft.id,
+      beforeState: null,
+      afterState: { ...draft } as Record<string, unknown>,
+      reason: null,
+      sourceModule: 'accounting',
+    });
+  }, [persist, entityCode]);
 
   const update = useCallback((id: string, patch: Partial<T>) => {
+    const snaps: { prev: T | null; next: T | null } = { prev: null, next: null };
     setLedgers(prev => {
+      snaps.prev = prev.find(l => l.id === id) ?? null;
       const next = prev.map(l => l.id === id ? { ...l, ...patch } as T : l);
+      snaps.next = next.find(l => l.id === id) ?? null;
       persist(next);
       return next;
     });
-  }, [persist]);
+    if (snaps.next) {
+      // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+      const nextSnap = snaps.next as T;
+      const prevSnap = snaps.prev;
+      logAudit({
+        entityCode: entityCode || 'GLOBAL',
+        action: 'update',
+        entityType: 'ledger',
+        recordId: id,
+        recordLabel: (nextSnap as unknown as { name?: string }).name ?? id,
+        beforeState: prevSnap ? ({ ...prevSnap } as Record<string, unknown>) : null,
+        afterState: { ...nextSnap } as Record<string, unknown>,
+        reason: null,
+        sourceModule: 'accounting',
+      });
+    }
+  }, [persist, entityCode]);
 
   const remove = useCallback((id: string) => {
+    const snaps: { prev: T | null } = { prev: null };
     setLedgers(prev => {
+      snaps.prev = prev.find(l => l.id === id) ?? null;
       const next = prev.filter(l => l.id !== id);
       persist(next);
       return next;
     });
-  }, [persist]);
+    if (snaps.prev) {
+      const prevSnap = snaps.prev as T;
+      // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+      logAudit({
+        entityCode: entityCode || 'GLOBAL',
+        action: 'cancel',
+        entityType: 'ledger',
+        recordId: id,
+        recordLabel: (prevSnap as unknown as { name?: string }).name ?? id,
+        beforeState: { ...prevSnap } as Record<string, unknown>,
+        afterState: null,
+        reason: 'Ledger removed',
+        sourceModule: 'accounting',
+      });
+    }
+  }, [persist, entityCode]);
 
   return { ledgers, reload, create, update, remove };
 }

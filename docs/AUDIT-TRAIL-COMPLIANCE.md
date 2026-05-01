@@ -26,8 +26,8 @@ Sprint T-Phase-1.2.5h-b1 · Card #2.5
 ### Audit Trail Engine (`src/lib/audit-trail-engine.ts`)
 - Append-only writer; no edit / delete / disable API
 - Every voucher post + cancel triggers `logAudit()`
-- Every 1.2.x transaction (MIN, CE, CycleCount) triggers logAudit
-- Every master CRUD (employees, voucher types) triggers logAudit
+- Every 1.2.x inventory transaction (GRN, MIN, CE, CycleCount, RTV) triggers logAudit
+- Every master CRUD (employees, voucher types, ledgers) triggers logAudit
 - Captures: timestamp (ISO 8601 to second), user, role, action, entity type, record ID, before-state, after-state, reason, source module
 
 ### Edit/Delete Protection
