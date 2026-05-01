@@ -74,24 +74,25 @@ export function useLedgerStore<T extends { id: string; ledgerType: LedgerStoreTy
   }, [persist, entityCode]);
 
   const update = useCallback((id: string, patch: Partial<T>) => {
-    let prevSnap: T | null = null;
-    let nextSnap: T | null = null;
+    const snaps: { prev: T | null; next: T | null } = { prev: null, next: null };
     setLedgers(prev => {
-      prevSnap = prev.find(l => l.id === id) ?? null;
+      snaps.prev = prev.find(l => l.id === id) ?? null;
       const next = prev.map(l => l.id === id ? { ...l, ...patch } as T : l);
-      nextSnap = next.find(l => l.id === id) ?? null;
+      snaps.next = next.find(l => l.id === id) ?? null;
       persist(next);
       return next;
     });
-    if (nextSnap) {
+    if (snaps.next) {
       // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+      const nextSnap = snaps.next as T;
+      const prevSnap = snaps.prev;
       logAudit({
         entityCode: entityCode || 'GLOBAL',
         action: 'update',
         entityType: 'ledger',
         recordId: id,
         recordLabel: (nextSnap as unknown as { name?: string }).name ?? id,
-        beforeState: prevSnap ? { ...prevSnap } as Record<string, unknown> : null,
+        beforeState: prevSnap ? ({ ...prevSnap } as Record<string, unknown>) : null,
         afterState: { ...nextSnap } as Record<string, unknown>,
         reason: null,
         sourceModule: 'accounting',
@@ -100,14 +101,15 @@ export function useLedgerStore<T extends { id: string; ledgerType: LedgerStoreTy
   }, [persist, entityCode]);
 
   const remove = useCallback((id: string) => {
-    let prevSnap: T | null = null;
+    const snaps: { prev: T | null } = { prev: null };
     setLedgers(prev => {
-      prevSnap = prev.find(l => l.id === id) ?? null;
+      snaps.prev = prev.find(l => l.id === id) ?? null;
       const next = prev.filter(l => l.id !== id);
       persist(next);
       return next;
     });
-    if (prevSnap) {
+    if (snaps.prev) {
+      const prevSnap = snaps.prev as T;
       // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
       logAudit({
         entityCode: entityCode || 'GLOBAL',
