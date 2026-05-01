@@ -27,7 +27,7 @@ import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
-import { dMul, round2 } from '@/lib/decimal-helpers';
+import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import {
   deliveryMemosKey,
   type DeliveryMemo,
@@ -125,21 +125,22 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     setItems(prev => prev.map((it, i) => {
       if (i !== idx) return it;
       const next = { ...it, ...patch };
-      next.sub_total = round2(dMul(next.qty, next.rate) * (1 - next.discount_pct / 100));
-      next.tax_amount = round2(next.sub_total * next.tax_pct / 100);
-      next.amount = round2(next.sub_total + next.tax_amount);
+      const gross = dMul(next.qty, next.rate);
+      next.sub_total = round2(dSub(gross, dPct(gross, next.discount_pct)));
+      next.tax_amount = round2(dPct(next.sub_total, next.tax_pct));
+      next.amount = round2(dAdd(next.sub_total, next.tax_amount));
       return next;
     }));
   };
 
   const subTotal = useMemo(
-    () => +items.reduce((s, it) => s + it.sub_total, 0).toFixed(2), [items],
+    () => round2(dSum(items, it => it.sub_total)), [items],
   );
   const taxTotal = useMemo(
-    () => +items.reduce((s, it) => s + it.tax_amount, 0).toFixed(2), [items],
+    () => round2(dSum(items, it => it.tax_amount)), [items],
   );
   const grandTotal = useMemo(
-    () => +items.reduce((s, it) => s + it.amount, 0).toFixed(2), [items],
+    () => round2(dSum(items, it => it.amount)), [items],
   );
 
   const validate = useCallback((): string | null => {

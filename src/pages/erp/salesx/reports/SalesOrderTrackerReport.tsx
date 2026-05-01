@@ -19,6 +19,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';
+import { dSub, dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props {
   entityCode: string;
@@ -88,8 +89,8 @@ export function SalesOrderTrackerReportPanel({ entityCode, onNavigate }: Props) 
                !v.is_cancelled &&
                (v.ref_voucher_no === so.order_no || (v.ref_voucher_no && dnNos.has(v.ref_voucher_no))),
         );
-        const invoicedTotal = invoices.reduce((s, v) => s + v.net_amount, 0);
-        const pendingValue = Math.max(0, so.net_amount - invoicedTotal);
+        const invoicedTotal = round2(dSum(invoices, v => v.net_amount));
+        const pendingValue = Math.max(0, round2(dSub(so.net_amount, invoicedTotal)));
         return {
           so,
           deliveryNotes,

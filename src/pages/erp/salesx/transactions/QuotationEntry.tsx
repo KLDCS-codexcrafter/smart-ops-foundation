@@ -28,6 +28,7 @@ import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/
 import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/scheme-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
+import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
   upsertQuoteReservation,
@@ -102,9 +103,11 @@ const blank = (): FormState => ({
 });
 
 function recalcLine(it: QuotationItem): QuotationItem {
-  const sub_total = it.qty * it.rate * (1 - (it.discount_pct || 0) / 100);
-  const tax_amount = (sub_total * (it.tax_pct || 0)) / 100;
-  return { ...it, sub_total, tax_amount, amount: sub_total + tax_amount };
+  // Decimal-safe: gross = qty*rate, then apply discount %, then add tax %.
+  const gross = dMul(it.qty, it.rate);
+  const sub_total = round2(dSub(gross, dPct(gross, it.discount_pct || 0)));
+  const tax_amount = round2(dPct(sub_total, it.tax_pct || 0));
+  return { ...it, sub_total, tax_amount, amount: round2(dAdd(sub_total, tax_amount)) };
 }
 
 export function QuotationEntryPanel({ entityCode }: Props) {
@@ -175,15 +178,15 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   });
   const updateLine = (idx: number, patch: Partial<QuotationItem>) => {
     const items = form.items.map((it, i) => i === idx ? recalcLine({ ...it, ...patch }) : it);
-    const sub = items.reduce((s, it) => s + it.sub_total, 0);
-    const tax = items.reduce((s, it) => s + it.tax_amount, 0);
-    update({ items, sub_total: sub, tax_amount: tax, total_amount: sub + tax });
+    const sub = round2(dSum(items, it => it.sub_total));
+    const tax = round2(dSum(items, it => it.tax_amount));
+    update({ items, sub_total: sub, tax_amount: tax, total_amount: round2(dAdd(sub, tax)) });
   };
   const removeLine = (idx: number) => {
     const items = form.items.filter((_, i) => i !== idx);
-    const sub = items.reduce((s, it) => s + it.sub_total, 0);
-    const tax = items.reduce((s, it) => s + it.tax_amount, 0);
-    update({ items, sub_total: sub, tax_amount: tax, total_amount: sub + tax });
+    const sub = round2(dSum(items, it => it.sub_total));
+    const tax = round2(dSum(items, it => it.tax_amount));
+    update({ items, sub_total: sub, tax_amount: tax, total_amount: round2(dAdd(sub, tax)) });
   };
 
   const handleReviseFrom = (qid: string) => {

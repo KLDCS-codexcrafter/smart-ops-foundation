@@ -18,6 +18,7 @@ import {
   aggregateSecondarySalesByDistributor,
   aggregateSecondarySalesByMonth,
 } from '@/lib/field-force-engine';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -66,7 +67,7 @@ export function SecondarySalesReportPanel({ entityCode }: Props) {
   }, [filteredSales]);
 
   const totalAmount = useMemo(
-    () => filteredSales.reduce((s, x) => s + x.total_amount, 0),
+    () => round2(dSum(filteredSales, x => x.total_amount)),
     [filteredSales],
   );
 

@@ -24,6 +24,7 @@ import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { useOrders } from '@/hooks/useOrders';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -109,10 +110,11 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
     partial:   salesOrders.filter(o => o.status === 'partial').length,
     closed:    salesOrders.filter(o => o.status === 'closed').length,
     cancelled: salesOrders.filter(o => o.status === 'cancelled').length,
-    totalValue: salesOrders.reduce((s, o) => s + o.net_amount, 0),
-    pendingValue: salesOrders
-      .filter(o => o.status === 'open' || o.status === 'partial')
-      .reduce((s, o) => s + o.net_amount, 0),
+    totalValue: round2(dSum(salesOrders, o => o.net_amount)),
+    pendingValue: round2(dSum(
+      salesOrders.filter(o => o.status === 'open' || o.status === 'partial'),
+      o => o.net_amount,
+    )),
   }), [salesOrders]);
 
   return (

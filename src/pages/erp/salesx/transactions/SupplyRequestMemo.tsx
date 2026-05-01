@@ -28,6 +28,7 @@ import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   supplyRequestMemosKey,
@@ -118,7 +119,7 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
   }]);
 
   const totalAmount = useMemo(
-    () => +items.reduce((s, it) => s + it.amount, 0).toFixed(2),
+    () => round2(dSum(items, it => it.amount)),
     [items],
   );
 

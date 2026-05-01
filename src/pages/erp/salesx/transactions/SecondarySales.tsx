@@ -26,7 +26,7 @@ import {
   type SecondarySales, type SecondarySalesLine, type EndCustomerType,
   secondarySalesKey, END_CUSTOMER_LABELS,
 } from '@/types/secondary-sales';
-import { dMul, round2 } from '@/lib/decimal-helpers';
+import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -137,7 +137,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   }, [entityCode]);
 
   const totalAmount = useMemo(
-    () => form.lines.reduce((sum, l) => sum + l.amount, 0),
+    () => round2(dSum(form.lines, l => l.amount)),
     [form.lines],
   );
 
