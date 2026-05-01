@@ -96,15 +96,12 @@ export function logAudit(opts: {
       const truncated = existing.slice(-Math.floor(existing.length / 2));
       try {
         localStorage.setItem(key, JSON.stringify(truncated));
-        // eslint-disable-next-line no-console
         console.warn('[audit-trail] storage quota hit; oldest 50% archived (export needed)');
       } catch {
         // Last resort — direct console (avoid error-engine cycle since both write to localStorage)
-        // eslint-disable-next-line no-console
         console.error('[audit-trail] CRITICAL: storage quota exceeded; audit entry could not persist', entry);
       }
     } else {
-      // eslint-disable-next-line no-console
       console.error('[audit-trail] write failed', e);
     }
   }

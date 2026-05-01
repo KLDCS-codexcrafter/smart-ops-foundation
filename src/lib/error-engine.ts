@@ -77,12 +77,10 @@ export function logError(
     localStorage.setItem(key, JSON.stringify(buffer));
   } catch {
     // If localStorage itself is failing, fall back to console
-    // eslint-disable-next-line no-console
     console.error('[error-engine] persistence failed', entry);
   }
 
   // Always also surface to console for local dev visibility
-  // eslint-disable-next-line no-console
   console.error(`[${category}] ${message}`, context, errObj ?? '');
 
   return entry;
