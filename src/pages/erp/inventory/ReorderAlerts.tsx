@@ -686,7 +686,7 @@ export function ReorderAlertsPanel() {
                     <Button size="sm" onClick={openCreateRule}><Plus className="h-4 w-4 mr-1" />New Rule</Button>
                   </TableCell></TableRow>
                 ) : rules.filter(r => { const q = search.toLowerCase(); return !q || r.item_name.toLowerCase().includes(q) || r.item_code.toLowerCase().includes(q); }).map(rule => {
-                  const currStock = stockMap[rule.item_id] || 0;
+                  const currStock = stockForRule(rule.item_id, rule.godown_id);
                   const shortage = Math.max(0, rule.min_stock - currStock);
                   const status = getStockStatus(currStock, rule.min_stock, rule.max_stock, rule.safety_stock);
                   return (
@@ -740,7 +740,7 @@ export function ReorderAlertsPanel() {
               </TableRow></TableHeader>
               <TableBody>
                 {rules.map(rule => {
-                  const currStock = stockMap[rule.item_id] || 0;
+                  const currStock = stockForRule(rule.item_id, rule.godown_id);
                   const shortage = Math.max(0, rule.min_stock - currStock);
                   const status = getStockStatus(currStock, rule.min_stock, rule.max_stock, rule.safety_stock);
                   return (
