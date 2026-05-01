@@ -534,6 +534,73 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       const merged = JSON.parse(localStorage.getItem(GODOWN_KEY) || '[]');
       localStorage.setItem(GODOWN_KEY, JSON.stringify([...seeded, ...merged]));
     }
+
+    // Sprint T-Phase-1.2.1-fix · Blueprint-specific extra godowns.
+    // Supplements the 5 universal departmental godowns above with patterns
+    // unique to each blueprint's business model.
+    type ExtraDept =
+      | 'main' | 'maintenance' | 'production' | 'paint_shop' | 'qc'
+      | 'welding' | 'site' | 'service' | 'dispatch';
+    type ExtraG = {
+      code: string; name: string;
+      department_code: ExtraDept;
+      requires_issue_note: boolean;
+      is_virtual: boolean;
+      description: string;
+    };
+    const blueprintExtras: Record<string, ExtraG[]> = {
+      SINHA: [
+        { code: 'SINHA-WELD-GD',  name: 'Welding Bay Stock',    department_code: 'welding',     requires_issue_note: true,  is_virtual: true,  description: 'Electrodes, Argon/CO2, wire — issued from Main Store. Virtual floor stock.' },
+        { code: 'SINHA-SITE-GD',  name: 'Site Stock',           department_code: 'site',        requires_issue_note: true,  is_virtual: true,  description: 'Material issued to customer conveyor installation sites. Per-project accountability.' },
+        { code: 'SINHA-DISP-GD',  name: 'Dispatch Staging',     department_code: 'dispatch',    requires_issue_note: false, is_virtual: false, description: 'Finished conveyor structures and spare parts awaiting dispatch.' },
+      ],
+      SMRTP: [
+        { code: 'SMRTP-SVC-GD',   name: 'Service Parts Store',  department_code: 'service',     requires_issue_note: true,  is_virtual: false, description: 'Spare parts for Smartpower AMC customers. Accountability critical — missing parts = failed SLA.' },
+        { code: 'SMRTP-SITE-GD',  name: 'Site Stock',           department_code: 'site',        requires_issue_note: true,  is_virtual: true,  description: 'Material at customer installation sites (UPS, gate automation).' },
+      ],
+      CHRSE: [
+        { code: 'CHRSE-BEV-GD',   name: 'Beverage Concentrate', department_code: 'main',        requires_issue_note: false, is_virtual: false, description: 'Beverage concentrate, syrup, pods. FIFO critical — perishable.' },
+        { code: 'CHRSE-DEV-GD',   name: 'Device Spare Parts',   department_code: 'maintenance', requires_issue_note: true,  is_virtual: false, description: 'Vending machine spare parts (heaters, pumps, sensors).' },
+        { code: 'CHRSE-DISP-GD',  name: 'Dispatch — D2C',       department_code: 'dispatch',    requires_issue_note: false, is_virtual: false, description: 'Packed beverage orders for Blinkit / D2C / B2B dispatch.' },
+      ],
+      AMITH: [
+        { code: 'AMITH-WH-GD',    name: 'Warehouse — Howrah',   department_code: 'main',        requires_issue_note: false, is_virtual: false, description: 'Imported marble slabs, granite blocks, tiles in bulk.' },
+        { code: 'AMITH-SHOW-GD',  name: 'Showroom — Kolkata',   department_code: 'dispatch',    requires_issue_note: false, is_virtual: false, description: 'Display and retail stock in Kolkata showroom.' },
+      ],
+    };
+    const extras = blueprintExtras[opts.shortCode] ?? [];
+    if (extras.length > 0) {
+      const currentGodowns: Array<{ name: string; code: string }> = JSON.parse(
+        localStorage.getItem(GODOWN_KEY) || '[]',
+      );
+      const toAppendExtras = extras.filter(
+        e => !currentGodowns.some(g => g.code === e.code || g.name === e.name),
+      );
+      if (toAppendExtras.length > 0) {
+        const seededExtras = toAppendExtras.map(e => ({
+          id: `gdn-seed-${e.code.toLowerCase()}-${Date.now()}`,
+          code: e.code, name: e.name,
+          ownership_type: 'own_own_stock' as const,
+          party_id: null, party_name: null,
+          address: null, city: null, state: null, pincode: null,
+          country: 'India',
+          latitude: null, longitude: null,
+          total_capacity: null, capacity_unit: null,
+          contact_person: null, contact_phone: null, contact_email: null,
+          gst_number: null, description: e.description,
+          status: 'active' as const, zones: [], agreements: [],
+          department_code: e.department_code,
+          responsible_person_id: null, responsible_person_name: null,
+          is_virtual: e.is_virtual,
+          requires_issue_note: e.requires_issue_note,
+          project_centre_id: null,
+          created_at: nowIso2, updated_at: nowIso2,
+        }));
+        // [JWT] POST /api/inventory/godowns (bulk)
+        const mergedExtras = JSON.parse(localStorage.getItem(GODOWN_KEY) || '[]');
+        localStorage.setItem(GODOWN_KEY, JSON.stringify([...seededExtras, ...mergedExtras]));
+      }
+    }
   } catch { /* ignore */ }
 
   return {
