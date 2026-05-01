@@ -262,18 +262,13 @@ export function useCycleCounts(entityCode: string) {
       write(itemKey, updatedItems);
     }
 
-    const prev = { ...cc };
-    const result = updateCount(id, { status: 'posted', posted_at: now });
-    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only · MCA Rule 3(1))
-    logAudit({
-      entityCode, action: 'post', entityType: 'cycle_count',
-      recordId: id, recordLabel: cc.count_no,
-      beforeState: prev, afterState: result ? { ...result } : null,
-      sourceModule: 'inventory',
-    });
+    // Sprint T-Phase-1.2.5h-c1 · Engine-driven post (audit trail wired automatically)
+    const r = wfPost(cc as unknown as Record<string, unknown> & { id: string }, wfCtx);
+    if (!r.ok || !r.next) { toast.error(r.reason ?? 'Post failed'); return null; }
+    const result = updateCount(id, r.next as unknown as Partial<CycleCount>);
     toast.success('Cycle count posted · stock adjusted');
     return result;
-  }, [counts, entityCode, updateCount]);
+  }, [counts, entityCode, updateCount, wfCtx]);
 
   return {
     counts,
