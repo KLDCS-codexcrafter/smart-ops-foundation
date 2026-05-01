@@ -42,6 +42,7 @@ import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomat
 import type { Voucher } from '@/types/voucher';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { entityCode: string }
 
@@ -69,6 +70,7 @@ function saveRegister(entityCode: string, list: CommissionEntry[]): void {
 }
 
 export function CommissionRegisterPanel({ entityCode }: Props) {
+  const _t = useT();
   const [register, setRegister] = useState<CommissionEntry[]>(() => loadRegister(entityCode));
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] =
@@ -446,7 +448,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Commission Register</h1>
+          <h1 className="text-2xl font-bold">{_t('salesx.commission', 'Commission')} Register</h1>
           <p className="text-sm text-muted-foreground">
             Commission earned on amount received with TDS write-back
           </p>

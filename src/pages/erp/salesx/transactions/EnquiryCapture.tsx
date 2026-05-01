@@ -43,6 +43,7 @@ import type { SAMPerson } from '@/types/sam-person';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import type { Employee } from '@/types/employee';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -152,6 +153,7 @@ const blankFollowUp = (): Omit<EnquiryFollowUp, 'id' | 'user_name'> => ({
 });
 
 export function EnquiryCapturePanel({ entityCode }: Props) {
+  const _t = useT();
   const cfg = useMemo(() => loadCfg(entityCode), [entityCode]);
   const navigate = useNavigate();
   const {
@@ -332,7 +334,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Enquiry Register</h1>
+            <h1 className="text-2xl font-bold">{_t('salesx.enquiry', 'Enquiry')} Register</h1>
             <p className="text-sm text-muted-foreground">Capture and track sales enquiries</p>
           </div>
           <Button onClick={handleNew} data-primary className="bg-orange-500 hover:bg-orange-600">
