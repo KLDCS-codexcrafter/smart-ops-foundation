@@ -7,6 +7,12 @@ import { useState, useCallback } from 'react';
 import type { TimeEntry, TimeEntryStatus } from '@/types/projx/time-entry';
 import { timeEntriesKey } from '@/types/projx/time-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// Sprint T-Phase-1.2.5h-c1 · Generalized approval workflow (M-4) — engine wires audit trail.
+import {
+  submit as wfSubmit, approve as wfApprove, reject as wfReject,
+  type ApprovalContext, type ApprovalFieldMap,
+} from '@/lib/approval-workflow-engine';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 function ls<T>(key: string): T[] {
   try {
