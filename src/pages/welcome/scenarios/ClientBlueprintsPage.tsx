@@ -228,6 +228,12 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_doc_seq_MIN_${entityCode}`,
     `erp_doc_seq_CE_${entityCode}`,
     `erp_bom_${entityCode}`,
+    // Sprint T-Phase-1.2.3 · Traceability + Storage Discipline
+    `erp_heat_numbers_${entityCode}`,
+    `erp_batches_${entityCode}`,
+    `erp_serial_numbers_${entityCode}`,
+    `erp_item_locations_${entityCode}`,
+    `erp_bin_labels_${entityCode}`,
   ];
 }
 

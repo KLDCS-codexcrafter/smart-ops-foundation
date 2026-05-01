@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Package, ChevronRight,
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
   ListOrdered, AlertTriangle, FileText, BarChart3,
-  Warehouse, Boxes, Layers,
+  Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -24,6 +24,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
+  'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
 ];
 
 interface SidebarItem {
@@ -50,6 +51,10 @@ const MAS_ITEMS: SidebarItem[] = [
   { id: 'm-item-master', label: 'Item Master', icon: Boxes },
   { id: 'm-godown-master', label: 'Godown Master', icon: Warehouse },
   { id: 'm-stock-groups', label: 'Stock Groups', icon: Layers },
+  { id: 'm-heat-master', label: 'Heat Master', icon: Flame },
+  { id: 'm-batch-grid', label: 'Batch Grid', icon: Grid3X3 },
+  { id: 'm-serial-grid', label: 'Serial Grid', icon: Hash },
+  { id: 'm-bin-labels', label: 'Bin Labels', icon: MapPin },
 ];
 
 interface InventoryHubSidebarProps {

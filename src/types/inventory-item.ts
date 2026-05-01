@@ -145,4 +145,17 @@ export interface InventoryItem {
   /** NEW (Sprint T10-pre.1b) — Item's default bin within preferred_godown_id.
       Resolved from BinLabel.items_assigned[] when available. User can override. */
   preferred_bin_id?: string;
+
+  // Sprint T-Phase-1.2.3 · Tracking flags (sibling additions, D-128 precedent)
+  /** When true, GRN post auto-creates a Batch record per line.batch_no */
+  is_batch_tracked?: boolean;
+  /** When true, GRN post auto-creates SerialNumber records per line.serial_nos[] */
+  is_serial_tracked?: boolean;
+  /** When true (steel/metal Raw Material), GRN post auto-creates Heat record per line.heat_no */
+  is_heat_tracked?: boolean;
+  /** Default costing method — pharma/food = 'FEFO', steel/chemical/electronics = 'FIFO',
+   *  commodity = 'Weighted'. Falls back to InventoryItem.costing_method if unset. */
+  default_costing_method?: 'FIFO' | 'FEFO' | 'Weighted';
+  /** Warranty period in months for serial-tracked items — used to compute warranty_end_date on GRN post */
+  warranty_months?: number;
 }

@@ -18,6 +18,10 @@ import { ReorderAlertsPanel } from './ReorderAlerts';
 import { ItemCraftPanel } from './ItemCraft';
 import { StorageMatrixPanel } from './StorageMatrix';
 import { StockMatrixPanel } from './StockMatrix';
+import { HeatMasterPanel } from './HeatMaster';
+import { BatchGridPanel } from './BatchGrid';
+import { SerialGridPanel } from './SerialGrid';
+import { BinLocationLabelsPanel } from './BinLocationLabels';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
@@ -58,6 +62,10 @@ export default function InventoryHubPage() {
       case 'm-item-master':          return <ItemCraftPanel />;
       case 'm-godown-master':        return <StorageMatrixPanel />;
       case 'm-stock-groups':         return <StockMatrixPanel />;
+      case 'm-heat-master':          return <HeatMasterPanel />;
+      case 'm-batch-grid':           return <BatchGridPanel />;
+      case 'm-serial-grid':          return <SerialGridPanel />;
+      case 'm-bin-labels':           return <BinLocationLabelsPanel />;
       default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };

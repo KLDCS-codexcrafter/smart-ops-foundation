@@ -20,4 +20,8 @@ export const INVENTORY_MODULE_GROUP: Record<
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',
+  'm-heat-master': 'masters',
+  'm-batch-grid': 'masters',
+  'm-serial-grid': 'masters',
+  'm-bin-labels': 'masters',
 };
