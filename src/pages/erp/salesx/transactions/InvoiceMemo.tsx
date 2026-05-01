@@ -4,7 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 /**
  * InvoiceMemo.tsx — Invoice/Tax Memo (IM) entry · SalesX Hub
  * Sprint T-Phase-1.1.1n. Memo is the authorization; Sales Invoice is the accounting entry.
