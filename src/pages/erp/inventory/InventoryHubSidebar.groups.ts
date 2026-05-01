@@ -17,6 +17,8 @@ export const INVENTORY_MODULE_GROUP: Record<
   'r-reorder-alerts': 'reports',
   'r-grn-register': 'reports',
   'r-consumption-summary': 'reports',
+  'r-storage-slip': 'reports',
+  'r-bin-slip': 'reports',
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',

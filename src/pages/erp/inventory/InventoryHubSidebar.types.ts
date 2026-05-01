@@ -12,6 +12,8 @@ export type InventoryHubModule =
   | 'r-reorder-alerts'
   | 'r-grn-register'
   | 'r-consumption-summary'
+  | 'r-storage-slip'
+  | 'r-bin-slip'
   | 'm-item-master'
   | 'm-godown-master'
   | 'm-stock-groups'

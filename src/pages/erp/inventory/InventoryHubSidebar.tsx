@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Package, ChevronRight,
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
-  ListOrdered, AlertTriangle, FileText, BarChart3,
+  ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin,
 } from 'lucide-react';
 import {
@@ -23,6 +23,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
+  'r-storage-slip', 'r-bin-slip',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
 ];
@@ -45,6 +46,8 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-reorder-alerts', label: 'Reorder Alerts', icon: AlertTriangle },
   { id: 'r-grn-register', label: 'GRN Register', icon: FileText },
   { id: 'r-consumption-summary', label: 'Consumption Summary', icon: BarChart3 },
+  { id: 'r-storage-slip', label: 'Storage Slip', icon: Printer },
+  { id: 'r-bin-slip', label: 'Bin Slip', icon: Printer },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
