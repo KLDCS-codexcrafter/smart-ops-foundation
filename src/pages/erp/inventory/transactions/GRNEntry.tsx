@@ -619,6 +619,77 @@ export function GRNEntryPanel() {
         <Button variant="outline" size="sm" onClick={() => setView('list')}>← Back to List</Button>
       </div>
 
+      {/* Sprint T-Phase-1.2.4 · GRN Type + Receipt Mode */}
+      <Card><CardHeader className="pb-2"><CardTitle className="text-sm">GRN Type & Receipt Mode</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5"><Label>GRN Type *</Label>
+            <Select
+              disabled={readonly || !!editingId}
+              value={header.voucher_type_id}
+              onValueChange={v => {
+                const vt = grnVoucherTypes.find(x => x.id === v);
+                setHeader(h => ({
+                  ...h,
+                  voucher_type_id: v,
+                  voucher_type_name: vt?.name ?? '',
+                }));
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Select GRN type" /></SelectTrigger>
+              <SelectContent>
+                {grnVoucherTypes.length === 0 ? (
+                  <SelectItem value="vt-receipt-note-domestic">Goods Receipt Note (Domestic)</SelectItem>
+                ) : grnVoucherTypes.map(vt => (
+                  <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5"><Label>Receipt Mode *</Label>
+            <Tabs
+              value={header.receipt_mode}
+              onValueChange={v => {
+                const mode = v as 'direct' | 'two_stage';
+                setHeader(h => {
+                  if (mode === 'two_stage' && gitGodown) {
+                    return { ...h, receipt_mode: mode, godown_id: gitGodown.id, godown_name: gitGodown.name };
+                  }
+                  return { ...h, receipt_mode: mode };
+                });
+              }}
+            >
+              <TabsList>
+                <TabsTrigger value="direct" disabled={readonly}>
+                  <FileText className="h-3.5 w-3.5 mr-1" /> Direct Receipt
+                </TabsTrigger>
+                <TabsTrigger value="two_stage" disabled={readonly}>
+                  <Truck className="h-3.5 w-3.5 mr-1" /> Two-Stage (Invoice First)
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {header.receipt_mode === 'two_stage' && gitGodown && (
+              <p className="text-[10px] text-amber-700 dark:text-amber-400 flex items-center gap-1 mt-1">
+                <Truck className="h-3 w-3" />
+                Stock will be staged in <b>{gitGodown.name}</b>. Confirm physical receipt to move it to destination.
+              </p>
+            )}
+            {editingId && grns.find(g => g.id === editingId)?.status === 'in_transit' && (
+              <Button
+                size="sm"
+                variant="default"
+                className="mt-2 gap-1 h-7 text-xs"
+                onClick={() => {
+                  const g = grns.find(x => x.id === editingId);
+                  if (g) { setShowStage2(g); setStage2DestId(''); }
+                }}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" /> Confirm Physical Receipt
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {totals.discrepancy && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs">
           <AlertTriangle className="h-4 w-4" />
