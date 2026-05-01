@@ -324,7 +324,18 @@ export function ConsumptionEntryPanel() {
     };
   };
 
+  // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3)
+  const headerValidator = makeFieldValidator<FormHeader>([
+    { field: 'consumption_date', test: (v) => Boolean(v), message: 'Date is required' },
+    { field: 'godown_id',        test: (v) => Boolean(v), message: 'Source godown is required' },
+    { field: 'consumed_by_id',   test: (v) => Boolean(v), message: 'Consumed by is required' },
+  ]);
+  const fieldErr = (f: string) => fieldErrorClass({}, f);
+  void fieldErr; void fieldErrorText;
+
   const handleSaveDraft = () => {
+    const fr = headerValidator(header);
+    if (!fr.ok) { const k = Object.keys(fr.errors)[0]; toast.error(fr.errors[k]); return; }
     const err = validate();
     if (err) { toast.error(err); return; }
     const existing = editingId ? entries.find(e => e.id === editingId) : undefined;
