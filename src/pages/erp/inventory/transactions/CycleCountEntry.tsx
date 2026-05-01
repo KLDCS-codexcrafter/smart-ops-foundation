@@ -122,8 +122,8 @@ export function CycleCountEntryPanel() {
   const ccFieldErr = (f: string) => fieldErrorClass({}, f);
   void ccFieldErr; void fieldErrorText; void ccValidator;
 
-  function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
   const _t = useT();
+  function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
     const gd = godowns.find(g => g.id === godownId) ?? null;
     const countDate = new Date().toISOString().slice(0, 10);
     // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
