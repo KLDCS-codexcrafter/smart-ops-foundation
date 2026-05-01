@@ -22,6 +22,8 @@ import { Separator } from '@/components/ui/separator';
 import { CreditCard, Wallet, Receipt, Gift, Plus, Check, X,
   ChevronDown, ChevronRight, Calculator, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+// Sprint T-Phase-1.2.5h-c1 · Approval workflow audit-trail wiring (M-4 wrap pattern)
+import { logAudit } from '@/lib/audit-trail-engine';
 import type { LoanApplication, SalaryAdvance, ExpenseClaim, FlexiAllocation,
   EMIScheduleRow, FlexiComponent, FinanceTab, ExpenseCategory } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY, EXPENSE_CLAIMS_KEY,
@@ -399,19 +401,33 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
   };
 
   const approveAdvance = (id: string) => {
+    const before = advances.find(x => x.id === id) ?? null;
     const updated = advances.map(x => x.id !== id ? x : {
       ...x, status: 'approved' as const, approvedBy: 'HR Admin',
       updated_at: new Date().toISOString(),
     });
     saveAdvances(updated);
+    const after = updated.find(x => x.id === id) ?? null;
+    if (before && after) logAudit({
+      entityCode: 'GLOBAL', action: 'approve', entityType: 'employee',
+      recordId: id, recordLabel: `Advance ${before.employeeName ?? id}`,
+      beforeState: { ...before }, afterState: { ...after }, sourceModule: 'pay-hub',
+    });
     toast.success('Advance approved');
   };
   const rejectAdvance = (id: string) => {
+    const before = advances.find(x => x.id === id) ?? null;
     const updated = advances.map(x => x.id !== id ? x : {
       ...x, status: 'rejected' as const, approvedBy: 'HR Admin',
       updated_at: new Date().toISOString(),
     });
     saveAdvances(updated);
+    const after = updated.find(x => x.id === id) ?? null;
+    if (before && after) logAudit({
+      entityCode: 'GLOBAL', action: 'reject', entityType: 'employee',
+      recordId: id, recordLabel: `Advance ${before.employeeName ?? id}`,
+      beforeState: { ...before }, afterState: { ...after }, sourceModule: 'pay-hub',
+    });
     toast.success('Advance rejected');
   };
   const recoverAdvance = (id: string) => {
@@ -424,19 +440,33 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
   };
 
   const approveExpense = (id: string) => {
+    const before = expenses.find(x => x.id === id) ?? null;
     const updated = expenses.map(x => x.id !== id ? x : {
       ...x, status: 'approved' as const, approvedBy: 'HR Admin',
       updated_at: new Date().toISOString(),
     });
     saveExpenses(updated);
+    const after = updated.find(x => x.id === id) ?? null;
+    if (before && after) logAudit({
+      entityCode: 'GLOBAL', action: 'approve', entityType: 'employee',
+      recordId: id, recordLabel: `Expense ${before.employeeName ?? id}`,
+      beforeState: { ...before }, afterState: { ...after }, sourceModule: 'pay-hub',
+    });
     toast.success('Expense approved');
   };
   const rejectExpense = (id: string) => {
+    const before = expenses.find(x => x.id === id) ?? null;
     const updated = expenses.map(x => x.id !== id ? x : {
       ...x, status: 'rejected' as const, approvedBy: 'HR Admin',
       updated_at: new Date().toISOString(),
     });
     saveExpenses(updated);
+    const after = updated.find(x => x.id === id) ?? null;
+    if (before && after) logAudit({
+      entityCode: 'GLOBAL', action: 'reject', entityType: 'employee',
+      recordId: id, recordLabel: `Expense ${before.employeeName ?? id}`,
+      beforeState: { ...before }, afterState: { ...after }, sourceModule: 'pay-hub',
+    });
     toast.success('Expense rejected');
   };
   const reimburseExpense = (id: string) => {
