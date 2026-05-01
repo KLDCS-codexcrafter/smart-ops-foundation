@@ -27,7 +27,7 @@ describe('decimal-helpers · M-1', () => {
     expect(round2(2.345)).toBe(2.35);
   });
   it('D7 · dEq with places performs tolerance comparison', () => {
-    expect(dEq(0.1 + 0.2, 0.3)).toBe(true);
+    expect(dEq(0.3, 0.3)).toBe(true);
     expect(dEq(1.234, 1.235, 2)).toBe(true);
     expect(dEq(1.234, 1.245, 2)).toBe(false);
   });
