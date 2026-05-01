@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Package, ChevronRight,
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
-  ListOrdered, AlertTriangle, FileText, BarChart3,
+  ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin,
 } from 'lucide-react';
 import {
