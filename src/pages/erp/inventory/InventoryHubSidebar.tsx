@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Package, ChevronRight,
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
-  Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin,
+  Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -26,6 +26,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'r-storage-slip', 'r-bin-slip',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
+  'm-reorder-matrix',
 ];
 
 interface SidebarItem {
@@ -58,6 +59,7 @@ const MAS_ITEMS: SidebarItem[] = [
   { id: 'm-batch-grid', label: 'Batch Grid', icon: Grid3X3 },
   { id: 'm-serial-grid', label: 'Serial Grid', icon: Hash },
   { id: 'm-bin-labels', label: 'Bin Labels', icon: MapPin },
+  { id: 'm-reorder-matrix', label: 'Reorder Matrix', icon: Repeat },
 ];
 
 interface InventoryHubSidebarProps {

@@ -21,4 +21,6 @@ export type InventoryHubModule =
   | 'm-heat-master'
   | 'm-batch-grid'
   | 'm-serial-grid'
-  | 'm-bin-labels';
+  | 'm-bin-labels'
+  // Sprint T-Phase-1.2.3-fix · Multi-godown reorder matrix
+  | 'm-reorder-matrix';
