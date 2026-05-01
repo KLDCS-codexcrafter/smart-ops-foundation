@@ -347,6 +347,8 @@ export function seedEntityDemoData(
     updated_at: nowSeed,
   }];
   safeSetArray(`erp_demo_outward_memos_${entityCode}`, demoSeed);
+  // Sprint T-Phase-1.1.2-d: DOM doc-no generator now lives in generateDocNo('DOM', ...).
+  // Storage key unchanged — sequence continues from this seed value.
   safeSetObj(`erp_doc_seq_DOM_${entityCode}`, 1);
 
   // Asset Centres (Sprint T-Phase-1.1.2-pre · D-218 two-master architecture)
