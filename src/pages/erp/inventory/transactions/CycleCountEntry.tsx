@@ -91,7 +91,7 @@ export function CycleCountEntryPanel() {
       return {
         id: crypto.randomUUID(),
         item_id: s.item_id, item_code: it?.code ?? '', item_name: s.item_name,
-        uom: it?.uom_primary ?? 'NOS',
+        uom: it?.primary_uom_symbol ?? 'NOS',
         godown_id: bal?.godown_id ?? '', godown_name: bal?.godown_name ?? '',
         bin_id: null, bin_code: null,
         system_qty: bal?.qty ?? 0, physical_qty: bal?.qty ?? 0,
@@ -227,7 +227,7 @@ export function CycleCountEntryPanel() {
           {active && (
             <CountDetail
               count={active}
-              userId={userId} userName={userName}
+              userId={userId}
               items={items} balances={balances} godowns={godowns}
               onUpdate={(patch) => updateCount(active.id, patch)}
               onSubmit={() => submitForReview(active.id, userId, userName)}
@@ -310,7 +310,7 @@ function CountDetail({
     const ln: CycleCountLine = {
       id: crypto.randomUUID(),
       item_id: it.id, item_code: it.code ?? '', item_name: it.name,
-      uom: it.uom_primary ?? 'NOS',
+      uom: it.primary_uom_symbol ?? 'NOS',
       godown_id: bal?.godown_id ?? '', godown_name: bal?.godown_name ?? '',
       bin_id: null, bin_code: null,
       system_qty: bal?.qty ?? 0, physical_qty: bal?.qty ?? 0,

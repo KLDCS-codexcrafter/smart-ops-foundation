@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
-import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarrationHeader';
+
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
