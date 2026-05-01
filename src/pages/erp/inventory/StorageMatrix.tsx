@@ -37,6 +37,10 @@ const BG={code:'',name:'',ownership_type:'own_own_stock' as GodownOwnershipType,
 const BA={agreement_number:'',lessor_name:'',lessor_gstin:'',lessor_pan:'',start_date:'',end_date:'',notice_period_days:null as number|null,lock_in_months:null as number|null,auto_renewal:false,monthly_rent:null as number|null,security_deposit:null as number|null,charge_type:'fixed' as GodownAgreement['charge_type'],rate:null as number|null,billing_cycle:'monthly' as GodownAgreement['billing_cycle'],escalation_rate:null as number|null,tds_applicable:false,tds_section:'194-I',tds_rate:null as number|null,license_type:'general',license_number:'',license_expiry:'',insurance_policy:'',insurance_expiry:''};
 
 export function StorageMatrixPanel(){
+    const { entityCode } = useCardEntitlement();
+    const safeEntity = entityCode || 'SMRT';
+    const { persons } = useSAMPersons(safeEntity);
+    const { centres } = useProjectCentres(safeEntity);
     const [godowns,setGodowns]=useState<Godown[]>(load()); // [JWT] GET /api/inventory/godowns
     const [search,setSearch]=useState('');
     const [open,setOpen]=useState(false);
@@ -55,7 +59,14 @@ export function StorageMatrixPanel(){
     };
     const openC=()=>{setGf(BG);setAf(BA);setShowA(false);setEdit(null);setOpen(true);};
     const openE=(g:Godown)=>{
-        setGf({code:g.code,name:g.name,ownership_type:g.ownership_type,party_name:g.party_name||'',address:g.address||'',city:g.city||'',state:g.state||'Maharashtra',pincode:g.pincode||'',country:g.country||'India',total_capacity:g.total_capacity||null,capacity_unit:g.capacity_unit||'sqft',contact_person:g.contact_person||'',contact_phone:g.contact_phone||'',contact_email:g.contact_email||'',gst_number:g.gst_number||'',description:g.description||''});
+        setGf({code:g.code,name:g.name,ownership_type:g.ownership_type,party_name:g.party_name||'',address:g.address||'',city:g.city||'',state:g.state||'Maharashtra',pincode:g.pincode||'',country:g.country||'India',total_capacity:g.total_capacity||null,capacity_unit:g.capacity_unit||'sqft',contact_person:g.contact_person||'',contact_phone:g.contact_phone||'',contact_email:g.contact_email||'',gst_number:g.gst_number||'',description:g.description||'',
+          department_code:g.department_code??null,
+          responsible_person_id:g.responsible_person_id??null,
+          responsible_person_name:g.responsible_person_name??null,
+          is_virtual:!!g.is_virtual,
+          requires_issue_note:!!g.requires_issue_note,
+          project_centre_id:g.project_centre_id??null,
+        });
         const ag=g.agreements?.[0];
         setAf(ag?
         {agreement_number:ag.agreement_number,lessor_name:ag.lessor_name,lessor_gstin:ag.lessor_gstin||'',lessor_pan:ag.lessor_pan||'',start_date:ag.start_date,end_date:ag.end_date||'',notice_period_days:ag.notice_period_days||null,lock_in_months:ag.lock_in_months||null,auto_renewal:ag.auto_renewal,monthly_rent:ag.monthly_rent||null,security_deposit:ag.security_deposit||null,charge_type:ag.charge_type,rate:ag.rate||null,billing_cycle:ag.billing_cycle,escalation_rate:ag.escalation_rate||null,tds_applicable:ag.tds_applicable,tds_section:ag.tds_section||'194-I',tds_rate:ag.tds_rate||null,license_type:ag.license_type||'general',license_number:ag.license_number||'',license_expiry:ag.license_expiry||'',insurance_policy:ag.insurance_policy||'',insurance_expiry:ag.insurance_expiry||''}:BA);
