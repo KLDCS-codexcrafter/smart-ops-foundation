@@ -12,10 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Package, Warehouse, ArrowDownToLine, IndianRupee, Plus, AlertTriangle,
-  ListOrdered, UserCircle2,
+  ListOrdered, UserCircle2, CheckCircle2,
 } from 'lucide-react';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
+import { useConsumptionEntries } from '@/hooks/useConsumptionEntries';
+import { runConsumptionIntelligence } from '@/lib/consumption-intelligence-engine';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { grnsKey, stockBalanceKey, type GRN, type StockBalanceEntry } from '@/types/grn';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
