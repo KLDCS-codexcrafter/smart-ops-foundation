@@ -213,6 +213,7 @@ export function seedEntityDemoData(
       released_at: null,
       created_at: nowIso,
       updated_at: nowIso,
+      project_centre_id: null,
     });
   }
   if (itemC) {
@@ -233,6 +234,7 @@ export function seedEntityDemoData(
       released_at: null,
       created_at: nowIso,
       updated_at: nowIso,
+      project_centre_id: null,
     });
   }
   safeSetArray(`erp_stock_reservations_${entityCode}`, demoReservations);
