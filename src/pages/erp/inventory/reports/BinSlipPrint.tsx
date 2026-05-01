@@ -91,6 +91,12 @@ export function BinSlipPrintPanel() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-4">
+            <PrintNarrationHeader
+              baseVoucherType="Stock Master"
+              voucherTypeName="Bin Label Sheet"
+              voucherNo={`${filtered.length} sticker(s)`}
+              fallbackTitle="Bin Slip"
+            />
             <div className="grid grid-cols-2 gap-2">
               {filtered.map(l => (
                 <div
