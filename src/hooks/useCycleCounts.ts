@@ -162,41 +162,46 @@ export function useCycleCounts(entityCode: string) {
     // [JWT] PATCH /api/inventory/cycle-counts/:id
   }, [counts, persist, computeAggregates]);
 
+  // Sprint T-Phase-1.2.5h-c1 · Approval transitions delegated to engine
+  // (audit log written automatically — no parallel logAudit calls).
+  const wfCtx: ApprovalContext = {
+    entityCode,
+    auditEntityType: 'cycle_count',
+    sourceModule: 'inventory',
+    recordLabel: r => (r.count_no as string) ?? r.id,
+  };
+
   const submitForReview = useCallback((id: string, counterId: string, counterName: string) => {
-    const now = new Date().toISOString();
-    return updateCount(id, {
-      status: 'submitted',
-      submitted_at: now,
-      counter_id: counterId,
-      counter_name: counterName,
-    });
-  }, [updateCount]);
+    const cc = counts.find(c => c.id === id);
+    if (!cc) return null;
+    const r = wfSubmit(cc as unknown as Record<string, unknown> & { id: string }, { id: counterId, name: counterName }, wfCtx);
+    if (!r.ok || !r.next) { toast.error(r.reason ?? 'Submit failed'); return null; }
+    return updateCount(id, r.next as unknown as Partial<CycleCount>);
+  }, [counts, updateCount, wfCtx]);
 
   const approveCount = useCallback((id: string, approverId: string, approverName: string) => {
-    const now = new Date().toISOString();
-    return updateCount(id, {
-      status: 'approved',
-      approved_at: now,
-      approver_id: approverId,
-      approver_name: approverName,
-    });
-  }, [updateCount]);
+    const cc = counts.find(c => c.id === id);
+    if (!cc) return null;
+    const r = wfApprove(cc as unknown as Record<string, unknown> & { id: string }, { id: approverId, name: approverName }, wfCtx);
+    if (!r.ok || !r.next) { toast.error(r.reason ?? 'Approve failed'); return null; }
+    return updateCount(id, r.next as unknown as Partial<CycleCount>);
+  }, [counts, updateCount, wfCtx]);
 
   const rejectCount = useCallback((id: string, reason: string) => {
-    return updateCount(id, {
-      status: 'rejected',
-      rejected_at: new Date().toISOString(),
-      rejection_reason: reason,
-    });
-  }, [updateCount]);
+    const cc = counts.find(c => c.id === id);
+    if (!cc) return null;
+    const r = wfReject(cc as unknown as Record<string, unknown> & { id: string }, { id: 'system', name: 'system' }, reason, wfCtx);
+    if (!r.ok || !r.next) { toast.error(r.reason ?? 'Reject failed'); return null; }
+    return updateCount(id, r.next as unknown as Partial<CycleCount>);
+  }, [counts, updateCount, wfCtx]);
 
   const cancelCount = useCallback((id: string, reason: string) => {
-    return updateCount(id, {
-      status: 'cancelled',
-      cancelled_at: new Date().toISOString(),
-      cancellation_reason: reason,
-    });
-  }, [updateCount]);
+    const cc = counts.find(c => c.id === id);
+    if (!cc) return null;
+    const r = wfCancel(cc as unknown as Record<string, unknown> & { id: string }, reason, wfCtx);
+    if (!r.ok || !r.next) { toast.error(r.reason ?? 'Cancel failed'); return null; }
+    return updateCount(id, r.next as unknown as Partial<CycleCount>);
+  }, [counts, updateCount, wfCtx]);
 
   const postCount = useCallback((id: string): CycleCount | null => {
     const cc = counts.find(c => c.id === id);
