@@ -17,6 +17,7 @@ import {
 import { Printer, MapPin, QrCode } from 'lucide-react';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useBinLabels } from '@/hooks/useBinLabels';
+import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarrationHeader';
 
 const LOCATION_TYPE_BG: Record<string, string> = {
   inward: 'bg-amber-100',
