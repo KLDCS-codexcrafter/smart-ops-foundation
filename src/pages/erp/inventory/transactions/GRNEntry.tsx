@@ -330,6 +330,9 @@ export function GRNEntryPanel() {
     const heatKey = 'erp_heat_numbers';
     const heats = loadJson<{ id: string; heat_no: string; item_id?: string | null }>(heatKey);
     let heatsChanged = false;
+    const serialsKey = 'erp_serial_numbers';
+    const serials = loadJson<{ id: string; serial_number: string; item_id?: string | null }>(serialsKey);
+    let serialsChanged = false;
 
     for (const ln of g.lines) {
       if (ln.accepted_qty <= 0) continue;
