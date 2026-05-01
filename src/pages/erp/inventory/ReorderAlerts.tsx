@@ -102,16 +102,32 @@ export function ReorderAlertsPanel() {
   const saveRules = (d: LocationReorderRule[]) => { localStorage.setItem(RRKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/reorder-rules */ };
   const saveTags = (d: DepartmentTag[]) => { localStorage.setItem(DTKEY, JSON.stringify(d)); /* [JWT] CRUD /api/inventory/department-tags */ };
 
-  // Stock map
-  const stockMap = useMemo(() => {
+  // Stock map — global by item_id (fallback) + composite per (item_id, godown_id).
+  // Sprint T-Phase-1.2.3 audit fix: rules can be per-godown, so evaluate stock per-location.
+  const { stockMap, stockByLocation } = useMemo(() => {
     const m: Record<string, number> = {};
+    const loc: Record<string, number> = {};
     stockLedger.forEach(e => {
       const itemId = String(e.item_id);
-      if (!m[itemId]) m[itemId] = 0;
-      m[itemId] += (Number(e.qty_in) || 0) - (Number(e.qty_out) || 0);
+      const godownId = e.godown_id ? String(e.godown_id) : '';
+      const delta = (Number(e.qty_in) || 0) - (Number(e.qty_out) || 0);
+      m[itemId] = (m[itemId] || 0) + delta;
+      if (godownId) {
+        const k = `${itemId}::${godownId}`;
+        loc[k] = (loc[k] || 0) + delta;
+      }
     });
-    return m;
+    return { stockMap: m, stockByLocation: loc };
   }, [stockLedger]);
+
+  // Resolve current stock for a rule — godown-scoped when rule has godown_id, else global.
+  const stockForRule = (itemId: string, godownId?: string): number => {
+    if (godownId && godownId !== 'default') {
+      const k = `${itemId}::${godownId}`;
+      return stockByLocation[k] ?? 0;
+    }
+    return stockMap[itemId] || 0;
+  };
 
   const getStockStatus = (currentStock: number, min: number, max: number, safety: number) => {
     if (min === 0 && max === 0 && safety === 0) return { label: 'No Rule', color: '', icon: '·' };
