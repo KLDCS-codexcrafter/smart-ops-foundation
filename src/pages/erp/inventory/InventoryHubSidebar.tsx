@@ -23,6 +23,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
+  'r-storage-slip', 'r-bin-slip',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
 ];
