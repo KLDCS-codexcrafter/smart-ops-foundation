@@ -6,6 +6,8 @@ import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import type { Employee } from '@/types/employee';
 import { EMPLOYEES_KEY } from '@/types/employee';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const load = (): Employee[] => {
   try {
@@ -48,6 +50,13 @@ export function useEmployees() {
     const updated = [...all, emp];
     setEmployees(updated); save(updated);
     toast.success(`${emp.displayName} (${emp.empCode}) added`);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only)
+    logAudit({
+      entityCode: '', action: 'create', entityType: 'employee',
+      recordId: emp.id, recordLabel: `${emp.empCode} · ${emp.displayName}`,
+      beforeState: null, afterState: { ...emp } as unknown as Record<string, unknown>,
+      sourceModule: 'payhub',
+    });
     // [JWT] POST /api/pay-hub/employees
     return emp;
   };

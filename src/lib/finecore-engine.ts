@@ -14,6 +14,8 @@ import { loadTenantConfig } from './tenant-config-engine';
 import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
 // [T-T8.0-OrgTagFoundation] Auto-tag derived metadata · enables 5-tier slicing without voucher.ts schema change.
 import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from './audit-trail-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -257,6 +259,20 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
   vouchers.push({ ...voucher, status: 'posted', posted_at: now, updated_at: now });
   ss(vouchersKey(entityCode), vouchers);
+
+  // Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+  // ALWAYS WRITES — no skip path, no toggle.
+  logAudit({
+    entityCode,
+    action: 'post',
+    entityType: 'voucher',
+    recordId: voucher.id,
+    recordLabel: voucher.voucher_no || `${voucher.base_voucher_type}/${voucher.id}`,
+    beforeState: null,
+    afterState: { ...voucher, status: 'posted' },
+    reason: null,
+    sourceModule: 'finecore',
+  });
 
   // [T-T8.0-OrgTagFoundation] Auto-tag · ensures both useVouchers and direct postVoucher paths populate metadata.
   tagVoucher(voucher.id, getOperatorContext(voucher.entity_id, voucher.department_id));
@@ -640,8 +656,23 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
   const idx = vouchers.findIndex(v => v.id === voucherId);
   if (idx === -1) return;
+  // Sprint T-Phase-1.2.5h-b1 · Capture prevSnapshot BEFORE mutation (CGST Rule 56(8))
+  const prevSnapshot: Record<string, unknown> = { ...vouchers[idx] };
   vouchers[idx] = { ...vouchers[idx], status: 'cancelled', is_cancelled: true, cancel_reason: reason, updated_at: now };
   ss(vouchersKey(entityCode), vouchers);
+
+  // Sprint T-Phase-1.2.5h-b1 · Audit trail on cancel (CGST Rule 56(8))
+  logAudit({
+    entityCode,
+    action: 'cancel',
+    entityType: 'voucher',
+    recordId: voucherId,
+    recordLabel: vouchers[idx].voucher_no || voucherId,
+    beforeState: prevSnapshot,
+    afterState: { ...vouchers[idx] },
+    reason: reason ?? 'No reason provided',
+    sourceModule: 'finecore',
+  });
 
   // Mark journal entries
   const journals = ls<JournalEntry>(journalKey(entityCode));

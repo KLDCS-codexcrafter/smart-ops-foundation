@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import type { VoucherType } from '@/types/voucher-type';
 import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
 import { useEntityCode } from '@/hooks/useEntityCode';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const TEMPLATE_KEY = 'erp_voucher_types_template';
 const LEGACY_KEY = 'erp_voucher_types';
@@ -78,6 +80,14 @@ export function useVoucherTypes() {
     setTypes(updated);
     save(updated);
     toast.success(`${vt.name} updated`);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only)
+    logAudit({
+      entityCode, action: 'update', entityType: 'voucher_type',
+      recordId: id, recordLabel: vt.name,
+      beforeState: { ...vt } as unknown as Record<string, unknown>,
+      afterState: { ...vt, ...patch } as unknown as Record<string, unknown>,
+      sourceModule: 'finecore',
+    });
     // [JWT] PUT /api/accounting/voucher-types/:id
   };
 

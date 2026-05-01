@@ -78,6 +78,10 @@ export interface GRN {
   // Narration
   narration: string;
 
+  /** Sprint T-Phase-1.2.5h-b1 · CGST Rule 56(8) edit/delete chain */
+  superseded_by?: string | null;
+  version?: number;
+
   // Sprint T-Phase-1.2.4 · Multi-variant + GIT support
   /** FK to VoucherType.id — 'vt-receipt-note-domestic' / 'import' / 'subcon'. Optional for backward compat. */
   voucher_type_id?: string | null;

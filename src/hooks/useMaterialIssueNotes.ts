@@ -14,6 +14,8 @@ import {
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { dAdd, dSub, dMul, round2 } from '@/lib/decimal-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 function ls<T>(key: string): T[] {
   try {
@@ -158,6 +160,13 @@ export function useMaterialIssueNotes(entityCode: string) {
       ...m, status: 'issued', issued_at: now, updated_at: now,
     };
     upsertDraft(issued);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only)
+    logAudit({
+      entityCode, action: 'post', entityType: 'min',
+      recordId: issued.id, recordLabel: issued.min_no,
+      beforeState: { ...m }, afterState: { ...issued },
+      sourceModule: 'inventory',
+    });
     toast.success(`MIN ${issued.min_no} issued · ${m.lines.length} line(s) transferred`);
     return { ok: true };
   }, [entityCode, upsertDraft]);
@@ -170,11 +179,20 @@ export function useMaterialIssueNotes(entityCode: string) {
       toast.error('Cannot cancel an issued MIN — create a reversing MIN instead');
       return;
     }
-    upsertDraft({
+    const prev = { ...found };
+    const cancelled: MaterialIssueNote = {
       ...found, status: 'cancelled',
       cancelled_at: now, cancellation_reason: reason, updated_at: now,
+    };
+    upsertDraft(cancelled);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail on cancel (CGST Rule 56(8))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'min',
+      recordId: id, recordLabel: found.min_no,
+      beforeState: prev, afterState: { ...cancelled },
+      reason, sourceModule: 'inventory',
     });
-  }, [mins, upsertDraft]);
+  }, [mins, upsertDraft, entityCode]);
 
   return { mins, refresh, upsertDraft, issueMin, cancelMin };
 }

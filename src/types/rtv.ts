@@ -51,6 +51,9 @@ export interface RTV {
   shipped_at: string | null;
   cancelled_at: string | null;
   cancellation_reason: string | null;
+  /** Sprint T-Phase-1.2.5h-b1 · CGST Rule 56(8) edit/delete chain */
+  superseded_by?: string | null;
+  version?: number;
   created_at: string;
   updated_at: string;
 }
