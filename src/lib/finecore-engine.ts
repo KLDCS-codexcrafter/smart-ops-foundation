@@ -147,6 +147,12 @@ function getFY(): string {
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
 }
 
+/**
+ * Sprint T-Phase-1.2.5h-a · Public FY accessor for tests + entity cleanup utilities.
+ * Indian fiscal-year window: Apr 1 - Mar 31.
+ */
+export function getCurrentFY(): string { return getFY(); }
+
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
 /**
  * Centralized doc-number generator. Format: `PREFIX/FY/NNNN` (e.g. `SO/24-25/0001`).
