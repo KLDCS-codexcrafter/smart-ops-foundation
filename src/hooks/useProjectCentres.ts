@@ -21,6 +21,9 @@ function ss<T>(key: string, val: T): void {
   localStorage.setItem(key, JSON.stringify(val));
 }
 
+// Sprint T-Phase-1.1.2-d: PCT generation INTENTIONALLY stays local — PCT-NNNN format
+// has no FY component, so it cannot be delegated to generateDocNo (which always emits
+// `PREFIX/FY/NNNN`). Storage key (`erp_project_centre_seq_${entityCode}`) is owned here.
 function nextProjectCentreCode(entityCode: string): string {
   const key = PROJECT_CENTRE_SEQ_KEY(entityCode);
   const raw = localStorage.getItem(key);
