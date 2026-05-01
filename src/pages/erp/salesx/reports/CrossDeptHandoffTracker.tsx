@@ -347,13 +347,14 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">DM · Dispatch</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">IM · SalesX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">SI · Accounts</TableHead>
+                  <TableHead className="text-[10px] uppercase tracking-wider h-9">Project · ProjX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9 text-right">Days</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={11} className="text-center text-xs text-muted-foreground py-8">
                       No Sales Orders found. Load demo data or create a Sales Order to see the pipeline.
                     </TableCell>
                   </TableRow>
