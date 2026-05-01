@@ -57,8 +57,9 @@ No `LOGIC` or `BREAKING` drift detected at the time of this audit.
 
 ## Streak Counter (Q2-c)
 - Old streak under wrong path (`finecore/transactions/`): **VOID**
-- New streak under corrected path (`accounting/vouchers/`): **begins Sprint
-  T-Phase-1.2.5h-a · count = 1 once this sprint closes**
+- New streak under corrected path (`accounting/vouchers/`):
+  - Sprint T-Phase-1.2.5h-a closed · count = **1**
+  - Sprint T-Phase-1.2.5h-b1 (+ fix) closed · count = **2**
 - Each subsequent sprint must verify `git diff src/pages/erp/accounting/vouchers/`
   produces zero lines (or document and justify any touch in its close summary).
 
