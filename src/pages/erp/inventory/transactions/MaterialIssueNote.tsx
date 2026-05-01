@@ -651,7 +651,7 @@ export function MaterialIssueNotePanel() {
                         <span className="ml-1.5 text-muted-foreground">· ratio {s.ratio}</span>
                       </div>
                       <Button type="button" size="sm" variant="outline"
-                        className="h-6 text-[11px]" onClick={() => useSubstitute(s.id)}>
+                        className="h-6 text-[11px]" onClick={() => applySubstitute(s.id)}>
                         Use This
                       </Button>
                     </div>
