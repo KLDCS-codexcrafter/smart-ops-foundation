@@ -83,6 +83,10 @@ interface FormLine {
   available_qty: number;
   batch_no: string;
   notes: string;
+  // Sprint T-Phase-1.2.3 audit fix: preferred-bin wiring on dispatch line.
+  bin_id: string;
+  bin_code: string;
+  bin_id_source: 'preferred' | 'manual' | '';
 }
 
 const blankLine = (): FormLine => ({
@@ -90,6 +94,7 @@ const blankLine = (): FormLine => ({
   item_id: '', item_code: '', item_name: '', uom: '',
   qty: 0, rate: 0, available_qty: 0,
   batch_no: '', notes: '',
+  bin_id: '', bin_code: '', bin_id_source: '',
 });
 
 export function MaterialIssueNotePanel() {
