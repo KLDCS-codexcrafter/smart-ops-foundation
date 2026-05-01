@@ -233,6 +233,7 @@ export const applications: AppDefinition[] = [
     category: 'Pay Hub',
     route: '/erp/pay-hub',
     icon: 'Users',
+    status: 'active',
   },
   {
     id: 'dispatch-hub',
