@@ -21,6 +21,7 @@ import {
   type ExpenseClaim, type ExpenseCategory,
   EXPENSE_CLAIMS_KEY, EXPENSE_CATEGORY_LABELS, EXPENSE_STATUS_COLORS,
 } from '@/types/employee-finance';
+import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { cn } from '@/lib/utils';
 import { capturePhoto } from '@/lib/camera-bridge';
 
@@ -48,6 +49,7 @@ const fmtINR = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 export default function MobileExpenseClaimPage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
+  const { centres } = useProjectCentres(session?.entity_code ?? '');
   const [allClaims, setAllClaims] = useState<ExpenseClaim[]>(() => loadClaims());
 
   const refreshClaims = useCallback(() => {
@@ -67,6 +69,7 @@ export default function MobileExpenseClaimPage() {
   const [description, setDescription] = useState('');
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0, 10));
   const [receiptDataUrl, setReceiptDataUrl] = useState<string>('');
+  const [projectCentreId, setProjectCentreId] = useState<string>('__none__');
   const [busy, setBusy] = useState(false);
 
   const handleCaptureReceipt = useCallback(async () => {
@@ -86,6 +89,7 @@ export default function MobileExpenseClaimPage() {
     setDescription('');
     setExpenseDate(new Date().toISOString().slice(0, 10));
     setReceiptDataUrl('');
+    setProjectCentreId('__none__');
     setShowForm(false);
   }, []);
 
@@ -114,6 +118,7 @@ export default function MobileExpenseClaimPage() {
       rejectionReason: '',
       reimbursedDate: '',
       reimbursementMode: 'bank_transfer',
+      projectCentreId: projectCentreId === '__none__' ? null : projectCentreId,
       created_at: now,
       updated_at: now,
     };
@@ -124,7 +129,7 @@ export default function MobileExpenseClaimPage() {
     setBusy(false);
     resetForm();
     toast.success(`Claim submitted: ${fmtINR(amountN)}`);
-  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm, refreshClaims]);
+  }, [session, amount, description, expenseDate, category, receiptDataUrl, projectCentreId, resetForm, refreshClaims]);
 
   if (!session) return null;
 
@@ -193,6 +198,19 @@ export default function MobileExpenseClaimPage() {
           <div className="space-y-1.5">
             <Label className="text-xs">Description</Label>
             <Textarea rows={2} value={description} onChange={e => setDescription(e.target.value)} placeholder="Purpose / context" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Tag to Project (optional)</Label>
+            <Select value={projectCentreId} onValueChange={setProjectCentreId}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">— None —</SelectItem>
+                {centres.filter(c => c.status === 'active').map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-1.5">

@@ -36,6 +36,7 @@ import MobileSalesmanVisitLogPage from './salesman/MobileSalesmanVisitLogPage';
 import MobileSecondarySalesPage from './salesman/MobileSecondarySalesPage';
 import MobileSalesmanTargetsPage from './salesman/MobileSalesmanTargetsPage';
 import MobileSalesmanCommissionPage from './salesman/MobileSalesmanCommissionPage';
+import MobileTimeEntriesPage from './salesman/MobileTimeEntriesPage';
 import MobileTelecallerHome from './telecaller/MobileTelecallerHome';
 import MobileCallQueuePage from './telecaller/MobileCallQueuePage';
 import MobileActiveCallPage from './telecaller/MobileActiveCallPage';
@@ -65,6 +66,7 @@ import MobileRevenueTrendPage from './manager/MobileRevenueTrendPage';
 import MobileCampaignPerformancePage from './manager/MobileCampaignPerformancePage';
 import MobileCrossDeptHandoffPage from './manager/MobileCrossDeptHandoffPage';
 import MobileManagerTeamStatsPage from './manager/MobileManagerTeamStatsPage';
+import MobileProjectHealthPage from './manager/MobileProjectHealthPage';
 // Distributor mobile pages
 import MobileDistributorCatalogPage from './distributor/MobileDistributorCatalogPage';
 import MobileDistributorCartPage from './distributor/MobileDistributorCartPage';
@@ -94,6 +96,7 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman/secondary-sales') return <MobileSecondarySalesPage />;
   if (pathname === '/mobile/salesman/targets') return <MobileSalesmanTargetsPage />;
   if (pathname === '/mobile/salesman/commission') return <MobileSalesmanCommissionPage />;
+  if (pathname === '/mobile/salesman/time-entries') return <MobileTimeEntriesPage />;
   // Telecaller routes
   if (pathname === '/mobile/telecaller' || pathname === '/mobile/telecaller/') return <MobileTelecallerHome />;
   if (pathname === '/mobile/telecaller/queue') return <MobileCallQueuePage />;
@@ -128,6 +131,7 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/manager/cross-dept-handoff') return <MobileCrossDeptHandoffPage />;
   if (pathname === '/mobile/manager/team-stats') return <MobileManagerTeamStatsPage />;
   if (pathname === '/mobile/manager/compliance-alerts') return <MobileComplianceAlertsPage />;
+  if (pathname === '/mobile/manager/project-health') return <MobileProjectHealthPage />;
   // Distributor routes
   if (pathname === '/mobile/distributor/catalog') return <MobileDistributorCatalogPage />;
   if (pathname === '/mobile/distributor/cart') return <MobileDistributorCartPage />;

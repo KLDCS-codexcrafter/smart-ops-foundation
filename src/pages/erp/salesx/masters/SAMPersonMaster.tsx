@@ -41,11 +41,11 @@ interface Props {
 
 const TYPE_LABEL: Record<SAMPersonType, string> = {
   salesman: 'Salesman', agent: 'Agent', broker: 'Broker',
-  receiver: 'Receiver', reference: 'Reference',
+  receiver: 'Receiver', reference: 'Reference', project_manager: 'Project Manager',
 };
 const GROUP_LABEL: Record<string, string> = {
   SLSM: 'Sales Man', AGNT: 'Agent', BRKR: 'Broker',
-  RCVR: 'Receiver', REFR: 'Reference',
+  RCVR: 'Receiver', REFR: 'Reference', MGMT: 'Management',
 };
 
 type View = 'list' | 'form';

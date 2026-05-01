@@ -87,6 +87,9 @@ export interface ExpenseClaim {
   rejectionReason: string;
   reimbursedDate: string;
   reimbursementMode: 'payroll' | 'bank_transfer';
+  // Sprint 1.1.2-c · ProjX cross-module (D-221) — optional project tagging
+  // camelCase matches existing ExpenseClaim convention (not snake_case)
+  projectCentreId?: string | null;   // FK to ProjectCentre · null = not project-tagged
   created_at: string;
   updated_at: string;
 }

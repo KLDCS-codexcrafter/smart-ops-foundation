@@ -37,6 +37,7 @@ import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useQuotations } from '@/hooks/useQuotations';
+import { useSAMPersons } from '@/hooks/useSAMPersons';
 import {
   PROJECT_TYPE_LABELS, PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS,
 } from '@/types/projx/project';
@@ -100,6 +101,18 @@ export function ProjectEntryPanel() {
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);
+  const { persons: samPersons } = useSAMPersons(entityCode);
+  const pmPickerOptions = useMemo(
+    () => samPersons
+      .filter(p => p.is_active)
+      .sort((a, b) => {
+        const aPM = a.person_type === 'project_manager' ? 0 : 1;
+        const bPM = b.person_type === 'project_manager' ? 0 : 1;
+        if (aPM !== bPM) return aPM - bPM;
+        return a.display_name.localeCompare(b.display_name);
+      }),
+    [samPersons],
+  );
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | ProjectStatus>('all');
@@ -420,8 +433,36 @@ export function ProjectEntryPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label>Project Manager</Label>
-                <Input value={form.project_manager_name ?? ''}
-                  onChange={e => setForm(f => ({ ...f, project_manager_name: e.target.value || null }))} />
+                <Select
+                  value={form.project_manager_id ?? '__none__'}
+                  onValueChange={v => {
+                    if (v === '__none__') {
+                      setForm(f => ({ ...f, project_manager_id: null, project_manager_name: null }));
+                      return;
+                    }
+                    const picked = pmPickerOptions.find(p => p.id === v);
+                    setForm(f => ({
+                      ...f,
+                      project_manager_id: v,
+                      project_manager_name: picked?.display_name ?? null,
+                    }));
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select PM" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— Unassigned —</SelectItem>
+                    {pmPickerOptions.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        <span className="flex items-center gap-2">
+                          {p.person_type === 'project_manager' && (
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-purple-500/30 bg-purple-500/10 text-purple-700">PM</Badge>
+                          )}
+                          {p.display_name} ({p.person_code})
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import {
   Navigation, MapPin, PhoneIncoming, Briefcase, Users,
   ClipboardList, ShoppingBag, Target, IndianRupee, LogOut, Activity,
-  CheckSquare, Receipt,
+  CheckSquare, Receipt, Clock,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
 import { startTracking, stopTracking } from '@/lib/location-tracker-engine';
+import { useProjectResources } from '@/hooks/useProjectResources';
 
 function readSession(): MobileSession | null {
   try {
@@ -32,6 +33,7 @@ const TILES = [
   { label: 'Secondary Sales', icon: ShoppingBag,   to: '/mobile/salesman/secondary-sales', color: 'text-amber-600' },
   { label: 'My Targets',      icon: Target,        to: '/mobile/salesman/targets',         color: 'text-red-600' },
   { label: 'Commission',      icon: IndianRupee,   to: '/mobile/salesman/commission',      color: 'text-emerald-600' },
+  { label: 'My Time Entries', icon: Clock,         to: '/mobile/salesman/time-entries',    color: 'text-purple-600', requiresProjectAllocation: true },
   { label: 'Attendance',      icon: CheckSquare,   to: '/mobile/shared/attendance',        color: 'text-sky-600' },
   { label: 'Expenses',        icon: Receipt,       to: '/mobile/shared/expenses',          color: 'text-violet-600' },
 ];
@@ -40,6 +42,15 @@ export default function MobileSalesmanHome() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
   const [trackingOn, setTrackingOn] = useState(false);
+  const { getResourcesByPerson } = useProjectResources(session?.entity_code ?? '');
+  const hasProjectAllocations = useMemo(
+    () => session?.user_id ? getResourcesByPerson(session.user_id).length > 0 : false,
+    [session, getResourcesByPerson],
+  );
+  const visibleTiles = useMemo(
+    () => TILES.filter(t => !t.requiresProjectAllocation || hasProjectAllocations),
+    [hasProjectAllocations],
+  );
 
   useEffect(() => {
     if (!session) return;
@@ -108,7 +119,7 @@ export default function MobileSalesmanHome() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {TILES.map(t => (
+        {visibleTiles.map(t => (
           <Card
             key={t.to}
             className="aspect-square p-3 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-orange-500/40 active:scale-95 transition-transform"
