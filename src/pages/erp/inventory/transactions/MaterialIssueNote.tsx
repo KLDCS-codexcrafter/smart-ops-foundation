@@ -232,7 +232,7 @@ export function MaterialIssueNotePanel() {
   );
 
   /** Replace the picked primary item with a substitute and increment usage telemetry. */
-  const useSubstitute = (subId: string) => {
+  const applySubstitute = (subId: string) => {
     const sub = draftSubstitutes.find(s => s.id === subId);
     if (!sub) return;
     const subItem = items.find(i => i.id === sub.substitute_item_id);
