@@ -109,6 +109,8 @@ export function MaterialIssueNotePanel() {
   const { persons } = useSAMPersons(safeEntity);
   const { centres } = useProjectCentres(safeEntity);
   const { mins, upsertDraft, issueMin, cancelMin } = useMaterialIssueNotes(safeEntity);
+  const { getSubstitutesForItem, recordUsage } = useItemSubstitutes(safeEntity);
+  const { getProfileForItem } = useHazmatProfiles(safeEntity);
 
   const [view, setView] = useState<'list' | 'form'>('list');
   const [statusFilter, setStatusFilter] = useState<'all' | MINStatus>('all');
