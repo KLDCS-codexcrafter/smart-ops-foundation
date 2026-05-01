@@ -4,14 +4,16 @@
  * [JWT] GET/POST/PUT/DELETE /api/salesx/sam/persons
  */
 
-export type SAMPersonType = 'salesman' | 'agent' | 'broker' | 'receiver' | 'reference';
+// D-224 (Sprint T-Phase-1.1.2-c): added 'project_manager' role
+export type SAMPersonType = 'salesman' | 'agent' | 'broker' | 'receiver' | 'reference' | 'project_manager';
 
 export const SAM_GROUP_CODE: Record<SAMPersonType, string> = {
-  salesman:  'SLSM',
-  agent:     'AGNT',
-  broker:    'BRKR',
-  receiver:  'RCVR',
-  reference: 'REFR',
+  salesman:        'SLSM',
+  agent:           'AGNT',
+  broker:          'BRKR',
+  receiver:        'RCVR',
+  reference:       'REFR',
+  project_manager: 'MGMT',
 };
 
 export type CommissionMethod = 'item_amount' | 'item_qty' | 'both' | 'slab_based' | 'net_margin';
