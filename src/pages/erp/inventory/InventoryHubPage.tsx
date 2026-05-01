@@ -14,6 +14,8 @@ import { ConsumptionEntryPanel } from './transactions/ConsumptionEntry';
 import { StockLedgerReportPanel } from './reports/StockLedgerReport';
 import { GRNRegisterPanel } from './reports/GRNRegister';
 import { ConsumptionSummaryReportPanel } from './reports/ConsumptionSummaryReport';
+import { StorageSlipPrintPanel } from './reports/StorageSlipPrint';
+import { BinSlipPrintPanel } from './reports/BinSlipPrint';
 import { ReorderAlertsPanel } from './ReorderAlerts';
 import { ItemCraftPanel } from './ItemCraft';
 import { StorageMatrixPanel } from './StorageMatrix';
