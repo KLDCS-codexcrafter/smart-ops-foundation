@@ -57,6 +57,7 @@ import { LocaleToggle } from '@/components/layout/LocaleToggle';
 import { useGlobalDateRange } from '@/hooks/GlobalDateRangeContext';
 import { formatIndianDate } from '@/hooks/useGlobalDateRange.types';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n-engine';
 
 export interface BreadcrumbEntry {
   label: string;
@@ -92,6 +93,7 @@ export function ERPHeader({
   lastEntryLabel,
 }: ERPHeaderProps) {
   const navigate = useNavigate();
+  const t = useT();
   const { openDishani } = useDishani();
   const dr = useGlobalDateRange();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -215,7 +217,7 @@ export function ERPHeader({
 
           {/* Search */}
           <div className='flex-1 max-w-xs hidden md:block' data-keyboard-form>
-            <Input placeholder='Search... (Ctrl+K)' className='h-8 text-xs bg-muted/30 border-border/50' onKeyDown={onEnterNext} />
+            <Input placeholder={t('common.search', 'Search... (Ctrl+K)')} className='h-8 text-xs bg-muted/30 border-border/50' onKeyDown={onEnterNext} />
           </div>
         </div>
 

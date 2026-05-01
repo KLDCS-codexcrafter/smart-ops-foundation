@@ -132,6 +132,7 @@ function computeEMI(principal: number, tenureMonths: number, annualRatePct: numb
 interface EmployeeFinancePanelProps { defaultTab?: FinanceTab; }
 
 export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePanelProps) {
+  const t = useT();
   // [T-T8.4-Requisition-Universal] navigate used by additive Request Payment buttons
   const navigate = useNavigate();
 
@@ -528,7 +529,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
           <CreditCard className="h-5 w-5 text-violet-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Employee Finance</h2>
+          <h2 className="text-xl font-bold">{t('payhub.employee_finance.title', 'Employee Finance')}</h2>
           <p className="text-xs text-muted-foreground">Loans · Advances · Expenses · Flexi Benefits</p>
         </div>
       </div>

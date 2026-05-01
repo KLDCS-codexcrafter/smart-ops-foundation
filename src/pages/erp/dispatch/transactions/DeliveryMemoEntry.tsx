@@ -63,6 +63,7 @@ function ls<T>(key: string): T[] {
 }
 
 export function DeliveryMemoEntryPanel({ entityCode }: Props) {
+  const t = useT();
   const [memoNo] = useState(() => nextMemoNo(entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -206,7 +207,7 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Delivery Memo</h1>
+          <h1 className="text-2xl font-bold">{t('dispatch.dm.title', 'Delivery Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Logistics to ship · assign LR · capture POD against a raised Supply Request Memo.
           </p>

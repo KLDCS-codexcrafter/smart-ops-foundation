@@ -29,6 +29,7 @@ function daysSince(iso: string): number {
 }
 
 export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
+  const t = useT();
   const { entityCode } = useCardEntitlement();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [pods, setPods] = useState<POD[]>([]);
@@ -83,7 +84,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Dispatch Hub</h1>
+        <h1 className="text-2xl font-bold">{t('dispatch.welcome.title', 'Dispatch Hub')}</h1>
         <p className="text-sm text-muted-foreground">LR · Packing Slip · POD · Exceptions</p>
       </div>
 

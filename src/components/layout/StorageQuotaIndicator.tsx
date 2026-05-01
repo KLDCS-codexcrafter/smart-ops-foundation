@@ -34,6 +34,7 @@ const TIER_LABELS: Record<StorageUsage['tier'], string> = {
 };
 
 export function StorageQuotaIndicator() {
+  const t = useT();
   const usage = useStorageQuota();
   const [open, setOpen] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
@@ -74,7 +75,7 @@ export function StorageQuotaIndicator() {
 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Storage Usage · {usage.pct.toFixed(1)}% of {formatBytes(usage.quota_bytes)}</DialogTitle>
+          <DialogTitle>{t('common.storage', 'Storage Usage')} · {usage.pct.toFixed(1)}% of {formatBytes(usage.quota_bytes)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3" key={refreshTick}>
           <div className={`p-3 rounded-md border text-xs ${tierClass}`}>
