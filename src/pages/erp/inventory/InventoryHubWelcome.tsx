@@ -256,7 +256,7 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5" />{t('inv.welcome.storage_quota', 'Storage Quota')}</CardDescription>
-              <CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber-600' : 'text-rose-600'}`}>{storageUsage.percentUsed}%</CardTitle>
+              <CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber-600' : 'text-rose-600'}`}>{Math.round(storageUsage.pct)}%</CardTitle>
             </CardHeader>
           </Card>
           <Card>
