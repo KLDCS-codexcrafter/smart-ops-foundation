@@ -9,10 +9,12 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, Sparkles, Target, TrendingUp, Megaphone,
   GitBranch, BarChart3, AlertTriangle, LogOut,
-  CheckSquare, Receipt,
+  CheckSquare, Receipt, FolderKanban,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
+import { useTimeEntries } from '@/hooks/useTimeEntries';
 
 function readSession(): MobileSession | null {
   try {
@@ -23,6 +25,7 @@ function readSession(): MobileSession | null {
 
 const TILES = [
   { label: 'Pipeline Health',      icon: Activity,      to: '/mobile/manager/pipeline-health',      color: 'text-blue-600' },
+  { label: 'Project Health',       icon: FolderKanban,  to: '/mobile/manager/project-health',       color: 'text-purple-600', kind: 'project-health' as const },
   { label: 'Smart Insights',       icon: Sparkles,      to: '/mobile/manager/smart-insights',       color: 'text-orange-600' },
   { label: 'Team Targets',         icon: Target,        to: '/mobile/manager/targets',              color: 'text-red-600' },
   { label: 'Revenue Trend',        icon: TrendingUp,    to: '/mobile/manager/revenue-trend',        color: 'text-green-600' },
@@ -37,6 +40,11 @@ const TILES = [
 export default function MobileManagerHome() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
+  const { entries } = useTimeEntries(session?.entity_code ?? '');
+  const pendingCount = useMemo(
+    () => entries.filter(e => e.status === 'submitted').length,
+    [entries],
+  );
   if (!session) return null;
 
   const handleTile = (to: string, label: string) => {
@@ -65,9 +73,14 @@ export default function MobileManagerHome() {
         {TILES.map(t => (
           <Card
             key={t.to}
-            className="aspect-square p-3 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-orange-500/40 active:scale-95 transition-transform"
+            className="relative aspect-square p-3 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-orange-500/40 active:scale-95 transition-transform"
             onClick={() => handleTile(t.to, t.label)}
           >
+            {t.kind === 'project-health' && pendingCount > 0 && (
+              <Badge className="absolute top-1.5 right-1.5 bg-red-600 text-white text-[9px] px-1.5 py-0 h-4 min-w-[16px]">
+                {pendingCount}
+              </Badge>
+            )}
             <t.icon className={`h-7 w-7 ${t.color}`} />
             <p className="text-[11px] text-center leading-tight font-medium">{t.label}</p>
           </Card>
