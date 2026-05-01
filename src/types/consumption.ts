@@ -64,6 +64,9 @@ export interface MaterialIssueNote {
   issued_at: string | null;        // set when status flips to 'issued'
   cancelled_at: string | null;
   cancellation_reason: string | null;
+  /** Sprint T-Phase-1.2.5h-b1 · CGST Rule 56(8) edit/delete chain */
+  superseded_by?: string | null;
+  version?: number;
 }
 
 export const minNotesKey = (entityCode: string): string =>
