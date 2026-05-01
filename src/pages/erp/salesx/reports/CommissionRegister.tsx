@@ -28,8 +28,8 @@ import type { CommissionEntry, CommissionPayment } from '@/types/commission-regi
 import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
+import { dAdd, dSub, dMul, dPct, dSum, round2 } from '@/lib/decimal-helpers';
 import { computeCommissionGL } from '@/lib/commission-engine';
-import { dAdd, dSub, dMul, dPct, round2 } from '@/lib/decimal-helpers';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { Voucher } from '@/types/voucher';
@@ -172,14 +172,15 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       // Check YTD aggregate for this person+section+AY (194H threshold = ₹15,000)
       const currentAY = getAssessmentYear(payDate);
       const threshold = active.tds_section === '194H' ? 15000 : 30000;
-      const ytdGross = allTDS
-        .filter(t =>
+      const ytdGross = round2(dSum(
+        allTDS.filter(t =>
           t.party_id === active.person_id &&
           t.tds_section === active.tds_section &&
           t.assessment_year === currentAY &&
           t.status !== 'cancelled'
-        )
-        .reduce((s, t) => s + t.gross_amount, 0);
+        ),
+        t => t.gross_amount,
+      ));
 
       if (ytdGross + previewPayment.commissionOnReceipt >= threshold) {
         const tdsEntry: TDSDeductionEntry = {
@@ -322,7 +323,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
       toast.error('Bank payment already recorded');
       return;
     }
-    const netPayable = +(entry.net_paid_to_date + (entry.collection_bonus_amount ?? 0)).toFixed(2);
+    const netPayable = round2(dAdd(entry.net_paid_to_date, entry.collection_bonus_amount ?? 0));
     if (netPayable <= 0) {
       toast.error('No commission payable for bank payout');
       return;
@@ -751,7 +752,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                               </div>
                             </div>
                             {Number(agentInvGross) > 0 && (() => {
-                              const variance = +(Number(agentInvGross) - Number(agentInvGST) - e.commission_earned_to_date).toFixed(2);
+                              const variance = round2(dSub(dSub(Number(agentInvGross), Number(agentInvGST)), e.commission_earned_to_date));
                               const variancePct = e.commission_earned_to_date > 0
                                 ? Math.abs(variance / e.commission_earned_to_date) * 100 : 0;
                               return (

@@ -22,6 +22,7 @@ import { useQuotations } from '@/hooks/useQuotations';
 import { useOrders } from '@/hooks/useOrders';
 import { quotationToOrderInput } from '@/lib/quote-to-so-converter';
 import type { Quotation } from '@/types/quotation';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -71,7 +72,7 @@ export function PITrackerPanelComponent({ entityCode }: Props) {
     active:    enriched.filter(q => q.derivedStatus === 'active').length,
     converted: enriched.filter(q => q.derivedStatus === 'converted').length,
     expired:   enriched.filter(q => q.derivedStatus === 'expired').length,
-    totalValue: enriched.reduce((s, q) => s + q.total_amount, 0),
+    totalValue: round2(dSum(enriched, q => q.total_amount)),
   }), [enriched]);
 
   const handleConvert = useCallback((q: Quotation) => {

@@ -28,6 +28,8 @@ import { quotationsKey } from '@/types/quotation';
 import type { Quotation } from '@/types/quotation';
 import { commissionRegisterKey } from '@/types/commission-register';
 import type { CommissionEntry } from '@/types/commission-register';
+import { dSum, round2 } from '@/lib/decimal-helpers';
+import Decimal from 'decimal.js';
 import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import { vouchersKey } from '@/lib/finecore-engine';
@@ -117,14 +119,16 @@ export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
 
   const targetRows = useMemo(() => {
     return targets.filter(t => t.is_active).map(t => {
-      const actual = salesInvoices
-        .filter(v => v.date.startsWith(t.period_label.slice(0, 7) ? '' : ''))
-        .reduce((s, v) => s + v.net_amount, 0);
+      const actual = round2(dSum(
+        salesInvoices.filter(v => v.date.startsWith(t.period_label.slice(0, 7) ? '' : '')),
+        v => v.net_amount,
+      ));
       // Simple period-agnostic actual estimate by FY match — full math lives in TargetVsAchievement
       const periodActual = t.period === 'monthly'
-        ? salesInvoices
-            .filter(v => v.date >= '2025-04-01')
-            .reduce((s, v) => s + v.net_amount, 0) / 12
+        ? round2(new Decimal(dSum(
+            salesInvoices.filter(v => v.date >= '2025-04-01'),
+            v => v.net_amount,
+          )).dividedBy(12).toNumber())
         : actual;
       const pct = t.target_value > 0
         ? Math.round((periodActual / t.target_value) * 1000) / 10

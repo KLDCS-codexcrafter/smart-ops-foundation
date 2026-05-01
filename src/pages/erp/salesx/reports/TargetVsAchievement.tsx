@@ -19,7 +19,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
 import Decimal from 'decimal.js';
-import { round2 } from '@/lib/decimal-helpers';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -69,13 +69,15 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
     return targets.map(t => {
       let actual = 0;
       if (t.dimension === 'sales_value') {
-        actual = vouchers
-          .filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted')
-          .reduce((s, v) => s + (v.net_amount ?? 0), 0);
+        actual = round2(dSum(
+          vouchers.filter(v => v.base_voucher_type === 'Sales' && v.status === 'posted'),
+          v => v.net_amount ?? 0,
+        ));
       } else if (t.dimension === 'collection') {
-        actual = vouchers
-          .filter(v => v.base_voucher_type === 'Receipt' && v.status === 'posted')
-          .reduce((s, v) => s + (v.net_amount ?? 0), 0);
+        actual = round2(dSum(
+          vouchers.filter(v => v.base_voucher_type === 'Receipt' && v.status === 'posted'),
+          v => v.net_amount ?? 0,
+        ));
       } else if (t.dimension === 'new_customers') {
         const customers = new Set(
           vouchers

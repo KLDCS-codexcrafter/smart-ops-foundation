@@ -26,6 +26,7 @@ import { useCampaigns } from '@/hooks/useCampaigns';
 import { useProspects } from '@/hooks/useProspects';
 import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import type {
   Enquiry, EnquiryItem, EnquiryFollowUp, EnquiryType,
   EnquiryStatus, EnquiryPriority, FollowUpType,
@@ -273,7 +274,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
       const merged = { ...it, ...patch };
       const qty = merged.quantity ?? 0;
       const rate = merged.rate ?? 0;
-      merged.amount = qty && rate ? qty * rate : null;
+      merged.amount = qty && rate ? round2(dMul(qty, rate)) : null;
       return merged;
     });
     update({ items });

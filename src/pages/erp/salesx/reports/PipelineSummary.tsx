@@ -13,6 +13,7 @@ import { useEnquiries } from '@/hooks/useEnquiries';
 import { useQuotations } from '@/hooks/useQuotations';
 import type { EnquiryStatus } from '@/types/enquiry';
 import { cn } from '@/lib/utils';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -45,15 +46,17 @@ export function PipelineSummaryPanel({ entityCode }: Props) {
   // Open pipeline value = sum of confirmed quotation totals where quotation_stage in
   // negotiation/draft (treat as "in pipeline")
   const pipelineValue = useMemo(() => {
-    return quotations
-      .filter(q => q.quotation_stage === 'negotiation' || q.quotation_stage === 'draft')
-      .reduce((s, q) => s + (q.total_amount ?? 0), 0);
+    return round2(dSum(
+      quotations.filter(q => q.quotation_stage === 'negotiation' || q.quotation_stage === 'draft'),
+      q => q.total_amount ?? 0,
+    ));
   }, [quotations]);
 
   const wonValue = useMemo(() => {
-    return quotations
-      .filter(q => q.quotation_stage === 'confirmed')
-      .reduce((s, q) => s + (q.total_amount ?? 0), 0);
+    return round2(dSum(
+      quotations.filter(q => q.quotation_stage === 'confirmed'),
+      q => q.total_amount ?? 0,
+    ));
   }, [quotations]);
 
   const lostCount = stageCounts.lost ?? 0;
