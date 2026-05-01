@@ -22,6 +22,7 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 |---|---|---|
 | 1.2.5h-a | closed | 1 |
 | 1.2.5h-b1 (+ fix) | closed | 2 |
+| 1.2.5h-b2 | closed | 3 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).
