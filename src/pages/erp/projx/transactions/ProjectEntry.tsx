@@ -11,6 +11,7 @@
  *  - Convert from Quotation populates source linkage + items context
  *  - Conversion logged via logConversionEvent('quotation_to_project') — see updated engine
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

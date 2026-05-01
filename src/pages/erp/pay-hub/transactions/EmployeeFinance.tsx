@@ -2,6 +2,7 @@
  * EmployeeFinance.tsx — Sprint 10
  * 4-tab screen: Loans & Advances · Salary Advance · Expense Claims · Flexi Benefits
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, addMonths, parseISO } from 'date-fns';

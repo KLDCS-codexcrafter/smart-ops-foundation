@@ -2,6 +2,7 @@
  * SubstituteMaster.tsx — Approved substitute materials per item.
  * Sprint T-Phase-1.2.5
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';

@@ -4,6 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 /**
  * EnquiryCapture.tsx — Sales Enquiry register + 3-tab form
  * Charis TDL: Enquiry Entry Screen UDF 4900-4942.

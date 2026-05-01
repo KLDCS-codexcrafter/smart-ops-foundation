@@ -2,6 +2,7 @@
  * RTVEntry.tsx — Return to Vendor (Rejections Out)
  * Sprint T-Phase-1.2.6 · activates vt-rejections-out
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState } from 'react';
 // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
 import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';

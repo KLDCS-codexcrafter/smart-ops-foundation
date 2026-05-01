@@ -4,6 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 /**
  * SecondarySales.tsx — Distributor sell-through capture
  * Sprint 7. Distributor reports sales they made FROM their stock to retailers/sub-dealers.

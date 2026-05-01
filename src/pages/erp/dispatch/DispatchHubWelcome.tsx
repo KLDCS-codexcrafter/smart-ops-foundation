@@ -2,6 +2,7 @@
  * DispatchHubWelcome.tsx — Dashboard with 4 KPI tiles + Awaiting-LR queue.
  * Sprint 15a. Blue-600 accent.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
