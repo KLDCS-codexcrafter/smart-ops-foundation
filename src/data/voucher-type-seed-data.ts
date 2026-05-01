@@ -334,4 +334,26 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
       validationRule(true),
     ],
   }),
+  // ── CONSUMPTION FAMILY (Feature-based · Sprint T-Phase-1.2.2 — The MOAT sprint) ───────
+  // CE = Consumption Entry. Tags material consumption to a Job/Project/Overhead/Site so that
+  // departmental accountability becomes possible (the gap no Indian ERP fills today).
+  // Base type 'Stock Journal' so Phase 2 GL posting (Stock A/c Cr · WIP/Cost Centre Dr) is trivial.
+  // accounting_impact: true — consumption hits P&L via cost-centre / overhead ledger.
+  // Activation: feature_based — flipped active by entity-setup-service when InventoryHub is provisioned.
+  seed('vt-consumption-entry', {
+    name: 'Consumption Entry', abbreviation: 'CE',
+    base_voucher_type: 'Stock Journal', family: 'Inventory',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: true,        // consumption hits P&L (Phase 2 wiring)
+    inventory_impact: true,         // stock decrements
+    allow_zero_value: false,
+    numbering_prefix: 'CE-', numbering_width: 4, current_sequence: 1,
+    behaviour_rules: [
+      validationRule(false),
+      { id: 'rule-ce-mode', rule_type: 'validation',
+        label: 'Require consumption mode (Job · Overhead · Site)',
+        is_active: true, sequence: 2,
+        config: { require_party: false, require_narration: false, block_future_date: false, require_cost_centre: true } },
+    ],
+  }),
 ];
