@@ -16,6 +16,7 @@ import { GRNRegisterPanel } from './reports/GRNRegister';
 import { ConsumptionSummaryReportPanel } from './reports/ConsumptionSummaryReport';
 import { StorageSlipPrintPanel } from './reports/StorageSlipPrint';
 import { BinSlipPrintPanel } from './reports/BinSlipPrint';
+import { AgedGITReportPanel } from './reports/AgedGITReport';
 import { ReorderAlertsPanel } from './ReorderAlerts';
 import { ItemCraftPanel } from './ItemCraft';
 import { StorageMatrixPanel } from './StorageMatrix';
@@ -63,6 +64,7 @@ export default function InventoryHubPage() {
       case 'r-consumption-summary':  return <ConsumptionSummaryReportPanel />;
       case 'r-storage-slip':         return <StorageSlipPrintPanel />;
       case 'r-bin-slip':             return <BinSlipPrintPanel />;
+      case 'r-aged-git':             return <AgedGITReportPanel />;
       case 'r-reorder-alerts':       return <ReorderAlertsPanel />;
       case 'm-item-master':          return <ItemCraftPanel />;
       case 'm-godown-master':        return <StorageMatrixPanel />;

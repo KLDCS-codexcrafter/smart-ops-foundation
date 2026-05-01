@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Package, ChevronRight,
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
-  Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat,
+  Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat, Truck,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -23,7 +23,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
-  'r-storage-slip', 'r-bin-slip',
+  'r-storage-slip', 'r-bin-slip', 'r-aged-git',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
@@ -49,6 +49,7 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-consumption-summary', label: 'Consumption Summary', icon: BarChart3 },
   { id: 'r-storage-slip', label: 'Storage Slip', icon: Printer },
   { id: 'r-bin-slip', label: 'Bin Slip', icon: Printer },
+  { id: 'r-aged-git', label: 'Aged Goods in Transit', icon: Truck },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
