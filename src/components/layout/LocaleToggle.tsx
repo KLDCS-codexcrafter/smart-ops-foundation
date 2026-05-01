@@ -12,8 +12,8 @@ import { getLocale, setLocale, type Locale } from '@/lib/i18n-engine';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 
 export function LocaleToggle() {
-  const { selectedCompany } = useERPCompany();
-  const entityCode = selectedCompany?.code ?? 'system';
+  const [companyId] = useERPCompany();
+  const entityCode = companyId || 'system';
   const [locale, setLocaleState] = useState<Locale>(() => getLocale(entityCode));
 
   const toggle = () => {
