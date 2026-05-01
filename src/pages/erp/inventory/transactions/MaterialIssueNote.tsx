@@ -207,6 +207,47 @@ export function MaterialIssueNotePanel() {
       rate: bal?.weighted_avg_rate ?? 0,
       available_qty: bal?.qty ?? 0,
     }));
+
+    // Sprint T-Phase-1.2.5 · DG compatibility check vs other items already on the MIN
+    const pickedProfile = getProfileForItem(it);
+    if (pickedProfile?.dg_class) {
+      for (const ln of lines) {
+        const otherItem = items.find(x => x.id === ln.item_id);
+        const otherProfile = getProfileForItem(otherItem);
+        if (otherProfile?.dg_class && !areDgClassesCompatible(pickedProfile.dg_class, otherProfile.dg_class)) {
+          toast.warning(
+            `DG incompatibility · ${DG_CLASS_LABELS[pickedProfile.dg_class]} cannot co-transport with ${DG_CLASS_LABELS[otherProfile.dg_class]} (${ln.item_name})`,
+            { duration: 6000 },
+          );
+          break;
+        }
+      }
+    }
+  };
+
+  // Sprint T-Phase-1.2.5 · Substitute auto-suggest for the item in the line-sheet
+  const draftSubstitutes = useMemo(
+    () => draftLine.item_id ? getSubstitutesForItem(draftLine.item_id) : [],
+    [draftLine.item_id, getSubstitutesForItem],
+  );
+
+  /** Replace the picked primary item with a substitute and increment usage telemetry. */
+  const useSubstitute = (subId: string) => {
+    const sub = draftSubstitutes.find(s => s.id === subId);
+    if (!sub) return;
+    const subItem = items.find(i => i.id === sub.substitute_item_id);
+    if (!subItem) { toast.error('Substitute item not found in master'); return; }
+    const bal = balances.find(b => b.item_id === subItem.id && b.godown_id === header.from_godown_id);
+    setDraftLine(d => ({
+      ...d,
+      item_id: subItem.id, item_code: subItem.code ?? '', item_name: subItem.name,
+      uom: subItem.primary_uom_symbol ?? subItem.purchase_uom_symbol ?? 'NOS',
+      rate: bal?.weighted_avg_rate ?? 0,
+      available_qty: bal?.qty ?? 0,
+      qty: round2(dMul(d.qty || 0, sub.ratio)),
+    }));
+    recordUsage(sub.id);
+    toast.success(`Switched to substitute ${subItem.name} · ratio ${sub.ratio}`);
   };
 
   const addLine = () => {
