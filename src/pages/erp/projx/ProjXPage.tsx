@@ -27,6 +27,9 @@ import type { ProjXModule } from './ProjXSidebar.types';
 import { useT } from '@/lib/i18n-engine';
 
 export default function ProjXPage() {
+  const t = useT();
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  void t('projx.title', 'ProjX');
   const [activeModule, setActiveModule] = useState<ProjXModule>('welcome');
   const { entityCode, userId } = useCardEntitlement();
 
