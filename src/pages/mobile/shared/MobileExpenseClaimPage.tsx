@@ -118,6 +118,7 @@ export default function MobileExpenseClaimPage() {
       rejectionReason: '',
       reimbursedDate: '',
       reimbursementMode: 'bank_transfer',
+      projectCentreId: projectCentreId === '__none__' ? null : projectCentreId,
       created_at: now,
       updated_at: now,
     };
@@ -128,7 +129,7 @@ export default function MobileExpenseClaimPage() {
     setBusy(false);
     resetForm();
     toast.success(`Claim submitted: ${fmtINR(amountN)}`);
-  }, [session, amount, description, expenseDate, category, receiptDataUrl, resetForm, refreshClaims]);
+  }, [session, amount, description, expenseDate, category, receiptDataUrl, projectCentreId, resetForm, refreshClaims]);
 
   if (!session) return null;
 
