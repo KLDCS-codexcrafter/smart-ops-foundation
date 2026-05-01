@@ -97,6 +97,7 @@ const numOrNull = (s: string): number | null => {
 };
 
 export function HeatMasterPanel() {
+  const t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -262,14 +263,14 @@ export function HeatMasterPanel() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Flame className="h-6 w-6 text-orange-500" />
-              Heat Master
+              {t('inv.heat_master.title', 'Heat Master')}
             </h1>
             <p className="text-sm text-muted-foreground">
               Mill heat / cast traceability · chemistry · MTC documents
             </p>
           </div>
           <Button size="sm" className="gap-1.5" onClick={startNew}>
-            <Plus className="h-4 w-4" /> New Heat
+            <Plus className="h-4 w-4" /> {t('common.add', 'New Heat')}
           </Button>
         </div>
 

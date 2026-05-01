@@ -51,6 +51,7 @@ const BLANK = (entity: string): ItemSubstitute => ({
 });
 
 export function SubstituteMasterPanel() {
+  const t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { subs, createSubstitute, updateSubstitute, deleteSubstitute } = useItemSubstitutes(safeEntity);
@@ -109,10 +110,10 @@ export function SubstituteMasterPanel() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Replace className="h-5 w-5 text-cyan-500" />
-          <h2 className="text-xl font-bold">Substitute Materials</h2>
+          <h2 className="text-xl font-bold">{t('inv.substitute_master.title', 'Substitute Materials')}</h2>
         </div>
         <Button size="sm" onClick={openNew} className="gap-1">
-          <Plus className="h-4 w-4" /> Add Substitute
+          <Plus className="h-4 w-4" /> {t('common.add', 'Add Substitute')}
         </Button>
       </div>
 
