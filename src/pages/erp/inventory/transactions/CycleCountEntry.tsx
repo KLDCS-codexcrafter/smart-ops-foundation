@@ -279,11 +279,11 @@ function CreateCountForm({ godowns, onCreate }: {
 }
 
 function CountDetail({
-  count, userId, userName, items, balances, godowns,
+  count, userId, items, balances, godowns,
   onUpdate, onSubmit, onApprove, onReject, onPost, onCancel,
 }: {
   count: CycleCount;
-  userId: string; userName: string;
+  userId: string;
   items: InventoryItem[]; balances: BalanceRow[]; godowns: GodownLite[];
   onUpdate: (patch: Partial<CycleCount>) => CycleCount | null;
   onSubmit: () => CycleCount | null;
