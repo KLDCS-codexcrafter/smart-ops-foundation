@@ -521,6 +521,18 @@ export function GRNEntryPanel() {
       ? grns.map(g => g.id === existing.id ? built : g)
       : [built, ...grns];
     persist(next);
+    // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+    logAudit({
+      entityCode: safeEntity,
+      action: existing ? 'update' : 'create',
+      entityType: 'grn',
+      recordId: built.id,
+      recordLabel: built.grn_no || built.id,
+      beforeState: existing ? { ...existing } : null,
+      afterState: { ...built },
+      reason: null,
+      sourceModule: 'inventory',
+    });
     if (target === 'posted') {
       updateStockBalance(built);
       autoCreateTraceabilityMasters(built);
@@ -1101,6 +1113,18 @@ export function GRNEntryPanel() {
                 };
                 const next = grns.map(g => g.id === updated.id ? updated : g);
                 persist(next);
+                // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+                logAudit({
+                  entityCode: safeEntity,
+                  action: 'post',
+                  entityType: 'grn',
+                  recordId: updated.id,
+                  recordLabel: updated.grn_no || updated.id,
+                  beforeState: { ...showStage2 },
+                  afterState: { ...updated },
+                  reason: 'Stage-2 physical receipt',
+                  sourceModule: 'inventory',
+                });
                 toast.success(`Stock moved to ${dest.name} · ${showStage2.grn_no} posted`);
                 setShowStage2(null);
                 setView('list');
