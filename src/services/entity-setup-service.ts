@@ -927,6 +927,127 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore — 1.2.5 demo seed is best-effort */ }
 
+  // Sprint T-Phase-1.2.6 · Cycle Count + RTV demo seed (idempotent)
+  try {
+    const nowIso26 = new Date().toISOString();
+
+    // 11a) Bin capacities for SINHA + SMRTP
+    const BIN_KEY = `erp_bin_labels_${opts.shortCode}`;
+    interface BinLite { id: string; capacity?: number | null; capacity_unit?: string | null; updated_at?: string }
+    const bins: BinLite[] = JSON.parse(localStorage.getItem(BIN_KEY) || '[]');
+    const CAP_BY_ENTITY: Record<string, { caps: number[]; unit: 'kg' | 'units' }> = {
+      SINHA: { caps: [1000, 1000, 500, 2000, 2000], unit: 'kg' },
+      SMRTP: { caps: [50, 100, 100], unit: 'units' },
+    };
+    const cfg = CAP_BY_ENTITY[opts.shortCode];
+    if (cfg && bins.length > 0) {
+      let mut = false;
+      for (let i = 0; i < bins.length && i < cfg.caps.length; i++) {
+        if (bins[i].capacity == null) {
+          bins[i] = { ...bins[i], capacity: cfg.caps[i], capacity_unit: cfg.unit, updated_at: nowIso26 };
+          mut = true;
+        }
+      }
+      if (mut) localStorage.setItem(BIN_KEY, JSON.stringify(bins));
+    }
+
+    // 11b) 1 posted cycle count per entity (idempotent)
+    const CC_KEY = `erp_cycle_counts_${opts.shortCode}`;
+    const ccExisting: Array<{ id: string }> = JSON.parse(localStorage.getItem(CC_KEY) || '[]');
+    const balRows: Array<{
+      item_id: string; item_code: string; item_name: string;
+      godown_id: string; godown_name: string;
+      qty: number; weighted_avg_rate: number;
+    }> = JSON.parse(localStorage.getItem(`erp_stock_balance_${opts.shortCode}`) || '[]');
+    if (ccExisting.length === 0 && balRows.length >= 5) {
+      const sample = balRows.slice(0, 5);
+      const lines = sample.map((b, i) => {
+        const variance = i === 2 ? -2 : 0;
+        const physical = b.qty + variance;
+        const varValue = variance * b.weighted_avg_rate;
+        return {
+          id: `ccline-seed-${i}`,
+          item_id: b.item_id, item_code: b.item_code, item_name: b.item_name,
+          uom: 'NOS',
+          godown_id: b.godown_id, godown_name: b.godown_name,
+          bin_id: null, bin_code: null,
+          system_qty: b.qty, physical_qty: physical, variance_qty: variance,
+          weighted_avg_rate: b.weighted_avg_rate,
+          variance_value: Math.round(varValue * 100) / 100,
+          variance_reason: variance !== 0 ? 'count_error' : null,
+          variance_notes: variance !== 0 ? 'Demo seed · count error' : null,
+          recount_qty: null, recount_at: null, recount_by_id: null, recount_by_name: null,
+        };
+      });
+      const totalVarValue = lines.reduce((s, l) => s + l.variance_value, 0);
+      const cc = {
+        id: `cc-seed-${opts.shortCode}`,
+        entity_id: opts.shortCode,
+        count_no: `PSV/26-27/0001`,
+        count_kind: 'random' as const,
+        count_date: nowIso26.slice(0, 10),
+        godown_id: null, godown_name: null,
+        bin_filter: null, abc_class_filter: null,
+        counter_id: 'demo-counter', counter_name: 'Demo Counter',
+        reviewer_id: 'demo-reviewer', reviewer_name: 'Demo Reviewer',
+        approver_id: 'demo-approver', approver_name: 'Demo Approver',
+        status: 'posted' as const,
+        submitted_at: nowIso26, approved_at: nowIso26,
+        rejected_at: null, rejection_reason: null,
+        posted_at: nowIso26, cancelled_at: null, cancellation_reason: null,
+        lines,
+        total_lines: lines.length,
+        variance_lines: lines.filter(l => l.variance_qty !== 0).length,
+        total_variance_qty_abs: Math.abs(lines.reduce((s, l) => s + l.variance_qty, 0)),
+        total_variance_value: Math.round(totalVarValue * 100) / 100,
+        net_shrinkage_pct: 0,
+        notes: 'Demo seed cycle count',
+        created_at: nowIso26, updated_at: nowIso26,
+      };
+      localStorage.setItem(CC_KEY, JSON.stringify([cc]));
+    }
+
+    // 11c) SINHA RTV demo (idempotent)
+    if (opts.shortCode === 'SINHA') {
+      const RTV_KEY = `erp_rtvs_${opts.shortCode}`;
+      const rtvExisting: Array<{ id: string }> = JSON.parse(localStorage.getItem(RTV_KEY) || '[]');
+      if (rtvExisting.length === 0 && balRows.length > 0) {
+        const b = balRows[0];
+        const qty = 50;
+        const rate = b.weighted_avg_rate || 100;
+        const lineTotal = Math.round(qty * rate * 100) / 100;
+        const rtv = {
+          id: `rtv-seed-${opts.shortCode}`,
+          entity_id: opts.shortCode,
+          rtv_no: `RJO/26-27/0001`,
+          status: 'posted' as const,
+          rtv_date: nowIso26.slice(0, 10),
+          vendor_id: '', vendor_name: 'Demo Vendor (QC Failed)',
+          vendor_address: null, vendor_gst: null,
+          transport_mode: 'Road', vehicle_no: 'MH-04-RT-9999', lr_no: 'LR-RTV-001',
+          expected_credit_note_no: null,
+          lines: [{
+            id: 'rtvline-seed-1',
+            item_id: b.item_id, item_code: b.item_code, item_name: b.item_name,
+            uom: 'kg',
+            godown_id: b.godown_id, godown_name: b.godown_name,
+            bin_id: null,
+            rejected_qty: qty, unit_rate: rate, line_total: lineTotal,
+            source_grn_id: null, source_grn_no: null, source_grn_line_id: null,
+            qc_failure_reason: 'Material below mechanical spec — fails IS 2062 E350 yield',
+            batch_no: null, serial_nos: [], heat_no: null,
+          }],
+          total_qty: qty, total_value: lineTotal,
+          narration: 'Demo seed RTV from QC-failed receipt',
+          posted_at: nowIso26, shipped_at: null,
+          cancelled_at: null, cancellation_reason: null,
+          created_at: nowIso26, updated_at: nowIso26,
+        };
+        localStorage.setItem(RTV_KEY, JSON.stringify([rtv]));
+      }
+    }
+  } catch { /* ignore — 1.2.6 demo seed is best-effort */ }
+
   // Sprint T-Phase-1.2.2 · Auto-activate Inventory Hub + ProjX voucher types on entity creation
   // Founder lock: "if voucher type is not then create the same while creating entity refer command center"
   // vt-stock-journal + vt-stock-transfer are already is_active:true — no action needed
