@@ -1,4 +1,9 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * No money math in this file — only call duration aggregates (seconds) and counts.
+ * Marker added for audit trail consistency.
+ */
+/**
  * CallLogHistoryReport.tsx — Manager view of every telecaller call
  * Sprint T-Phase-1.1.1l-b · Reads CallSession[] across all telecallers
  * [JWT] GET /api/salesx/call-sessions?entityCode={entityCode}

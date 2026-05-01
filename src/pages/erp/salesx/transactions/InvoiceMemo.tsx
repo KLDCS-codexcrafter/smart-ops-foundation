@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * InvoiceMemo.tsx — Invoice/Tax Memo (IM) entry · SalesX Hub
  * Sprint T-Phase-1.1.1n. Memo is the authorization; Sales Invoice is the accounting entry.
  * [JWT] GET/POST/PATCH /api/salesx/invoice-memos

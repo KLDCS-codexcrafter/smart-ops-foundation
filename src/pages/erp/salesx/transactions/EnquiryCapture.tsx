@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * EnquiryCapture.tsx — Sales Enquiry register + 3-tab form
  * Charis TDL: Enquiry Entry Screen UDF 4900-4942.
  * [JWT] GET/POST/PATCH /api/salesx/enquiries

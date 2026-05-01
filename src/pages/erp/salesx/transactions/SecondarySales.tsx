@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * SecondarySales.tsx — Distributor sell-through capture
  * Sprint 7. Distributor reports sales they made FROM their stock to retailers/sub-dealers.
  * No accounting impact — informs forecasting and trade promo schemes.

@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * DistributorBroadcast.tsx — Sales-team composer that fires WhatsApp/email/in-portal
  * messages to a distributor audience. Sprint 10. Reuses MAS infrastructure.
  * [JWT] POST /api/sales/broadcasts
@@ -25,6 +31,7 @@ import {
 } from '@/types/distributor-order';
 import type { Distributor, DistributorTier } from '@/types/distributor';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { dSum } from '@/lib/decimal-helpers';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -283,7 +290,7 @@ export default function DistributorBroadcast() {
           {partners.length > 0 && (
             <div className="mt-4 pt-4 border-t border-border/50 text-[11px] text-muted-foreground">
               <p>Outstanding across audience: <span className="font-mono text-foreground">
-                {formatINR(partners.reduce((s, p) => s + p.outstanding_paise, 0))}
+                {formatINR(dSum(partners, p => p.outstanding_paise))}
               </span></p>
             </div>
           )}
