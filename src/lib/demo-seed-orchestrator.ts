@@ -420,6 +420,12 @@ export function seedEntityDemoData(
     }
   }
 
+  // Sprint T-Phase-1.2.2 · BOM demo data (required for consumption variance computation)
+  safeSetArray(
+    `erp_bom_${entityCode}`,
+    DEMO_BOM_HAPPY_PATH.map(b => ({ ...b, entity_id: entityCode })),
+  );
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
