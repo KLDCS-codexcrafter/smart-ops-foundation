@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import {
-  ArrowLeft, BarChart3, ArrowRight, Zap, CheckCircle2, XCircle, Briefcase,
+  ArrowLeft, ArrowRight, Zap, CheckCircle2, XCircle, Briefcase,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { MobileSession } from '../MobileRouter';
@@ -54,7 +54,7 @@ export default function MobileProjectHealthPage() {
 
   const visibleProjects = useMemo(() => {
     let list = projects.filter(p => p.is_active);
-    if (statusFilter === 'active') list = list.filter(p => p.status === 'active' || p.status === 'planned');
+    if (statusFilter === 'active') list = list.filter(p => p.status === 'active' || p.status === 'planning');
     else if (statusFilter === 'on_hold') list = list.filter(p => p.status === 'on_hold');
     return [...list].sort((a, b) => {
       const ar = a.schedule_risk_index ?? -1;
