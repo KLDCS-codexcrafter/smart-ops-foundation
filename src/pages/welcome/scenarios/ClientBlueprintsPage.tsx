@@ -221,6 +221,13 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_grns_${entityCode}`,
     `erp_stock_balance_${entityCode}`,
     `erp_doc_seq_GRN_${entityCode}`,
+    // Sprint T-Phase-1.2.2 · Inventory Hub Consumption
+    `erp_material_issue_notes_${entityCode}`,
+    `erp_consumption_entries_${entityCode}`,
+    `erp_consumption_alerts_${entityCode}`,
+    `erp_doc_seq_MIN_${entityCode}`,
+    `erp_doc_seq_CE_${entityCode}`,
+    `erp_bom_${entityCode}`,
   ];
 }
 
