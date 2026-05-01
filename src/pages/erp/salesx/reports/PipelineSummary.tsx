@@ -4,6 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 /**
  * PipelineSummary.tsx — read-only CRM pipeline summary report
  * Sprint 3 SalesX.
@@ -20,6 +21,7 @@ import { useQuotations } from '@/hooks/useQuotations';
 import type { EnquiryStatus } from '@/types/enquiry';
 import { cn } from '@/lib/utils';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { entityCode: string }
 
@@ -38,6 +40,7 @@ const STAGE_GROUPS: Array<{ id: EnquiryStatus; label: string; color: string }> =
 ];
 
 export function PipelineSummaryPanel({ entityCode }: Props) {
+  const _t = useT();
   const { enquiries } = useEnquiries(entityCode);
   const { quotations } = useQuotations(entityCode);
 
@@ -88,7 +91,7 @@ export function PipelineSummaryPanel({ entityCode }: Props) {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Pipeline Summary</h1>
+        <h1 className="text-2xl font-bold">{_t('salesx.pipeline', 'Pipeline')} Summary</h1>
         <p className="text-sm text-muted-foreground">Stage distribution, value &amp; win rate</p>
       </div>
 

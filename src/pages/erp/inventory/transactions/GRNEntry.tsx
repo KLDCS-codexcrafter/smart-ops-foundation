@@ -6,6 +6,7 @@
  * Stock balance updated in localStorage on Post.
  * [JWT] POST /api/inventory/grn/:id/post
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState } from 'react';
 // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3)
 import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
@@ -51,6 +52,7 @@ import {
 } from '@/types/grn';
 import type { VoucherType } from '@/types/voucher-type';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -144,6 +146,7 @@ function loadVendors(): VendorSeed[] {
 }
 
 export function GRNEntryPanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -582,7 +585,7 @@ export function GRNEntryPanel() {
               <ArrowDownToLine className="h-6 w-6 text-cyan-500" />
               GRN Entry
             </h1>
-            <p className="text-sm text-muted-foreground">Goods Receipt Note · physical receiving</p>
+            <p className="text-sm text-muted-foreground">{_t('inv.grn', 'Goods Receipt Note')} · physical receiving</p>
           </div>
           <Button size="sm" className="gap-1.5" onClick={startNew}>
             <Plus className="h-4 w-4" /> New GRN

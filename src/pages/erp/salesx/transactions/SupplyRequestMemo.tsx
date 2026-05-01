@@ -6,6 +6,7 @@
  * D-127/D-128 ZERO-TOUCH: This component NEVER posts vouchers · never touches voucher.ts schemas.
  * The SRM is a pure authorization document · status flow: draft → raised → acknowledged → dispatching → dispatched.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -2,6 +2,7 @@
  * RTVEntry.tsx — Return to Vendor (Rejections Out)
  * Sprint T-Phase-1.2.6 · activates vt-rejections-out
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState } from 'react';
 // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
 import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
@@ -26,6 +27,7 @@ import { logAudit } from '@/lib/audit-trail-engine';
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
+import { useT } from '@/lib/i18n-engine';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -41,6 +43,7 @@ function readKey<T>(key: string): T[] {
 }
 
 export function RTVEntryPanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
   const [createOpen, setCreateOpen] = useState(false);
@@ -229,7 +232,7 @@ export function RTVEntryPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <RotateCcw className="h-5 w-5 text-cyan-600" /> Return to Vendor (RTV)
+            <RotateCcw className="h-5 w-5 text-cyan-600" /> {_t('inv.rtv', 'Return to Vendor')} (RTV)
           </h1>
           <p className="text-xs text-muted-foreground">Rejections Out · activates vt-rejections-out</p>
         </div>

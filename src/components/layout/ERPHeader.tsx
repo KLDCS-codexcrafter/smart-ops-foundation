@@ -52,6 +52,7 @@ import {
 import { ERPDatePicker } from '@/components/layout/ERPDatePicker';
 import { ERPCompanySelector, useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';
 import { StorageQuotaIndicator } from '@/components/layout/StorageQuotaIndicator';
+import { LocaleToggle } from '@/components/layout/LocaleToggle';
 
 import { useGlobalDateRange } from '@/hooks/GlobalDateRangeContext';
 import { formatIndianDate } from '@/hooks/useGlobalDateRange.types';
@@ -269,6 +270,9 @@ export function ERPHeader({
             </TooltipTrigger>
             <TooltipContent>Shortcuts (?)</TooltipContent>
           </Tooltip>
+
+          {/* Locale toggle (EN ↔ हिन्दी) — Sprint T-Phase-1.2.5h-c2 */}
+          <LocaleToggle />
 
           {/* Theme toggle */}
           <ThemeToggle />

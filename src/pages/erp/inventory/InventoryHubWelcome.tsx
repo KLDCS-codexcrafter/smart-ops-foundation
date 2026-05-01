@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import {
   Package, Warehouse, ArrowDownToLine, IndianRupee, Plus, AlertTriangle,
   ListOrdered, UserCircle2, CheckCircle2,
+  TrendingUp, Snail, ClipboardCheck, Database, Shield, PackageX,
 } from 'lucide-react';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useGodowns } from '@/hooks/useGodowns';
@@ -23,6 +24,10 @@ import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { grnsKey, stockBalanceKey, type GRN, type StockBalanceEntry } from '@/types/grn';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { dSum } from '@/lib/decimal-helpers';
+import { useStorageQuota } from '@/hooks/useStorageQuota';
+import { readAuditTrail } from '@/lib/audit-trail-engine';
+import { cycleCountsKey, type CycleCount } from '@/types/cycle-count';
+import { useT } from '@/lib/i18n-engine';
 import type { InventoryHubModule } from './InventoryHubSidebar.types';
 
 const fmtINR = (n: number): string =>
@@ -47,6 +52,8 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
   const { godowns } = useGodowns();
   const { mins } = useMaterialIssueNotes(safeEntity);
   const { entries: consumptionEntries } = useConsumptionEntries(safeEntity);
+  const storageUsage = useStorageQuota();
+  const t = useT();
 
   const grns = useMemo<GRN[]>(() => loadJson<GRN>(grnsKey(safeEntity)), [safeEntity]);
   const stockBalance = useMemo<StockBalanceEntry[]>(
@@ -99,6 +106,74 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
       g.status === 'draft' &&
       new Date(g.created_at).getTime() < oneDayAgo).length;
   }, [grns]);
+
+  /** Sprint T-Phase-1.2.5h-c2 · 7 production-grade KPIs (L-3 closure) */
+  const productionKpis = useMemo(() => {
+    const now = Date.now();
+    const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+    const dayMs = 24 * 60 * 60 * 1000;
+
+    // A-class items needing review = A-class items with no recent movement (proxy)
+    const abcAlertsCount = items.filter(i => {
+      const cls = (i as { abc_class?: string }).abc_class;
+      const lastMove = (i as { last_movement_at?: string | null }).last_movement_at;
+      if (cls !== 'A') return false;
+      if (!lastMove) return true;
+      return now - new Date(lastMove).getTime() > 30 * dayMs;
+    }).length;
+
+    // Slow-moving items = no movement in last 90 days
+    const slowMovingCount = items.filter(i => {
+      const lastMove = (i as { last_movement_at?: string | null }).last_movement_at;
+      if (!lastMove) return true;
+      return now - new Date(lastMove).getTime() > ninetyDaysMs;
+    }).length;
+
+    // Cycle counts due = posted CCs older than 30d for A, 90d for B, 365d for C (proxy: not posted in 30d)
+    let cycleCountsDue = 0;
+    try {
+      // [JWT] GET /api/cycle-counts?entityCode=:entityCode
+      const raw = localStorage.getItem(cycleCountsKey(safeEntity));
+      const ccs: CycleCount[] = raw ? JSON.parse(raw) : [];
+      const lastPosted = ccs
+        .filter(c => c.status === 'posted' && c.posted_at)
+        .sort((a, b) => (b.posted_at ?? '').localeCompare(a.posted_at ?? ''))[0];
+      if (!lastPosted) {
+        cycleCountsDue = items.length > 0 ? 1 : 0;
+      } else {
+        const ageDays = (now - new Date(lastPosted.posted_at!).getTime()) / dayMs;
+        cycleCountsDue = ageDays > 30 ? Math.ceil(ageDays / 30) : 0;
+      }
+    } catch { /* ignore */ }
+
+    // Audit events (24h)
+    const since = new Date(now - dayMs).toISOString();
+    const auditTrailLast24h = readAuditTrail(safeEntity, { from: since }).length;
+
+    // Hazmat compliance alerts — proxy: items flagged hazmat with no compliance doc
+    const hazmatAlertsCount = items.filter(i => {
+      const isHaz = (i as { is_hazmat?: boolean }).is_hazmat;
+      const docOk = (i as { hazmat_doc_verified?: boolean }).hazmat_doc_verified;
+      return isHaz === true && docOk !== true;
+    }).length;
+
+    // Returnable packaging overdue — proxy: GRNs with returnable flag past expected return date
+    const returnableOverdueCount = grns.filter(g => {
+      const ret = (g as { returnable_due_date?: string | null }).returnable_due_date;
+      const closed = (g as { returnable_closed?: boolean }).returnable_closed;
+      if (!ret || closed) return false;
+      return new Date(ret).getTime() < now;
+    }).length;
+
+    return {
+      abcAlertsCount,
+      slowMovingCount,
+      cycleCountsDue,
+      auditTrailLast24h,
+      hazmatAlertsCount,
+      returnableOverdueCount,
+    };
+  }, [items, grns, safeEntity]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 p-6">
@@ -156,7 +231,55 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
         </Card>
       </div>
 
-      {/* Departmental Accountability Strip — the MOAT feature */}
+      {/* Sprint T-Phase-1.2.5h-c2 · Production-Grade KPI strip (L-3 closure) */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground mb-2">{t('misc.dashboard', 'Operations Health')}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          <Card className="cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => onNavigate('m-abc-classification')}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><TrendingUp className="h-3.5 w-3.5 text-amber-600" />{t('inv.welcome.abc_alerts', 'A-class Items Needing Review')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-amber-600">{productionKpis.abcAlertsCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Snail className="h-3.5 w-3.5 text-rose-600" />{t('inv.welcome.slow_moving', 'Slow-Moving Items (90d)')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-rose-600">{productionKpis.slowMovingCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => onNavigate('t-cycle-count')}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5 text-blue-600" />{t('inv.welcome.cycle_count_due', 'Cycle Counts Due')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-blue-600">{productionKpis.cycleCountsDue}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5" />{t('inv.welcome.storage_quota', 'Storage Quota')}</CardDescription>
+              <CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber-600' : 'text-rose-600'}`}>{Math.round(storageUsage.pct)}%</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-slate-500" />{t('inv.welcome.audit_trail_24h', 'Audit Events (24h)')}</CardDescription>
+              <CardTitle className="text-2xl font-mono">{productionKpis.auditTrailLast24h}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><AlertTriangle className={`h-3.5 w-3.5 ${productionKpis.hazmatAlertsCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`} />{t('inv.welcome.hazmat_alerts', 'Hazmat Compliance Alerts')}</CardDescription>
+              <CardTitle className={`text-2xl font-mono ${productionKpis.hazmatAlertsCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>{productionKpis.hazmatAlertsCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><PackageX className="h-3.5 w-3.5 text-amber-600" />{t('inv.welcome.returnable_overdue', 'Returnable Pkg Overdue')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-amber-600">{productionKpis.returnableOverdueCount}</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">

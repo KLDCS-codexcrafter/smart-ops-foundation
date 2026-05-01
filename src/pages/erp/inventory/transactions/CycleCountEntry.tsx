@@ -3,6 +3,7 @@
  * 3 modes: Draft / Review / Approved (Post)
  * Two-step approval enforced: counter cannot approve own count.
  */
+// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
 import { useMemo, useState } from 'react';
 // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
 import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
@@ -26,6 +27,7 @@ import { COUNT_STATUS_COLORS, COUNT_KIND_LABELS, VARIANCE_REASON_LABELS } from '
 import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarrationHeader';
 import type { InventoryItem } from '@/types/inventory-item';
 import { dMul, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -120,6 +122,7 @@ export function CycleCountEntryPanel() {
   const ccFieldErr = (f: string) => fieldErrorClass({}, f);
   void ccFieldErr; void fieldErrorText; void ccValidator;
 
+  const _t = useT();
   function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
     const gd = godowns.find(g => g.id === godownId) ?? null;
     const countDate = new Date().toISOString().slice(0, 10);
@@ -232,7 +235,7 @@ export function CycleCountEntryPanel() {
       {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>New Cycle Count</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{_t('inv.cycle_count', 'Cycle Count')}</DialogTitle></DialogHeader>
           <CreateCountForm godowns={godowns} onCreate={handleCreateBlank} />
         </DialogContent>
       </Dialog>
