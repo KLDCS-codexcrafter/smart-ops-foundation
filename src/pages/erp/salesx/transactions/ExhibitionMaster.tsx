@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * ExhibitionMaster.tsx — Canvas Wave 2 (T-Phase-1.1.1c)
  * 4-tab panel: Details · Budget · Visitors · Summary
  * [JWT] /api/salesx/exhibitions
@@ -34,6 +40,7 @@ import {
   defaultExhibitionBudget, defaultExhibitionOutcome, computeExhibitionBudget,
 } from '@/types/exhibition';
 import { cn } from '@/lib/utils';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
