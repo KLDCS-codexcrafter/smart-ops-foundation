@@ -21,8 +21,8 @@ import type { InventoryHubModule } from './InventoryHubSidebar.types';
 
 const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
-  't-grn-entry',
-  'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register',
+  't-grn-entry', 't-material-issue', 't-consumption-entry',
+  'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
 ];
 
@@ -35,15 +35,15 @@ interface SidebarItem {
 
 const TXN_ITEMS: SidebarItem[] = [
   { id: 't-grn-entry', label: 'GRN Entry', icon: ArrowDownToLine },
-  { id: 't-material-issue-disabled', label: 'Material Issue Note', icon: ArrowUpFromLine, comingLabel: '1.2.2' },
-  { id: 't-consumption-disabled', label: 'Consumption Entry', icon: PackageOpen, comingLabel: '1.2.2' },
+  { id: 't-material-issue', label: 'Material Issue Note', icon: ArrowUpFromLine },
+  { id: 't-consumption-entry', label: 'Consumption Entry', icon: PackageOpen },
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-stock-ledger', label: 'Stock Ledger', icon: ListOrdered },
   { id: 'r-reorder-alerts', label: 'Reorder Alerts', icon: AlertTriangle },
   { id: 'r-grn-register', label: 'GRN Register', icon: FileText },
-  { id: 'r-consumption-disabled', label: 'Consumption Summary', icon: BarChart3, comingLabel: '1.2.2' },
+  { id: 'r-consumption-summary', label: 'Consumption Summary', icon: BarChart3 },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
