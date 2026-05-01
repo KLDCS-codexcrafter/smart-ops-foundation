@@ -36,6 +36,7 @@ import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/s
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
   upsertQuoteReservation,

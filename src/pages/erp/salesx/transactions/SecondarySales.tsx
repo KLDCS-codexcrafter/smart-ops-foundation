@@ -34,6 +34,7 @@ import {
   secondarySalesKey, END_CUSTOMER_LABELS,
 } from '@/types/secondary-sales';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { entityCode: string }
 

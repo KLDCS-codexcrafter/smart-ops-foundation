@@ -42,6 +42,7 @@ import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types'
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props {
   entityCode: string;

@@ -30,6 +30,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
   SRM_STATUS_LABELS,

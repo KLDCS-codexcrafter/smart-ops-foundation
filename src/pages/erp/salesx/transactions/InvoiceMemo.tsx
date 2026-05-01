@@ -35,6 +35,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import {
   deliveryMemosKey,
   type DeliveryMemo,
