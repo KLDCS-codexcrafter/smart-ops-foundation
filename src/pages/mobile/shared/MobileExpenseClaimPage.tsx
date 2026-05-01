@@ -201,6 +201,19 @@ export default function MobileExpenseClaimPage() {
           </div>
 
           <div className="space-y-1.5">
+            <Label className="text-xs">Tag to Project (optional)</Label>
+            <Select value={projectCentreId} onValueChange={setProjectCentreId}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">— None —</SelectItem>
+                {centres.filter(c => c.is_active).map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
             <Label className="text-xs">Receipt Photo (optional)</Label>
             <Button variant="outline" size="sm" className="w-full" onClick={handleCaptureReceipt}>
               <Camera className="h-4 w-4 mr-2" />
