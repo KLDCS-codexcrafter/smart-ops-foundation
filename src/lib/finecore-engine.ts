@@ -71,14 +71,29 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
     }
   }
 
-  // Dr = Cr check for journal lines
+  // Sprint T-Phase-1.2.5h-a · Voucher balance enforcement (audit H-3)
+  // Tally-classic rule: voucher must be balanced (sum_dr === sum_cr) before save.
+  // Tolerance ₹0.01 absorbs unavoidable Decimal rounding without masking real errors.
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
     const totalDr = voucher.ledger_lines
       .reduce((s, l) => s.plus(new Decimal(l.dr_amount ?? 0)), new Decimal(0));
     const totalCr = voucher.ledger_lines
       .reduce((s, l) => s.plus(new Decimal(l.cr_amount ?? 0)), new Decimal(0));
-    if (!totalDr.equals(totalCr)) {
-      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toNumber().toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toNumber().toLocaleString('en-IN')}`);
+    if (totalDr.minus(totalCr).abs().greaterThan(0.01)) {
+      errors.push(`Voucher not balanced: Dr ₹${totalDr.toFixed(2)} ≠ Cr ₹${totalCr.toFixed(2)} (diff ₹${totalDr.minus(totalCr).abs().toFixed(2)})`);
+    }
+  }
+  // Also accept generic { lines: [{debit, credit}] } shape used by some callers/tests.
+  const genericLines = (voucher as Partial<Voucher> & { lines?: Array<{ debit?: number; credit?: number }> }).lines;
+  if (genericLines && genericLines.length > 0 && (!voucher.ledger_lines || voucher.ledger_lines.length === 0)) {
+    let totalDr = new Decimal(0);
+    let totalCr = new Decimal(0);
+    for (const ln of genericLines) {
+      if (typeof ln.debit === 'number' && ln.debit > 0) totalDr = totalDr.plus(ln.debit);
+      if (typeof ln.credit === 'number' && ln.credit > 0) totalCr = totalCr.plus(ln.credit);
+    }
+    if (totalDr.minus(totalCr).abs().greaterThan(0.01)) {
+      errors.push(`Voucher not balanced: Dr ₹${totalDr.toFixed(2)} ≠ Cr ₹${totalCr.toFixed(2)} (diff ₹${totalDr.minus(totalCr).abs().toFixed(2)})`);
     }
   }
 
