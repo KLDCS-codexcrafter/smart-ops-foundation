@@ -26,4 +26,5 @@ export const INVENTORY_MODULE_GROUP: Record<
   'm-batch-grid': 'masters',
   'm-serial-grid': 'masters',
   'm-bin-labels': 'masters',
+  'm-reorder-matrix': 'masters',
 };

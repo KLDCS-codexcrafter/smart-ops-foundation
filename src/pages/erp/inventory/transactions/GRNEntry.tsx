@@ -18,13 +18,17 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from '@/components/ui/sheet';
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from '@/components/ui/dialog';
+import { StorageSlipPrintPanel } from '../reports/StorageSlipPrint';
+import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye,
+  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye, Printer, RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
@@ -32,6 +36,7 @@ import { useGodowns } from '@/hooks/useGodowns';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
@@ -102,6 +107,9 @@ interface FormLine {
   batch_no: string;
   serial_nos: string;
   heat_no: string;
+  bin_id: string;
+  bin_code: string;
+  bin_id_source: 'preferred' | 'manual' | '';
   qc_result: GRNQCResult;
   qc_notes: string;
 }
@@ -111,6 +119,7 @@ const blankLine = (): FormLine => ({
   item_id: '', item_code: '', item_name: '', item_type: '', uom: '',
   ordered_qty: 0, received_qty: 0, accepted_qty: 0, unit_rate: 0,
   batch_no: '', serial_nos: '', heat_no: '',
+  bin_id: '', bin_code: '', bin_id_source: '',
   qc_result: 'pending', qc_notes: '',
 });
 
@@ -141,6 +150,25 @@ export function GRNEntryPanel() {
   const [lines, setLines] = useState<FormLine[]>([]);
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
+  const [printGrn, setPrintGrn] = useState<GRN | null>(null);
+
+  // Sprint T-Phase-1.2.3-fix · Resolve preferred godown/bin for the draft line item.
+  // Founder ask: "while receiving item or issuing item it should pick the location as sets in item."
+  const preferred = useItemPreferredLocation(draftLine.item_id || undefined, safeEntity);
+
+  const applyPreferredBin = () => {
+    if (!preferred?.binId) {
+      toast.info('No preferred bin set for this item');
+      return;
+    }
+    setDraftLine(l => ({
+      ...l,
+      bin_id: preferred.binId ?? '',
+      bin_code: preferred.binCode ?? '',
+      bin_id_source: 'preferred',
+    }));
+    toast.success(`Bin set to preferred · ${preferred.binCode ?? preferred.binId}`);
+  };
 
   const totals = useMemo(() => {
     let qty = 0, value = 0;
@@ -200,6 +228,8 @@ export function GRNEntryPanel() {
       accepted_qty: l.accepted_qty, unit_rate: l.unit_rate,
       batch_no: l.batch_no ?? '', serial_nos: (l.serial_nos ?? []).join('\n'),
       heat_no: l.heat_no ?? '',
+      bin_id: l.bin_id ?? '', bin_code: '',
+      bin_id_source: l.bin_id ? 'manual' : '',
       qc_result: l.qc_result ?? 'pending', qc_notes: l.qc_notes,
     })));
     setView('form');
@@ -251,7 +281,7 @@ export function GRNEntryPanel() {
       batch_no: l.batch_no || null,
       serial_nos: l.serial_nos.split('\n').map(s => s.trim()).filter(Boolean),
       heat_no: l.heat_no || null,
-      bin_id: null,
+      bin_id: l.bin_id || null,
       qc_result: l.qc_result,
       qc_notes: l.qc_notes,
     }));
@@ -423,6 +453,8 @@ export function GRNEntryPanel() {
       updateStockBalance(built);
       autoCreateTraceabilityMasters(built);
       toast.success(`GRN ${built.grn_no} posted · stock credited to ${built.godown_name}`);
+      // Sprint T-Phase-1.2.3-fix · Auto-open Storage Slip print dialog after post.
+      setPrintGrn(built);
     } else {
       toast.success(`GRN ${built.grn_no} saved as ${GRN_STATUS_LABELS[target]}`);
     }
@@ -722,6 +754,32 @@ export function GRNEntryPanel() {
                   {items.map(i => <SelectItem key={i.id} value={i.id}>{i.code} — {i.name}</SelectItem>)}
                 </SelectContent>
               </Select>
+              {preferred && (
+                <p className="text-[10px] text-muted-foreground">
+                  Preferred: {preferred.godownName}
+                  {preferred.binCode ? ` · Bin ${preferred.binCode}` : ''}
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label>Bin / Rack</Label>
+                {preferred?.binId && (
+                  <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1"
+                    onClick={applyPreferredBin}>
+                    <RotateCcw className="h-3 w-3" /> Use preferred
+                  </Button>
+                )}
+              </div>
+              <Input
+                placeholder={preferred?.binCode ? `Auto-fill: ${preferred.binCode}` : 'Optional bin / rack code'}
+                value={draftLine.bin_code || draftLine.bin_id}
+                onChange={e => setDraftLine(l => ({
+                  ...l, bin_id: e.target.value, bin_code: e.target.value, bin_id_source: 'manual',
+                }))} />
+              {draftLine.bin_id_source === 'preferred' && (
+                <p className="text-[10px] text-emerald-600">↻ Using preferred bin</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>Ordered Qty</Label>
@@ -787,6 +845,28 @@ export function GRNEntryPanel() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Sprint T-Phase-1.2.3-fix · Auto-open Storage Slip after GRN post */}
+      <Dialog open={!!printGrn} onOpenChange={v => !v && setPrintGrn(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Printer className="h-5 w-5 text-cyan-500" />
+              Storage Slip · {printGrn?.grn_no}
+            </DialogTitle>
+            <DialogDescription>
+              GRN posted · print this slip and hand it to the storekeeper for put-away.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setPrintGrn(null)}>Close</Button>
+            <Button onClick={() => window.print()} className="gap-1.5">
+              <Printer className="h-4 w-4" /> Print Now
+            </Button>
+          </div>
+          <StorageSlipPrintPanel />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
