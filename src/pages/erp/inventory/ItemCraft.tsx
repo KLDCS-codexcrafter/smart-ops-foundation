@@ -256,16 +256,45 @@ export function ItemCraftPanel() {
     setOs(ls<ItemOpeningStockEntry>(OSKEY).filter(o => o.item_id === item.id));
     setEditItem(item); setTab(1); setDlgOpen(true);
   };
+  /**
+   * Sprint T-Phase-1.2.3 · Sync legacy form fields → new schema fields used by GRN
+   * auto-creation (Batch / Serial / Heat masters). Keeps existing UI intact while
+   * providing the canonical fields the inventory engine expects.
+   */
+  const buildSchemaSync = (f: typeof form): Partial<InventoryItem> => {
+    const cm = f.costing_method;
+    const default_costing_method: 'FIFO' | 'FEFO' | 'Weighted' =
+      cm === 'fifo_annual' || cm === 'fifo_perpetual' ? 'FIFO'
+      : cm === 'specific_id' ? 'FEFO'
+      : 'Weighted';
+    const warranty_months: number | undefined = f.warranty_period == null
+      ? undefined
+      : f.warranty_unit === 'Years' ? Number(f.warranty_period) * 12
+      : f.warranty_unit === 'Days' ? Math.round(Number(f.warranty_period) / 30)
+      : Number(f.warranty_period);
+    // Heat tracking auto-on for steel/metal Raw Material (Sinha-critical).
+    const is_heat_tracked = f.item_type === 'Raw Material'
+      && /steel|metal|tmt|rod|plate|sheet|bar|ingot/i.test(`${f.name} ${f.stock_group_name || ''}`);
+    return {
+      is_batch_tracked: !!f.batch_tracking,
+      is_serial_tracked: !!f.serial_tracking,
+      is_heat_tracked,
+      default_costing_method,
+      warranty_months,
+    };
+  };
+
   const handleSave = () => {
     if (!form.name.trim()) { toast.error('Item Name is required'); return; }
     const now = new Date().toISOString();
     const sid = editItem?.id || `item-${Date.now()}`;
+    const sync = buildSchemaSync(form);
     if (editItem) {
-      const u = items.map(x => x.id === editItem.id ? { ...x, ...form, id: editItem.id, updated_at: now } as InventoryItem : x);
+      const u = items.map(x => x.id === editItem.id ? { ...x, ...form, ...sync, id: editItem.id, updated_at: now } as InventoryItem : x);
       setItems(u); sv(u);
       // [JWT] PATCH /api/inventory/items/:id
     } else {
-      const ni = { ...form, id: sid, created_at: now, updated_at: now } as InventoryItem;
+      const ni = { ...form, ...sync, id: sid, created_at: now, updated_at: now } as InventoryItem;
       const u = [ni, ...items]; setItems(u); sv(u);
       // [JWT] POST /api/inventory/items
     }
