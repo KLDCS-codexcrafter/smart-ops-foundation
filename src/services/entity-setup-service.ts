@@ -699,6 +699,79 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       // [JWT] POST /api/inventory/heat-numbers (bulk)
       localStorage.setItem(HEAT_KEY, JSON.stringify(seededHeats));
     }
+
+    // Sprint T-Phase-1.2.4 · One demo in-transit GRN per entity (idempotent · demos GIT feature)
+    const GRN_KEY = `erp_grns_${opts.shortCode}`;
+    const grnsForGit: Array<{ id: string; status?: string }> = JSON.parse(
+      localStorage.getItem(GRN_KEY) || '[]'
+    );
+    const hasInTransitGrn = grnsForGit.some(g => g.status === 'in_transit');
+    const itemForDemo = seedItems[0];
+    const allGodowns: Array<{ id: string; ownership_type?: string }> = JSON.parse(
+      localStorage.getItem('erp_godowns') || '[]'
+    );
+    const gitGdId = allGodowns.find(g => g.ownership_type === 'goods_in_transit')?.id;
+    if (!hasInTransitGrn && itemForDemo && gitGdId && mainGd) {
+      const sixDaysAgoIso = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString();
+      const demoInTransitGrn = {
+        id: `grn-git-demo-${opts.shortCode.toLowerCase()}-${Date.now()}`,
+        entity_id: opts.shortCode,
+        grn_no: `IGRN/26-27/0001`,
+        voucher_type_id: 'vt-receipt-note-import',
+        voucher_type_name: 'Goods Receipt Note (Import)',
+        receipt_mode: 'two_stage' as const,
+        status: 'in_transit' as const,
+        po_id: null, po_no: null,
+        vendor_id: '', vendor_name: 'Demo Vendor (Import)',
+        vendor_invoice_no: 'INV-DEMO-12345',
+        vendor_invoice_date: sixDaysAgoIso.slice(0, 10),
+        receipt_date: nowIso3.slice(0, 10),
+        vehicle_no: 'MH-04-AB-1234', lr_no: 'LR-DEMO-001',
+        received_by_id: '', received_by_name: 'Auto-seed',
+        godown_id: gitGdId, godown_name: 'Goods in Transit',
+        project_centre_id: null,
+        lines: [{
+          id: `grnline-git-demo-1`,
+          item_id: itemForDemo.id, item_code: itemForDemo.code ?? '', item_name: itemForDemo.name,
+          item_type: 'Raw Material', uom: 'kg',
+          ordered_qty: 500, received_qty: 500, accepted_qty: 500, rejected_qty: 0,
+          unit_rate: 50, line_total: 25000,
+          batch_no: null, serial_nos: [], heat_no: null,
+          bin_id: null, qc_result: 'pending', qc_notes: '',
+        }],
+        total_qty: 500, total_value: 25000,
+        has_discrepancy: false,
+        narration: 'Demo: Vendor invoice received, material in transit (6 days)',
+        invoice_received_at: sixDaysAgoIso,
+        physical_received_at: null,
+        created_at: nowIso3, updated_at: nowIso3,
+        posted_at: null, cancelled_at: null, cancellation_reason: null,
+      };
+      const mergedGrns = JSON.parse(localStorage.getItem(GRN_KEY) || '[]');
+      // [JWT] POST /api/inventory/grn (demo seed)
+      localStorage.setItem(GRN_KEY, JSON.stringify([demoInTransitGrn, ...mergedGrns]));
+
+      // Stage stock in GIT godown for the demo
+      const balKey = `erp_stock_balance_${opts.shortCode}`;
+      const balances: Array<{
+        item_id: string; item_code: string; item_name: string;
+        godown_id: string; godown_name: string;
+        qty: number; value: number; weighted_avg_rate: number;
+        last_grn_id: string | null; last_grn_no: string | null;
+        updated_at: string;
+      }> = JSON.parse(localStorage.getItem(balKey) || '[]');
+      const alreadyStaged = balances.some(b => b.item_id === itemForDemo.id && b.godown_id === gitGdId);
+      if (!alreadyStaged) {
+        balances.unshift({
+          item_id: itemForDemo.id, item_code: itemForDemo.code ?? '', item_name: itemForDemo.name,
+          godown_id: gitGdId, godown_name: 'Goods in Transit',
+          qty: 500, value: 25000, weighted_avg_rate: 50,
+          last_grn_id: demoInTransitGrn.id, last_grn_no: demoInTransitGrn.grn_no,
+          updated_at: nowIso3,
+        });
+        localStorage.setItem(balKey, JSON.stringify(balances));
+      }
+    }
   } catch { /* ignore — demo seed is best-effort */ }
 
   // Sprint T-Phase-1.2.2 · Auto-activate Inventory Hub + ProjX voucher types on entity creation
