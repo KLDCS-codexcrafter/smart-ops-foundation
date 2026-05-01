@@ -3,6 +3,9 @@
  * Sprint T-Phase-1.2.6 · activates vt-rejections-out
  */
 import { useMemo, useState } from 'react';
+// Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
+import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
