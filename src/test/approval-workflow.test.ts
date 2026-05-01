@@ -14,7 +14,7 @@ const ctx: ApprovalContext = {
   sourceModule: 'inventory',
 };
 
-type Rec = Record<string, unknown> & { id: string };
+type Rec = Record<string, unknown> & { id: string; status: string };
 const mk = (status: string): Rec => ({ id: 'r1', status });
 
 describe('approval-workflow-engine · M-4', () => {
