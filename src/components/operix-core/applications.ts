@@ -134,6 +134,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/salesx',
     icon: 'TrendingUp',
+    status: 'active',
   },
   {
     id: 'distributor-hub',
@@ -142,6 +143,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/distributor-hub',
     icon: 'Store',
+    status: 'active',
   },
   {
     id: 'customer-hub',
