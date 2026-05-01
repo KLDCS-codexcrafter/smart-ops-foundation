@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import {
   Package, Warehouse, ArrowDownToLine, IndianRupee, Plus, AlertTriangle,
   ListOrdered, UserCircle2, CheckCircle2,
+  TrendingUp, Snail, ClipboardCheck, Database, Shield, PackageX,
 } from 'lucide-react';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useGodowns } from '@/hooks/useGodowns';
@@ -23,6 +24,10 @@ import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { grnsKey, stockBalanceKey, type GRN, type StockBalanceEntry } from '@/types/grn';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { dSum } from '@/lib/decimal-helpers';
+import { useStorageQuota } from '@/hooks/useStorageQuota';
+import { readAuditTrail } from '@/lib/audit-trail-engine';
+import { cycleCountsKey, type CycleCount } from '@/types/cycle-count';
+import { useT } from '@/lib/i18n-engine';
 import type { InventoryHubModule } from './InventoryHubSidebar.types';
 
 const fmtINR = (n: number): string =>
