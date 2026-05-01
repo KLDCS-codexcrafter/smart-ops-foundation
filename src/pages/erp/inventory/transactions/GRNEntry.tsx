@@ -205,6 +205,8 @@ export function GRNEntryPanel() {
       accepted_qty: l.accepted_qty, unit_rate: l.unit_rate,
       batch_no: l.batch_no ?? '', serial_nos: (l.serial_nos ?? []).join('\n'),
       heat_no: l.heat_no ?? '',
+      bin_id: l.bin_id ?? '', bin_code: '',
+      bin_id_source: l.bin_id ? 'manual' : '',
       qc_result: l.qc_result ?? 'pending', qc_notes: l.qc_notes,
     })));
     setView('form');
