@@ -229,6 +229,9 @@ export function GRNEntryPanel() {
       godown_id: g.godown_id, godown_name: g.godown_name,
       project_centre_id: g.project_centre_id,
       narration: g.narration,
+      voucher_type_id: g.voucher_type_id ?? 'vt-receipt-note-domestic',
+      voucher_type_name: g.voucher_type_name ?? 'Goods Receipt Note (Domestic)',
+      receipt_mode: g.receipt_mode ?? 'direct',
     });
     setLines(g.lines.map(l => ({
       id: l.id, item_id: l.item_id, item_code: l.item_code,
