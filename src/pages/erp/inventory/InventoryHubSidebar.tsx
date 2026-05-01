@@ -70,16 +70,6 @@ const MAS_ITEMS: SidebarItem[] = [
   { id: 'm-returnable-packaging', label: 'Returnable Packaging', icon: Recycle },
 ];
 
-const MAS_ITEMS: SidebarItem[] = [
-  { id: 'm-item-master', label: 'Item Master', icon: Boxes },
-  { id: 'm-godown-master', label: 'Godown Master', icon: Warehouse },
-  { id: 'm-stock-groups', label: 'Stock Groups', icon: Layers },
-  { id: 'm-heat-master', label: 'Heat Master', icon: Flame },
-  { id: 'm-batch-grid', label: 'Batch Grid', icon: Grid3X3 },
-  { id: 'm-serial-grid', label: 'Serial Grid', icon: Hash },
-  { id: 'm-bin-labels', label: 'Bin Labels', icon: MapPin },
-  { id: 'm-reorder-matrix', label: 'Reorder Matrix', icon: Repeat },
-];
 
 interface InventoryHubSidebarProps {
   active: InventoryHubModule;
