@@ -62,7 +62,7 @@ export function InventoryHubPanel() {
               </div>
               <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                {t('common.loading', 'Coming in Sprint 26')}
+                {t('inv.hub.coming_soon', 'Coming in Sprint 26')}
               </span>
             </div>
 
@@ -77,7 +77,7 @@ export function InventoryHubPanel() {
 
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-3">
-                {t('common.next', 'Available now')}
+                {t('inv.hub.available_now', 'Available now')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div
