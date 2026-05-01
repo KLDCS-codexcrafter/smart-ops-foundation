@@ -845,6 +845,28 @@ export function GRNEntryPanel() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Sprint T-Phase-1.2.3-fix · Auto-open Storage Slip after GRN post */}
+      <Dialog open={!!printGrn} onOpenChange={v => !v && setPrintGrn(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Printer className="h-5 w-5 text-cyan-500" />
+              Storage Slip · {printGrn?.grn_no}
+            </DialogTitle>
+            <DialogDescription>
+              GRN posted · print this slip and hand it to the storekeeper for put-away.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setPrintGrn(null)}>Close</Button>
+            <Button onClick={() => window.print()} className="gap-1.5">
+              <Printer className="h-4 w-4" /> Print Now
+            </Button>
+          </div>
+          <StorageSlipPrintPanel />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
