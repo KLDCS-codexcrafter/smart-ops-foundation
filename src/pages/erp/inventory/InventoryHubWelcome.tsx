@@ -231,7 +231,55 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
         </Card>
       </div>
 
-      {/* Departmental Accountability Strip — the MOAT feature */}
+      {/* Sprint T-Phase-1.2.5h-c2 · Production-Grade KPI strip (L-3 closure) */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground mb-2">{t('misc.dashboard', 'Operations Health')}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          <Card className="cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => onNavigate('m-abc-classification')}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><TrendingUp className="h-3.5 w-3.5 text-amber-600" />{t('inv.welcome.abc_alerts', 'A-class Items Needing Review')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-amber-600">{productionKpis.abcAlertsCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Snail className="h-3.5 w-3.5 text-rose-600" />{t('inv.welcome.slow_moving', 'Slow-Moving Items (90d)')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-rose-600">{productionKpis.slowMovingCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => onNavigate('t-cycle-count')}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><ClipboardCheck className="h-3.5 w-3.5 text-blue-600" />{t('inv.welcome.cycle_count_due', 'Cycle Counts Due')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-blue-600">{productionKpis.cycleCountsDue}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5" />{t('inv.welcome.storage_quota', 'Storage Quota')}</CardDescription>
+              <CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber-600' : 'text-rose-600'}`}>{storageUsage.percentUsed}%</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-slate-500" />{t('inv.welcome.audit_trail_24h', 'Audit Events (24h)')}</CardDescription>
+              <CardTitle className="text-2xl font-mono">{productionKpis.auditTrailLast24h}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><AlertTriangle className={`h-3.5 w-3.5 ${productionKpis.hazmatAlertsCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`} />{t('inv.welcome.hazmat_alerts', 'Hazmat Compliance Alerts')}</CardDescription>
+              <CardTitle className={`text-2xl font-mono ${productionKpis.hazmatAlertsCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>{productionKpis.hazmatAlertsCount}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5"><PackageX className="h-3.5 w-3.5 text-amber-600" />{t('inv.welcome.returnable_overdue', 'Returnable Pkg Overdue')}</CardDescription>
+              <CardTitle className="text-2xl font-mono text-amber-600">{productionKpis.returnableOverdueCount}</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
