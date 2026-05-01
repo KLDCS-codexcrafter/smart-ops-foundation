@@ -39,6 +39,8 @@ export const hi: Record<string, string> = {
   'common.optional': 'वैकल्पिक',
   'common.total': 'कुल',
   'common.subtotal': 'उप-योग',
+  'common.storage': 'भंडारण',
+  'common.logout': 'लॉगआउट',
 
   // ── Voucher Types ──
   'voucher.sales_invoice': 'विक्रय बीजक',

@@ -38,6 +38,8 @@ export const en: Record<string, string> = {
   'common.optional': 'Optional',
   'common.total': 'Total',
   'common.subtotal': 'Subtotal',
+  'common.storage': 'Storage',
+  'common.logout': 'Logout',
 
   // ── Voucher Types · 15 keys ──
   'voucher.sales_invoice': 'Sales Invoice',
