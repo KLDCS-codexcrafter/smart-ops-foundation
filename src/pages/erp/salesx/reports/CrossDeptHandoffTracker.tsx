@@ -421,6 +421,21 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                           className={r.siVoucherNo ? SI_COLOR_PRESENT : DASH_COLOR}
                         />
                       </TableCell>
+                      <TableCell className="py-2">
+                        {r.projectId ? (
+                          <Badge
+                            variant="outline"
+                            className="gap-1 text-[10px] border-purple-500/30 bg-purple-500/10 text-purple-700 cursor-pointer"
+                            onClick={() => navigate('/erp/projx')}
+                            title={`Open project ${r.projectNo}`}
+                          >
+                            <Briefcase className="h-2.5 w-2.5" />
+                            <span className="font-mono">{r.projectNo}</span>
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-[10px]">—</span>
+                        )}
+                      </TableCell>
                       <TableCell className="py-2 text-right">
                         <Badge
                           variant="outline"
