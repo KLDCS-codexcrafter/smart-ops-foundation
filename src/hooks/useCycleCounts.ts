@@ -14,8 +14,12 @@ import { cycleCountsKey } from '@/types/cycle-count';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import type { InventoryItem } from '@/types/inventory-item';
-// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
-import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-1.2.5h-c1 · Generalized approval workflow (M-4) — engine wires audit trail.
+import {
+  submit as wfSubmit, approve as wfApprove, reject as wfReject,
+  post as wfPost, cancelApproval as wfCancel,
+  type ApprovalContext,
+} from '@/lib/approval-workflow-engine';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
