@@ -206,7 +206,7 @@ export default function MobileExpenseClaimPage() {
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">— None —</SelectItem>
-                {centres.filter(c => c.is_active).map(c => (
+                {centres.filter(c => c.status === 'active').map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
                 ))}
               </SelectContent>
