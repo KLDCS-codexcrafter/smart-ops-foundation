@@ -1,9 +1,15 @@
 # i18n Migration Guide
 
+## Migration Status (post-1.2.5h-c2-fix)
+
+- **30 priority pages migrated** with `useT()` (page title + 3-5 visible strings each)
+- **223 dictionary keys** in en.ts ↔ hi.ts (parity enforced by test U4)
+- **~466 page components remaining** on Phase 1.6 backlog — migrate as touched
+- Sprint 1.2.5h-c2-fix added 17 new page-title keys + 2 common keys (`storage`, `logout`)
+
 Sprint T-Phase-1.2.5h-c2 closed L-4 (i18n not set up). The framework is in place
-and 30 high-traffic pages are migrated (with `// i18n-todo` markers tracking
-remaining strings). The remaining ~466 page components need incremental
-migration as they're touched.
+and all 30 high-traffic priority pages are now migrated. The remaining ~466 page
+components need incremental migration as they're touched.
 
 ## Pattern
 
