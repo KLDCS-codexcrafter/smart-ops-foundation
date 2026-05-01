@@ -146,6 +146,25 @@ export function GRNEntryPanel() {
   const [lines, setLines] = useState<FormLine[]>([]);
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
+  const [printGrn, setPrintGrn] = useState<GRN | null>(null);
+
+  // Sprint T-Phase-1.2.3-fix · Resolve preferred godown/bin for the draft line item.
+  // Founder ask: "while receiving item or issuing item it should pick the location as sets in item."
+  const preferred = useItemPreferredLocation(draftLine.item_id || undefined, safeEntity);
+
+  const applyPreferredBin = () => {
+    if (!preferred?.binId) {
+      toast.info('No preferred bin set for this item');
+      return;
+    }
+    setDraftLine(l => ({
+      ...l,
+      bin_id: preferred.binId ?? '',
+      bin_code: preferred.binCode ?? '',
+      bin_id_source: 'preferred',
+    }));
+    toast.success(`Bin set to preferred · ${preferred.binCode ?? preferred.binId}`);
+  };
 
   const totals = useMemo(() => {
     let qty = 0, value = 0;
