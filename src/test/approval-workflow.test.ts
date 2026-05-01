@@ -14,6 +14,9 @@ const ctx: ApprovalContext = {
   sourceModule: 'inventory',
 };
 
+type Rec = Record<string, unknown> & { id: string };
+const mk = (status: string): Rec => ({ id: 'r1', status });
+
 describe('approval-workflow-engine · M-4', () => {
   beforeEach(() => localStorage.clear());
 
