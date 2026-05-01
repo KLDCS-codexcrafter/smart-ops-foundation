@@ -7,7 +7,9 @@ export type GodownOwnershipType =
   | 'consignment_at_dealer'
   | 'cwc_swc_godown'
   | 'customs_bonded'
-  | 'sez_ftz';
+  | 'sez_ftz'
+  // Sprint T-Phase-1.2.4 · Virtual godown for invoice-received-material-pending scenario
+  | 'goods_in_transit';
 
 export const OWNERSHIP_LABELS: Record<GodownOwnershipType, string> = {
   own_own_stock: 'Own Premises - Own Stock',
@@ -19,6 +21,7 @@ export const OWNERSHIP_LABELS: Record<GodownOwnershipType, string> = {
   cwc_swc_godown: 'CWC / SWC Government Warehouse',
   customs_bonded: 'Customs Bonded Warehouse',
   sez_ftz: 'SEZ / Free Trade Zone',
+  goods_in_transit: 'Goods in Transit (Virtual)',
 };
 
 export const RENTED_TYPES: GodownOwnershipType[] = [
