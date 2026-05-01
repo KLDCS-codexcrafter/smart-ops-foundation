@@ -215,7 +215,7 @@ export function ResourceAllocationPanel() {
         <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>{editing ? 'Edit Allocation' : 'Allocate Resource'}</SheetTitle>
-            <SheetDescription>1.1.2-c will add &apos;project_manager&apos; person type filter.</SheetDescription>
+            <SheetDescription>Project Managers (PM) appear with a badge for quick identification.</SheetDescription>
           </SheetHeader>
           <div className="space-y-4 mt-4">
             <div className="space-y-1.5">
@@ -223,9 +223,23 @@ export function ResourceAllocationPanel() {
               <Select value={form.person_id} onValueChange={v => setForm(f => ({ ...f, person_id: v }))} disabled={!!editing}>
                 <SelectTrigger><SelectValue placeholder="Pick a person" /></SelectTrigger>
                 <SelectContent>
-                  {activePersons.map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.display_name} ({p.person_code})</SelectItem>
-                  ))}
+                  {[...activePersons]
+                    .sort((a, b) => {
+                      const aPM = a.person_type === 'project_manager' ? 0 : 1;
+                      const bPM = b.person_type === 'project_manager' ? 0 : 1;
+                      if (aPM !== bPM) return aPM - bPM;
+                      return a.display_name.localeCompare(b.display_name);
+                    })
+                    .map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        <span className="flex items-center gap-2">
+                          {p.person_type === 'project_manager' && (
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-purple-500/30 bg-purple-500/10 text-purple-700">PM</Badge>
+                          )}
+                          {p.display_name} ({p.person_code})
+                        </span>
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
