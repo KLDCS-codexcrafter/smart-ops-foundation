@@ -612,6 +612,20 @@ export function MaterialIssueNotePanel() {
               </div>
             </div>
             <div>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Bin / Rack</Label>
+                <Button type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                  disabled={!draftLine.item_id || !preferred}
+                  onClick={applyPreferredBin}>↻ Use preferred</Button>
+              </div>
+              <Input value={draftLine.bin_code}
+                placeholder={preferred?.binCode ? `Suggested: ${preferred.binCode}` : 'No preferred bin'}
+                onChange={e => setDraftLine(d => ({ ...d, bin_code: e.target.value, bin_id_source: 'manual' }))} />
+              {draftLine.bin_id_source === 'preferred' && (
+                <p className="text-[10px] text-emerald-600 mt-1">Auto-filled from item preferred location</p>
+              )}
+            </div>
+            <div>
               <Label className="text-xs">Batch (optional)</Label>
               <Input value={draftLine.batch_no}
                 onChange={e => setDraftLine(d => ({ ...d, batch_no: e.target.value }))} />
