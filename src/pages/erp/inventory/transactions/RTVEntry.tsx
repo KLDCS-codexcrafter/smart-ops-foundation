@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
@@ -97,6 +98,18 @@ export function RTVEntryPanel() {
     persist([rtv, ...rtvs]);
     setCreateOpen(false);
     setActiveId(rtv.id);
+    // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+    logAudit({
+      entityCode,
+      action: 'create',
+      entityType: 'rtv',
+      recordId: rtv.id,
+      recordLabel: rtv.rtv_no,
+      beforeState: null,
+      afterState: { ...rtv },
+      reason: null,
+      sourceModule: 'inventory',
+    });
     toast.success(`RTV ${rtv.rtv_no} created`);
     // [JWT] POST /api/inventory/rtvs
   }
@@ -120,16 +133,45 @@ export function RTVEntryPanel() {
       }
     }
     localStorage.setItem(balKey, JSON.stringify(balances));
-    const next = rtvs.map(r => r.id === id ? { ...r, status: 'posted' as const, posted_at: now, updated_at: now } : r);
+    const updated = { ...rtv, status: 'posted' as const, posted_at: now, updated_at: now };
+    const next = rtvs.map(r => r.id === id ? updated : r);
     persist(next);
+    // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+    logAudit({
+      entityCode,
+      action: 'post',
+      entityType: 'rtv',
+      recordId: updated.id,
+      recordLabel: updated.rtv_no,
+      beforeState: { ...rtv },
+      afterState: { ...updated },
+      reason: null,
+      sourceModule: 'inventory',
+    });
     toast.success('RTV posted · stock decremented');
     setTimeout(() => printRtv(next.find(r => r.id === id)!), 300);
   }
 
   function shipRtv(id: string) {
     const now = new Date().toISOString();
+    const prev = rtvs.find(r => r.id === id) ?? null;
+    const updated = prev ? { ...prev, status: 'shipped' as const, shipped_at: now, updated_at: now } : null;
     const next = rtvs.map(r => r.id === id ? { ...r, status: 'shipped' as const, shipped_at: now, updated_at: now } : r);
     persist(next);
+    if (updated) {
+      // Sprint T-Phase-1.2.5h-b1-fix · Audit trail (additive · MCA Rule 3(1))
+      logAudit({
+        entityCode,
+        action: 'update',
+        entityType: 'rtv',
+        recordId: updated.id,
+        recordLabel: updated.rtv_no,
+        beforeState: prev ? { ...prev } : null,
+        afterState: { ...updated },
+        reason: 'Shipped to vendor',
+        sourceModule: 'inventory',
+      });
+    }
     toast.success('RTV shipped');
   }
 
