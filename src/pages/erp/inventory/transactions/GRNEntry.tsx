@@ -81,6 +81,10 @@ interface FormHeader {
   godown_name: string;
   project_centre_id: string | null;
   narration: string;
+  // Sprint T-Phase-1.2.4 · Multi-VT GRN + GIT (two-stage receipt)
+  voucher_type_id: string;
+  voucher_type_name: string;
+  receipt_mode: 'direct' | 'two_stage';
 }
 
 const BLANK_HEADER: FormHeader = {
@@ -93,6 +97,9 @@ const BLANK_HEADER: FormHeader = {
   godown_id: '', godown_name: '',
   project_centre_id: null,
   narration: '',
+  voucher_type_id: 'vt-receipt-note-domestic',
+  voucher_type_name: 'Goods Receipt Note (Domestic)',
+  receipt_mode: 'direct',
 };
 
 interface FormLine {
