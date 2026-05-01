@@ -121,6 +121,8 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-26q', label: 'Form 26Q (Non-salary)', icon: FileText },
   { id: 'fc-rpt-27q', label: 'Form 27Q (NRI)', icon: Globe },
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
+  { id: 'fc-rpt-audit-trail', label: 'Audit Trail (MCA Rule 3(1))', icon: Shield },
+  { id: 'fc-rpt-monthly-production', label: 'Monthly Production (CGST 56(12))', icon: Factory },
 ];
 
 // [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
