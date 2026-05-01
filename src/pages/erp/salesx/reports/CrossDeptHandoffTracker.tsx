@@ -27,7 +27,8 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search, GitMerge, AlertTriangle } from 'lucide-react';
+import { Search, GitMerge, AlertTriangle, Briefcase } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 import type { Order } from '@/types/order';
@@ -77,6 +78,9 @@ interface HandoffRow {
   imStatus: IMStatus | null;
   siVoucherNo: string | null;
   siAmount: number | null;
+  // Sprint 1.1.2-c · ProjX cross-module
+  projectId: string | null;
+  projectNo: string | null;
   pipelineStage: number;   // 0-4
   daysSinceActivity: number;
 }
@@ -143,6 +147,8 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
       imNo: im?.memo_no ?? null, imStatus: im?.status ?? null,
       siVoucherNo: si?.voucher_no ?? null,
       siAmount: si ? si.net_amount : null,
+      projectId: so.project_id ?? null,
+      projectNo: so.project_no ?? null,
       pipelineStage, daysSinceActivity: daysSince,
     };
   });
@@ -254,6 +260,7 @@ function MetricCard({ label, value, tone = 'default' }: MetricCardProps) {
 }
 
 export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [stuckOnly, setStuckOnly] = useState(false);
 
@@ -267,7 +274,8 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
         r.customerName.toLowerCase().includes(q)
         || r.soNo.toLowerCase().includes(q)
         || (r.quotationNo?.toLowerCase().includes(q) ?? false)
-        || (r.enquiryNo?.toLowerCase().includes(q) ?? false),
+        || (r.enquiryNo?.toLowerCase().includes(q) ?? false)
+        || (r.projectNo?.toLowerCase().includes(q) ?? false),
       );
     }
     if (stuckOnly) list = list.filter(r => r.daysSinceActivity > 7);
