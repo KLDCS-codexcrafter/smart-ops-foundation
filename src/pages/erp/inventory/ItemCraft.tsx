@@ -115,6 +115,7 @@ const BLANK: Omit<InventoryItem, 'id' | 'created_at' | 'updated_at'> = {
   safety_stock: null, max_stock_level: null,
   batch_tracking: false, batch_override: false,
   serial_tracking: false, serial_override: false,
+  is_heat_tracked: false,
   expiry_tracking: false, qc_hold_on_receipt: false,
   warranty_period: null, warranty_unit: 'Months', warranty_type: 'Standard',
   service_required: false, service_interval: null, amc_applicable: false,
@@ -272,9 +273,10 @@ export function ItemCraftPanel() {
       : f.warranty_unit === 'Years' ? Number(f.warranty_period) * 12
       : f.warranty_unit === 'Days' ? Math.round(Number(f.warranty_period) / 30)
       : Number(f.warranty_period);
-    // Heat tracking auto-on for steel/metal Raw Material (Sinha-critical).
-    const is_heat_tracked = f.item_type === 'Raw Material'
+    // Heat tracking — explicit toggle wins; otherwise auto-on for steel/metal Raw Material (Sinha-critical).
+    const autoHeat = f.item_type === 'Raw Material'
       && /steel|metal|tmt|rod|plate|sheet|bar|ingot/i.test(`${f.name} ${f.stock_group_name || ''}`);
+    const is_heat_tracked = f.is_heat_tracked === true ? true : autoHeat;
     return {
       is_batch_tracked: !!f.batch_tracking,
       is_serial_tracked: !!f.serial_tracking,
@@ -1184,6 +1186,7 @@ export function ItemCraftPanel() {
                   {([
                     { tf: 'batch_tracking', l: 'Batch Tracking', d: 'Track by batch / lot number' },
                     { tf: 'serial_tracking', l: 'Serial Tracking', d: 'Track individual serial numbers' },
+                    { tf: 'is_heat_tracked', l: 'Heat / Cast Tracking', d: 'Track foundry heat number + MTC (steel/alloy)' },
                     { tf: 'expiry_tracking', l: 'Expiry Tracking', d: 'Mandatory expiry date on every inward' },
                     { tf: 'qc_hold_on_receipt', l: 'QC Hold on Receipt', d: 'Hold in QC location before main godown' },
                   ] as const).map(({ tf, l, d }) => (

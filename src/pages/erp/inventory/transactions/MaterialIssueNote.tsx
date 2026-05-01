@@ -33,6 +33,7 @@ import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
+import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
@@ -83,6 +84,10 @@ interface FormLine {
   available_qty: number;
   batch_no: string;
   notes: string;
+  // Sprint T-Phase-1.2.3 audit fix: preferred-bin wiring on dispatch line.
+  bin_id: string;
+  bin_code: string;
+  bin_id_source: 'preferred' | 'manual' | '';
 }
 
 const blankLine = (): FormLine => ({
@@ -90,6 +95,7 @@ const blankLine = (): FormLine => ({
   item_id: '', item_code: '', item_name: '', uom: '',
   qty: 0, rate: 0, available_qty: 0,
   batch_no: '', notes: '',
+  bin_id: '', bin_code: '', bin_id_source: '',
 });
 
 export function MaterialIssueNotePanel() {
@@ -114,6 +120,21 @@ export function MaterialIssueNotePanel() {
   // mins is intentionally a dependency: re-read balances after a MIN is issued.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo(() => loadBalances(safeEntity), [safeEntity, mins]);
+
+  // Sprint T-Phase-1.2.3 audit fix: resolve preferred godown/bin for the picked item.
+  const preferred = useItemPreferredLocation(draftLine.item_id || undefined, safeEntity);
+  const applyPreferredBin = () => {
+    if (!preferred) { toast.info('No preferred bin set for this item'); return; }
+    setDraftLine(d => ({
+      ...d,
+      bin_id: preferred.binId ?? '',
+      bin_code: preferred.binCode ?? '',
+      bin_id_source: 'preferred',
+    }));
+    toast.success(preferred.binCode
+      ? `Preferred bin ${preferred.binCode} applied`
+      : `Preferred godown ${preferred.godownName} applied`);
+  };
 
   const totals = useMemo(() => {
     let qty = 0, value = 0;
@@ -165,6 +186,7 @@ export function MaterialIssueNotePanel() {
       uom: l.uom, qty: l.qty, rate: l.rate,
       available_qty: l.available_qty_at_issue,
       batch_no: l.batch_no ?? '', notes: l.notes,
+      bin_id: '', bin_code: '', bin_id_source: '' as const,
     })));
     setView('form');
   };
@@ -588,6 +610,20 @@ export function MaterialIssueNotePanel() {
                 <Label className="text-xs">UOM</Label>
                 <Input value={draftLine.uom} disabled />
               </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Bin / Rack</Label>
+                <Button type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                  disabled={!draftLine.item_id || !preferred}
+                  onClick={applyPreferredBin}>↻ Use preferred</Button>
+              </div>
+              <Input value={draftLine.bin_code}
+                placeholder={preferred?.binCode ? `Suggested: ${preferred.binCode}` : 'No preferred bin'}
+                onChange={e => setDraftLine(d => ({ ...d, bin_code: e.target.value, bin_id_source: 'manual' }))} />
+              {draftLine.bin_id_source === 'preferred' && (
+                <p className="text-[10px] text-emerald-600 mt-1">Auto-filled from item preferred location</p>
+              )}
             </div>
             <div>
               <Label className="text-xs">Batch (optional)</Label>

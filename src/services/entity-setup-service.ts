@@ -603,6 +603,73 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore */ }
 
+  // Sprint T-Phase-1.2.3 · Demo seed: a few reorder rules + heat numbers so
+  // ReorderAlerts and HeatMaster have testable data on a fresh entity.
+  // Idempotent — only seeds when the respective stores are empty.
+  try {
+    const RR_KEY = 'erp_location_reorder_rules';
+    const HEAT_KEY = `erp_heat_numbers_${opts.shortCode}`;
+    const ITEM_KEY = `erp_group_items_${opts.shortCode}`;
+    const GODOWN_KEY2 = 'erp_godowns';
+    const existingRules: Array<{ id: string }> = JSON.parse(localStorage.getItem(RR_KEY) || '[]');
+    const existingHeats: Array<{ heat_no: string }> = JSON.parse(localStorage.getItem(HEAT_KEY) || '[]');
+    const seedItems: Array<{ id: string; code?: string; name: string }> = JSON.parse(
+      localStorage.getItem(ITEM_KEY)
+        || localStorage.getItem('erp_group_items')
+        || '[]'
+    );
+    const seedGodowns: Array<{ id: string; name: string; code: string }> = JSON.parse(
+      localStorage.getItem(GODOWN_KEY2) || '[]'
+    );
+    const mainGd = seedGodowns.find(g => /MAIN-GD$/i.test(g.code) || /Main Store/i.test(g.name));
+    const nowIso3 = new Date().toISOString();
+
+    if (existingRules.length === 0 && seedItems.length > 0 && mainGd) {
+      const sample = seedItems.slice(0, 3);
+      const seededRules = sample.map((it, idx) => ({
+        id: `rr-seed-${opts.shortCode}-${idx}-${Date.now()}`,
+        item_id: it.id, item_code: it.code ?? '', item_name: it.name,
+        godown_id: mainGd.id, godown_name: mainGd.name,
+        department_tag_id: null, department_tag_name: null,
+        min_stock: 50, max_stock: 500, reorder_qty: 100,
+        safety_stock: 25, lead_time_days: 7,
+        priority: idx === 0 ? 'critical' : idx === 1 ? 'high' : 'normal',
+        is_active: true,
+        created_at: nowIso3, updated_at: nowIso3,
+      }));
+      // [JWT] POST /api/inventory/reorder-rules (bulk)
+      localStorage.setItem(RR_KEY, JSON.stringify(seededRules));
+    }
+
+    if (existingHeats.length === 0 && opts.shortCode === 'SINHA' && seedItems.length > 0) {
+      const steelItem = seedItems.find(it => /steel|plate|sheet|bar|rod/i.test(it.name)) ?? seedItems[0];
+      const seededHeats = [
+        {
+          id: `heat-seed-${opts.shortCode}-1`,
+          heat_no: 'HT-2026-0001', cast_no: 'C-1001',
+          mill_name: 'Tata Steel Jamshedpur', mill_batch_ref: 'TS-2026-0001',
+          supplier_id: null, supplier_name: 'Tata Steel Ltd', supplier_batch_ref: null,
+          item_id: steelItem.id, item_name: steelItem.name, grade: 'IS 2062 E250',
+          received_qty: 1500, available_qty: 1500, uom: 'KG',
+          status: 'received',
+          created_at: nowIso3, updated_at: nowIso3,
+        },
+        {
+          id: `heat-seed-${opts.shortCode}-2`,
+          heat_no: 'HT-2026-0002', cast_no: 'C-1002',
+          mill_name: 'JSW Steel', mill_batch_ref: 'JSW-2026-0002',
+          supplier_id: null, supplier_name: 'JSW Steel Ltd', supplier_batch_ref: null,
+          item_id: steelItem.id, item_name: steelItem.name, grade: 'IS 2062 E350',
+          received_qty: 800, available_qty: 600, uom: 'KG',
+          status: 'in_production',
+          created_at: nowIso3, updated_at: nowIso3,
+        },
+      ];
+      // [JWT] POST /api/inventory/heat-numbers (bulk)
+      localStorage.setItem(HEAT_KEY, JSON.stringify(seededHeats));
+    }
+  } catch { /* ignore — demo seed is best-effort */ }
+
   // Sprint T-Phase-1.2.2 · Auto-activate Inventory Hub + ProjX voucher types on entity creation
   // Founder lock: "if voucher type is not then create the same while creating entity refer command center"
   // vt-stock-journal + vt-stock-transfer are already is_active:true — no action needed
