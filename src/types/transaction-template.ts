@@ -298,3 +298,10 @@ export function getTemplateSeedData(): TransactionTemplate[] {
       '6. Jurisdiction: {our_city} courts only'),
   ];
 }
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket B) ──────
+// Template (global seed) + per-entity instance pattern.
+export const TRANSACTION_TEMPLATES_TEMPLATE_KEY = 'erp_transaction_templates_template';
+// [JWT] GET /api/finecore/transaction-templates?entityCode={e}
+export const transactionTemplatesKey = (e: string): string =>
+  e ? `erp_transaction_templates_${e}` : TRANSACTION_TEMPLATES_TEMPLATE_KEY;

@@ -71,14 +71,29 @@ export function validateVoucher(voucher: Partial<Voucher>): ValidationResult {
     }
   }
 
-  // Dr = Cr check for journal lines
+  // Sprint T-Phase-1.2.5h-a · Voucher balance enforcement (audit H-3)
+  // Tally-classic rule: voucher must be balanced (sum_dr === sum_cr) before save.
+  // Tolerance ₹0.01 absorbs unavoidable Decimal rounding without masking real errors.
   if (voucher.ledger_lines && voucher.ledger_lines.length > 0) {
     const totalDr = voucher.ledger_lines
       .reduce((s, l) => s.plus(new Decimal(l.dr_amount ?? 0)), new Decimal(0));
     const totalCr = voucher.ledger_lines
       .reduce((s, l) => s.plus(new Decimal(l.cr_amount ?? 0)), new Decimal(0));
-    if (!totalDr.equals(totalCr)) {
-      errors.push(`Dr/Cr mismatch: Dr ₹${totalDr.toNumber().toLocaleString('en-IN')} ≠ Cr ₹${totalCr.toNumber().toLocaleString('en-IN')}`);
+    if (totalDr.minus(totalCr).abs().greaterThan(0.01)) {
+      errors.push(`Voucher not balanced: Dr ₹${totalDr.toFixed(2)} ≠ Cr ₹${totalCr.toFixed(2)} (diff ₹${totalDr.minus(totalCr).abs().toFixed(2)})`);
+    }
+  }
+  // Also accept generic { lines: [{debit, credit}] } shape used by some callers/tests.
+  const genericLines = (voucher as Partial<Voucher> & { lines?: Array<{ debit?: number; credit?: number }> }).lines;
+  if (genericLines && genericLines.length > 0 && (!voucher.ledger_lines || voucher.ledger_lines.length === 0)) {
+    let totalDr = new Decimal(0);
+    let totalCr = new Decimal(0);
+    for (const ln of genericLines) {
+      if (typeof ln.debit === 'number' && ln.debit > 0) totalDr = totalDr.plus(ln.debit);
+      if (typeof ln.credit === 'number' && ln.credit > 0) totalCr = totalCr.plus(ln.credit);
+    }
+    if (totalDr.minus(totalCr).abs().greaterThan(0.01)) {
+      errors.push(`Voucher not balanced: Dr ₹${totalDr.toFixed(2)} ≠ Cr ₹${totalCr.toFixed(2)} (diff ₹${totalDr.minus(totalCr).abs().toFixed(2)})`);
     }
   }
 
@@ -132,6 +147,12 @@ function getFY(): string {
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
 }
 
+/**
+ * Sprint T-Phase-1.2.5h-a · Public FY accessor for tests + entity cleanup utilities.
+ * Indian fiscal-year window: Apr 1 - Mar 31.
+ */
+export function getCurrentFY(): string { return getFY(); }
+
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
 /**
  * Centralized doc-number generator. Format: `PREFIX/FY/NNNN` (e.g. `SO/24-25/0001`).
@@ -166,13 +187,26 @@ export function generateDocNo(
     | 'RJO',   // Rejections Out (Return to Vendor)
   entityCode: string,
 ): string {
-  const key = `erp_doc_seq_${prefix}_${entityCode}`;
-  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
-  const raw = localStorage.getItem(key);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode
-  localStorage.setItem(key, String(seq));
+  // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
+  // Storage key: erp_doc_seq_{prefix}_{entityCode}_{fy}
+  // Auto-migrates legacy non-FY key into current-FY key on first call (Q3-b).
   const fy = getFY();
+  const newKey = `erp_doc_seq_${prefix}_${entityCode}_${fy}`;
+  const legacyKey = `erp_doc_seq_${prefix}_${entityCode}`;
+  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode/:fy
+  let raw = localStorage.getItem(newKey);
+  if (!raw) {
+    const legacyRaw = localStorage.getItem(legacyKey);
+    if (legacyRaw) {
+      // [JWT] One-time migration · legacy non-FY → current FY
+      localStorage.setItem(newKey, legacyRaw);
+      raw = legacyRaw;
+      // Keep legacyKey for one FY (safety) — h-b will purge.
+    }
+  }
+  const seq = raw ? parseInt(raw, 10) + 1 : 1;
+  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode/:fy
+  localStorage.setItem(newKey, String(seq));
   return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
 }
 

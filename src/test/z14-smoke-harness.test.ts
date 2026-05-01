@@ -708,3 +708,82 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
     expect(passCount).toBe(16);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1 · Tests A19-A23
+// Validates: voucher Dr/Cr balance check, FY-scoped sequence numbering,
+// legacy non-FY auto-migration, voucher-types entity-scoping.
+// ─────────────────────────────────────────────────────────────────────────
+describe('Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1', () => {
+  const FYTEST = 'FYTEST';
+
+  // FY helper duplicated locally so we don't depend on engine internals.
+  const localFY = (): string => {
+    const now = new Date();
+    const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+    return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
+  };
+
+  const cleanFYTEST = () => {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.includes(FYTEST)) localStorage.removeItem(k);
+    }
+  };
+
+  it('A19 · validateVoucher rejects unbalanced voucher (Dr 100 ≠ Cr 99)', () => {
+    const result = validateVoucher({
+      date: '2026-04-15',
+      base_voucher_type: 'Journal',
+      entity_id: FYTEST,
+      ledger_lines: [
+        { ledger_id: 'l1', ledger_name: 'L1', dr_amount: 100, cr_amount: 0 },
+        { ledger_id: 'l2', ledger_name: 'L2', dr_amount: 0,   cr_amount: 99  },
+      ],
+    } as Parameters<typeof validateVoucher>[0]);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some(e => e.includes('not balanced'))).toBe(true);
+  });
+
+  it('A20 · validateVoucher accepts exactly balanced voucher (Dr 100 = Cr 100)', () => {
+    const result = validateVoucher({
+      date: '2026-04-15',
+      base_voucher_type: 'Journal',
+      entity_id: FYTEST,
+      ledger_lines: [
+        { ledger_id: 'l1', ledger_name: 'L1', dr_amount: 100, cr_amount: 0 },
+        { ledger_id: 'l2', ledger_name: 'L2', dr_amount: 0,   cr_amount: 100 },
+      ],
+    } as Parameters<typeof validateVoucher>[0]);
+    expect(result.errors.some(e => e.includes('not balanced'))).toBe(false);
+  });
+
+  it('A21 · generateDocNo uses FY-scoped storage key', async () => {
+    cleanFYTEST();
+    const { generateDocNo } = await import('@/lib/finecore-engine');
+    const fy = localFY();
+    const docNo = generateDocNo('GRN', FYTEST);
+    expect(docNo).toMatch(new RegExp(`^GRN/${fy}/0001$`));
+    expect(localStorage.getItem(`erp_doc_seq_GRN_${FYTEST}_${fy}`)).toBe('1');
+    cleanFYTEST();
+  });
+
+  it('A22 · generateDocNo migrates legacy non-FY key to current FY', async () => {
+    cleanFYTEST();
+    // Seed legacy non-FY key
+    localStorage.setItem(`erp_doc_seq_GRN_${FYTEST}`, '47');
+    const { generateDocNo } = await import('@/lib/finecore-engine');
+    const fy = localFY();
+    const docNo = generateDocNo('GRN', FYTEST);
+    // Migration: legacy 47 → FY-scoped 47, then incremented to 48
+    expect(docNo).toMatch(new RegExp(`^GRN/${fy}/0048$`));
+    expect(localStorage.getItem(`erp_doc_seq_GRN_${FYTEST}_${fy}`)).toBe('48');
+    cleanFYTEST();
+  });
+
+  it('A23 · voucherTypesKey produces entity-scoped key with template fallback', async () => {
+    const { voucherTypesKey } = await import('@/hooks/useVoucherTypes');
+    expect(voucherTypesKey('SINHA')).toBe('erp_voucher_types_SINHA');
+    expect(voucherTypesKey('')).toBe('erp_voucher_types_template');
+  });
+});

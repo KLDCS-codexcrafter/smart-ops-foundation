@@ -200,3 +200,8 @@ export const CALC_TYPE_LABELS: Record<PayHeadCalcType, string> = {
   slab: 'Slab-based',
   computed: 'Computed (IT engine)',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/salary-structures?entityCode={e}
+export const salaryStructuresKey = (e: string): string =>
+  e ? `erp_salary_structures_${e}` : 'erp_salary_structures';

@@ -122,3 +122,11 @@ export const DEFAULT_CLEARANCE_ITEMS: Omit<ClearanceItem, 'id' | 'status' | 'rem
   { department: 'HR',      item: 'PF withdrawal / transfer form',   assignedTo: 'HR Admin'   },
   { department: 'Manager', item: 'Knowledge transfer completed',    assignedTo: 'Manager'    },
 ];
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/exit-requests?entityCode={e}
+export const exitRequestsKey = (e: string): string =>
+  e ? `erp_exit_requests_${e}` : 'erp_exit_requests';
+// [JWT] GET /api/peoplepay/fnf-settlements?entityCode={e}
+export const fnfSettlementsKey = (e: string): string =>
+  e ? `erp_fnf_settlements_${e}` : 'erp_fnf_settlements';

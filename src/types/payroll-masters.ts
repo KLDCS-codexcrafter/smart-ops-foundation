@@ -262,3 +262,11 @@ export function getAttendanceTypeSeeds(): AttendanceType[] {
     mk('at-seed-09','CO','Comp Off','CO','compensatory_off','full_paid','#10b981',true,true),
   ];
 }
+
+/**
+ * GLOBAL KEYS (Sprint T-Phase-1.2.5h-a verified): SHIFTS_KEY, LEAVE_TYPES_KEY,
+ * HOLIDAY_CALENDARS_KEY, ATTENDANCE_TYPES_KEY, OVERTIME_RULES_KEY, LOAN_TYPES_KEY,
+ * BONUS_CONFIGS_KEY, GRATUITY_NPS_KEY are intentionally tenant-global.
+ * Rationale: statutory + company-wide catalogs apply to all entities.
+ * Audited: 2026-05-01 · Bucket A — TRULY GLOBAL.
+ */

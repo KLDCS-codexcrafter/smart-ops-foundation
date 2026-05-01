@@ -102,3 +102,8 @@ export interface StatutoryDueDate {
 
 // ── Tab type ──────────────────────────────────────────────────────
 export type StatutoryTab = 'pf-ecr' | 'esi' | 'pt' | 'tds-24q' | 'form16' | 'calendar';
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/comply360/statutory-challans?entityCode={e}
+export const statutoryChallansKey = (e: string): string =>
+  e ? `erp_statutory_challans_${e}` : 'erp_statutory_challans';

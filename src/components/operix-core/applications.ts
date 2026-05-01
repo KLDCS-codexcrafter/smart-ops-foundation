@@ -53,6 +53,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/command-center',
     icon: 'LayoutDashboard',
+    status: 'active',
   },
   {
     id: 'procure360',
@@ -133,6 +134,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/salesx',
     icon: 'TrendingUp',
+    status: 'active',
   },
   {
     id: 'distributor-hub',
@@ -141,6 +143,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/distributor-hub',
     icon: 'Store',
+    status: 'active',
   },
   {
     id: 'customer-hub',
@@ -185,6 +188,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/finecore',
     icon: 'Calculator',
+    status: 'active',
   },
   {
     id: 'comply360',
@@ -211,6 +215,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/receivx',
     icon: 'TrendingUp',
+    status: 'active',
   },
   {
     id: 'eximx',
@@ -228,6 +233,7 @@ export const applications: AppDefinition[] = [
     category: 'Pay Hub',
     route: '/erp/pay-hub',
     icon: 'Users',
+    status: 'active',
   },
   {
     id: 'dispatch-hub',
