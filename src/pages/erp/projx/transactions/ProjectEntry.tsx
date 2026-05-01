@@ -101,6 +101,18 @@ export function ProjectEntryPanel() {
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);
+  const { persons: samPersons } = useSAMPersons(entityCode);
+  const pmPickerOptions = useMemo(
+    () => samPersons
+      .filter(p => p.is_active)
+      .sort((a, b) => {
+        const aPM = a.person_type === 'project_manager' ? 0 : 1;
+        const bPM = b.person_type === 'project_manager' ? 0 : 1;
+        if (aPM !== bPM) return aPM - bPM;
+        return a.display_name.localeCompare(b.display_name);
+      }),
+    [samPersons],
+  );
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | ProjectStatus>('all');
