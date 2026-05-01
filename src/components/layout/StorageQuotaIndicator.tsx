@@ -4,7 +4,7 @@
  *
  * Click to open dialog with top-10 largest keys + per-key Archive button.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState } from 'react';
 import { Database, Download, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useStorageQuota } from '@/hooks/useStorageQuota';
 import { archiveKey, formatBytes, type StorageUsage } from '@/lib/storage-quota-engine';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n-engine';
 
 const TIER_CLASSES: Record<StorageUsage['tier'], string> = {
   green:        'bg-success/10 text-success border-success/30',

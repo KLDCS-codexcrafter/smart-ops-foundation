@@ -2,7 +2,7 @@
  * EmployeeFinance.tsx — Sprint 10
  * 4-tab screen: Loans & Advances · Salary Advance · Expense Claims · Flexi Benefits
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, addMonths, parseISO } from 'date-fns';
@@ -35,6 +35,7 @@ import type { LoanType } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { useT } from '@/lib/i18n-engine';
 
 /* ── generateEMISchedule — pure function, no library ─────────────── */
 function generateEMISchedule(

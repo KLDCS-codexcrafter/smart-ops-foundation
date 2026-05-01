@@ -6,7 +6,7 @@
  * D-127/D-128 ZERO-TOUCH: This component NEVER posts vouchers.
  * Status flow: draft → raised → lr_assigned → delivered.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
   type SupplyRequestMemo,

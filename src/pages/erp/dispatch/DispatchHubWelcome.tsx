@@ -2,7 +2,7 @@
  * DispatchHubWelcome.tsx — Dashboard with 4 KPI tiles + Awaiting-LR queue.
  * Sprint 15a. Blue-600 accent.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { podsKey } from '@/types/pod';
 import { vouchersKey } from '@/lib/finecore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchHubModule } from './DispatchHubSidebar';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
 
