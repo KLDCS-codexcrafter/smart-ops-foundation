@@ -1,4 +1,10 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * All money/qty/percentage arithmetic uses Decimal.js helpers
+ * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
+ * No float multiplication or Math.round on money values.
+ */
+/**
  * QuotationEntry.tsx — Sales Quotation register + 2-tab form + revision history
  * Charis TDL UDF 4955-4975.
  * [JWT] GET/POST/PATCH /api/salesx/quotations
