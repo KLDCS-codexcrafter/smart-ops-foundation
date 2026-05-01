@@ -14,4 +14,9 @@ export type InventoryHubModule =
   | 'r-consumption-summary'
   | 'm-item-master'
   | 'm-godown-master'
-  | 'm-stock-groups';
+  | 'm-stock-groups'
+  // Sprint T-Phase-1.2.3 · Traceability masters
+  | 'm-heat-master'
+  | 'm-batch-grid'
+  | 'm-serial-grid'
+  | 'm-bin-labels';
