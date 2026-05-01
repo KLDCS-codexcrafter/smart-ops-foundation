@@ -284,7 +284,7 @@ export default function MobileTimeEntriesPage() {
                 <SelectContent>
                   <SelectItem value="__none__">— None —</SelectItem>
                   {projectMilestones.map(m => (
-                    <SelectItem key={m.id} value={m.id}>{m.title}</SelectItem>
+                    <SelectItem key={m.id} value={m.id}>{m.milestone_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -362,7 +362,7 @@ export default function MobileTimeEntriesPage() {
                       <span className="text-[11px] text-muted-foreground truncate">{project?.project_name}</span>
                     </div>
                     {milestone && (
-                      <p className="text-[10px] text-muted-foreground mt-0.5">→ {milestone.title}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">→ {milestone.milestone_name}</p>
                     )}
                   </div>
                   <div className="text-right shrink-0">
