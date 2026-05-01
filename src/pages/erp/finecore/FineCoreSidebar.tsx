@@ -9,7 +9,7 @@ import {
   LayoutDashboard, FileText, CreditCard, Wallet, BookOpen, ArrowLeftRight,
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
-  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2,
+  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2, Factory,
 } from 'lucide-react';
 // Scale and Truck already imported above (re-used for new INV entries).
 import {
@@ -36,6 +36,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-out-receivables', 'fc-out-payables',
   'fc-tds-advance', 'fc-tds-analytics',
   'fc-rpt-24q', 'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan', 'fc-rpt-26as',
+  'fc-rpt-audit-trail', 'fc-rpt-monthly-production',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
   'fc-gst-irn-register', 'fc-gst-ewb-register',
@@ -121,6 +122,8 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-26q', label: 'Form 26Q (Non-salary)', icon: FileText },
   { id: 'fc-rpt-27q', label: 'Form 27Q (NRI)', icon: Globe },
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
+  { id: 'fc-rpt-audit-trail', label: 'Audit Trail (MCA Rule 3(1))', icon: Shield },
+  { id: 'fc-rpt-monthly-production', label: 'Monthly Production (CGST 56(12))', icon: Factory },
 ];
 
 // [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
@@ -202,7 +205,8 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     const out = ['fc-out-receivables','fc-out-payables'];
     const rpt = ['fc-rpt-daybook','fc-rpt-ledger','fc-rpt-trial-balance','fc-rpt-pl',
       'fc-rpt-bs','fc-rpt-stock-summary','fc-rpt-outstanding','fc-rpt-26as',
-      'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan'];
+      'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan',
+      'fc-rpt-audit-trail','fc-rpt-monthly-production'];
     const gst = ['fc-gst-gstr1','fc-gst-gstr3b','fc-gst-2a','fc-gst-itc',
       'fc-gst-gstr2','fc-gst-gstr9'];
     const tds = ['fc-tds-advance','fc-tds-analytics'];

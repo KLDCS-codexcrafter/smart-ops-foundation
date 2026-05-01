@@ -60,6 +60,8 @@ import { Form3CDPanel } from './reports/Form3CD';
 import { Clause44ReportPanel } from './reports/gst/Clause44Report';
 import { IRNRegisterPanel } from './reports/IRNRegister';
 import { EWayBillRegisterPanel } from './reports/EWayBillRegister';
+import AuditTrailReport from './reports/AuditTrailReport';
+import MonthlyProductionAccounts from './reports/MonthlyProductionAccounts';
 import { CapitalAssetMasterPanel } from '@/pages/erp/accounting/capital-assets/CapitalAssetMaster';
 import { DepreciationWorkingsPanel } from '@/pages/erp/accounting/capital-assets/DepreciationWorkings';
 import { AMCWarrantyTrackerPanel } from '@/pages/erp/accounting/capital-assets/AMCWarrantyTracker';
@@ -115,6 +117,8 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-out-payables': 'Payables',
   'fc-tds-advance': 'TDS Advance',
   'fc-rpt-26as': 'Form 26AS Reconciliation',
+  'fc-rpt-audit-trail': 'Audit Trail (MCA Rule 3(1))',
+  'fc-rpt-monthly-production': 'Monthly Production Accounts (CGST Rule 56(12))',
   'fc-gst-gstr1': 'GSTR-1',
   'fc-gst-gstr3b': 'GSTR-3B',
   'fc-gst-gstr9': 'GSTR-9 Annual Return',
@@ -251,6 +255,8 @@ export function FinCorePagePanel() {
       case 'fc-rpt-challan': return <ChallanRegisterPanel entityCode={entityCode} />;
       case 'fc-tds-analytics': return <TDSAnalyticsPanel entityCode={entityCode} />;
       case 'fc-rpt-26as': return <Form26ASPanel entityCode={entityCode} />;
+      case 'fc-rpt-audit-trail': return <AuditTrailReport />;
+      case 'fc-rpt-monthly-production': return <MonthlyProductionAccounts />;
       case 'fc-gst-gstr1': return <GSTR1Panel entityCode={entityCode} />;
       case 'fc-gst-gstr3b': return <GSTR3BPanel entityCode={entityCode} />;
       case 'fc-gst-gstr9': return <GSTR9Panel entityCode={entityCode} />;

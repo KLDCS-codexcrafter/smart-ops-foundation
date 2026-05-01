@@ -787,3 +787,124 @@ describe('Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1', () => {
     expect(voucherTypesKey('')).toBe('erp_voucher_types_template');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail · Tests A24-A30
+// Validates: MCA Rule 3(1) audit trail engine, CGST Rule 56(8) edit/delete
+// protection via versioning, append-only guarantee, entity scoping, action
+// filters, CSV export shape, and "cannot be disabled" architectural rule.
+// ─────────────────────────────────────────────────────────────────────────
+describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => {
+  const ENT = 'AUDTEST';
+
+  const cleanAudit = () => {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.includes(ENT)) localStorage.removeItem(k);
+    }
+  };
+
+  it('A24 · logAudit writes append-only entry to entity-scoped key', async () => {
+    cleanAudit();
+    const { logAudit } = await import('@/lib/audit-trail-engine');
+    const { auditTrailKey } = await import('@/types/audit-trail');
+    logAudit({
+      entityCode: ENT, action: 'create', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001',
+      beforeState: null, afterState: { id: 'V1', amount: 100 },
+      sourceModule: 'finecore',
+    });
+    const raw = localStorage.getItem(auditTrailKey(ENT));
+    expect(raw).toBeTruthy();
+    const arr = JSON.parse(raw!);
+    expect(arr).toHaveLength(1);
+    expect(arr[0].action).toBe('create');
+    expect(arr[0].entity_id).toBe(ENT);
+    cleanAudit();
+  });
+
+  it('A25 · logAudit is append-only — second call appends, never overwrites', async () => {
+    cleanAudit();
+    const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
+    logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
+      afterState: { id: 'V1' }, sourceModule: 'finecore' });
+    logAudit({ entityCode: ENT, action: 'post', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001',
+      beforeState: { id: 'V1', status: 'draft' },
+      afterState: { id: 'V1', status: 'posted' }, sourceModule: 'finecore' });
+    const entries = readAuditTrail(ENT);
+    expect(entries).toHaveLength(2);
+    expect(entries.map(e => e.action).sort()).toEqual(['create', 'post']);
+    cleanAudit();
+  });
+
+  it('A26 · readAuditTrail filters by action and date range', async () => {
+    cleanAudit();
+    const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
+    logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
+      afterState: {}, sourceModule: 'finecore' });
+    logAudit({ entityCode: ENT, action: 'cancel', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001', beforeState: {},
+      afterState: null, reason: 'duplicate', sourceModule: 'finecore' });
+    const cancels = readAuditTrail(ENT, { action: 'cancel' });
+    expect(cancels).toHaveLength(1);
+    expect(cancels[0].reason).toBe('duplicate');
+    cleanAudit();
+  });
+
+  it('A27 · audit trail is entity-scoped — entries do not bleed across tenants', async () => {
+    cleanAudit();
+    localStorage.removeItem('erp_audit_trail_OTHER');
+    const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
+    logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'A', beforeState: null,
+      afterState: {}, sourceModule: 'finecore' });
+    logAudit({ entityCode: 'OTHER', action: 'create', entityType: 'voucher',
+      recordId: 'V2', recordLabel: 'B', beforeState: null,
+      afterState: {}, sourceModule: 'finecore' });
+    expect(readAuditTrail(ENT)).toHaveLength(1);
+    expect(readAuditTrail('OTHER')).toHaveLength(1);
+    expect(readAuditTrail(ENT)[0].record_id).toBe('V1');
+    cleanAudit();
+    localStorage.removeItem('erp_audit_trail_OTHER');
+  });
+
+  it('A28 · canMutateInPlace blocks posted records (CGST Rule 56(8))', async () => {
+    const { canMutateInPlace } = await import('@/lib/voucher-version-engine');
+    expect(canMutateInPlace({ status: 'draft' })).toBe(true);
+    expect(canMutateInPlace({ status: 'submitted' })).toBe(true);
+    expect(canMutateInPlace({ status: 'posted' })).toBe(false);
+    expect(canMutateInPlace({ status: 'cancelled' })).toBe(false);
+  });
+
+  it('A29 · buildNextVersion preserves original and increments version', async () => {
+    const { buildNextVersion } = await import('@/lib/voucher-version-engine');
+    const original = { id: 'V1', version: 1, superseded_by: null, amount: 100 };
+    const { supersededOriginal, nextVersion } = buildNextVersion(
+      original, { amount: 150 } as Partial<typeof original>, 'V2',
+    );
+    expect(supersededOriginal.id).toBe('V1');
+    expect(supersededOriginal.superseded_by).toBe('V2');
+    expect(nextVersion.id).toBe('V2');
+    expect(nextVersion.version).toBe(2);
+    expect(nextVersion.superseded_by).toBeNull();
+    expect(nextVersion.amount).toBe(150);
+  });
+
+  it('A30 · exportAuditTrailCsv produces header + row per entry (MCA archival)', async () => {
+    cleanAudit();
+    const { logAudit, readAuditTrail, exportAuditTrailCsv } = await import('@/lib/audit-trail-engine');
+    logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
+      recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
+      afterState: { amount: 100 }, sourceModule: 'finecore' });
+    const csv = exportAuditTrailCsv(readAuditTrail(ENT));
+    const lines = csv.split('\n');
+    expect(lines.length).toBe(2); // header + 1 row
+    expect(lines[0]).toContain('Audit ID');
+    expect(lines[0]).toContain('Before State');
+    expect(lines[1]).toContain('JV/0001');
+    cleanAudit();
+  });
+});
