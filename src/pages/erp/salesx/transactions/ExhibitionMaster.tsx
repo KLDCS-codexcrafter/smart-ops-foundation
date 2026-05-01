@@ -190,8 +190,8 @@ export function ExhibitionMasterPanel({ entityCode }: Props) {
       e.status === 'active' || (e.start_date <= today && e.end_date >= today),
     ).length;
     const upcoming = exhibitions.filter(e => e.status === 'planned' && e.start_date > today).length;
-    const totalBudget = exhibitions.reduce((s, e) => s + (e.budget?.total_planned || 0), 0);
-    const totalVisitors = exhibitions.reduce((s, e) => s + (e.outcome?.total_visitors || 0), 0);
+    const totalBudget = round2(dSum(exhibitions, e => e.budget?.total_planned || 0));
+    const totalVisitors = dSum(exhibitions, e => e.outcome?.total_visitors || 0);
     return { active, upcoming, totalBudget, totalVisitors };
   }, [exhibitions]);
 
@@ -341,7 +341,7 @@ export function ExhibitionMasterPanel({ entityCode }: Props) {
     const hot = vs.filter(v => v.interest_level === 'hot').length;
     const warm = vs.filter(v => v.interest_level === 'warm').length;
     const cold = vs.filter(v => v.interest_level === 'cold').length;
-    const pipeline = vs.reduce((s, v) => s + (v.estimated_value || 0), 0);
+    const pipeline = round2(dSum(vs, v => v.estimated_value || 0));
     const productFreq: Record<string, number> = {};
     vs.forEach(v => v.products_interested.forEach(p => {
       productFreq[p] = (productFreq[p] || 0) + 1;
