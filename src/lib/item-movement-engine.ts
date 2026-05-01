@@ -11,6 +11,8 @@ import { dMul, round2 } from '@/lib/decimal-helpers';
 import type { GRN } from '@/types/grn';
 import type { CycleCount } from '@/types/cycle-count';
 import type { RTV } from '@/types/rtv';
+// Sprint T-Phase-1.2.5h-b2 · Centralized error logging (M-2)
+import { logError } from '@/lib/error-engine';
 
 export type MovementType =
   | 'grn_inward'
