@@ -14,6 +14,8 @@ import {
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { dAdd, dSub, dMul, round2 } from '@/lib/decimal-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 function ls<T>(key: string): T[] {
   try {
