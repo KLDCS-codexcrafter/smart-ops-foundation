@@ -43,6 +43,7 @@ function readKey<T>(key: string): T[] {
 }
 
 export function RTVEntryPanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
   const [createOpen, setCreateOpen] = useState(false);
@@ -196,7 +197,6 @@ export function RTVEntryPanel() {
   }
 
   function printRtv(rtv: RTV) {
-  const _t = useT();
     const w = window.open('', '_blank', 'width=900,height=700');
     if (!w) return;
     const lines = rtv.lines.map(l => `
