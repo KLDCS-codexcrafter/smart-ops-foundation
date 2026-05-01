@@ -36,6 +36,7 @@ const LIVE_MODULES: FineCoreModule[] = [
   'fc-out-receivables', 'fc-out-payables',
   'fc-tds-advance', 'fc-tds-analytics',
   'fc-rpt-24q', 'fc-rpt-26q', 'fc-rpt-27q', 'fc-rpt-challan', 'fc-rpt-26as',
+  'fc-rpt-audit-trail', 'fc-rpt-monthly-production',
   'fc-gst-gstr1', 'fc-gst-gstr3b', 'fc-gst-2a', 'fc-gst-itc',
   'fc-gst-gstr2', 'fc-gst-gstr9',
   'fc-gst-irn-register', 'fc-gst-ewb-register',
@@ -204,7 +205,8 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     const out = ['fc-out-receivables','fc-out-payables'];
     const rpt = ['fc-rpt-daybook','fc-rpt-ledger','fc-rpt-trial-balance','fc-rpt-pl',
       'fc-rpt-bs','fc-rpt-stock-summary','fc-rpt-outstanding','fc-rpt-26as',
-      'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan'];
+      'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan',
+      'fc-rpt-audit-trail','fc-rpt-monthly-production'];
     const gst = ['fc-gst-gstr1','fc-gst-gstr3b','fc-gst-2a','fc-gst-itc',
       'fc-gst-gstr2','fc-gst-gstr9'];
     const tds = ['fc-tds-advance','fc-tds-analytics'];
