@@ -89,3 +89,17 @@ Deliverables:
   item-movement, stock-reservation, generateDocNo deeper, type contracts
 - Architecture documentation (docs/ARCHITECTURE.md)
 
+
+## Sprint T-Phase-1.2.5h-c2 closed · count = 5
+
+FINAL Card #2.5 sub-sprint (Wave 3 part 2) closed with zero touches to
+`src/pages/erp/accounting/vouchers/`. D-127 streak counter advances 4 → 5.
+
+Deliverables:
+- i18n framework (i18next + react-i18next) with Hindi MVP (208 keys, parity verified)
+- LocaleToggle in ERPHeader (EN ↔ हिन्दी, persisted per-entity via Bucket C)
+- 30 priority pages marked for migration; top strings wrapped in 8+ pages
+- Inventory Hub Welcome refreshed with 7 production-grade KPI cards (L-3)
+- docs/CODE-CONVENTIONS.md (L-2) · docs/I18N-MIGRATION-GUIDE.md · docs/PERFORMANCE-BASELINE.md (L-5)
+- 6 new vitest tests (i18n.test.ts U1-U6) · target 132/132
+- package.json adds i18next + react-i18next (Q1-a lock · first deps in 60+ sprints)
