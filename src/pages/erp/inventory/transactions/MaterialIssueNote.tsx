@@ -637,6 +637,28 @@ export function MaterialIssueNotePanel() {
                 </SelectContent>
               </Select>
             </div>
+            {draftSubstitutes.length > 0 && (
+              <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
+                <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                  {draftSubstitutes.length} approved substitute(s) available
+                </p>
+                <div className="space-y-1.5">
+                  {draftSubstitutes.map(s => (
+                    <div key={s.id} className="flex items-center justify-between gap-2 text-xs">
+                      <div className="min-w-0 flex-1">
+                        <code className="font-mono text-[11px]">{s.substitute_item_code}</code>
+                        <span className="ml-1.5">{s.substitute_item_name}</span>
+                        <span className="ml-1.5 text-muted-foreground">· ratio {s.ratio}</span>
+                      </div>
+                      <Button type="button" size="sm" variant="outline"
+                        className="h-6 text-[11px]" onClick={() => useSubstitute(s.id)}>
+                        Use This
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Qty</Label>
