@@ -14,4 +14,5 @@ export type ProjXModule =
   | 'r-project-pnl'
   | 'r-resource-utilization'
   | 'r-milestone-status'
-  | 'r-project-margin';
+  | 'r-project-margin'
+  | 'r-cash-flow-projection';

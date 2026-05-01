@@ -16,4 +16,5 @@ export const PROJX_MODULE_GROUP: Record<ProjXModule, 'transactions' | 'masters' 
   'r-resource-utilization': 'reports',
   'r-milestone-status': 'reports',
   'r-project-margin': 'reports',
+  'r-cash-flow-projection': 'reports',
 };

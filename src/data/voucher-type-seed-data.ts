@@ -295,4 +295,43 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
         config: { debit_ledger_code: 'SALARY_EXP', debit_ledger_name: 'Salary Expense', credit_ledger_code: 'SALP', credit_ledger_name: 'Salary Payable', amount_mode: 'full' } },
     ],
   }),
+  // ── PROJECT BILLING FAMILY (Feature-based · activates when ProjX card enabled per entity) ─────
+  // Note: family 'Accounting' + base 'Sales'/'Receipt' used to honor D-128 byte-identical schemas.
+  // Logical family identity is encoded via id-prefix + name + abbreviation; UI can group by abbreviation.
+  seed('vt-project-invoice', {
+    name: 'Project Invoice', abbreviation: 'PINV',
+    base_voucher_type: 'Sales', family: 'Accounting',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: true, inventory_impact: false,
+    numbering_prefix: 'PINV-', numbering_width: 4, current_sequence: 1,
+    print_after_save: true, print_title: 'Project Invoice',
+    behaviour_rules: [
+      validationRule(true),
+      taxRule('auto_detect'),
+      settlementRule(),
+    ],
+  }),
+  seed('vt-project-advance-receipt', {
+    name: 'Project Advance Receipt', abbreviation: 'PADV',
+    base_voucher_type: 'Receipt', family: 'Accounting',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: true, inventory_impact: false,
+    numbering_prefix: 'PADV-', numbering_width: 4, current_sequence: 1,
+    print_after_save: false, print_title: 'Project Advance Receipt',
+    behaviour_rules: [
+      validationRule(true),
+      taxRule('auto_detect'),
+    ],
+  }),
+  seed('vt-retention-settlement', {
+    name: 'Retention Settlement', abbreviation: 'RETN',
+    base_voucher_type: 'Receipt', family: 'Accounting',
+    is_active: false, activation_type: 'feature_based',
+    accounting_impact: true, inventory_impact: false,
+    numbering_prefix: 'RETN-', numbering_width: 4, current_sequence: 1,
+    print_after_save: false, print_title: 'Retention Settlement',
+    behaviour_rules: [
+      validationRule(true),
+    ],
+  }),
 ];

@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, FolderKanban, ChevronRight, ExternalLink,
-  Milestone, Users, Clock, FileText, BarChart3, TrendingUp, PieChart, Activity,
+  Milestone, Users, Clock, FileText, BarChart3, TrendingUp, PieChart, Activity, Wallet,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -22,6 +22,7 @@ const LIVE_MODULES: ProjXModule[] = [
   'welcome', 't-project-entry', 'm-project-centres',
   't-milestone-tracker', 't-resource-allocation', 't-time-entry', 't-invoice-scheduling',
   'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
+  'r-cash-flow-projection',
 ];
 
 interface SidebarItem {
@@ -53,6 +54,7 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-resource-utilization', label: 'Resource Utilization', icon: Activity },
   { id: 'r-milestone-status', label: 'Milestone Status', icon: BarChart3 },
   { id: 'r-project-margin', label: 'Project Margin', icon: TrendingUp },
+  { id: 'r-cash-flow-projection', label: 'Cash Flow Projection', icon: Wallet },
 ];
 
 interface ProjXSidebarProps {
