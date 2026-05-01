@@ -179,8 +179,16 @@ export const HOLIDAY_CALENDARS_KEY = 'erp_holiday_calendars';
 export const ATTENDANCE_TYPES_KEY  = 'erp_attendance_types';
 export const OVERTIME_RULES_KEY    = 'erp_overtime_rules';
 export const LOAN_TYPES_KEY        = 'erp_loan_types';
+/** @deprecated Use bonusConfigsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 (per-entity migration) */
 export const BONUS_CONFIGS_KEY     = 'erp_bonus_configs';
+/** @deprecated Use gratuityNpsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const GRATUITY_NPS_KEY      = 'erp_gratuity_nps_config';
+// [JWT] GET /api/peoplepay/bonus-configs?entityCode={e}
+export const bonusConfigsKey = (e: string): string =>
+  e ? `erp_bonus_configs_${e}` : 'erp_bonus_configs';
+// [JWT] GET /api/peoplepay/gratuity-nps?entityCode={e}
+export const gratuityNpsKey = (e: string): string =>
+  e ? `erp_gratuity_nps_config_${e}` : 'erp_gratuity_nps_config';
 
 // Default gratuity + NPS settings
 export const DEFAULT_GRATUITY_NPS: GratuityNPSSettings = {

@@ -56,5 +56,15 @@ export interface Recognition {
   updated_at: string;
 }
 
+/** @deprecated Use announcementsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 (kept for backward-compat read fallback) */
 export const ANNOUNCEMENTS_KEY = 'erp_announcements';
+/** @deprecated Use recognitionsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const RECOGNITIONS_KEY  = 'erp_recognitions';
+
+// ── Sprint T-Phase-1.2.5h-b2 · Multi-tenant key migration (Bucket C tail) ────
+// [JWT] GET /api/peoplepay/announcements?entityCode={e}
+export const announcementsKey = (e: string): string =>
+  e ? `erp_announcements_${e}` : 'erp_announcements';
+// [JWT] GET /api/peoplepay/recognitions?entityCode={e}
+export const recognitionsKey = (e: string): string =>
+  e ? `erp_recognitions_${e}` : 'erp_recognitions';

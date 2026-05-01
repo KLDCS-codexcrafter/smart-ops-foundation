@@ -45,4 +45,8 @@ export interface VoucherOrgTag {
  *  Phase 2 will swap to backend table · key reserved for migration script.
  *  [JWT] GET/POST /api/accounting/voucher-org-tags
  */
+/** @deprecated Use voucherOrgTagsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const VOUCHER_ORG_TAGS_KEY = 'erp_voucher_org_tags';
+// [JWT] GET /api/accounting/voucher-org-tags?entityCode={e}
+export const voucherOrgTagsKey = (e: string): string =>
+  e ? `erp_voucher_org_tags_${e}` : 'erp_voucher_org_tags';

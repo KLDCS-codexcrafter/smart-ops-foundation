@@ -117,6 +117,7 @@ export interface CompensationAction {
 
 export const APPRAISAL_CYCLES_KEY  = 'erp_appraisal_cycles';
 export const PERF_REVIEWS_KEY      = 'erp_performance_reviews';
+/** @deprecated Use successionPlansKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const SUCCESSION_PLANS_KEY  = 'erp_succession_plans';
 export const COMP_ACTIONS_KEY      = 'erp_comp_actions';
 
