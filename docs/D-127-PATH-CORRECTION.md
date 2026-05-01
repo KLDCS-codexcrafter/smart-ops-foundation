@@ -16,6 +16,13 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 - **Streak counter RESET to 0**: the previously-reported 60-sprint streak was
   measured against a path that did not exist and is therefore void.
 - **New streak begins this sprint** (count = 1 after Sprint 1.2.5h-a closes).
+
+## Streak Counter
+| Sprint | Status | Streak |
+|---|---|---|
+| 1.2.5h-a | closed | 1 |
+| 1.2.5h-b1 (+ fix) | closed | 2 |
+
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).
 
