@@ -157,6 +157,13 @@ export function useConsumptionEntries(entityCode: string) {
       updated_at: now,
     };
     upsert(posted);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only)
+    logAudit({
+      entityCode, action: 'post', entityType: 'consumption_entry',
+      recordId: posted.id, recordLabel: posted.ce_no,
+      beforeState: { ...draft }, afterState: { ...posted },
+      sourceModule: 'inventory',
+    });
     toast.success(`Consumption ${posted.ce_no} posted · stock deducted from ${posted.godown_name}`);
     return { ok: true };
   }, [entityCode, upsert]);
@@ -169,11 +176,20 @@ export function useConsumptionEntries(entityCode: string) {
       toast.error('Cannot cancel a posted consumption — create a reversing entry');
       return;
     }
-    upsert({
+    const prev = { ...found };
+    const cancelled: ConsumptionEntry = {
       ...found, status: 'cancelled',
       cancelled_at: now, cancellation_reason: reason, updated_at: now,
+    };
+    upsert(cancelled);
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail on cancel (CGST Rule 56(8))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'consumption_entry',
+      recordId: id, recordLabel: found.ce_no,
+      beforeState: prev, afterState: { ...cancelled },
+      reason, sourceModule: 'inventory',
     });
-  }, [entries, upsert]);
+  }, [entries, upsert, entityCode]);
 
   return { entries, refresh, upsert, postEntry, cancelEntry };
 }
