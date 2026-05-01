@@ -21,6 +21,7 @@ import {
   type ExpenseClaim, type ExpenseCategory,
   EXPENSE_CLAIMS_KEY, EXPENSE_CATEGORY_LABELS, EXPENSE_STATUS_COLORS,
 } from '@/types/employee-finance';
+import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { cn } from '@/lib/utils';
 import { capturePhoto } from '@/lib/camera-bridge';
 
@@ -48,6 +49,7 @@ const fmtINR = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 export default function MobileExpenseClaimPage() {
   const navigate = useNavigate();
   const session = useMemo(() => readSession(), []);
+  const { centres } = useProjectCentres(session?.entity_code ?? '');
   const [allClaims, setAllClaims] = useState<ExpenseClaim[]>(() => loadClaims());
 
   const refreshClaims = useCallback(() => {
@@ -67,6 +69,7 @@ export default function MobileExpenseClaimPage() {
   const [description, setDescription] = useState('');
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0, 10));
   const [receiptDataUrl, setReceiptDataUrl] = useState<string>('');
+  const [projectCentreId, setProjectCentreId] = useState<string>('__none__');
   const [busy, setBusy] = useState(false);
 
   const handleCaptureReceipt = useCallback(async () => {
@@ -86,6 +89,7 @@ export default function MobileExpenseClaimPage() {
     setDescription('');
     setExpenseDate(new Date().toISOString().slice(0, 10));
     setReceiptDataUrl('');
+    setProjectCentreId('__none__');
     setShowForm(false);
   }, []);
 
