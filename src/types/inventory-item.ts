@@ -158,4 +158,18 @@ export interface InventoryItem {
   default_costing_method?: 'FIFO' | 'FEFO' | 'Weighted';
   /** Warranty period in months for serial-tracked items — used to compute warranty_end_date on GRN post */
   warranty_months?: number;
+
+  // Sprint T-Phase-1.2.5 · ABC + movement tracking + hazmat link (D-128 sibling precedent)
+  /** ABC class: A (top 20% / 80% value) · B (next 30% / 15%) · C (bottom 50% / 5%) · null = unclassified */
+  abc_class?: 'A' | 'B' | 'C' | null;
+  /** Founder Q1-b lock: when true, auto-classification engine SKIPS this item (manual override locked) */
+  abc_class_pinned?: boolean;
+  /** Last auto/manual classification timestamp (ISO datetime) */
+  abc_classified_at?: string | null;
+  /** ISO datetime of last outward movement (MIN issue · CE post · DLN dispatch) */
+  last_issued_at?: string | null;
+  /** ISO datetime of last inward movement (GRN post) */
+  last_received_at?: string | null;
+  /** FK → HazmatProfile.id (null = no hazmat profile linked) */
+  hazmat_profile_id?: string | null;
 }
