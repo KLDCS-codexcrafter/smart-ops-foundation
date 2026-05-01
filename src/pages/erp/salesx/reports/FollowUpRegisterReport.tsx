@@ -1,4 +1,9 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * No money math in this file — only follow-up counts and day-overdue calculations.
+ * Marker added for audit trail consistency.
+ */
+/**
  * FollowUpRegisterReport.tsx — Overdue follow-ups register (Sprint 4)
  * Read-only. Reads from useEnquiries.
  */

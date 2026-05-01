@@ -1,4 +1,9 @@
 /**
+ * MONEY-MATH-AUDITED · Sprint T-Phase-1.2.5h-c1
+ * No money math in this file — only quality scores (0-100) and criteria weight percentages.
+ * Marker added for audit trail consistency.
+ */
+/**
  * CallQualityHub.tsx — Canvas Wave 5 (T-Phase-1.1.1i)
  * Supervisor panel: Quality Criteria · Review Queue · Reviews · Coaching Feedback
  * [JWT] /api/salesx/call-quality
