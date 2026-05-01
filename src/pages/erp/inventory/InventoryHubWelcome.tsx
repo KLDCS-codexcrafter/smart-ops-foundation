@@ -52,6 +52,8 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
   const { godowns } = useGodowns();
   const { mins } = useMaterialIssueNotes(safeEntity);
   const { entries: consumptionEntries } = useConsumptionEntries(safeEntity);
+  const storageUsage = useStorageQuota();
+  const t = useT();
 
   const grns = useMemo<GRN[]>(() => loadJson<GRN>(grnsKey(safeEntity)), [safeEntity]);
   const stockBalance = useMemo<StockBalanceEntry[]>(
@@ -104,6 +106,74 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
       g.status === 'draft' &&
       new Date(g.created_at).getTime() < oneDayAgo).length;
   }, [grns]);
+
+  /** Sprint T-Phase-1.2.5h-c2 · 7 production-grade KPIs (L-3 closure) */
+  const productionKpis = useMemo(() => {
+    const now = Date.now();
+    const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+    const dayMs = 24 * 60 * 60 * 1000;
+
+    // A-class items needing review = A-class items with no recent movement (proxy)
+    const abcAlertsCount = items.filter(i => {
+      const cls = (i as { abc_class?: string }).abc_class;
+      const lastMove = (i as { last_movement_at?: string | null }).last_movement_at;
+      if (cls !== 'A') return false;
+      if (!lastMove) return true;
+      return now - new Date(lastMove).getTime() > 30 * dayMs;
+    }).length;
+
+    // Slow-moving items = no movement in last 90 days
+    const slowMovingCount = items.filter(i => {
+      const lastMove = (i as { last_movement_at?: string | null }).last_movement_at;
+      if (!lastMove) return true;
+      return now - new Date(lastMove).getTime() > ninetyDaysMs;
+    }).length;
+
+    // Cycle counts due = posted CCs older than 30d for A, 90d for B, 365d for C (proxy: not posted in 30d)
+    let cycleCountsDue = 0;
+    try {
+      // [JWT] GET /api/cycle-counts?entityCode=:entityCode
+      const raw = localStorage.getItem(cycleCountsKey(safeEntity));
+      const ccs: CycleCount[] = raw ? JSON.parse(raw) : [];
+      const lastPosted = ccs
+        .filter(c => c.status === 'posted' && c.posted_at)
+        .sort((a, b) => (b.posted_at ?? '').localeCompare(a.posted_at ?? ''))[0];
+      if (!lastPosted) {
+        cycleCountsDue = items.length > 0 ? 1 : 0;
+      } else {
+        const ageDays = (now - new Date(lastPosted.posted_at!).getTime()) / dayMs;
+        cycleCountsDue = ageDays > 30 ? Math.ceil(ageDays / 30) : 0;
+      }
+    } catch { /* ignore */ }
+
+    // Audit events (24h)
+    const since = new Date(now - dayMs).toISOString();
+    const auditTrailLast24h = readAuditTrail(safeEntity, { from: since }).length;
+
+    // Hazmat compliance alerts — proxy: items flagged hazmat with no compliance doc
+    const hazmatAlertsCount = items.filter(i => {
+      const isHaz = (i as { is_hazmat?: boolean }).is_hazmat;
+      const docOk = (i as { hazmat_doc_verified?: boolean }).hazmat_doc_verified;
+      return isHaz === true && docOk !== true;
+    }).length;
+
+    // Returnable packaging overdue — proxy: GRNs with returnable flag past expected return date
+    const returnableOverdueCount = grns.filter(g => {
+      const ret = (g as { returnable_due_date?: string | null }).returnable_due_date;
+      const closed = (g as { returnable_closed?: boolean }).returnable_closed;
+      if (!ret || closed) return false;
+      return new Date(ret).getTime() < now;
+    }).length;
+
+    return {
+      abcAlertsCount,
+      slowMovingCount,
+      cycleCountsDue,
+      auditTrailLast24h,
+      hazmatAlertsCount,
+      returnableOverdueCount,
+    };
+  }, [items, grns, safeEntity]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 p-6">
