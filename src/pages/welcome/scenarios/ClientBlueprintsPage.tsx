@@ -358,6 +358,8 @@ export function ClientBlueprintsPagePanel() {
       // [JWT] DELETE /api/entity/storage/:key
       localStorage.removeItem(k);
     });
+    // Sprint T-Phase-1.2.5h-a · clean FY-scoped doc-sequence keys
+    removeFYScopedSequences(entityCode);
 
     // Also remove vouchers + outstanding scoped to this entity
     // [JWT] DELETE /api/entity/storage/vouchers?entity=:entityCode
