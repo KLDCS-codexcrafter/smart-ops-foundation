@@ -121,7 +121,7 @@ export function StorageMatrixPanel(){
     <TableCell><Badge className={`text-xs ${g.status==='active'?'bg-emerald-500/10 text-emerald-700':'bg-slate-500/10 text-slate-500'}`}>{g.status}</Badge></TableCell>
     <TableCell><div className='flex gap-1 opacity-0 group-hover:opacity-100'>
     <Button variant='ghost' size='icon' className='h-7 w-7' onClick={()=>openE(g)}><Edit2 className='h-3.5 w-3.5 text-muted-foreground'/></Button>
-    <Button variant='ghost' size='icon' className='h-7 w-7' onClick={()=>{const u=godowns.filter(x=>x.id!==g.id);setGodowns(u);sv(u);toast.success(`${g.name} deleted`);}}><Trash2 className='h-3.5 w-3.5 text-destructive'/></Button>
+    <Button variant='ghost' size='icon' className='h-7 w-7' disabled={g.is_system_godown} title={g.is_system_godown?'System godown · cannot be deleted':'Delete godown'} onClick={()=>{if(g.is_system_godown){toast.error('System godown cannot be deleted');return;}const u=godowns.filter(x=>x.id!==g.id);setGodowns(u);sv(u);toast.success(`${g.name} deleted`);}}><Trash2 className='h-3.5 w-3.5 text-destructive'/></Button>
     </div></TableCell>
     </TableRow>))}
     </TableBody></Table></CardContent></Card>
