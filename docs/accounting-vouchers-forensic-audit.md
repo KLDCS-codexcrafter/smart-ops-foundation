@@ -73,3 +73,18 @@ governance review.
 - Sprint T-Phase-1.2.5h-a closed · count = **1**
 - Sprint T-Phase-1.2.5h-b1 (+ fix) closed · count = **2**
 - Sprint T-Phase-1.2.5h-b2 closed · count = **3**
+
+## Sprint T-Phase-1.2.5h-c1 closed · count = 4
+
+Engineering hardening sprint (Wave 3 part 1) closed with zero touches to
+`src/pages/erp/accounting/vouchers/`. D-127 streak counter advances 3 → 4.
+
+Deliverables:
+- Generalized approval workflow engine (M-4) — refactored useCycleCounts,
+  useTimeEntries, EmployeeFinance to delegate audit-trail wiring
+- 90+ new vitest tests covering decimal-helpers, period-lock, voucher-version,
+  audit-trail-deep, storage-quota-deep, error-engine-deep, validate-first-deep,
+  approval-workflow, consumption-intelligence, abc-classification,
+  item-movement, stock-reservation, generateDocNo deeper, type contracts
+- Architecture documentation (docs/ARCHITECTURE.md)
+
