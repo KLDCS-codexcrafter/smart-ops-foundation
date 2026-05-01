@@ -266,3 +266,13 @@ export const EMPLOYEE_STATUS_COLORS: Record<Employee['status'], string> = {
   on_notice: 'bg-amber-500/10 text-amber-700 border-amber-500/30',
   relieved: 'bg-rose-500/10 text-rose-700 border-rose-500/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+/**
+ * Entity-scoped storage key factory (preferred for all new code).
+ * @deprecated EMPLOYEES_KEY — use employeesKey(entityCode) instead.
+ * Backward-compat: hooks fall back to legacy key on first read and migrate.
+ */
+// [JWT] GET /api/peoplepay/employees?entityCode={e}
+export const employeesKey = (entityCode: string): string =>
+  entityCode ? `erp_employees_${entityCode}` : 'erp_employees';

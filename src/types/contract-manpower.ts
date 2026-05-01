@@ -184,3 +184,20 @@ export const WORK_ORDER_STATUS_COLORS: Record<WorkOrderStatus, string> = {
   completed: 'bg-violet-500/10 text-violet-600 border-violet-400/30',
   cancelled: 'bg-red-500/10 text-red-700 border-red-500/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/labour-contractors?entityCode={e}
+export const labourContractorsKey = (e: string): string =>
+  e ? `erp_labour_contractors_${e}` : 'erp_labour_contractors';
+// [JWT] GET /api/peoplepay/contract-workers?entityCode={e}
+export const contractWorkersKey = (e: string): string =>
+  e ? `erp_contract_workers_${e}` : 'erp_contract_workers';
+// [JWT] GET /api/peoplepay/work-orders?entityCode={e}
+export const workOrdersKey = (e: string): string =>
+  e ? `erp_work_orders_${e}` : 'erp_work_orders';
+// [JWT] GET /api/peoplepay/contract-invoices?entityCode={e}
+export const contractInvoicesKey = (e: string): string =>
+  e ? `erp_contract_invoices_${e}` : 'erp_contract_invoices';
+// [JWT] GET /api/peoplepay/contract-attendance?entityCode={e}
+export const contractAttendanceKey = (e: string): string =>
+  e ? `erp_contract_attendance_${e}` : 'erp_contract_attendance';

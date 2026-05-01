@@ -145,3 +145,7 @@ export const PAYROLL_RUN_STATUS_COLORS: Record<PayrollRunStatus, string> = {
   posted:     'bg-violet-500/10 text-violet-700 border-violet-500/30',
   locked:     'bg-green-500/10 text-green-700 border-green-500/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// Note: payrollRunsKey + salaryHoldsKey already exist above (pre-migration).
+// Re-exported for clarity in the entity-scoped registry.

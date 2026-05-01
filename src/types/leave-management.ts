@@ -77,3 +77,14 @@ export const LEAVE_STATUS_COLORS: Record<LeaveRequest['status'], string> = {
   cancelled: 'bg-slate-500/10 text-slate-500 border-slate-400/30',
   withdrawn: 'bg-slate-500/10 text-slate-500 border-slate-400/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration ─────────────────
+// Bucket C (per-entity) — preferred factory:
+// [JWT] GET /api/peoplepay/leave-requests?entityCode={e}
+export const leaveRequestsKey = (e: string): string =>
+  e ? `erp_leave_requests_${e}` : 'erp_leave_requests';
+// Bucket B (template + per-entity) — approval delegations:
+export const APPROVAL_DELEGATIONS_TEMPLATE_KEY = 'erp_approval_delegations_template';
+// [JWT] GET /api/peoplepay/approval-delegations?entityCode={e}
+export const approvalDelegationsKey = (e: string): string =>
+  e ? `erp_approval_delegations_${e}` : APPROVAL_DELEGATIONS_TEMPLATE_KEY;

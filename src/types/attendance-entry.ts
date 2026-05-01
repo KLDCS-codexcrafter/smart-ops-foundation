@@ -87,3 +87,16 @@ export interface BiometricDaySummary {
   employeeId: string;
   employeeName: string;
 }
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/attendance-records?entityCode={e}
+export const attendanceRecordsKey = (e: string): string =>
+  e ? `erp_attendance_records_${e}` : 'erp_attendance_records';
+// [JWT] GET /api/peoplepay/regularization?entityCode={e}
+export const regularizationKey = (e: string): string =>
+  e ? `erp_regularization_requests_${e}` : 'erp_regularization_requests';
+/**
+ * GLOBAL KEY (Sprint T-Phase-1.2.5h-a verified): GEO_FENCES_KEY is intentionally
+ * tenant-global. Rationale: shared geofence library across all entities of a
+ * parent company. Audited: 2026-05-01 · Bucket A — TRULY GLOBAL.
+ */

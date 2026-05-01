@@ -155,3 +155,14 @@ export function get9BoxPosition(perfScore: number, potentialScore: number): { co
   ];
   return { col, row, label: labels[row][col] };
 }
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// [JWT] GET /api/peoplepay/appraisal-cycles?entityCode={e}
+export const appraisalCyclesKey = (e: string): string =>
+  e ? `erp_appraisal_cycles_${e}` : 'erp_appraisal_cycles';
+// [JWT] GET /api/peoplepay/performance-reviews?entityCode={e}
+export const performanceReviewsKey = (e: string): string =>
+  e ? `erp_performance_reviews_${e}` : 'erp_performance_reviews';
+// [JWT] GET /api/peoplepay/comp-actions?entityCode={e}
+export const compActionsKey = (e: string): string =>
+  e ? `erp_comp_actions_${e}` : 'erp_comp_actions';

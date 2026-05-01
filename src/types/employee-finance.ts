@@ -148,3 +148,16 @@ export const EXPENSE_STATUS_COLORS: Record<ExpenseClaim['status'], string> = {
   rejected:    'bg-red-500/10 text-red-700 border-red-500/30',
   reimbursed:  'bg-green-500/10 text-green-700 border-green-500/30',
 };
+
+// ── Sprint T-Phase-1.2.5h-a · Multi-tenant key migration (Bucket C) ──────
+// Entity-scoped factories — preferred for all new code. Legacy *_KEY constants
+// retained above for backward-compat read fallback only (do not write to them).
+// [JWT] GET /api/peoplepay/loan-applications?entityCode={e}
+export const loanApplicationsKey = (e: string): string =>
+  e ? `erp_loan_applications_${e}` : 'erp_loan_applications';
+// [JWT] GET /api/peoplepay/salary-advances?entityCode={e}
+export const salaryAdvancesKey = (e: string): string =>
+  e ? `erp_salary_advances_${e}` : 'erp_salary_advances';
+// [JWT] GET /api/peoplepay/expense-claims?entityCode={e}
+export const expenseClaimsKey = (e: string): string =>
+  e ? `erp_expense_claims_${e}` : 'erp_expense_claims';
