@@ -17,7 +17,10 @@
  *
  * The sprint prompt template now includes a 'Seed/Mock Data Update' section
  * that lists what each sprint must add to seed data BEFORE Acceptance Criteria.
+ *
+ * T-Phase-1.2.2: DEMO_BOM_HAPPY_PATH seeded · erp_bom_{entityCode}
  */
+import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
 } from '@/data/demo-customers-vendors';
@@ -416,6 +419,12 @@ export function seedEntityDemoData(
       }
     }
   }
+
+  // Sprint T-Phase-1.2.2 · BOM demo data (required for consumption variance computation)
+  safeSetArray(
+    `erp_bom_${entityCode}`,
+    DEMO_BOM_HAPPY_PATH.map(b => ({ ...b, entity_id: entityCode })),
+  );
 
   return {
     entityCode, archetype,

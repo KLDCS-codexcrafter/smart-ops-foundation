@@ -35,6 +35,7 @@ import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useConsumptionEntries, computeConsumptionVariance } from '@/hooks/useConsumptionEntries';
 import { generateDocNo } from '@/lib/finecore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import {
@@ -481,7 +482,13 @@ export function ConsumptionEntryPanel() {
           <div>
             <Label className="text-xs">Date</Label>
             <Input type="date" disabled={readonly} value={header.consumption_date}
-              onChange={e => setHeader(h => ({ ...h, consumption_date: e.target.value }))} />
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, consumption_date: v }));
+              }} />
           </div>
           <div>
             <Label className="text-xs">Mode</Label>

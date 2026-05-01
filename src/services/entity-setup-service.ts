@@ -603,6 +603,32 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore */ }
 
+  // Sprint T-Phase-1.2.2 · Auto-activate Inventory Hub + ProjX voucher types on entity creation
+  // Founder lock: "if voucher type is not then create the same while creating entity refer command center"
+  // vt-stock-journal + vt-stock-transfer are already is_active:true — no action needed
+  // vt-consumption-entry + ProjX types are feature_based → activate on every entity creation
+  try {
+    const VT_KEY = 'erp_voucher_types';
+    const vts: Array<{ id: string; is_active: boolean; updated_at?: string }> =
+      JSON.parse(localStorage.getItem(VT_KEY) || '[]');
+    const toActivate = [
+      'vt-consumption-entry',          // Inventory Hub
+      'vt-project-invoice',            // ProjX billing
+      'vt-project-advance-receipt',    // ProjX advance
+      'vt-retention-settlement',       // ProjX retention (1.5.7)
+    ];
+    let changed = false;
+    toActivate.forEach(vtId => {
+      const idx = vts.findIndex(v => v.id === vtId);
+      if (idx !== -1 && !vts[idx].is_active) {
+        vts[idx] = { ...vts[idx], is_active: true, updated_at: new Date().toISOString() };
+        changed = true;
+        // [JWT] PATCH /api/accounting/voucher-types/:vtId/activate
+      }
+    });
+    if (changed) localStorage.setItem(VT_KEY, JSON.stringify(vts));
+  } catch { /* ignore — VT activation is best-effort */ }
+
   return {
     ledgersCreated,
     l4GroupsCreated,

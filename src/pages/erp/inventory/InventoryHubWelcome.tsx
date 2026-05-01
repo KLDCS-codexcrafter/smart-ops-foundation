@@ -12,10 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Package, Warehouse, ArrowDownToLine, IndianRupee, Plus, AlertTriangle,
-  ListOrdered, UserCircle2,
+  ListOrdered, UserCircle2, CheckCircle2,
 } from 'lucide-react';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
+import { useConsumptionEntries } from '@/hooks/useConsumptionEntries';
+import { runConsumptionIntelligence } from '@/lib/consumption-intelligence-engine';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { grnsKey, stockBalanceKey, type GRN, type StockBalanceEntry } from '@/types/grn';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -42,10 +45,19 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
   const { godowns } = useGodowns();
+  const { mins } = useMaterialIssueNotes(safeEntity);
+  const { entries: consumptionEntries } = useConsumptionEntries(safeEntity);
 
   const grns = useMemo<GRN[]>(() => loadJson<GRN>(grnsKey(safeEntity)), [safeEntity]);
   const stockBalance = useMemo<StockBalanceEntry[]>(
     () => loadJson<StockBalanceEntry>(stockBalanceKey(safeEntity)), [safeEntity]);
+
+  const alerts = useMemo(
+    () => runConsumptionIntelligence({ balances: stockBalance, mins, consumptions: consumptionEntries }),
+    [stockBalance, mins, consumptionEntries],
+  );
+  const criticalCount = alerts.filter(a => a.severity === 'critical').length;
+  const warnCount = alerts.filter(a => a.severity === 'warn').length;
 
   const stats = useMemo(() => {
     const monthStart = new Date();
@@ -200,6 +212,37 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
           )}
         </CardContent>
       </Card>
+
+      {/* Intelligence Pulse Strip */}
+      {alerts.length > 0 ? (
+        <div className="flex items-center gap-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/50 dark:bg-amber-950/30">
+          {criticalCount > 0 && (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-rose-700 dark:text-rose-300">
+              <AlertTriangle className="h-4 w-4" />
+              {criticalCount} critical {criticalCount === 1 ? 'alert' : 'alerts'}
+            </span>
+          )}
+          {warnCount > 0 && (
+            <span className="flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-300">
+              <AlertTriangle className="h-4 w-4" />
+              {warnCount} {warnCount === 1 ? 'warning' : 'warnings'}
+            </span>
+          )}
+          <Button
+            variant="link"
+            size="sm"
+            className="ml-auto text-amber-700 dark:text-amber-300 p-0 h-auto"
+            onClick={() => onNavigate('r-consumption-summary')}
+          >
+            View Consumption Summary →
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+          <CheckCircle2 className="h-4 w-4" />
+          All departments balanced · No consumption alerts
+        </div>
+      )}
 
       {/* Alert + Quick action strip */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

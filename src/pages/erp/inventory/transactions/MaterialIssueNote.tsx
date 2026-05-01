@@ -34,6 +34,7 @@ import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
 import { generateDocNo } from '@/lib/finecore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import {
@@ -404,7 +405,13 @@ export function MaterialIssueNotePanel() {
           <div>
             <Label className="text-xs">Issue Date</Label>
             <Input type="date" disabled={readonly} value={header.issue_date}
-              onChange={e => setHeader(h => ({ ...h, issue_date: e.target.value }))} />
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, issue_date: v }));
+              }} />
           </div>
           <div>
             <Label className="text-xs">From Godown</Label>
