@@ -289,6 +289,8 @@ export function seedEntityDemoData(
     updated_at: nowSeed,
   }];
   safeSetArray(`erp_sample_outward_memos_${entityCode}`, sampleSeed);
+  // Sprint T-Phase-1.1.2-d: SOM doc-no generator now lives in generateDocNo('SOM', ...).
+  // Storage key unchanged — sequence continues from this seed value.
   safeSetObj(`erp_doc_seq_SOM_${entityCode}`, 1);
 
   const overdueStart = '2026-02-19'; // 60+ days before today (Apr 28, 2026 + buffer)
