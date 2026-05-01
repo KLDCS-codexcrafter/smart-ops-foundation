@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import {
   Navigation, MapPin, PhoneIncoming, Briefcase, Users,
   ClipboardList, ShoppingBag, Target, IndianRupee, LogOut, Activity,
-  CheckSquare, Receipt,
+  CheckSquare, Receipt, Clock,
 } from 'lucide-react';
 import type { MobileSession } from '../MobileRouter';
 import { logMobileTileClick } from '@/lib/mobile-audit';
 import { startTracking, stopTracking } from '@/lib/location-tracker-engine';
+import { useProjectResources } from '@/hooks/useProjectResources';
 
 function readSession(): MobileSession | null {
   try {
