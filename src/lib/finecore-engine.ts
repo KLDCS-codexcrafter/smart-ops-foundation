@@ -14,6 +14,8 @@ import { loadTenantConfig } from './tenant-config-engine';
 import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
 // [T-T8.0-OrgTagFoundation] Auto-tag derived metadata · enables 5-tier slicing without voucher.ts schema change.
 import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
+// Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
+import { logAudit } from './audit-trail-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
