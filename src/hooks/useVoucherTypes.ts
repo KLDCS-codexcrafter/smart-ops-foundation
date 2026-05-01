@@ -2,35 +2,65 @@
  * useVoucherTypes.ts — Voucher Types master CRUD hook
  * Pattern: identical to all 27 other ERP hooks (localStorage + [JWT] comments)
  * [JWT] Replace with GET/POST/PUT/DELETE /api/accounting/voucher-types
+ *
+ * Sprint T-Phase-1.2.5h-a · Bucket B migration: storage now entity-scoped
+ *   - TEMPLATE_KEY (`erp_voucher_types_template`)  → global seed catalog
+ *   - voucherTypesKey(entityCode)                  → per-entity active VTs
+ * Backward-compat: legacy `erp_voucher_types` is auto-migrated on first read.
  */
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { VoucherType } from '@/types/voucher-type';
 import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const KEY = 'erp_voucher_types';
+const TEMPLATE_KEY = 'erp_voucher_types_template';
+const LEGACY_KEY = 'erp_voucher_types';
+export const voucherTypesKey = (entityCode: string): string =>
+  entityCode ? `erp_voucher_types_${entityCode}` : TEMPLATE_KEY;
 
-const load = (): VoucherType[] => {
+const load = (entityCode: string): VoucherType[] => {
   try {
-    // [JWT] GET /api/accounting/voucher-types
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const stored = JSON.parse(raw) as VoucherType[];
+    // [JWT] GET /api/accounting/voucher-types?entityCode={e}
+    const entityRaw = localStorage.getItem(voucherTypesKey(entityCode));
+    if (entityRaw) {
+      const stored = JSON.parse(entityRaw) as VoucherType[];
       if (stored.length > 0) return stored;
     }
+    // Backward-compat: auto-migrate legacy global key into entity-scoped key
+    const legacyRaw = localStorage.getItem(LEGACY_KEY);
+    if (legacyRaw) {
+      // [JWT] One-time migration: legacy global → entity-scoped
+      localStorage.setItem(voucherTypesKey(entityCode), legacyRaw);
+      const stored = JSON.parse(legacyRaw) as VoucherType[];
+      if (stored.length > 0) return stored;
+    }
+    // Fallback: seed catalog (template) for new entities
+    const templateRaw = localStorage.getItem(TEMPLATE_KEY);
+    if (templateRaw) {
+      const stored = JSON.parse(templateRaw) as VoucherType[];
+      if (stored.length > 0) {
+        // [JWT] POST /api/accounting/voucher-types · seed for new entity
+        localStorage.setItem(voucherTypesKey(entityCode), templateRaw);
+        return stored;
+      }
+    }
   } catch { /* ignore */ }
-  // First load — seed the 24 Tally defaults
+  // First-ever load — seed both template and entity-scoped key
   // [JWT] POST /api/accounting/voucher-types
-  localStorage.setItem(KEY, JSON.stringify(VOUCHER_TYPE_SEEDS));
+  const seedJson = JSON.stringify(VOUCHER_TYPE_SEEDS);
+  localStorage.setItem(TEMPLATE_KEY, seedJson);
+  localStorage.setItem(voucherTypesKey(entityCode), seedJson);
   return VOUCHER_TYPE_SEEDS;
 };
 
 export function useVoucherTypes() {
-  const [types, setTypes] = useState<VoucherType[]>(load);
+  const { entityCode } = useEntityCode();
+  const [types, setTypes] = useState<VoucherType[]>(() => load(entityCode));
 
   const save = (data: VoucherType[]) => {
-    // [JWT] POST /api/accounting/voucher-types
-    localStorage.setItem(KEY, JSON.stringify(data));
+    // [JWT] POST /api/accounting/voucher-types?entityCode={e}
+    localStorage.setItem(voucherTypesKey(entityCode), JSON.stringify(data));
   };
 
   const updateType = (id: string, patch: Partial<VoucherType>) => {
