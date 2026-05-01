@@ -1,0 +1,74 @@
+/**
+ * InventoryHubPage.tsx — Inventory Hub card container (sidebar + content area)
+ * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3 · mirrors ProjXPage shell pattern
+ */
+import { useState, useEffect } from 'react';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { InventoryHubSidebar } from './InventoryHubSidebar';
+import { ERPHeader } from '@/components/layout/ERPHeader';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { InventoryHubWelcomePanel } from './InventoryHubWelcome';
+import { GRNEntryPanel } from './transactions/GRNEntry';
+import { StockLedgerReportPanel } from './reports/StockLedgerReport';
+import { GRNRegisterPanel } from './reports/GRNRegister';
+import { ReorderAlertsPanel } from './ReorderAlerts';
+import { ItemCraftPanel } from './ItemCraft';
+import { StorageMatrixPanel } from './StorageMatrix';
+import { StockMatrixPanel } from './StockMatrix';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { logAudit } from '@/lib/card-audit-engine';
+import { rememberModule } from '@/lib/breadcrumb-memory';
+import type { InventoryHubModule } from './InventoryHubSidebar.types';
+
+export default function InventoryHubPage() {
+  const [activeModule, setActiveModule] = useState<InventoryHubModule>('welcome');
+  const { entityCode, userId } = useCardEntitlement();
+
+  useEffect(() => {
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'inventory-hub',
+      action: 'card_open',
+    });
+  }, [entityCode, userId]);
+
+  useEffect(() => {
+    rememberModule('inventory-hub', activeModule);
+    logAudit({
+      entityCode, userId, userName: userId,
+      cardId: 'inventory-hub',
+      moduleId: activeModule,
+      action: 'module_open',
+    });
+  }, [activeModule, entityCode, userId]);
+
+  const renderModule = () => {
+    switch (activeModule) {
+      case 'welcome':            return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+      case 't-grn-entry':        return <GRNEntryPanel />;
+      case 'r-stock-ledger':     return <StockLedgerReportPanel />;
+      case 'r-grn-register':     return <GRNRegisterPanel />;
+      case 'r-reorder-alerts':   return <ReorderAlertsPanel />;
+      case 'm-item-master':      return <ItemCraftPanel />;
+      case 'm-godown-master':    return <StorageMatrixPanel />;
+      case 'm-stock-groups':     return <StockMatrixPanel />;
+      default:                   return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+    }
+  };
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+        <ERPHeader />
+        <div className="flex-1 flex w-full overflow-hidden">
+          <InventoryHubSidebar active={activeModule} onNavigate={setActiveModule} />
+          <main className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              {renderModule()}
+            </ScrollArea>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}

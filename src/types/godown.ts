@@ -95,6 +95,48 @@ export interface GodownAgreement {
   created_at: string; updated_at: string;
 }
 
+export type GodownDepartmentCode =
+  | 'main' | 'maintenance' | 'production' | 'paint_shop' | 'welding'
+  | 'packaging' | 'service' | 'site' | 'wip' | 'qc' | 'dispatch'
+  | 'electrical' | 'other';
+
+/**
+ * Sprint T-Phase-1.2.1 · Departmental accountability — the missing piece in Indian ERP.
+ * Maps each department code to a human-readable label.
+ */
+export const DEPARTMENT_LABELS: Record<GodownDepartmentCode, string> = {
+  main:        'Main Store',
+  maintenance: 'Maintenance Store',
+  production:  'Production / WIP',
+  paint_shop:  'Paint Shop',
+  welding:     'Welding Bay',
+  packaging:   'Packaging',
+  service:     'Service & AMC Parts',
+  site:        'Site Stock',
+  wip:         'Work-in-Progress Store',
+  qc:          'QC Hold Store',
+  dispatch:    'Dispatch Staging',
+  electrical:  'Electrical & Instrumentation',
+  other:       'Other',
+};
+
+/** Tailwind badge classes per department — used in StorageMatrix list table and Welcome strip. */
+export const DEPARTMENT_BADGE_COLORS: Record<GodownDepartmentCode, string> = {
+  main:        'bg-emerald-500/10 text-emerald-700',
+  maintenance: 'bg-amber-500/10 text-amber-700',
+  production:  'bg-blue-500/10 text-blue-700',
+  paint_shop:  'bg-rose-500/10 text-rose-700',
+  welding:     'bg-orange-500/10 text-orange-700',
+  packaging:   'bg-cyan-500/10 text-cyan-700',
+  service:     'bg-violet-500/10 text-violet-700',
+  site:        'bg-purple-500/10 text-purple-700',
+  wip:         'bg-indigo-500/10 text-indigo-700',
+  qc:          'bg-yellow-500/10 text-yellow-700',
+  dispatch:    'bg-slate-500/10 text-slate-700',
+  electrical:  'bg-sky-500/10 text-sky-700',
+  other:       'bg-muted text-muted-foreground',
+};
+
 export interface Godown {
   id: string; code: string; name: string;
   ownership_type: GodownOwnershipType;
@@ -114,5 +156,17 @@ export interface Godown {
   status: 'active' | 'inactive';
   zones?: GodownZone[];
   agreements?: GodownAgreement[];
+  // Sprint T-Phase-1.2.1 · Departmental accountability sibling fields (D-128 sibling precedent · D-171/D-218/D-221).
+  /** Which department owns this godown? null = main/shared store */
+  department_code?: GodownDepartmentCode | null;
+  /** SAMPerson.id — who is accountable for stock in this godown */
+  responsible_person_id?: string | null;
+  responsible_person_name?: string | null;
+  /** Virtual godown = tracking unit only, no physical address required */
+  is_virtual?: boolean;
+  /** If true, a Material Issue Note voucher must be created before stock can leave this godown */
+  requires_issue_note?: boolean;
+  /** Optional FK to ProjectCentre — for site/project-specific godowns */
+  project_centre_id?: string | null;
   created_at: string; updated_at: string;
 }

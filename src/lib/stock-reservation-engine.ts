@@ -139,6 +139,8 @@ export function upsertQuoteReservation(
       released_at: null,
       created_at: now,
       updated_at: now,
+      // Sprint T-Phase-1.2.1 · ProjX cross-module · null = not project-tagged
+      project_centre_id: null,
     }));
   // [JWT] POST /api/inventory/reservations (bulk upsert)
   saveReservations(entityCode, [...remaining, ...fresh]);
@@ -190,6 +192,8 @@ export function createOrderReservations(
       released_at: null,
       created_at: now,
       updated_at: now,
+      // Sprint T-Phase-1.2.1 · ProjX cross-module · null = not project-tagged
+      project_centre_id: null,
     }));
   // [JWT] POST /api/inventory/reservations (order-level)
   saveReservations(entityCode, [...remaining, ...fresh]);

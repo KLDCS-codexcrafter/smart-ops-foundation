@@ -151,7 +151,9 @@ export function generateDocNo(
     | 'ADVP' | 'ADVR'
     | 'LEAD' | 'ENQ' | 'PF'
     | 'SRM' | 'SRQM' | 'IM' | 'SOM' | 'DOM'
-    | 'PRJ' | 'PCT' | 'TE',
+    | 'PRJ' | 'PCT' | 'TE'
+    // Sprint T-Phase-1.2.1 · Inventory Hub
+    | 'GRN', // GRN — Goods Receipt Note (Inventory Hub)
   entityCode: string,
 ): string {
   const key = `erp_doc_seq_${prefix}_${entityCode}`;
