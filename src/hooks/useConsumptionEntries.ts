@@ -124,6 +124,26 @@ export function useConsumptionEntries(entityCode: string) {
     }
     ss(stockBalanceKey(entityCode), updatedBalances);
 
+    // Sprint T-Phase-1.2.5 · Update Item.last_issued_at in single batched write
+    try {
+      const IKEY = 'erp_inventory_items';
+      // [JWT] GET /api/inventory/items
+      const itemsRaw = localStorage.getItem(IKEY);
+      if (itemsRaw) {
+        const arr: Array<{ id: string; last_issued_at?: string | null; updated_at?: string }> = JSON.parse(itemsRaw);
+        const lineItemIds = new Set(variance.lines.filter(l => l.actual_qty > 0).map(l => l.item_id));
+        let changed = false;
+        for (let i = 0; i < arr.length; i++) {
+          if (lineItemIds.has(arr[i].id)) {
+            arr[i] = { ...arr[i], last_issued_at: now, updated_at: now };
+            changed = true;
+          }
+        }
+        // [JWT] PATCH /api/inventory/items (bulk last_issued_at)
+        if (changed) localStorage.setItem(IKEY, JSON.stringify(arr));
+      }
+    } catch { /* best-effort */ }
+
     const posted: ConsumptionEntry = {
       ...draft,
       lines: variance.lines,
