@@ -247,7 +247,62 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_rtvs_${entityCode}`,
     `erp_doc_seq_PSV_${entityCode}`,
     `erp_doc_seq_RJO_${entityCode}`,
+    // Sprint T-Phase-1.2.5h-a · Multi-tenant migration Wave 1 (30 keys)
+    // Bucket B (template + per-entity instances)
+    `erp_voucher_types_${entityCode}`,
+    `erp_approval_delegations_${entityCode}`,
+    `erp_job_requisitions_${entityCode}`,
+    `erp_job_applications_${entityCode}`,
+    `erp_transaction_templates_${entityCode}`,
+    // Bucket C (per-entity factories — top 25)
+    `erp_employees_${entityCode}`,
+    `erp_attendance_records_${entityCode}`,
+    `erp_leave_requests_${entityCode}`,
+    `erp_expense_claims_${entityCode}`,
+    `erp_loan_applications_${entityCode}`,
+    `erp_salary_advances_${entityCode}`,
+    `erp_salary_holds_${entityCode}`,
+    `erp_salary_structures_${entityCode}`,
+    `erp_payroll_runs_${entityCode}`,
+    `erp_fnf_settlements_${entityCode}`,
+    `erp_statutory_challans_${entityCode}`,
+    `erp_it_declarations_${entityCode}`,
+    `erp_employee_documents_${entityCode}`,
+    `erp_documents_${entityCode}`,
+    `erp_doc_templates_${entityCode}`,
+    `erp_exit_requests_${entityCode}`,
+    `erp_appraisal_cycles_${entityCode}`,
+    `erp_performance_reviews_${entityCode}`,
+    `erp_labour_contractors_${entityCode}`,
+    `erp_contract_workers_${entityCode}`,
+    `erp_work_orders_${entityCode}`,
+    `erp_contract_invoices_${entityCode}`,
+    `erp_contract_attendance_${entityCode}`,
+    `erp_regularization_requests_${entityCode}`,
+    `erp_comp_actions_${entityCode}`,
   ];
+}
+
+/**
+ * Sprint T-Phase-1.2.5h-a · FY-scoped doc-sequence cleanup helper.
+ * Pattern: erp_doc_seq_{prefix}_{entityCode}_{fy}
+ * Scans localStorage and removes both legacy non-FY and current-FY sequence
+ * keys that belong to the given entity (used during entity reset).
+ */
+function removeFYScopedSequences(entityCode: string): void {
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith('erp_doc_seq_')) continue;
+    // Match: erp_doc_seq_{prefix}_{entityCode}[_fy]
+    const tail = `_${entityCode}`;
+    if (k === `erp_doc_seq_${entityCode}` || k.endsWith(tail)) {
+      localStorage.removeItem(k);
+      continue;
+    }
+    // FY-scoped suffix: ..._{entityCode}_NN-NN
+    const m = k.match(new RegExp(`_${entityCode}_\\d{2}-\\d{2}$`));
+    if (m) localStorage.removeItem(k);
+  }
 }
 
 export function ClientBlueprintsPagePanel() {
