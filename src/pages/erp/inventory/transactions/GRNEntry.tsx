@@ -326,10 +326,11 @@ export function GRNEntryPanel() {
       qc_result: l.qc_result,
       qc_notes: l.qc_notes,
     }));
+    const docPrefix = prefixForVt(header.voucher_type_id);
     return {
       id: existing?.id ?? `grn-${Date.now()}`,
       entity_id: safeEntity,
-      grn_no: existing?.grn_no ?? generateDocNo('GRN', safeEntity),
+      grn_no: existing?.grn_no ?? generateDocNo(docPrefix, safeEntity),
       status,
       po_id: null, po_no: header.po_no || null,
       vendor_id: header.vendor_id, vendor_name: header.vendor_name,
@@ -345,6 +346,15 @@ export function GRNEntryPanel() {
       total_value: totals.value,
       has_discrepancy: totals.discrepancy,
       narration: header.narration,
+      voucher_type_id: header.voucher_type_id || null,
+      voucher_type_name: header.voucher_type_name || null,
+      receipt_mode: header.receipt_mode,
+      invoice_received_at: status === 'in_transit'
+        ? (existing?.invoice_received_at ?? now)
+        : (existing?.invoice_received_at ?? null),
+      physical_received_at: status === 'posted' && existing?.status === 'in_transit'
+        ? now
+        : (existing?.physical_received_at ?? null),
       created_at: existing?.created_at ?? now,
       updated_at: now,
       posted_at: status === 'posted' ? now : (existing?.posted_at ?? null),
