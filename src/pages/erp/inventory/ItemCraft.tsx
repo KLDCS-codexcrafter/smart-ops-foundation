@@ -115,6 +115,7 @@ const BLANK: Omit<InventoryItem, 'id' | 'created_at' | 'updated_at'> = {
   safety_stock: null, max_stock_level: null,
   batch_tracking: false, batch_override: false,
   serial_tracking: false, serial_override: false,
+  heat_tracking: false, heat_override: false,
   expiry_tracking: false, qc_hold_on_receipt: false,
   warranty_period: null, warranty_unit: 'Months', warranty_type: 'Standard',
   service_required: false, service_interval: null, amc_applicable: false,
