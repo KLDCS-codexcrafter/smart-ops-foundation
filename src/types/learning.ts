@@ -157,3 +157,10 @@ export const SKILL_CATALOG: SkillCatalogItem[] = [
 
 // unique categories in SKILL_CATALOG order
 export const SKILL_CATEGORIES = ['Technical','Leadership','Communication','Finance','Soft Skills'];
+
+/**
+ * GLOBAL KEYS (Sprint T-Phase-1.2.5h-a verified): TRAINING_COURSES_KEY,
+ * EMPLOYEE_SKILLS_KEY, CERTIFICATIONS_KEY, ENROLLMENTS_KEY are intentionally
+ * tenant-global. Rationale: course/skill/certification catalogs and enrollment
+ * metadata are shared across entities. Audited: 2026-05-01 · Bucket A.
+ */

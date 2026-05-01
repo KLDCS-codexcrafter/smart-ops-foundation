@@ -140,3 +140,11 @@ export function makeDefaultRoles(): Omit<AccessRole,"id"|"created_at"|"updated_a
     { roleCode:'ROLE-005', roleName:'Employee (ESS)', level:'employee',   description:'Self-service only',                 permissions:viewOnly,        assignedEmployeeIds:[], isSystemRole:true  },
   ];
 }
+
+/**
+ * GLOBAL KEYS (Sprint T-Phase-1.2.5h-a verified): the constants above
+ * (ACCESS_ROLES_KEY, EMAIL_TEMPLATES_KEY, ACTIVITY_LOGS_KEY, ESS_CONFIG_KEY)
+ * are intentionally tenant-global. Rationale: RBAC catalog, system templates,
+ * cross-entity audit log, and ESS portal config apply across all entities of
+ * the parent company. Audited: 2026-05-01 · Bucket A — TRULY GLOBAL.
+ */
