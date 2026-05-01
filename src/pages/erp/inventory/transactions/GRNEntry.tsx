@@ -394,6 +394,7 @@ export function GRNEntryPanel() {
     persist(next);
     if (target === 'posted') {
       updateStockBalance(built);
+      autoCreateTraceabilityMasters(built);
       toast.success(`GRN ${built.grn_no} posted · stock credited to ${built.godown_name}`);
     } else {
       toast.success(`GRN ${built.grn_no} saved as ${GRN_STATUS_LABELS[target]}`);
