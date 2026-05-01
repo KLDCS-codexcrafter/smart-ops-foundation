@@ -24,10 +24,11 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
-  'r-storage-slip', 'r-bin-slip', 'r-aged-git',
+  'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
+  'm-abc-classification', 'm-hazmat-profiles', 'm-substitute-master', 'm-returnable-packaging',
 ];
 
 interface SidebarItem {
@@ -51,6 +52,22 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-storage-slip', label: 'Storage Slip', icon: Printer },
   { id: 'r-bin-slip', label: 'Bin Slip', icon: Printer },
   { id: 'r-aged-git', label: 'Aged Goods in Transit', icon: Truck },
+  { id: 'r-slow-moving-dead', label: 'Slow-Moving / Dead Stock', icon: Clock },
+];
+
+const MAS_ITEMS: SidebarItem[] = [
+  { id: 'm-item-master', label: 'Item Master', icon: Boxes },
+  { id: 'm-godown-master', label: 'Godown Master', icon: Warehouse },
+  { id: 'm-stock-groups', label: 'Stock Groups', icon: Layers },
+  { id: 'm-heat-master', label: 'Heat Master', icon: Flame },
+  { id: 'm-batch-grid', label: 'Batch Grid', icon: Grid3X3 },
+  { id: 'm-serial-grid', label: 'Serial Grid', icon: Hash },
+  { id: 'm-bin-labels', label: 'Bin Labels', icon: MapPin },
+  { id: 'm-reorder-matrix', label: 'Reorder Matrix', icon: Repeat },
+  { id: 'm-abc-classification', label: 'ABC Classification', icon: TrendingUp },
+  { id: 'm-hazmat-profiles', label: 'Hazmat Profiles', icon: AlertTriangle },
+  { id: 'm-substitute-master', label: 'Substitute Materials', icon: Replace },
+  { id: 'm-returnable-packaging', label: 'Returnable Packaging', icon: Recycle },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
