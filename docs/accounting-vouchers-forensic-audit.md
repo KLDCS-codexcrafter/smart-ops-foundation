@@ -54,6 +54,7 @@ Classification key:
 All 28 files classify as **SAFE** under the D-127 contract: each form is a
 thin orchestrator that delegates GL/stock posting to `finecore-engine.ts`.
 No `LOGIC` or `BREAKING` drift detected at the time of this audit.
+- 1.2.5h-c1 fix · Decimal sweep coverage extended to 13/14 SalesX files (OrderDeskPanel + CampaignPerformanceReport excluded · pre-flight verified zero float-math hits). MONEY-MATH-AUDITED markers added to all 13 files.
 
 ## Streak Counter (Q2-c)
 - Old streak under wrong path (`finecore/transactions/`): **VOID**
