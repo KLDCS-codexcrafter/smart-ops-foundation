@@ -506,6 +506,12 @@ export function GRNEntryPanel() {
       toast.success(`GRN ${built.grn_no} posted · stock credited to ${built.godown_name}`);
       // Sprint T-Phase-1.2.3-fix · Auto-open Storage Slip print dialog after post.
       setPrintGrn(built);
+    } else if (target === 'in_transit' && built.receipt_mode === 'two_stage' && existing?.status !== 'in_transit') {
+      // Sprint T-Phase-1.2.4 · Stage-1: invoice received, material pending.
+      // Credit accepted qty to the system Goods-in-Transit godown (built.godown_id is GIT id).
+      updateStockBalance(built);
+      autoCreateTraceabilityMasters(built);
+      toast.success(`GRN ${built.grn_no} staged in ${built.godown_name} · awaiting physical receipt`);
     } else {
       toast.success(`GRN ${built.grn_no} saved as ${GRN_STATUS_LABELS[target]}`);
     }
