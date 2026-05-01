@@ -317,6 +317,67 @@ export function GRNEntryPanel() {
     saveJson(stockBalanceKey(safeEntity), balances);
   };
 
+  /**
+   * Sprint T-Phase-1.2.3 · Auto-create batch & heat-number masters on GRN post.
+   * Idempotent: skips if same batch_no / heat_no already exists for the item.
+   * [JWT] POST /api/inventory/batches and /api/inventory/heat-numbers
+   */
+  const autoCreateTraceabilityMasters = (g: GRN) => {
+    const nowIso = new Date().toISOString();
+    const batchesKey = 'erp_batches';
+    const batches = loadJson<{ id: string; batch_number: string; item_id?: string | null }>(batchesKey);
+    let batchesChanged = false;
+    const heatKey = 'erp_heat_numbers';
+    const heats = loadJson<{ id: string; heat_no: string; item_id?: string | null }>(heatKey);
+    let heatsChanged = false;
+
+    for (const ln of g.lines) {
+      if (ln.accepted_qty <= 0) continue;
+      if (ln.batch_no && !batches.some(b => b.batch_number === ln.batch_no && b.item_id === ln.item_id)) {
+        batches.unshift({
+          id: `batch-${Date.now()}-${ln.id}`,
+          batch_number: ln.batch_no,
+          item_id: ln.item_id,
+          item_name: ln.item_name,
+          quantity: ln.accepted_qty,
+          available_quantity: ln.accepted_qty,
+          supplier_name: g.vendor_name,
+          supplier_invoice_no: g.vendor_invoice_no,
+          unit_cost: ln.unit_rate,
+          total_cost: round2(dMul(ln.accepted_qty, ln.unit_rate)),
+          qc_status: ln.qc_result === 'pass' ? 'passed' : ln.qc_result === 'fail' ? 'failed' : 'pending',
+          status: 'active',
+          godown_name: g.godown_name,
+          created_at: nowIso,
+          updated_at: nowIso,
+        } as never);
+        batchesChanged = true;
+      }
+      if (ln.heat_no && !heats.some(h => h.heat_no === ln.heat_no && h.item_id === ln.item_id)) {
+        heats.unshift({
+          id: `heat-${Date.now()}-${ln.id}`,
+          heat_no: ln.heat_no,
+          item_id: ln.item_id,
+          item_name: ln.item_name,
+          item_code: ln.item_code,
+          received_qty: ln.accepted_qty,
+          balance_qty: ln.accepted_qty,
+          source_grn_id: g.id,
+          source_grn_no: g.grn_no,
+          vendor_id: g.vendor_id,
+          vendor_name: g.vendor_name,
+          received_date: g.receipt_date,
+          status: 'active',
+          created_at: nowIso,
+          updated_at: nowIso,
+        } as never);
+        heatsChanged = true;
+      }
+    }
+    if (batchesChanged) saveJson(batchesKey, batches);
+    if (heatsChanged) saveJson(heatKey, heats);
+  };
+
   const handleSave = (target: GRNStatus) => {
     const err = validate();
     if (err) { toast.error(err); return; }
