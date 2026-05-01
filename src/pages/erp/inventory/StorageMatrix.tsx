@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Warehouse, Plus, Search, Edit2, Trash2, MapPin, Phone, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Godown, GodownAgreement, GodownOwnershipType, GodownDepartmentCode } from '@/types/godown';
-import { OWNERSHIP_LABELS, RENTED_TYPES, DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
+import { OWNERSHIP_LABELS, RENTED_TYPES, DEPARTMENT_LABELS } from '@/types/godown';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
