@@ -9,7 +9,7 @@ import {
   LayoutDashboard, FileText, CreditCard, Wallet, BookOpen, ArrowLeftRight,
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
-  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2,
+  Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2, Factory,
 } from 'lucide-react';
 // Scale and Truck already imported above (re-used for new INV entries).
 import {
