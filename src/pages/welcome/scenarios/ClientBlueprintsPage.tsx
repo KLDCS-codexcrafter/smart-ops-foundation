@@ -238,6 +238,10 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_serial_numbers_${entityCode}`,
     `erp_item_locations_${entityCode}`,
     `erp_bin_labels_${entityCode}`,
+    // Sprint T-Phase-1.2.5 · Store Discipline Depth
+    `erp_hazmat_profiles_${entityCode}`,
+    `erp_item_substitutes_${entityCode}`,
+    `erp_returnable_packaging_${entityCode}`,
   ];
 }
 
