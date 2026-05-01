@@ -56,7 +56,7 @@ const STATUS_VARIANT: Record<SOMStatus, 'outline' | 'secondary' | 'default'> = {
 };
 
 export function SampleOutwardMemoPanel({ entityCode }: Props) {
-  const [memoNo] = useState(() => nextMemoNo(entityCode));
+  const [memoNo] = useState(() => generateDocNo('SOM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
   const persons = useMemo(() =>

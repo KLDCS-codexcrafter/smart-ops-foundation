@@ -50,7 +50,7 @@ const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 
 export function SalesReturnMemoPanel({ entityCode }: Props) {
   // ── Header ─────────────────────────────────────────────────────────
-  const [memoNo] = useState(() => nextMemoNo(entityCode));
+  const [memoNo] = useState(() => generateDocNo('SRM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
   // ── Raised By ──────────────────────────────────────────────────────

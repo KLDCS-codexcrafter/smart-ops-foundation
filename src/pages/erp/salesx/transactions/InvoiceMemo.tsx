@@ -72,7 +72,7 @@ function buildItem(srcName: string, qty: number, uom: string | null, rate: numbe
 }
 
 export function InvoiceMemoPanel({ entityCode }: Props) {
-  const [memoNo] = useState(() => nextMemoNo(entityCode));
+  const [memoNo] = useState(() => generateDocNo('IM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
   const allDMs = useMemo(

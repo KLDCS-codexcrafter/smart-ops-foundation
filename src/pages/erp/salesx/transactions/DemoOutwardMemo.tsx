@@ -61,7 +61,7 @@ const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 const PERIOD_OPTIONS: DOMPeriodDays[] = [14, 30, 60, 90];
 
 export function DemoOutwardMemoPanel({ entityCode }: Props) {
-  const [memoNo] = useState(() => nextMemoNo(entityCode));
+  const [memoNo] = useState(() => generateDocNo('DOM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
   const persons = useMemo(() =>
