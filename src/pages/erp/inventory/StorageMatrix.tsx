@@ -103,16 +103,17 @@ export function StorageMatrixPanel(){
     <div className='flex items-center gap-4'><div className='relative flex-1 max-w-sm'><Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'/><Input className='pl-8 h-9' placeholder='Search godowns...' value={search} onChange={e=>setSearch(e.target.value)}/></div></div>
     <Card><CardContent className='p-0'><Table>
     <TableHeader><TableRow className='bg-muted/40 hover:bg-muted/40'>
-    {['Code','Name','Ownership','Location','Phone','GST','Status',''].map(h=><TableHead key={h} className='text-xs font-semibold uppercase tracking-wider'>{h}</TableHead>)}
+    {['Code','Name','Department','Ownership','Location','Phone','GST','Status',''].map(h=><TableHead key={h} className='text-xs font-semibold uppercase tracking-wider'>{h}</TableHead>)}
     </TableRow></TableHeader>
     <TableBody>
-    {fil.length===0?(<TableRow><TableCell colSpan={8} className='text-center py-16 text-muted-foreground'>
+    {fil.length===0?(<TableRow><TableCell colSpan={9} className='text-center py-16 text-muted-foreground'>
     <Warehouse className='h-10 w-10 mx-auto mb-3 opacity-20'/>
     <p className='text-sm font-semibold mb-1 text-foreground'>No godowns</p><Button data-primary size='sm' className='mt-2' onClick={openC}><Plus className='h-4 w-4 mr-1'/>Add Godown</Button>
     </TableCell></TableRow>):fil.map(g=>(
     <TableRow key={g.id} className='group'>
     <TableCell><Badge variant='secondary' className='font-mono text-xs'>{g.code}</Badge></TableCell>
-    <TableCell className='font-medium text-sm'>{g.name}</TableCell>
+    <TableCell className='font-medium text-sm'>{g.name}{g.is_virtual&&<Badge variant='outline' className='ml-2 text-[10px] py-0'>Virtual</Badge>}</TableCell>
+    <TableCell>{g.department_code?(<Badge className={`text-xs ${DEPARTMENT_BADGE_COLORS[g.department_code]}`}>{DEPARTMENT_LABELS[g.department_code]}</Badge>):<span className='text-xs text-muted-foreground'>—</span>}{g.responsible_person_name&&<div className='text-[10px] text-muted-foreground mt-0.5'>{g.responsible_person_name}</div>}</TableCell>
     <TableCell><Badge className={`text-xs ${OWN_C[g.ownership_type]||''}`}>{OWNERSHIP_LABELS[g.ownership_type]}</Badge></TableCell>
     <TableCell>{(g.city||g.state)&&<div className='flex items-center gap-1 text-xs text-muted-foreground'><MapPin className='h-3 w-3'/>{[g.city,g.state].filter(Boolean).join(', ')}</div>}</TableCell>
     <TableCell>{g.contact_phone&&<div className='flex items-center gap-1 text-xs text-muted-foreground'><Phone className='h-3 w-3'/>{g.contact_phone}</div>}</TableCell>
@@ -156,6 +157,69 @@ export function StorageMatrixPanel(){
       <p className='text-xs text-muted-foreground'>Must match GSTN Additional Place of Business for e-way bills</p>
     </div>
     <div className='space-y-1.5'><Label>Description</Label><Input value={gf.description} onChange={e=>setGf(f=>({...f,description:e.target.value}))}/></div>
+    <Separator/>
+    {/* Sprint T-Phase-1.2.1 · Departmental Custody — the missing accountability piece */}
+    <div className='space-y-3 rounded-lg border border-dashed p-3 bg-muted/20'>
+      <div>
+        <p className='text-sm font-semibold'>Departmental Custody</p>
+        <p className='text-xs text-muted-foreground'>Assign this godown to a department and an accountable person. Indian ERP-first.</p>
+      </div>
+      <div className='grid grid-cols-2 gap-4'>
+        <div className='space-y-1.5'><Label>Department</Label>
+          <Select value={gf.department_code||'__none'} onValueChange={v=>setGf(f=>({...f,department_code:v==='__none'?null:v as GodownDepartmentCode}))}>
+            <SelectTrigger><SelectValue placeholder='— None / Main Store —'/></SelectTrigger>
+            <SelectContent>
+              <SelectItem value='__none'>— None / Main Store —</SelectItem>
+              {(Object.keys(DEPARTMENT_LABELS) as GodownDepartmentCode[]).map(k=>(
+                <SelectItem key={k} value={k}>{DEPARTMENT_LABELS[k]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className='space-y-1.5'><Label>Responsible Person</Label>
+          <Select value={gf.responsible_person_id||'__none'} onValueChange={v=>{
+            if(v==='__none'){setGf(f=>({...f,responsible_person_id:null,responsible_person_name:null}));return;}
+            const p=persons.find(x=>x.id===v);
+            setGf(f=>({...f,responsible_person_id:v,responsible_person_name:p?p.display_name:null}));
+          }}>
+            <SelectTrigger><SelectValue placeholder='— Unassigned —'/></SelectTrigger>
+            <SelectContent>
+              <SelectItem value='__none'>— Unassigned —</SelectItem>
+              {persons.map(p=>(
+                <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className='grid grid-cols-2 gap-4'>
+        <label className='flex items-center gap-3 cursor-pointer border rounded-lg p-3'>
+          <Switch checked={!!gf.is_virtual} onCheckedChange={v=>setGf(f=>({...f,is_virtual:v}))}/>
+          <div>
+            <p className='text-sm font-medium'>Virtual Godown</p>
+            <p className='text-xs text-muted-foreground'>Tracking unit only — no physical address required</p>
+          </div>
+        </label>
+        <label className='flex items-center gap-3 cursor-pointer border rounded-lg p-3'>
+          <Switch checked={!!gf.requires_issue_note} onCheckedChange={v=>setGf(f=>({...f,requires_issue_note:v}))}/>
+          <div>
+            <p className='text-sm font-medium'>Requires Material Issue Note</p>
+            <p className='text-xs text-muted-foreground'>Stock cannot leave without an MIN voucher</p>
+          </div>
+        </label>
+      </div>
+      <div className='space-y-1.5'><Label>Linked Project Centre <span className='text-muted-foreground font-normal'>(optional · for site stock)</span></Label>
+        <Select value={gf.project_centre_id||'__none'} onValueChange={v=>setGf(f=>({...f,project_centre_id:v==='__none'?null:v}))}>
+          <SelectTrigger><SelectValue placeholder='— Not linked —'/></SelectTrigger>
+          <SelectContent>
+            <SelectItem value='__none'>— Not linked —</SelectItem>
+            {centres.map(c=>(
+              <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
     </TabsContent>
 
     <TabsContent value='contact' className='space-y-4 mt-4'>

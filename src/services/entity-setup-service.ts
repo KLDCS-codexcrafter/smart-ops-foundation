@@ -486,6 +486,54 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       localStorage.setItem(GODOWN_KEY, JSON.stringify([...existing, samplesGodown]));
       samplesGodownCreated = true;
     }
+
+    // Sprint T-Phase-1.2.1 · Seed 5 departmental godowns idempotently.
+    // Indian ERP-first: every plant has a Main Store + Maintenance + Production WIP +
+    // Paint Shop + QC Hold. These are the minimum 5 needed for departmental accountability.
+    const refreshed: Array<{ name: string; code: string }> = JSON.parse(
+      localStorage.getItem(GODOWN_KEY) || '[]',
+    );
+    const nowIso2 = new Date().toISOString();
+    type SeedG = {
+      code: string; name: string;
+      department_code: 'main' | 'maintenance' | 'production' | 'paint_shop' | 'qc';
+      requires_issue_note: boolean; is_virtual: boolean;
+      description: string;
+    };
+    const departmentSeeds: SeedG[] = [
+      { code: `${opts.shortCode}-MAIN-GD`,  name: 'Main Store',          department_code: 'main',        requires_issue_note: false, is_virtual: false, description: 'Primary raw material & consumables store. All inward GRNs land here by default.' },
+      { code: `${opts.shortCode}-MTNC-GD`,  name: 'Maintenance Store',   department_code: 'maintenance', requires_issue_note: true,  is_virtual: false, description: 'Spares, tools & consumables for plant maintenance. Issued only on MIN voucher.' },
+      { code: `${opts.shortCode}-WIP-GD`,   name: 'Production / WIP',    department_code: 'production',  requires_issue_note: true,  is_virtual: true,  description: 'Virtual godown holding work-in-progress stock on the shop floor.' },
+      { code: `${opts.shortCode}-PAINT-GD`, name: 'Paint Shop Store',    department_code: 'paint_shop',  requires_issue_note: true,  is_virtual: false, description: 'Paints, thinners & PPE for paint booth. Hazmat tracked.' },
+      { code: `${opts.shortCode}-QC-GD`,    name: 'QC Hold Store',       department_code: 'qc',          requires_issue_note: true,  is_virtual: false, description: 'Quarantine for items pending inspection or failed QC.' },
+    ];
+    const toAppend = departmentSeeds.filter(s => !refreshed.some(r => r.code === s.code || r.name === s.name));
+    if (toAppend.length > 0) {
+      const seeded = toAppend.map(s => ({
+        id: `gdn-seed-${opts.shortCode}-${s.department_code}-${Date.now()}`,
+        code: s.code, name: s.name,
+        ownership_type: 'own_own_stock' as const,
+        party_id: null, party_name: null,
+        address: null, city: null, state: null, pincode: null,
+        country: 'India',
+        latitude: null, longitude: null,
+        total_capacity: null, capacity_unit: null,
+        contact_person: null, contact_phone: null, contact_email: null,
+        gst_number: null,
+        description: s.description,
+        status: 'active' as const,
+        zones: [], agreements: [],
+        department_code: s.department_code,
+        responsible_person_id: null, responsible_person_name: null,
+        is_virtual: s.is_virtual,
+        requires_issue_note: s.requires_issue_note,
+        project_centre_id: null,
+        created_at: nowIso2, updated_at: nowIso2,
+      }));
+      // [JWT] POST /api/inventory/godowns (bulk)
+      const merged = JSON.parse(localStorage.getItem(GODOWN_KEY) || '[]');
+      localStorage.setItem(GODOWN_KEY, JSON.stringify([...seeded, ...merged]));
+    }
   } catch { /* ignore */ }
 
   return {

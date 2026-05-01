@@ -142,7 +142,8 @@ const TermsOfDeliveryMaster = lazy(() => import('./pages/erp/masters/supporting/
 const LogisticMaster = lazy(() => import('./pages/erp/masters/LogisticMaster'));
 const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
-const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHub'));
+const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
+const InventoryHubLegacy = lazy(() => import('./pages/erp/inventory/InventoryHub'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
 const SerialGrid = lazy(() => import('./pages/erp/inventory/SerialGrid'));
@@ -416,6 +417,7 @@ const App = () => (
               <Route path="/erp/masters/customer" element={<P><CustomerMaster /></P>} />
               <Route path="/erp/masters/business-unit" element={<P><BusinessUnitMaster /></P>} />
               <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
+              <Route path="/erp/inventory-hub/legacy" element={<P><InventoryHubLegacy /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
               <Route path="/erp/inventory-hub/batch-grid" element={<P><BatchGrid /></P>} />
               <Route path="/erp/inventory-hub/serial-grid" element={<P><SerialGrid /></P>} />

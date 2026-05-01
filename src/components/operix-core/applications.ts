@@ -70,7 +70,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/inventory-hub',
     icon: 'Package',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'qulicheak',
