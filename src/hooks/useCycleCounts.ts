@@ -253,7 +253,15 @@ export function useCycleCounts(entityCode: string) {
       write(itemKey, updatedItems);
     }
 
+    const prev = { ...cc };
     const result = updateCount(id, { status: 'posted', posted_at: now });
+    // Sprint T-Phase-1.2.5h-b1 · Audit trail (additive only · MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'post', entityType: 'cycle_count',
+      recordId: id, recordLabel: cc.count_no,
+      beforeState: prev, afterState: result ? { ...result } : null,
+      sourceModule: 'inventory',
+    });
     toast.success('Cycle count posted · stock adjusted');
     return result;
   }, [counts, entityCode, updateCount]);
