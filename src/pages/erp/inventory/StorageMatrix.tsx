@@ -103,7 +103,7 @@ export function StorageMatrixPanel(){
     <div className='flex items-center gap-4'><div className='relative flex-1 max-w-sm'><Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'/><Input className='pl-8 h-9' placeholder='Search godowns...' value={search} onChange={e=>setSearch(e.target.value)}/></div></div>
     <Card><CardContent className='p-0'><Table>
     <TableHeader><TableRow className='bg-muted/40 hover:bg-muted/40'>
-    {['Code','Name','Ownership','Location','Phone','GST','Status',''].map(h=><TableHead key={h} className='text-xs font-semibold uppercase tracking-wider'>{h}</TableHead>)}
+    {['Code','Name','Department','Ownership','Location','Phone','GST','Status',''].map(h=><TableHead key={h} className='text-xs font-semibold uppercase tracking-wider'>{h}</TableHead>)}
     </TableRow></TableHeader>
     <TableBody>
     {fil.length===0?(<TableRow><TableCell colSpan={8} className='text-center py-16 text-muted-foreground'>
