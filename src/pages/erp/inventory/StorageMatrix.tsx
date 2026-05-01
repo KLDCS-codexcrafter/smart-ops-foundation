@@ -14,15 +14,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Warehouse, Plus, Search, Edit2, Trash2, MapPin, Phone, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Godown, GodownAgreement, GodownOwnershipType } from '@/types/godown';
-import { OWNERSHIP_LABELS, RENTED_TYPES } from '@/types/godown';
+import type { Godown, GodownAgreement, GodownOwnershipType, GodownDepartmentCode } from '@/types/godown';
+import { OWNERSHIP_LABELS, RENTED_TYPES, DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
+import { useSAMPersons } from '@/hooks/useSAMPersons';
+import { useProjectCentres } from '@/hooks/useProjectCentres';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 
 const STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Andaman & Nicobar Islands'];
 const OWN_C:Record<string,string>={own_own_stock:'bg-emerald-500/10 text-emerald-700',own_third_party_stock:'bg-blue-500/10 text-blue-700',third_party_our_stock:'bg-amber-500/10 text-amber-700',third_party_third_party_stock:'bg-slate-500/10 text-slate-600',job_work_location:'bg-purple-500/10 text-purple-700',consignment_at_dealer:'bg-cyan-500/10 text-cyan-700',cwc_swc_godown:'bg-orange-500/10 text-orange-700',customs_bonded:'bg-red-500/10 text-red-700',sez_ftz:'bg-indigo-500/10 text-indigo-700'};
 const GKEY='erp_godowns';
 // [JWT] GET /api/entity/storage/:key
 const load=():Godown[]=>{try{return JSON.parse(localStorage.getItem(GKEY)||'[]');}catch{return[];}};
-const BG={code:'',name:'',ownership_type:'own_own_stock' as GodownOwnershipType,party_name:'',address:'',city:'',state:'Maharashtra',pincode:'',country:'India',total_capacity:null as number|null,capacity_unit:'sqft',contact_person:'',contact_phone:'',contact_email:'',gst_number:'',description:''};
+const BG={code:'',name:'',ownership_type:'own_own_stock' as GodownOwnershipType,party_name:'',address:'',city:'',state:'Maharashtra',pincode:'',country:'India',total_capacity:null as number|null,capacity_unit:'sqft',contact_person:'',contact_phone:'',contact_email:'',gst_number:'',description:'',
+  // Sprint T-Phase-1.2.1 · Departmental accountability
+  department_code:null as GodownDepartmentCode|null,
+  responsible_person_id:null as string|null,
+  responsible_person_name:null as string|null,
+  is_virtual:false,
+  requires_issue_note:false,
+  project_centre_id:null as string|null,
+};
 const BA={agreement_number:'',lessor_name:'',lessor_gstin:'',lessor_pan:'',start_date:'',end_date:'',notice_period_days:null as number|null,lock_in_months:null as number|null,auto_renewal:false,monthly_rent:null as number|null,security_deposit:null as number|null,charge_type:'fixed' as GodownAgreement['charge_type'],rate:null as number|null,billing_cycle:'monthly' as GodownAgreement['billing_cycle'],escalation_rate:null as number|null,tds_applicable:false,tds_section:'194-I',tds_rate:null as number|null,license_type:'general',license_number:'',license_expiry:'',insurance_policy:'',insurance_expiry:''};
 
 export function StorageMatrixPanel(){
