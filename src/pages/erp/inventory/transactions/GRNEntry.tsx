@@ -160,6 +160,35 @@ export function GRNEntryPanel() {
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
   const [printGrn, setPrintGrn] = useState<GRN | null>(null);
+  const [showStage2, setShowStage2] = useState<GRN | null>(null);
+  const [stage2DestId, setStage2DestId] = useState<string>('');
+
+  // Sprint T-Phase-1.2.4 · Load active GRN voucher types (Receipt Note family) for multi-VT dropdown.
+  const grnVoucherTypes = useMemo<VoucherType[]>(() => {
+    try {
+      // [JWT] GET /api/accounting/voucher-types?base=Receipt+Note&active=true
+      const all: VoucherType[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+      return all.filter(vt => vt.is_active && vt.base_voucher_type === 'Receipt Note');
+    } catch { return []; }
+  }, []);
+
+  // Sprint T-Phase-1.2.4 · Resolve system GIT godown for two-stage receipts.
+  const gitGodown = useMemo<Godown | null>(() => {
+    try {
+      const all: Godown[] = JSON.parse(localStorage.getItem('erp_godowns') || '[]');
+      return all.find(g => g.ownership_type === 'goods_in_transit') ?? null;
+    } catch { return null; }
+  }, []);
+
+  // Map VT id → generateDocNo prefix (DGRN/IGRN/SCGRN/GRN fallback)
+  const prefixForVt = (vtId: string): 'DGRN' | 'IGRN' | 'SCGRN' | 'GRN' => {
+    if (vtId === 'vt-receipt-note-domestic') return 'DGRN';
+    if (vtId === 'vt-receipt-note-import') return 'IGRN';
+    if (vtId === 'vt-receipt-note-subcon') return 'SCGRN';
+    return 'GRN';
+  };
+  // dSub kept for future Stage-2 reverse moves; void to silence unused-var lint.
+  void dSub;
 
   // Sprint T-Phase-1.2.3-fix · Resolve preferred godown/bin for the draft line item.
   // Founder ask: "while receiving item or issuing item it should pick the location as sets in item."
