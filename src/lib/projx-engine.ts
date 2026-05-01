@@ -12,6 +12,7 @@ import type { TimeEntry } from '@/types/projx/time-entry';
 import type { ProjectResource } from '@/types/projx/project-resource';
 import type { ExpenseClaim } from '@/types/employee-finance';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { generateDocNo } from '@/lib/finecore-engine';
 
 /** Result type — no values persisted, computed live (D-216) */
 export interface ProjectPnLResult {
@@ -146,22 +147,14 @@ export function canTransitionStatus(
   return { ok: true };
 }
 
-/** Sequence generator — PRJ/YY-YY/NNNN format. */
+/**
+ * Sequence generator — PRJ/YY-YY/NNNN format.
+ * Sprint T-Phase-1.1.2-d: delegated to generateDocNo('PRJ', entityCode).
+ * Storage key (`erp_doc_seq_PRJ_${entityCode}`) and format are identical — sequences persist.
+ */
 export function nextProjectCode(entityCode: string): string {
-  const fy = computeFYShort(new Date());
-  const seqKey = `erp_doc_seq_PRJ_${entityCode}`;
   // [JWT] POST /api/projx/projects/next-no
-  const raw = localStorage.getItem(seqKey);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  localStorage.setItem(seqKey, String(seq));
-  return `PRJ/${fy}/${String(seq).padStart(4, '0')}`;
-}
-
-function computeFYShort(date: Date): string {
-  const m = date.getMonth();
-  const y = date.getFullYear();
-  const fyStart = m >= 3 ? y : y - 1;
-  return `${String(fyStart).slice(-2)}-${String(fyStart + 1).slice(-2)}`;
+  return generateDocNo('PRJ', entityCode);
 }
 
 /** Hookpoint stub for 1.5.7 · returns no milestones in 1.1.2-b */
