@@ -601,6 +601,37 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         localStorage.setItem(GODOWN_KEY, JSON.stringify([...seededExtras, ...mergedExtras]));
       }
     }
+
+    // Sprint T-Phase-1.2.4 · System Goods-in-Transit godown (every entity gets one · idempotent)
+    const GIT_CODE = `${opts.shortCode}-GIT-GD`;
+    const currentForGit: Array<{ code: string }> = JSON.parse(localStorage.getItem(GODOWN_KEY) || '[]');
+    if (!currentForGit.some(g => g.code === GIT_CODE)) {
+      const gitGodown = {
+        id: `gdn-seed-git-${opts.shortCode.toLowerCase()}-${Date.now()}`,
+        code: GIT_CODE,
+        name: 'Goods in Transit',
+        ownership_type: 'goods_in_transit' as const,
+        party_id: null, party_name: null,
+        address: null, city: null, state: null, pincode: null, country: 'India',
+        latitude: null, longitude: null,
+        total_capacity: null, capacity_unit: null,
+        contact_person: null, contact_phone: null, contact_email: null,
+        gst_number: null,
+        description: 'Virtual godown for invoice-received-material-pending scenario. Material here means vendor invoice booked but physical receipt pending.',
+        status: 'active' as const,
+        zones: [], agreements: [],
+        department_code: null,
+        responsible_person_id: null, responsible_person_name: null,
+        is_virtual: true,
+        requires_issue_note: false,
+        project_centre_id: null,
+        is_system_godown: true,
+        created_at: nowIso2, updated_at: nowIso2,
+      };
+      const mergedGit = JSON.parse(localStorage.getItem(GODOWN_KEY) || '[]');
+      // [JWT] POST /api/inventory/godowns (system seed)
+      localStorage.setItem(GODOWN_KEY, JSON.stringify([gitGodown, ...mergedGit]));
+    }
   } catch { /* ignore */ }
 
   // Sprint T-Phase-1.2.3 · Demo seed: a few reorder rules + heat numbers so
