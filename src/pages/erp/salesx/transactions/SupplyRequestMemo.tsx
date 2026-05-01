@@ -27,6 +27,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   supplyRequestMemosKey,
@@ -40,21 +41,8 @@ interface Props { entityCode: string }
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
-function fyShort(): string {
-  const d = new Date();
-  const y = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
-  return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
-}
-
-function nextMemoNo(entityCode: string): string {
-  const key = `erp_doc_seq_SRQM_${entityCode}`;
-  // [JWT] GET /api/procurement/sequences/SRQM/:entityCode
-  const raw = localStorage.getItem(key);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  // [JWT] PATCH /api/procurement/sequences/SRQM/:entityCode
-  localStorage.setItem(key, String(seq));
-  return `SRQM/${fyShort()}/${String(seq).padStart(4, '0')}`;
-}
+// Sprint T-Phase-1.1.2-d: SRQM doc-no now delegated to generateDocNo('SRQM', entityCode).
+// Storage key (`erp_doc_seq_SRQM_${entityCode}`) and format are identical — sequences persist.
 
 function ls<T>(key: string): T[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]') as T[]; }
