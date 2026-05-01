@@ -103,6 +103,9 @@ interface FormLine {
   batch_no: string;
   serial_nos: string;
   heat_no: string;
+  bin_id: string;
+  bin_code: string;
+  bin_id_source: 'preferred' | 'manual' | '';
   qc_result: GRNQCResult;
   qc_notes: string;
 }
@@ -112,6 +115,7 @@ const blankLine = (): FormLine => ({
   item_id: '', item_code: '', item_name: '', item_type: '', uom: '',
   ordered_qty: 0, received_qty: 0, accepted_qty: 0, unit_rate: 0,
   batch_no: '', serial_nos: '', heat_no: '',
+  bin_id: '', bin_code: '', bin_id_source: '',
   qc_result: 'pending', qc_notes: '',
 });
 
