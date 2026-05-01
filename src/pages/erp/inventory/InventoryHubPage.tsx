@@ -31,6 +31,10 @@ import { HazmatProfileMasterPanel } from './HazmatProfileMaster';
 import { SubstituteMasterPanel } from './SubstituteMaster';
 import { ReturnablePackagingMasterPanel } from './ReturnablePackagingMaster';
 import { SlowMovingDeadStockReportPanel } from './reports/SlowMovingDeadStockReport';
+import { CycleCountEntryPanel } from './transactions/CycleCountEntry';
+import { RTVEntryPanel } from './transactions/RTVEntry';
+import { BinUtilizationReportPanel } from './reports/BinUtilizationReport';
+import { ItemMovementHistoryReportPanel } from './reports/ItemMovementHistoryReport';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
@@ -84,6 +88,10 @@ export default function InventoryHubPage() {
       case 'm-substitute-master':    return <SubstituteMasterPanel />;
       case 'm-returnable-packaging': return <ReturnablePackagingMasterPanel />;
       case 'r-slow-moving-dead':     return <SlowMovingDeadStockReportPanel />;
+      case 't-cycle-count':          return <CycleCountEntryPanel />;
+      case 't-rtv':                  return <RTVEntryPanel />;
+      case 'r-bin-utilization':      return <BinUtilizationReportPanel />;
+      case 'r-item-movement':        return <ItemMovementHistoryReportPanel />;
       default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };

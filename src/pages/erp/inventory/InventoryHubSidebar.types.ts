@@ -31,4 +31,9 @@ export type InventoryHubModule =
   | 'm-hazmat-profiles'
   | 'm-substitute-master'
   | 'm-returnable-packaging'
-  | 'r-slow-moving-dead';
+  | 'r-slow-moving-dead'
+  // Sprint T-Phase-1.2.6 · Cycle Count + RTV + Bin Util + Movement
+  | 't-cycle-count'
+  | 't-rtv'
+  | 'r-bin-utilization'
+  | 'r-item-movement';

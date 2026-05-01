@@ -944,6 +944,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       'vt-receipt-note-domestic',
       'vt-receipt-note-import',
       'vt-receipt-note-subcon',
+      // Sprint T-Phase-1.2.6 · Cycle Count + RTV
+      'vt-physical-stock',
+      'vt-rejections-out',
     ];
     let changed = false;
     toActivate.forEach(vtId => {

@@ -9,7 +9,7 @@ import {
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat, Truck,
-  TrendingUp, Replace, Recycle, Clock,
+  TrendingUp, Replace, Recycle, Clock, ClipboardCheck, RotateCcw, Activity,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -23,8 +23,10 @@ import type { InventoryHubModule } from './InventoryHubSidebar.types';
 const LIVE_MODULES: InventoryHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
+  't-cycle-count', 't-rtv',
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
   'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
+  'r-bin-utilization', 'r-item-movement',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
@@ -42,6 +44,8 @@ const TXN_ITEMS: SidebarItem[] = [
   { id: 't-grn-entry', label: 'GRN Entry', icon: ArrowDownToLine },
   { id: 't-material-issue', label: 'Material Issue Note', icon: ArrowUpFromLine },
   { id: 't-consumption-entry', label: 'Consumption Entry', icon: PackageOpen },
+  { id: 't-cycle-count', label: 'Cycle Count', icon: ClipboardCheck },
+  { id: 't-rtv', label: 'Return to Vendor', icon: RotateCcw },
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
@@ -53,6 +57,8 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-bin-slip', label: 'Bin Slip', icon: Printer },
   { id: 'r-aged-git', label: 'Aged Goods in Transit', icon: Truck },
   { id: 'r-slow-moving-dead', label: 'Slow-Moving / Dead Stock', icon: Clock },
+  { id: 'r-bin-utilization', label: 'Bin Utilization', icon: Boxes },
+  { id: 'r-item-movement', label: 'Item Movement History', icon: Activity },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
