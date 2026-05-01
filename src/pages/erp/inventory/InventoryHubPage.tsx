@@ -9,8 +9,11 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { InventoryHubWelcomePanel } from './InventoryHubWelcome';
 import { GRNEntryPanel } from './transactions/GRNEntry';
+import { MaterialIssueNotePanel } from './transactions/MaterialIssueNote';
+import { ConsumptionEntryPanel } from './transactions/ConsumptionEntry';
 import { StockLedgerReportPanel } from './reports/StockLedgerReport';
 import { GRNRegisterPanel } from './reports/GRNRegister';
+import { ConsumptionSummaryReportPanel } from './reports/ConsumptionSummaryReport';
 import { ReorderAlertsPanel } from './ReorderAlerts';
 import { ItemCraftPanel } from './ItemCraft';
 import { StorageMatrixPanel } from './StorageMatrix';
@@ -44,15 +47,18 @@ export default function InventoryHubPage() {
 
   const renderModule = () => {
     switch (activeModule) {
-      case 'welcome':            return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
-      case 't-grn-entry':        return <GRNEntryPanel />;
-      case 'r-stock-ledger':     return <StockLedgerReportPanel />;
-      case 'r-grn-register':     return <GRNRegisterPanel />;
-      case 'r-reorder-alerts':   return <ReorderAlertsPanel />;
-      case 'm-item-master':      return <ItemCraftPanel />;
-      case 'm-godown-master':    return <StorageMatrixPanel />;
-      case 'm-stock-groups':     return <StockMatrixPanel />;
-      default:                   return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+      case 'welcome':                return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+      case 't-grn-entry':            return <GRNEntryPanel />;
+      case 't-material-issue':       return <MaterialIssueNotePanel />;
+      case 't-consumption-entry':    return <ConsumptionEntryPanel />;
+      case 'r-stock-ledger':         return <StockLedgerReportPanel />;
+      case 'r-grn-register':         return <GRNRegisterPanel />;
+      case 'r-consumption-summary':  return <ConsumptionSummaryReportPanel />;
+      case 'r-reorder-alerts':       return <ReorderAlertsPanel />;
+      case 'm-item-master':          return <ItemCraftPanel />;
+      case 'm-godown-master':        return <StorageMatrixPanel />;
+      case 'm-stock-groups':         return <StockMatrixPanel />;
+      default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };
 

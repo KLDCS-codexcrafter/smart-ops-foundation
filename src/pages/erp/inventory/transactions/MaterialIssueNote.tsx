@@ -110,6 +110,8 @@ export function MaterialIssueNotePanel() {
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
 
+  // mins is intentionally a dependency: re-read balances after a MIN is issued.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo(() => loadBalances(safeEntity), [safeEntity, mins]);
 
   const totals = useMemo(() => {
@@ -173,7 +175,7 @@ export function MaterialIssueNotePanel() {
     setDraftLine(d => ({
       ...d,
       item_id: it.id, item_code: it.code ?? '', item_name: it.name,
-      uom: it.base_uom ?? it.purchase_uom ?? 'NOS',
+      uom: it.primary_uom_symbol ?? it.purchase_uom_symbol ?? 'NOS',
       rate: bal?.weighted_avg_rate ?? 0,
       available_qty: bal?.qty ?? 0,
     }));
@@ -220,6 +222,8 @@ export function MaterialIssueNotePanel() {
     const toG = godowns.find(g => g.id === header.to_godown_id);
     const reqP = persons.find(p => p.id === header.requested_by_id);
     const issP = persons.find(p => p.id === header.issued_by_id);
+    const reqName = reqP?.display_name ?? '';
+    const issName = issP?.display_name ?? '';
     const builtLines: MINLine[] = lines.map(l => ({
       id: l.id,
       item_id: l.item_id, item_code: l.item_code, item_name: l.item_name,
@@ -238,8 +242,8 @@ export function MaterialIssueNotePanel() {
       from_godown_id: header.from_godown_id, from_godown_name: fromG?.name ?? '',
       to_godown_id: header.to_godown_id, to_godown_name: toG?.name ?? '',
       to_department_code: toG?.department_code ?? null,
-      requested_by_id: header.requested_by_id, requested_by_name: reqP?.full_name ?? '',
-      issued_by_id: header.issued_by_id, issued_by_name: issP?.full_name ?? '',
+      requested_by_id: header.requested_by_id, requested_by_name: reqName,
+      issued_by_id: header.issued_by_id, issued_by_name: issName,
       project_centre_id: header.project_centre_id,
       lines: builtLines,
       total_qty: totals.qty,
@@ -436,7 +440,7 @@ export function MaterialIssueNotePanel() {
               onValueChange={v => setHeader(h => ({ ...h, requested_by_id: v }))}>
               <SelectTrigger><SelectValue placeholder="Select requester" /></SelectTrigger>
               <SelectContent>
-                {persons.map(p => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
+                {persons.map(p => <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -446,18 +450,18 @@ export function MaterialIssueNotePanel() {
               onValueChange={v => setHeader(h => ({ ...h, issued_by_id: v }))}>
               <SelectTrigger><SelectValue placeholder="Select issuer" /></SelectTrigger>
               <SelectContent>
-                {persons.map(p => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
+                {persons.map(p => <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label className="text-xs">Project (optional)</Label>
-            <Select disabled={readonly} value={header.project_centre_id ?? ''}
-              onValueChange={v => setHeader(h => ({ ...h, project_centre_id: v || null }))}>
+            <Select disabled={readonly} value={header.project_centre_id ?? '__none'}
+              onValueChange={v => setHeader(h => ({ ...h, project_centre_id: v === '__none' ? null : v }))}>
               <SelectTrigger><SelectValue placeholder="No project" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
-                {centres.filter(c => c.is_active).map(c => (
+                <SelectItem value="__none">None</SelectItem>
+                {centres.filter(c => c.status === 'active').map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.code} · {c.name}</SelectItem>
                 ))}
               </SelectContent>
