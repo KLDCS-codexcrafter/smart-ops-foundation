@@ -179,13 +179,13 @@ export function StorageMatrixPanel(){
           <Select value={gf.responsible_person_id||'__none'} onValueChange={v=>{
             if(v==='__none'){setGf(f=>({...f,responsible_person_id:null,responsible_person_name:null}));return;}
             const p=persons.find(x=>x.id===v);
-            setGf(f=>({...f,responsible_person_id:v,responsible_person_name:p?p.name:null}));
+            setGf(f=>({...f,responsible_person_id:v,responsible_person_name:p?p.display_name:null}));
           }}>
             <SelectTrigger><SelectValue placeholder='— Unassigned —'/></SelectTrigger>
             <SelectContent>
               <SelectItem value='__none'>— Unassigned —</SelectItem>
               {persons.map(p=>(
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                <SelectItem key={p.id} value={p.id}>{p.display_name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
