@@ -52,6 +52,8 @@ export function ConsumptionSummaryReportPanel() {
   const { entries } = useConsumptionEntries(safeEntity);
   const { godowns } = useGodowns();
 
+  // mins/entries are deliberate deps so balances re-read after movements.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo<StockBalanceEntry[]>(
     () => loadJson<StockBalanceEntry>(stockBalanceKey(safeEntity)),
     [safeEntity, mins, entries]);

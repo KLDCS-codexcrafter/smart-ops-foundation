@@ -127,6 +127,8 @@ export function ConsumptionEntryPanel() {
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
 
+  // entries is intentionally a dependency: re-read balances after posting.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo(() => loadBalances(safeEntity), [safeEntity, entries]);
 
   const totals = useMemo(() => {

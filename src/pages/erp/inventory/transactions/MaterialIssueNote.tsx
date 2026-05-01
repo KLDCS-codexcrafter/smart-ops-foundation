@@ -110,6 +110,8 @@ export function MaterialIssueNotePanel() {
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
 
+  // mins is intentionally a dependency: re-read balances after a MIN is issued.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo(() => loadBalances(safeEntity), [safeEntity, mins]);
 
   const totals = useMemo(() => {
