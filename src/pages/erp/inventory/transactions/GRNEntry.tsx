@@ -7,6 +7,8 @@
  * [JWT] POST /api/inventory/grn/:id/post
  */
 import { useMemo, useState } from 'react';
+// Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3)
+import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -163,6 +165,17 @@ export function GRNEntryPanel() {
   const [printGrn, setPrintGrn] = useState<GRN | null>(null);
   const [showStage2, setShowStage2] = useState<GRN | null>(null);
   const [stage2DestId, setStage2DestId] = useState<string>('');
+  // Sprint T-Phase-1.2.5h-b2 · Inline header-field errors (M-3)
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const headerValidator = useMemo(() => makeFieldValidator<FormHeader>([
+    { field: 'vendor_id',     test: v => Boolean(v), message: 'Vendor is required' },
+    { field: 'godown_id',     test: v => Boolean(v), message: 'Receiving godown is required' },
+    { field: 'received_by_id',test: v => Boolean(v), message: 'Received by is required' },
+    { field: 'receipt_date',  test: v => Boolean(v), message: 'Date is required' },
+  ]), []);
+  // Helper · returns CSS class for field (used inline by inputs)
+  const fieldErr = (f: string) => fieldErrorClass(errors, f);
+  void fieldErr; void fieldErrorText;
 
   // Sprint T-Phase-1.2.4 · Load active GRN voucher types (Receipt Note family) for multi-VT dropdown.
   const grnVoucherTypes = useMemo<VoucherType[]>(() => {
@@ -508,6 +521,15 @@ export function GRNEntryPanel() {
   };
 
   const handleSave = (target: GRNStatus) => {
+    // Sprint T-Phase-1.2.5h-b2 · Inline field validation first (M-3)
+    const fieldResult = headerValidator(header);
+    if (!fieldResult.ok) {
+      setErrors(fieldResult.errors);
+      const firstField = Object.keys(fieldResult.errors)[0];
+      toast.error(fieldResult.errors[firstField]);
+      return;
+    }
+    setErrors({});
     const err = validate();
     if (err) { toast.error(err); return; }
     if (target === 'posted') {
