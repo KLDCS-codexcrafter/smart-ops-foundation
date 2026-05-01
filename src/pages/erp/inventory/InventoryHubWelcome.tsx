@@ -45,10 +45,19 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
   const { godowns } = useGodowns();
+  const { mins } = useMaterialIssueNotes(safeEntity);
+  const { entries: consumptionEntries } = useConsumptionEntries(safeEntity);
 
   const grns = useMemo<GRN[]>(() => loadJson<GRN>(grnsKey(safeEntity)), [safeEntity]);
   const stockBalance = useMemo<StockBalanceEntry[]>(
     () => loadJson<StockBalanceEntry>(stockBalanceKey(safeEntity)), [safeEntity]);
+
+  const alerts = useMemo(
+    () => runConsumptionIntelligence({ balances: stockBalance, mins, consumptions: consumptionEntries }),
+    [stockBalance, mins, consumptionEntries],
+  );
+  const criticalCount = alerts.filter(a => a.severity === 'critical').length;
+  const warnCount = alerts.filter(a => a.severity === 'warn').length;
 
   const stats = useMemo(() => {
     const monthStart = new Date();
