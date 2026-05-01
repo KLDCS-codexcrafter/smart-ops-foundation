@@ -16,4 +16,7 @@ export interface BinLabel {
   last_printed?: string | null;
   created_at: string;
   updated_at: string;
+  /** Sprint T-Phase-1.2.6 · Capacity for utilization tracking. Empty = unmeasured (skip from utilization report). */
+  capacity?: number | null;
+  capacity_unit?: 'kg' | 'units' | 'cubic_metre' | 'litres' | null;
 }

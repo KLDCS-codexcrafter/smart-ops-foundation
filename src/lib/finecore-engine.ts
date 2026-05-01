@@ -160,7 +160,10 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.4 · GRN multi-variant doc-no sequences
     | 'DGRN'   // Domestic GRN
     | 'IGRN'   // Import GRN
-    | 'SCGRN', // Subcontract GRN
+    | 'SCGRN'  // Subcontract GRN
+    // Sprint T-Phase-1.2.6 · Cycle Count + RTV
+    | 'PSV'    // Physical Stock Voucher (Cycle Count)
+    | 'RJO',   // Rejections Out (Return to Vendor)
   entityCode: string,
 ): string {
   const key = `erp_doc_seq_${prefix}_${entityCode}`;
