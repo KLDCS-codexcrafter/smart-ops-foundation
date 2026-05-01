@@ -60,6 +60,8 @@ export default function InventoryHubPage() {
       case 'r-stock-ledger':         return <StockLedgerReportPanel />;
       case 'r-grn-register':         return <GRNRegisterPanel />;
       case 'r-consumption-summary':  return <ConsumptionSummaryReportPanel />;
+      case 'r-storage-slip':         return <StorageSlipPrintPanel />;
+      case 'r-bin-slip':             return <BinSlipPrintPanel />;
       case 'r-reorder-alerts':       return <ReorderAlertsPanel />;
       case 'm-item-master':          return <ItemCraftPanel />;
       case 'm-godown-master':        return <StorageMatrixPanel />;
