@@ -63,6 +63,7 @@ function ls<T>(key: string): T[] {
 type FunnelStage = 'enquiry' | 'opportunity' | 'quotation' | 'invoice';
 
 export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
+  const t = useT();
   const [drillStage, setDrillStage] = useState<FunnelStage | null>(null);
   const [search, setSearch] = useState('');
 

@@ -54,6 +54,7 @@ function ls<T>(key: string): T[] {
 const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 
 export function SupplyRequestMemoPanel({ entityCode }: Props) {
+  const t = useT();
   const [memoNo] = useState(() => generateDocNo('SRQM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 

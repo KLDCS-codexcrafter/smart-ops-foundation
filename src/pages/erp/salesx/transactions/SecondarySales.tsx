@@ -132,6 +132,7 @@ const BLANK: FormState = {
 };
 
 export function SecondarySalesPanel({ entityCode }: Props) {
+  const t = useT();
   const [sales, setSales] = useState<SecondarySales[]>(() => loadSales(entityCode));
   const [distributors, setDistributors] = useState<CustomerLite[]>(() => loadDistributors());
   const [items, setItems] = useState<ItemLite[]>(() => loadItems());

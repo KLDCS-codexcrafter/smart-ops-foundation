@@ -119,6 +119,7 @@ function recalcLine(it: QuotationItem): QuotationItem {
 }
 
 export function QuotationEntryPanel({ entityCode }: Props) {
+  const t = useT();
   const { quotations, createQuotation, updateQuotation, createRevision, markConvertedToSO } = useQuotations(entityCode);
   const { enquiries } = useEnquiries(entityCode);
   const { createOrder } = useOrders(entityCode);
