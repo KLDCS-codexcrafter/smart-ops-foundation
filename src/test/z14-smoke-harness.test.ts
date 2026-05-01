@@ -907,4 +907,73 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
     expect(lines[1]).toContain('JV/0001');
     cleanAudit();
   });
+
+  // ── Sprint T-Phase-1.2.5h-b2 · Quality + Performance + Polish · Tests A31-A35 ──
+
+  it('A31 · storage-quota-engine returns tier and pct correctly', async () => {
+    const { getStorageUsage } = await import('@/lib/storage-quota-engine');
+    const usage = getStorageUsage();
+    expect(usage).toHaveProperty('used_bytes');
+    expect(usage).toHaveProperty('quota_bytes');
+    expect(usage).toHaveProperty('pct');
+    expect(['green', 'amber', 'red', 'block_create', 'block_all']).toContain(usage.tier);
+    expect(usage.top_keys).toBeInstanceOf(Array);
+  });
+
+  it('A32 · checkWriteAllowed always permits audit_trail intent (MCA Rule 3(1))', async () => {
+    const { checkWriteAllowed } = await import('@/lib/storage-quota-engine');
+    const result = checkWriteAllowed('audit_trail');
+    expect(result.allowed).toBe(true);
+  });
+
+  it('A33 · error-engine writes to entity-scoped key with circular buffer cap', async () => {
+    const { logError, readErrorLog, clearErrorLog } = await import('@/lib/error-engine');
+    clearErrorLog('system');
+    for (let i = 0; i < 250; i++) {
+      logError('validation', `test-${i}`, { i });
+    }
+    const log = readErrorLog('system');
+    expect(log.length).toBeLessThanOrEqual(200);
+    clearErrorLog('system');
+  });
+
+  it('A34 · validate-first makeFieldValidator returns inline errors per field', async () => {
+    const { makeFieldValidator } = await import('@/lib/validate-first');
+    const validator = makeFieldValidator<{ name: string; age: number }>([
+      { field: 'name', test: (v) => typeof v === 'string' && (v as string).length > 0, message: 'Name required' },
+      { field: 'age',  test: (v) => typeof v === 'number' && (v as number) > 0, message: 'Age must be positive' },
+    ]);
+    const r1 = validator({ name: '', age: 0 });
+    expect(r1.ok).toBe(false);
+    expect(r1.errors.name).toBe('Name required');
+    expect(r1.errors.age).toBe('Age must be positive');
+    const r2 = validator({ name: 'Alice', age: 30 });
+    expect(r2.ok).toBe(true);
+    expect(Object.keys(r2.errors)).toHaveLength(0);
+  });
+
+  it('A35 · 10 tail Bucket C factory functions exist and produce entity-scoped keys', async () => {
+    const collab = await import('@/types/collaboration');
+    const leave = await import('@/types/leave-management');
+    const perf = await import('@/types/performance');
+    const onboard = await import('@/types/onboarding');
+    const vot = await import('@/types/voucher-org-tag');
+    const empfin = await import('@/types/employee-finance');
+    const payMasters = await import('@/types/payroll-masters');
+    const learning = await import('@/types/learning');
+
+    expect((collab as Record<string, unknown>).announcementsKey).toBeDefined();
+    expect((collab as Record<string, unknown>).recognitionsKey).toBeDefined();
+    expect((leave as Record<string, unknown>).compOffLedgerKey).toBeDefined();
+    expect((perf as Record<string, unknown>).successionPlansKey).toBeDefined();
+    expect((onboard as Record<string, unknown>).onboardingJourneysKey).toBeDefined();
+    expect((vot as Record<string, unknown>).voucherOrgTagsKey).toBeDefined();
+    expect((empfin as Record<string, unknown>).flexiAllocationsKey).toBeDefined();
+    expect((payMasters as Record<string, unknown>).bonusConfigsKey).toBeDefined();
+    expect((payMasters as Record<string, unknown>).gratuityNpsKey).toBeDefined();
+    expect((learning as Record<string, unknown>).employeeSkillAssignmentsKey).toBeDefined();
+
+    const fn = (collab as Record<string, unknown>).announcementsKey as (e: string) => string;
+    expect(fn('TEST123')).toBe('erp_announcements_TEST123');
+  });
 });
