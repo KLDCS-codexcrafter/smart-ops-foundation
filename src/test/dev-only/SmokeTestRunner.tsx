@@ -2766,7 +2766,6 @@ export default function SmokeTestRunner() {
   // but if reached via direct navigation the user sees a console error.
   useEffect(() => {
     if (import.meta.env.PROD) {
-      // eslint-disable-next-line no-console
       console.error('[smoke-test] SmokeTestRunner is dev-only and must not be loaded in production');
     }
   }, []);
