@@ -21,6 +21,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Send, Plus, Trash2, Paperclip, CheckCircle2, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+import { generateDocNo } from '@/lib/finecore-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import {
@@ -37,21 +38,8 @@ interface Props { entityCode: string }
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
-function fyShort(): string {
-  const d = new Date();
-  const y = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
-  return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
-}
-
-function nextMemoNo(entityCode: string): string {
-  const key = `erp_doc_seq_SOM_${entityCode}`;
-  // [JWT] GET /api/procurement/sequences/SOM/:entityCode
-  const raw = localStorage.getItem(key);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  // [JWT] PATCH /api/procurement/sequences/SOM/:entityCode
-  localStorage.setItem(key, String(seq));
-  return `SOM/${fyShort()}/${String(seq).padStart(4, '0')}`;
-}
+// Sprint T-Phase-1.1.2-d: SOM doc-no now delegated to generateDocNo('SOM', entityCode).
+// Storage key (`erp_doc_seq_SOM_${entityCode}`) and format are identical — sequences persist.
 
 function ls<T>(key: string): T[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]') as T[]; }
