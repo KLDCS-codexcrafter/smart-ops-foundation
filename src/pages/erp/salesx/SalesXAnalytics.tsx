@@ -189,7 +189,7 @@ export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Activity className="h-6 w-6 text-orange-500" />
-            SalesX Analytics
+            {t('salesx.analytics.title', 'SalesX Analytics')}
           </h1>
           <p className="text-sm text-muted-foreground">
             Funnel · commission health · target achievement · pipeline risk

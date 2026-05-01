@@ -197,7 +197,7 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Supply Request Memo</h1>
+          <h1 className="text-2xl font-bold">{t('salesx.srm.title', 'Supply Request Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Dispatch to pick · pack · ship goods against a confirmed Sales Order.
           </p>

@@ -274,7 +274,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
             <ListTree className="h-4 w-4 text-orange-500" />
-            Secondary Sales
+            {t('salesx.secondary_sales.title', 'Secondary Sales')}
           </CardTitle>
           {!showForm && (
             <Button

@@ -227,7 +227,7 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Invoice / Tax Memo</h1>
+          <h1 className="text-2xl font-bold">{t('salesx.invoice_memo.title', 'Invoice / Tax Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Accounts to post the Sales Invoice voucher against a delivered Delivery Memo.
           </p>

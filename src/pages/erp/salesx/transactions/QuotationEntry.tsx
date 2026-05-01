@@ -342,7 +342,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Quotation Register</h1>
+            <h1 className="text-2xl font-bold">{t('salesx.quotation.title', 'Quotation Register')}</h1>
             <p className="text-sm text-muted-foreground">Manage sales quotations &amp; revisions</p>
           </div>
           <Button onClick={handleNew} data-primary className="bg-orange-500 hover:bg-orange-600">
@@ -432,7 +432,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
             <ArrowLeft className="h-4 w-4 mr-1" />Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{editingId ? 'Edit Quotation' : 'New Quotation'}</h1>
+            <h1 className="text-2xl font-bold">{editingId ? t('common.edit', 'Edit Quotation') : t('common.add', 'New Quotation')}</h1>
             <p className="text-sm text-muted-foreground">Charis TDL UDF 4955-4975</p>
           </div>
         </div>
