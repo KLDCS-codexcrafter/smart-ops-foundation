@@ -33,6 +33,9 @@ export interface StockReservation {
   released_at: string | null;
   created_at: string;
   updated_at: string;
+  // Sprint T-Phase-1.2.1 · ProjX cross-module (Q2 lock · D-128 sibling precedent — D-221 ExpenseClaim)
+  /** FK to ProjectCentre · null = not project-tagged */
+  project_centre_id?: string | null;
 }
 
 export const stockReservationsKey = (e: string) => `erp_stock_reservations_${e}`;
