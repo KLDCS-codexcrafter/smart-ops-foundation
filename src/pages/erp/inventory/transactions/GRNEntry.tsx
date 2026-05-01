@@ -20,6 +20,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StorageSlipPrintPanel } from '../reports/StorageSlipPrint';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -28,7 +29,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye, Printer, RotateCcw,
+  ArrowDownToLine, Plus, Trash2, AlertTriangle, IndianRupee, FileText, Eye, Printer, RotateCcw, Truck, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
@@ -39,13 +40,14 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
+import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
 import {
   grnsKey, stockBalanceKey,
   GRN_STATUS_LABELS, GRN_STATUS_COLORS,
   type GRN, type GRNLine, type GRNStatus, type GRNQCResult, type StockBalanceEntry,
 } from '@/types/grn';
-import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
+import type { VoucherType } from '@/types/voucher-type';
+import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
