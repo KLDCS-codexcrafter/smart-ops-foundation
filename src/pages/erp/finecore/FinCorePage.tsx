@@ -301,7 +301,7 @@ export function FinCorePagePanel() {
       <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen bg-background flex flex-col">
           <ERPHeader
-            breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }]}
+            breadcrumbs={[{ label: t('finecore.title', 'Fin Core'), href: '/erp/finecore' }]}
             showDatePicker={false}
           />
           <main className="flex-1">
@@ -324,7 +324,7 @@ export function FinCorePagePanel() {
           <ERPHeader
             breadcrumbs={[
               { label: 'Operix Core', href: '/erp/dashboard' },
-              { label: 'Fin Core' },
+              { label: t('finecore.title', 'Fin Core') },
               { label: breadcrumbLabels[activeModule] ?? activeModule },
             ]}
             showDatePicker={false}
