@@ -242,6 +242,11 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_hazmat_profiles_${entityCode}`,
     `erp_item_substitutes_${entityCode}`,
     `erp_returnable_packaging_${entityCode}`,
+    // Sprint T-Phase-1.2.6 · Cycle Count + RTV
+    `erp_cycle_counts_${entityCode}`,
+    `erp_rtvs_${entityCode}`,
+    `erp_doc_seq_PSV_${entityCode}`,
+    `erp_doc_seq_RJO_${entityCode}`,
   ];
 }
 
