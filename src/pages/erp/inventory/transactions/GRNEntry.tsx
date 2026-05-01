@@ -376,9 +376,33 @@ export function GRNEntryPanel() {
         } as never);
         heatsChanged = true;
       }
+      if (ln.serial_nos && ln.serial_nos.length > 0) {
+        for (const sn of ln.serial_nos) {
+          if (!sn) continue;
+          if (serials.some(s => s.serial_number === sn && s.item_id === ln.item_id)) continue;
+          serials.unshift({
+            id: `sn-${Date.now()}-${ln.id}-${sn}`,
+            serial_number: sn,
+            item_id: ln.item_id,
+            item_name: ln.item_name,
+            status: 'available',
+            condition: 'new',
+            purchase_date: g.receipt_date,
+            purchase_price: ln.unit_rate,
+            supplier_name: g.vendor_name,
+            supplier_invoice_no: g.vendor_invoice_no,
+            current_location: g.godown_name,
+            grn_reference: g.grn_no,
+            created_at: nowIso,
+            updated_at: nowIso,
+          } as never);
+          serialsChanged = true;
+        }
+      }
     }
     if (batchesChanged) saveJson(batchesKey, batches);
     if (heatsChanged) saveJson(heatKey, heats);
+    if (serialsChanged) saveJson(serialsKey, serials);
   };
 
   const handleSave = (target: GRNStatus) => {
