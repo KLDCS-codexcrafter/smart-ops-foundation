@@ -115,7 +115,15 @@ export interface CertificationRecord {
 
 export const TRAINING_COURSES_KEY   = 'erp_training_courses';
 export const ENROLLMENTS_KEY        = 'erp_training_enrollments';
+/**
+ * EMPLOYEE_SKILLS_KEY holds BOTH the global skill catalog (Bucket A · Standing-Rules
+ * tenant-global) AND per-employee skill assignments. Sprint T-Phase-1.2.5h-b2
+ * splits the assignment subset to a per-entity factory; the catalog stays here.
+ */
 export const EMPLOYEE_SKILLS_KEY    = 'erp_employee_skills';
+// [JWT] GET /api/peoplepay/employee-skill-assignments?entityCode={e}
+export const employeeSkillAssignmentsKey = (e: string): string =>
+  e ? `erp_employee_skill_assignments_${e}` : 'erp_employee_skill_assignments';
 export const CERTIFICATIONS_KEY     = 'erp_certifications';
 
 // ── Seeded skill catalog (25 skills across 5 categories) ──────────

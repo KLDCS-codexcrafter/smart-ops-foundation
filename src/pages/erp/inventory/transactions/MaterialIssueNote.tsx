@@ -8,6 +8,8 @@
  * [JWT] POST /api/inventory/material-issue-notes/:id/issue
  */
 import { useMemo, useState } from 'react';
+// Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3)
+import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -121,6 +123,14 @@ export function MaterialIssueNotePanel() {
   const [lines, setLines] = useState<FormLine[]>([]);
   const [showLineSheet, setShowLineSheet] = useState(false);
   const [draftLine, setDraftLine] = useState<FormLine>(blankLine());
+  // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3)
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const headerValidator = useMemo(() => makeFieldValidator<FormHeader>([
+    { field: 'issue_date',      test: (v) => Boolean(v), message: 'Date is required' },
+    { field: 'from_godown_id',  test: (v) => Boolean(v), message: 'Source godown is required' },
+    { field: 'requested_by_id', test: (v) => Boolean(v), message: 'Requested by is required' },
+  ]), []);
+  void fieldErrorClass; void fieldErrorText; void errors; void setErrors; void headerValidator;
 
   // mins is intentionally a dependency: re-read balances after a MIN is issued.
   // eslint-disable-next-line react-hooks/exhaustive-deps

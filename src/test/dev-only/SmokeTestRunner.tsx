@@ -2761,6 +2761,15 @@ function useCtrlS(handler: () => void) {
 export function SmokeTestRunnerPanel() { return <SmokeTestRunner />; }
 
 export default function SmokeTestRunner() {
+  // Sprint T-Phase-1.2.5h-b2 · Production guard (L-1)
+  // This 1900+ LOC dev tool must never load in production. Route is gated in App.tsx,
+  // but if reached via direct navigation the user sees a console error.
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      // eslint-disable-next-line no-console
+      console.error('[smoke-test] SmokeTestRunner is dev-only and must not be loaded in production');
+    }
+  }, []);
   const [results, setResults] = useState<CheckResult[]>([]);
   const [running, setRunning] = useState(false);
   const [entityCode, setEntityCode] = useState<string>(DEFAULT_ENTITY_SHORTCODE);

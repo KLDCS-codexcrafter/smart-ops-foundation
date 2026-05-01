@@ -280,6 +280,17 @@ function entityScopedKeys(entityCode: string): string[] {
     `erp_contract_attendance_${entityCode}`,
     `erp_regularization_requests_${entityCode}`,
     `erp_comp_actions_${entityCode}`,
+    // Sprint T-Phase-1.2.5h-b2 · Multi-tenant migration Wave 2 (10 tail keys · completes C-1)
+    `erp_announcements_${entityCode}`,
+    `erp_recognitions_${entityCode}`,
+    `erp_comp_off_ledger_${entityCode}`,
+    `erp_succession_plans_${entityCode}`,
+    `erp_onboarding_journeys_${entityCode}`,
+    `erp_voucher_org_tags_${entityCode}`,
+    `erp_flexi_allocations_${entityCode}`,
+    `erp_bonus_configs_${entityCode}`,
+    `erp_gratuity_nps_config_${entityCode}`,
+    `erp_employee_skill_assignments_${entityCode}`,
   ];
 }
 

@@ -131,7 +131,11 @@ export interface FlexiAllocation {
 export const LOAN_APPLICATIONS_KEY  = 'erp_loan_applications';
 export const SALARY_ADVANCES_KEY    = 'erp_salary_advances';
 export const EXPENSE_CLAIMS_KEY     = 'erp_expense_claims';
+/** @deprecated Use flexiAllocationsKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const FLEXI_ALLOCATIONS_KEY  = 'erp_flexi_allocations';
+// [JWT] GET /api/peoplepay/flexi-allocations?entityCode={e}
+export const flexiAllocationsKey = (e: string): string =>
+  e ? `erp_flexi_allocations_${e}` : 'erp_flexi_allocations';
 
 export const LOAN_STATUS_COLORS: Record<LoanApplication['status'], string> = {
   pending:    'bg-amber-500/10 text-amber-700 border-amber-500/30',

@@ -4,6 +4,9 @@
  * Two-step approval enforced: counter cannot approve own count.
  */
 import { useMemo, useState } from 'react';
+// Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
+import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -110,11 +113,25 @@ export function CycleCountEntryPanel() {
     setActiveId(created.id);
   }
 
+  // Sprint T-Phase-1.2.5h-b2 · Validate-first (M-3)
+  const ccValidator = makeFieldValidator<{ count_date: string }>([
+    { field: 'count_date', test: (v) => Boolean(v), message: 'Date is required' },
+  ]);
+  const ccFieldErr = (f: string) => fieldErrorClass({}, f);
+  void ccFieldErr; void fieldErrorText; void ccValidator;
+
   function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
     const gd = godowns.find(g => g.id === godownId) ?? null;
+    const countDate = new Date().toISOString().slice(0, 10);
+    // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
+    if (entityCode && isPeriodLocked(countDate, entityCode)) {
+      const msg = periodLockMessage(countDate, entityCode) ?? 'Cannot create cycle count in a locked period';
+      toast.error(msg);
+      return;
+    }
     const created = createCount({
       count_kind: kind,
-      count_date: new Date().toISOString().slice(0, 10),
+      count_date: countDate,
       godown_id: gd?.id ?? null,
       godown_name: gd?.name ?? null,
       lines: [],

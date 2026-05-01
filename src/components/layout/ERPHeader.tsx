@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { ERPDatePicker } from '@/components/layout/ERPDatePicker';
 import { ERPCompanySelector, useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';
+import { StorageQuotaIndicator } from '@/components/layout/StorageQuotaIndicator';
 
 import { useGlobalDateRange } from '@/hooks/GlobalDateRangeContext';
 import { formatIndianDate } from '@/hooks/useGlobalDateRange.types';
@@ -207,6 +208,9 @@ export function ERPHeader({
           <span className='hidden lg:inline-flex items-center px-2 py-1 rounded-md bg-muted/30 border border-border/50 text-[10px] text-muted-foreground font-mono shrink-0'>
             {dr.fyLabel}
           </span>
+
+          {/* Sprint T-Phase-1.2.5h-b2 · Storage quota indicator (H-4) */}
+          <StorageQuotaIndicator />
 
           {/* Search */}
           <div className='flex-1 max-w-xs hidden md:block' data-keyboard-form>

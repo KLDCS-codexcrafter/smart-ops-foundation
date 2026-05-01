@@ -59,7 +59,11 @@ export interface OnboardingJourney {
   updated_at: string;
 }
 
+/** @deprecated Use onboardingJourneysKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const ONBOARDING_KEY = 'erp_onboarding_journeys';
+// [JWT] GET /api/peoplepay/onboarding-journeys?entityCode={e}
+export const onboardingJourneysKey = (e: string): string =>
+  e ? `erp_onboarding_journeys_${e}` : 'erp_onboarding_journeys';
 
 // ── Seeded checklist tasks (applied to every new journey) ─────────
 // Defined here so OnboardingPanel can use them without embedding data in JSX.

@@ -67,7 +67,11 @@ export interface CompOffEntry {
 
 export const LEAVE_REQUESTS_KEY      = 'erp_leave_requests';
 export const APPROVAL_DELEGATIONS_KEY = 'erp_approval_delegations';
+/** @deprecated Use compOffLedgerKey(entityCode) — Sprint T-Phase-1.2.5h-b2 */
 export const COMP_OFF_LEDGER_KEY      = 'erp_comp_off_ledger';
+// [JWT] GET /api/peoplepay/comp-off-ledger?entityCode={e}
+export const compOffLedgerKey = (e: string): string =>
+  e ? `erp_comp_off_ledger_${e}` : 'erp_comp_off_ledger';
 
 // Status badge colors
 export const LEAVE_STATUS_COLORS: Record<LeaveRequest['status'], string> = {

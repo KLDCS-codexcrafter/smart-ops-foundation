@@ -48,7 +48,10 @@ const CommandCenterPage = lazy(() => import('./features/command-center/pages/Com
 const PayHubPage = lazy(() => import('./features/pay-hub/PayHubPage'));
 const SalesXPage = lazy(() => import('./features/salesx/SalesXPage'));
 const ReceivXPage = lazy(() => import('./features/receivx/ReceivXPage'));
-const SmokeTestRunner = lazy(() => import('./pages/erp/smoke-test/SmokeTestRunner'));
+// Sprint T-Phase-1.2.5h-b2 · Smoke test moved to src/test/dev-only · gated below
+const SmokeTestRunner = lazy(() => import('./test/dev-only/SmokeTestRunner'));
+// Sprint T-Phase-1.2.5h-b2 · Recent Errors panel
+const RecentErrorsPage = lazy(() => import('./features/command-center/pages/RecentErrorsPage'));
 const ProformaInvoicePrint = lazy(() => import('./pages/erp/salesx/transactions/ProformaInvoicePrint'));
 const ParentCompany = lazy(() => import('./pages/erp/foundation/ParentCompany'));
 const CompanyCreate = lazy(() => import('./pages/erp/foundation/CompanyCreate'));
@@ -445,7 +448,11 @@ const App = () => (
               <Route path="/erp/salesx" element={<P><SalesXPage /></P>} />
               <Route path="/erp/salesx/proforma-print/:quotationId" element={<P><ProformaInvoicePrint /></P>} />
               <Route path="/erp/receivx" element={<P><ReceivXPage /></P>} />
-              <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
+              {/* Sprint T-Phase-1.2.5h-b2 · Smoke test gated to non-prod (L-1) */}
+              {!import.meta.env.PROD && (
+                <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
+              )}
+              <Route path="/erp/command-center/errors" element={<P><RecentErrorsPage /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
               <Route path="/partner" element={<PartnerDashboard />} />

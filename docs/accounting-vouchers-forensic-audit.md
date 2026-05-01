@@ -68,3 +68,8 @@ Because the agent sandbox does not expose `git log`, this audit is a current-
 state inspection rather than a commit-by-commit replay. A follow-up review by
 a human maintainer with full git access is recommended at the next quarterly
 governance review.
+
+## Streak Updates
+- Sprint T-Phase-1.2.5h-a closed · count = **1**
+- Sprint T-Phase-1.2.5h-b1 (+ fix) closed · count = **2**
+- Sprint T-Phase-1.2.5h-b2 closed · count = **3**

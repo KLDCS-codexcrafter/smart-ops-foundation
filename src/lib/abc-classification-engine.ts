@@ -15,6 +15,8 @@
 import type { InventoryItem } from '@/types/inventory-item';
 import type { MaterialIssueNote, ConsumptionEntry } from '@/types/consumption';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+// Sprint T-Phase-1.2.5h-b2 · Centralized error logging (M-2)
+import { logError } from '@/lib/error-engine';
 
 export interface AbcClassificationResult {
   item_id: string;
@@ -44,6 +46,7 @@ export function classifyItemsABC(
   consumptionEntries: ConsumptionEntry[],
   windowDays: number = 365,
 ): AbcClassificationResult[] {
+  try {
   // Build value-by-item map
   const valueByItem = new Map<string, number>();
 
@@ -108,6 +111,11 @@ export function classifyItemsABC(
   });
 
   return results;
+  } catch (e) {
+    logError('stock_balance', 'ABC pareto computation failed',
+      { source: 'abc-classification-engine', windowDays, itemCount: items.length }, e);
+    return [];
+  }
 }
 
 /**

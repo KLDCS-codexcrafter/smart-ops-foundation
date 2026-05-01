@@ -16,6 +16,8 @@ import { isPeriodLocked, periodLockMessage } from './period-lock-engine';
 import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
 // Sprint T-Phase-1.2.5h-b1 · Universal audit trail (MCA Rule 3(1))
 import { logAudit } from './audit-trail-engine';
+// Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4)
+import { checkWriteAllowed } from './storage-quota-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -253,6 +255,12 @@ function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['su
 // ── Post Voucher — writes to all 4 storage keys atomically ──────────
 
 export function postVoucher(voucher: Voucher, entityCode: string): void {
+  // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4) — block at >= 95%
+  const quotaCheck = checkWriteAllowed('voucher_create');
+  if (!quotaCheck.allowed) {
+    throw new Error(`[storage-quota] ${quotaCheck.reason}`);
+  }
+
   const now = new Date().toISOString();
 
   // 1. Write voucher header
@@ -650,6 +658,12 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
 // ── Cancel Voucher — reversal entries ────────────────────────────────
 
 export function cancelVoucher(voucherId: string, entityCode: string, reason: string): void {
+  // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4) — edits allowed up to 99%
+  const quotaCheck = checkWriteAllowed('edit');
+  if (!quotaCheck.allowed) {
+    throw new Error(`[storage-quota] ${quotaCheck.reason}`);
+  }
+
   const now = new Date().toISOString();
 
   // Mark voucher as cancelled

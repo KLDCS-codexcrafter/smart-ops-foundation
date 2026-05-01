@@ -3,6 +3,9 @@
  * Sprint T-Phase-1.2.6 · activates vt-rejections-out
  */
 import { useMemo, useState } from 'react';
+// Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) + period-lock UX
+import { makeFieldValidator, fieldErrorClass, fieldErrorText } from '@/lib/validate-first';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,10 +60,25 @@ export function RTVEntryPanel() {
     return { qty: round2(qty), value: round2(value) };
   }
 
+  // Sprint T-Phase-1.2.5h-b2 · Validate-first inline-error pattern (M-3) for RTV form
+  const rtvValidator = makeFieldValidator<{ vendor_id: string; rtv_date: string }>([
+    { field: 'vendor_id', test: (v) => Boolean(v), message: 'Vendor is required' },
+    { field: 'rtv_date',  test: (v) => Boolean(v), message: 'Date is required' },
+  ]);
+  const rtvFieldErr = (f: string) => fieldErrorClass({}, f);
+  void rtvFieldErr; void fieldErrorText; void rtvValidator;
+
   function createFromGrn(grn: GRN) {
     const failedLines = grn.lines.filter(l => l.qc_result === 'fail' || l.rejected_qty > 0);
     if (failedLines.length === 0) {
       toast.error('No rejected lines on this GRN');
+      return;
+    }
+    // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
+    const rtvDate = new Date().toISOString().slice(0, 10);
+    if (entityCode && isPeriodLocked(rtvDate, entityCode)) {
+      const msg = periodLockMessage(rtvDate, entityCode) ?? 'Cannot create RTV in a locked period';
+      toast.error(msg);
       return;
     }
     const now = new Date().toISOString();
