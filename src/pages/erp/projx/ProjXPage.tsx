@@ -2,7 +2,7 @@
  * ProjXPage.tsx — ProjX card container (sidebar + content area)
  * Sprint T-Phase-1.1.2-a · Tier 1 Card #1 · mirrors FinCorePage shell pattern
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ProjXSidebar } from './ProjXSidebar';
@@ -24,8 +24,10 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import type { ProjXModule } from './ProjXSidebar.types';
+import { useT } from '@/lib/i18n-engine';
 
 export default function ProjXPage() {
+  const t = useT();
   const [activeModule, setActiveModule] = useState<ProjXModule>('welcome');
   const { entityCode, userId } = useCardEntitlement();
 
@@ -71,7 +73,7 @@ export default function ProjXPage() {
         <ERPHeader />
         <div className="flex-1 flex w-full overflow-hidden">
           <ProjXSidebar active={activeModule} onNavigate={setActiveModule} />
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden" aria-label={t('projx.title', 'ProjX')}>
             <ScrollArea className="h-full">
               {renderModule()}
             </ScrollArea>

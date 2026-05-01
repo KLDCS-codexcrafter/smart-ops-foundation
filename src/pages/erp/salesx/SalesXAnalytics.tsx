@@ -4,7 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 /**
  * SalesXAnalytics.tsx — Sprint 5
  * Interactive sales funnel + commission health + target achievement + pipeline health.
@@ -42,6 +42,7 @@ import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types'
 import { vouchersKey } from '@/lib/finecore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props {
   entityCode: string;
@@ -62,6 +63,7 @@ function ls<T>(key: string): T[] {
 type FunnelStage = 'enquiry' | 'opportunity' | 'quotation' | 'invoice';
 
 export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
+  const t = useT();
   const [drillStage, setDrillStage] = useState<FunnelStage | null>(null);
   const [search, setSearch] = useState('');
 
@@ -187,7 +189,7 @@ export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Activity className="h-6 w-6 text-orange-500" />
-            SalesX Analytics
+            {t('salesx.analytics.title', 'SalesX Analytics')}
           </h1>
           <p className="text-sm text-muted-foreground">
             Funnel · commission health · target achievement · pipeline risk

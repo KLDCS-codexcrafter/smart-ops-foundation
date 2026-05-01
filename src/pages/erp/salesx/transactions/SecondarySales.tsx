@@ -4,7 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 /**
  * SecondarySales.tsx — Distributor sell-through capture
  * Sprint 7. Distributor reports sales they made FROM their stock to retailers/sub-dealers.
@@ -34,6 +34,7 @@ import {
   secondarySalesKey, END_CUSTOMER_LABELS,
 } from '@/types/secondary-sales';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface Props { entityCode: string }
 
@@ -131,6 +132,7 @@ const BLANK: FormState = {
 };
 
 export function SecondarySalesPanel({ entityCode }: Props) {
+  const t = useT();
   const [sales, setSales] = useState<SecondarySales[]>(() => loadSales(entityCode));
   const [distributors, setDistributors] = useState<CustomerLite[]>(() => loadDistributors());
   const [items, setItems] = useState<ItemLite[]>(() => loadItems());
@@ -272,7 +274,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
             <ListTree className="h-4 w-4 text-orange-500" />
-            Secondary Sales
+            {t('salesx.secondary_sales.title', 'Secondary Sales')}
           </CardTitle>
           {!showForm && (
             <Button

@@ -3,7 +3,7 @@
  * Sprint T-Phase-1.2.5h-b1
  * [JWT] GET /api/audit-trail
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,10 +15,12 @@ import { Shield, Download, Eye } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { readAuditTrail, exportAuditTrailCsv } from '@/lib/audit-trail-engine';
 import type { AuditTrailEntry, AuditAction } from '@/types/audit-trail';
+import { useT } from '@/lib/i18n-engine';
 
 const ACTIONS: AuditAction[] = ['create', 'update', 'cancel', 'post', 'unpost', 'approve', 'reject'];
 
 export default function AuditTrailReport() {
+  const t = useT();
   const { entityCode } = useEntityCode();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -62,14 +64,14 @@ export default function AuditTrailReport() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            Audit Trail · MCA Rule 3(1) Compliance
+            {t('comp.audit_trail.title', 'Audit Trail · MCA Rule 3(1) Compliance')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Append-only log of every transaction and change. Cannot be disabled.
           </p>
         </div>
         <Button onClick={handleExport} disabled={filtered.length === 0}>
-          <Download className="h-4 w-4 mr-1" /> Export CSV
+          <Download className="h-4 w-4 mr-1" /> {t('common.export', 'Export CSV')}
         </Button>
       </div>
 

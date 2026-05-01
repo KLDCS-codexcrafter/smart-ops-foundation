@@ -4,7 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 /**
  * InvoiceMemo.tsx — Invoice/Tax Memo (IM) entry · SalesX Hub
  * Sprint T-Phase-1.1.1n. Memo is the authorization; Sales Invoice is the accounting entry.
@@ -35,6 +35,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import {
   deliveryMemosKey,
   type DeliveryMemo,
@@ -79,6 +80,7 @@ function buildItem(srcName: string, qty: number, uom: string | null, rate: numbe
 }
 
 export function InvoiceMemoPanel({ entityCode }: Props) {
+  const t = useT();
   const [memoNo] = useState(() => generateDocNo('IM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -225,7 +227,7 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Invoice / Tax Memo</h1>
+          <h1 className="text-2xl font-bold">{t('salesx.invoice_memo.title', 'Invoice / Tax Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Accounts to post the Sales Invoice voucher against a delivered Delivery Memo.
           </p>

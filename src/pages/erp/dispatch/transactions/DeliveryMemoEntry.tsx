@@ -6,7 +6,7 @@
  * D-127/D-128 ZERO-TOUCH: This component NEVER posts vouchers.
  * Status flow: draft → raised → lr_assigned → delivered.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
   type SupplyRequestMemo,
@@ -62,6 +63,7 @@ function ls<T>(key: string): T[] {
 }
 
 export function DeliveryMemoEntryPanel({ entityCode }: Props) {
+  const t = useT();
   const [memoNo] = useState(() => nextMemoNo(entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -205,7 +207,7 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Delivery Memo</h1>
+          <h1 className="text-2xl font-bold">{t('dispatch.dm.title', 'Delivery Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Logistics to ship · assign LR · capture POD against a raised Supply Request Memo.
           </p>

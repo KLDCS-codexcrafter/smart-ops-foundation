@@ -2,7 +2,7 @@
  * MonthlyProductionAccounts.tsx — CGST Rule 56(12) for manufacturers
  * Sprint T-Phase-1.2.5h-b1
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Factory, AlertCircle } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { consumptionEntriesKey, type ConsumptionEntry } from '@/types/consumption';
+import { useT } from '@/lib/i18n-engine';
 
 interface CompanyLite {
   entityCode?: string;
@@ -27,6 +28,7 @@ function readCompany(entityCode: string): CompanyLite | null {
 }
 
 export default function MonthlyProductionAccounts() {
+  const t = useT();
   const { entityCode } = useEntityCode();
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
 
@@ -88,7 +90,7 @@ export default function MonthlyProductionAccounts() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Factory className="h-6 w-6 text-primary" />
-            Monthly Production Accounts · CGST Rule 56(12)
+            {t('comp.monthly_production.title', 'Monthly Production Accounts · CGST Rule 56(12)')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">{company?.legalEntityName} · {month}</p>
         </div>

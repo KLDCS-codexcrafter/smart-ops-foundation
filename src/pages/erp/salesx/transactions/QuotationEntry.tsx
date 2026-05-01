@@ -4,7 +4,7 @@
  * (dMul · dAdd · dSub · dPct · dSum · round2) from @/lib/decimal-helpers.
  * No float multiplication or Math.round on money values.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 /**
  * QuotationEntry.tsx — Sales Quotation register + 2-tab form + revision history
  * Charis TDL UDF 4955-4975.
@@ -36,6 +36,7 @@ import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/s
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
   upsertQuoteReservation,
@@ -118,6 +119,7 @@ function recalcLine(it: QuotationItem): QuotationItem {
 }
 
 export function QuotationEntryPanel({ entityCode }: Props) {
+  const t = useT();
   const { quotations, createQuotation, updateQuotation, createRevision, markConvertedToSO } = useQuotations(entityCode);
   const { enquiries } = useEnquiries(entityCode);
   const { createOrder } = useOrders(entityCode);
@@ -340,7 +342,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Quotation Register</h1>
+            <h1 className="text-2xl font-bold">{t('salesx.quotation.title', 'Quotation Register')}</h1>
             <p className="text-sm text-muted-foreground">Manage sales quotations &amp; revisions</p>
           </div>
           <Button onClick={handleNew} data-primary className="bg-orange-500 hover:bg-orange-600">
@@ -430,7 +432,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
             <ArrowLeft className="h-4 w-4 mr-1" />Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{editingId ? 'Edit Quotation' : 'New Quotation'}</h1>
+            <h1 className="text-2xl font-bold">{editingId ? t('common.edit', 'Edit Quotation') : t('common.add', 'New Quotation')}</h1>
             <p className="text-sm text-muted-foreground">Charis TDL UDF 4955-4975</p>
           </div>
         </div>

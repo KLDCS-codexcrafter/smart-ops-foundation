@@ -2,7 +2,7 @@
  * MilestoneTracker.tsx — ProjX milestones per project · auto-creates schedule
  * Sprint T-Phase-1.1.2-b
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,7 @@ import {
 import type { ProjectMilestone, MilestoneStatus } from '@/types/projx/project-milestone';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -46,6 +47,7 @@ const BLANK: FormState = {
 };
 
 export function MilestoneTrackerPanel() {
+  const t = useT();
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects } = useProjects(entityCode);
   const { milestones, createMilestone, updateMilestone, deleteMilestone } = useProjectMilestones(entityCode);
@@ -163,7 +165,7 @@ export function MilestoneTrackerPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Milestone className="h-6 w-6 text-indigo-500" /> Milestone Tracker
+            <Milestone className="h-6 w-6 text-indigo-500" /> {t('projx.milestone_tracker.title', 'Milestone Tracker')}
           </h1>
           <p className="text-sm text-muted-foreground">Per-project milestones · auto-creates invoice schedule entries</p>
         </div>

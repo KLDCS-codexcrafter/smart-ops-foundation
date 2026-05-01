@@ -2,7 +2,8 @@
  * AbcClassificationMaster.tsx — Pareto ABC Master + Run Classification preview.
  * Sprint T-Phase-1.2.5
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
+import { useT } from '@/lib/i18n-engine';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -46,6 +47,7 @@ const CLASS_BADGE = (cls: 'A' | 'B' | 'C' | null): string => {
 };
 
 export function AbcClassificationMasterPanel() {
+  const t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
 
@@ -125,7 +127,7 @@ export function AbcClassificationMasterPanel() {
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-2">
         <TrendingUp className="h-5 w-5 text-cyan-500" />
-        <h2 className="text-xl font-bold">ABC Classification</h2>
+        <h2 className="text-xl font-bold">{t('inv.abc_master.title', 'ABC Classification')}</h2>
         <Badge variant="outline" className="text-[10px]">Pareto 80 / 15 / 5</Badge>
       </div>
 

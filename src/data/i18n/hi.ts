@@ -39,6 +39,8 @@ export const hi: Record<string, string> = {
   'common.optional': 'वैकल्पिक',
   'common.total': 'कुल',
   'common.subtotal': 'उप-योग',
+  'common.storage': 'भंडारण',
+  'common.logout': 'लॉगआउट',
 
   // ── Voucher Types ──
   'voucher.sales_invoice': 'विक्रय बीजक',
@@ -239,4 +241,25 @@ export const hi: Record<string, string> = {
   'misc.party': 'पक्ष',
   'misc.vendor': 'विक्रेता',
   'misc.account': 'खाता',
+
+  // ── Page titles · 17 keys (Sprint 1.2.5h-c2-fix) ──
+  'inv.hub.title': 'इन्वेंटरी हब',
+  'inv.heat_master.title': 'हीट नंबर मास्टर',
+  'inv.abc_master.title': 'ABC वर्गीकरण मास्टर',
+  'inv.substitute_master.title': 'विकल्प आइटम मास्टर',
+  'salesx.quotation.title': 'कोटेशन प्रविष्टि',
+  'salesx.secondary_sales.title': 'द्वितीयक विक्रय',
+  'salesx.invoice_memo.title': 'बीजक मेमो',
+  'salesx.srm.title': 'आपूर्ति अनुरोध मेमो',
+  'salesx.analytics.title': 'सेल्सएक्स विश्लेषण',
+  'projx.title': 'प्रोजेक्ट हब',
+  'projx.project_entry.title': 'परियोजना प्रविष्टि',
+  'projx.milestone_tracker.title': 'माइलस्टोन ट्रैकर',
+  'finecore.title': 'फाइनकोर',
+  'comp.audit_trail.title': 'ऑडिट ट्रेल रिपोर्ट',
+  'comp.monthly_production.title': 'मासिक उत्पादन लेखे',
+  'foundation.entity_hub.title': 'इकाई हब',
+  'payhub.employee_finance.title': 'कर्मचारी वित्त',
+  'dispatch.welcome.title': 'डिस्पैच हब',
+  'dispatch.dm.title': 'डिलीवरी मेमो',
 };

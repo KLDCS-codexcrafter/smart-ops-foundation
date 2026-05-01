@@ -11,7 +11,7 @@
  *  - Convert from Quotation populates source linkage + items context
  *  - Conversion logged via logConversionEvent('quotation_to_project') — see updated engine
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,7 @@ import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { CreateProjectInput } from '@/hooks/useProjects';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -98,6 +99,7 @@ const BLANK: FormState = {
 };
 
 export function ProjectEntryPanel() {
+  const t = useT();
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
@@ -261,7 +263,7 @@ export function ProjectEntryPanel() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Briefcase className="h-6 w-6 text-indigo-500" />
-            Projects
+            {t('projx.project_entry.title', 'Projects')}
           </h1>
           <p className="text-sm text-muted-foreground">
             ProjX transactions · live P&amp;L (D-216) · status workflow enforced

@@ -2,7 +2,7 @@
  * EmployeeFinance.tsx — Sprint 10
  * 4-tab screen: Loans & Advances · Salary Advance · Expense Claims · Flexi Benefits
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, addMonths, parseISO } from 'date-fns';
@@ -35,6 +35,7 @@ import type { LoanType } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { useT } from '@/lib/i18n-engine';
 
 /* ── generateEMISchedule — pure function, no library ─────────────── */
 function generateEMISchedule(
@@ -131,6 +132,7 @@ function computeEMI(principal: number, tenureMonths: number, annualRatePct: numb
 interface EmployeeFinancePanelProps { defaultTab?: FinanceTab; }
 
 export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePanelProps) {
+  const t = useT();
   // [T-T8.4-Requisition-Universal] navigate used by additive Request Payment buttons
   const navigate = useNavigate();
 
@@ -527,7 +529,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
           <CreditCard className="h-5 w-5 text-violet-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Employee Finance</h2>
+          <h2 className="text-xl font-bold">{t('payhub.employee_finance.title', 'Employee Finance')}</h2>
           <p className="text-xs text-muted-foreground">Loans · Advances · Expenses · Flexi Benefits</p>
         </div>
       </div>

@@ -3,7 +3,7 @@
  * Mirrors PayHubPage.tsx — SidebarProvider + FineCoreSidebar + content area.
  * [JWT] All data loaded via hooks
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useCallback, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { FineCoreSidebar } from './FineCoreSidebar';
@@ -86,6 +86,7 @@ import { StockJournalRegisterPanel } from './registers/StockJournalRegister';
 import { StockTransferRegisterPanel } from './registers/StockTransferRegister';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { useT } from '@/lib/i18n-engine';
 
 const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
   'fc-hub': 'Hub Overview',
@@ -155,6 +156,7 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
 };
 
 export function FinCorePagePanel() {
+  const t = useT();
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
@@ -299,7 +301,7 @@ export function FinCorePagePanel() {
       <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen bg-background flex flex-col">
           <ERPHeader
-            breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }]}
+            breadcrumbs={[{ label: t('finecore.title', 'Fin Core'), href: '/erp/finecore' }]}
             showDatePicker={false}
           />
           <main className="flex-1">
@@ -322,7 +324,7 @@ export function FinCorePagePanel() {
           <ERPHeader
             breadcrumbs={[
               { label: 'Operix Core', href: '/erp/dashboard' },
-              { label: 'Fin Core' },
+              { label: t('finecore.title', 'Fin Core') },
               { label: breadcrumbLabels[activeModule] ?? activeModule },
             ]}
             showDatePicker={false}

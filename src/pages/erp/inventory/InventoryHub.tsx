@@ -1,7 +1,8 @@
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration (page title + chip)
 import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
+import { useT } from '@/lib/i18n-engine';
 import {
   PackageOpen, ArrowRight, Warehouse, Truck,
   ScanLine, GitBranch, LayoutGrid, Clock, Network,
@@ -42,6 +43,7 @@ const COMING_FEATURES = [
 
 export function InventoryHubPanel() {
   const navigate = useNavigate();
+  const t = useT();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex flex-col w-full bg-background">
@@ -52,7 +54,7 @@ export function InventoryHubPanel() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  Store Hub
+                  {t('inv.hub.title', 'Store Hub')}
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Physical warehouse and store operations
@@ -60,7 +62,7 @@ export function InventoryHubPanel() {
               </div>
               <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                Coming in Sprint 26
+                {t('inv.hub.coming_soon', 'Coming in Sprint 26')}
               </span>
             </div>
 
@@ -75,7 +77,7 @@ export function InventoryHubPanel() {
 
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-3">
-                Available now
+                {t('inv.hub.available_now', 'Available now')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div

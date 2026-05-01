@@ -4,7 +4,7 @@
  * Tab controlled by ?tab= URL param.
  * Create/edit routes unchanged.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n-engine';
 
 type Tab = 'companies' | 'subsidiaries' | 'branch-offices';
 
@@ -140,6 +141,7 @@ function EntityTable<T extends { id: string }>({
 
 // ── Main component ────────────────────────────────────────────────
 export function FoundationEntityHubPanel() {
+  const _t = useT();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('tab') as Tab) || 'companies';
@@ -247,7 +249,7 @@ export function FoundationEntityHubPanel() {
           {/* Page header */}
           <div className='flex items-start justify-between gap-4 flex-wrap'>
             <div>
-              <h1 className='text-xl font-bold text-foreground'>Entity Registry</h1>
+              <h1 className='text-xl font-bold text-foreground'>{_t('foundation.entity_hub.title', 'Entity Registry')}</h1>
               <p className='text-sm text-muted-foreground mt-0.5'>
                 Manage all registered entities — companies, subsidiaries, and branch offices.
               </p>

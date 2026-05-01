@@ -6,7 +6,7 @@
  * D-127/D-128 ZERO-TOUCH: This component NEVER posts vouchers · never touches voucher.ts schemas.
  * The SRM is a pure authorization document · status flow: draft → raised → acknowledged → dispatching → dispatched.
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
   SRM_STATUS_LABELS,
@@ -53,6 +54,7 @@ function ls<T>(key: string): T[] {
 const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 
 export function SupplyRequestMemoPanel({ entityCode }: Props) {
+  const t = useT();
   const [memoNo] = useState(() => generateDocNo('SRQM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -195,7 +197,7 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     <div className="space-y-4" data-keyboard-form>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Supply Request Memo</h1>
+          <h1 className="text-2xl font-bold">{t('salesx.srm.title', 'Supply Request Memo')}</h1>
           <p className="text-sm text-muted-foreground">
             Authorise Dispatch to pick · pack · ship goods against a confirmed Sales Order.
           </p>
