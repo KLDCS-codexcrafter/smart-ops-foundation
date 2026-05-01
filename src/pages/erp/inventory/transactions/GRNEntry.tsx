@@ -989,6 +989,101 @@ export function GRNEntryPanel() {
           <StorageSlipPrintPanel />
         </DialogContent>
       </Dialog>
+
+      {/* Sprint T-Phase-1.2.4 · Stage-2 Confirm Physical Receipt dialog */}
+      <Dialog open={!!showStage2} onOpenChange={v => !v && setShowStage2(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              Confirm Physical Receipt · {showStage2?.grn_no}
+            </DialogTitle>
+            <DialogDescription>
+              Material has arrived. Select destination godown — stock will move from
+              Goods-in-Transit to the destination godown.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Label>Destination Godown *</Label>
+            <Select value={stage2DestId} onValueChange={setStage2DestId}>
+              <SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger>
+              <SelectContent>
+                {godowns
+                  .filter(g => g.status === 'active' && g.ownership_type !== 'goods_in_transit')
+                  .map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.code} — {g.name}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowStage2(null)}>Cancel</Button>
+            <Button
+              disabled={!stage2DestId || !showStage2}
+              onClick={() => {
+                if (!showStage2 || !stage2DestId) return;
+                const dest = godowns.find(g => g.id === stage2DestId);
+                if (!dest) return;
+                const now = new Date().toISOString();
+                // Move stock GIT → destination
+                const balances = loadJson<StockBalanceEntry>(stockBalanceKey(safeEntity));
+                for (const ln of showStage2.lines) {
+                  if (ln.received_qty <= 0) continue;
+                  // Deduct from GIT
+                  const gIdx = balances.findIndex(b => b.item_id === ln.item_id && b.godown_id === showStage2.godown_id);
+                  if (gIdx !== -1) {
+                    const ex = balances[gIdx];
+                    const newQty = round2(dAdd(ex.qty, -ln.received_qty));
+                    const newVal = round2(dAdd(ex.value, -dMul(ln.received_qty, ex.weighted_avg_rate)));
+                    balances[gIdx] = { ...ex, qty: newQty, value: newVal, updated_at: now };
+                  }
+                  // Credit destination
+                  const dIdx = balances.findIndex(b => b.item_id === ln.item_id && b.godown_id === dest.id);
+                  if (dIdx === -1) {
+                    balances.push({
+                      item_id: ln.item_id, item_code: ln.item_code, item_name: ln.item_name,
+                      godown_id: dest.id, godown_name: dest.name,
+                      qty: ln.received_qty,
+                      value: round2(dMul(ln.received_qty, ln.unit_rate)),
+                      weighted_avg_rate: ln.unit_rate,
+                      last_grn_id: showStage2.id, last_grn_no: showStage2.grn_no,
+                      updated_at: now,
+                    });
+                  } else {
+                    const ex = balances[dIdx];
+                    const newQty = round2(dAdd(ex.qty, ln.received_qty));
+                    const newVal = round2(dAdd(ex.value, dMul(ln.received_qty, ln.unit_rate)));
+                    balances[dIdx] = {
+                      ...ex, qty: newQty, value: newVal,
+                      weighted_avg_rate: newQty > 0 ? round2(newVal / newQty) : ln.unit_rate,
+                      last_grn_id: showStage2.id, last_grn_no: showStage2.grn_no,
+                      updated_at: now,
+                    };
+                  }
+                }
+                saveJson(stockBalanceKey(safeEntity), balances);
+                // Update GRN status → posted, set physical_received_at, godown=dest
+                const updated: GRN = {
+                  ...showStage2,
+                  status: 'posted',
+                  godown_id: dest.id,
+                  godown_name: dest.name,
+                  physical_received_at: now,
+                  posted_at: now,
+                  updated_at: now,
+                };
+                const next = grns.map(g => g.id === updated.id ? updated : g);
+                persist(next);
+                toast.success(`Stock moved to ${dest.name} · ${showStage2.grn_no} posted`);
+                setShowStage2(null);
+                setView('list');
+              }}
+            >
+              Confirm & Move Stock
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
