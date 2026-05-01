@@ -27,6 +27,7 @@ import { logAudit } from '@/lib/audit-trail-engine';
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
+import { useT } from '@/lib/i18n-engine';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -230,7 +231,7 @@ export function RTVEntryPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <RotateCcw className="h-5 w-5 text-cyan-600" /> Return to Vendor (RTV)
+            <RotateCcw className="h-5 w-5 text-cyan-600" /> {t('inv.rtv', 'Return to Vendor')} (RTV)
           </h1>
           <p className="text-xs text-muted-foreground">Rejections Out · activates vt-rejections-out</p>
         </div>

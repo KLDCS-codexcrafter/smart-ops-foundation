@@ -27,6 +27,7 @@ import { COUNT_STATUS_COLORS, COUNT_KIND_LABELS, VARIANCE_REASON_LABELS } from '
 import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarrationHeader';
 import type { InventoryItem } from '@/types/inventory-item';
 import { dMul, round2 } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -233,7 +234,7 @@ export function CycleCountEntryPanel() {
       {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>New Cycle Count</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('inv.cycle_count', 'Cycle Count')}</DialogTitle></DialogHeader>
           <CreateCountForm godowns={godowns} onCreate={handleCreateBlank} />
         </DialogContent>
       </Dialog>

@@ -49,6 +49,7 @@ import {
   type MaterialIssueNote, type MINLine, type MINStatus,
 } from '@/types/consumption';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -364,7 +365,7 @@ export function MaterialIssueNotePanel() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <ArrowUpFromLine className="h-6 w-6 text-cyan-500" />
-              Material Issue Note
+              {t('inv.min', 'Material Issue Note')}
             </h1>
             <p className="text-sm text-muted-foreground">
               Godown-to-godown transfers · departmental accountability

@@ -52,6 +52,7 @@ import {
 } from '@/types/grn';
 import type { VoucherType } from '@/types/voucher-type';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -583,7 +584,7 @@ export function GRNEntryPanel() {
               <ArrowDownToLine className="h-6 w-6 text-cyan-500" />
               GRN Entry
             </h1>
-            <p className="text-sm text-muted-foreground">Goods Receipt Note · physical receiving</p>
+            <p className="text-sm text-muted-foreground">{t('inv.grn', 'Goods Receipt Note')} · physical receiving</p>
           </div>
           <Button size="sm" className="gap-1.5" onClick={startNew}>
             <Plus className="h-4 w-4" /> New GRN

@@ -49,6 +49,7 @@ import {
 } from '@/types/consumption';
 import { DEPARTMENT_LABELS } from '@/types/godown';
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
+import { useT } from '@/lib/i18n-engine';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -363,7 +364,7 @@ export function ConsumptionEntryPanel() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <PackageOpen className="h-6 w-6 text-cyan-500" />
-              Consumption Entry
+              {t('inv.consumption', 'Consumption Entry')}
             </h1>
             <p className="text-sm text-muted-foreground">
               Departmental consumption · job / overhead / site · variance vs BOM standard
