@@ -47,6 +47,7 @@ const BLANK: FormState = {
 };
 
 export function MilestoneTrackerPanel() {
+  const t = useT();
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects } = useProjects(entityCode);
   const { milestones, createMilestone, updateMilestone, deleteMilestone } = useProjectMilestones(entityCode);
@@ -164,7 +165,7 @@ export function MilestoneTrackerPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Milestone className="h-6 w-6 text-indigo-500" /> Milestone Tracker
+            <Milestone className="h-6 w-6 text-indigo-500" /> {t('projx.milestone_tracker.title', 'Milestone Tracker')}
           </h1>
           <p className="text-sm text-muted-foreground">Per-project milestones · auto-creates invoice schedule entries</p>
         </div>

@@ -28,6 +28,7 @@ function readCompany(entityCode: string): CompanyLite | null {
 }
 
 export default function MonthlyProductionAccounts() {
+  const t = useT();
   const { entityCode } = useEntityCode();
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
 
@@ -89,7 +90,7 @@ export default function MonthlyProductionAccounts() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Factory className="h-6 w-6 text-primary" />
-            Monthly Production Accounts · CGST Rule 56(12)
+            {t('comp.monthly_production.title', 'Monthly Production Accounts · CGST Rule 56(12)')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">{company?.legalEntityName} · {month}</p>
         </div>

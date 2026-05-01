@@ -20,6 +20,7 @@ import { useT } from '@/lib/i18n-engine';
 const ACTIONS: AuditAction[] = ['create', 'update', 'cancel', 'post', 'unpost', 'approve', 'reject'];
 
 export default function AuditTrailReport() {
+  const t = useT();
   const { entityCode } = useEntityCode();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -63,14 +64,14 @@ export default function AuditTrailReport() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            Audit Trail · MCA Rule 3(1) Compliance
+            {t('comp.audit_trail.title', 'Audit Trail · MCA Rule 3(1) Compliance')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Append-only log of every transaction and change. Cannot be disabled.
           </p>
         </div>
         <Button onClick={handleExport} disabled={filtered.length === 0}>
-          <Download className="h-4 w-4 mr-1" /> Export CSV
+          <Download className="h-4 w-4 mr-1" /> {t('common.export', 'Export CSV')}
         </Button>
       </div>
 

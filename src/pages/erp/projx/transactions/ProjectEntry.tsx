@@ -99,6 +99,7 @@ const BLANK: FormState = {
 };
 
 export function ProjectEntryPanel() {
+  const t = useT();
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
@@ -262,7 +263,7 @@ export function ProjectEntryPanel() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Briefcase className="h-6 w-6 text-indigo-500" />
-            Projects
+            {t('projx.project_entry.title', 'Projects')}
           </h1>
           <p className="text-sm text-muted-foreground">
             ProjX transactions · live P&amp;L (D-216) · status workflow enforced

@@ -156,6 +156,7 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
 };
 
 export function FinCorePagePanel() {
+  const t = useT();
   const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);

@@ -141,6 +141,7 @@ function EntityTable<T extends { id: string }>({
 
 // ── Main component ────────────────────────────────────────────────
 export function FoundationEntityHubPanel() {
+  const _t = useT();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('tab') as Tab) || 'companies';
@@ -248,7 +249,7 @@ export function FoundationEntityHubPanel() {
           {/* Page header */}
           <div className='flex items-start justify-between gap-4 flex-wrap'>
             <div>
-              <h1 className='text-xl font-bold text-foreground'>Entity Registry</h1>
+              <h1 className='text-xl font-bold text-foreground'>{_t('foundation.entity_hub.title', 'Entity Registry')}</h1>
               <p className='text-sm text-muted-foreground mt-0.5'>
                 Manage all registered entities — companies, subsidiaries, and branch offices.
               </p>
