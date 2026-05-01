@@ -156,7 +156,11 @@ export function generateDocNo(
     | 'GRN' // GRN — Goods Receipt Note (Inventory Hub)
     // Sprint T-Phase-1.2.2 · Material Issue Note + Consumption Entry
     | 'MIN' // MIN — Material Issue Note (godown-to-godown transfer)
-    | 'CE', // CE  — Consumption Entry (job/overhead/site material consumption)
+    | 'CE'  // CE  — Consumption Entry (job/overhead/site material consumption)
+    // Sprint T-Phase-1.2.4 · GRN multi-variant doc-no sequences
+    | 'DGRN'   // Domestic GRN
+    | 'IGRN'   // Import GRN
+    | 'SCGRN', // Subcontract GRN
   entityCode: string,
 ): string {
   const key = `erp_doc_seq_${prefix}_${entityCode}`;
