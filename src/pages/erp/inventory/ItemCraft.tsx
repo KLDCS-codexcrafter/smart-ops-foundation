@@ -1186,6 +1186,7 @@ export function ItemCraftPanel() {
                   {([
                     { tf: 'batch_tracking', l: 'Batch Tracking', d: 'Track by batch / lot number' },
                     { tf: 'serial_tracking', l: 'Serial Tracking', d: 'Track individual serial numbers' },
+                    { tf: 'is_heat_tracked', l: 'Heat / Cast Tracking', d: 'Track foundry heat number + MTC (steel/alloy)' },
                     { tf: 'expiry_tracking', l: 'Expiry Tracking', d: 'Mandatory expiry date on every inward' },
                     { tf: 'qc_hold_on_receipt', l: 'QC Hold on Receipt', d: 'Hold in QC location before main godown' },
                   ] as const).map(({ tf, l, d }) => (
