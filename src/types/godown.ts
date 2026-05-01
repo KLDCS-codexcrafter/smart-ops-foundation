@@ -168,5 +168,9 @@ export interface Godown {
   requires_issue_note?: boolean;
   /** Optional FK to ProjectCentre — for site/project-specific godowns */
   project_centre_id?: string | null;
+  // Sprint T-Phase-1.2.3 · Reserved for system godowns (GIT in 1.2.4, Samples already, etc.)
+  /** System godowns are auto-created by entity-setup-service and cannot be deleted by users.
+   *  Used for: Goods-in-Transit (1.2.4), Samples & Demos (existing), Quarantine (1.2.5) */
+  is_system_godown?: boolean;
   created_at: string; updated_at: string;
 }
