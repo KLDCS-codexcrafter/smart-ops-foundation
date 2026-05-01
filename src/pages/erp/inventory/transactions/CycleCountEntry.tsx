@@ -123,6 +123,7 @@ export function CycleCountEntryPanel() {
   void ccFieldErr; void fieldErrorText; void ccValidator;
 
   function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
+  const _t = useT();
     const gd = godowns.find(g => g.id === godownId) ?? null;
     const countDate = new Date().toISOString().slice(0, 10);
     // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
@@ -234,7 +235,7 @@ export function CycleCountEntryPanel() {
       {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{t('inv.cycle_count', 'Cycle Count')}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{_t('inv.cycle_count', 'Cycle Count')}</DialogTitle></DialogHeader>
           <CreateCountForm godowns={godowns} onCreate={handleCreateBlank} />
         </DialogContent>
       </Dialog>

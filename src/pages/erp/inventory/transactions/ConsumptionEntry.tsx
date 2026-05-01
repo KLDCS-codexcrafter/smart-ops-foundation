@@ -113,6 +113,7 @@ const blankLine = (): FormLine => ({
 });
 
 export function ConsumptionEntryPanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -364,7 +365,7 @@ export function ConsumptionEntryPanel() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <PackageOpen className="h-6 w-6 text-cyan-500" />
-              {t('inv.consumption', 'Consumption Entry')}
+              {_t('inv.consumption', 'Consumption Entry')}
             </h1>
             <p className="text-sm text-muted-foreground">
               Departmental consumption · job / overhead / site · variance vs BOM standard

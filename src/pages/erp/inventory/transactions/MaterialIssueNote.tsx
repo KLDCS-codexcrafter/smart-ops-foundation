@@ -106,6 +106,7 @@ const blankLine = (): FormLine => ({
 });
 
 export function MaterialIssueNotePanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -365,7 +366,7 @@ export function MaterialIssueNotePanel() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <ArrowUpFromLine className="h-6 w-6 text-cyan-500" />
-              {t('inv.min', 'Material Issue Note')}
+              {_t('inv.min', 'Material Issue Note')}
             </h1>
             <p className="text-sm text-muted-foreground">
               Godown-to-godown transfers · departmental accountability

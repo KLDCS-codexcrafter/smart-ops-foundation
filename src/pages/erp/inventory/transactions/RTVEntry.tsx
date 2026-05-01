@@ -196,6 +196,7 @@ export function RTVEntryPanel() {
   }
 
   function printRtv(rtv: RTV) {
+  const _t = useT();
     const w = window.open('', '_blank', 'width=900,height=700');
     if (!w) return;
     const lines = rtv.lines.map(l => `
@@ -231,7 +232,7 @@ export function RTVEntryPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <RotateCcw className="h-5 w-5 text-cyan-600" /> {t('inv.rtv', 'Return to Vendor')} (RTV)
+            <RotateCcw className="h-5 w-5 text-cyan-600" /> {_t('inv.rtv', 'Return to Vendor')} (RTV)
           </h1>
           <p className="text-xs text-muted-foreground">Rejections Out · activates vt-rejections-out</p>
         </div>

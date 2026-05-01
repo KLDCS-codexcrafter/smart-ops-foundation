@@ -146,6 +146,7 @@ function loadVendors(): VendorSeed[] {
 }
 
 export function GRNEntryPanel() {
+  const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -584,7 +585,7 @@ export function GRNEntryPanel() {
               <ArrowDownToLine className="h-6 w-6 text-cyan-500" />
               GRN Entry
             </h1>
-            <p className="text-sm text-muted-foreground">{t('inv.grn', 'Goods Receipt Note')} · physical receiving</p>
+            <p className="text-sm text-muted-foreground">{_t('inv.grn', 'Goods Receipt Note')} · physical receiving</p>
           </div>
           <Button size="sm" className="gap-1.5" onClick={startNew}>
             <Plus className="h-4 w-4" /> New GRN
