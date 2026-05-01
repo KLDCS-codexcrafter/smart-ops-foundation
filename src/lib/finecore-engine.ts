@@ -133,7 +133,27 @@ function getFY(): string {
 }
 
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
-export function generateDocNo(prefix: 'PR' | 'RFQ' | 'PO' | 'SO' | 'ADVP' | 'ADVR' | 'LEAD' | 'ENQ' | 'PF' | 'SRM', entityCode: string): string {
+/**
+ * Centralized doc-number generator. Format: `PREFIX/FY/NNNN` (e.g. `SO/24-25/0001`).
+ * Storage key: `erp_doc_seq_${prefix}_${entityCode}` — sequence is per-entity, per-prefix.
+ *
+ * Sprint T-Phase-1.1.2-d: Union extended to consolidate memo + ProjX doc numbering.
+ * Migrated callers: SupplyRequestMemo (SRQM), InvoiceMemo (IM), SampleOutwardMemo (SOM),
+ * DemoOutwardMemo (DOM), SalesReturnMemo (SRM), projx-engine.nextProjectCode (PRJ).
+ *
+ * Excluded by design:
+ *  - PCT (project centres): PCT-NNNN has no FY component — stays local in useProjectCentres.
+ *  - MILESTONE: keyed by (entity, project) two-arg — stays local in project-milestone types.
+ */
+export function generateDocNo(
+  prefix:
+    | 'PR' | 'RFQ' | 'PO' | 'SO'
+    | 'ADVP' | 'ADVR'
+    | 'LEAD' | 'ENQ' | 'PF'
+    | 'SRM' | 'SRQM' | 'IM' | 'SOM' | 'DOM'
+    | 'PRJ' | 'PCT' | 'TE',
+  entityCode: string,
+): string {
   const key = `erp_doc_seq_${prefix}_${entityCode}`;
   // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
   const raw = localStorage.getItem(key);

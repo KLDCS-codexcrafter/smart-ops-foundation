@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+import { generateDocNo } from '@/lib/finecore-engine';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import {
   demoOutwardMemosKey,
@@ -42,21 +43,8 @@ interface Props { entityCode: string }
 
 const todayISO = () => new Date().toISOString().split('T')[0];
 
-function fyShort(): string {
-  const d = new Date();
-  const y = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
-  return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
-}
-
-function nextMemoNo(entityCode: string): string {
-  const key = `erp_doc_seq_DOM_${entityCode}`;
-  // [JWT] GET /api/procurement/sequences/DOM/:entityCode
-  const raw = localStorage.getItem(key);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  // [JWT] PATCH /api/procurement/sequences/DOM/:entityCode
-  localStorage.setItem(key, String(seq));
-  return `DOM/${fyShort()}/${String(seq).padStart(4, '0')}`;
-}
+// Sprint T-Phase-1.1.2-d: DOM doc-no now delegated to generateDocNo('DOM', entityCode).
+// Storage key (`erp_doc_seq_DOM_${entityCode}`) and format are identical — sequences persist.
 
 function ls<T>(key: string): T[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]') as T[]; }
@@ -73,7 +61,7 @@ const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 const PERIOD_OPTIONS: DOMPeriodDays[] = [14, 30, 60, 90];
 
 export function DemoOutwardMemoPanel({ entityCode }: Props) {
-  const [memoNo] = useState(() => nextMemoNo(entityCode));
+  const [memoNo] = useState(() => generateDocNo('DOM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
   const persons = useMemo(() =>
