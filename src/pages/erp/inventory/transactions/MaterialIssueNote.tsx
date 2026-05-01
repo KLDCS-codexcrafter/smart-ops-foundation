@@ -170,6 +170,7 @@ export function MaterialIssueNotePanel() {
       uom: l.uom, qty: l.qty, rate: l.rate,
       available_qty: l.available_qty_at_issue,
       batch_no: l.batch_no ?? '', notes: l.notes,
+      bin_id: '', bin_code: '', bin_id_source: '' as const,
     })));
     setView('form');
   };
