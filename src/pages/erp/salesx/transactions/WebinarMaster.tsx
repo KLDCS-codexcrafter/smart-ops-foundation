@@ -41,6 +41,7 @@ import {
   computeWebinarBudget, computeWebinarMetrics,
 } from '@/types/webinar';
 import { cn } from '@/lib/utils';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 interface Props { entityCode: string }
 
@@ -190,7 +191,7 @@ export function WebinarMasterPanel({ entityCode }: Props) {
   const kpis = useMemo(() => {
     const total = webinars.length;
     const scheduled = webinars.filter(w => w.status === 'scheduled').length;
-    const totalReg = webinars.reduce((s, w) => s + (w.outcome?.registrations || 0), 0);
+    const totalReg = dSum(webinars, w => w.outcome?.registrations || 0);
     const completed = webinars.filter(w => w.status === 'completed' && (w.outcome?.registrations || 0) > 0);
     const avgAtt = completed.length === 0 ? 0
       : Math.round(
@@ -928,7 +929,7 @@ export function WebinarMasterPanel({ entityCode }: Props) {
                           <span className="text-muted-foreground">Cost / Attendee</span>
                           <span>
                             ₹ {form.outcome.attendees > 0
-                              ? Math.round(form.budget.total_actual / form.outcome.attendees).toLocaleString('en-IN')
+                              ? Math.round(round2(form.budget.total_actual / form.outcome.attendees)).toLocaleString('en-IN')
                               : '—'}
                           </span>
                         </div>
