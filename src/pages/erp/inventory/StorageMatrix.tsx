@@ -113,7 +113,7 @@ export function StorageMatrixPanel(){
     <TableRow key={g.id} className='group'>
     <TableCell><Badge variant='secondary' className='font-mono text-xs'>{g.code}</Badge></TableCell>
     <TableCell className='font-medium text-sm'>{g.name}{g.is_virtual&&<Badge variant='outline' className='ml-2 text-[10px] py-0'>Virtual</Badge>}</TableCell>
-    <TableCell>{g.department_code?(<Badge className={`text-xs ${DEPARTMENT_BADGE_COLORS[g.department_code]}`}>{DEPARTMENT_LABELS[g.department_code]}</Badge>):<span className='text-xs text-muted-foreground'>—</span>}{g.responsible_person_name&&<div className='text-[10px] text-muted-foreground mt-0.5'>👤 {g.responsible_person_name}</div>}</TableCell>
+    <TableCell>{g.department_code?(<Badge className={`text-xs ${DEPARTMENT_BADGE_COLORS[g.department_code]}`}>{DEPARTMENT_LABELS[g.department_code]}</Badge>):<span className='text-xs text-muted-foreground'>—</span>}{g.responsible_person_name&&<div className='text-[10px] text-muted-foreground mt-0.5'>{g.responsible_person_name}</div>}</TableCell>
     <TableCell><Badge className={`text-xs ${OWN_C[g.ownership_type]||''}`}>{OWNERSHIP_LABELS[g.ownership_type]}</Badge></TableCell>
     <TableCell>{(g.city||g.state)&&<div className='flex items-center gap-1 text-xs text-muted-foreground'><MapPin className='h-3 w-3'/>{[g.city,g.state].filter(Boolean).join(', ')}</div>}</TableCell>
     <TableCell>{g.contact_phone&&<div className='flex items-center gap-1 text-xs text-muted-foreground'><Phone className='h-3 w-3'/>{g.contact_phone}</div>}</TableCell>
