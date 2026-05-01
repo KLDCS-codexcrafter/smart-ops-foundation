@@ -20,6 +20,7 @@ export const INVENTORY_MODULE_GROUP: Record<
   'r-storage-slip': 'reports',
   'r-bin-slip': 'reports',
   'r-aged-git': 'reports',
+  'r-slow-moving-dead': 'reports',
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',
@@ -28,4 +29,8 @@ export const INVENTORY_MODULE_GROUP: Record<
   'm-serial-grid': 'masters',
   'm-bin-labels': 'masters',
   'm-reorder-matrix': 'masters',
+  'm-abc-classification': 'masters',
+  'm-hazmat-profiles': 'masters',
+  'm-substitute-master': 'masters',
+  'm-returnable-packaging': 'masters',
 };

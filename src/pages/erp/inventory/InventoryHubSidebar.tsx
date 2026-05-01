@@ -9,6 +9,7 @@ import {
   PackageOpen, ArrowDownToLine, ArrowUpFromLine,
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat, Truck,
+  TrendingUp, Replace, Recycle, Clock,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,

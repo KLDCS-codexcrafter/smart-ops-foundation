@@ -25,4 +25,10 @@ export type InventoryHubModule =
   | 'm-serial-grid'
   | 'm-bin-labels'
   // Sprint T-Phase-1.2.3-fix · Multi-godown reorder matrix
-  | 'm-reorder-matrix';
+  | 'm-reorder-matrix'
+  // Sprint T-Phase-1.2.5 · Store Discipline Depth — ABC + Hazmat + Substitutes + Returnable + Slow-moving
+  | 'm-abc-classification'
+  | 'm-hazmat-profiles'
+  | 'm-substitute-master'
+  | 'm-returnable-packaging'
+  | 'r-slow-moving-dead';
