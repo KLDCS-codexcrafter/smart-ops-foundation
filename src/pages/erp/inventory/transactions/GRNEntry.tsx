@@ -449,6 +449,8 @@ export function GRNEntryPanel() {
       updateStockBalance(built);
       autoCreateTraceabilityMasters(built);
       toast.success(`GRN ${built.grn_no} posted · stock credited to ${built.godown_name}`);
+      // Sprint T-Phase-1.2.3-fix · Auto-open Storage Slip print dialog after post.
+      setPrintGrn(built);
     } else {
       toast.success(`GRN ${built.grn_no} saved as ${GRN_STATUS_LABELS[target]}`);
     }
