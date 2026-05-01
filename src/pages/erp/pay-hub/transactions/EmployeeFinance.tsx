@@ -22,6 +22,8 @@ import { Separator } from '@/components/ui/separator';
 import { CreditCard, Wallet, Receipt, Gift, Plus, Check, X,
   ChevronDown, ChevronRight, Calculator, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+// Sprint T-Phase-1.2.5h-c1 · Approval workflow audit-trail wiring (M-4 wrap pattern)
+import { logAudit } from '@/lib/audit-trail-engine';
 import type { LoanApplication, SalaryAdvance, ExpenseClaim, FlexiAllocation,
   EMIScheduleRow, FlexiComponent, FinanceTab, ExpenseCategory } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY, EXPENSE_CLAIMS_KEY,
