@@ -2,7 +2,7 @@
  * ProjXPage.tsx — ProjX card container (sidebar + content area)
  * Sprint T-Phase-1.1.2-a · Tier 1 Card #1 · mirrors FinCorePage shell pattern
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ProjXSidebar } from './ProjXSidebar';

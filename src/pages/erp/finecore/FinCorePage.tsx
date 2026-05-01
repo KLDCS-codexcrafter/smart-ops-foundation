@@ -3,7 +3,7 @@
  * Mirrors PayHubPage.tsx — SidebarProvider + FineCoreSidebar + content area.
  * [JWT] All data loaded via hooks
  */
-// i18n-todo: Sprint T-Phase-1.2.5h-c2 · phased migration · top-strings wrapped where safe; remaining strings tracked for Phase 1.6
+// i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useCallback, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { FineCoreSidebar } from './FineCoreSidebar';
