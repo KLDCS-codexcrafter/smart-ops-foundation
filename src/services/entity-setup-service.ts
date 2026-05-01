@@ -774,6 +774,159 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore — demo seed is best-effort */ }
 
+  // Sprint T-Phase-1.2.5 · Store Discipline Depth · idempotent demo seed
+  try {
+    const ITEM_KEY_25 = `erp_group_items_${opts.shortCode}`;
+    const seedItems25: Array<{ id: string; name: string; abc_class?: string | null; abc_class_pinned?: boolean }> = JSON.parse(
+      localStorage.getItem(ITEM_KEY_25)
+        || localStorage.getItem('erp_group_items')
+        || localStorage.getItem('erp_inventory_items')
+        || '[]',
+    );
+    const nowIso25 = new Date().toISOString();
+
+    // 9a) ABC pin first matching item to A (idempotent: only when not already pinned)
+    const PIN_TARGETS: Record<string, RegExp> = {
+      SINHA: /MS Plate 12|plate.*12/i,
+      SMRTP: /UPS.*5\s*KVA|ups.*5kva/i,
+      BCPL: /paracetamol|api/i,
+      SHKPH: /paracetamol|api/i,
+      CHRSE: /sugar|cleaning/i,
+    };
+    const tgt = PIN_TARGETS[opts.shortCode];
+    if (tgt && seedItems25.length > 0) {
+      let mut = false;
+      for (let i = 0; i < seedItems25.length; i++) {
+        if (tgt.test(seedItems25[i].name) && !seedItems25[i].abc_class_pinned) {
+          seedItems25[i] = {
+            ...seedItems25[i],
+            abc_class: 'A', abc_class_pinned: true,
+            // @ts-expect-error sibling fields
+            abc_classified_at: nowIso25, updated_at: nowIso25,
+          };
+          mut = true;
+          break;
+        }
+      }
+      if (mut) {
+        const k = localStorage.getItem(ITEM_KEY_25) ? ITEM_KEY_25
+          : localStorage.getItem('erp_group_items') ? 'erp_group_items' : 'erp_inventory_items';
+        localStorage.setItem(k, JSON.stringify(seedItems25));
+      }
+    }
+
+    // 9b) Hazmat profiles
+    const HZ_KEY = `erp_hazmat_profiles_${opts.shortCode}`;
+    const existingHz: Array<{ profile_name: string }> = JSON.parse(localStorage.getItem(HZ_KEY) || '[]');
+    interface HzSeed {
+      name: string; dg_class: '3' | '5' | '8'; sub: string | null; un: string;
+      pg: 'I' | 'II' | 'III'; flash: number | null; oxid: boolean; corr: boolean; tox: boolean;
+    }
+    const HZ_BY_ENTITY: Record<string, HzSeed[]> = {
+      BCPL: [
+        { name: 'Toluene Solvent', dg_class: '3', sub: null, un: 'UN1294', pg: 'II', flash: 4, oxid: false, corr: false, tox: true },
+        { name: 'Hydrochloric Acid 32%', dg_class: '8', sub: null, un: 'UN1789', pg: 'II', flash: null, oxid: false, corr: true, tox: true },
+        { name: 'Hydrogen Peroxide 50%', dg_class: '5', sub: '5.1', un: 'UN2014', pg: 'II', flash: null, oxid: true, corr: true, tox: false },
+      ],
+      SHKPH: [
+        { name: 'Methanol', dg_class: '3', sub: null, un: 'UN1230', pg: 'II', flash: 11, oxid: false, corr: false, tox: true },
+        { name: 'Acetic Acid Glacial', dg_class: '8', sub: null, un: 'UN2789', pg: 'II', flash: 39, oxid: false, corr: true, tox: false },
+      ],
+      CHRSE: [
+        { name: 'Cleaning Concentrate (alkaline)', dg_class: '8', sub: null, un: 'UN1719', pg: 'III', flash: null, oxid: false, corr: true, tox: false },
+      ],
+    };
+    const hzSeeds = HZ_BY_ENTITY[opts.shortCode] ?? [];
+    const toCreateHz = hzSeeds.filter(h => !existingHz.some(e => e.profile_name === h.name));
+    if (toCreateHz.length > 0) {
+      const merged = [...existingHz];
+      for (const h of toCreateHz) {
+        merged.push({
+          // @ts-expect-error full HazmatProfile shape
+          id: `hzm-seed-${opts.shortCode}-${h.name.replace(/\s+/g, '-').toLowerCase()}`,
+          entity_id: opts.shortCode, profile_name: h.name,
+          dg_class: h.dg_class, dg_sub_class: h.sub, un_number: h.un,
+          packing_group: h.pg, proper_shipping_name: h.name,
+          flash_point_celsius: h.flash, boiling_point_celsius: null,
+          is_oxidizer: h.oxid, is_water_reactive: false, is_corrosive: h.corr,
+          is_toxic: h.tox, is_carcinogenic: false,
+          msds_document_url: null, msds_document_filename: null,
+          msds_uploaded_at: null, msds_revision_no: null,
+          emergency_contact_no: null, emergency_contact_name: null,
+          max_storage_temperature_celsius: null, min_storage_temperature_celsius: null,
+          ventilation_required: h.dg_class === '3', segregation_notes: null,
+          notes: 'Demo seed', created_at: nowIso25, updated_at: nowIso25,
+        });
+      }
+      // [JWT] POST /api/inventory/hazmat-profiles (bulk demo seed)
+      localStorage.setItem(HZ_KEY, JSON.stringify(merged));
+    }
+
+    // 9c) SINHA substitutes
+    if (opts.shortCode === 'SINHA' && seedItems25.length >= 2) {
+      const SUB_KEY = `erp_item_substitutes_${opts.shortCode}`;
+      const existingSubs: Array<{ id: string }> = JSON.parse(localStorage.getItem(SUB_KEY) || '[]');
+      if (existingSubs.length === 0) {
+        const a = seedItems25[0]; const b = seedItems25[1];
+        const today = nowIso25.slice(0, 10);
+        const subs = [{
+          id: `sub-seed-${opts.shortCode}-1`,
+          entity_id: opts.shortCode,
+          primary_item_id: a.id, primary_item_code: '', primary_item_name: a.name,
+          substitute_item_id: b.id, substitute_item_code: '', substitute_item_name: b.name,
+          ratio: 1.0, scenarios: ['production'], notes: 'Demo: equivalent grade',
+          approval_status: 'approved', approved_by_id: null, approved_by_name: 'Engineering',
+          approved_at: nowIso25, approval_doc_ref: 'ECO-2026-001',
+          effective_from: today, effective_until: null, is_active: true,
+          used_count: 0, last_used_at: null,
+          created_at: nowIso25, updated_at: nowIso25,
+        }];
+        // [JWT] POST /api/inventory/item-substitutes (demo seed)
+        localStorage.setItem(SUB_KEY, JSON.stringify(subs));
+      }
+    }
+
+    // 9d) Returnable packaging — SINHA pallets + SMRTP crates
+    const RP_KEY = `erp_returnable_packaging_${opts.shortCode}`;
+    const existingRp: Array<{ unit_no: string }> = JSON.parse(localStorage.getItem(RP_KEY) || '[]');
+    interface RpSeed { prefix: string; kind: 'pallet' | 'crate'; cost: number; count: number }
+    const RP_BY_ENTITY: Record<string, RpSeed | null> = {
+      SINHA: { prefix: 'PALLET-SINHA-2024', kind: 'pallet', cost: 1500, count: 5 },
+      SMRTP: { prefix: 'CRATE-SMRTP-2024', kind: 'crate', cost: 2200, count: 3 },
+    };
+    const rpCfg = RP_BY_ENTITY[opts.shortCode];
+    if (rpCfg && existingRp.length === 0) {
+      const dueIso = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const sentIso = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString();
+      const seedRp: unknown[] = [];
+      for (let i = 1; i <= rpCfg.count; i++) {
+        const unitNo = `${rpCfg.prefix}-${String(i).padStart(4, '0')}`;
+        const withCustomer = i <= Math.ceil(rpCfg.count / 2);
+        seedRp.push({
+          id: `pkg-seed-${opts.shortCode}-${i}`,
+          entity_id: opts.shortCode,
+          unit_no: unitNo, kind: rpCfg.kind,
+          description: `Demo ${rpCfg.kind} unit`,
+          acquisition_cost: rpCfg.cost,
+          expected_lifetime_cycles: 50, current_cycle_count: withCustomer ? 1 : 0,
+          status: withCustomer ? 'with_customer' : 'in_stock',
+          current_location: withCustomer ? 'Demo Customer A' : 'IN_STOCK',
+          current_godown_id: null,
+          current_customer_id: withCustomer ? 'cust-demo-a' : null,
+          sent_with_dln_id: null,
+          sent_to_customer_id: withCustomer ? 'cust-demo-a' : null,
+          sent_to_customer_name: withCustomer ? 'Demo Customer A' : null,
+          sent_at: withCustomer ? sentIso : null,
+          return_due_date: withCustomer ? dueIso : null,
+          returned_at: null, return_grn_id: null, return_condition: null,
+          notes: null, created_at: nowIso25, updated_at: nowIso25,
+        });
+      }
+      // [JWT] POST /api/inventory/returnable-packaging (demo seed)
+      localStorage.setItem(RP_KEY, JSON.stringify(seedRp));
+    }
+  } catch { /* ignore — 1.2.5 demo seed is best-effort */ }
+
   // Sprint T-Phase-1.2.2 · Auto-activate Inventory Hub + ProjX voucher types on entity creation
   // Founder lock: "if voucher type is not then create the same while creating entity refer command center"
   // vt-stock-journal + vt-stock-transfer are already is_active:true — no action needed

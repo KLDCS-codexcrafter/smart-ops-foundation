@@ -26,6 +26,11 @@ import { BatchGridPanel } from './BatchGrid';
 import { SerialGridPanel } from './SerialGrid';
 import { BinLocationLabelsPanel } from './BinLocationLabels';
 import { ReorderMatrixPanel } from './ReorderMatrix';
+import { AbcClassificationMasterPanel } from './AbcClassificationMaster';
+import { HazmatProfileMasterPanel } from './HazmatProfileMaster';
+import { SubstituteMasterPanel } from './SubstituteMaster';
+import { ReturnablePackagingMasterPanel } from './ReturnablePackagingMaster';
+import { SlowMovingDeadStockReportPanel } from './reports/SlowMovingDeadStockReport';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
@@ -74,6 +79,11 @@ export default function InventoryHubPage() {
       case 'm-serial-grid':          return <SerialGridPanel />;
       case 'm-bin-labels':           return <BinLocationLabelsPanel />;
       case 'm-reorder-matrix':       return <ReorderMatrixPanel />;
+      case 'm-abc-classification':   return <AbcClassificationMasterPanel />;
+      case 'm-hazmat-profiles':      return <HazmatProfileMasterPanel />;
+      case 'm-substitute-master':    return <SubstituteMasterPanel />;
+      case 'm-returnable-packaging': return <ReturnablePackagingMasterPanel />;
+      case 'r-slow-moving-dead':     return <SlowMovingDeadStockReportPanel />;
       default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };

@@ -396,6 +396,26 @@ export function GRNEntryPanel() {
       }
     }
     saveJson(stockBalanceKey(safeEntity), balances);
+
+    // Sprint T-Phase-1.2.5 · Update Item.last_received_at in single batched write
+    try {
+      const IKEY = 'erp_inventory_items';
+      // [JWT] GET /api/inventory/items
+      const itemsRaw = localStorage.getItem(IKEY);
+      if (itemsRaw) {
+        const arr: Array<{ id: string; last_received_at?: string | null; updated_at?: string }> = JSON.parse(itemsRaw);
+        const lineItemIds = new Set(g.lines.filter(l => l.accepted_qty > 0).map(l => l.item_id));
+        let changed = false;
+        for (let i = 0; i < arr.length; i++) {
+          if (lineItemIds.has(arr[i].id)) {
+            arr[i] = { ...arr[i], last_received_at: now, updated_at: now };
+            changed = true;
+          }
+        }
+        // [JWT] PATCH /api/inventory/items (bulk last_received_at)
+        if (changed) localStorage.setItem(IKEY, JSON.stringify(arr));
+      }
+    } catch { /* best-effort */ }
   };
 
   /**
