@@ -121,6 +121,21 @@ export function MaterialIssueNotePanel() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const balances = useMemo(() => loadBalances(safeEntity), [safeEntity, mins]);
 
+  // Sprint T-Phase-1.2.3 audit fix: resolve preferred godown/bin for the picked item.
+  const preferred = useItemPreferredLocation(draftLine.item_id || undefined, safeEntity);
+  const applyPreferredBin = () => {
+    if (!preferred) { toast.info('No preferred bin set for this item'); return; }
+    setDraftLine(d => ({
+      ...d,
+      bin_id: preferred.binId ?? '',
+      bin_code: preferred.binCode ?? '',
+      bin_id_source: 'preferred',
+    }));
+    toast.success(preferred.binCode
+      ? `Preferred bin ${preferred.binCode} applied`
+      : `Preferred godown ${preferred.godownName} applied`);
+  };
+
   const totals = useMemo(() => {
     let qty = 0, value = 0;
     for (const l of lines) {
