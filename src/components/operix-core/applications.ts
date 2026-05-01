@@ -215,6 +215,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/receivx',
     icon: 'TrendingUp',
+    status: 'active',
   },
   {
     id: 'eximx',
