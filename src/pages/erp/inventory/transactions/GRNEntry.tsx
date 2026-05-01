@@ -750,6 +750,32 @@ export function GRNEntryPanel() {
                   {items.map(i => <SelectItem key={i.id} value={i.id}>{i.code} — {i.name}</SelectItem>)}
                 </SelectContent>
               </Select>
+              {preferred && (
+                <p className="text-[10px] text-muted-foreground">
+                  Preferred: {preferred.godownName}
+                  {preferred.binCode ? ` · Bin ${preferred.binCode}` : ''}
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label>Bin / Rack</Label>
+                {preferred?.binId && (
+                  <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1"
+                    onClick={applyPreferredBin}>
+                    <RotateCcw className="h-3 w-3" /> Use preferred
+                  </Button>
+                )}
+              </div>
+              <Input
+                placeholder={preferred?.binCode ? `Auto-fill: ${preferred.binCode}` : 'Optional bin / rack code'}
+                value={draftLine.bin_code || draftLine.bin_id}
+                onChange={e => setDraftLine(l => ({
+                  ...l, bin_id: e.target.value, bin_code: e.target.value, bin_id_source: 'manual',
+                }))} />
+              {draftLine.bin_id_source === 'preferred' && (
+                <p className="text-[10px] text-emerald-600">↻ Using preferred bin</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>Ordered Qty</Label>
