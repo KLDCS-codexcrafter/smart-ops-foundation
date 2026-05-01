@@ -24,6 +24,7 @@ import { HeatMasterPanel } from './HeatMaster';
 import { BatchGridPanel } from './BatchGrid';
 import { SerialGridPanel } from './SerialGrid';
 import { BinLocationLabelsPanel } from './BinLocationLabels';
+import { ReorderMatrixPanel } from './ReorderMatrix';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
@@ -70,6 +71,7 @@ export default function InventoryHubPage() {
       case 'm-batch-grid':           return <BatchGridPanel />;
       case 'm-serial-grid':          return <SerialGridPanel />;
       case 'm-bin-labels':           return <BinLocationLabelsPanel />;
+      case 'm-reorder-matrix':       return <ReorderMatrixPanel />;
       default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };
