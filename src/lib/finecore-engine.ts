@@ -187,13 +187,26 @@ export function generateDocNo(
     | 'RJO',   // Rejections Out (Return to Vendor)
   entityCode: string,
 ): string {
-  const key = `erp_doc_seq_${prefix}_${entityCode}`;
-  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode
-  const raw = localStorage.getItem(key);
-  const seq = raw ? parseInt(raw, 10) + 1 : 1;
-  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode
-  localStorage.setItem(key, String(seq));
+  // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
+  // Storage key: erp_doc_seq_{prefix}_{entityCode}_{fy}
+  // Auto-migrates legacy non-FY key into current-FY key on first call (Q3-b).
   const fy = getFY();
+  const newKey = `erp_doc_seq_${prefix}_${entityCode}_${fy}`;
+  const legacyKey = `erp_doc_seq_${prefix}_${entityCode}`;
+  // [JWT] GET /api/procurement/sequences/:prefix/:entityCode/:fy
+  let raw = localStorage.getItem(newKey);
+  if (!raw) {
+    const legacyRaw = localStorage.getItem(legacyKey);
+    if (legacyRaw) {
+      // [JWT] One-time migration · legacy non-FY → current FY
+      localStorage.setItem(newKey, legacyRaw);
+      raw = legacyRaw;
+      // Keep legacyKey for one FY (safety) — h-b will purge.
+    }
+  }
+  const seq = raw ? parseInt(raw, 10) + 1 : 1;
+  // [JWT] PATCH /api/procurement/sequences/:prefix/:entityCode/:fy
+  localStorage.setItem(newKey, String(seq));
   return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
 }
 
