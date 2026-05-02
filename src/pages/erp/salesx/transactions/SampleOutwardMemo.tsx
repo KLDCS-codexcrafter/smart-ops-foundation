@@ -5,6 +5,9 @@
  * [JWT] GET/POST/PATCH /api/salesx/sample-outward-memos
  */
 import { useState, useMemo, useCallback } from 'react';
+// Sprint T-Phase-2.7-a · Batch C2 · GST + Bill/Ship mount
+import { GSTBillShipSection } from '@/components/uth/GSTBillShipSection';
+import { toSimpleGSTLines } from '@/components/uth/gst-bill-ship.helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -429,6 +432,17 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
               ))}
             </ul>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST */}
+      <Card>
+        <CardContent className="p-4">
+          <GSTBillShipSection
+            customerId={null}
+            customerName={recipientName || null}
+            lines={toSimpleGSTLines(items)}
+          />
         </CardContent>
       </Card>
 

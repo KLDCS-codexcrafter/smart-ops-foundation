@@ -15,6 +15,9 @@
  * Accounts (FineCore side · Phase 2) flips status to 'invoice_posted' after posting Sales Invoice.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
+// Sprint T-Phase-2.7-a · Batch C2 · GST + Bill/Ship mount
+import { GSTBillShipSection } from '@/components/uth/GSTBillShipSection';
+import { toSimpleGSTLines } from '@/components/uth/gst-bill-ship.helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -459,6 +462,17 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
           <Textarea value={narration} onChange={e => setNarration(e.target.value)}
             placeholder="Notes for the Accounts team"
             className="min-h-[64px] text-sm" />
+        </CardContent>
+      </Card>
+
+      {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST */}
+      <Card>
+        <CardContent className="p-4">
+          <GSTBillShipSection
+            customerId={selectedDM?.customer_id ?? null}
+            customerName={selectedDM?.customer_name ?? null}
+            lines={toSimpleGSTLines(items)}
+          />
         </CardContent>
       </Card>
 
