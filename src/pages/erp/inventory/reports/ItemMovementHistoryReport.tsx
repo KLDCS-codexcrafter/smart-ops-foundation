@@ -28,7 +28,13 @@ const TYPE_LABELS: Record<MovementType, string> = {
 
 const fmt = (n: number) => n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
-export function ItemMovementHistoryReportPanel() {
+interface ItemMovementHistoryReportPanelProps {
+  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  initialFilter?: import('@/types/drill-context').InventoryDrillFilter;
+}
+
+export function ItemMovementHistoryReportPanel({ onNavigate, initialFilter }: ItemMovementHistoryReportPanelProps = {}) {
+  void onNavigate; void initialFilter;
   const { entityCode } = useCardEntitlement();
 
   const items = useMemo<InventoryItem[]>(() => {
