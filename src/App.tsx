@@ -364,6 +364,7 @@ const App = () => (
               <Route path="/erp/finecore/masters/voucher-class" element={<P><VoucherClassMasterPage /></P>} />
               <Route path="/erp/finecore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
               <Route path="/erp/finecore/registers/cancellation-audit-register" element={<P><CancellationAuditRegister /></P>} />
+              <Route path="/erp/finecore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
