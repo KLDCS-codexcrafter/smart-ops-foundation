@@ -6,7 +6,7 @@
  *   - HTML5 (textarea Enter = newline)
  *   - MS Office 1989+ (Ctrl+S/N/P/F/Z/Y/D/H)
  *   - IBM PC 1981+ (F1=help, F2=edit)
- *   - Excel 1985+ (F2=edit cell, F4=picker, +/-/*/=/% inline math)
+ *   - Excel 1985+ (F2=edit cell, F4=picker, plus/minus/multiply/divide/percent inline math)
  *
  * NO Tally trademark or trade-dress copying · all bindings sourced from
  * pre-existing public standards (per Lotus v. Borland 1995 + Oracle v.
