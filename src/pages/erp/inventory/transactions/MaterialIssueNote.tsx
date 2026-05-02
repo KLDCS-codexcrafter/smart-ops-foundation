@@ -299,6 +299,11 @@ export function MaterialIssueNotePanel() {
     if (!header.requested_by_id) return 'Requested by is required';
     if (!header.issued_by_id) return 'Issued by is required';
     if (lines.length === 0) return 'Add at least one line';
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = header.effective_date || header.issue_date;
+    if (eff && isPeriodLocked(eff, safeEntity)) {
+      return periodLockMessage(eff, safeEntity) ?? 'Period is locked';
+    }
     return null;
   };
 
