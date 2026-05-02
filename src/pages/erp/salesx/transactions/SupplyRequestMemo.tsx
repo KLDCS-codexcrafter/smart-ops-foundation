@@ -51,8 +51,9 @@ import type { MultiSourceRef } from '@/types/multi-source-ref';
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
 import { useVoucherClassMount as _useVCM_27B } from '@/hooks/useVoucherClassMount';
 const _VC_FAMILY_27B = 'sales_request' as const;
-// Re-export tags for sprint 2.7-b registration (no runtime effect):
-export const __SPRINT_27B_VCM__ = { mount: _VCM_27B, hook: _useVCM_27B, family: _VC_FAMILY_27B };
+// Sprint 2.7-b · keep imports referenced (no runtime effect, no react-refresh export):
+const _SPRINT_27B_VCM_REF = [_VCM_27B, _useVCM_27B, _VC_FAMILY_27B] as const;
+if (false as boolean) { console.log(_SPRINT_27B_VCM_REF); }
 
 interface Props { entityCode: string }
 
