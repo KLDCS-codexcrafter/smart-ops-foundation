@@ -49,11 +49,12 @@ export default function PinnedTemplatesView() {
 
   const filtered = useMemo(() => {
     if (!entityCode) return [];
+    if (tick < 0) return [];
     return searchPinnedTemplates(entityCode, {
       voucher_type_id: vtFilter === 'all' ? undefined : vtFilter,
       query: query || undefined,
     });
-  }, [entityCode, vtFilter, query]);
+  }, [entityCode, vtFilter, query, tick]);
 
   function handleUnpin(id: string) {
     if (!confirm('Unpin this template?')) return;
