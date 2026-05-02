@@ -3,7 +3,6 @@
  * Sprint T-Phase-2.7-d-1 · 6 new tests SD1-SD6
  */
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
 import {
   getDetailedAvailabilityMap,
 } from '@/lib/stock-reservation-engine';
@@ -11,7 +10,7 @@ import {
   extractCarryOverFields,
   applyCarryOverToForm,
 } from '@/lib/save-and-new-carryover';
-import { useDraftAutoSave } from '@/hooks/useDraftAutoSave';
+import { writeDraftToStorage } from '@/hooks/useDraftAutoSave';
 import { resolveSmartLedger } from '@/lib/smart-defaults-engine';
 import { stockReservationsKey, type StockReservation } from '@/types/stock-reservation';
 
