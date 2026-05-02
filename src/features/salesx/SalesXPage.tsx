@@ -249,6 +249,18 @@ function renderModule(
       return <OrderDeskPanelComponent entityCode={entityCode} />;
     case 'sx-r-call-log-history':
       return <CallLogHistoryReportPanel entityCode={entityCode} />;
+    case 'sx-r-quotation-v2':
+      return <QuotationRegisterV2Panel />;
+    case 'sx-r-srm-register':
+      return <SRMRegisterPanel />;
+    case 'sx-r-im-register':
+      return <InvoiceMemoRegisterPanel />;
+    case 'sx-r-secondary-register':
+      return <SecondarySalesRegisterPanel />;
+    case 'sx-r-som-register':
+      return <SOMRegisterPanel />;
+    case 'sx-r-dom-register':
+      return <DOMRegisterPanel />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
