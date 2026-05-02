@@ -13,8 +13,10 @@ import {
 import { Button } from '@/components/ui/button';
 
 interface Props {
-  formKey: string;
-  entityCode: string;
+  /** Reserved for future analytics/labelling · accepted for caller-side wiring symmetry. */
+  formKey?: string;
+  /** Reserved for future analytics/labelling · accepted for caller-side wiring symmetry. */
+  entityCode?: string;
   open: boolean;
   draftAge: number; // seconds
   onRecover: () => void;
@@ -29,10 +31,7 @@ function humanizeAge(seconds: number): string {
   return `${Math.floor(seconds / 86400)} days`;
 }
 
-export function DraftRecoveryDialog({ formKey, entityCode, open, draftAge, onRecover, onDiscard, onClose }: Props) {
-  // formKey + entityCode reserved for future analytics/labelling. Reference to keep them in scope.
-  void formKey;
-  void entityCode;
+export function DraftRecoveryDialog({ open, draftAge, onRecover, onDiscard, onClose }: Props) {
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent>
