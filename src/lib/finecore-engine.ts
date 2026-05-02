@@ -271,6 +271,15 @@ function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['su
 // ── Post Voucher — writes to all 4 storage keys atomically ──────────
 
 export function postVoucher(voucher: Voucher, entityCode: string): void {
+  // Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock — reject edits/cancels engine-side.
+  const beforeRecord = ls<Voucher>(vouchersKey(entityCode)).find(v => v.id === voucher.id);
+  if (beforeRecord) {
+    const lockCheck = rejectSaveDueToIRNLock(beforeRecord, { status: voucher.status });
+    if (lockCheck.reject) {
+      throw new Error(lockCheck.message ?? 'Voucher locked due to IRN');
+    }
+  }
+
   // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4) — block at >= 95%
   const quotaCheck = checkWriteAllowed('voucher_create');
   if (!quotaCheck.allowed) {
