@@ -97,14 +97,21 @@ function HSNSACMasterPanelInner() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'HSN Codes', count: stats.hsn },
-          { label: 'SAC Codes', count: stats.sac },
-          { label: 'Total Codes', count: stats.total },
-          { label: 'RCM Applicable', count: stats.rcm },
+          { label: 'HSN Codes', count: stats.hsn, sublabel: null as string | null },
+          { label: 'SAC Codes', count: stats.sac, sublabel: null },
+          { label: 'Total Codes', count: stats.total, sublabel: null },
+          {
+            label: 'RCM Applicable',
+            count: stats.rcm,
+            sublabel: `${baselineRCM} baseline + ${extensions.filter(e => e.is_rcm_notified).length} entity-flagged`,
+          },
         ].map(s => (
           <div key={s.label} className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">{s.label}</p>
             <p className="text-2xl font-bold text-foreground">{s.count}</p>
+            {s.sublabel ? (
+              <p className="text-[10px] text-muted-foreground mt-0.5">{s.sublabel}</p>
+            ) : null}
           </div>
         ))}
       </div>
