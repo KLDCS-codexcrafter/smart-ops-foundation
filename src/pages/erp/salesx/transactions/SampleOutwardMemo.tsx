@@ -33,6 +33,7 @@ import {
   type SOMPurpose,
   type SOMStatus,
 } from '@/types/sample-outward-memo';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 interface Props { entityCode: string }
 
