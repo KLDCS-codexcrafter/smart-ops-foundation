@@ -231,7 +231,19 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
                   No job-mode consumption posted yet
                 </TableCell></TableRow>
               ) : jobLeaderboard.map(j => (
-                <TableRow key={j.id}>
+                <TableRow
+                  key={j.id}
+                  className="cursor-pointer hover:bg-muted/30"
+                  onClick={() => onNavigate?.('r-consumption-register', {
+                    fromModule: 'r-consumption-summary',
+                    fromLabel: 'Consumption Summary',
+                    filter: {
+                      projectCentreId: j.id,
+                      varianceThreshold: 1,
+                      sourceLabel: `Project · ${j.id.slice(0, 12)}`,
+                    },
+                  })}
+                >
                   <TableCell className="text-xs"><code className="font-mono">{j.id.slice(0, 12)}</code></TableCell>
                   <TableCell className="text-xs font-mono">{j.jobs}</TableCell>
                   <TableCell className="text-xs font-mono">{fmtINR(j.value)}</TableCell>
