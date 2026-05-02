@@ -100,6 +100,7 @@ function loadItems(): ItemLite[] {
 // New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
 // Existing records keep their secondary_code as-is (backward compat).
 import { generateDocNo } from '@/lib/finecore-engine';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
   return generateDocNo('SEC', entityCode);
 }
