@@ -36,6 +36,7 @@ import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/s
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { Sparkles } from 'lucide-react';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
@@ -200,7 +201,24 @@ export function QuotationEntryPanel({ entityCode }: Props) {
     })],
   });
   const updateLine = (idx: number, patch: Partial<QuotationItem>) => {
-    const items = form.items.map((it, i) => i === idx ? recalcLine({ ...it, ...patch }) : it);
+    // Sprint 2.7-a-fix · HSN auto-resolve when operator types item_name
+    let resolvedPatch: Partial<QuotationItem> = patch;
+    if (typeof patch.item_name === 'string' && patch.item_name.trim()) {
+      const masterItem = findItemByName(patch.item_name, entityCode);
+      if (masterItem) {
+        const resolved = resolveHSNForItem(masterItem, entityCode);
+        if (resolved.hsn_sac_code) {
+          resolvedPatch = {
+            ...patch,
+            hsn_sac_code: resolved.hsn_sac_code,
+            gst_rate: resolved.gst_rate,
+            is_rcm_eligible: resolved.is_rcm_eligible,
+            tax_pct: resolved.gst_rate,
+          };
+        }
+      }
+    }
+    const items = form.items.map((it, i) => i === idx ? recalcLine({ ...it, ...resolvedPatch }) : it);
     const sub = round2(dSum(items, it => it.sub_total));
     const tax = round2(dSum(items, it => it.tax_amount));
     update({ items, sub_total: sub, tax_amount: tax, total_amount: round2(dAdd(sub, tax)) });
