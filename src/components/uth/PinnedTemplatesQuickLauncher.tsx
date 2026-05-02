@@ -2,7 +2,7 @@
  * PinnedTemplatesQuickLauncher · Sprint T-Phase-2.7-e · OOB-10
  * Dropdown of pins for current voucher type · click clones into form.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ import {
   cloneTemplateToFormState,
   type ClonedTemplateState,
 } from '@/lib/pinned-templates-engine';
+import type { PinnedTemplate } from '@/types/pinned-template';
 
 interface Props {
   entityCode: string;
@@ -42,13 +43,15 @@ export function PinnedTemplatesQuickLauncher({ entityCode, voucherTypeId, onClon
   const [open, setOpen] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  const templates = useMemo(() => {
-    if (!entityCode) return [];
-    return loadPinnedTemplatesForWidget(entityCode).filter(
-      (t) => t.voucher_type_id === voucherTypeId,
+  const [templates, setTemplates] = useState<PinnedTemplate[]>([]);
+  useEffect(() => {
+    if (!open || !entityCode) return;
+    setTemplates(
+      loadPinnedTemplatesForWidget(entityCode).filter(
+        (t) => t.voucher_type_id === voucherTypeId,
+      ),
     );
-    // re-evaluate on dropdown open
-  }, [entityCode, voucherTypeId, open]);
+  }, [open, entityCode, voucherTypeId]);
 
   function applyClone(id: string) {
     const state = cloneTemplateToFormState(entityCode, id);
