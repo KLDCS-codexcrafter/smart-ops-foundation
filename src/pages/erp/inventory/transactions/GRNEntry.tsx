@@ -703,7 +703,7 @@ export function GRNEntryPanel() {
               entityCode={safeEntity}
               recordType="grn"
               partyValue={header.vendor_id || null}
-              partyLabel={vendors.find(v => v.id === header.vendor_id)?.party_name}
+              partyLabel={vendors.find(v => v.id === header.vendor_id)?.vendor_name ?? vendors.find(v => v.id === header.vendor_id)?.name}
               onUse={(data) => {
                 setHeader(h => ({ ...h, ...(data as Partial<FormHeader>) }));
                 if (Array.isArray((data as Record<string, unknown>).lines)) {
@@ -731,7 +731,7 @@ export function GRNEntryPanel() {
         onClose={() => setSourcePickerOpen(false)}
         sourceType="po"
         partyId={header.vendor_id || null}
-        excludeIds={[header.po_id, ...multiSources.map(r => r.voucher_id)].filter((x): x is string => !!x)}
+        excludeIds={multiSources.map(r => r.voucher_id)}
         entityCode={safeEntity}
         onSelect={(refs) => {
           setMultiSources([...multiSources, ...refs]);
