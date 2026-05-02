@@ -20,7 +20,7 @@
  *   - Empty-state message
  */
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useMemo, useState, type ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -230,8 +230,8 @@ export function UniversalRegisterGrid<T extends { id: string }>(
                 {pageRows.map(row => {
                   const isOpen = !!expanded[row.id];
                   return (
-                    <>
-                      <TableRow key={row.id}>
+                    <Fragment key={row.id}>
+                      <TableRow>
                         {getExpandedRows && (
                           <TableCell className="w-10">
                             <button
