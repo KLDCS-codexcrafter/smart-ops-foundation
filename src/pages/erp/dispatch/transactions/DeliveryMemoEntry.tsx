@@ -259,6 +259,30 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
             <Label className="text-xs">Effective Date</Label>
             <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Supply Request Memos) */}
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedSRM?.memo_no || undefined}
+        title="Linked Source SRMs"
+        emptyState="No additional SRMs linked · primary SRM shown above (if any)"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="srm"
+        partyId={selectedSRM?.customer_id ?? null}
+        excludeIds={multiSources.map(r => r.voucher_id)}
+        entityCode={entityCode}
+        onSelect={(refs) => {
+          setMultiSources([...multiSources, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Against Supply Request Memo</CardTitle></CardHeader>
