@@ -25,6 +25,7 @@ import { Send, Plus, Trash2, Paperclip, CheckCircle2, RotateCcw, AlertTriangle }
 import { toast } from 'sonner';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { generateDocNo } from '@/lib/finecore-engine';
+import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import {
@@ -84,7 +85,23 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
 
   const [items, setItems] = useState<SampleOutwardMemoItem[]>([]);
   const updateLine = (idx: number, patch: Partial<SampleOutwardMemoItem>) => {
-    setItems(prev => prev.map((it, i) => i === idx ? { ...it, ...patch } : it));
+    setItems(prev => prev.map((it, i) => {
+      if (i !== idx) return it;
+      const next = { ...it, ...patch };
+      // Sprint 2.7-a-fix · HSN auto-resolve when operator types item_name
+      if (typeof patch.item_name === 'string' && patch.item_name.trim()) {
+        const masterItem = findItemByName(patch.item_name, entityCode);
+        if (masterItem) {
+          const resolved = resolveHSNForItem(masterItem, entityCode);
+          if (resolved.hsn_sac_code) {
+            next.hsn_sac_code = resolved.hsn_sac_code;
+            next.gst_rate = resolved.gst_rate;
+            next.is_rcm_eligible = resolved.is_rcm_eligible;
+          }
+        }
+      }
+      return next;
+    }));
   };
   const removeLine = (idx: number) => setItems(prev => prev.filter((_, i) => i !== idx));
   const addLine = () => setItems(prev => [...prev, {

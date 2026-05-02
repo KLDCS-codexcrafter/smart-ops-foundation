@@ -33,6 +33,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
@@ -111,6 +112,10 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       uom: l.uom,
       rate: l.rate,
       amount: round2(dMul(l.pending_qty > 0 ? l.pending_qty : l.qty, l.rate)),
+      // Sprint 2.7-a-fix · HSN passthrough from SO line
+      hsn_sac_code: l.hsn_sac_code ?? null,
+      gst_rate: l.gst_rate ?? null,
+      is_rcm_eligible: null,
     }));
     setItems(lines);
   }, [selectedSO]);
@@ -119,6 +124,18 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     setItems(prev => prev.map((it, i) => {
       if (i !== idx) return it;
       const next = { ...it, ...patch };
+      // Sprint 2.7-a-fix · auto-resolve HSN/SAC when operator types item_name
+      if (typeof patch.item_name === 'string' && patch.item_name.trim()) {
+        const masterItem = findItemByName(patch.item_name, entityCode);
+        if (masterItem) {
+          const resolved = resolveHSNForItem(masterItem, entityCode);
+          if (resolved.hsn_sac_code) {
+            next.hsn_sac_code = resolved.hsn_sac_code;
+            next.gst_rate = resolved.gst_rate;
+            next.is_rcm_eligible = resolved.is_rcm_eligible;
+          }
+        }
+      }
       next.amount = round2(dMul(next.qty, next.rate));
       return next;
     }));

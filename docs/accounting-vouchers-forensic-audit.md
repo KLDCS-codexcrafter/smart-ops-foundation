@@ -140,6 +140,70 @@ voucher_type_id + multi_source_refs added as sibling abstractions
 
 ---
 
+## Sprint T-Phase-2.7-a · GST + Bill-To/Ship-To + HSN + RCM Auto-Detection
+
+**Status:** closed · count = **15**
+**Scope:** Indian GST + e-invoice + RCM compliance foundation (OOB-4 · Card #2.7 sub-sprint 1 of 5)
+**Commit:** Batch A (types + libs) + Batch B (UI components) + Batch C (engine integration + reporting) + Batch C2 (form mounts)
+
+### What landed
+- **gstin-validator.ts** — 15-char regex + state code derivation + checksum stub
+- **hsn-resolver.ts** — HSN/SAC lookup with entity extension layer · `resolveHSNForItem` from item master
+- **place-of-supply-engine.ts** — Section 10 IGST Act resolver with intra/inter-state classification
+- **rcm-detection-engine.ts** — 3-fold detection (GTA/legal/notified-HSN/unregistered-vendor) · severity tiering
+- **rcm-compliance-log.ts** — log entry schema with `outcome: auto_posted | report_only | passed_true | skipped_true`
+- **BillShipAddressPicker** + helpers — Bill-To/Ship-To FK + snapshot pattern (Q1-a · mirrors FineCore Voucher)
+- **SimpleGSTPanel** — line-level GST breakdown display
+- **GSTBillShipSection** — composite wrapper used by 6 sales transaction forms
+- **UniversalPrintFrame** — GST footer with CGST/SGST/IGST split
+- **HSNSACMaster** — `is_rcm_notified` switch + entity extension persistence
+- **ComplianceSettingsAutomation** — per-voucher-type RCM Auto-Post Policy (Q9)
+- **finecore-engine** — additive RCM compliance log writer in `postVoucher`
+- **RCMComplianceReport** — severity cards (HIGH/MED/LOW/INFO) + filterable log table
+- **6 sales line-item types** (Quotation/SRM/IM/SOM/DOM/DM) — `hsn_sac_code`/`gst_rate`/`is_rcm_eligible` schema
+- **6 sales form mounts** (Quotation/SRM/IM/SOM/DOM/DM) — `GSTBillShipSection` integrated as wrapper-state
+
+### 9 Founder Q-locks executed
+- Q1-a · Bill-To/Ship-To FK + snapshot mirror of FineCore Voucher
+- Q2-a · HSN/SAC auto-resolve from item master + operator override
+- Q3-d · RCM detection at FineCore booking with 3-fold signals
+- Q4 · Place of Supply Section 10 resolver
+- Q5-b · Severity tiers HIGH/MED/LOW for compliance report
+- Q6 · Detection cases expanded (GTA · legal · notified HSN · unregistered)
+- Q7 · Entity extension layer for HSN notifications
+- Q8-c · HSN preference order: hsn_sac_code → hsn → hsn_code
+- Q9 · Per-voucher-type RCM Auto-Post Policy on existing ComplianceSettingsAutomation infra
+
+### Existing infrastructure leveraged (no duplication)
+- ComplianceSettingsAutomation extension (not a new page)
+- generateDocNo via existing finecore-engine pattern
+- ls<T>/ss helpers reused
+- gst-bill-ship.helpers.ts + BillShipAddressPicker.helpers.ts split for react-refresh compliance
+
+### Verification
+- D-127 ZERO TOUCH: `src/pages/erp/accounting/vouchers/` unchanged
+- D-128: voucher.ts + voucher-type.ts byte-identical
+- vitest: 216/216 stable (8 new GST/RCM tests landed in batch C)
+- tsc: 0 errors · ESLint: 0 warnings
+- Zero new package.json deps · zero `void X;` markers
+
+---
+
+## Sprint T-Phase-2.7-a-fix · Close 2 micro-gaps
+
+**Status:** closed · count stays at **15** (fix sprint · doesn't increment)
+**Scope:** HSN auto-resolve on 4 missing forms (SRM/IM/SOM/DOM) + D-127 streak doc cleanup
+- Added `findItemByName` helper to `hsn-resolver.ts` (case-insensitive name → item master lookup)
+- SRM useEffect: HSN passthrough from SO line · updateLine: name-typed HSN resolve
+- IM `buildItem`: gained `entityCode` param · master-lookup → resolveHSNForItem · gst_rate overrides default tax %
+- SOM updateLine: name-typed HSN resolve
+- DOM updateLine: name-typed HSN resolve
+- QuotationEntry updateLine: name-typed HSN resolve (was previously empty-string projection only on save)
+- Streak doc table cleaned (2 stale partial-close entries → closed)
+- D-127 ZERO TOUCH preserved · 216/216 stable · zero new tests
+
+---
+
 ## DEFERRED · Voucher Numbering Behavior Parity (Phase 1.6 backlog)
 
 **Tracked:** 1.2.6e-audit deferral list will pick this up explicitly.

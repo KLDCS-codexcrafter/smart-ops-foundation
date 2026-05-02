@@ -32,10 +32,12 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 1.2.6b-rpt-fix | closed | 10 |
 | 1.2.6c | closed | 11 |
 | 1.2.6d | closed | 12 |
-| 1.2.6d-hdr | partial-close (detail panels + frame + libs · forms deferred) | 13 |
+| 1.2.6d-hdr | closed | 13 |
 | 1.2.6d-hdr-fix | closed (fyForDate split · react-refresh fixed) | 13 |
 | 1.2.6e-tally-1 | closed | 14 |
-| 1.2.6e-tally-1-fix · batch 1 | partial-close (Quotation + InvoiceMemo + DeliveryMemoEntry wired · 6 forms remain) | 14 |
+| 1.2.6e-tally-1-fix | closed (all 12 form mounts · 6 missing UseLastVoucherButton + SRM MultiSourcePicker + 4 effective_date inputs) | 14 |
+| 2.7-a | closed | 15 |
+| 2.7-a-fix | closed (HSN auto-resolve on 4 forms + streak doc cleanup) | 15 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).

@@ -102,3 +102,35 @@ export function resolveHSNForItem(
     source: 'hsn_seed',
   };
 }
+
+/**
+ * findItemByName — Sprint T-Phase-2.7-a-fix · case-insensitive item-master lookup.
+ * Reads from `erp_group_items_{entityCode}` → `erp_group_items` → `erp_inventory_items`
+ * (mirrors useItemPreferredLocation.loadItems · canonical pattern).
+ * Returns null on miss · all callers tolerate null.
+ * [JWT] GET /api/masters/items?entityCode=...&name=...
+ */
+export function findItemByName(
+  name: string | null | undefined,
+  entityCode: string,
+): Record<string, unknown> | null {
+  const q = (name ?? '').trim().toLowerCase();
+  if (!q || !entityCode) return null;
+  try {
+    const raw =
+      localStorage.getItem(`erp_group_items_${entityCode}`) ??
+      localStorage.getItem('erp_group_items') ??
+      localStorage.getItem('erp_inventory_items');
+    if (!raw) return null;
+    const items = JSON.parse(raw) as Array<Record<string, unknown>>;
+    if (!Array.isArray(items)) return null;
+    const match = items.find((it) => {
+      const n = typeof it.name === 'string' ? it.name.toLowerCase() : '';
+      const dn = typeof it.display_name === 'string' ? it.display_name.toLowerCase() : '';
+      return n === q || dn === q;
+    });
+    return match ?? null;
+  } catch {
+    return null;
+  }
+}
