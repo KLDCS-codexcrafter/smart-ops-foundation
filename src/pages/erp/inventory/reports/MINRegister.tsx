@@ -51,7 +51,7 @@ export function MINRegisterPanel({ initialFilter }: MINRegisterPanelProps = {}) 
       if (filter.status && m.status !== filter.status) return false;
       if (filter.godownId && m.from_godown_id !== filter.godownId && m.to_godown_id !== filter.godownId) return false;
       if (filter.itemId && !m.lines.some(l => l.item_id === filter.itemId)) return false;
-      if (filter.departmentCode && m.department_code !== filter.departmentCode) return false;
+      if (filter.departmentCode && m.to_department_code !== filter.departmentCode && m.from_department_code !== filter.departmentCode) return false;
       const eff = m.effective_date ?? m.issue_date;
       if (filter.dateFrom && eff < filter.dateFrom) return false;
       if (filter.dateTo && eff > filter.dateTo) return false;
