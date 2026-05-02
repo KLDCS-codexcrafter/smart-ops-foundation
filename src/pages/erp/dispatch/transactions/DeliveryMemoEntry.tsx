@@ -8,6 +8,9 @@
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useMemo, useCallback, useEffect } from 'react';
+// Sprint T-Phase-2.7-a · Batch C2 · GST + Bill/Ship mount
+import { GSTBillShipSection } from '@/components/uth/GSTBillShipSection';
+import { toSimpleGSTLines } from '@/components/uth/gst-bill-ship.helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -417,6 +420,17 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
               <CheckCircle2 className="h-4 w-4 mr-1" /> Mark Delivered
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST */}
+      <Card>
+        <CardContent className="p-4">
+          <GSTBillShipSection
+            customerId={selectedSRM?.customer_id ?? null}
+            customerName={selectedSRM?.customer_name ?? null}
+            lines={toSimpleGSTLines(items)}
+          />
         </CardContent>
       </Card>
 
