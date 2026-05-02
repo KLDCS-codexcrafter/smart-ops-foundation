@@ -64,7 +64,8 @@ export type SalesXModule =
   | 'sx-r-im-register'
   | 'sx-r-secondary-register'
   | 'sx-r-som-register'
-  | 'sx-r-dom-register';
+  | 'sx-r-dom-register'
+  | 'sx-r-quotation-v2';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
