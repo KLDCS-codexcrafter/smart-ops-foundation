@@ -52,6 +52,14 @@ function severityFor(rule: FieldRule, formState: FormState): ValidationSeverity 
   return 'info';
 }
 
+/** Sprint 2.7-c · Q1-c · gate per-rule on record amount threshold (default 'total_amount'). */
+function ruleApplies(rule: FieldRule, data: Record<string, unknown>): boolean {
+  if (!rule.min_amount || rule.min_amount <= 0) return true;
+  const amountField = rule.amount_field ?? 'total_amount';
+  const amountRaw = data[amountField];
+  const amount = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw ?? 0);
+  return Number.isFinite(amount) && amount >= rule.min_amount;
+
 /** Validate form data against a list of field rules. */
 export function validateFieldRules(
   data: Record<string, unknown>,
