@@ -23,6 +23,10 @@ import {
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Send, Plus, Trash2, Paperclip, CheckCircle2, RotateCcw, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
