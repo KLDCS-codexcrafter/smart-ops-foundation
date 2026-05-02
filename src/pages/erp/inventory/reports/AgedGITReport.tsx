@@ -163,7 +163,7 @@ export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {})
                       <Button
                         size="sm" variant="outline"
                         className="h-7 text-xs gap-1"
-                        onClick={() => navigateToStage2(g.id)}
+                        onClick={(e) => { e.stopPropagation(); navigateToStage2(g.id); }}
                       >
                         <CheckCircle2 className="h-3 w-3" /> Confirm Receipt
                       </Button>
