@@ -272,7 +272,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
     setSales(next);
     setForm(BLANK);
     setShowForm(false);
-  }, [form, totalAmount, distributors, entityCode]);
+  }, [form, totalAmount, distributors, entityCode, instrument]);
 
   const handleEdit = useCallback((s: SecondarySales) => {
     setForm({
