@@ -111,6 +111,10 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       uom: l.uom,
       rate: l.rate,
       amount: round2(dMul(l.pending_qty > 0 ? l.pending_qty : l.qty, l.rate)),
+      // Sprint 2.7-a-fix · HSN passthrough from SO line
+      hsn_sac_code: l.hsn_sac_code ?? null,
+      gst_rate: l.gst_rate ?? null,
+      is_rcm_eligible: null,
     }));
     setItems(lines);
   }, [selectedSO]);
