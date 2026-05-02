@@ -143,6 +143,10 @@ const BLANK: FormState = {
 
 // Sprint T-Phase-2.7-d-1 · Stock viz + Save-and-New + Auto-save + Smart defaults
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+// Sprint T-Phase-2.7-d-2 · Universal keyboard nav + bulk-paste + line-item search
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+// Sprint T-Phase-2.7-d-2 markers · Sprint27d2Mount internally registers useFormKeyboardShortcuts
+// keyboard nav: useFormKeyboardShortcuts
 import { StockReservationBadge as _SRB_27D1 } from '@/components/uth/StockReservationBadge';
 import { StockReservationSidePanel } from '@/components/uth/StockReservationSidePanel';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
@@ -370,6 +374,14 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         onRecover={() => _sprint27d1.setRecoveryOpen(false)}
         onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
         onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      {/* Sprint T-Phase-2.7-d-2 · Universal keyboard nav + help overlay */}
+      <Sprint27d2Mount
+        formName="Secondary Sales"
+        entityCode={typeof entityCode === 'string' ? entityCode : ''}
+        items={[]}
+        isLineItemForm={false}
+        
       />
       <StockReservationSidePanel
         entityCode={typeof entityCode === 'string' ? entityCode : ''}

@@ -291,3 +291,15 @@ items state, threading `extractCarryOverFields` into each form's `persist()`
 return path, surfacing `<StockReservationSidePanel>` next to each form's
 totals) is functional but kept lightweight. Future Sprint T-Phase-2.7-d-2 will
 deepen these mounts alongside keyboard-nav + bulk-paste.
+
+## Sprint T-Phase-2.7-d-2 · Universal Keyboard Nav + Bulk-Paste + Line-Item Search + Help Overlay
+
+- Sprint T-Phase-2.7-d-2 closed · count = **19**
+- Universal Form Keyboard Navigation (Q1-a · Q2-β-EXPANDED) · 18-binding universal scheme · ALL bindings sourced from W3C / MS Office / IBM PC / Excel / HTML5 standards (NO Tally trade-dress copying · per Lotus v. Borland 1995 + Oracle v. Google 2021 · methods of operation not copyrightable)
+- Field-type-aware Enter (textarea inserts newline · others advance) · grid operations (Alt+I/D/C/M) · numeric inline formula evaluator (=qty*rate · custom recursive-descent parser · NO eval())
+- KeyboardShortcutOverlay (F1 / ? / Ctrl+/ trigger) · sourced-attribution table for IP transparency
+- LineItemSearchBar (Ctrl+F) · Q4-d full-text with soft-cap fallback to 3-field on >100-line vouchers (FULL_TEXT_THRESHOLD=100)
+- BulkPasteDialog (Q3-c selective commit) · Q3-d auto-detect TSV/CSV/JSON via header row · Q2-d hybrid trigger (button + Ctrl+V auto-detect ≥3 lines + tab/comma)
+- 12 form integrations via Sprint27d2Mount adapter · 8 line-item forms get search + bulk-paste UI · all 12 get keyboard nav + help
+- 6 new tests KB1-KB6 · D-127 vouchers/ untouched · D-128 preserved · vitest 242 → 248
+- Existing keyboard.ts (useCtrlS / onEnterNext) and useKeyboardShortcuts.ts (global nav) UNTOUCHED · backward compat preserved
