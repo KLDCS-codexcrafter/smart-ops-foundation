@@ -59,6 +59,7 @@ function ruleApplies(rule: FieldRule, data: Record<string, unknown>): boolean {
   const amountRaw = data[amountField];
   const amount = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw ?? 0);
   return Number.isFinite(amount) && amount >= rule.min_amount;
+}
 
 /** Validate form data against a list of field rules. */
 export function validateFieldRules(
