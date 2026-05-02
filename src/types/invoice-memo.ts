@@ -81,6 +81,12 @@ export interface InvoiceMemo {
   /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
   voucher_type_id?: string | null;
   voucher_type_name?: string | null;
+  /** Sprint 2.7-c · OOB-15 · bank instrument capture (Q4-c). */
+  instrument_type?: string | null;
+  instrument_ref_no?: string | null;
+  cheque_date?: string | null;
+  bank_name?: string | null;
+  deposit_date?: string | null;
   /** Tally-Prime multi-source linking (Q2-c · 1.2.6e-tally-1).
    *  Existing single-ref fields stay populated as the "primary" source · this array
    *  captures additional sources when operator clicks "Add another source." */
