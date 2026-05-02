@@ -113,6 +113,11 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
                 Effective: <span className="font-mono">{effectiveDate}</span>
               </div>
             )}
+            {referenceNo && (
+              <div className="text-muted-foreground">
+                Ref: <span className="font-mono">{referenceNo}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -121,6 +126,16 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
 
         {/* Body */}
         <div>{children}</div>
+
+        {/* D-228 UTH narration block (rendered above signatories when present) */}
+        {narration && (
+          <div className="border-t pt-3 text-sm">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+              Narration
+            </div>
+            <div className="whitespace-pre-line">{narration}</div>
+          </div>
+        )}
 
         {/* Signatory rows */}
         <div
