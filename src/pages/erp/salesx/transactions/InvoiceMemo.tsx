@@ -114,6 +114,10 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
   const [gstin, setGstin] = useState('');
   const [placeOfSupply, setPlaceOfSupply] = useState('');
   const [narration, setNarration] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source linking (Q2-c)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
   const [defaultTaxPct, setDefaultTaxPct] = useState(18);
 
   const [items, setItems] = useState<IMItem[]>([]);
@@ -196,6 +200,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       invoice_voucher_id: null,
       invoice_voucher_no: null,
       invoice_posted_at: null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources,
       created_at: now,
       updated_at: now,
     };
