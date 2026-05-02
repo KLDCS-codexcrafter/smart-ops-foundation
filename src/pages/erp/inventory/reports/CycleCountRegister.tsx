@@ -3,12 +3,13 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · D-226 UTS compliant · variance summary
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -19,6 +20,7 @@ import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CycleCountDetailPanel } from './detail/CycleCountDetailPanel';
 import { CycleCountPrint } from './print/CycleCountPrint';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
