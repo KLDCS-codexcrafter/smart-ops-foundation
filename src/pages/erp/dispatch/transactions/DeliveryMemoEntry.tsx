@@ -225,7 +225,22 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
             Authorise Logistics to ship · assign LR · capture POD against a raised Supply Request Memo.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="delivery_memo"
+            partyValue={selectedSRM?.customer_id ?? null}
+            partyLabel={selectedSRM?.customer_name ?? undefined}
+            onUse={(data) => {
+              const d = data as Partial<DeliveryMemo>;
+              if (d.transporter_name) setTransporterName(d.transporter_name);
+              if (d.vehicle_no) setVehicleNo(d.vehicle_no);
+              if (d.delivery_address) setDeliveryAddress(d.delivery_address);
+              toast.success('Pre-filled from last delivery memo · review and edit.');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
@@ -239,8 +254,11 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
             <Label className="text-xs">Memo Date</Label>
             <SmartDateInput value={memoDate} onChange={setMemoDate} />
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+            <Label className="text-xs">Effective Date</Label>
+            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
+          </div>
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Against Supply Request Memo</CardTitle></CardHeader>
