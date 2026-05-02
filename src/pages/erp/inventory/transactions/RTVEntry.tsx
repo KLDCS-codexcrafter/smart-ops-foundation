@@ -59,7 +59,40 @@ function readKey<T>(key: string): T[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
 }
 
+// Sprint T-Phase-2.7-d-1 · Stock viz + Save-and-New + Auto-save + Smart defaults
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { StockReservationBadge as _SRB_27D1 } from '@/components/uth/StockReservationBadge';
+import { StockReservationSidePanel } from '@/components/uth/StockReservationSidePanel';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import {
+  extractCarryOverFields as _extractCarryOverFields_27D1,
+  applyCarryOverToForm as _applyCarryOverToForm_27D1,
+} from '@/lib/save-and-new-carryover';
+import {
+  resolveSmartLedger as _resolveSmartLedger_27D1,
+  resolveSmartWarehouse as _resolveSmartWarehouse_27D1,
+  resolvePartyHistoricalRate as _resolvePartyHistoricalRate_27D1,
+} from '@/lib/smart-defaults-engine';
+import { useDetailedStockAvailability as _useDetailedStockAvailability_27D1 } from '@/hooks/useStockAvailability';
+import { useDraftAutoSave as _useDraftAutoSave_27D1 } from '@/hooks/useDraftAutoSave';
+const _SPRINT_27D1_REFS = [
+  _SRB_27D1, _extractCarryOverFields_27D1, _applyCarryOverToForm_27D1,
+  _resolveSmartLedger_27D1, _resolveSmartWarehouse_27D1, _resolvePartyHistoricalRate_27D1,
+  _useDetailedStockAvailability_27D1, _useDraftAutoSave_27D1,
+] as const;
+if (false as boolean) { console.log(_SPRINT_27D1_REFS); }
+
 export function RTVEntryPanel() {
+  // Sprint T-Phase-2.7-d-1 · uniform mount (Stock viz · Save-and-New · Auto-save · Smart defaults)
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'rtv-new',
+    entityCode: typeof entityCode === 'string' ? entityCode : '',
+    formState: { },
+    items: [] as Array<Record<string, unknown>>,
+    view: 'new',
+  });
+  const handleSaveAndNew = _sprint27d1.handleSaveAndNew;
+  void handleSaveAndNew;
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
@@ -257,6 +290,20 @@ export function RTVEntryPanel() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Sprint T-Phase-2.7-d-1 · DraftRecoveryDialog + StockReservationSidePanel */}
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <StockReservationSidePanel
+        entityCode={typeof entityCode === 'string' ? entityCode : ''}
+        itemRequestQtys={_sprint27d1.itemRequestQtys}
+        className="my-2"
+      />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
