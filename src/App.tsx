@@ -91,6 +91,8 @@ const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
 const FinCorePage = lazy(() => import('./pages/erp/finecore/FinCorePage'));
 const AssetCentreMasterPage = lazy(() => import('./pages/erp/finecore/masters/AssetCentreMaster'));
+const VoucherClassMasterPage = lazy(() => import('./pages/erp/finecore/masters/VoucherClassMaster'));
+const ApprovalsPendingPage = lazy(() => import('./pages/erp/finecore/registers/ApprovalsPendingPage'));
 const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
 const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
@@ -357,6 +359,8 @@ const App = () => (
               <Route path="/erp/accounting/mock-auth" element={<P><MockAuthDevPanel /></P>} />
               <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
               <Route path="/erp/finecore/masters/asset-centres" element={<P><AssetCentreMasterPage /></P>} />
+              <Route path="/erp/finecore/masters/voucher-class" element={<P><VoucherClassMasterPage /></P>} />
+              <Route path="/erp/finecore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
