@@ -50,7 +50,6 @@ interface ConsumptionSummaryReportPanelProps {
 }
 
 export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummaryReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { mins } = useMaterialIssueNotes(safeEntity);
