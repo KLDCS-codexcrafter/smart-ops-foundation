@@ -504,6 +504,23 @@ export function MaterialIssueNotePanel() {
                 setHeader(h => ({ ...h, issue_date: v }));
               }} />
           </div>
+          {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+          <div>
+            <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+            <Input type="date" disabled={readonly}
+              value={header.effective_date ?? ''}
+              placeholder={header.issue_date}
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, effective_date: v || null }));
+              }} />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              accounting date · defaults to Issue Date
+            </p>
+          </div>
           <div>
             <Label className="text-xs">From Godown</Label>
             <Select disabled={readonly} value={header.from_godown_id}
