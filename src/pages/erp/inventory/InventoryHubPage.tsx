@@ -44,10 +44,18 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import type { InventoryHubModule } from './InventoryHubSidebar.types';
+import type { DrillNavigationContext } from '@/types/drill-context';
 
 export default function InventoryHubPage() {
   const [activeModule, setActiveModule] = useState<InventoryHubModule>('welcome');
+  // Sprint 1.2.6b-rpt · Q2-c hybrid routing — cross-panel drill context.
+  const [drillContext, setDrillContext] = useState<DrillNavigationContext | null>(null);
   const { entityCode, userId } = useCardEntitlement();
+
+  const navigateToModule = (module: InventoryHubModule, ctx?: DrillNavigationContext) => {
+    setDrillContext(ctx ?? null);
+    setActiveModule(module);
+  };
 
   useEffect(() => {
     logAudit({
