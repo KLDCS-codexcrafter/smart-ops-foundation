@@ -54,6 +54,18 @@ export interface InvoiceMemo {
   invoice_voucher_id: string | null;
   invoice_voucher_no: string | null;
   invoice_posted_at: string | null;
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  bill_to_address_id?: string | null;
+  bill_to_address_snapshot?: string | null;
+  bill_to_state_code?: string | null;
+  bill_to_gstin?: string | null;
+  ship_to_address_id?: string | null;
+  ship_to_address_snapshot?: string | null;
+  ship_to_state_code?: string | null;
+  ship_to_gstin?: string | null;
+  /** Sprint 2.7-a · Place of Supply (Section 10 IGST Act). */
+  place_of_supply_state_code?: string | null;
+  place_of_supply_state_name?: string | null;
   /** D-226 UTS · accounting effective date; falls back to primary date when null. */
   effective_date?: string | null;
   /** D-228 Universal Transaction Header (UTH) — all optional · backward compat preserved */
