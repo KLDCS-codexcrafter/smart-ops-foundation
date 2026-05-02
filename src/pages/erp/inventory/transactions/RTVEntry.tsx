@@ -125,8 +125,7 @@ export function RTVEntryPanel() {
       cancelled_at: null, cancellation_reason: null,
       // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date (defaults to rtv_date)
       effective_date: null,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
+      reference_no: null,
       created_at: now, updated_at: now,
     };
     persist([rtv, ...rtvs]);
