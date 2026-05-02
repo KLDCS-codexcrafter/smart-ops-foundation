@@ -36,6 +36,11 @@ import {
   type DMItem,
   type DMStatus,
 } from '@/types/delivery-memo';
+// Sprint T-Phase-1.2.6e-tally-1-fix · Q1-b/Q2-c/Q3-b/Q4-d
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 interface Props { entityCode: string }
 
@@ -89,6 +94,10 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
 
   const [items, setItems] = useState<DMItem[]>([]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source linking (Q2-c)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const [existingMemos, setExistingMemos] = useState<DeliveryMemo[]>(
     () => ls<DeliveryMemo>(deliveryMemosKey(entityCode)),
