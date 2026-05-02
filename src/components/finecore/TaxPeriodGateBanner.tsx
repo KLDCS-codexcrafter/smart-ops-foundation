@@ -86,7 +86,7 @@ export function TaxPeriodGateBanner({ entityCode, voucherDate }: Props) {
             <Badge variant="destructive">
               <AlertTriangle className="h-3 w-3 mr-1" />
               Period locked
-              {lockConfig?.locked_until ? ` through ${lockConfig.locked_until}` : ''}
+              {lockConfig?.lockedThrough ? ` through ${lockConfig.lockedThrough}` : ''}
             </Badge>
           )}
 
