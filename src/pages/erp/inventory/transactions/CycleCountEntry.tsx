@@ -123,7 +123,7 @@ export function CycleCountEntryPanel() {
   void ccFieldErr; void fieldErrorText; void ccValidator;
 
   const _t = useT();
-  function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
+  function handleCreateBlank(kind: CycleCountKind, godownId: string | null, effectiveDate: string | null) {
     const gd = godowns.find(g => g.id === godownId) ?? null;
     const countDate = new Date().toISOString().slice(0, 10);
     // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
@@ -132,9 +132,16 @@ export function CycleCountEntryPanel() {
       toast.error(msg);
       return;
     }
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    if (entityCode && effectiveDate && isPeriodLocked(effectiveDate, entityCode)) {
+      const msg = periodLockMessage(effectiveDate, entityCode) ?? 'Effective date is in a locked period';
+      toast.error(msg);
+      return;
+    }
     const created = createCount({
       count_kind: kind,
       count_date: countDate,
+      effective_date: effectiveDate,
       godown_id: gd?.id ?? null,
       godown_name: gd?.name ?? null,
       lines: [],
