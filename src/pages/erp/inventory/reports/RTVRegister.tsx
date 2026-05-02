@@ -139,6 +139,7 @@ export function RTVRegisterPanel({ initialFilter }: RTVRegisterPanelProps = {}) 
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="RTV Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentRTV ? (
         <UniversalRegisterGrid<RTV>
