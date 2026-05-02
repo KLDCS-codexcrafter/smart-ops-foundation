@@ -142,6 +142,12 @@ export function SaveButtonGroup({
           <Save className="h-4 w-4 mr-2" /> Save & Post
         </Button>
       )}
+      {!breached && onSaveAndNew && (
+        <Button variant="secondary" onClick={onSaveAndNew} disabled={saving}>
+          <FilePlus2 className="h-4 w-4 mr-2" /> Save &amp; New
+          <kbd className="ml-2 px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono border">Ctrl+Enter</kbd>
+        </Button>
+      )}
       {breached && !isApprover && (
         <Button onClick={onSubmitForApproval} disabled={saving}>
           <Send className="h-4 w-4 mr-2" /> Submit for Approval
