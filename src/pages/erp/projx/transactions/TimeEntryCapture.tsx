@@ -35,6 +35,7 @@ interface FormState {
   milestone_id: string | null;
   person_id: string;
   entry_date: string;
+  effective_date: string;
   hours: number;
   task_description: string;
   is_billable: boolean;
@@ -43,7 +44,7 @@ interface FormState {
 
 const BLANK: FormState = {
   project_id: '', milestone_id: null, person_id: '',
-  entry_date: todayISO(), hours: 8,
+  entry_date: todayISO(), effective_date: '', hours: 8,
   task_description: '', is_billable: true, hourly_rate: 1500,
 };
 
