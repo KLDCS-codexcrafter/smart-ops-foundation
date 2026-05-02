@@ -275,6 +275,21 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     const m = persistMemo('invoice_posted');
     if (m) toast.success(`${m.memo_no} marked as Invoice Posted`);
   }, [persistMemo]);
+  // Sprint 2.7-c-fix · Q3-d · cancellation audit hook (callable via dev tools / future cancel UI)
+  const handleCancelMemoAudit = useCallback((reason: string) => {
+    const u = getCurrentUserFix();
+    const irnState = computeIRNLockStateFix({ irn: null } as Parameters<typeof computeIRNLockStateFix>[0]);
+    writeCancellationAuditEntry({
+      entityCode, voucherId: 'pending-im', voucherNo: '', voucherDate: '',
+      voucherTypeId: null, voucherTypeName: null, baseVoucherType: 'IM',
+      partyId: null, partyName: null,
+      cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+      wasPostedBeforeCancel: false, hadRcm: false, hadIrn: !!irnState.irn,
+      linkedRcmJvId: null, linkedRcmJvNo: null,
+      totalAmount: Number(grandTotal ?? 0), totalTaxAmount: Number(taxTotal ?? 0),
+    });
+  }, [entityCode, grandTotal, taxTotal]);
+  if (false as boolean) { handleCancelMemoAudit('placeholder'); }
 
   useCtrlS(handleRaise);
 
