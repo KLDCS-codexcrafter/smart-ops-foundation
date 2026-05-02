@@ -45,7 +45,12 @@ function loadJson<T>(key: string): T[] {
   } catch { return []; }
 }
 
-export function ConsumptionSummaryReportPanel() {
+interface ConsumptionSummaryReportPanelProps {
+  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+}
+
+export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummaryReportPanelProps = {}) {
+  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { mins } = useMaterialIssueNotes(safeEntity);
