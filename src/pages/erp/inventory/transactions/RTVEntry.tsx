@@ -332,6 +332,26 @@ export function RTVEntryPanel() {
               </TableBody>
             </Table>
           </div>
+          {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c additional GRN linkage (multi-GRN RTV) */}
+          <MultiSourcePicker
+            refs={multiSources}
+            onChange={setMultiSources}
+            onAddSource={() => setSourcePickerOpen(true)}
+            title="Additional Source GRNs (optional)"
+            emptyState="Pick the primary GRN above · add more here for combined RTVs"
+          />
+          <SourceVoucherPickerDialog
+            open={sourcePickerOpen}
+            onClose={() => setSourcePickerOpen(false)}
+            sourceType="grn"
+            partyId={null}
+            excludeIds={multiSources.map(r => r.voucher_id)}
+            entityCode={entityCode}
+            onSelect={(refs) => {
+              setMultiSources([...multiSources, ...refs]);
+              setSourcePickerOpen(false);
+            }}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Close</Button>
           </DialogFooter>
