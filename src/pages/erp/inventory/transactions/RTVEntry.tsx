@@ -341,6 +341,23 @@ export function RTVEntryPanel() {
                       onChange={e => persist(rtvs.map(r => r.id === active.id ? { ...r, lr_no: e.target.value } : r))}
                     />
                   </div>
+                  {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+                  <div className="col-span-2">
+                    <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+                    <Input type="date"
+                      value={active.effective_date ?? ''}
+                      placeholder={active.rtv_date}
+                      onChange={e => {
+                        const v = e.target.value;
+                        if (v && entityCode && isPeriodLocked(v, entityCode)) {
+                          toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                        }
+                        persist(rtvs.map(r => r.id === active.id ? { ...r, effective_date: v || null } : r));
+                      }} />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      accounting date · defaults to RTV Date
+                    </p>
+                  </div>
                 </div>
               )}
               <Table>
