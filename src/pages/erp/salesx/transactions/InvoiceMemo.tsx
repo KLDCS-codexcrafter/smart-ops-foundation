@@ -38,6 +38,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
+import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
 import {
   deliveryMemosKey,
@@ -72,18 +73,25 @@ function ls<T>(key: string): T[] {
   catch { return []; }
 }
 
-function buildItem(srcName: string, qty: number, uom: string | null, rate: number, taxPct: number, idx: number): IMItem {
+function buildItem(srcName: string, qty: number, uom: string | null, rate: number, taxPct: number, idx: number, entityCode: string): IMItem {
+  // Sprint 2.7-a-fix · HSN auto-resolve from item master · gst_rate overrides default tax %
+  const masterItem = findItemByName(srcName, entityCode);
+  const resolved = masterItem ? resolveHSNForItem(masterItem, entityCode) : null;
+  const effectiveTaxPct = resolved && resolved.hsn_sac_code ? resolved.gst_rate : taxPct;
   const sub = round2(dMul(qty, rate));
-  const taxAmt = round2(sub * taxPct / 100);
+  const taxAmt = round2(sub * effectiveTaxPct / 100);
   return {
     id: `im-it-${Date.now()}-${idx}`,
     item_name: srcName,
     qty, uom, rate,
     discount_pct: 0,
     sub_total: sub,
-    tax_pct: taxPct,
+    tax_pct: effectiveTaxPct,
     tax_amount: taxAmt,
     amount: round2(sub + taxAmt),
+    hsn_sac_code: resolved?.hsn_sac_code ?? null,
+    gst_rate: resolved?.gst_rate ?? null,
+    is_rcm_eligible: resolved?.is_rcm_eligible ?? null,
   };
 }
 
@@ -138,7 +146,7 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     setItems(selectedDM.items.map((it, i) => {
       const srmItem = srm?.items.find(si => si.item_name === it.item_name);
       const rate = srmItem?.rate ?? (it.qty > 0 ? it.amount / it.qty : 0);
-      return buildItem(it.item_name, it.qty, it.uom, rate, defaultTaxPct, i);
+      return buildItem(it.item_name, it.qty, it.uom, rate, defaultTaxPct, i, entityCode);
     }));
   }, [selectedDM, entityCode, defaultTaxPct]);
 
