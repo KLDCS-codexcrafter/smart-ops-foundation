@@ -126,3 +126,14 @@ Deliverables:
 - effective_date optional schema field on 15 type files (consumption.ts adds 2: MIN + ConsumptionEntry)
 - SecondarySales doc-no consolidation onto generateDocNo('SEC', entityCode)
 - 8 new vitest tests (UR1-UR8) → target 140/140
+
+---
+
+Sprint T-Phase-1.2.6c closed · count = 8.
+Sprint T-Phase-1.2.6d closed · count = 9.
+Sprint T-Phase-1.2.6d-hdr closed · count = 13 (cumulative through partial closes).
+Sprint T-Phase-1.2.6e-tally-1 closed · count = **14**.
+
+D-127 ZERO TOUCH preserved on `src/pages/erp/accounting/vouchers/`.
+voucher_type_id + multi_source_refs added as sibling abstractions
+(non-finecore-voucher-type-registry.ts + multi-source-ref.ts re-export of BillReference).
