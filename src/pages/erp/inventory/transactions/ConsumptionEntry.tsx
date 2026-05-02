@@ -271,6 +271,11 @@ export function ConsumptionEntryPanel() {
     if (header.mode === 'job' && !header.project_centre_id) return 'Job mode requires a project';
     if (header.mode === 'overhead' && !header.overhead_ledger_id) return 'Overhead mode requires ledger ref';
     if (lines.length === 0) return 'Add at least one line';
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = header.effective_date || header.consumption_date;
+    if (eff && isPeriodLocked(eff, safeEntity)) {
+      return periodLockMessage(eff, safeEntity) ?? 'Period is locked';
+    }
     return null;
   };
 
