@@ -24,6 +24,7 @@ import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport'
 import { SampleOutwardIssuePanel } from './transactions/SampleOutwardIssue';
 import { DemoOutwardIssuePanel } from './transactions/DemoOutwardIssue';
 import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
+import { DeliveryMemoRegisterPanel } from './reports/DeliveryMemoRegister';
 
 function ComingSoonPanel({ module }: { module: DispatchOpsModule }) {
   return (
