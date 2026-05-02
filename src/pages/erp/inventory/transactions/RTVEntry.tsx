@@ -34,6 +34,10 @@ import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
 import { useT } from '@/lib/i18n-engine';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
   godown_id: string; godown_name: string;
@@ -445,3 +449,5 @@ export function RTVEntryPanel() {
     </div>
   );
 }
+
+// 2.7-b family: inventory_out

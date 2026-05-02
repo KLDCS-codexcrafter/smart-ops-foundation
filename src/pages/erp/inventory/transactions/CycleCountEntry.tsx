@@ -30,6 +30,10 @@ import { dMul, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
   godown_id: string; godown_name: string;
@@ -531,3 +535,5 @@ function CountDetail({
     </div>
   );
 }
+
+// 2.7-b family: inventory_adjust

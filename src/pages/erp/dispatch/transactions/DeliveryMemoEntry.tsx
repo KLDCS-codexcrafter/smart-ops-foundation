@@ -46,6 +46,10 @@ import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
 import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
 import type { MultiSourceRef } from '@/types/multi-source-ref';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 interface Props { entityCode: string }
 
 const todayISO = () => new Date().toISOString().split('T')[0];
@@ -474,3 +478,5 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
 export default function DeliveryMemoEntryPage() {
   return <DeliveryMemoEntryPanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
 }
+
+// 2.7-b family: dispatch

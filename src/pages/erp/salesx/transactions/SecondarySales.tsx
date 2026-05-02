@@ -36,6 +36,10 @@ import {
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 interface Props { entityCode: string }
 
 interface CustomerLite {
@@ -509,3 +513,5 @@ export function SecondarySalesPanel({ entityCode }: Props) {
 }
 
 export default SecondarySalesPanel;
+
+// 2.7-b family: sales_secondary

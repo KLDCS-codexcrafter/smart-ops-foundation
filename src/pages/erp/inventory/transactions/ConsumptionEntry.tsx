@@ -52,6 +52,10 @@ import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
 import { useT } from '@/lib/i18n-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
 
@@ -810,3 +814,5 @@ export function ConsumptionEntryPanel() {
     </div>
   );
 }
+
+// 2.7-b family: inventory_out

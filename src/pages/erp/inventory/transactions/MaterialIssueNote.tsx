@@ -53,6 +53,10 @@ import { useT } from '@/lib/i18n-engine';
 // Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 Use Last Voucher
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
 
@@ -769,3 +773,5 @@ export function MaterialIssueNotePanel() {
     </div>
   );
 }
+
+// 2.7-b family: inventory_out

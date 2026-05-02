@@ -59,6 +59,10 @@ import type { VoucherType } from '@/types/voucher-type';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
 
@@ -1219,3 +1223,5 @@ export function GRNEntryPanel() {
     </div>
   );
 }
+
+// 2.7-b family: inventory_in

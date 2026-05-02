@@ -44,6 +44,10 @@ import {
 } from '@/types/demo-outward-memo';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+
 interface Props { entityCode: string }
 
 const todayISO = () => new Date().toISOString().split('T')[0];
@@ -546,3 +550,5 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
     </div>
   );
 }
+
+// 2.7-b family: sales_demo
