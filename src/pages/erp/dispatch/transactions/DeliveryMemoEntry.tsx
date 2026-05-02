@@ -23,6 +23,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useT } from '@/lib/i18n-engine';
 import {
