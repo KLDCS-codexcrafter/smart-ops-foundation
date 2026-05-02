@@ -97,7 +97,7 @@ export function upsertParty(input: UpsertPartyInput): UpsertPartyResult {
   const now = new Date().toISOString();
 
   // GSTIN validation (non-blocking warning)
-  let gstin: string | null = (input.gstin ?? '').trim().toUpperCase() || null;
+  const gstin: string | null = (input.gstin ?? '').trim().toUpperCase() || null;
   if (gstin) {
     const r = validateGSTIN(gstin);
     if (!r.valid) {

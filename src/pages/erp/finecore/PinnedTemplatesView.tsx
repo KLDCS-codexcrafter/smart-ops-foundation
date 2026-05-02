@@ -38,8 +38,10 @@ export default function PinnedTemplatesView() {
   const [vtFilter, setVtFilter] = useState<string>('all');
   const [tick, setTick] = useState(0);
 
+  // tick forces re-read after mutations (unpin/rename)
   const all = useMemo(
     () => (entityCode ? searchPinnedTemplates(entityCode, {}) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
     [entityCode, tick],
   );
 
