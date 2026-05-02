@@ -137,6 +137,7 @@ export function ConsumptionRegisterPanel({ initialFilter }: ConsumptionRegisterP
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="Consumption Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentCE ? (
         <UniversalRegisterGrid<ConsumptionEntry>
