@@ -76,6 +76,8 @@ export function validateFieldRules(
   }
 
   for (const rule of rules) {
+    // Sprint 2.7-c · Q1-c · skip rules whose amount threshold is not met yet.
+    if (!ruleApplies(rule, data)) continue;
     const value = readPath(data, rule.field_path);
     const empty = isEmpty(value);
 
