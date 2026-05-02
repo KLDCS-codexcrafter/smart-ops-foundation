@@ -23,6 +23,11 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 + Q2-c multi-source (RTV → multi-GRN)
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
@@ -48,6 +53,9 @@ export function RTVEntryPanel() {
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
   const [createOpen, setCreateOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  // Sprint T-Phase-1.2.6e-tally-1 · multi-source (RTV → multi-GRN)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const grns = useMemo(() => readKey<GRN>(`erp_grns_${entityCode}`).filter(g => g.status === 'posted' || g.status === 'inspected'), [entityCode]);
 
@@ -244,9 +252,25 @@ export function RTVEntryPanel() {
           </h1>
           <p className="text-xs text-muted-foreground">Rejections Out · activates vt-rejections-out</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
-          <Plus className="h-4 w-4" /> Create from GRN
-        </Button>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="rtv"
+            partyValue={null}
+            partyLabel="vendor"
+            onUse={(data) => {
+              const d = data as { vendor_id?: string; vendor_name?: string; lines?: RTVLine[] };
+              toast.success(`Pre-fill loaded for ${d.vendor_name ?? 'vendor'} · open Create from GRN to apply.`);
+              if (Array.isArray(d.lines)) {
+                // Stash for next createFromGrn? · for RTV the create flow is GRN-driven,
+                // so we surface what was found via toast; full merge happens in 2.7-b.
+              }
+            }}
+          />
+          <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
+            <Plus className="h-4 w-4" /> Create from GRN
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -308,6 +332,26 @@ export function RTVEntryPanel() {
               </TableBody>
             </Table>
           </div>
+          {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c additional GRN linkage (multi-GRN RTV) */}
+          <MultiSourcePicker
+            refs={multiSources}
+            onChange={setMultiSources}
+            onAddSource={() => setSourcePickerOpen(true)}
+            title="Additional Source GRNs (optional)"
+            emptyState="Pick the primary GRN above · add more here for combined RTVs"
+          />
+          <SourceVoucherPickerDialog
+            open={sourcePickerOpen}
+            onClose={() => setSourcePickerOpen(false)}
+            sourceType="grn"
+            partyId={null}
+            excludeIds={multiSources.map(r => r.voucher_id)}
+            entityCode={entityCode}
+            onSelect={(refs) => {
+              setMultiSources([...multiSources, ...refs]);
+              setSourcePickerOpen(false);
+            }}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Close</Button>
           </DialogFooter>

@@ -70,6 +70,9 @@ export interface MaterialIssueNote {
   voucher_hash?: string | null;
   currency_code?: string | null;
   exchange_rate?: number | null;
+  /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
+  voucher_type_id?: string | null;
+  voucher_type_name?: string | null;
   created_at: string;
   updated_at: string;
   issued_at: string | null;        // set when status flips to 'issued'
@@ -168,6 +171,9 @@ export interface ConsumptionEntry {
   voucher_hash?: string | null;
   currency_code?: string | null;
   exchange_rate?: number | null;
+  /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
+  voucher_type_id?: string | null;
+  voucher_type_name?: string | null;
   created_at: string;
   updated_at: string;
   posted_at: string | null;

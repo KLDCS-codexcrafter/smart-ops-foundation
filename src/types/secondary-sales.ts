@@ -54,6 +54,9 @@ export interface SecondarySales {
   voucher_hash?: string | null;
   currency_code?: string | null;
   exchange_rate?: number | null;
+  /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
+  voucher_type_id?: string | null;
+  voucher_type_name?: string | null;
   created_at: string;
   updated_at: string;
 }

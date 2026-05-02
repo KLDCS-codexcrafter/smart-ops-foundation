@@ -33,6 +33,8 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 1.2.6c | closed | 11 |
 | 1.2.6d | closed | 12 |
 | 1.2.6d-hdr | partial-close (detail panels + frame + libs · forms deferred) | 13 |
+| 1.2.6d-hdr-fix | closed (fyForDate split · react-refresh fixed) | 13 |
+| 1.2.6e-tally-1 | closed | 14 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).

@@ -45,6 +45,11 @@ import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-1.2.6e-tally-1 · Q1-b/Q2-c/Q3-b/Q4-d
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 import {
   grnsKey, stockBalanceKey,
   GRN_STATUS_LABELS, GRN_STATUS_COLORS,
@@ -173,6 +178,9 @@ export function GRNEntryPanel() {
   const [stage2DestId, setStage2DestId] = useState<string>('');
   // Sprint T-Phase-1.2.5h-b2 · Inline header-field errors (M-3)
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Sprint T-Phase-1.2.6e-tally-1 · multi-source + Use Last
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
   const headerValidator = useMemo(() => makeFieldValidator<FormHeader>([
     { field: 'vendor_id',     test: v => Boolean(v), message: 'Vendor is required' },
     { field: 'godown_id',     test: v => Boolean(v), message: 'Receiving godown is required' },
@@ -689,8 +697,47 @@ export function GRNEntryPanel() {
             {readonly ? 'View only' : 'Record physical receipt against vendor / PO'}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setView('list')}>← Back to List</Button>
+        <div className="flex items-center gap-2">
+          {!editingId && (
+            <UseLastVoucherButton
+              entityCode={safeEntity}
+              recordType="grn"
+              partyValue={header.vendor_id || null}
+              partyLabel={vendors.find(v => v.id === header.vendor_id)?.vendor_name ?? vendors.find(v => v.id === header.vendor_id)?.name}
+              onUse={(data) => {
+                setHeader(h => ({ ...h, ...(data as Partial<FormHeader>) }));
+                if (Array.isArray((data as Record<string, unknown>).lines)) {
+                  setLines((data as { lines: FormLine[] }).lines.map(l => ({ ...l, id: crypto.randomUUID() })));
+                }
+                toast.success('Pre-filled from last GRN · review and edit.');
+              }}
+            />
+          )}
+          <Button variant="outline" size="sm" onClick={() => setView('list')}>← Back to List</Button>
+        </div>
       </div>
+
+      {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking */}
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={header.po_no || undefined}
+        title="Linked Source POs"
+        emptyState="No additional POs linked · primary PO shown above (if any)"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="po"
+        partyId={header.vendor_id || null}
+        excludeIds={multiSources.map(r => r.voucher_id)}
+        entityCode={safeEntity}
+        onSelect={(refs) => {
+          setMultiSources([...multiSources, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       {/* Sprint T-Phase-1.2.4 · GRN Type + Receipt Mode */}
       <Card><CardHeader className="pb-2"><CardTitle className="text-sm">GRN Type & Receipt Mode</CardTitle></CardHeader>

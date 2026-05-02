@@ -50,6 +50,8 @@ import {
 } from '@/types/consumption';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
+// Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 Use Last Voucher
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -487,7 +489,24 @@ export function MaterialIssueNotePanel() {
             Stock transferred at source godown's weighted-average rate
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => setView('list')}>← Back</Button>
+        <div className="flex items-center gap-2">
+          {!editingId && (
+            <UseLastVoucherButton
+              entityCode={safeEntity}
+              recordType="material_issue_note"
+              partyValue={header.to_godown_id || null}
+              partyLabel="destination godown"
+              onUse={(data) => {
+                setHeader(h => ({ ...h, ...(data as Partial<FormHeader>) }));
+                if (Array.isArray((data as Record<string, unknown>).lines)) {
+                  setLines((data as { lines: FormLine[] }).lines.map(l => ({ ...l, id: crypto.randomUUID() })));
+                }
+                toast.success('Pre-filled from last MIN.');
+              }}
+            />
+          )}
+          <Button variant="ghost" size="sm" onClick={() => setView('list')}>← Back</Button>
+        </div>
       </div>
 
       <Card>
