@@ -12,7 +12,12 @@ import { GRNEntryPanel } from './transactions/GRNEntry';
 import { MaterialIssueNotePanel } from './transactions/MaterialIssueNote';
 import { ConsumptionEntryPanel } from './transactions/ConsumptionEntry';
 import { StockLedgerReportPanel } from './reports/StockLedgerReport';
-import { GRNRegisterPanel } from './reports/GRNRegister';
+// Sprint T-Phase-1.2.6b · GRNRegister.tsx (legacy) kept on disk as fallback · file deletion + this comment removed in 1.2.6e governance pass
+import { GRNRegisterV2Panel } from './reports/GRNRegisterV2';
+import { MINRegisterPanel } from './reports/MINRegister';
+import { ConsumptionRegisterPanel } from './reports/ConsumptionRegister';
+import { CycleCountRegisterPanel } from './reports/CycleCountRegister';
+import { RTVRegisterPanel } from './reports/RTVRegister';
 import { ConsumptionSummaryReportPanel } from './reports/ConsumptionSummaryReport';
 import { StorageSlipPrintPanel } from './reports/StorageSlipPrint';
 import { BinSlipPrintPanel } from './reports/BinSlipPrint';
@@ -69,7 +74,11 @@ export default function InventoryHubPage() {
       case 't-material-issue':       return <MaterialIssueNotePanel />;
       case 't-consumption-entry':    return <ConsumptionEntryPanel />;
       case 'r-stock-ledger':         return <StockLedgerReportPanel />;
-      case 'r-grn-register':         return <GRNRegisterPanel />;
+      case 'r-grn-register':         return <GRNRegisterV2Panel />;
+      case 'r-min-register':         return <MINRegisterPanel />;
+      case 'r-consumption-register': return <ConsumptionRegisterPanel />;
+      case 'r-cycle-count-register': return <CycleCountRegisterPanel />;
+      case 'r-rtv-register':         return <RTVRegisterPanel />;
       case 'r-consumption-summary':  return <ConsumptionSummaryReportPanel />;
       case 'r-storage-slip':         return <StorageSlipPrintPanel />;
       case 'r-bin-slip':             return <BinSlipPrintPanel />;

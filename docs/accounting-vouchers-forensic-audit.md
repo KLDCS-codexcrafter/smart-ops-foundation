@@ -110,6 +110,10 @@ Deliverables:
 
 Sprint T-Phase-1.2.6a closed · count = 6.
 
+## Sprint T-Phase-1.2.6b · Inventory Hub UTS Retrofit
+
+Sprint T-Phase-1.2.6b closed · count = 7.
+
 D-127 ZERO TOUCH preserved on `src/pages/erp/accounting/vouchers/`. UTS
 foundation is a sibling abstraction (see D-226) — FineCore RegisterGrid
 and the 13 voucher consumers are byte-identical to the prior sprint.

@@ -2,6 +2,7 @@
  * InventoryHubSidebar.groups.ts — module → group mapping
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  * Sprint T-Phase-1.2.2 · Activated MIN + Consumption Entry + Consumption Summary
+ * Sprint T-Phase-1.2.6b · UTS register modules
  */
 import type { InventoryHubModule } from './InventoryHubSidebar.types';
 
@@ -25,6 +26,10 @@ export const INVENTORY_MODULE_GROUP: Record<
   'r-slow-moving-dead': 'reports',
   'r-bin-utilization': 'reports',
   'r-item-movement': 'reports',
+  'r-min-register': 'reports',
+  'r-consumption-register': 'reports',
+  'r-cycle-count-register': 'reports',
+  'r-rtv-register': 'reports',
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',

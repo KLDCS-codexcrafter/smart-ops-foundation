@@ -27,6 +27,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
   'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
   'r-bin-utilization', 'r-item-movement',
+  'r-min-register', 'r-consumption-register', 'r-cycle-count-register', 'r-rtv-register',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
@@ -59,6 +60,11 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-slow-moving-dead', label: 'Slow-Moving / Dead Stock', icon: Clock },
   { id: 'r-bin-utilization', label: 'Bin Utilization', icon: Boxes },
   { id: 'r-item-movement', label: 'Item Movement History', icon: Activity },
+  // Sprint T-Phase-1.2.6b · UTS register retrofits
+  { id: 'r-min-register', label: 'MIN Register', icon: ListOrdered },
+  { id: 'r-consumption-register', label: 'Consumption Register', icon: BarChart3 },
+  { id: 'r-cycle-count-register', label: 'Cycle Count Register', icon: ClipboardCheck },
+  { id: 'r-rtv-register', label: 'RTV Register', icon: RotateCcw },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
