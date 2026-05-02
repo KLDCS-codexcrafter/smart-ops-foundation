@@ -187,7 +187,28 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
             Send a small physical sample to an architect, prospect, or quality-trial target.
           </p>
         </div>
-        <Badge variant={STATUS_VARIANT.draft} className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="sample_outward_memo"
+            partyValue={recipientName.trim() || null}
+            partyLabel={recipientName.trim() || undefined}
+            onUse={(data) => {
+              setRecipientName((data.recipient_name as string | null) ?? '');
+              setRecipientCompany((data.recipient_company as string | null) ?? '');
+              setRecipientPhone((data.recipient_phone as string | null) ?? '');
+              setRecipientAddress((data.recipient_address as string | null) ?? '');
+              setPurpose((data.purpose as SOMPurpose) ?? 'architect_trial');
+              setPurposeNote((data.purpose_note as string | null) ?? '');
+              const srcItems = (data.items as SampleOutwardMemoItem[] | undefined) ?? [];
+              if (srcItems.length > 0) {
+                setItems(srcItems.map((it) => ({ ...it, id: `som-it-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` })));
+              }
+              toast.success('Pre-filled from last sample memo');
+            }}
+          />
+          <Badge variant={STATUS_VARIANT.draft} className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       {lastIssued && (
