@@ -302,6 +302,7 @@ export function ConsumptionEntryPanel() {
       ce_no: existing?.ce_no ?? generateDocNo('CE', safeEntity),
       status,
       consumption_date: header.consumption_date,
+      effective_date: header.effective_date || null,
       mode: header.mode,
       godown_id: header.godown_id,
       godown_name: g?.name ?? '',
