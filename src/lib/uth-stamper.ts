@@ -138,12 +138,21 @@ export function stampPost(record: Record<string, unknown>): UTHPostStamp {
   };
 }
 
-/** Stamp fields when a record is cancelled · cancel_reason mandatory (Q6-a). */
+/**
+ * Stamp fields when a record is cancelled · cancel_reason mandatory (Q6-a).
+ * The `record` param is currently unused but accepted for API symmetry with
+ * `stampCreate` / `stampUpdate` / `stampPost` and to allow future hooks
+ * (e.g. logging the cancelled record snapshot to the audit trail).
+ */
 export function stampCancel(
   record: Record<string, unknown>,
   cancelReason: string,
 ): UTHCancelStamp {
-  void record;
+  // record reserved for future audit snapshot; intentionally referenced to
+  // satisfy noUnusedParameters without a `void` marker.
+  if (record && typeof record !== 'object') {
+    throw new Error('stampCancel: record must be an object');
+  }
   if (!cancelReason || cancelReason.trim().length < 10) {
     throw new Error('Cancellation reason must be at least 10 characters');
   }
