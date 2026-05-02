@@ -198,6 +198,7 @@ export function MaterialIssueNotePanel() {
     setEditingId(m.id); setReadonly(ro);
     setHeader({
       issue_date: m.issue_date,
+      effective_date: m.effective_date ?? null,
       from_godown_id: m.from_godown_id, to_godown_id: m.to_godown_id,
       requested_by_id: m.requested_by_id, issued_by_id: m.issued_by_id,
       project_centre_id: m.project_centre_id, narration: m.narration,
