@@ -25,6 +25,10 @@ import {
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
