@@ -159,22 +159,38 @@ function HSNSACMasterPanelInner() {
                   <TableHead>GST Rate</TableHead>
                   <TableHead>Chapter</TableHead>
                   <TableHead>RCM</TableHead>
+                  <TableHead className="text-right">Entity-Flag</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {hsnFiltered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
-                ) : hsnFiltered.map(r => (
-                  <TableRow key={r.code}>
-                    <TableCell className="font-mono font-medium text-blue-600">{r.code}</TableCell>
-                    <TableCell className="max-w-[300px]">{r.description}</TableCell>
-                    <TableCell>{r.igstRate}%</TableCell>
-                    <TableCell className="font-mono">{r.chapter}</TableCell>
-                    <TableCell>
-                      {r.reverseCharge ? <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">RCM</Badge> : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
+                ) : hsnFiltered.map(r => {
+                  const effRCM = isEffectivelyRCM(r.code, r.reverseCharge);
+                  return (
+                    <TableRow key={r.code}>
+                      <TableCell className="font-mono font-medium text-blue-600">{r.code}</TableCell>
+                      <TableCell className="max-w-[300px]">{r.description}</TableCell>
+                      <TableCell>{r.igstRate}%</TableCell>
+                      <TableCell className="font-mono">{r.chapter}</TableCell>
+                      <TableCell>
+                        {effRCM ? (
+                          <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">
+                            RCM{isExtFlagged(r.code) && !r.reverseCharge ? ' · entity' : ''}
+                          </Badge>
+                        ) : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={isExtFlagged(r.code)}
+                          onCheckedChange={(v) => toggleRCMExt(r.code, v)}
+                          disabled={!entityCode || r.reverseCharge}
+                          aria-label={`Flag HSN ${r.code} as RCM-notified`}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
