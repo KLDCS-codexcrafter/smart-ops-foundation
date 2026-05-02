@@ -135,6 +135,7 @@ export function TimeEntryCapturePanel() {
         person_id: person.id,
         person_name: person.display_name,
         entry_date: form.entry_date,
+        effective_date: form.effective_date || null,
         hours: form.hours,
         task_description: form.task_description,
         is_billable: form.is_billable,
