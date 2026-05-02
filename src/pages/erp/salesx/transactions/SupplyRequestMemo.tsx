@@ -294,9 +294,10 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       />
       <SourceVoucherPickerDialog
         open={sourcePickerOpen}
-        onOpenChange={setSourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
         sourceType="so"
         partyId={selectedSO?.party_id ?? null}
+        entityCode={entityCode}
         onSelect={(refs) => {
           setMultiSources((prev) => [...prev, ...refs]);
           setSourcePickerOpen(false);
