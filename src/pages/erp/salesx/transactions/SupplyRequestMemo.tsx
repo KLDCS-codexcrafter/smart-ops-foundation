@@ -542,6 +542,29 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-[10px]">{SRM_STATUS_LABELS[m.status]}</Badge>
+                      {m.status !== 'cancelled' && (
+                        <Button variant="ghost" size="sm" className="h-6 px-1 ml-1 text-xs text-rose-600" onClick={() => {
+                          const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                          if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                          // Sprint 2.7-c-fix · Q3-d · cancellation audit
+                          const u = _2_7c_getCurrentUser();
+                          const irnState = _2_7c_computeIRNLockState(m as unknown as Parameters<typeof _2_7c_computeIRNLockState>[0]);
+                          _2_7c_writeCancellationAuditEntry({
+                            entityCode, voucherId: m.id, voucherNo: m.memo_no,
+                            voucherDate: String(m.memo_date ?? ''),
+                            voucherTypeId: (m as unknown as { voucher_type_id?: string }).voucher_type_id ?? null,
+                            voucherTypeName: (m as unknown as { voucher_type_name?: string }).voucher_type_name ?? null,
+                            baseVoucherType: 'SRM',
+                            partyId: m.customer_id ?? null, partyName: m.customer_name ?? null,
+                            cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                            wasPostedBeforeCancel: ['raised','dispatched'].includes(String(m.status ?? '')),
+                            hadRcm: false, hadIrn: !!irnState.irn,
+                            linkedRcmJvId: null, linkedRcmJvNo: null,
+                            totalAmount: Number(m.total_amount ?? 0), totalTaxAmount: 0,
+                          });
+                          toast.success('Cancellation logged');
+                        }}>Cancel</Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
