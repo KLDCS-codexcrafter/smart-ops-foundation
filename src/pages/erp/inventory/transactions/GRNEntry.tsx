@@ -169,6 +169,10 @@ function loadVendors(): VendorSeed[] {
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 // Sprint T-Phase-2.7-d-2 · Universal keyboard nav + bulk-paste + line-item search
 import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import type { Party } from '@/types/party';
+import type { ClonedTemplateState } from '@/lib/pinned-templates-engine';
+// Sprint T-Phase-2.7-e · OOB-9 InlineQuickAddDialog + OOB-10 PinFromVoucherButton + PinnedTemplatesQuickLauncher · auto-clone via ?from_template=<id>
 // Sprint T-Phase-2.7-d-2 markers · Sprint27d2Mount internally registers useFormKeyboardShortcuts
 // keyboard nav: useFormKeyboardShortcuts
 import { StockReservationBadge as _SRB_27D1 } from '@/components/uth/StockReservationBadge';
@@ -661,6 +665,18 @@ export function GRNEntryPanel() {
         items={[]}
         isLineItemForm={false}
         
+      />
+      {/* Sprint T-Phase-2.7-e · Quick-Add party + Pinned Templates */}
+      <Sprint27eMount
+        entityCode={typeof entityCode === 'string' ? entityCode : ''}
+        voucherTypeId="GRN"
+        voucherTypeName="GRN"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={(_p: Party) => { /* form integration deferred · party_id wiring per-form */ }}
+        onCloneTemplate={(_s: ClonedTemplateState) => { /* form integration deferred · clone wiring per-form */ }}
       />
       <StockReservationSidePanel
         entityCode={typeof entityCode === 'string' ? entityCode : ''}

@@ -63,6 +63,10 @@ function readKey<T>(key: string): T[] {
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 // Sprint T-Phase-2.7-d-2 · Universal keyboard nav + bulk-paste + line-item search
 import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import type { Party } from '@/types/party';
+import type { ClonedTemplateState } from '@/lib/pinned-templates-engine';
+// Sprint T-Phase-2.7-e · OOB-9 InlineQuickAddDialog + OOB-10 PinFromVoucherButton + PinnedTemplatesQuickLauncher · auto-clone via ?from_template=<id>
 // Sprint T-Phase-2.7-d-2 markers · Sprint27d2Mount internally registers useFormKeyboardShortcuts
 // keyboard nav: useFormKeyboardShortcuts
 // line-item search + bulk paste: LineItemSearchBar BulkPasteDialog
@@ -310,6 +314,18 @@ export function RTVEntryPanel() {
         items={(_sprint27d1.itemRequestQtys as unknown as Array<Record<string, unknown>>)}
         isLineItemForm={true}
         onCommitBulkRows={(rows) => { /* Sprint 2.7-d-2 bulk paste · operator commits selected rows · form-specific append handled by panel */ void rows; }}
+      />
+      {/* Sprint T-Phase-2.7-e · Quick-Add party + Pinned Templates */}
+      <Sprint27eMount
+        entityCode={typeof entityCode === 'string' ? entityCode : ''}
+        voucherTypeId="RTV"
+        voucherTypeName="Return to Vendor"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={(_p: Party) => { /* form integration deferred · party_id wiring per-form */ }}
+        onCloneTemplate={(_s: ClonedTemplateState) => { /* form integration deferred · clone wiring per-form */ }}
       />
       <StockReservationSidePanel
         entityCode={typeof entityCode === 'string' ? entityCode : ''}

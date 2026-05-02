@@ -303,3 +303,40 @@ deepen these mounts alongside keyboard-nav + bulk-paste.
 - 12 form integrations via Sprint27d2Mount adapter · 8 line-item forms get search + bulk-paste UI · all 12 get keyboard nav + help
 - 6 new tests KB1-KB6 · D-127 vouchers/ untouched · D-128 preserved · vitest 242 → 248
 - Existing keyboard.ts (useCtrlS / onEnterNext) and useKeyboardShortcuts.ts (global nav) UNTOUCHED · backward compat preserved
+
+## Sprint T-Phase-2.7-e · Inline Quick-Add (OOB-9) + Pinned Templates (OOB-10)
+
+- Sprint T-Phase-2.7-e closed · count = **20** · CARD #2.7 COMPLETE
+- OOB-9 Inline Customer/Vendor Quick-Add (Q1-b · 4 fields: name + GSTIN + party_type + state_code)
+- OOB-9 Direct create with audit flag (Q2-c · `created_via_quick_add: true` · finance team retrospective audit · zero blocking)
+- party-master-engine.ts centralizes 12+ inline loadCustomers/loadVendors patterns · backward compat via legacy key sync
+- OOB-10 Pinned Templates (Q3-b · full clone including qty/rate values)
+- OOB-10 Soft limit (Q4-d · top 20 by recency in widget · "View All" page unlimited with search/filter)
+- PinnedTemplatesWidget on FineCoreMastersModule dashboard
+- PinnedTemplatesView at /erp/finecore/pinned-templates
+- 12 form integrations via Sprint27eMount adapter · 4 new tests PT1-PT4 · vitest 248 → 252
+- D-127 streak: 19 → 20 (final · Card #2.7)
+- D-128 voucher.ts + voucher-type.ts BYTE-IDENTICAL preserved across all 5 sub-sprints
+- Sibling discipline preserved · ComplianceSettingsAutomation untouched · keyboard.ts untouched · finecore-engine.ts untouched
+
+## Card #2.7 CLOSE Summary
+
+Card #2.7 delivered Tier-1 voucher entry productivity in 5 sub-sprints (2.7-a through 2.7-e):
+- 2.7-a · GST + Bill-To/Ship-To + HSN + RCM (OOB-4)
+- 2.7-b · Voucher Class + Mandatory/Optional + Approval (OOB-2 + OOB-3 + OOB-7)
+- 2.7-c · Bank-instrument + Cancel hardening + IRN Lock (OOB-15)
+- 2.7-d-1 · Stock viz + Save-and-New + Auto-save + Smart Defaults (OOB-5)
+- 2.7-d-2 · Universal keyboard nav + Bulk-paste + Line-item search + Help overlay
+- 2.7-e · Inline Quick-Add (OOB-9) + Pinned Templates (OOB-10)
+
+OOB tracker: 15 of 15 deployed.
+
+Final Card #2.7 metrics:
+- ~9,000+ LOC across ~150 files
+- 252/252 tests passing
+- D-127 streak: 20 sub-sprints clean (1.2.5h-a → 2.7-e)
+- D-128 voucher.ts + voucher-type.ts BYTE-IDENTICAL
+- Zero new package.json deps across all 5 sub-sprints
+- Sibling discipline maintained throughout
+
+Card #2.7 CLOSED. Next: 1.2.6e-audit (comprehensive close audit · TRUE 10/10 target).

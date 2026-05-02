@@ -94,6 +94,7 @@ const AssetCentreMasterPage = lazy(() => import('./pages/erp/finecore/masters/As
 const VoucherClassMasterPage = lazy(() => import('./pages/erp/finecore/masters/VoucherClassMaster'));
 const ApprovalsPendingPage = lazy(() => import('./pages/erp/finecore/registers/ApprovalsPendingPage'));
 const CancellationAuditRegister = lazy(() => import('./pages/erp/finecore/registers/CancellationAuditRegister'));
+const PinnedTemplatesView = lazy(() => import('./pages/erp/finecore/PinnedTemplatesView'));
 const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
 const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
@@ -363,6 +364,7 @@ const App = () => (
               <Route path="/erp/finecore/masters/voucher-class" element={<P><VoucherClassMasterPage /></P>} />
               <Route path="/erp/finecore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
               <Route path="/erp/finecore/registers/cancellation-audit-register" element={<P><CancellationAuditRegister /></P>} />
+              <Route path="/erp/finecore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
