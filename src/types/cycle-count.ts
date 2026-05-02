@@ -90,6 +90,15 @@ export interface CycleCount {
   version?: number;
   /** D-226 UTS · accounting effective date; falls back to primary date when null. */
   effective_date?: string | null;
+  /** D-228 Universal Transaction Header (UTH) — all optional · backward compat preserved */
+  narration?: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
+  cancel_reason?: string | null;
+  reference_no?: string | null;
+  voucher_hash?: string | null;
+  currency_code?: string | null;
+  exchange_rate?: number | null;
   created_at: string;
   updated_at: string;
 }
