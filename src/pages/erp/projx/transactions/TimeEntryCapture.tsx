@@ -329,13 +329,29 @@ export function TimeEntryCapturePanel() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <Label>Date</Label>
                   <Input type="date" value={form.entry_date} onChange={e => setForm(f => ({ ...f, entry_date: e.target.value }))} />
                   {dateLocked && (
                     <p className="text-[10px] text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3" />Period locked</p>
                   )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Effective Date</Label>
+                  <Input
+                    type="date"
+                    value={form.effective_date}
+                    placeholder={form.entry_date}
+                    onChange={e => {
+                      const v = e.target.value;
+                      if (v && isPeriodLocked(v, entityCode)) {
+                        toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                      }
+                      setForm(f => ({ ...f, effective_date: v }));
+                    }}
+                  />
+                  <p className="text-[10px] text-muted-foreground">defaults to Date</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Hours (0.25 step)</Label>
