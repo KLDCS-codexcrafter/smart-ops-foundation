@@ -28,7 +28,21 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
   } catch { return []; }
 }
 
-export function StockLedgerReportPanel() {
+import type { InventoryHubModule } from '../InventoryHubSidebar.types';
+import type { DrillNavigationContext } from '@/types/drill-context';
+import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
+interface StockLedgerReportPanelProps {
+  /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c */
+  onNavigate?: (module: InventoryHubModule, ctx?: DrillNavigationContext) => void;
+}
+
+export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelProps = {}) {
+  const drill = useDrillDown();
+  // Stock Ledger flagship · 4-level deep drill (Q1-c): base → ItemDetail → MovementTimeline → Source.
+  // Drill payload travels in trail; level-3 'Open Source' uses onNavigate to cross-panel.
+  void drill; void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { godowns } = useGodowns();
