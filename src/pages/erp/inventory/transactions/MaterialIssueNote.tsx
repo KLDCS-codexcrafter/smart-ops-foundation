@@ -48,6 +48,10 @@ import {
   MIN_STATUS_LABELS, MIN_STATUS_COLORS,
   type MaterialIssueNote, type MINLine, type MINStatus,
 } from '@/types/consumption';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
 // Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 Use Last Voucher
