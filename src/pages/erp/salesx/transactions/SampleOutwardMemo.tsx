@@ -197,8 +197,7 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
         <Badge variant={STATUS_VARIANT.draft} className="font-mono text-xs">{memoNo}</Badge>
       </div>
 
-      {lastIssued && (
-              <NotesAndReferenceCard
+      <NotesAndReferenceCard
         referenceNo={referenceNo}
         setReferenceNo={setReferenceNo}
         referenceLabel="Lead / Enquiry Ref"
@@ -206,8 +205,8 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
         setNarration={setNarration}
         setOverrideReason={setOverrideReason}
       />
-      {/* /D-228 UTH card */}
-      <Card className="border-blue-500/30">
+      {lastIssued && (
+        <Card className="border-blue-500/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
               Last issued by Dispatch · {lastIssued.memo_no}
