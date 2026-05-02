@@ -19,7 +19,7 @@ import {
 import { Search, Info } from 'lucide-react';
 import { HSN_CODES, SAC_CODES } from '@/data/hsn-sac-seed-data';
 import { loadHSNExtensions, saveHSNExtensions, type HSNExtension } from '@/lib/hsn-resolver';
-import { useEntityScope } from '@/hooks/useEntityScope';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { toast } from 'sonner';
 
 function HSNSACMasterPanelInner() {
