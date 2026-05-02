@@ -47,7 +47,6 @@ interface SlowMovingDeadStockReportPanelProps {
 }
 
 export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadStockReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
 
