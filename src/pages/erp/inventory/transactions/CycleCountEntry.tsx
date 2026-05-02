@@ -28,6 +28,7 @@ import { PrintNarrationHeader } from '@/components/inventory-print/PrintNarratio
 import type { InventoryItem } from '@/types/inventory-item';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
