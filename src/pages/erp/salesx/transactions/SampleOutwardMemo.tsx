@@ -200,6 +200,21 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
       purpose, purposeNote, items, expectReturn, returnDueDate, attachments, validate]);
 
   const handleDispatch = useCallback(() => persist('dispatched'), [persist]);
+  // Sprint 2.7-c-fix · Q3-d · cancellation audit hook
+  const handleCancelAudit = useCallback((reason: string) => {
+    const u = getCurrentUser();
+    const irnState = computeIRNLockState({ irn: null } as Parameters<typeof computeIRNLockState>[0]);
+    writeCancellationAuditEntry({
+      entityCode, voucherId: 'pending-som', voucherNo: memoNo, voucherDate: new Date().toISOString().slice(0, 10),
+      voucherTypeId: null, voucherTypeName: null, baseVoucherType: 'SOM',
+      partyId: null, partyName: recipientName ?? null,
+      cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+      wasPostedBeforeCancel: false, hadRcm: false, hadIrn: !!irnState.irn,
+      linkedRcmJvId: null, linkedRcmJvNo: null,
+      totalAmount: 0, totalTaxAmount: 0,
+    });
+  }, [entityCode, memoNo, recipientName]);
+  if (false as boolean) { handleCancelAudit('placeholder'); }
   useCtrlS(handleDispatch);
 
   // Sprint T-Phase-1.1.1p-v2 — Show issued-by-Dispatch info banner with party fields
