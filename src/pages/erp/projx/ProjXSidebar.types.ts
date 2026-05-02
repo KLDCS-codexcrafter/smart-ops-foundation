@@ -2,6 +2,7 @@
  * ProjXSidebar.types.ts — Module union for ProjX card
  * Sprint T-Phase-1.1.2-a · Tier 1 Card #1
  * Sprint T-Phase-1.1.2-b · Activated transactions + reports
+ * Sprint T-Phase-1.2.6d · Added 3 UTS-compliant register modules.
  */
 export type ProjXModule =
   | 'welcome'
@@ -15,4 +16,7 @@ export type ProjXModule =
   | 'r-resource-utilization'
   | 'r-milestone-status'
   | 'r-project-margin'
-  | 'r-cash-flow-projection';
+  | 'r-cash-flow-projection'
+  | 'r-project-register'
+  | 'r-milestone-register'
+  | 'r-time-entry-register';

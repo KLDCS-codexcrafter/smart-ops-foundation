@@ -20,6 +20,9 @@ import { ResourceUtilizationReportPanel } from './reports/ResourceUtilizationRep
 import { MilestoneStatusReportPanel } from './reports/MilestoneStatusReport';
 import { ProjectMarginReportPanel } from './reports/ProjectMarginReport';
 import { CashFlowProjectionReportPanel } from './reports/CashFlowProjectionReport';
+import { ProjectRegisterPanel } from './reports/ProjectRegister';
+import { MilestoneRegisterPanel } from './reports/MilestoneRegister';
+import { TimeEntryRegisterPanel } from './reports/TimeEntryRegister';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
@@ -63,6 +66,9 @@ export default function ProjXPage() {
       case 'r-milestone-status':      return <MilestoneStatusReportPanel />;
       case 'r-project-margin':        return <ProjectMarginReportPanel />;
       case 'r-cash-flow-projection':  return <CashFlowProjectionReportPanel />;
+      case 'r-project-register':      return <ProjectRegisterPanel />;
+      case 'r-milestone-register':    return <MilestoneRegisterPanel />;
+      case 'r-time-entry-register':   return <TimeEntryRegisterPanel />;
       default: return <ProjXWelcomePanel onNavigate={setActiveModule} />;
     }
   };

@@ -32,7 +32,10 @@ export type DispatchOpsModule =
   | 'dops-r-outward-movement'
   | 'dops-r-packing-consumption'
   | 'dops-r-packer-performance'
-  | 'dops-r-dispatch-summary';
+  | 'dops-r-dispatch-summary'
+  | 'dops-r-delivery-memo-register'
+  | 'dops-link-som-register'
+  | 'dops-link-dom-register';
 
 interface DispatchOpsSidebarProps {
   activeModule: DispatchOpsModule;
@@ -60,10 +63,13 @@ const MASTERS_ITEMS: MenuItem[] = [
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
+  { label: 'Delivery Memo Register', module: 'dops-r-delivery-memo-register', icon: Truck },
   { label: 'Outward Movement Report', module: 'dops-r-outward-movement',     icon: GitMerge },
   { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',  icon: TrendingUp },
   { label: 'Packer Performance',      module: 'dops-r-packer-performance',   icon: Users },
   { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',     icon: BarChart3, badge: 'Soon' },
+  { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',      icon: ArrowUpRight },
+  { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',      icon: ArrowUpRight },
 ];
 
 export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {
@@ -177,7 +183,15 @@ export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {
                 {REPORTS_ITEMS.map(i => (
                   <SidebarMenuItem key={i.module}>
                     <SidebarMenuButton
-                      onClick={() => onModuleChange(i.module)}
+                      onClick={() => {
+                        if (i.module === 'dops-link-som-register') {
+                          navigate('/erp/salesx?m=sx-r-som-register');
+                        } else if (i.module === 'dops-link-dom-register') {
+                          navigate('/erp/salesx?m=sx-r-dom-register');
+                        } else {
+                          onModuleChange(i.module);
+                        }
+                      }}
                       isActive={activeModule === i.module}
                       className={cn('pl-8', activeModule === i.module && 'bg-orange-500/15 text-orange-500')}
                     >

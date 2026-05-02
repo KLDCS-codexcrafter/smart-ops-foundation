@@ -23,6 +23,7 @@ const LIVE_MODULES: ProjXModule[] = [
   't-milestone-tracker', 't-resource-allocation', 't-time-entry', 't-invoice-scheduling',
   'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
   'r-cash-flow-projection',
+  'r-project-register', 'r-milestone-register', 'r-time-entry-register',
 ];
 
 interface SidebarItem {
@@ -50,6 +51,9 @@ const TXN_ITEMS: SidebarItem[] = [
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
+  { id: 'r-project-register', label: 'Project Register', icon: Briefcase },
+  { id: 'r-milestone-register', label: 'Milestone Register', icon: Milestone },
+  { id: 'r-time-entry-register', label: 'Time Entry Register', icon: Clock },
   { id: 'r-project-pnl', label: 'Project P&L', icon: PieChart },
   { id: 'r-resource-utilization', label: 'Resource Utilization', icon: Activity },
   { id: 'r-milestone-status', label: 'Milestone Status', icon: BarChart3 },

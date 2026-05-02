@@ -24,6 +24,7 @@ import { PackerPerformanceReportPanel } from './reports/PackerPerformanceReport'
 import { SampleOutwardIssuePanel } from './transactions/SampleOutwardIssue';
 import { DemoOutwardIssuePanel } from './transactions/DemoOutwardIssue';
 import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
+import { DeliveryMemoRegisterPanel } from './reports/DeliveryMemoRegister';
 
 function ComingSoonPanel({ module }: { module: DispatchOpsModule }) {
   return (
@@ -77,6 +78,7 @@ function renderModule(mod: DispatchOpsModule, entityCode: string): React.ReactEl
     case 'dops-r-outward-movement':      return <OutwardMovementReportPanel entityCode={entityCode} />;
     case 'dops-r-packing-consumption':   return <PackingConsumptionReportPanel />;
     case 'dops-r-packer-performance':    return <PackerPerformanceReportPanel />;
+    case 'dops-r-delivery-memo-register':return <DeliveryMemoRegisterPanel />;
     default:                             return <ComingSoonPanel module={mod} />;
   }
 }
