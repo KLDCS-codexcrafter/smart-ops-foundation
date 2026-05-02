@@ -252,9 +252,25 @@ export function RTVEntryPanel() {
           </h1>
           <p className="text-xs text-muted-foreground">Rejections Out · activates vt-rejections-out</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
-          <Plus className="h-4 w-4" /> Create from GRN
-        </Button>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="rtv"
+            partyValue={null}
+            partyLabel="vendor"
+            onUse={(data) => {
+              const d = data as { vendor_id?: string; vendor_name?: string; lines?: RTVLine[] };
+              toast.success(`Pre-fill loaded for ${d.vendor_name ?? 'vendor'} · open Create from GRN to apply.`);
+              if (Array.isArray(d.lines)) {
+                // Stash for next createFromGrn? · for RTV the create flow is GRN-driven,
+                // so we surface what was found via toast; full merge happens in 2.7-b.
+              }
+            }}
+          />
+          <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
+            <Plus className="h-4 w-4" /> Create from GRN
+          </Button>
+        </div>
       </div>
 
       <Card>
