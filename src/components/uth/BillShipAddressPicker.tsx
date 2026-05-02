@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { resolveCustomerAddress } from '@/lib/customer-address-lookup';
 import { stateCodeOptions } from '@/lib/place-of-supply-engine';
+import type { BillShipValue } from './BillShipAddressPicker.helpers';
 
 interface CustomerAddressRow {
   id: string;
@@ -37,27 +38,7 @@ interface CustomerMasterRow {
   addresses?: CustomerAddressRow[];
 }
 
-export interface BillShipValue {
-  bill_to_address_id: string | null;
-  bill_to_address_snapshot: string | null;
-  bill_to_state_code: string | null;
-  bill_to_gstin: string | null;
-  ship_to_address_id: string | null;
-  ship_to_address_snapshot: string | null;
-  ship_to_state_code: string | null;
-  ship_to_gstin: string | null;
-}
-
-export const EMPTY_BILL_SHIP: BillShipValue = {
-  bill_to_address_id: null,
-  bill_to_address_snapshot: null,
-  bill_to_state_code: null,
-  bill_to_gstin: null,
-  ship_to_address_id: null,
-  ship_to_address_snapshot: null,
-  ship_to_state_code: null,
-  ship_to_gstin: null,
-};
+export type { BillShipValue };
 
 interface Props {
   customerId: string | null;
