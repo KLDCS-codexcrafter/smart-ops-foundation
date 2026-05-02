@@ -83,6 +83,7 @@ export function TimeEntryCapturePanel() {
           milestone_id: editing.milestone_id,
           person_id: editing.person_id,
           entry_date: editing.entry_date,
+          effective_date: editing.effective_date ?? '',
           hours: editing.hours,
           task_description: editing.task_description,
           is_billable: editing.is_billable,
