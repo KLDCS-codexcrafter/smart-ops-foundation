@@ -34,6 +34,10 @@ export interface FieldRule {
   min_length?: number;
   pattern?: string;              // RegExp source string · validated separately
   custom_message?: string;       // override default error text
+  /** Sprint 2.7-c · Q1-c · only enforce when record's amount ≥ this threshold. */
+  min_amount?: number;
+  /** Field path holding the record's total amount (default 'total_amount'). */
+  amount_field?: string;
 }
 
 export interface NonFineCoreVoucherType {
