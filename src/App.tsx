@@ -82,6 +82,7 @@ const EPFESILWFMaster = lazy(() => import('./pages/erp/accounting/EPFESILWFMaste
 const StatutoryRegistrations = lazy(() => import('./pages/erp/accounting/StatutoryRegistrations'));
 const GSTEntityConfig = lazy(() => import('./pages/erp/accounting/GSTEntityConfig'));
 const ComplianceSettingsAutomation = lazy(() => import('./pages/erp/accounting/ComplianceSettingsAutomation'));
+const RCMComplianceReport = lazy(() => import('./pages/erp/finecore/reports/gst/RCMComplianceReport'));
 const FinFrame = lazy(() => import('./pages/erp/accounting/FinFrame'));
 const LedgerMaster = lazy(() => import('./pages/erp/accounting/LedgerMaster'));
 const IncomeTaxMaster = lazy(() => import('./pages/erp/accounting/IncomeTaxMaster'));
@@ -344,6 +345,7 @@ const App = () => (
               <Route path="/erp/accounting/statutory-registrations" element={<P><StatutoryRegistrations /></P>} />
               <Route path="/erp/accounting/gst-config" element={<P><GSTEntityConfig /></P>} />
               <Route path="/erp/accounting/compliance-settings-automation" element={<P><ComplianceSettingsAutomation /></P>} />
+              <Route path="/erp/finecore/reports/gst/rcm-compliance-report" element={<P><RCMComplianceReport /></P>} />
               <Route path="/erp/accounting/finframe" element={<P><FinFrame /></P>} />
               <Route path="/erp/accounting/ledger-master" element={<P><LedgerMaster /></P>} />
               <Route path="/erp/accounting/income-tax" element={<P><IncomeTaxMaster /></P>} />
