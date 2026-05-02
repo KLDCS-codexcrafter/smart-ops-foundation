@@ -6,6 +6,18 @@ import Decimal from 'decimal.js';
 import type { Voucher, JournalEntry, StockEntry, OutstandingEntry, GSTEntry } from '@/types/voucher';
 import type { RCMEntry, TDSDeductionEntry, AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
 import { rcmEntriesKey, tdsDeductionsKey, advancesKey, tdsReceivableKey } from '@/types/compliance';
+// Sprint T-Phase-2.7-a · RCM Auto-Detection (Q3-d · Q5-b · Q9) — additive compliance log writer
+import { detectRCMForVoucher, type DetectionLine, type VendorMasterSnapshot } from '@/lib/rcm-detection-engine';
+import {
+  rcmComplianceLogKey,
+  type RCMComplianceLogEntry,
+  type RCMOutcomeStatus,
+} from '@/types/rcm-compliance-log';
+import {
+  comply360RCMAutoPostKey,
+  DEFAULT_RCM_AUTO_POST_POLICIES,
+  type RCMAutoPostPolicy,
+} from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_RATES } from '@/types/fixed-asset';
 import { mapUOMtoUQC } from '@/lib/uqcMap';
