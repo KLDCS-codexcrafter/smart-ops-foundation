@@ -18,12 +18,13 @@
  *   8 Print/Export parity · UniversalPrintFrame + UniversalRegisterGrid export menu
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -34,11 +35,17 @@ import { dSum } from '@/lib/decimal-helpers';
 import { GRNDetailPanel } from './detail/GRNDetailPanel';
 import { GRNPrint } from './print/GRNPrint';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function GRNRegisterV2Panel() {
+interface GRNRegisterV2PanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function GRNRegisterV2Panel({ initialFilter }: GRNRegisterV2PanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
