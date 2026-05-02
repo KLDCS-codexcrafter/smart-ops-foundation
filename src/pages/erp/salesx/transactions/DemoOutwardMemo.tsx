@@ -244,8 +244,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
         <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
       </div>
 
-      {lastIssued && (
-              <NotesAndReferenceCard
+      <NotesAndReferenceCard
         referenceNo={referenceNo}
         setReferenceNo={setReferenceNo}
         referenceLabel="Customer Demo Request Ref"
@@ -253,8 +252,8 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
         setNarration={setNarration}
         setOverrideReason={setOverrideReason}
       />
-      {/* /D-228 UTH card */}
-      <Card className="border-blue-500/30">
+      {lastIssued && (
+        <Card className="border-blue-500/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
               Last issued by Dispatch · {lastIssued.memo_no}
