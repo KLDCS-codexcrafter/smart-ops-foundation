@@ -87,6 +87,9 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
   const [expectedDispatchDate, setExpectedDispatchDate] = useState<string>('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const [items, setItems] = useState<SRMItem[]>([]);
 
