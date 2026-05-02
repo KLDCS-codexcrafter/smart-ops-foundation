@@ -675,8 +675,8 @@ export function GRNEntryPanel() {
         partyId={null}
         partyName={null}
         lineItems={[]}
-        onPartyCreated={(_p: Party) => { void _p; }}
-        onCloneTemplate={(_s: ClonedTemplateState) => { void _s; }}
+        onPartyCreated={(_p: Party) => { /* form integration deferred · party_id wiring per-form */ }}
+        onCloneTemplate={(_s: ClonedTemplateState) => { /* form integration deferred · clone wiring per-form */ }}
       />
       <StockReservationSidePanel
         entityCode={typeof entityCode === 'string' ? entityCode : ''}
