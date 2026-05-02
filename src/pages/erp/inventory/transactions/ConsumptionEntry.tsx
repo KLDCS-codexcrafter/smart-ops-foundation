@@ -50,6 +50,7 @@ import {
 import { DEPARTMENT_LABELS } from '@/types/godown';
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
 import { useT } from '@/lib/i18n-engine';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
