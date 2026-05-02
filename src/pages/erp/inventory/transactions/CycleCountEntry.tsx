@@ -161,9 +161,34 @@ export function CycleCountEntryPanel() {
           </h1>
           <p className="text-xs text-muted-foreground">Physical-vs-system reconciliation · two-step approval</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
-          <Plus className="h-4 w-4" /> New Cycle Count
-        </Button>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="cycle_count"
+            partyValue={null}
+            partyLabel="any godown"
+            onUse={(data) => {
+              const countDate = new Date().toISOString().slice(0, 10);
+              if (entityCode && isPeriodLocked(countDate, entityCode)) {
+                toast.error(periodLockMessage(countDate, entityCode) ?? 'Period locked');
+                return;
+              }
+              const created = createCount({
+                count_kind: (data.count_kind as CycleCountKind) ?? 'random',
+                count_date: countDate,
+                effective_date: null,
+                godown_id: (data.godown_id as string | null) ?? null,
+                godown_name: (data.godown_name as string | null) ?? null,
+                lines: [],
+              });
+              setActiveId(created.id);
+              toast.success('Pre-filled from last cycle count');
+            }}
+          />
+          <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1">
+            <Plus className="h-4 w-4" /> New Cycle Count
+          </Button>
+        </div>
       </div>
 
       {/* KPI strip */}
