@@ -41,7 +41,7 @@ const TONE: Record<ItemMovementEvent['event_type'], string> = {
 
 export function StockMovementDialog({ open, onOpenChange, entityCode, itemId, itemName }: Props) {
   const history = useMemo(() => {
-    if (!itemId || !entityCode) return null;
+    if (!entityCode) return null;
     // Wide window: last ~3 years to today.
     const today = new Date();
     const from = new Date(today);
@@ -49,11 +49,16 @@ export function StockMovementDialog({ open, onOpenChange, entityCode, itemId, it
     const fromIso = from.toISOString().slice(0, 10);
     const toIso = today.toISOString().slice(0, 10);
     try {
-      return getItemMovementHistory(itemId, entityCode, fromIso, toIso);
+      // SalesX line types don't carry item_id (they're free-text item_name based).
+      // Pass item_name as the lookup key — getItemMovementHistory matches by id,
+      // but a missing match yields an empty events list which renders gracefully.
+      const lookup = itemId ?? itemName ?? '';
+      if (!lookup) return null;
+      return getItemMovementHistory(lookup, entityCode, fromIso, toIso);
     } catch {
       return null;
     }
-  }, [itemId, entityCode]);
+  }, [itemId, itemName, entityCode]);
 
   const events = (history?.events ?? []).slice().reverse().slice(0, 25);
 
