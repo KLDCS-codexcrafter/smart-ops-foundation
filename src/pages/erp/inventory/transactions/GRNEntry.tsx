@@ -90,6 +90,8 @@ interface FormHeader {
   voucher_type_id: string;
   voucher_type_name: string;
   receipt_mode: 'direct' | 'two_stage';
+  /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to receipt_date) */
+  effective_date: string;
 }
 
 const BLANK_HEADER: FormHeader = {
@@ -105,6 +107,7 @@ const BLANK_HEADER: FormHeader = {
   voucher_type_id: 'vt-receipt-note-domestic',
   voucher_type_name: 'Goods Receipt Note (Domestic)',
   receipt_mode: 'direct',
+  effective_date: '',
 };
 
 interface FormLine {
@@ -322,6 +325,11 @@ export function GRNEntryPanel() {
     if (isPeriodLocked(header.receipt_date, safeEntity)) {
       return periodLockMessage(header.receipt_date, safeEntity) ?? 'Period is locked';
     }
+    // Sprint T-Phase-1.2.6b · D-226 UTS · effective_date period-lock parity
+    const eff = header.effective_date || header.receipt_date;
+    if (isPeriodLocked(eff, safeEntity)) {
+      return periodLockMessage(eff, safeEntity) ?? 'Period is locked';
+    }
     return null;
   };
 
@@ -366,6 +374,7 @@ export function GRNEntryPanel() {
       voucher_type_id: header.voucher_type_id || null,
       voucher_type_name: header.voucher_type_name || null,
       receipt_mode: header.receipt_mode,
+      effective_date: header.effective_date || null,
       invoice_received_at: status === 'in_transit'
         ? (existing?.invoice_received_at ?? now)
         : (existing?.invoice_received_at ?? null),
