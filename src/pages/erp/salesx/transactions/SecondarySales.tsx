@@ -291,15 +291,15 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         </CardHeader>
 
         {showForm && (
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Distributor Bill Ref"
-        narration={narration}
-        setNarration={setNarration}
-        setOverrideReason={setOverrideReason}
-      />
           <CardContent className="space-y-4 border-t pt-4">
+            <NotesAndReferenceCard
+              referenceNo={referenceNo}
+              setReferenceNo={setReferenceNo}
+              referenceLabel="Distributor Bill Ref"
+              narration={narration}
+              setNarration={setNarration}
+              setOverrideReason={setOverrideReason}
+            />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <Label className="text-xs">Sale Date</Label>
