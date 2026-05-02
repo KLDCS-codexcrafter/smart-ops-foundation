@@ -125,7 +125,15 @@ export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadSto
             <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground text-sm py-6">No items</TableCell></TableRow>
           )}
           {data.map(r => (
-            <TableRow key={r.item_id}>
+            <TableRow
+              key={r.item_id}
+              className="cursor-pointer hover:bg-muted/30"
+              onClick={() => onNavigate?.('r-item-movement', {
+                fromModule: 'r-slow-moving-dead',
+                fromLabel: 'Slow / Dead Stock',
+                filter: { itemId: r.item_id, sourceLabel: `Slow/Dead · ${r.item_name}` },
+              })}
+            >
               <TableCell className="text-sm">{r.item_name}</TableCell>
               <TableCell className="text-xs">{r.last_issued_at?.slice(0, 10) ?? 'Never'}</TableCell>
               <TableCell className="font-mono text-xs">{r.days_since >= 9999 ? '∞' : `${r.days_since}d`}</TableCell>
