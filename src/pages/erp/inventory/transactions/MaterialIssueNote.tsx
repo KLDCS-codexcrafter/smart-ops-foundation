@@ -330,6 +330,7 @@ export function MaterialIssueNotePanel() {
       min_no: existing?.min_no ?? generateDocNo('MIN', safeEntity),
       status,
       issue_date: header.issue_date,
+      effective_date: header.effective_date || null,
       from_godown_id: header.from_godown_id, from_godown_name: fromG?.name ?? '',
       to_godown_id: header.to_godown_id, to_godown_name: toG?.name ?? '',
       to_department_code: toG?.department_code ?? null,
