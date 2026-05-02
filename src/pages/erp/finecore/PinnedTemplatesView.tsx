@@ -38,10 +38,11 @@ export default function PinnedTemplatesView() {
   const [vtFilter, setVtFilter] = useState<string>('all');
   const [tick, setTick] = useState(0);
 
-  const all = useMemo(
-    () => (entityCode && tick >= 0 ? searchPinnedTemplates(entityCode, {}) : []),
-    [entityCode, tick],
-  );
+  const all = useMemo(() => {
+    if (!entityCode) return [];
+    if (tick < 0) return [];
+    return searchPinnedTemplates(entityCode, {});
+  }, [entityCode, tick]);
 
   const voucherTypes = useMemo(() => {
     const set = new Map<string, string>();
