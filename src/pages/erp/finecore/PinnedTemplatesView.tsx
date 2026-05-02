@@ -38,9 +38,8 @@ export default function PinnedTemplatesView() {
   const [vtFilter, setVtFilter] = useState<string>('all');
   const [tick, setTick] = useState(0);
 
-  // tick forces re-read after mutations (unpin/rename) · referencing it explicitly keeps eslint quiet
-  const _tickRef = tick;
-  const all = entityCode ? searchPinnedTemplates(entityCode, {}) : [];
+  // tick is read by `all` derivation to force refresh after mutations
+  const all = entityCode && tick >= 0 ? searchPinnedTemplates(entityCode, {}) : [];
 
   const voucherTypes = useMemo(() => {
     const set = new Map<string, string>();
