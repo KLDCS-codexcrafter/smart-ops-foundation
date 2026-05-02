@@ -50,7 +50,6 @@ import {
 } from '@/types/consumption';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -110,11 +109,6 @@ const blankLine = (): FormLine => ({
 });
 
 export function MaterialIssueNotePanel() {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
@@ -347,8 +341,6 @@ export function MaterialIssueNotePanel() {
       total_qty: totals.qty,
       total_value: totals.value,
       narration: header.narration,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: existing?.created_at ?? now,
       updated_at: now,
       issued_at: existing?.issued_at ?? null,
@@ -614,14 +606,6 @@ export function MaterialIssueNotePanel() {
             </Button>
           )}
         </CardHeader>
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Indent / Work Order Ref"
-        narration={narration}
-        setNarration={setNarration}
-        setOverrideReason={setOverrideReason}
-      />
         <CardContent className="p-0">
           <Table>
             <TableHeader><TableRow className="bg-muted/40 hover:bg-muted/40">

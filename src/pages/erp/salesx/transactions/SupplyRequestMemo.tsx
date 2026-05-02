@@ -38,7 +38,6 @@ import {
   type SRMItem,
   type SRMStatus,
 } from '@/types/supply-request-memo';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 interface Props { entityCode: string }
 
@@ -55,11 +54,6 @@ function ls<T>(key: string): T[] {
 const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 
 export function SupplyRequestMemoPanel({ entityCode }: Props) {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
   const t = useT();
   const [memoNo] = useState(() => generateDocNo('SRQM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
@@ -169,8 +163,6 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       dispatched_at: null,
       delivery_memo_id: null,
       delivery_memo_no: null,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -323,14 +315,6 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
             <Plus className="h-3.5 w-3.5 mr-1" /> Add Line
           </Button>
         </CardHeader>
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Customer PO / SO Ref"
-        narration={narration}
-        setNarration={setNarration}
-        setOverrideReason={setOverrideReason}
-      />
         <CardContent>
           {items.length === 0 ? (
             <p className="text-xs text-muted-foreground py-6 text-center">

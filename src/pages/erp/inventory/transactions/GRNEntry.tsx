@@ -53,8 +53,6 @@ import {
 import type { VoucherType } from '@/types/voucher-type';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
-import { checkDuplicateReference } from '@/lib/duplicate-reference-check';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -151,25 +149,6 @@ function loadVendors(): VendorSeed[] {
 }
 
 export function GRNEntryPanel() {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
-  // D-228 UTH · Q7-b duplicate reference_no detection
-  const duplicateError = useMemo(() => {
-    if (!referenceNo.trim() || !vendorId) return null;
-    const result = checkDuplicateReference({
-      entityCode: typeof entityCode === 'string' ? entityCode : '',
-      recordType: 'grn',
-      partyId: vendorId,
-      referenceNo: referenceNo.trim(),
-      recordDate: receiptDate,
-      overrideReason,
-    });
-    return result.blocked ? (result.message ?? 'Duplicate reference number') : null;
-  }, [referenceNo, vendorId, receiptDate, overrideReason]);
-
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
@@ -402,8 +381,6 @@ export function GRNEntryPanel() {
       physical_received_at: status === 'posted' && existing?.status === 'in_transit'
         ? now
         : (existing?.physical_received_at ?? null),
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: existing?.created_at ?? now,
       updated_at: now,
       posted_at: status === 'posted' ? now : (existing?.posted_at ?? null),
@@ -888,18 +865,6 @@ export function GRNEntryPanel() {
             </Button>
           )}
         </CardHeader>
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Vendor Invoice / Challan No"
-        referenceHelp="CGST 36(4) · duplicate within FY+vendor will be blocked."
-        narration={narration}
-        setNarration={setNarration}
-        duplicateError={duplicateError}
-        overrideReason={overrideReason}
-        setOverrideReason={setOverrideReason}
-        showOverrideField
-      />
         <CardContent className="p-0">
           <Table>
             <TableHeader><TableRow className="bg-muted/40">

@@ -100,7 +100,6 @@ function loadItems(): ItemLite[] {
 // New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
 // Existing records keep their secondary_code as-is (backward compat).
 import { generateDocNo } from '@/lib/finecore-engine';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
   return generateDocNo('SEC', entityCode);
 }
@@ -128,11 +127,6 @@ const BLANK: FormState = {
 };
 
 export function SecondarySalesPanel({ entityCode }: Props) {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
   const t = useT();
   const [sales, setSales] = useState<SecondarySales[]>(() => loadSales(entityCode));
   const [distributors, setDistributors] = useState<CustomerLite[]>(() => loadDistributors());
@@ -233,9 +227,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         capture_mode: 'manual',
         api_request_id: null,
         notes: form.notes || null,
-        narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
-      created_at: NOW(),
+        created_at: NOW(),
         updated_at: NOW(),
       };
       next = [...list, newRow];
@@ -292,15 +284,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
 
         {showForm && (
           <CardContent className="space-y-4 border-t pt-4">
-            <NotesAndReferenceCard
-              referenceNo={referenceNo}
-              setReferenceNo={setReferenceNo}
-              referenceLabel="Distributor Bill Ref"
-              narration={narration}
-              setNarration={setNarration}
-              setOverrideReason={setOverrideReason}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <Label className="text-xs">Sale Date</Label>
                 <SmartDateInput

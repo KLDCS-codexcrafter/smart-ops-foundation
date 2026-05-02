@@ -51,8 +51,6 @@ import {
   type IMItem,
   type IMStatus,
 } from '@/types/invoice-memo';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
-import { checkDuplicateReference } from '@/lib/duplicate-reference-check';
 
 interface Props { entityCode: string }
 
@@ -82,25 +80,6 @@ function buildItem(srcName: string, qty: number, uom: string | null, rate: numbe
 }
 
 export function InvoiceMemoPanel({ entityCode }: Props) {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
-  // D-228 UTH · Q7-b duplicate reference_no detection
-  const duplicateError = useMemo(() => {
-    if (!referenceNo.trim() || !customerId) return null;
-    const result = checkDuplicateReference({
-      entityCode: typeof entityCode === 'string' ? entityCode : '',
-      recordType: 'invoice_memo',
-      partyId: customerId,
-      referenceNo: referenceNo.trim(),
-      recordDate: memoDate,
-      overrideReason,
-    });
-    return result.blocked ? (result.message ?? 'Duplicate reference number') : null;
-  }, [referenceNo, customerId, memoDate, overrideReason]);
-
   const t = useT();
   const [memoNo] = useState(() => generateDocNo('IM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
@@ -212,8 +191,6 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       invoice_voucher_id: null,
       invoice_voucher_no: null,
       invoice_posted_at: null,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -414,18 +391,6 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Narration</CardTitle></CardHeader>
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Customer PO / Order Ref"
-        referenceHelp="Duplicate within FY+customer will be blocked."
-        narration={narration}
-        setNarration={setNarration}
-        duplicateError={duplicateError}
-        overrideReason={overrideReason}
-        setOverrideReason={setOverrideReason}
-        showOverrideField
-      />
         <CardContent>
           <Textarea value={narration} onChange={e => setNarration(e.target.value)}
             placeholder="Notes for the Accounts team"

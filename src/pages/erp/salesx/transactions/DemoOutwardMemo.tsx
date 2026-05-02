@@ -38,7 +38,6 @@ import {
   type DOMPeriodDays,
   type DOMReturnCondition,
 } from '@/types/demo-outward-memo';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 interface Props { entityCode: string }
 
@@ -62,11 +61,6 @@ const RAISE_BY_TYPES = ['salesman', 'agent', 'broker', 'reference'];
 const PERIOD_OPTIONS: DOMPeriodDays[] = [14, 30, 60, 90];
 
 export function DemoOutwardMemoPanel({ entityCode }: Props) {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
   const [memoNo] = useState(() => generateDocNo('DOM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -172,8 +166,6 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       dispatch_issued_at: null, dispatch_issued_by: null,
       // Sprint T-Phase-1.1.1q · Demo units are always refundable by nature.
       pending_expense_voucher: false,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: now,
       updated_at: now,
       ...extras,
@@ -244,14 +236,6 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
         <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
       </div>
 
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Customer Demo Request Ref"
-        narration={narration}
-        setNarration={setNarration}
-        setOverrideReason={setOverrideReason}
-      />
       {lastIssued && (
         <Card className="border-blue-500/30">
           <CardHeader className="pb-2">

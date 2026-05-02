@@ -33,7 +33,6 @@ import {
   type SOMPurpose,
   type SOMStatus,
 } from '@/types/sample-outward-memo';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 interface Props { entityCode: string }
 
@@ -57,11 +56,6 @@ const STATUS_VARIANT: Record<SOMStatus, 'outline' | 'secondary' | 'default'> = {
 };
 
 export function SampleOutwardMemoPanel({ entityCode }: Props) {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
-
   const [memoNo] = useState(() => generateDocNo('SOM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
 
@@ -154,8 +148,6 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
       unit_value: 0, total_value: 0,
       // Sprint T-Phase-1.1.1q · Phase 2 expense voucher posting flag.
       pending_expense_voucher: true,
-      narration: narration.trim() || null,
-      reference_no: referenceNo.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -197,14 +189,6 @@ export function SampleOutwardMemoPanel({ entityCode }: Props) {
         <Badge variant={STATUS_VARIANT.draft} className="font-mono text-xs">{memoNo}</Badge>
       </div>
 
-      <NotesAndReferenceCard
-        referenceNo={referenceNo}
-        setReferenceNo={setReferenceNo}
-        referenceLabel="Lead / Enquiry Ref"
-        narration={narration}
-        setNarration={setNarration}
-        setOverrideReason={setOverrideReason}
-      />
       {lastIssued && (
         <Card className="border-blue-500/30">
           <CardHeader className="pb-2">

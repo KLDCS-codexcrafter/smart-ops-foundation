@@ -28,8 +28,6 @@ import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
 import { useT } from '@/lib/i18n-engine';
-import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
-import { checkDuplicateReference } from '@/lib/duplicate-reference-check';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -45,13 +43,6 @@ function readKey<T>(key: string): T[] {
 }
 
 export function RTVEntryPanel() {
-  // D-228 UTH · narration & reference_no auto-stamped at creation from GRN.
-  // RTV has no per-record entry form (it derives from GRN-failed lines), so
-  // the user-facing UTH card lives on the active-RTV detail sheet (line 419
-  // narration <Textarea>). The duplicate-reference Q7-b check runs inside
-  // createFromGrn() against the source GRN's vendor.
-
-
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
@@ -125,7 +116,6 @@ export function RTVEntryPanel() {
       cancelled_at: null, cancellation_reason: null,
       // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date (defaults to rtv_date)
       effective_date: null,
-      reference_no: null,
       created_at: now, updated_at: now,
     };
     persist([rtv, ...rtvs]);
