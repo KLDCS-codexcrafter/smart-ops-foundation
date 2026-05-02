@@ -51,13 +51,22 @@ interface UniversalPrintFrameProps {
   voucherHash?: string | null;
   /** D-228 UTH footer metadata · free-text narration */
   narration?: string | null;
+  /** Sprint 2.7-a · GST breakdown footer · all values in ₹ (rupees, not paise). */
+  gstBreakdown?: {
+    taxable?: number | null;
+    cgst?: number | null;
+    sgst?: number | null;
+    igst?: number | null;
+    cess?: number | null;
+    place_of_supply?: string | null;
+  } | null;
 }
 
 export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
   const {
     company, title, docNo, voucherDate, effectiveDate,
     referenceBlock, children, termsAndConditions, onClose, signatories,
-    referenceNo, postedAt, voucherHash, narration,
+    referenceNo, postedAt, voucherHash, narration, gstBreakdown,
   } = props;
   const sigs = signatories && signatories.length > 0
     ? signatories
