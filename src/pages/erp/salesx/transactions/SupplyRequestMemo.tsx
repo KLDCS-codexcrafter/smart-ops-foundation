@@ -144,6 +144,14 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
   const persistMemo = useCallback((status: SRMStatus): SupplyRequestMemo | null => {
     const err = validate();
     if (err) { toast.error(err); return null; }
+    if (memoDate && isPeriodLocked(memoDate, entityCode)) {
+      toast.error(periodLockMessage(memoDate, entityCode) ?? 'Memo date is in a locked period');
+      return null;
+    }
+    if (effectiveDate && isPeriodLocked(effectiveDate, entityCode)) {
+      toast.error(periodLockMessage(effectiveDate, entityCode) ?? 'Effective date is in a locked period');
+      return null;
+    }
     const person = persons.find(p => p.id === raisedById)!;
     const so = selectedSO!;
     const now = new Date().toISOString();
@@ -170,6 +178,8 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       dispatched_at: null,
       delivery_memo_id: null,
       delivery_memo_no: null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources.length > 0 ? multiSources : null,
       created_at: now,
       updated_at: now,
     };
@@ -182,10 +192,12 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     setExistingMemos(list);
     setRaisedById(''); setSalesOrderId('');
     setExpectedDispatchDate(''); setDeliveryAddress(''); setSpecialInstructions('');
+    setEffectiveDate(''); setMultiSources([]);
     setItems([]);
     return memo;
   }, [persons, raisedById, selectedSO, entityCode, memoNo, memoDate,
       expectedDispatchDate, deliveryAddress, specialInstructions,
+      effectiveDate, multiSources,
       items, totalAmount, validate]);
 
   const handleSaveDraft = useCallback(() => {
