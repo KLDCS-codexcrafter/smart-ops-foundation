@@ -515,8 +515,78 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
         igst_amount: line.igst_amount, cess_amount: line.cess_amount,
         status: 'open', created_at: now,
       }));
-      // [JWT] POST /api/compliance/rcm-entries
-      ss(rcmEntriesKey(entityCode), rcmStore);
+    // [JWT] POST /api/compliance/rcm-entries
+    ss(rcmEntriesKey(entityCode), rcmStore);
+    }
+
+    // ── Sprint T-Phase-2.7-a · RCM Compliance Log (additive · Q5-b · Q9) ──
+    // Always writes a log entry for purchase-side vouchers (auditable trail).
+    // [JWT] POST /api/finecore/rcm-compliance-log
+    try {
+      const purchaseSideTypes = new Set([
+        'Purchase', 'Expense', 'Journal', 'Debit Note', 'Credit Note', 'Payment',
+      ]);
+      if (purchaseSideTypes.has(voucher.base_voucher_type)) {
+        const detectionLines: DetectionLine[] = (voucher.inventory_lines ?? []).map((l) => ({
+          id: l.id,
+          hsn_sac_code: l.hsn_sac_code ?? null,
+          taxable_amount_paise: Math.round((l.taxable_value ?? 0) * 100),
+          is_rcm: undefined,
+          rcm_section: null,
+        }));
+        const vendor: VendorMasterSnapshot = {
+          id: voucher.party_id ?? null,
+          name: voucher.party_name ?? null,
+          gstin: voucher.party_gstin ?? null,
+          is_composition: null,
+          party_registration_type: voucher.party_registration_type ?? null,
+          state_code: voucher.party_state_code ?? null,
+        };
+        const detection = detectRCMForVoucher(vendor, detectionLines, entityCode);
+
+        // Resolve per-voucher-type policy (Q9)
+        const vt = voucher.base_voucher_type.toLowerCase().replace(/\s+/g, '_');
+        const policiesRaw = ls<RCMAutoPostPolicy>(comply360RCMAutoPostKey(entityCode));
+        const policies: RCMAutoPostPolicy[] = policiesRaw.length ? policiesRaw : DEFAULT_RCM_AUTO_POST_POLICIES;
+        const policy = policies.find(p => p.voucher_type === vt && p.active);
+        const mode = policy?.mode ?? 'report_only';
+
+        const operatorMarkedRCM = (voucher.tax_lines ?? []).some(t => (t as { is_rcm?: boolean }).is_rcm === true)
+          || (voucher.inventory_lines ?? []).some(l => (l as { is_rcm?: boolean }).is_rcm === true);
+
+        let outcome: RCMOutcomeStatus = 'report_only';
+        if (operatorMarkedRCM && detection.detected) outcome = 'passed_true';
+        else if (operatorMarkedRCM && !detection.detected) outcome = 'passed_true';
+        else if (!operatorMarkedRCM && detection.detected && mode === 'always') outcome = 'auto_posted';
+        else if (!operatorMarkedRCM && detection.detected && mode === 'report_only') outcome = 'report_only';
+        else if (!operatorMarkedRCM && detection.detected && mode === 'never') outcome = 'skipped_true';
+        else if (!operatorMarkedRCM && !detection.detected) outcome = 'report_only';
+
+        const logStore = ls<RCMComplianceLogEntry>(rcmComplianceLogKey(entityCode));
+        logStore.push({
+          id: `rcmlog-${Date.now()}-${voucher.id}`,
+          entity_id: entityCode,
+          voucher_id: voucher.id,
+          voucher_no: voucher.voucher_no,
+          voucher_type: voucher.base_voucher_type,
+          voucher_date: voucher.date,
+          vendor_id: vendor.id,
+          vendor_name: vendor.name,
+          vendor_gstin: vendor.gstin,
+          taxable_amount_paise: detection.taxable_amount_paise,
+          severity: detection.severity,
+          signals: detection.signals,
+          outcome,
+          rcm_jv_id: null,
+          note: detection.reason,
+          created_at: now,
+          created_by: voucher.created_by ?? null,
+        });
+        // [JWT] POST /api/finecore/rcm-compliance-log
+        ss(rcmComplianceLogKey(entityCode), logStore);
+      }
+    } catch {
+      // never break voucher posting on log-writer fault — graceful degradation
     }
   }
 
