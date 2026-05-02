@@ -2,12 +2,13 @@
  * HSNSACMaster.tsx — Read-only HSN/SAC Directory
  * Maintained by 4DSmartOps. No CRUD.
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -17,11 +18,41 @@ import {
 } from '@/components/ui/table';
 import { Search, Info } from 'lucide-react';
 import { HSN_CODES, SAC_CODES } from '@/data/hsn-sac-seed-data';
+import { loadHSNExtensions, saveHSNExtensions, type HSNExtension } from '@/lib/hsn-resolver';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { toast } from 'sonner';
 
 function HSNSACMasterPanelInner() {
+  const { entityCode } = useEntityCode();
   const [hsnSearch, setHsnSearch] = useState('');
   const [sacSearch, setSacSearch] = useState('');
   const [rateFilter, setRateFilter] = useState('all');
+  const [extensions, setExtensions] = useState<HSNExtension[]>([]);
+
+  useEffect(() => {
+    if (!entityCode) { setExtensions([]); return; }
+    setExtensions(loadHSNExtensions(entityCode));
+  }, [entityCode]);
+
+  const isExtFlagged = (code: string): boolean =>
+    extensions.find((e) => e.code === code)?.is_rcm_notified === true;
+
+  const isEffectivelyRCM = (code: string, baseRCM: boolean): boolean =>
+    baseRCM || isExtFlagged(code);
+
+  const toggleRCMExt = (code: string, next: boolean) => {
+    if (!entityCode) {
+      toast.error('Select a company to flag entity-specific RCM codes.');
+      return;
+    }
+    const without = extensions.filter((e) => e.code !== code);
+    const updated: HSNExtension[] = next
+      ? [...without, { code, is_rcm_notified: true, updated_at: new Date().toISOString() }]
+      : without;
+    setExtensions(updated);
+    saveHSNExtensions(entityCode, updated);
+    toast.success(`HSN ${code} ${next ? 'flagged' : 'cleared'} as RCM-notified`);
+  };
 
   const hsnFiltered = useMemo(() =>
     HSN_CODES.filter(r => {
@@ -35,12 +66,17 @@ function HSNSACMasterPanelInner() {
       return `${r.code} ${r.description}`.toLowerCase().includes(sacSearch.toLowerCase());
     }), [sacSearch, rateFilter]);
 
+  const baselineRCM = useMemo(
+    () => [...HSN_CODES, ...SAC_CODES].filter(r => r.reverseCharge).length,
+    [],
+  );
+
   const stats = useMemo(() => ({
     hsn: HSN_CODES.length,
     sac: SAC_CODES.length,
     total: HSN_CODES.length + SAC_CODES.length,
-    rcm: [...HSN_CODES, ...SAC_CODES].filter(r => r.reverseCharge).length,
-  }), []);
+    rcm: baselineRCM + extensions.filter(e => e.is_rcm_notified).length,
+  }), [baselineRCM, extensions]);
 
   return (
     <div data-keyboard-form className="space-y-6">
@@ -61,14 +97,21 @@ function HSNSACMasterPanelInner() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'HSN Codes', count: stats.hsn },
-          { label: 'SAC Codes', count: stats.sac },
-          { label: 'Total Codes', count: stats.total },
-          { label: 'RCM Applicable', count: stats.rcm },
+          { label: 'HSN Codes', count: stats.hsn, sublabel: null as string | null },
+          { label: 'SAC Codes', count: stats.sac, sublabel: null },
+          { label: 'Total Codes', count: stats.total, sublabel: null },
+          {
+            label: 'RCM Applicable',
+            count: stats.rcm,
+            sublabel: `${baselineRCM} baseline + ${extensions.filter(e => e.is_rcm_notified).length} entity-flagged`,
+          },
         ].map(s => (
           <div key={s.label} className="rounded-lg border bg-card p-4">
             <p className="text-sm text-muted-foreground">{s.label}</p>
             <p className="text-2xl font-bold text-foreground">{s.count}</p>
+            {s.sublabel ? (
+              <p className="text-[10px] text-muted-foreground mt-0.5">{s.sublabel}</p>
+            ) : null}
           </div>
         ))}
       </div>
@@ -116,22 +159,38 @@ function HSNSACMasterPanelInner() {
                   <TableHead>GST Rate</TableHead>
                   <TableHead>Chapter</TableHead>
                   <TableHead>RCM</TableHead>
+                  <TableHead className="text-right">Entity-Flag</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {hsnFiltered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
-                ) : hsnFiltered.map(r => (
-                  <TableRow key={r.code}>
-                    <TableCell className="font-mono font-medium text-blue-600">{r.code}</TableCell>
-                    <TableCell className="max-w-[300px]">{r.description}</TableCell>
-                    <TableCell>{r.igstRate}%</TableCell>
-                    <TableCell className="font-mono">{r.chapter}</TableCell>
-                    <TableCell>
-                      {r.reverseCharge ? <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">RCM</Badge> : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
+                ) : hsnFiltered.map(r => {
+                  const effRCM = isEffectivelyRCM(r.code, r.reverseCharge);
+                  return (
+                    <TableRow key={r.code}>
+                      <TableCell className="font-mono font-medium text-blue-600">{r.code}</TableCell>
+                      <TableCell className="max-w-[300px]">{r.description}</TableCell>
+                      <TableCell>{r.igstRate}%</TableCell>
+                      <TableCell className="font-mono">{r.chapter}</TableCell>
+                      <TableCell>
+                        {effRCM ? (
+                          <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">
+                            RCM{isExtFlagged(r.code) && !r.reverseCharge ? ' · entity' : ''}
+                          </Badge>
+                        ) : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={isExtFlagged(r.code)}
+                          onCheckedChange={(v) => toggleRCMExt(r.code, v)}
+                          disabled={!entityCode || r.reverseCharge}
+                          aria-label={`Flag HSN ${r.code} as RCM-notified`}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -150,21 +209,37 @@ function HSNSACMasterPanelInner() {
                   <TableHead>Description</TableHead>
                   <TableHead>GST Rate</TableHead>
                   <TableHead>RCM</TableHead>
+                  <TableHead className="text-right">Entity-Flag</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sacFiltered.length === 0 ? (
-                  <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
-                ) : sacFiltered.map(r => (
-                  <TableRow key={r.code}>
-                    <TableCell className="font-mono font-medium text-purple-600">{r.code}</TableCell>
-                    <TableCell className="max-w-[300px]">{r.description}</TableCell>
-                    <TableCell>{r.igstRate}%</TableCell>
-                    <TableCell>
-                      {r.reverseCharge ? <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">RCM</Badge> : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No results.</TableCell></TableRow>
+                ) : sacFiltered.map(r => {
+                  const effRCM = isEffectivelyRCM(r.code, r.reverseCharge);
+                  return (
+                    <TableRow key={r.code}>
+                      <TableCell className="font-mono font-medium text-purple-600">{r.code}</TableCell>
+                      <TableCell className="max-w-[300px]">{r.description}</TableCell>
+                      <TableCell>{r.igstRate}%</TableCell>
+                      <TableCell>
+                        {effRCM ? (
+                          <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-xs">
+                            RCM{isExtFlagged(r.code) && !r.reverseCharge ? ' · entity' : ''}
+                          </Badge>
+                        ) : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={isExtFlagged(r.code)}
+                          onCheckedChange={(v) => toggleRCMExt(r.code, v)}
+                          disabled={!entityCode || r.reverseCharge}
+                          aria-label={`Flag SAC ${r.code} as RCM-notified`}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

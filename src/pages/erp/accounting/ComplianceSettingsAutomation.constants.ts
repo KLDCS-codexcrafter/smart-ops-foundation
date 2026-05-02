@@ -157,3 +157,36 @@ export const DEFAULT_TALLY_EXPORT_CONFIG: TallyExportConfig = {
 // preserved bytes-identical from original (was ComplianceSettingsAutomation.tsx L262)
 export const comply360TallyKey = (entityId: string | null | undefined): string =>
   `erp_comply360_tally_${entityId ?? 'default'}`;
+
+// ─── Sprint T-Phase-2.7-a · RCM Auto-Post Policy (Q9 founder catch · existing infra) ───
+// Per-voucher-type policy gate for finecore-engine RCM JV auto-posting.
+// [JWT] GET/PATCH /api/compliance/comply360/rcm-auto-post/:entityId
+
+export type RCMAutoPostMode = 'always' | 'report_only' | 'never';
+
+export interface RCMAutoPostPolicy {
+  voucher_type: string;       // 'purchase' | 'expense' | 'jv' | 'debit_note' | 'credit_note' | 'payment'
+  voucher_type_label: string;
+  mode: RCMAutoPostMode;
+  active: boolean;
+}
+
+/** 6 voucher types · default ALL to report_only on first run (safe default · Q7-c). */
+export const DEFAULT_RCM_AUTO_POST_POLICIES: RCMAutoPostPolicy[] = [
+  { voucher_type: 'purchase',    voucher_type_label: 'Purchase',    mode: 'always',      active: true },
+  { voucher_type: 'expense',     voucher_type_label: 'Expense',     mode: 'always',      active: true },
+  { voucher_type: 'jv',          voucher_type_label: 'Journal',     mode: 'report_only', active: true },
+  { voucher_type: 'debit_note',  voucher_type_label: 'Debit Note',  mode: 'report_only', active: true },
+  { voucher_type: 'credit_note', voucher_type_label: 'Credit Note', mode: 'report_only', active: true },
+  { voucher_type: 'payment',     voucher_type_label: 'Payment',     mode: 'report_only', active: true },
+];
+
+export const RCM_AUTO_POST_MODE_LABELS: Record<RCMAutoPostMode, string> = {
+  always: 'Always Post',
+  report_only: 'Report Only',
+  never: 'Never Post',
+};
+
+export const comply360RCMAutoPostKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_rcm_autopost_${entityId ?? 'default'}`;
+
