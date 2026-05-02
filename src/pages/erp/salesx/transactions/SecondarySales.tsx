@@ -231,6 +231,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         lines: form.lines,
         total_amount: totalAmount,
         notes: form.notes || null,
+        // Sprint 2.7-c-fix · Q4-c · bank instrument fields (D-128 voucher schema unchanged)
+        instrument_type: instrument.instrument_type,
+        instrument_ref_no: instrument.instrument_ref_no,
+        cheque_date: instrument.cheque_date,
+        bank_name: instrument.bank_name,
+        deposit_date: instrument.deposit_date,
         updated_at: NOW(),
       } : s);
       toast.success('Updated');
@@ -250,6 +256,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         capture_mode: 'manual',
         api_request_id: null,
         notes: form.notes || null,
+        // Sprint 2.7-c-fix · Q4-c · bank instrument fields
+        instrument_type: instrument.instrument_type,
+        instrument_ref_no: instrument.instrument_ref_no,
+        cheque_date: instrument.cheque_date,
+        bank_name: instrument.bank_name,
+        deposit_date: instrument.deposit_date,
         created_at: NOW(),
         updated_at: NOW(),
       };
