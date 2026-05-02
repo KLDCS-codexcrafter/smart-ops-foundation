@@ -38,6 +38,7 @@ import {
   type DOMPeriodDays,
   type DOMReturnCondition,
 } from '@/types/demo-outward-memo';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 interface Props { entityCode: string }
 
