@@ -148,6 +148,8 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   const [items, setItems] = useState<ItemLite[]>(() => loadItems());
   const [form, setForm] = useState<FormState>(BLANK);
   const [showForm, setShowForm] = useState(false);
+  // Sprint 2.7-c-fix · Q4-c · bank instrument capture (5 fields mirror Voucher.ts · D-128 schema unchanged)
+  const [instrument, setInstrument] = useState<InstrumentValue>(EMPTY_INSTRUMENT);
 
   useEffect(() => {
     setSales(loadSales(entityCode));
@@ -159,6 +161,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
     () => round2(dSum(form.lines, l => l.amount)),
     [form.lines],
   );
+
+  // Sprint 2.7-c-fix · Q1-c threshold reuse — engine-level field_rules drive the actual
+  // gating (vt-sec-standard min_amount=50000); banner here is informational only.
+  const mandatoryReason = totalAmount >= 50000
+    ? `Total ₹${totalAmount.toLocaleString('en-IN')} ≥ ₹50,000 · bank instrument required by field_rules (Section 269ST + KYC Rule 9)`
+    : null;
 
   const addLine = useCallback(() => {
     const newLine: SecondarySalesLine = {
