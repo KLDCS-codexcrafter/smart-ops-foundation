@@ -64,6 +64,12 @@ import { BeatProductivityReportPanel } from '@/pages/erp/salesx/reports/BeatProd
 import { CoverageReportPanel } from '@/pages/erp/salesx/reports/CoverageReport';
 import { SecondarySalesReportPanel } from '@/pages/erp/salesx/reports/SecondarySalesReport';
 import { CallLogHistoryReportPanel } from '@/pages/erp/salesx/reports/CallLogHistoryReport';
+import { QuotationRegisterV2Panel } from '@/pages/erp/salesx/reports/QuotationRegisterV2';
+import { SRMRegisterPanel } from '@/pages/erp/salesx/reports/SRMRegister';
+import { InvoiceMemoRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceMemoRegister';
+import { SecondarySalesRegisterPanel } from '@/pages/erp/salesx/reports/SecondarySalesRegister';
+import { SOMRegisterPanel } from '@/pages/erp/salesx/reports/SOMRegister';
+import { DOMRegisterPanel } from '@/pages/erp/salesx/reports/DOMRegister';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
