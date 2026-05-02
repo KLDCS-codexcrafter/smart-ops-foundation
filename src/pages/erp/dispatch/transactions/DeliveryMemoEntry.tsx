@@ -23,6 +23,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useT } from '@/lib/i18n-engine';
 import {
@@ -133,6 +134,14 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     const requirePod = status === 'delivered';
     const err = validate(requireLR, requirePod);
     if (err) { toast.error(err); return null; }
+    if (memoDate && isPeriodLocked(memoDate, entityCode)) {
+      toast.error(periodLockMessage(memoDate, entityCode) ?? 'Memo date is in a locked period');
+      return null;
+    }
+    if (effectiveDate && isPeriodLocked(effectiveDate, entityCode)) {
+      toast.error(periodLockMessage(effectiveDate, entityCode) ?? 'Effective date is in a locked period');
+      return null;
+    }
     const srm = selectedSRM!;
     const now = new Date().toISOString();
     const memo: DeliveryMemo = {

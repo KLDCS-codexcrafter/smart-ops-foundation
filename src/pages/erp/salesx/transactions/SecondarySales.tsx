@@ -100,6 +100,7 @@ function loadItems(): ItemLite[] {
 // New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
 // Existing records keep their secondary_code as-is (backward compat).
 import { generateDocNo } from '@/lib/finecore-engine';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
   return generateDocNo('SEC', entityCode);
 }
@@ -272,13 +273,38 @@ export function SecondarySalesPanel({ entityCode }: Props) {
             {t('salesx.secondary_sales.title', 'Secondary Sales')}
           </CardTitle>
           {!showForm && (
-            <Button
-              size="sm"
-              onClick={() => { setForm(BLANK); setShowForm(true); }}
-              className="bg-orange-500 hover:bg-orange-600 text-white h-8"
-            >
-              <Plus className="h-3.5 w-3.5 mr-1" /> New Entry
-            </Button>
+            <div className="flex items-center gap-2">
+              <UseLastVoucherButton
+                entityCode={entityCode}
+                recordType="secondary_sales"
+                partyValue={null}
+                partyLabel="any distributor"
+                onUse={(data) => {
+                  setForm({
+                    sale_date: todayISO(),
+                    distributor_id: (data.distributor_id as string) ?? '',
+                    end_customer_type: (data.end_customer_type as EndCustomerType) ?? 'retailer',
+                    end_customer_name: (data.end_customer_name as string) ?? '',
+                    end_customer_code: (data.end_customer_code as string) ?? '',
+                    notes: (data.notes as string) ?? '',
+                    lines: ((data.lines as SecondarySalesLine[] | undefined) ?? []).map((l) => ({
+                      ...l,
+                      id: `sl-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                    })),
+                    editingId: null,
+                  });
+                  setShowForm(true);
+                  toast.success('Pre-filled from last secondary sale');
+                }}
+              />
+              <Button
+                size="sm"
+                onClick={() => { setForm(BLANK); setShowForm(true); }}
+                className="bg-orange-500 hover:bg-orange-600 text-white h-8"
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" /> New Entry
+              </Button>
+            </div>
           )}
         </CardHeader>
 

@@ -38,6 +38,7 @@ import {
   type DOMPeriodDays,
   type DOMReturnCondition,
 } from '@/types/demo-outward-memo';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
 interface Props { entityCode: string }
 
@@ -233,7 +234,28 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
             Send a full demo unit to a prospect. Mandatory return tracking.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="demo_outward_memo"
+            partyValue={recipientName.trim() || null}
+            partyLabel={recipientName.trim() || undefined}
+            onUse={(data) => {
+              setRecipientName((data.recipient_name as string | null) ?? '');
+              setRecipientCompany((data.recipient_company as string | null) ?? '');
+              setRecipientPhone((data.recipient_phone as string | null) ?? '');
+              setRecipientAddress((data.recipient_address as string | null) ?? '');
+              const pd = data.period_days as DOMPeriodDays | undefined;
+              if (pd) setPeriodDays(pd);
+              const srcItems = (data.items as DemoOutwardMemoItem[] | undefined) ?? [];
+              if (srcItems.length > 0) {
+                setItems(srcItems.map((it) => ({ ...it, id: `dom-it-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` })));
+              }
+              toast.success('Pre-filled from last demo memo');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       {lastIssued && (

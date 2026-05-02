@@ -38,6 +38,10 @@ import {
   type SRMItem,
   type SRMStatus,
 } from '@/types/supply-request-memo';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 interface Props { entityCode: string }
 
@@ -83,6 +87,9 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
   const [expectedDispatchDate, setExpectedDispatchDate] = useState<string>('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const [items, setItems] = useState<SRMItem[]>([]);
 
@@ -137,6 +144,14 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
   const persistMemo = useCallback((status: SRMStatus): SupplyRequestMemo | null => {
     const err = validate();
     if (err) { toast.error(err); return null; }
+    if (memoDate && isPeriodLocked(memoDate, entityCode)) {
+      toast.error(periodLockMessage(memoDate, entityCode) ?? 'Memo date is in a locked period');
+      return null;
+    }
+    if (effectiveDate && isPeriodLocked(effectiveDate, entityCode)) {
+      toast.error(periodLockMessage(effectiveDate, entityCode) ?? 'Effective date is in a locked period');
+      return null;
+    }
     const person = persons.find(p => p.id === raisedById)!;
     const so = selectedSO!;
     const now = new Date().toISOString();
@@ -163,6 +178,8 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       dispatched_at: null,
       delivery_memo_id: null,
       delivery_memo_no: null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources.length > 0 ? multiSources : null,
       created_at: now,
       updated_at: now,
     };
@@ -175,10 +192,12 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     setExistingMemos(list);
     setRaisedById(''); setSalesOrderId('');
     setExpectedDispatchDate(''); setDeliveryAddress(''); setSpecialInstructions('');
+    setEffectiveDate(''); setMultiSources([]);
     setItems([]);
     return memo;
   }, [persons, raisedById, selectedSO, entityCode, memoNo, memoDate,
       expectedDispatchDate, deliveryAddress, specialInstructions,
+      effectiveDate, multiSources,
       items, totalAmount, validate]);
 
   const handleSaveDraft = useCallback(() => {
@@ -202,12 +221,30 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
             Authorise Dispatch to pick · pack · ship goods against a confirmed Sales Order.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="supply_request_memo"
+            partyValue={selectedSO?.party_id ?? null}
+            partyLabel={selectedSO?.party_name ?? undefined}
+            onUse={(data) => {
+              setExpectedDispatchDate('');
+              setDeliveryAddress((data.delivery_address as string | null) ?? '');
+              setSpecialInstructions((data.special_instructions as string | null) ?? '');
+              const srcItems = (data.items as SRMItem[] | undefined) ?? [];
+              if (srcItems.length > 0) {
+                setItems(srcItems.map((it) => ({ ...it, id: `srm-it-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` })));
+              }
+              toast.success('Pre-filled from last SRM');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Label className="text-xs">Memo No</Label>
             <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
@@ -227,8 +264,45 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
               </div>
             )}
           </div>
+          <div>
+            <Label className="text-xs">{t('common.effective_date', 'Effective Date')}</Label>
+            <Input
+              type="date"
+              value={effectiveDate}
+              placeholder={memoDate}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, entityCode)) {
+                  toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                }
+                setEffectiveDate(v);
+              }}
+              className="h-9"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">accounting date · defaults to Memo Date</p>
+          </div>
         </CardContent>
       </Card>
+
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedSO?.order_no}
+        primaryRefAmount={totalAmount}
+        title="Linked Source Sales Orders"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="so"
+        partyId={selectedSO?.party_id ?? null}
+        entityCode={entityCode}
+        onSelect={(refs) => {
+          setMultiSources((prev) => [...prev, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Raised By</CardTitle></CardHeader>

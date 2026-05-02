@@ -24,7 +24,7 @@ import {
 } from '@/types/projx/time-entry';
 import type { TimeEntry } from '@/types/projx/time-entry';
 import { dMul, round2 } from '@/lib/decimal-helpers';
-import { isPeriodLocked } from '@/lib/period-lock-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -35,6 +35,7 @@ interface FormState {
   milestone_id: string | null;
   person_id: string;
   entry_date: string;
+  effective_date: string;
   hours: number;
   task_description: string;
   is_billable: boolean;
@@ -43,7 +44,7 @@ interface FormState {
 
 const BLANK: FormState = {
   project_id: '', milestone_id: null, person_id: '',
-  entry_date: todayISO(), hours: 8,
+  entry_date: todayISO(), effective_date: '', hours: 8,
   task_description: '', is_billable: true, hourly_rate: 1500,
 };
 
@@ -82,6 +83,7 @@ export function TimeEntryCapturePanel() {
           milestone_id: editing.milestone_id,
           person_id: editing.person_id,
           entry_date: editing.entry_date,
+          effective_date: editing.effective_date ?? '',
           hours: editing.hours,
           task_description: editing.task_description,
           is_billable: editing.is_billable,
@@ -133,6 +135,7 @@ export function TimeEntryCapturePanel() {
         person_id: person.id,
         person_name: person.display_name,
         entry_date: form.entry_date,
+        effective_date: form.effective_date || null,
         hours: form.hours,
         task_description: form.task_description,
         is_billable: form.is_billable,
@@ -145,6 +148,10 @@ export function TimeEntryCapturePanel() {
     const v = validateAndPayload();
     if (!v.ok) { toast.error(v.reason); return; }
     if (dateLocked) toast.warning('Entry date is in a locked accounting period.');
+    if (form.effective_date && isPeriodLocked(form.effective_date, entityCode)) {
+      toast.error(periodLockMessage(form.effective_date, entityCode) ?? 'Effective date is in a locked period');
+      return;
+    }
 
     if (editing) {
       const r = updateTimeEntry(editing.id, v.payload);
@@ -162,6 +169,10 @@ export function TimeEntryCapturePanel() {
     const v = validateAndPayload();
     if (!v.ok) { toast.error(v.reason); return; }
     if (dateLocked) toast.warning('Entry date is in a locked accounting period.');
+    if (form.effective_date && isPeriodLocked(form.effective_date, entityCode)) {
+      toast.error(periodLockMessage(form.effective_date, entityCode) ?? 'Effective date is in a locked period');
+      return;
+    }
 
     if (editing) {
       const r = updateTimeEntry(editing.id, v.payload);
@@ -318,13 +329,29 @@ export function TimeEntryCapturePanel() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <Label>Date</Label>
                   <Input type="date" value={form.entry_date} onChange={e => setForm(f => ({ ...f, entry_date: e.target.value }))} />
                   {dateLocked && (
                     <p className="text-[10px] text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3" />Period locked</p>
                   )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Effective Date</Label>
+                  <Input
+                    type="date"
+                    value={form.effective_date}
+                    placeholder={form.entry_date}
+                    onChange={e => {
+                      const v = e.target.value;
+                      if (v && isPeriodLocked(v, entityCode)) {
+                        toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                      }
+                      setForm(f => ({ ...f, effective_date: v }));
+                    }}
+                  />
+                  <p className="text-[10px] text-muted-foreground">defaults to Date</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Hours (0.25 step)</Label>
