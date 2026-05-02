@@ -144,6 +144,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
   const [defaultTaxPct, setDefaultTaxPct] = useState(18);
 
   const [items, setItems] = useState<IMItem[]>([]);
+  // Sprint 2.7-c · Q4-c · bank instrument capture (5 fields mirror Voucher.ts)
+  const [instrument, setInstrument] = useState<InstrumentValue>(EMPTY_INSTRUMENT);
 
   const [existingMemos, setExistingMemos] = useState<InvoiceMemo[]>(
     () => ls<InvoiceMemo>(invoiceMemosKey(entityCode)),
