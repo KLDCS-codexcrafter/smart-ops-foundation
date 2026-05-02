@@ -27,6 +27,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
   'r-stock-ledger', 'r-reorder-alerts', 'r-grn-register', 'r-consumption-summary',
   'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
   'r-bin-utilization', 'r-item-movement',
+  'r-min-register', 'r-consumption-register', 'r-cycle-count-register', 'r-rtv-register',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
