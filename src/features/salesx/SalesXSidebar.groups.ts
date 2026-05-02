@@ -76,6 +76,11 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-webinar-report':       'report',
   'sx-r-call-log-history':     'report',
   'sx-analytics':              'report',
+  'sx-r-srm-register':         'report',
+  'sx-r-im-register':          'report',
+  'sx-r-secondary-register':   'report',
+  'sx-r-som-register':         'report',
+  'sx-r-dom-register':         'report',
 };
 
 /** Default landing module per group when user clicks the tab */
