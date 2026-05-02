@@ -137,3 +137,32 @@ Sprint T-Phase-1.2.6e-tally-1 closed · count = **14**.
 D-127 ZERO TOUCH preserved on `src/pages/erp/accounting/vouchers/`.
 voucher_type_id + multi_source_refs added as sibling abstractions
 (non-finecore-voucher-type-registry.ts + multi-source-ref.ts re-export of BillReference).
+
+---
+
+## DEFERRED · Voucher Numbering Behavior Parity (Phase 1.6 backlog)
+
+**Tracked:** 1.2.6e-audit deferral list will pick this up explicitly.
+
+**Gap:** `generateDocNo` + `generateVoucherNo` hard-code 4-digit zero-padded `{PREFIX}/{FY}/{NNNN}` format. They do NOT honor the 11 numbering-config fields on the FineCore `VoucherType` schema:
+
+1. `numbering_method` (auto / manual / auto-with-override)
+2. `use_custom_series` (per-series sequencing)
+3. `numbering_prefix`
+4. `numbering_suffix`
+5. `numbering_start` (custom starting number)
+6. `numbering_width` (configurable digit width, not always 4)
+7. `numbering_prefill_zeros` (zero-pad toggle)
+8. `prevent_duplicate_manual` (manual-entry duplicate guard)
+9. `insertion_deletion_behaviour` (renumber vs gap)
+10. `show_unused_numbers`
+11. `current_sequence` (live counter persisted on the voucher type)
+
+**NonFineCore symmetry gap:** `NonFineCoreVoucherType.prefix: string` only — same parity gap as the FineCore helper.
+
+**Phase 1.6 closure plan:**
+1. Extract a `resolveNumberingConfig(voucherTypeId, entityCode)` helper that reads either FineCore VoucherType or NonFineCoreVoucherType.
+2. Refactor `generateDocNo` / `generateVoucherNo` to consume that config (prefix, suffix, width, prefill, start, current_sequence).
+3. Honor `numbering_method` (auto vs manual) at the call sites; surface manual-entry UI in the form when method !== 'auto'.
+4. Implement `prevent_duplicate_manual` lookup and `insertion_deletion_behaviour` policy on cancel/delete.
+5. Backfill: a one-time sync pass to seed `current_sequence` from the highest existing `{NNNN}` per (voucher_type, FY).
