@@ -470,7 +470,27 @@ export function MaterialIssueNotePanel() {
                           <FileText className="h-3.5 w-3.5" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-600"
-                          onClick={() => cancelMin(m.id, 'Cancelled by user')}>
+                          onClick={() => {
+                            const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                            if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                            // Sprint 2.7-c-fix · Q3-d · cancellation audit
+                            const u = getCurrentUser();
+                            const irnState = computeIRNLockState(m as unknown as Parameters<typeof computeIRNLockState>[0]);
+                            writeCancellationAuditEntry({
+                              entityCode: safeEntity, voucherId: m.id, voucherNo: m.min_no,
+                              voucherDate: String(m.issue_date ?? ''),
+                              voucherTypeId: m.voucher_type_id ?? null, voucherTypeName: m.voucher_type_name ?? null,
+                              baseVoucherType: 'MIN',
+                              partyId: m.requesting_dept_id ?? null, partyName: m.requesting_dept_name ?? null,
+                              cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                              wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(m.status ?? '')),
+                              hadRcm: false, hadIrn: !!irnState.irn,
+                              linkedRcmJvId: null, linkedRcmJvNo: null,
+                              totalAmount: Number((m as unknown as { total_amount?: number }).total_amount ?? 0),
+                              totalTaxAmount: 0,
+                            });
+                            cancelMin(m.id, reason);
+                          }}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </>
