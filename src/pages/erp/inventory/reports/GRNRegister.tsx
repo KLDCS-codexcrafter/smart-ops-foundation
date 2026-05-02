@@ -1,6 +1,9 @@
 /**
  * GRNRegister.tsx — Register of all GRNs with filter/search
  * Sprint T-Phase-1.2.1 · Inventory Hub · Tier 1 Card #2 sub-sprint 1/3
+ *
+ * @deprecated Sprint T-Phase-1.2.6b · Replaced by GRNRegisterV2 (UTS / D-226).
+ * Kept as fallback for one sprint · removed in 1.2.6e governance pass.
  */
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
