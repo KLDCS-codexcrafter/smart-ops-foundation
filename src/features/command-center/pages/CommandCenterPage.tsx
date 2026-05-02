@@ -228,7 +228,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'projx-project-centres',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'finecore-voucher-class', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
