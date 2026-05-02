@@ -2,7 +2,7 @@
  * stock-viz-saveandnew-autosave-smartdefaults.test.ts
  * Sprint T-Phase-2.7-d-1 · 6 new tests SD1-SD6
  */
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   getDetailedAvailabilityMap,
 } from '@/lib/stock-reservation-engine';
