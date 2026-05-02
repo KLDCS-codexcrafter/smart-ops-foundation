@@ -40,7 +40,6 @@ interface AgedGITReportPanelProps {
 }
 
 export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'DEMO';
 
