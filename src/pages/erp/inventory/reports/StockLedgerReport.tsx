@@ -97,6 +97,143 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
       .sort((a, b) => b.value - a.value);
   }, [godowns, balances]);
 
+  // ---------- Level 1: ItemDetailView ----------
+  const current = drill.current;
+  if (current?.module === 'item-detail' || current?.module === 'item-movements') {
+    const payload = current.payload as { itemId: string; itemName: string };
+    const itemId = payload.itemId;
+    const itemName = payload.itemName;
+    const perGodown = balances.filter(b => b.item_id === itemId);
+    const totalQty = perGodown.reduce((s, b) => dAdd(s, b.qty), 0);
+    const totalVal = perGodown.reduce((s, b) => dAdd(s, b.value), 0);
+
+    if (current.module === 'item-detail') {
+      return (
+        <div className="max-w-6xl mx-auto space-y-5 p-6">
+          <DrillBreadcrumb rootLabel="Stock Ledger" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold">{itemName}</h1>
+              <p className="text-xs text-muted-foreground">Per-godown breakdown · period summary</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => drill.pop()} className="gap-1">
+              <ArrowLeft className="h-3.5 w-3.5" /> Back
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Card><CardHeader className="pb-2"><CardDescription>Total On-Hand</CardDescription>
+              <CardTitle className="text-2xl font-mono">{totalQty}</CardTitle></CardHeader></Card>
+            <Card><CardHeader className="pb-2"><CardDescription>Total Value</CardDescription>
+              <CardTitle className="text-2xl font-mono">{fmtINR(totalVal)}</CardTitle></CardHeader></Card>
+            <Card><CardHeader className="pb-2"><CardDescription>Locations</CardDescription>
+              <CardTitle className="text-2xl font-mono">{perGodown.length}</CardTitle></CardHeader></Card>
+          </div>
+          <Card><CardContent className="p-0">
+            <Table>
+              <TableHeader><TableRow className="bg-muted/40">
+                {['Godown', 'Department', 'Qty', 'Value'].map(h =>
+                  <TableHead key={h} className="text-xs uppercase">{h}</TableHead>)}
+              </TableRow></TableHeader>
+              <TableBody>
+                {perGodown.length === 0 ? (
+                  <TableRow><TableCell colSpan={4} className="text-center py-8 text-xs text-muted-foreground">No balance for this item</TableCell></TableRow>
+                ) : perGodown.map(b => {
+                  const g = godowns.find(x => x.id === b.godown_id);
+                  return (
+                    <TableRow key={b.godown_id}>
+                      <TableCell className="text-xs">{b.godown_name}</TableCell>
+                      <TableCell>
+                        {g?.department_code ? (
+                          <Badge className={`text-[9px] ${DEPARTMENT_BADGE_COLORS[g.department_code]}`}>
+                            {DEPARTMENT_LABELS[g.department_code]}
+                          </Badge>
+                        ) : <span className="text-[10px] text-muted-foreground">—</span>}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono">{b.qty}</TableCell>
+                      <TableCell className="text-xs font-mono">{fmtINR(b.value)}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent></Card>
+          <div>
+            <Button
+              size="sm" variant="default" className="gap-1"
+              onClick={() => drill.push({
+                id: `timeline:${itemId}`, label: 'Movement Timeline',
+                level: 2, module: 'item-movements', payload,
+              })}
+            >
+              View Movement Timeline <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------- Level 2: ItemMovementTimelineView ----------
+    const history = getItemMovementHistory(itemId, safeEntity, '', '');
+    return (
+      <div className="max-w-6xl mx-auto space-y-5 p-6">
+        <DrillBreadcrumb rootLabel="Stock Ledger" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold">{itemName} · Movement Timeline</h1>
+            <p className="text-xs text-muted-foreground">All vouchers touching this item</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => drill.pop()} className="gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" /> Back
+          </Button>
+        </div>
+        <Card><CardContent className="p-0">
+          <Table>
+            <TableHeader><TableRow className="bg-muted/40">
+              <TableHead>Date</TableHead><TableHead>Type</TableHead>
+              <TableHead>Voucher</TableHead>
+              <TableHead className="text-right">Qty Δ</TableHead>
+              <TableHead className="text-right">Value Δ</TableHead>
+              <TableHead></TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {history.events.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">No movements recorded</TableCell></TableRow>
+              ) : history.events.map(e => {
+                const target = TYPE_TO_MODULE[e.event_type];
+                return (
+                  <TableRow key={e.event_id}>
+                    <TableCell className="text-xs">{e.event_date.slice(0, 10)}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-[10px]">{TYPE_LABELS[e.event_type]}</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">{e.source_voucher_no}</TableCell>
+                    <TableCell className={`text-right font-mono text-xs ${e.qty_change >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      {e.qty_change >= 0 ? '+' : ''}{e.qty_change}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-xs">{fmtINR(e.value_change)}</TableCell>
+                    <TableCell>
+                      {target && onNavigate ? (
+                        <Button
+                          size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1"
+                          onClick={() => onNavigate(target, {
+                            fromModule: 'r-stock-ledger',
+                            fromLabel: 'Stock Ledger',
+                            filter: { itemId, sourceLabel: `${itemName} · ${e.source_voucher_no}` },
+                          })}
+                        >
+                          <ExternalLink className="h-3 w-3" /> Open
+                        </Button>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent></Card>
+      </div>
+    );
+  }
+
+  // ---------- Level 0: Base ----------
   return (
     <div className="max-w-6xl mx-auto space-y-5 p-6">
       <div className="flex items-center justify-between">
@@ -177,7 +314,17 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
                   No stock balance yet — post a GRN to credit stock
                 </TableCell></TableRow>
               ) : summary.map(r => (
-                <TableRow key={r.item_id}>
+                <TableRow
+                  key={r.item_id}
+                  className="cursor-pointer hover:bg-muted/30"
+                  onClick={() => drill.push({
+                    id: `item-${r.item_id}`,
+                    label: r.item_name,
+                    level: 1,
+                    module: 'item-detail',
+                    payload: { itemId: r.item_id, itemName: r.item_name },
+                  })}
+                >
                   <TableCell className="text-sm">{r.item_name}</TableCell>
                   <TableCell className="text-xs font-mono">{r.qty}</TableCell>
                   <TableCell className="text-xs font-mono">{fmtINR(r.value)}</TableCell>
