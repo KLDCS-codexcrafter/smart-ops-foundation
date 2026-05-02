@@ -43,6 +43,14 @@ interface UniversalPrintFrameProps {
   onClose?: () => void;
   /** Optional override for signatory column labels. Default: ['Prepared by','Checked by','Authorised Signatory']. */
   signatories?: string[];
+  /** D-228 UTH footer metadata · party-side reference (vendor inv / customer PO) */
+  referenceNo?: string | null;
+  /** D-228 UTH footer metadata · ISO timestamp when record was posted */
+  postedAt?: string | null;
+  /** D-228 UTH footer metadata · tamper-evidence voucher hash (OOB-12) */
+  voucherHash?: string | null;
+  /** D-228 UTH footer metadata · free-text narration */
+  narration?: string | null;
 }
 
 export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
