@@ -148,6 +148,10 @@ export function TimeEntryCapturePanel() {
     const v = validateAndPayload();
     if (!v.ok) { toast.error(v.reason); return; }
     if (dateLocked) toast.warning('Entry date is in a locked accounting period.');
+    if (form.effective_date && isPeriodLocked(form.effective_date, entityCode)) {
+      toast.error(periodLockMessage(form.effective_date, entityCode) ?? 'Effective date is in a locked period');
+      return;
+    }
 
     if (editing) {
       const r = updateTimeEntry(editing.id, v.payload);
@@ -165,6 +169,10 @@ export function TimeEntryCapturePanel() {
     const v = validateAndPayload();
     if (!v.ok) { toast.error(v.reason); return; }
     if (dateLocked) toast.warning('Entry date is in a locked accounting period.');
+    if (form.effective_date && isPeriodLocked(form.effective_date, entityCode)) {
+      toast.error(periodLockMessage(form.effective_date, entityCode) ?? 'Effective date is in a locked period');
+      return;
+    }
 
     if (editing) {
       const r = updateTimeEntry(editing.id, v.payload);
