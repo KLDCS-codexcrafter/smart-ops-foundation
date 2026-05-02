@@ -127,12 +127,15 @@ export function ItemMovementHistoryReportPanel({ onNavigate }: ItemMovementHisto
               <TableHead className="text-right">Value Δ</TableHead>
               <TableHead>From → To</TableHead>
               <TableHead>Party</TableHead>
+              <TableHead></TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(!history || history.events.length === 0) && (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-xs text-muted-foreground">No movements in this window</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-xs text-muted-foreground">No movements in this window</TableCell></TableRow>
               )}
-              {history?.events.map(e => (
+              {history?.events.map(e => {
+                const target = TYPE_TO_MODULE[e.event_type];
+                return (
                 <TableRow key={e.event_id}>
                   <TableCell className="text-xs">{e.event_date.slice(0, 10)}</TableCell>
                   <TableCell><Badge variant="outline" className="text-[10px]">{TYPE_LABELS[e.event_type]}</Badge></TableCell>
@@ -146,8 +149,22 @@ export function ItemMovementHistoryReportPanel({ onNavigate }: ItemMovementHisto
                   </TableCell>
                   <TableCell className="text-xs">{e.from_godown_name ?? '—'} → {e.to_godown_name ?? '—'}</TableCell>
                   <TableCell className="text-xs">{e.party_name ?? '—'}</TableCell>
+                  <TableCell>
+                    {target && onNavigate ? (
+                      <Button
+                        size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1"
+                        onClick={() => onNavigate(target, {
+                          fromModule: 'r-item-movement',
+                          fromLabel: 'Movement History',
+                          filter: { itemId, sourceLabel: `Movement · ${e.source_voucher_no}` },
+                        })}
+                      >
+                        <ExternalLink className="h-3 w-3" /> Open
+                      </Button>
+                    ) : null}
+                  </TableCell>
                 </TableRow>
-              ))}
+              );})}
             </TableBody>
           </Table>
         </CardContent>
