@@ -74,6 +74,34 @@ export function Sprint27d2Mount({
     return () => window.removeEventListener('paste', onPaste);
   }, [isLineItemForm, onCommitBulkRows]);
 
+  // Inline formula evaluator · listens to blur on numeric inputs with
+  // data-formula="qty|rate|discount_pct|tax_pct" OR inputMode="decimal".
+  // On blur · if value starts with '=' or contains math operators · evaluate.
+  useEffect(() => {
+    const FORMULA_FIELDS = new Set(['qty', 'rate', 'discount_pct', 'tax_pct']);
+    const onBlur = (e: FocusEvent) => {
+      const t = e.target as HTMLInputElement | null;
+      if (!t || t.tagName !== 'INPUT') return;
+      const dataField = t.getAttribute('data-formula');
+      const isOptIn = dataField !== null && (dataField === 'true' || FORMULA_FIELDS.has(dataField));
+      const isDecimal = t.inputMode === 'decimal';
+      if (!isOptIn && !isDecimal) return;
+      const raw = t.value ?? '';
+      if (!raw.startsWith('=') && !/[+\-*/%]/.test(raw)) return;
+      // Skip plain numeric (e.g. "-100" is not a formula)
+      if (/^-?\d+(\.\d+)?$/.test(raw.trim())) return;
+      const result = evaluateInlineFormula(raw);
+      if (result !== null) {
+        t.value = String(result);
+        // Notify React via input event (works with controlled components when caller listens)
+        t.dispatchEvent(new Event('input', { bubbles: true }));
+        t.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    };
+    document.addEventListener('blur', onBlur, true);
+    return () => document.removeEventListener('blur', onBlur, true);
+  }, []);
+
   function handleCommit(rows: PasteRow[]) {
     onCommitBulkRows?.(rows);
     setPendingPaste(undefined);
