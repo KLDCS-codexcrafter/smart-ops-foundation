@@ -29,18 +29,39 @@ const RTV_STATUS_LABELS: Record<RTVStatus, string> = {
   draft: 'Draft', posted: 'Posted', shipped: 'Shipped', cancelled: 'Cancelled',
 };
 
-export function RTVRegisterPanel() {
+interface RTVRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function RTVRegisterPanel({ initialFilter }: RTVRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printRTV, setPrintRTV] = useState<RTV | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const rtvs = useMemo<RTV[]>(() => {
+  const allRtvs = useMemo<RTV[]>(() => {
     try {
       // [JWT] GET /api/inventory/rtvs/:entityCode
       return JSON.parse(localStorage.getItem(rtvsKey(safeEntity)) || '[]') as RTV[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const rtvs = useMemo<RTV[]>(() => {
+    if (!filter) return allRtvs;
+    return allRtvs.filter(r => {
+      if (filter.status && r.status !== filter.status) return false;
+      if (filter.vendorId && r.vendor_id !== filter.vendorId) return false;
+      if (filter.godownId && r.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !r.lines.some(l => l.item_id === filter.itemId)) return false;
+      const eff = r.effective_date ?? r.rtv_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allRtvs, filter]);
 
   const meta: RegisterMeta<RTV> = {
     registerCode: 'rtv_register',
