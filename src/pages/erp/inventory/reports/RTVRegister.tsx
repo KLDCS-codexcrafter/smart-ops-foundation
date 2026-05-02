@@ -54,7 +54,7 @@ export function RTVRegisterPanel({ initialFilter }: RTVRegisterPanelProps = {}) 
     return allRtvs.filter(r => {
       if (filter.status && r.status !== filter.status) return false;
       if (filter.vendorId && r.vendor_id !== filter.vendorId) return false;
-      if (filter.godownId && r.godown_id !== filter.godownId) return false;
+      if (filter.godownId && !r.lines.some(l => l.godown_id === filter.godownId)) return false;
       if (filter.itemId && !r.lines.some(l => l.item_id === filter.itemId)) return false;
       const eff = r.effective_date ?? r.rtv_date;
       if (filter.dateFrom && eff < filter.dateFrom) return false;
