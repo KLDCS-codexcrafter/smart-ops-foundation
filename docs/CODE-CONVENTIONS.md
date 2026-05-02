@@ -113,3 +113,29 @@ modification of posted records — the engine throws and the form surfaces
 Do NOT add `// eslint-disable-next-line no-console` directives — that rule
 isn't in this project's config and the directive will trigger
 `unused-disable-directives`. Prefer `error-engine.ts` for operational logging.
+
+## Universal Transaction Standard (UTS · D-226)
+
+Sprint T-Phase-1.2.6a locked the 8-dimension Universal Transaction Standard.
+Every operational record (voucher and non-voucher) presents the same
+dimensions in registers, prints, and exports.
+
+The 8 dimensions:
+
+1. Doc number — FY-scoped, generated via `generateDocNo(prefix, entityCode)`.
+2. Voucher / primary date — operational date.
+3. Effective date — accounting date; fallback `record.effective_date ?? record.primary_date`.
+4. Status — finite state machine with audit hooks.
+5. Reference linkage — every record cites its source.
+6. Decimal-safe money math — `@/lib/decimal-helpers`.
+7. Audit trail — every CRUD + transition.
+8. Print + Export parity — `UniversalPrintFrame` and `universal-export-engine`.
+
+Hybrid treatment for ProjX:
+
+- **Project** and **ProjectMilestone** are masters (no posting effect).
+- **TimeEntry** is a voucher (posts to payroll/billing).
+
+Sibling-abstraction rule: do NOT modify
+`src/components/finecore/registers/RegisterGrid.tsx`. Non-voucher consumers
+use the sibling `src/components/registers/UniversalRegisterGrid.tsx` instead.
