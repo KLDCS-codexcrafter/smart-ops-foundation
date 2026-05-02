@@ -134,9 +134,15 @@ export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {})
                   <TableRow
                     key={g.id}
                     className={cn(
+                      'cursor-pointer',
                       isCritical && 'bg-rose-500/10 hover:bg-rose-500/15',
                       isWarning && 'bg-amber-500/10 hover:bg-amber-500/15',
                     )}
+                    onClick={() => onNavigate?.('r-grn-register', {
+                      fromModule: 'r-aged-git',
+                      fromLabel: 'Aged GIT',
+                      filter: { status: 'in_transit', sourceLabel: `Aged GIT · ${g.grn_no}` },
+                    })}
                   >
                     <TableCell><code className="text-xs font-mono">{g.grn_no}</code></TableCell>
                     <TableCell className="text-sm">{g.vendor_name}</TableCell>
