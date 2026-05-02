@@ -135,11 +135,11 @@ function parseDelimited(text: string, sep: string, entityCode: string): { rows: 
       const val = cells[c].trim();
       if (target === 'qty' || target === 'rate') {
         const n = parseFloat(val.replace(/,/g, ''));
-        if (Number.isFinite(n)) (row as Record<string, unknown>)[target] = n;
+        if (Number.isFinite(n)) (row as unknown as Record<string, unknown>)[target] = n;
       } else if (target === 'matched' || target === 'warnings') {
         // ignore · derived
       } else {
-        (row as Record<string, unknown>)[target] = val;
+        (row as unknown as Record<string, unknown>)[target] = val;
       }
     }
     if (!row.item_name) row.warnings.push('Missing item name');
