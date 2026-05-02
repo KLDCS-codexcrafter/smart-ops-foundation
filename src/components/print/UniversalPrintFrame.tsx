@@ -43,12 +43,21 @@ interface UniversalPrintFrameProps {
   onClose?: () => void;
   /** Optional override for signatory column labels. Default: ['Prepared by','Checked by','Authorised Signatory']. */
   signatories?: string[];
+  /** D-228 UTH footer metadata · party-side reference (vendor inv / customer PO) */
+  referenceNo?: string | null;
+  /** D-228 UTH footer metadata · ISO timestamp when record was posted */
+  postedAt?: string | null;
+  /** D-228 UTH footer metadata · tamper-evidence voucher hash (OOB-12) */
+  voucherHash?: string | null;
+  /** D-228 UTH footer metadata · free-text narration */
+  narration?: string | null;
 }
 
 export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
   const {
     company, title, docNo, voucherDate, effectiveDate,
     referenceBlock, children, termsAndConditions, onClose, signatories,
+    referenceNo, postedAt, voucherHash, narration,
   } = props;
   const sigs = signatories && signatories.length > 0
     ? signatories
@@ -104,6 +113,11 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
                 Effective: <span className="font-mono">{effectiveDate}</span>
               </div>
             )}
+            {referenceNo && (
+              <div className="text-muted-foreground">
+                Ref: <span className="font-mono">{referenceNo}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -112,6 +126,16 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
 
         {/* Body */}
         <div>{children}</div>
+
+        {/* D-228 UTH narration block (rendered above signatories when present) */}
+        {narration && (
+          <div className="border-t pt-3 text-sm">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+              Narration
+            </div>
+            <div className="whitespace-pre-line">{narration}</div>
+          </div>
+        )}
 
         {/* Signatory rows */}
         <div
@@ -130,6 +154,14 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
           <div className="text-xs text-muted-foreground border-t pt-3 whitespace-pre-line">
             <div className="font-semibold mb-1">Terms &amp; Conditions</div>
             {termsAndConditions}
+          </div>
+        )}
+
+        {/* D-228 UTH compliance footer · audit trail metadata */}
+        {(postedAt || voucherHash) && (
+          <div className="text-[10px] text-muted-foreground border-t pt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono">
+            {postedAt && <span>Posted: {postedAt}</span>}
+            {voucherHash && <span>Hash: {voucherHash}</span>}
           </div>
         )}
       </div>

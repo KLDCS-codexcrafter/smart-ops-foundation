@@ -330,7 +330,7 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
-      <Card className="border-blue-500/30">
+            <Card className="border-blue-500/30">
         <CardContent className="pt-4 flex items-center justify-between flex-wrap gap-2">
           <div>
             <p className="text-xs text-muted-foreground">Total memo value</p>

@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer, Activity, CheckCircle2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -75,6 +76,12 @@ export function DOMDetailPanel({ dom, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={dom.id}
+              entityType="demo_outward_memo"
+              entityCode={entityCode || ''}
+              currentRecord={dom as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

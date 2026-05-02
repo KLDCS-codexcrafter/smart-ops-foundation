@@ -5,6 +5,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer } from 'lucide-react';
 import {
@@ -57,6 +58,12 @@ export function MilestoneDetailPanel({ milestone, project, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={milestone.id}
+              entityType="project_milestone"
+              entityCode={entityCode || ''}
+              currentRecord={milestone as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

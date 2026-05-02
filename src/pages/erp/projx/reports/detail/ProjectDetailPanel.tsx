@@ -8,6 +8,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer } from 'lucide-react';
 import {
@@ -35,6 +37,7 @@ interface Props {
 }
 
 export function ProjectDetailPanel({ project, milestones, drill, onPrint }: Props) {
+  const { entityCode } = useCardEntitlement();
   // Q4-a cascade: if a milestone crumb is at the tip of the trail, render its detail in-panel.
   const tip = drill.current;
   if (tip?.module === 'milestone-detail') {
@@ -59,6 +62,12 @@ export function ProjectDetailPanel({ project, milestones, drill, onPrint }: Prop
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={project.id}
+              entityType="project"
+              entityCode={entityCode || ''}
+              currentRecord={project as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

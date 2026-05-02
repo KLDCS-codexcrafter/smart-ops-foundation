@@ -284,7 +284,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
 
         {showForm && (
           <CardContent className="space-y-4 border-t pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <Label className="text-xs">Sale Date</Label>
                 <SmartDateInput

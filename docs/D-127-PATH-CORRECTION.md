@@ -32,7 +32,7 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 1.2.6b-rpt-fix | closed | 10 |
 | 1.2.6c | closed | 11 |
 | 1.2.6d | closed | 12 |
-| 1.2.6d-hdr | closed | 13 |
+| 1.2.6d-hdr | partial-close (detail panels + frame + libs · forms deferred) | 13 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).
