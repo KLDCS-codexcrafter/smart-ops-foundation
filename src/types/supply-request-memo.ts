@@ -45,6 +45,8 @@ export interface SupplyRequestMemo {
   dispatched_at: string | null;
   delivery_memo_id: string | null;
   delivery_memo_no: string | null;
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }

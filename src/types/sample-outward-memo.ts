@@ -114,6 +114,8 @@ export interface SampleOutwardMemo {
   // Marketing Expense voucher posting in FineCore Phase 2. True when posting is pending.
   pending_expense_voucher: boolean;
 
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }

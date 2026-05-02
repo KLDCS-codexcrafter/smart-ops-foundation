@@ -118,6 +118,8 @@ export interface DemoOutwardMemo {
   // marked lost/converted (instead of returned), triggering Marketing Expense voucher.
   pending_expense_voucher: boolean;
 
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }

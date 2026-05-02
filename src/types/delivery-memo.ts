@@ -40,6 +40,8 @@ export interface DeliveryMemo {
   created_by: string | null;
   delivered_at: string | null;
   pod_reference: string | null;
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }

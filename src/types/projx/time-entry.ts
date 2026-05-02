@@ -46,6 +46,8 @@ export interface TimeEntry {
   approved_at: string | null;
   rejection_reason: string | null;
 
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }
