@@ -344,6 +344,7 @@ export function ComplianceSettingsAutomationPanel() {
     setOutstandingConfig(loadOrDefault(comply360OutstandingKey(entityId), DEFAULT_OUTSTANDING));
     setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
     setTallyConfig(loadOrDefault(comply360TallyKey(entityId), DEFAULT_TALLY_EXPORT_CONFIG));
+    setRcmAutoPostPolicies(loadOrDefault(comply360RCMAutoPostKey(entityId), DEFAULT_RCM_AUTO_POST_POLICIES));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
