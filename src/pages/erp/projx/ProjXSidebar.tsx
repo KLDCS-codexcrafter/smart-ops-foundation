@@ -51,6 +51,9 @@ const TXN_ITEMS: SidebarItem[] = [
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
+  { id: 'r-project-register', label: 'Project Register', icon: Briefcase },
+  { id: 'r-milestone-register', label: 'Milestone Register', icon: Milestone },
+  { id: 'r-time-entry-register', label: 'Time Entry Register', icon: Clock },
   { id: 'r-project-pnl', label: 'Project P&L', icon: PieChart },
   { id: 'r-resource-utilization', label: 'Resource Utilization', icon: Activity },
   { id: 'r-milestone-status', label: 'Milestone Status', icon: BarChart3 },
