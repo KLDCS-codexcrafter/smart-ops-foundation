@@ -253,10 +253,11 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     setExistingMemos(list);
     setDmId(''); setBillingAddress(''); setGstin(''); setPlaceOfSupply('');
     setNarration(''); setItems([]); setEffectiveDate(''); setMultiSources([]);
+    setInstrument(EMPTY_INSTRUMENT);
     return memo;
   }, [validate, selectedDM, linkedSRM, entityCode, memoNo, memoDate,
       invoiceDate, billingAddress, gstin, placeOfSupply, items,
-      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources]);
+      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources, instrument]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
