@@ -499,7 +499,38 @@ export function ConsumptionEntryPanel() {
             Stock deducted at source godown's weighted-average rate · variance computed live
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => setView('list')}>← Back</Button>
+        <div className="flex items-center gap-2">
+          {!editingId && (
+            <UseLastVoucherButton
+              entityCode={safeEntity}
+              recordType="consumption_entry"
+              partyValue={header.godown_id || null}
+              partyLabel={godown?.name}
+              onUse={(data) => {
+                setHeader((h) => ({
+                  ...h,
+                  mode: (data.mode as ConsumptionMode) ?? h.mode,
+                  godown_id: (data.godown_id as string) ?? h.godown_id,
+                  project_centre_id: (data.project_centre_id as string | null) ?? h.project_centre_id,
+                  bom_id: (data.bom_id as string | null) ?? h.bom_id,
+                  output_qty: (data.output_qty as number) ?? h.output_qty,
+                  output_uom: (data.output_uom as string) ?? h.output_uom,
+                  overhead_ledger_id: (data.overhead_ledger_id as string | null) ?? h.overhead_ledger_id,
+                  overhead_ledger_name: (data.overhead_ledger_name as string) ?? h.overhead_ledger_name,
+                  site_reference: (data.site_reference as string) ?? h.site_reference,
+                  consumed_by_id: (data.consumed_by_id as string | null) ?? h.consumed_by_id,
+                  narration: (data.narration as string | null) ?? h.narration,
+                }));
+                const srcLines = (data.lines as FormLine[] | undefined) ?? [];
+                if (srcLines.length > 0) {
+                  setLines(srcLines.map((l) => ({ ...l, id: `cln-${l.item_id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` })));
+                }
+                toast.success('Pre-filled from last consumption entry');
+              }}
+            />
+          )}
+          <Button variant="ghost" size="sm" onClick={() => setView('list')}>← Back</Button>
+        </div>
       </div>
 
       <Card>
