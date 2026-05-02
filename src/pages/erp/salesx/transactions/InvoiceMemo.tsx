@@ -243,7 +243,23 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
             Authorise Accounts to post the Sales Invoice voucher against a delivered Delivery Memo.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="invoice_memo"
+            partyValue={selectedDM?.customer_id ?? null}
+            partyLabel={selectedDM?.customer_name ?? undefined}
+            onUse={(data) => {
+              const d = data as Partial<InvoiceMemo>;
+              if (d.billing_address) setBillingAddress(d.billing_address);
+              if (d.gstin) setGstin(d.gstin);
+              if (d.place_of_supply) setPlaceOfSupply(d.place_of_supply);
+              if (d.narration) setNarration(d.narration);
+              toast.success('Pre-filled from last invoice memo · review and edit.');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
@@ -271,6 +287,13 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
           <div>
             <Label className="text-xs">Invoice Date</Label>
             <SmartDateInput value={invoiceDate} onChange={setInvoiceDate} />
+          </div>
+        </CardContent>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-0">
+          <div>
+            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+            <Label className="text-xs">Effective Date</Label>
+            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
           </div>
         </CardContent>
       </Card>
