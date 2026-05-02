@@ -223,6 +223,12 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-exhibition-report',   label: 'Exhibition Report',    icon: Store,         live: true },
     { id: 'sx-r-webinar-report',      label: 'Webinar Report',       icon: Video,         live: true },
     { id: 'sx-r-call-log-history',    label: 'Call Log History',     icon: History,       live: true },
+    { id: 'sx-r-quotation-v2',        label: 'Quotation Register V2',icon: FileBarChart,  live: true },
+    { id: 'sx-r-srm-register',        label: 'SRM Register',         icon: ClipboardList, live: true },
+    { id: 'sx-r-im-register',         label: 'Invoice Memo Register',icon: FileBarChart,  live: true },
+    { id: 'sx-r-secondary-register',  label: 'Secondary Register',   icon: ListTree,      live: true },
+    { id: 'sx-r-som-register',        label: 'SOM Register',         icon: ListChecks,    live: true },
+    { id: 'sx-r-dom-register',        label: 'DOM Register',         icon: ClipboardList, live: true },
   ], [cfg]);
 
   const filteredMasterItems = useMemo(() =>
