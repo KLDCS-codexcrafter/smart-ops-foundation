@@ -41,6 +41,8 @@ interface UniversalPrintFrameProps {
   children: ReactNode;
   termsAndConditions?: string;
   onClose?: () => void;
+  /** Optional override for signatory column labels. Default: ['Prepared by','Checked by','Authorised Signatory']. */
+  signatories?: string[];
 }
 
 export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
