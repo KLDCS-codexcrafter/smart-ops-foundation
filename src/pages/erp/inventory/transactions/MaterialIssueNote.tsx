@@ -481,7 +481,7 @@ export function MaterialIssueNotePanel() {
                               voucherDate: String(m.issue_date ?? ''),
                               voucherTypeId: m.voucher_type_id ?? null, voucherTypeName: m.voucher_type_name ?? null,
                               baseVoucherType: 'MIN',
-                              partyId: m.requesting_dept_id ?? null, partyName: m.requesting_dept_name ?? null,
+                              partyId: m.requested_by_id ?? null, partyName: m.requested_by_name ?? null,
                               cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
                               wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(m.status ?? '')),
                               hadRcm: false, hadIrn: !!irnState.irn,
