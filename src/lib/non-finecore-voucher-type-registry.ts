@@ -104,10 +104,24 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFineCoreVoucherType[] = [
   // Sprint 2.7-b · demo seed
   { id: 'vt-quotation-domestic-special', family: 'sales_quote', display_name: 'Quotation Domestic Special', prefix: 'QT', is_default: false, is_active: true, default_payment_terms: 'Net 7 days · 2% cash discount' },
   { id: 'vt-srm-standard', family: 'sales_request', display_name: 'Supply Request Memo', prefix: 'SRM', is_default: true, is_active: true },
-  { id: 'vt-im-standard', family: 'sales_invoice_memo', display_name: 'Invoice Memo', prefix: 'IM', is_default: true, is_active: true },
+  {
+    id: 'vt-im-standard', family: 'sales_invoice_memo', display_name: 'Invoice Memo', prefix: 'IM',
+    is_default: true, is_active: true,
+    field_rules: [
+      { field_path: 'instrument_type', field_label: 'Bank Instrument', rule: 'mandatory', enforce_on: 'posted', min_amount: 50000, amount_field: 'total_amount', custom_message: 'Bank instrument required for receipts ≥ ₹50,000 (Section 269ST + KYC Rule 9)' },
+      { field_path: 'instrument_ref_no', field_label: 'Instrument Reference', rule: 'mandatory', enforce_on: 'posted', min_amount: 50000, amount_field: 'total_amount', custom_message: 'Instrument reference required when type is set' },
+    ],
+  },
   // Sprint 2.7-b · demo seed
   { id: 'vt-im-export', family: 'sales_invoice_memo', display_name: 'Invoice Memo Export', prefix: 'IM', is_default: false, is_active: true, default_terms: 'Export shipment · LUT applies' },
-  { id: 'vt-sec-standard', family: 'sales_secondary', display_name: 'Secondary Sales', prefix: 'SEC', is_default: true, is_active: true },
+  {
+    id: 'vt-sec-standard', family: 'sales_secondary', display_name: 'Secondary Sales', prefix: 'SEC',
+    is_default: true, is_active: true,
+    field_rules: [
+      { field_path: 'instrument_type', field_label: 'Bank Instrument', rule: 'mandatory', enforce_on: 'posted', min_amount: 50000, amount_field: 'total_amount', custom_message: 'Bank instrument required for receipts ≥ ₹50,000 (Section 269ST + KYC Rule 9)' },
+      { field_path: 'instrument_ref_no', field_label: 'Instrument Reference', rule: 'mandatory', enforce_on: 'posted', min_amount: 50000, amount_field: 'total_amount', custom_message: 'Instrument reference required when type is set' },
+    ],
+  },
   { id: 'vt-som-refundable', family: 'sales_sample', display_name: 'Sample Outward (Refundable)', prefix: 'SOM', is_default: true, is_active: true },
   { id: 'vt-som-non-refundable', family: 'sales_sample', display_name: 'Sample Outward (Non-Refundable · Marketing)', prefix: 'SOM', is_default: false, is_active: true },
   {
