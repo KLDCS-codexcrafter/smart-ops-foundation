@@ -23,6 +23,7 @@ const LIVE_MODULES: ProjXModule[] = [
   't-milestone-tracker', 't-resource-allocation', 't-time-entry', 't-invoice-scheduling',
   'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
   'r-cash-flow-projection',
+  'r-project-register', 'r-milestone-register', 'r-time-entry-register',
 ];
 
 interface SidebarItem {
