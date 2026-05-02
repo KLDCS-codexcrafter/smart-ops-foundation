@@ -38,7 +38,12 @@ function computeRecommendation(util: number, lastActivityIso: string | null): Re
   return 'Optimal';
 }
 
-export function BinUtilizationReportPanel() {
+interface BinUtilizationReportPanelProps {
+  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+}
+
+export function BinUtilizationReportPanel({ onNavigate }: BinUtilizationReportPanelProps = {}) {
+  void onNavigate;
   const { entityCode } = useCardEntitlement();
 
   const data = useMemo(() => {
