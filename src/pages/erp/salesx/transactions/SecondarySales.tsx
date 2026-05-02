@@ -35,6 +35,12 @@ import {
 } from '@/types/secondary-sales';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
+// Sprint T-Phase-2.7-c-fix · Q4-c BankInstrumentPicker mount + Q3-d cancel audit
+import { BankInstrumentPicker } from '@/components/uth/BankInstrumentPicker';
+import { EMPTY_INSTRUMENT, type InstrumentValue } from '@/components/uth/BankInstrumentPicker.helpers';
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
@@ -142,6 +148,8 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   const [items, setItems] = useState<ItemLite[]>(() => loadItems());
   const [form, setForm] = useState<FormState>(BLANK);
   const [showForm, setShowForm] = useState(false);
+  // Sprint 2.7-c-fix · Q4-c · bank instrument capture (5 fields mirror Voucher.ts · D-128 schema unchanged)
+  const [instrument, setInstrument] = useState<InstrumentValue>(EMPTY_INSTRUMENT);
 
   useEffect(() => {
     setSales(loadSales(entityCode));
@@ -153,6 +161,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
     () => round2(dSum(form.lines, l => l.amount)),
     [form.lines],
   );
+
+  // Sprint 2.7-c-fix · Q1-c threshold reuse — engine-level field_rules drive the actual
+  // gating (vt-sec-standard min_amount=50000); banner here is informational only.
+  const mandatoryReason = totalAmount >= 50000
+    ? `Total ₹${totalAmount.toLocaleString('en-IN')} ≥ ₹50,000 · bank instrument required by field_rules (Section 269ST + KYC Rule 9)`
+    : null;
 
   const addLine = useCallback(() => {
     const newLine: SecondarySalesLine = {
@@ -217,6 +231,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         lines: form.lines,
         total_amount: totalAmount,
         notes: form.notes || null,
+        // Sprint 2.7-c-fix · Q4-c · bank instrument fields (D-128 voucher schema unchanged)
+        instrument_type: instrument.instrument_type,
+        instrument_ref_no: instrument.instrument_ref_no,
+        cheque_date: instrument.cheque_date,
+        bank_name: instrument.bank_name,
+        deposit_date: instrument.deposit_date,
         updated_at: NOW(),
       } : s);
       toast.success('Updated');
@@ -236,6 +256,12 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         capture_mode: 'manual',
         api_request_id: null,
         notes: form.notes || null,
+        // Sprint 2.7-c-fix · Q4-c · bank instrument fields
+        instrument_type: instrument.instrument_type,
+        instrument_ref_no: instrument.instrument_ref_no,
+        cheque_date: instrument.cheque_date,
+        bank_name: instrument.bank_name,
+        deposit_date: instrument.deposit_date,
         created_at: NOW(),
         updated_at: NOW(),
       };
@@ -245,8 +271,9 @@ export function SecondarySalesPanel({ entityCode }: Props) {
     saveSales(entityCode, next);
     setSales(next);
     setForm(BLANK);
+    setInstrument(EMPTY_INSTRUMENT);
     setShowForm(false);
-  }, [form, totalAmount, distributors, entityCode]);
+  }, [form, totalAmount, distributors, entityCode, instrument]);
 
   const handleEdit = useCallback((s: SecondarySales) => {
     setForm({
@@ -263,11 +290,40 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    if (!confirm('Delete this secondary sales record?')) return;
+    const reason = window.prompt('Cancel reason (min 10 chars · forensic audit log):') ?? '';
+    if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 characters'); return; }
+    const existing = sales.find(s => s.id === id);
+    if (existing) {
+      // Sprint 2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+      const u = getCurrentUser();
+      const irnState = computeIRNLockState(existing as unknown as Parameters<typeof computeIRNLockState>[0]);
+      const wasPosted = ['posted', 'submitted', 'approved'].includes(String(existing.status ?? ''));
+      writeCancellationAuditEntry({
+        entityCode,
+        voucherId: existing.id,
+        voucherNo: existing.secondary_code,
+        voucherDate: existing.sale_date,
+        voucherTypeId: existing.voucher_type_id ?? null,
+        voucherTypeName: existing.voucher_type_name ?? null,
+        baseVoucherType: 'SS',
+        partyId: existing.distributor_id ?? null,
+        partyName: existing.distributor_name ?? null,
+        cancelledBy: u.id,
+        cancelledByName: u.displayName,
+        cancelReason: reason,
+        wasPostedBeforeCancel: wasPosted,
+        hadRcm: false,
+        hadIrn: !!irnState.irn,
+        linkedRcmJvId: null,
+        linkedRcmJvNo: null,
+        totalAmount: Number(existing.total_amount ?? 0),
+        totalTaxAmount: 0,
+      });
+    }
     const next = sales.filter(s => s.id !== id);
     saveSales(entityCode, next);
     setSales(next);
-    toast.success('Deleted');
+    toast.success('Cancelled');
   }, [sales, entityCode]);
 
   useCtrlS(handleSave);
@@ -437,6 +493,14 @@ export function SecondarySalesPanel({ entityCode }: Props) {
                 <p className="text-sm font-mono font-semibold">Total: {formatINR(totalAmount)}</p>
               </div>
             </div>
+
+            {/* Sprint 2.7-c-fix · Q4-c · bank instrument · mandatory ≥ ₹50K via field_rules (Q1-c) */}
+            <BankInstrumentPicker
+              value={instrument}
+              onChange={setInstrument}
+              amount={totalAmount}
+              mandatoryReason={mandatoryReason}
+            />
 
             <div>
               <Label className="text-xs">Notes</Label>

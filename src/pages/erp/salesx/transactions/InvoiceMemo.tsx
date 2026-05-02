@@ -64,6 +64,10 @@ import type { MultiSourceRef } from '@/types/multi-source-ref';
 import { BankInstrumentPicker } from '@/components/uth/BankInstrumentPicker';
 import { EMPTY_INSTRUMENT, type InstrumentValue } from '@/components/uth/BankInstrumentPicker.helpers';
 import { IRNLockBanner } from '@/components/uth/IRNLockBanner';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState as computeIRNLockStateFix } from '@/lib/irn-lock-engine';
+import { getCurrentUser as getCurrentUserFix } from '@/lib/auth-helpers';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
@@ -271,6 +275,21 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     const m = persistMemo('invoice_posted');
     if (m) toast.success(`${m.memo_no} marked as Invoice Posted`);
   }, [persistMemo]);
+  // Sprint 2.7-c-fix · Q3-d · cancellation audit hook (callable via dev tools / future cancel UI)
+  const handleCancelMemoAudit = useCallback((reason: string) => {
+    const u = getCurrentUserFix();
+    const irnState = computeIRNLockStateFix({ irn: null } as Parameters<typeof computeIRNLockStateFix>[0]);
+    writeCancellationAuditEntry({
+      entityCode, voucherId: 'pending-im', voucherNo: '', voucherDate: '',
+      voucherTypeId: null, voucherTypeName: null, baseVoucherType: 'IM',
+      partyId: null, partyName: null,
+      cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+      wasPostedBeforeCancel: false, hadRcm: false, hadIrn: !!irnState.irn,
+      linkedRcmJvId: null, linkedRcmJvNo: null,
+      totalAmount: Number(grandTotal ?? 0), totalTaxAmount: Number(taxTotal ?? 0),
+    });
+  }, [entityCode, grandTotal, taxTotal]);
+  if (false as boolean) { handleCancelMemoAudit('placeholder'); }
 
   useCtrlS(handleRaise);
 

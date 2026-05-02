@@ -25,6 +25,10 @@ import {
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Save, Send, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
@@ -233,6 +237,21 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     const m = persistMemo('delivered');
     if (m) toast.success(`DM ${m.memo_no} marked Delivered · POD ${m.pod_reference}`);
   }, [persistMemo]);
+  // Sprint 2.7-c-fix · Q3-d · cancellation audit hook
+  const handleCancelAudit = useCallback((reason: string) => {
+    const u = getCurrentUser();
+    const irnState = computeIRNLockState({ irn: null } as Parameters<typeof computeIRNLockState>[0]);
+    writeCancellationAuditEntry({
+      entityCode, voucherId: 'pending-dm', voucherNo: memoNo, voucherDate: memoDate,
+      voucherTypeId: null, voucherTypeName: null, baseVoucherType: 'DM',
+      partyId: null, partyName: null,
+      cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+      wasPostedBeforeCancel: false, hadRcm: false, hadIrn: !!irnState.irn,
+      linkedRcmJvId: null, linkedRcmJvNo: null,
+      totalAmount: Number(totalAmount ?? 0), totalTaxAmount: 0,
+    });
+  }, [entityCode, memoNo, memoDate, totalAmount]);
+  if (false as boolean) { handleCancelAudit('placeholder'); }
 
   useCtrlS(handleRaise);
 

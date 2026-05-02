@@ -23,6 +23,10 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 // Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 + Q2-c multi-source (RTV → multi-GRN)
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
@@ -443,6 +447,28 @@ export function RTVEntryPanel() {
                   <Button size="sm" onClick={() => shipRtv(active.id)} className="gap-1">
                     <Truck className="h-3.5 w-3.5" /> Mark Shipped
                   </Button>
+                )}
+                {active.status !== 'cancelled' && active.status !== 'shipped' && (
+                  <Button size="sm" variant="ghost" onClick={() => {
+                    const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                    if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                    const u = getCurrentUser();
+                    const irnState = computeIRNLockState(active as unknown as Parameters<typeof computeIRNLockState>[0]);
+                    writeCancellationAuditEntry({
+                      entityCode, voucherId: active.id, voucherNo: active.rtv_no,
+                      voucherDate: String(active.rtv_date ?? ''),
+                      voucherTypeId: active.voucher_type_id ?? null, voucherTypeName: active.voucher_type_name ?? null,
+                      baseVoucherType: 'RTV',
+                      partyId: active.vendor_id ?? null, partyName: active.vendor_name ?? null,
+                      cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                      wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(active.status ?? '')),
+                      hadRcm: false, hadIrn: !!irnState.irn,
+                      linkedRcmJvId: null, linkedRcmJvNo: null,
+                      totalAmount: Number(active.total_value ?? 0), totalTaxAmount: 0,
+                    });
+                    persist(rtvs.map(r => r.id === active.id ? { ...r, status: 'cancelled' as const, cancelled_at: new Date().toISOString(), cancellation_reason: reason } : r));
+                    toast.success('RTV cancelled');
+                  }}>Cancel</Button>
                 )}
               </div>
               <Textarea readOnly value={active.narration ?? ''} className="text-xs" />

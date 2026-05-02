@@ -29,6 +29,10 @@ import type { InventoryItem } from '@/types/inventory-item';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
@@ -295,7 +299,23 @@ export function CycleCountEntryPanel() {
               onApprove={() => approveCount(active.id, userId, userName)}
               onReject={(reason) => rejectCount(active.id, reason)}
               onPost={() => postCount(active.id)}
-              onCancel={(reason) => cancelCount(active.id, reason)}
+              onCancel={(reason) => {
+                if (!active) return null;
+                const u = getCurrentUser();
+                const irnState = computeIRNLockState(active as unknown as Parameters<typeof computeIRNLockState>[0]);
+                writeCancellationAuditEntry({
+                  entityCode, voucherId: active.id, voucherNo: active.count_no,
+                  voucherDate: String(active.count_date ?? ''),
+                  voucherTypeId: active.voucher_type_id ?? null, voucherTypeName: active.voucher_type_name ?? null,
+                  baseVoucherType: 'CC', partyId: null, partyName: null,
+                  cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                  wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(active.status ?? '')),
+                  hadRcm: false, hadIrn: !!irnState.irn,
+                  linkedRcmJvId: null, linkedRcmJvNo: null,
+                  totalAmount: 0, totalTaxAmount: 0,
+                });
+                return cancelCount(active.id, reason);
+              }}
             />
           )}
         </SheetContent>

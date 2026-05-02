@@ -45,6 +45,10 @@ import { generateDocNo } from '@/lib/finecore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 // Sprint T-Phase-1.2.6e-tally-1 · Q1-b/Q2-c/Q3-b/Q4-d
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
@@ -680,6 +684,33 @@ export function GRNEntryPanel() {
                       <Button variant="ghost" size="icon" className="h-7 w-7"
                         onClick={() => openExisting(g, false)}>
                         <FileText className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                    {g.status !== 'posted' && g.status !== 'cancelled' && (
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-600"
+                        onClick={() => {
+                          const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                          if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                          // Sprint 2.7-c-fix · Q3-d · cancellation audit
+                          const u = getCurrentUser();
+                          const irnState = computeIRNLockState(g as unknown as Parameters<typeof computeIRNLockState>[0]);
+                          writeCancellationAuditEntry({
+                            entityCode: safeEntity, voucherId: g.id, voucherNo: g.grn_no,
+                            voucherDate: String(g.receipt_date ?? ''),
+                            voucherTypeId: g.voucher_type_id ?? null, voucherTypeName: g.voucher_type_name ?? null,
+                            baseVoucherType: 'GRN',
+                            partyId: g.vendor_id ?? null, partyName: g.vendor_name ?? null,
+                            cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                            wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(g.status ?? '')),
+                            hadRcm: false, hadIrn: !!irnState.irn,
+                            linkedRcmJvId: null, linkedRcmJvNo: null,
+                            totalAmount: Number((g as unknown as { total_amount?: number }).total_amount ?? 0),
+                            totalTaxAmount: 0,
+                          });
+                          persist(grns.map(x => x.id === g.id ? { ...x, status: 'cancelled', cancelled_at: new Date().toISOString(), cancellation_reason: reason } : x));
+                          toast.success('GRN cancelled');
+                        }}>
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     )}
                   </div>

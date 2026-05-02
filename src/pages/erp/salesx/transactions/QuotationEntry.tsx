@@ -38,6 +38,10 @@ import { Sparkles } from 'lucide-react';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
   upsertQuoteReservation,
@@ -674,7 +678,28 @@ export function QuotationEntryPanel({ entityCode }: Props) {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-medium">Stage</label>
-                  <Select value={form.quotation_stage} onValueChange={v => update({ quotation_stage: v as QuotationStage })}>
+                  <Select value={form.quotation_stage} onValueChange={v => {
+                    if (v === 'cancelled' && form.quotation_stage !== 'cancelled') {
+                      const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                      if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                      const u = getCurrentUser();
+                      const irnState = computeIRNLockState(form as unknown as Parameters<typeof computeIRNLockState>[0]);
+                      writeCancellationAuditEntry({
+                        entityCode, voucherId: editingId ?? 'new', voucherNo: String((form as unknown as { quotation_no?: string }).quotation_no ?? ''),
+                        voucherDate: String(form.quotation_date ?? ''),
+                        voucherTypeId: (form as unknown as { voucher_type_id?: string }).voucher_type_id ?? null,
+                        voucherTypeName: (form as unknown as { voucher_type_name?: string }).voucher_type_name ?? null,
+                        baseVoucherType: 'Quotation',
+                        partyId: form.customer_id ?? null, partyName: form.customer_name ?? null,
+                        cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                        wasPostedBeforeCancel: form.quotation_stage === 'confirmed',
+                        hadRcm: false, hadIrn: !!irnState.irn,
+                        linkedRcmJvId: null, linkedRcmJvNo: null,
+                        totalAmount: Number(form.total_amount ?? 0), totalTaxAmount: Number(form.tax_amount ?? 0),
+                      });
+                    }
+                    update({ quotation_stage: v as QuotationStage });
+                  }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
