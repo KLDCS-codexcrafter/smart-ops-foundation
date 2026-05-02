@@ -57,6 +57,14 @@ export interface SecondarySales {
   /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
   voucher_type_id?: string | null;
   voucher_type_name?: string | null;
+  /** Sprint 2.7-c · OOB-15 · bank instrument capture (Q4-c). */
+  instrument_type?: string | null;
+  instrument_ref_no?: string | null;
+  cheque_date?: string | null;
+  bank_name?: string | null;
+  deposit_date?: string | null;
+  /** Sprint 2.7-c · cancel-log writer needs status semantics across forms. */
+  status?: string | null;
   created_at: string;
   updated_at: string;
 }
