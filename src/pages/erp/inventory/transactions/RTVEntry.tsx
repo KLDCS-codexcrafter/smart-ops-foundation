@@ -23,6 +23,11 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 + Q2-c multi-source (RTV → multi-GRN)
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
@@ -48,6 +53,9 @@ export function RTVEntryPanel() {
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
   const [createOpen, setCreateOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  // Sprint T-Phase-1.2.6e-tally-1 · multi-source (RTV → multi-GRN)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const grns = useMemo(() => readKey<GRN>(`erp_grns_${entityCode}`).filter(g => g.status === 'posted' || g.status === 'inspected'), [entityCode]);
 
