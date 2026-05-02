@@ -20,6 +20,9 @@ import { ResourceUtilizationReportPanel } from './reports/ResourceUtilizationRep
 import { MilestoneStatusReportPanel } from './reports/MilestoneStatusReport';
 import { ProjectMarginReportPanel } from './reports/ProjectMarginReport';
 import { CashFlowProjectionReportPanel } from './reports/CashFlowProjectionReport';
+import { ProjectRegisterPanel } from './reports/ProjectRegister';
+import { MilestoneRegisterPanel } from './reports/MilestoneRegister';
+import { TimeEntryRegisterPanel } from './reports/TimeEntryRegister';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
