@@ -17,6 +17,7 @@ import { BulkPasteDialog } from '@/components/uth/BulkPasteDialog';
 import { Button } from '@/components/ui/button';
 import { ClipboardPaste } from 'lucide-react';
 import { shouldAutoTriggerBulkPaste, type PasteRow } from '@/lib/bulk-paste-engine';
+import { evaluateInlineFormula } from '@/lib/form-keyboard-engine';
 
 interface Props {
   formName: string;
