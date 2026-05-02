@@ -3,6 +3,7 @@ import { Calculator, Shield, BookOpen, Users, Settings, ArrowRight, FolderTree, 
 import { Badge } from '@/components/ui/badge';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { fiscalYearStorageKey } from '@/types/fiscal-year';
+import { CancellationDashboardWidget } from './CancellationDashboardWidget';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
 
 interface FineCoreMastersModuleProps {
@@ -76,6 +77,7 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
 
   return (
     <div className="space-y-6 relative">
+      <CancellationDashboardWidget />
       <div>
         <div className="flex items-center gap-2 mb-1">
           <h1 className="text-2xl font-bold text-foreground">FineCore Masters</h1>
