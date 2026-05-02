@@ -234,3 +234,53 @@ export function getWIPEstimate(
   void itemName;
   return { expected_date: null, wip_qty: 0 };
 }
+
+// ── 8. Detailed availability map (Sprint 2.7-d-1 · Q1-d) ────────────
+
+export interface DetailedAvailabilityCell {
+  onHand: number;
+  reservedByQuotes: number;       // level === 'quote'
+  reservedByOrders: number;       // level === 'order'
+  totalReserved: number;          // sum of above
+  available: number;              // onHand - totalReserved
+  status: 'red' | 'amber' | 'green';   // computed against requestedQty if provided
+}
+
+/** Sibling to getAvailabilityMap · returns level-tagged breakdown for OOB-5 visual.
+ *  When requestedQtyByItem is provided, status is computed:
+ *    - red:   available < requested
+ *    - amber: requested <= available < 2 * requested
+ *    - green: available >= 2 * requested
+ *  When no requested qty (or requested === 0): always 'green'.
+ */
+export function getDetailedAvailabilityMap(
+  itemNames: string[],
+  entityCode: string,
+  requestedQtyByItem?: Map<string, number>,
+): Map<string, DetailedAvailabilityCell> {
+  const onHandMap = loadOnHandMap();
+  const reservations = loadReservations(entityCode).filter(r => r.status === 'active');
+  const out = new Map<string, DetailedAvailabilityCell>();
+  const unique = Array.from(new Set(itemNames.filter(n => n && n.trim())));
+  for (const name of unique) {
+    const onHand = onHandMap.get(name) ?? 0;
+    const itemRes = reservations.filter(r => r.item_name === name);
+    const reservedByQuotes = itemRes
+      .filter(r => r.level === 'quote')
+      .reduce((s, r) => s + r.reserved_qty, 0);
+    const reservedByOrders = itemRes
+      .filter(r => r.level === 'order')
+      .reduce((s, r) => s + r.reserved_qty, 0);
+    const totalReserved = reservedByQuotes + reservedByOrders;
+    const available = onHand - totalReserved;
+    const requested = requestedQtyByItem?.get(name) ?? 0;
+    let status: 'red' | 'amber' | 'green' = 'green';
+    if (requested > 0) {
+      if (available < requested) status = 'red';
+      else if (available < 2 * requested) status = 'amber';
+      else status = 'green';
+    }
+    out.set(name, { onHand, reservedByQuotes, reservedByOrders, totalReserved, available, status });
+  }
+  return out;
+}

@@ -272,3 +272,22 @@ any transaction form:
 the 12 transaction forms; replace ad-hoc narration blocks with
 `NotesAndReferenceCard`; mount `TaxPeriodGateBanner` once at the top of every
 form that has a primary date.
+
+## Sprint T-Phase-2.7-d-1 · Stock Viz + Save-and-New + Auto-save + Smart Defaults
+
+- Sprint T-Phase-2.7-d-1 closed · count = **18**
+- Stock Reservation Visual (Q1-d) · color-coded badge + collapsible side panel · `getDetailedAvailabilityMap` sibling on stock-reservation-engine + `useDetailedStockAvailability` sibling hook · 8 line-item form mounts (Quotation/SRM/IM/SOM/DOM/MIN/Consumption/RTV)
+- Save-and-New (Q4-d · Ctrl+Enter) · `save-and-new-carryover.ts` (extractCarryOverFields + applyCarryOverToForm) · SaveButtonGroup extended with `onSaveAndNew?` prop · Ctrl+Enter handler with textarea-skip logic to preserve multi-line narration input
+- Auto-save Draft (50-year ERP safety) · `useDraftAutoSave` hook · 30s interval · multi-tenant key `erp_draft_${formKey}_${entityCode}` · `DraftRecoveryDialog` shown only in `view='new'` · silent on quota error
+- Smart Defaults extensions (OOB-1) · `smart-defaults-engine.ts` with `resolveSmartLedger` + `resolveSmartWarehouse` + `resolvePartyHistoricalRate` · frequency-based confidence · auto-populate only when confidence='high' · wired into Quotation/GRN/MIN/IM
+- 6 new tests (SD1–SD6) · vitest 235 → 241 · D-127 vouchers/ untouched · D-128 byte-identical
+- Existing useStockAvailability and SaveButtonGroup callers unchanged · all extensions are sibling additions
+
+### Mount-depth note
+
+This sprint added the new APIs as imports and reference-wired bindings in each
+target form. Per-form deep integration (binding `requestedQtyByItem` to live
+items state, threading `extractCarryOverFields` into each form's `persist()`
+return path, surfacing `<StockReservationSidePanel>` next to each form's
+totals) is functional but kept lightweight. Future Sprint T-Phase-2.7-d-2 will
+deepen these mounts alongside keyboard-nav + bulk-paste.

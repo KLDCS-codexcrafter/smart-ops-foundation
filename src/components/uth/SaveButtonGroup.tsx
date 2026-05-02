@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, Send, CheckCircle2, XCircle } from 'lucide-react';
+import { Save, Send, CheckCircle2, XCircle, FilePlus2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { NonFineCoreVoucherType } from '@/lib/non-finecore-voucher-type-registry';
 
@@ -31,6 +31,9 @@ interface Props {
   onSubmitForApproval: () => void;
   onApproveAndPost: () => void;
   onReject: (reason: string) => void;
+  /** Sprint 2.7-d-1 · Q4-d · when set, renders a "Save & New" button (Ctrl+Enter)
+   *  ONLY when below approval threshold. High-value vouchers route through approval flow. */
+  onSaveAndNew?: () => void;
   saving?: boolean;
   className?: string;
 }
@@ -38,6 +41,7 @@ interface Props {
 export function SaveButtonGroup({
   voucherType, recordValue, recordStatus, userRoles,
   onSaveDraft, onSaveAndPost, onSubmitForApproval, onApproveAndPost, onReject,
+  onSaveAndNew,
   saving, className,
 }: Props) {
   const [rejectOpen, setRejectOpen] = useState(false);
@@ -136,6 +140,12 @@ export function SaveButtonGroup({
       {!breached && (
         <Button onClick={onSaveAndPost} disabled={saving}>
           <Save className="h-4 w-4 mr-2" /> Save & Post
+        </Button>
+      )}
+      {!breached && onSaveAndNew && (
+        <Button variant="secondary" onClick={onSaveAndNew} disabled={saving}>
+          <FilePlus2 className="h-4 w-4 mr-2" /> Save &amp; New
+          <kbd className="ml-2 px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono border">Ctrl+Enter</kbd>
         </Button>
       )}
       {breached && !isApprover && (
