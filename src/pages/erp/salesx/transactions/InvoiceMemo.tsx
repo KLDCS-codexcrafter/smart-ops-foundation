@@ -213,11 +213,11 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     localStorage.setItem(key, JSON.stringify(list));
     setExistingMemos(list);
     setDmId(''); setBillingAddress(''); setGstin(''); setPlaceOfSupply('');
-    setNarration(''); setItems([]);
+    setNarration(''); setItems([]); setEffectiveDate(''); setMultiSources([]);
     return memo;
   }, [validate, selectedDM, linkedSRM, entityCode, memoNo, memoDate,
       invoiceDate, billingAddress, gstin, placeOfSupply, items,
-      subTotal, taxTotal, grandTotal, narration]);
+      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
