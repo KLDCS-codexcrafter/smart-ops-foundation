@@ -160,6 +160,7 @@ export function GRNRegisterV2Panel({ initialFilter }: GRNRegisterV2PanelProps = 
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb
         rootLabel="GRN Register"
         trail={drill.trail}
