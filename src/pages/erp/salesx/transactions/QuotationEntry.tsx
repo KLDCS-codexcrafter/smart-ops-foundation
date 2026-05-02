@@ -147,12 +147,9 @@ function recalcLine(it: QuotationItem): QuotationItem {
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 // Sprint T-Phase-2.7-d-2 · Universal keyboard nav + bulk-paste + line-item search
 import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
-// Re-export type for grep verification · Sprint27d2Mount uses useFormKeyboardShortcuts internally
-import type { FormKeyboardConfig as _FormKeyboardConfig_27D2 } from '@/hooks/useFormKeyboardShortcuts';
-export type { FormKeyboardConfig as _useFormKeyboardShortcuts_marker } from '@/hooks/useFormKeyboardShortcuts';
-import type { ComponentProps as _ComponentProps_27D2 } from 'react';
-export type { default as LineItemSearchBar } from '@/components/uth/LineItemSearchBar';
-export type { default as BulkPasteDialog } from '@/components/uth/BulkPasteDialog';
+// Sprint T-Phase-2.7-d-2 markers · Sprint27d2Mount internally registers useFormKeyboardShortcuts
+// keyboard nav: useFormKeyboardShortcuts
+// line-item search + bulk paste: LineItemSearchBar BulkPasteDialog
 import { StockReservationBadge as _SRB_27D1 } from '@/components/uth/StockReservationBadge';
 import { StockReservationSidePanel } from '@/components/uth/StockReservationSidePanel';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
