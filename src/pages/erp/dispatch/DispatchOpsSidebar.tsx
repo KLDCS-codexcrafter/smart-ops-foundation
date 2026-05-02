@@ -183,7 +183,15 @@ export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {
                 {REPORTS_ITEMS.map(i => (
                   <SidebarMenuItem key={i.module}>
                     <SidebarMenuButton
-                      onClick={() => onModuleChange(i.module)}
+                      onClick={() => {
+                        if (i.module === 'dops-link-som-register') {
+                          navigate('/erp/salesx?m=sx-r-som-register');
+                        } else if (i.module === 'dops-link-dom-register') {
+                          navigate('/erp/salesx?m=sx-r-dom-register');
+                        } else {
+                          onModuleChange(i.module);
+                        }
+                      }}
                       isActive={activeModule === i.module}
                       className={cn('pl-8', activeModule === i.module && 'bg-orange-500/15 text-orange-500')}
                     >
