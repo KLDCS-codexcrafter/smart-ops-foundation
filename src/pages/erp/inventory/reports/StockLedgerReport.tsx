@@ -32,17 +32,21 @@ import type { InventoryHubModule } from '../InventoryHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
 import { useDrillDown } from '@/hooks/useDrillDown';
+import { ChevronRight } from 'lucide-react';
 
 interface StockLedgerReportPanelProps {
-  /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c */
+  /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c hybrid routing */
   onNavigate?: (module: InventoryHubModule, ctx?: DrillNavigationContext) => void;
 }
 
+/**
+ * Stock Ledger flagship · 4-level drill (Q1-c):
+ *   L0 base summary → L1 ItemDetailView → L2 ItemMovementTimelineView →
+ *   L3 cross-panel via onNavigate to source register.
+ */
 export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelProps = {}) {
   const drill = useDrillDown();
-  // Stock Ledger flagship · 4-level deep drill (Q1-c): base → ItemDetail → MovementTimeline → Source.
-  // Drill payload travels in trail; level-3 'Open Source' uses onNavigate to cross-panel.
-  void drill; void onNavigate;
+  void drill; void onNavigate; void ChevronRight;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { godowns } = useGodowns();
