@@ -2,6 +2,7 @@
  * InventoryHubSidebar.types.ts — Module union for Inventory Hub card
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  * Sprint T-Phase-1.2.2 · Activated MIN + Consumption Entry + Consumption Summary
+ * Sprint T-Phase-1.2.6b · 4 new UTS register modules (D-226)
  */
 export type InventoryHubModule =
   | 'welcome'
@@ -36,4 +37,9 @@ export type InventoryHubModule =
   | 't-cycle-count'
   | 't-rtv'
   | 'r-bin-utilization'
-  | 'r-item-movement';
+  | 'r-item-movement'
+  // Sprint T-Phase-1.2.6b · UTS retrofit registers
+  | 'r-min-register'
+  | 'r-consumption-register'
+  | 'r-cycle-count-register'
+  | 'r-rtv-register';
