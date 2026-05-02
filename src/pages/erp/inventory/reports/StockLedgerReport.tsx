@@ -30,9 +30,9 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 import type { InventoryHubModule } from '../InventoryHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
-// DrillBreadcrumb imported for level-1+ drill UI (deferred render — Q1-c flagship plan).
-import { DrillBreadcrumb as _DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
-const _DRILL = _DrillBreadcrumb;
+// DrillBreadcrumb pre-wired for level-1+ drill UI (Q1-c flagship 4-level plan).
+import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+void DrillBreadcrumb;
 import { useDrillDown } from '@/hooks/useDrillDown';
 import { ChevronRight } from 'lucide-react';
 
