@@ -300,7 +300,7 @@ export function CycleCountEntryPanel() {
               onReject={(reason) => rejectCount(active.id, reason)}
               onPost={() => postCount(active.id)}
               onCancel={(reason) => {
-                if (!active) return;
+                if (!active) return null;
                 const u = getCurrentUser();
                 const irnState = computeIRNLockState(active as unknown as Parameters<typeof computeIRNLockState>[0]);
                 writeCancellationAuditEntry({
