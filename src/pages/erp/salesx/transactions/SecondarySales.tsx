@@ -96,17 +96,12 @@ function loadItems(): ItemLite[] {
   } catch { return []; }
 }
 
-function nextSecondaryCode(existing: SecondarySales[]): string {
-  const today = new Date();
-  const fyStart = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
-  const fy = `${String(fyStart).slice(2)}-${String(fyStart + 1).slice(2)}`;
-  const prefix = `SEC/${fy}/`;
-  const nums = existing
-    .filter(s => s.secondary_code.startsWith(prefix))
-    .map(s => parseInt(s.secondary_code.split('/').pop() || '0', 10))
-    .filter(n => !isNaN(n));
-  const next = (nums.length > 0 ? Math.max(...nums) : 0) + 1;
-  return `${prefix}${String(next).padStart(4, '0')}`;
+// Sprint T-Phase-1.2.6a · UTS doc-no consolidation (D-226).
+// New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
+// Existing records keep their secondary_code as-is (backward compat).
+import { generateDocNo } from '@/lib/finecore-engine';
+function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
+  return generateDocNo('SEC', entityCode);
 }
 
 interface FormState {
