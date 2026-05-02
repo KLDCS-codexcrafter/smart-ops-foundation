@@ -482,7 +482,26 @@ export function ConsumptionEntryPanel() {
                           <FileText className="h-3.5 w-3.5" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-600"
-                          onClick={() => cancelEntry(e.id, 'Cancelled by user')}>
+                          onClick={() => {
+                            const reason = window.prompt('Cancel reason (min 10 chars):') ?? '';
+                            if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 chars'); return; }
+                            const u = getCurrentUser();
+                            const irnState = computeIRNLockState(e as unknown as Parameters<typeof computeIRNLockState>[0]);
+                            writeCancellationAuditEntry({
+                              entityCode: safeEntity, voucherId: e.id, voucherNo: e.ce_no,
+                              voucherDate: String(e.consumption_date ?? ''),
+                              voucherTypeId: e.voucher_type_id ?? null, voucherTypeName: e.voucher_type_name ?? null,
+                              baseVoucherType: 'CE',
+                              partyId: e.project_centre_id ?? null, partyName: (e as unknown as { project_centre_name?: string }).project_centre_name ?? null,
+                              cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                              wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(e.status ?? '')),
+                              hadRcm: false, hadIrn: !!irnState.irn,
+                              linkedRcmJvId: null, linkedRcmJvNo: null,
+                              totalAmount: Number((e as unknown as { total_amount?: number }).total_amount ?? 0),
+                              totalTaxAmount: 0,
+                            });
+                            cancelEntry(e.id, reason);
+                          }}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </>
