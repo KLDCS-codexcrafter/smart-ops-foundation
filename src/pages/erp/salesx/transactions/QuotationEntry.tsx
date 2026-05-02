@@ -523,13 +523,21 @@ export function QuotationEntryPanel({ entityCode }: Props) {
         <TabsContent value="info">
           <Card>
             <CardContent className="p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-medium">Quotation Date</label>
                   <SmartDateInput value={form.quotation_date} onChange={v => update({
                     quotation_date: v,
                     valid_until_date: addDays(v, form.valid_until_days),
                   })} />
+                </div>
+                <div>
+                  {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+                  <label className="text-xs font-medium">Effective Date</label>
+                  <SmartDateInput
+                    value={form.effective_date ?? ''}
+                    onChange={v => update({ effective_date: v || null })}
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-medium">Type</label>
@@ -544,6 +552,28 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                   </div>
                 </div>
               </div>
+
+              {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Enquiries) */}
+              <MultiSourcePicker
+                refs={form.multi_source_refs ?? []}
+                onChange={(refs) => update({ multi_source_refs: refs })}
+                onAddSource={() => setSourcePickerOpen(true)}
+                primaryRefLabel={form.enquiry_no || undefined}
+                title="Linked Source Enquiries"
+                emptyState="No additional enquiries linked · primary enquiry shown above (if any)"
+              />
+              <SourceVoucherPickerDialog
+                open={sourcePickerOpen}
+                onClose={() => setSourcePickerOpen(false)}
+                sourceType="enquiry"
+                partyId={form.customer_id}
+                excludeIds={(form.multi_source_refs ?? []).map(r => r.voucher_id)}
+                entityCode={entityCode}
+                onSelect={(refs: MultiSourceRef[]) => {
+                  update({ multi_source_refs: [...(form.multi_source_refs ?? []), ...refs] });
+                  setSourcePickerOpen(false);
+                }}
+              />
 
               {form.quotation_type === 'revised' && (
                 <div className="space-y-2">
