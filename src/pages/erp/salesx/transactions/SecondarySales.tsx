@@ -494,6 +494,14 @@ export function SecondarySalesPanel({ entityCode }: Props) {
               </div>
             </div>
 
+            {/* Sprint 2.7-c-fix · Q4-c · bank instrument · mandatory ≥ ₹50K via field_rules (Q1-c) */}
+            <BankInstrumentPicker
+              value={instrument}
+              onChange={setInstrument}
+              amount={totalAmount}
+              mandatoryReason={mandatoryReason}
+            />
+
             <div>
               <Label className="text-xs">Notes</Label>
               <Textarea
