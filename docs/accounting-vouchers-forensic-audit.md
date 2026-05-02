@@ -103,3 +103,22 @@ Deliverables:
 - docs/CODE-CONVENTIONS.md (L-2) · docs/I18N-MIGRATION-GUIDE.md · docs/PERFORMANCE-BASELINE.md (L-5)
 - 6 new vitest tests (i18n.test.ts U1-U6) · target 132/132
 - package.json adds i18next + react-i18next (Q1-a lock · first deps in 60+ sprints)
+
+---
+
+## Sprint T-Phase-1.2.6a · UTS Foundation
+
+Sprint T-Phase-1.2.6a closed · count = 6.
+
+D-127 ZERO TOUCH preserved on `src/pages/erp/accounting/vouchers/`. UTS
+foundation is a sibling abstraction (see D-226) — FineCore RegisterGrid
+and the 13 voucher consumers are byte-identical to the prior sprint.
+
+Deliverables:
+- D-226 decision document (8 dimensions, hybrid ProjX treatment, sibling rationale)
+- UniversalRegisterGrid<T> + UniversalRegisterTypes (sibling to FineCore RegisterGrid)
+- universal-export-engine (Excel/PDF/Word/CSV) — zero new deps
+- UniversalPrintFrame (letterhead + signatory + T&C + @media print)
+- effective_date optional schema field on 15 type files (consumption.ts adds 2: MIN + ConsumptionEntry)
+- SecondarySales doc-no consolidation onto generateDocNo('SEC', entityCode)
+- 8 new vitest tests (UR1-UR8) → target 140/140
