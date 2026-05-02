@@ -175,7 +175,18 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
                   No consumption posted this month yet
                 </TableCell></TableRow>
               ) : deptGrid.map(d => (
-                <TableRow key={d.dept}>
+                <TableRow
+                  key={d.dept}
+                  className="cursor-pointer hover:bg-muted/30"
+                  onClick={() => onNavigate?.('r-consumption-register', {
+                    fromModule: 'r-consumption-summary',
+                    fromLabel: 'Consumption Summary',
+                    filter: {
+                      departmentCode: d.dept === 'unassigned' ? undefined : d.dept,
+                      sourceLabel: `Dept · ${DEPARTMENT_LABELS[d.dept as GodownDepartmentCode] ?? d.dept}`,
+                    },
+                  })}
+                >
                   <TableCell>
                     {d.dept === 'unassigned' ? (
                       <span className="text-xs text-muted-foreground">Unassigned</span>
