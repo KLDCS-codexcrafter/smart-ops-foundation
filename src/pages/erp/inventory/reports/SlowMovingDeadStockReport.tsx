@@ -141,7 +141,7 @@ export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadSto
               <TableCell className="font-mono text-xs">{FMT(r.value)}</TableCell>
               <TableCell><Badge variant="outline" className={CLASS_BADGE(r.abc_class)}>{r.abc_class ?? '—'}</Badge></TableCell>
               <TableCell>
-                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => writeOff(r)}>
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); writeOff(r); }}>
                   {showRecommendation ? 'Initiate Write-off' : 'Suggest Action'}
                 </Button>
               </TableCell>
