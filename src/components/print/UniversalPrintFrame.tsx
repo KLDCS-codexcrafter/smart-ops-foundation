@@ -166,6 +166,58 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
           </div>
         )}
 
+        {/* Sprint 2.7-a · GST breakdown footer (when transaction has GST values) */}
+        {gstBreakdown && (
+          (gstBreakdown.taxable ?? 0) > 0 ||
+          (gstBreakdown.cgst ?? 0) > 0 ||
+          (gstBreakdown.sgst ?? 0) > 0 ||
+          (gstBreakdown.igst ?? 0) > 0 ||
+          (gstBreakdown.cess ?? 0) > 0
+        ) ? (
+          <div className="border-t pt-3 text-xs">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              GST Breakdown
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 font-mono">
+              {(gstBreakdown.taxable ?? 0) > 0 && (
+                <div>
+                  <div className="text-[10px] text-muted-foreground">Taxable</div>
+                  <div className="font-semibold">₹{(gstBreakdown.taxable ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                </div>
+              )}
+              {(gstBreakdown.cgst ?? 0) > 0 && (
+                <div>
+                  <div className="text-[10px] text-muted-foreground">CGST</div>
+                  <div>₹{(gstBreakdown.cgst ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                </div>
+              )}
+              {(gstBreakdown.sgst ?? 0) > 0 && (
+                <div>
+                  <div className="text-[10px] text-muted-foreground">SGST</div>
+                  <div>₹{(gstBreakdown.sgst ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                </div>
+              )}
+              {(gstBreakdown.igst ?? 0) > 0 && (
+                <div>
+                  <div className="text-[10px] text-muted-foreground">IGST</div>
+                  <div>₹{(gstBreakdown.igst ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                </div>
+              )}
+              {(gstBreakdown.cess ?? 0) > 0 && (
+                <div>
+                  <div className="text-[10px] text-muted-foreground">Cess</div>
+                  <div>₹{(gstBreakdown.cess ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                </div>
+              )}
+            </div>
+            {gstBreakdown.place_of_supply && (
+              <div className="mt-2 text-[10px] text-muted-foreground">
+                Place of Supply: <span className="font-mono">{gstBreakdown.place_of_supply}</span>
+              </div>
+            )}
+          </div>
+        ) : null}
+
         {/* D-228 UTH compliance footer · audit trail metadata */}
         {(postedAt || voucherHash) && (
           <div className="text-[10px] text-muted-foreground border-t pt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono">
