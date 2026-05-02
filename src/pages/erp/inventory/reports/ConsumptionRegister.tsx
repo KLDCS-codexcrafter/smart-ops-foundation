@@ -26,18 +26,41 @@ import type { InventoryDrillFilter } from '@/types/drill-context';
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function ConsumptionRegisterPanel() {
+interface ConsumptionRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function ConsumptionRegisterPanel({ initialFilter }: ConsumptionRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printCE, setPrintCE] = useState<ConsumptionEntry | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const entries = useMemo<ConsumptionEntry[]>(() => {
+  const allEntries = useMemo<ConsumptionEntry[]>(() => {
     try {
       // [JWT] GET /api/inventory/consumption-entries/:entityCode
       return JSON.parse(localStorage.getItem(consumptionEntriesKey(safeEntity)) || '[]') as ConsumptionEntry[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const entries = useMemo<ConsumptionEntry[]>(() => {
+    if (!filter) return allEntries;
+    return allEntries.filter(e => {
+      if (filter.status && e.status !== filter.status) return false;
+      if (filter.godownId && e.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !e.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.departmentCode && e.department_code !== filter.departmentCode) return false;
+      if (filter.projectCentreId && e.project_centre_id !== filter.projectCentreId) return false;
+      if (filter.varianceThreshold != null && Math.abs(e.total_variance_value) < filter.varianceThreshold) return false;
+      const eff = e.effective_date ?? e.consumption_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allEntries, filter]);
 
   const meta: RegisterMeta<ConsumptionEntry> = {
     registerCode: 'consumption_register',
