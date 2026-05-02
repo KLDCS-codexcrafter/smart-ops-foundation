@@ -47,6 +47,10 @@ export interface SampleOutwardMemoItem {
   unit_value: number;
   /** Sprint T-Phase-1.1.1p-v2 — qty * unit_value. */
   amount: number;
+  /** Sprint 2.7-a · GST line-level HSN/SAC + RCM eligibility (Q2-a). */
+  hsn_sac_code?: string | null;
+  gst_rate?: number | null;
+  is_rcm_eligible?: boolean | null;
 }
 
 export interface SampleOutwardMemo {
