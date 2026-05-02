@@ -32,7 +32,10 @@ export type DispatchOpsModule =
   | 'dops-r-outward-movement'
   | 'dops-r-packing-consumption'
   | 'dops-r-packer-performance'
-  | 'dops-r-dispatch-summary';
+  | 'dops-r-dispatch-summary'
+  | 'dops-r-delivery-memo-register'
+  | 'dops-link-som-register'
+  | 'dops-link-dom-register';
 
 interface DispatchOpsSidebarProps {
   activeModule: DispatchOpsModule;
