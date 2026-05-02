@@ -156,6 +156,14 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
             {termsAndConditions}
           </div>
         )}
+
+        {/* D-228 UTH compliance footer · audit trail metadata */}
+        {(postedAt || voucherHash) && (
+          <div className="text-[10px] text-muted-foreground border-t pt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono">
+            {postedAt && <span>Posted: {postedAt}</span>}
+            {voucherHash && <span>Hash: {voucherHash}</span>}
+          </div>
+        )}
       </div>
     </div>
   );
