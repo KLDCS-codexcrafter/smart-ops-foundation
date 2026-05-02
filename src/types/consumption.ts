@@ -65,7 +65,6 @@ export interface MaterialIssueNote {
   created_by?: string | null;
   updated_by?: string | null;
   posted_at?: string | null;
-  cancelled_at?: string | null;
   cancel_reason?: string | null;
   reference_no?: string | null;
   voucher_hash?: string | null;
@@ -164,8 +163,6 @@ export interface ConsumptionEntry {
   /** D-228 Universal Transaction Header (UTH) — all optional · backward compat preserved */
   created_by?: string | null;
   updated_by?: string | null;
-  posted_at?: string | null;
-  cancelled_at?: string | null;
   cancel_reason?: string | null;
   reference_no?: string | null;
   voucher_hash?: string | null;
