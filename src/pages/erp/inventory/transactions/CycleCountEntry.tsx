@@ -79,7 +79,7 @@ export function CycleCountEntryPanel() {
   // Sprint T-Phase-2.7-d-1 · uniform mount (Stock viz · Save-and-New · Auto-save · Smart defaults)
   const _sprint27d1 = useSprint27d1Mount({
     formKey: 'cyclecount-new',
-    entityCode: typeof entityCode === 'string' ? entityCode : '',
+    entityCode: '',
     formState: { },
     items: [] as Array<Record<string, unknown>>,
     view: 'new',

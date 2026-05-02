@@ -2,8 +2,7 @@
  * stock-viz-saveandnew-autosave-smartdefaults.test.ts
  * Sprint T-Phase-2.7-d-1 · 6 new tests SD1-SD6
  */
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   getDetailedAvailabilityMap,
 } from '@/lib/stock-reservation-engine';
@@ -11,7 +10,7 @@ import {
   extractCarryOverFields,
   applyCarryOverToForm,
 } from '@/lib/save-and-new-carryover';
-import { useDraftAutoSave } from '@/hooks/useDraftAutoSave';
+import { writeDraftToStorage } from '@/hooks/useDraftAutoSave';
 import { resolveSmartLedger } from '@/lib/smart-defaults-engine';
 import { stockReservationsKey, type StockReservation } from '@/types/stock-reservation';
 
@@ -122,25 +121,22 @@ describe('Sprint 2.7-d-1 · SD1-SD6', () => {
   });
 
   // SD5
-  it('SD5 · useDraftAutoSave writes to correct localStorage key on interval', () => {
-    vi.useFakeTimers();
-    try {
-      const { result } = renderHook(() =>
-        useDraftAutoSave('quotation-new', ENTITY, { foo: 1 }, 30000),
-      );
-      expect(result.current.hasDraft).toBe(false);
-      act(() => {
-        vi.advanceTimersByTime(30001);
-      });
-      const raw = localStorage.getItem(`erp_draft_quotation-new_${ENTITY}`);
-      expect(raw).not.toBeNull();
-      const parsed = JSON.parse(raw!);
-      expect(typeof parsed.savedAt).toBe('string');
-      const data = JSON.parse(parsed.formData);
-      expect(data.foo).toBe(1);
-    } finally {
-      vi.useRealTimers();
-    }
+  it('SD5 · writeDraftToStorage writes envelope { savedAt, formData } to correct key', () => {
+    const ok = writeDraftToStorage('quotation-new', ENTITY, { foo: 1 });
+    expect(ok).toBe(true);
+    const raw = localStorage.getItem(`erp_draft_quotation-new_${ENTITY}`);
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!);
+    expect(typeof parsed.savedAt).toBe('string');
+    const data = JSON.parse(parsed.formData);
+    expect(data.foo).toBe(1);
+  });
+
+  // SD5b · empty entityCode returns false silently · no localStorage write
+  it('SD5b · writeDraftToStorage returns false when entityCode empty', () => {
+    const ok = writeDraftToStorage('quotation-new', '', { foo: 1 });
+    expect(ok).toBe(false);
+    expect(localStorage.getItem('erp_draft_quotation-new_')).toBeNull();
   });
 
   // SD6

@@ -149,7 +149,7 @@ export function MaterialIssueNotePanel() {
   // Sprint T-Phase-2.7-d-1 · uniform mount (Stock viz · Save-and-New · Auto-save · Smart defaults)
   const _sprint27d1 = useSprint27d1Mount({
     formKey: 'materialissuenote-new',
-    entityCode: typeof entityCode === 'string' ? entityCode : '',
+    entityCode: '',
     formState: { },
     items: [] as Array<Record<string, unknown>>,
     view: 'new',

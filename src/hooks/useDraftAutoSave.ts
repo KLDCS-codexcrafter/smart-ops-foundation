@@ -21,6 +21,33 @@ function draftKey(formKey: string, entityCode: string): string {
   return `erp_draft_${formKey}_${entityCode}`;
 }
 
+/**
+ * writeDraftToStorage — pure helper · serializes form state into the draft envelope
+ * and writes it to localStorage. Returns true on success, false on silent guard
+ * (empty entityCode) or quota / serialize failure.
+ *
+ * Consumed by both `useDraftAutoSave` (production) and the SD5 test (no renderHook needed).
+ *
+ * [JWT] Phase 2: replace with PUT /api/drafts/:formKey
+ */
+export function writeDraftToStorage<T>(
+  formKey: string,
+  entityCode: string,
+  formState: T,
+): boolean {
+  if (!entityCode) return false;
+  try {
+    const payload = JSON.stringify({
+      savedAt: new Date().toISOString(),
+      formData: JSON.stringify(formState),
+    });
+    localStorage.setItem(draftKey(formKey, entityCode), payload);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function readDraftMeta(key: string): { savedAt: string } | null {
   try {
     const raw = localStorage.getItem(key);
@@ -50,20 +77,11 @@ export function useDraftAutoSave<T>(
   });
 
   const saveNow = useCallback(() => {
-    if (!entityCode) return;
-    try {
-      // [JWT] PUT /api/drafts/:formKey
-      const payload = JSON.stringify({
-        savedAt: new Date().toISOString(),
-        formData: JSON.stringify(stateRef.current),
-      });
-      localStorage.setItem(key, payload);
+    if (writeDraftToStorage(formKey, entityCode, stateRef.current)) {
       setHasDraft(true);
       setDraftAge(0);
-    } catch {
-      // Silent · quota or serialize failure must not break the form
     }
-  }, [entityCode, key]);
+  }, [entityCode, formKey]);
 
   const clearDraft = useCallback(() => {
     try {
