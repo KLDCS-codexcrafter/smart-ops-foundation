@@ -290,11 +290,40 @@ export function SecondarySalesPanel({ entityCode }: Props) {
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    if (!confirm('Delete this secondary sales record?')) return;
+    const reason = window.prompt('Cancel reason (min 10 chars · forensic audit log):') ?? '';
+    if (reason.trim().length < 10) { toast.error('Cancel reason must be ≥ 10 characters'); return; }
+    const existing = sales.find(s => s.id === id);
+    if (existing) {
+      // Sprint 2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+      const u = getCurrentUser();
+      const irnState = computeIRNLockState(existing as unknown as Parameters<typeof computeIRNLockState>[0]);
+      const wasPosted = ['posted', 'submitted', 'approved'].includes(String(existing.status ?? ''));
+      writeCancellationAuditEntry({
+        entityCode,
+        voucherId: existing.id,
+        voucherNo: existing.secondary_code,
+        voucherDate: existing.sale_date,
+        voucherTypeId: existing.voucher_type_id ?? null,
+        voucherTypeName: existing.voucher_type_name ?? null,
+        baseVoucherType: 'SS',
+        partyId: existing.distributor_id ?? null,
+        partyName: existing.distributor_name ?? null,
+        cancelledBy: u.id,
+        cancelledByName: u.displayName,
+        cancelReason: reason,
+        wasPostedBeforeCancel: wasPosted,
+        hadRcm: false,
+        hadIrn: !!irnState.irn,
+        linkedRcmJvId: null,
+        linkedRcmJvNo: null,
+        totalAmount: Number(existing.total_amount ?? 0),
+        totalTaxAmount: 0,
+      });
+    }
     const next = sales.filter(s => s.id !== id);
     saveSales(entityCode, next);
     setSales(next);
-    toast.success('Deleted');
+    toast.success('Cancelled');
   }, [sales, entityCode]);
 
   useCtrlS(handleSave);
