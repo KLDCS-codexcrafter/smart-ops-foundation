@@ -48,8 +48,11 @@ interface UniversalPrintFrameProps {
 export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
   const {
     company, title, docNo, voucherDate, effectiveDate,
-    referenceBlock, children, termsAndConditions, onClose,
+    referenceBlock, children, termsAndConditions, onClose, signatories,
   } = props;
+  const sigs = signatories && signatories.length > 0
+    ? signatories
+    : ['Prepared by', 'Checked by', 'Authorised Signatory'];
 
   const showEffective = !!effectiveDate && effectiveDate !== voucherDate;
 
