@@ -245,8 +245,22 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
   const handleLost = useCallback(() => {
     const reason = (prompt('Lost reason') ?? '').trim();
     if (!reason) { toast.error('Lost reason required'); return; }
+    // Sprint 2.7-c-fix · Q3-d · cancellation audit (lost = effective cancel)
+    if (reason.length >= 10) {
+      const u = getCurrentUser();
+      const irnState = computeIRNLockState({ irn: null } as Parameters<typeof computeIRNLockState>[0]);
+      writeCancellationAuditEntry({
+        entityCode, voucherId: 'pending-dom', voucherNo: memoNo, voucherDate: new Date().toISOString().slice(0, 10),
+        voucherTypeId: null, voucherTypeName: null, baseVoucherType: 'DOM',
+        partyId: null, partyName: recipientName ?? null,
+        cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+        wasPostedBeforeCancel: true, hadRcm: false, hadIrn: !!irnState.irn,
+        linkedRcmJvId: null, linkedRcmJvNo: null,
+        totalAmount: 0, totalTaxAmount: 0,
+      });
+    }
     persist('lost', { lost_reason: reason });
-  }, [persist]);
+  }, [persist, entityCode, memoNo, recipientName]);
 
   useCtrlS(handleDispatch);
 
