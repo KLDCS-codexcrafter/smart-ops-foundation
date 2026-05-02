@@ -270,7 +270,7 @@ export function UniversalRegisterGrid<T extends { id: string }>(
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </TableBody>
