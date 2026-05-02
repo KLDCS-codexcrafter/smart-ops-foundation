@@ -41,6 +41,7 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 2.7-b | closed (VoucherClassPicker · field-rule-engine · SaveButtonGroup · MobileApprovalsPage · ApprovalsPendingPage · VoucherClassMaster · 12 form mounts · 8 new tests · 224/224) | 16 |
 | 2.7-c | closed | 17 |
 | 2.7-d-1 | closed (Stock viz Q1-d · Save-and-New Q4-d · auto-save draft + recovery dialog · smart defaults extensions · 6 new tests · 241/241) | 18 |
+| 2.7-d-2 | closed (Universal keyboard nav · bulk-paste · line-item search · help overlay · 248/248) | 19 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).
