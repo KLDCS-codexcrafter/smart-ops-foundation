@@ -44,6 +44,10 @@ export interface QuotationItem {
   tax_pct: number;
   tax_amount: number;
   amount: number;
+  /** Sprint 2.7-a · GST line-level HSN/SAC + RCM eligibility (Q2-a). */
+  hsn_sac_code?: string | null;
+  gst_rate?: number | null;
+  is_rcm_eligible?: boolean | null;
 }
 
 // Snapshot of items at time of revision — never mutated after creation
@@ -99,6 +103,18 @@ export interface Quotation {
   project_id: string | null;
 
   is_active: boolean;
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  bill_to_address_id?: string | null;
+  bill_to_address_snapshot?: string | null;
+  bill_to_state_code?: string | null;
+  bill_to_gstin?: string | null;
+  ship_to_address_id?: string | null;
+  ship_to_address_snapshot?: string | null;
+  ship_to_state_code?: string | null;
+  ship_to_gstin?: string | null;
+  /** Sprint 2.7-a · Place of Supply (Section 10 IGST Act). */
+  place_of_supply_state_code?: string | null;
+  place_of_supply_state_name?: string | null;
   /** D-226 UTS · accounting effective date; falls back to primary date when null. */
   effective_date?: string | null;
   /** D-228 Universal Transaction Header (UTH) — all optional · backward compat preserved */
