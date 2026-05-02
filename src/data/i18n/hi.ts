@@ -41,6 +41,7 @@ export const hi: Record<string, string> = {
   'common.subtotal': 'उप-योग',
   'common.storage': 'भंडारण',
   'common.logout': 'लॉगआउट',
+  'common.effective_date': 'प्रभावी तिथि',
 
   // ── Voucher Types ──
   'voucher.sales_invoice': 'विक्रय बीजक',

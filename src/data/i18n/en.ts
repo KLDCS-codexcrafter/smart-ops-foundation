@@ -40,6 +40,7 @@ export const en: Record<string, string> = {
   'common.subtotal': 'Subtotal',
   'common.storage': 'Storage',
   'common.logout': 'Logout',
+  'common.effective_date': 'Effective Date',
 
   // ── Voucher Types · 15 keys ──
   'voucher.sales_invoice': 'Sales Invoice',
