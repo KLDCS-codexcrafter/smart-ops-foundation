@@ -48,6 +48,10 @@ import {
   type ConsumptionMode, type ConsumptionStatus,
 } from '@/types/consumption';
 import { DEPARTMENT_LABELS } from '@/types/godown';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
 import { useT } from '@/lib/i18n-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
