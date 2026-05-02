@@ -30,18 +30,39 @@ const STATUS_LABELS: Record<CycleCountStatus, string> = {
   rejected: 'Rejected', posted: 'Posted', cancelled: 'Cancelled',
 };
 
-export function CycleCountRegisterPanel() {
+interface CycleCountRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function CycleCountRegisterPanel({ initialFilter }: CycleCountRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printCC, setPrintCC] = useState<CycleCount | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const counts = useMemo<CycleCount[]>(() => {
+  const allCounts = useMemo<CycleCount[]>(() => {
     try {
       // [JWT] GET /api/inventory/cycle-counts/:entityCode
       return JSON.parse(localStorage.getItem(cycleCountsKey(safeEntity)) || '[]') as CycleCount[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const counts = useMemo<CycleCount[]>(() => {
+    if (!filter) return allCounts;
+    return allCounts.filter(c => {
+      if (filter.status && c.status !== filter.status) return false;
+      if (filter.godownId && c.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !c.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.varianceThreshold != null && Math.abs(c.total_variance_value) < filter.varianceThreshold) return false;
+      const eff = c.effective_date ?? c.count_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allCounts, filter]);
 
   const meta: RegisterMeta<CycleCount> = {
     registerCode: 'cycle_count_register',
