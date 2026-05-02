@@ -65,6 +65,8 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 interface FormHeader {
   issue_date: string;
+  /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to issue_date) */
+  effective_date: string | null;
   from_godown_id: string;
   to_godown_id: string;
   requested_by_id: string;
@@ -75,6 +77,7 @@ interface FormHeader {
 
 const BLANK_HEADER: FormHeader = {
   issue_date: todayISO(),
+  effective_date: null,
   from_godown_id: '', to_godown_id: '',
   requested_by_id: '', issued_by_id: '',
   project_centre_id: null, narration: '',
