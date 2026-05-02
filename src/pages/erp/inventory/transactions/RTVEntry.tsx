@@ -23,6 +23,10 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 // Sprint T-Phase-1.2.6e-tally-1 · Q3-b OOB-1 + Q2-c multi-source (RTV → multi-GRN)
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
