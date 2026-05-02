@@ -88,6 +88,8 @@ export interface CycleCount {
   /** Sprint T-Phase-1.2.5h-b1 · CGST Rule 56(8) edit/delete chain */
   superseded_by?: string | null;
   version?: number;
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
 }

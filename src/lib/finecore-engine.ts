@@ -188,7 +188,9 @@ export function generateDocNo(
     | 'SCGRN'  // Subcontract GRN
     // Sprint T-Phase-1.2.6 · Cycle Count + RTV
     | 'PSV'    // Physical Stock Voucher (Cycle Count)
-    | 'RJO',   // Rejections Out (Return to Vendor)
+    | 'RJO'    // Rejections Out (Return to Vendor)
+    // Sprint T-Phase-1.2.6a · UTS doc-no consolidation (D-226)
+    | 'SEC',   // SEC — SalesX Secondary Sales (was custom prefix; now FY-scoped via generateDocNo)
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.

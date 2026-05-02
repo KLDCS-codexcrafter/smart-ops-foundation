@@ -59,6 +59,8 @@ export interface MaterialIssueNote {
   total_value: number;
   narration: string;
 
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
   issued_at: string | null;        // set when status flips to 'issued'
@@ -147,6 +149,8 @@ export interface ConsumptionEntry {
 
   narration: string;
 
+  /** D-226 UTS · accounting effective date; falls back to primary date when null. */
+  effective_date?: string | null;
   created_at: string;
   updated_at: string;
   posted_at: string | null;
