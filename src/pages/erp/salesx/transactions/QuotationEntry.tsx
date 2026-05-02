@@ -44,6 +44,11 @@ import {
   createOrderReservations,
 } from '@/lib/stock-reservation-engine';
 import { logConversionEvent } from '@/lib/salesx-conversion-engine';
+// Sprint T-Phase-1.2.6e-tally-1-fix · Q1-b/Q2-c/Q3-b/Q4-d
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -108,6 +113,10 @@ const blank = (): FormState => ({
   // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
   project_id: null,
   is_active: true,
+  // Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date
+  effective_date: null,
+  // Sprint T-Phase-1.2.6e-tally-1 · multi-source linking (Q2-c)
+  multi_source_refs: [],
 });
 
 function recalcLine(it: QuotationItem): QuotationItem {
@@ -132,6 +141,8 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   const [stageFilter, setStageFilter] = useState<'all' | QuotationStage>('all');
   const [revisionReason, setRevisionReason] = useState('');
   const [snapshotId, setSnapshotId] = useState<string | null>(null);
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source + Use Last
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const update = useCallback((p: Partial<FormState>) => setForm(prev => ({ ...prev, ...p })), []);
 
@@ -437,6 +448,18 @@ export function QuotationEntryPanel({ entityCode }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
+          {!editingId && (
+            <UseLastVoucherButton
+              entityCode={entityCode}
+              recordType="quotation"
+              partyValue={form.customer_id}
+              partyLabel={form.customer_name ?? undefined}
+              onUse={(data) => {
+                setForm(prev => ({ ...prev, ...(data as Partial<FormState>) }));
+                toast.success('Pre-filled from last quotation · review and edit.');
+              }}
+            />
+          )}
           {editingId && (
             <div className="flex items-center gap-2">
               <Input
@@ -500,13 +523,21 @@ export function QuotationEntryPanel({ entityCode }: Props) {
         <TabsContent value="info">
           <Card>
             <CardContent className="p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-medium">Quotation Date</label>
                   <SmartDateInput value={form.quotation_date} onChange={v => update({
                     quotation_date: v,
                     valid_until_date: addDays(v, form.valid_until_days),
                   })} />
+                </div>
+                <div>
+                  {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+                  <label className="text-xs font-medium">Effective Date</label>
+                  <SmartDateInput
+                    value={form.effective_date ?? ''}
+                    onChange={v => update({ effective_date: v || null })}
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-medium">Type</label>
@@ -521,6 +552,28 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                   </div>
                 </div>
               </div>
+
+              {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Enquiries) */}
+              <MultiSourcePicker
+                refs={form.multi_source_refs ?? []}
+                onChange={(refs) => update({ multi_source_refs: refs })}
+                onAddSource={() => setSourcePickerOpen(true)}
+                primaryRefLabel={form.enquiry_no || undefined}
+                title="Linked Source Enquiries"
+                emptyState="No additional enquiries linked · primary enquiry shown above (if any)"
+              />
+              <SourceVoucherPickerDialog
+                open={sourcePickerOpen}
+                onClose={() => setSourcePickerOpen(false)}
+                sourceType="enquiry"
+                partyId={form.customer_id}
+                excludeIds={(form.multi_source_refs ?? []).map(r => r.voucher_id)}
+                entityCode={entityCode}
+                onSelect={(refs: MultiSourceRef[]) => {
+                  update({ multi_source_refs: [...(form.multi_source_refs ?? []), ...refs] });
+                  setSourcePickerOpen(false);
+                }}
+              />
 
               {form.quotation_type === 'revised' && (
                 <div className="space-y-2">

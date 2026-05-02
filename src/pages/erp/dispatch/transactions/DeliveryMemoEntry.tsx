@@ -36,6 +36,11 @@ import {
   type DMItem,
   type DMStatus,
 } from '@/types/delivery-memo';
+// Sprint T-Phase-1.2.6e-tally-1-fix · Q1-b/Q2-c/Q3-b/Q4-d
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 interface Props { entityCode: string }
 
@@ -89,6 +94,10 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
 
   const [items, setItems] = useState<DMItem[]>([]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source linking (Q2-c)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const [existingMemos, setExistingMemos] = useState<DeliveryMemo[]>(
     () => ls<DeliveryMemo>(deliveryMemosKey(entityCode)),
@@ -147,6 +156,8 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
       created_by: 'dispatch_user',
       delivered_at: status === 'delivered' ? now : null,
       pod_reference: podReference.trim() || null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources,
       created_at: now,
       updated_at: now,
     };
@@ -179,10 +190,12 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     setSrmId(''); setTransporterName(''); setVehicleNo('');
     setLrNo(''); setLrDate(''); setExpectedDeliveryDate('');
     setPodReference(''); setItems([]); setDeliveryAddress('');
+    setEffectiveDate(''); setMultiSources([]);
     return memo;
   }, [validate, selectedSRM, entityCode, memoNo, memoDate,
       deliveryAddress, transporterName, vehicleNo, lrNo, lrDate,
-      expectedDeliveryDate, podReference, items, totalAmount]);
+      expectedDeliveryDate, podReference, items, totalAmount,
+      effectiveDate, multiSources]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
@@ -212,7 +225,22 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
             Authorise Logistics to ship · assign LR · capture POD against a raised Supply Request Memo.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="delivery_memo"
+            partyValue={selectedSRM?.customer_id ?? null}
+            partyLabel={selectedSRM?.customer_name ?? undefined}
+            onUse={(data) => {
+              const d = data as Partial<DeliveryMemo>;
+              if (d.transporter_name) setTransporterName(d.transporter_name);
+              if (d.vehicle_no) setVehicleNo(d.vehicle_no);
+              if (d.delivery_address) setDeliveryAddress(d.delivery_address);
+              toast.success('Pre-filled from last delivery memo · review and edit.');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
@@ -226,8 +254,35 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
             <Label className="text-xs">Memo Date</Label>
             <SmartDateInput value={memoDate} onChange={setMemoDate} />
           </div>
+          <div>
+            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+            <Label className="text-xs">Effective Date</Label>
+            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
+          </div>
         </CardContent>
       </Card>
+
+      {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Supply Request Memos) */}
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedSRM?.memo_no || undefined}
+        title="Linked Source SRMs"
+        emptyState="No additional SRMs linked · primary SRM shown above (if any)"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="srm"
+        partyId={selectedSRM?.customer_id ?? null}
+        excludeIds={multiSources.map(r => r.voucher_id)}
+        entityCode={entityCode}
+        onSelect={(refs) => {
+          setMultiSources([...multiSources, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Against Supply Request Memo</CardTitle></CardHeader>

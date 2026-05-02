@@ -51,6 +51,11 @@ import {
   type IMItem,
   type IMStatus,
 } from '@/types/invoice-memo';
+// Sprint T-Phase-1.2.6e-tally-1-fix · Q1-b/Q2-c/Q3-b/Q4-d
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
+import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
+import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 interface Props { entityCode: string }
 
@@ -109,6 +114,10 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
   const [gstin, setGstin] = useState('');
   const [placeOfSupply, setPlaceOfSupply] = useState('');
   const [narration, setNarration] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source linking (Q2-c)
+  const [multiSources, setMultiSources] = useState<MultiSourceRef[]>([]);
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
   const [defaultTaxPct, setDefaultTaxPct] = useState(18);
 
   const [items, setItems] = useState<IMItem[]>([]);
@@ -191,6 +200,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       invoice_voucher_id: null,
       invoice_voucher_no: null,
       invoice_posted_at: null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources,
       created_at: now,
       updated_at: now,
     };
@@ -202,11 +213,11 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     localStorage.setItem(key, JSON.stringify(list));
     setExistingMemos(list);
     setDmId(''); setBillingAddress(''); setGstin(''); setPlaceOfSupply('');
-    setNarration(''); setItems([]);
+    setNarration(''); setItems([]); setEffectiveDate(''); setMultiSources([]);
     return memo;
   }, [validate, selectedDM, linkedSRM, entityCode, memoNo, memoDate,
       invoiceDate, billingAddress, gstin, placeOfSupply, items,
-      subTotal, taxTotal, grandTotal, narration]);
+      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
@@ -232,7 +243,23 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
             Authorise Accounts to post the Sales Invoice voucher against a delivered Delivery Memo.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="invoice_memo"
+            partyValue={selectedDM?.customer_id ?? null}
+            partyLabel={selectedDM?.customer_name ?? undefined}
+            onUse={(data) => {
+              const d = data as Partial<InvoiceMemo>;
+              if (d.billing_address) setBillingAddress(d.billing_address);
+              if (d.gstin) setGstin(d.gstin);
+              if (d.place_of_supply) setPlaceOfSupply(d.place_of_supply);
+              if (d.narration) setNarration(d.narration);
+              toast.success('Pre-filled from last invoice memo · review and edit.');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
@@ -260,6 +287,13 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
           <div>
             <Label className="text-xs">Invoice Date</Label>
             <SmartDateInput value={invoiceDate} onChange={setInvoiceDate} />
+          </div>
+        </CardContent>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-0">
+          <div>
+            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
+            <Label className="text-xs">Effective Date</Label>
+            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
           </div>
         </CardContent>
       </Card>
@@ -292,6 +326,28 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Delivery Memos) */}
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedDM?.memo_no || undefined}
+        title="Linked Source Delivery Memos"
+        emptyState="No additional DMs linked · primary DM shown above (if any)"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="dm"
+        partyId={selectedDM?.customer_id ?? null}
+        excludeIds={multiSources.map(r => r.voucher_id)}
+        entityCode={entityCode}
+        onSelect={(refs) => {
+          setMultiSources([...multiSources, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Billing</CardTitle></CardHeader>
