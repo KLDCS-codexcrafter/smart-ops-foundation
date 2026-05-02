@@ -104,6 +104,10 @@ export interface GRN {
   voucher_hash?: string | null;
   currency_code?: string | null;
   exchange_rate?: number | null;
+  /** Tally-Prime multi-source linking (Q2-c · 1.2.6e-tally-1).
+   *  Existing single-ref fields stay populated as the "primary" source · this array
+   *  captures additional sources when operator clicks "Add another source." */
+  multi_source_refs?: import('./multi-source-ref').MultiSourceRef[] | null;
   created_at: string;
   updated_at: string;
   posted_at: string | null;
