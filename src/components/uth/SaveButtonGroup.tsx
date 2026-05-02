@@ -41,6 +41,7 @@ interface Props {
 export function SaveButtonGroup({
   voucherType, recordValue, recordStatus, userRoles,
   onSaveDraft, onSaveAndPost, onSubmitForApproval, onApproveAndPost, onReject,
+  onSaveAndNew,
   saving, className,
 }: Props) {
   const [rejectOpen, setRejectOpen] = useState(false);
