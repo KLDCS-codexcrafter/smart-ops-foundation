@@ -23,9 +23,36 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { toast } from 'sonner';
 
 function HSNSACMasterPanelInner() {
+  const { entityCode } = useEntityCode();
   const [hsnSearch, setHsnSearch] = useState('');
   const [sacSearch, setSacSearch] = useState('');
   const [rateFilter, setRateFilter] = useState('all');
+  const [extensions, setExtensions] = useState<HSNExtension[]>([]);
+
+  useEffect(() => {
+    if (!entityCode) { setExtensions([]); return; }
+    setExtensions(loadHSNExtensions(entityCode));
+  }, [entityCode]);
+
+  const isExtFlagged = (code: string): boolean =>
+    extensions.find((e) => e.code === code)?.is_rcm_notified === true;
+
+  const isEffectivelyRCM = (code: string, baseRCM: boolean): boolean =>
+    baseRCM || isExtFlagged(code);
+
+  const toggleRCMExt = (code: string, next: boolean) => {
+    if (!entityCode) {
+      toast.error('Select a company to flag entity-specific RCM codes.');
+      return;
+    }
+    const without = extensions.filter((e) => e.code !== code);
+    const updated: HSNExtension[] = next
+      ? [...without, { code, is_rcm_notified: true, updated_at: new Date().toISOString() }]
+      : without;
+    setExtensions(updated);
+    saveHSNExtensions(entityCode, updated);
+    toast.success(`HSN ${code} ${next ? 'flagged' : 'cleared'} as RCM-notified`);
+  };
 
   const hsnFiltered = useMemo(() =>
     HSN_CODES.filter(r => {
@@ -39,12 +66,17 @@ function HSNSACMasterPanelInner() {
       return `${r.code} ${r.description}`.toLowerCase().includes(sacSearch.toLowerCase());
     }), [sacSearch, rateFilter]);
 
+  const baselineRCM = useMemo(
+    () => [...HSN_CODES, ...SAC_CODES].filter(r => r.reverseCharge).length,
+    [],
+  );
+
   const stats = useMemo(() => ({
     hsn: HSN_CODES.length,
     sac: SAC_CODES.length,
     total: HSN_CODES.length + SAC_CODES.length,
-    rcm: [...HSN_CODES, ...SAC_CODES].filter(r => r.reverseCharge).length,
-  }), []);
+    rcm: baselineRCM + extensions.filter(e => e.is_rcm_notified).length,
+  }), [baselineRCM, extensions]);
 
   return (
     <div data-keyboard-form className="space-y-6">
