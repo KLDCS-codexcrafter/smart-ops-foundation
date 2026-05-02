@@ -44,7 +44,7 @@ export interface DeliveryMemo {
   effective_date?: string | null;
   /** D-228 Universal Transaction Header (UTH) — all optional · backward compat preserved */
   narration?: string | null;
-  created_by?: string | null;
+  // created_by already declared above (line 40) · no duplicate
   updated_by?: string | null;
   posted_at?: string | null;
   cancelled_at?: string | null;
