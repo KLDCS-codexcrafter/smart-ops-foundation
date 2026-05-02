@@ -4,7 +4,7 @@
  *           edit field rules + approval thresholds + defaults.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,11 +60,11 @@ export default function VoucherClassMaster() {
   const [types, setTypes] = useState<NonFineCoreVoucherType[]>([]);
   const [editing, setEditing] = useState<NonFineCoreVoucherType | null>(null);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     if (entityCode) setTypes(getNonFineCoreVoucherTypes(entityCode));
-  };
+  }, [entityCode]);
 
-  useEffect(() => { refresh(); }, [entityCode]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const grouped = useMemo(() => {
     const map = new Map<NonFineCoreVoucherFamily, NonFineCoreVoucherType[]>();
