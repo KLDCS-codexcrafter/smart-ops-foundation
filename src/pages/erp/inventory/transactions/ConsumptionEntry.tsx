@@ -181,6 +181,7 @@ export function ConsumptionEntryPanel() {
     setEditingId(e.id); setReadonly(ro);
     setHeader({
       consumption_date: e.consumption_date,
+      effective_date: e.effective_date ?? null,
       mode: e.mode,
       godown_id: e.godown_id,
       project_centre_id: e.project_centre_id,
