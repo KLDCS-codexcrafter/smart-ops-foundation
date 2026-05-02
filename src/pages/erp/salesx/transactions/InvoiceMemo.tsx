@@ -60,6 +60,10 @@ import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
 import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
 import type { MultiSourceRef } from '@/types/multi-source-ref';
+// Sprint T-Phase-2.7-c · Q4-c bank instrument + Q2-d IRN lock banner
+import { BankInstrumentPicker } from '@/components/uth/BankInstrumentPicker';
+import { EMPTY_INSTRUMENT, type InstrumentValue } from '@/components/uth/BankInstrumentPicker.helpers';
+import { IRNLockBanner } from '@/components/uth/IRNLockBanner';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
@@ -140,6 +144,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
   const [defaultTaxPct, setDefaultTaxPct] = useState(18);
 
   const [items, setItems] = useState<IMItem[]>([]);
+  // Sprint 2.7-c · Q4-c · bank instrument capture (5 fields mirror Voucher.ts)
+  const [instrument, setInstrument] = useState<InstrumentValue>(EMPTY_INSTRUMENT);
 
   const [existingMemos, setExistingMemos] = useState<InvoiceMemo[]>(
     () => ls<InvoiceMemo>(invoiceMemosKey(entityCode)),
@@ -229,6 +235,12 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       invoice_posted_at: null,
       effective_date: effectiveDate || null,
       multi_source_refs: multiSources,
+      // Sprint 2.7-c · Q4-c · bank instrument fields (D-128 voucher schema unchanged)
+      instrument_type: instrument.instrument_type,
+      instrument_ref_no: instrument.instrument_ref_no,
+      cheque_date: instrument.cheque_date,
+      bank_name: instrument.bank_name,
+      deposit_date: instrument.deposit_date,
       created_at: now,
       updated_at: now,
     };
@@ -241,10 +253,11 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
     setExistingMemos(list);
     setDmId(''); setBillingAddress(''); setGstin(''); setPlaceOfSupply('');
     setNarration(''); setItems([]); setEffectiveDate(''); setMultiSources([]);
+    setInstrument(EMPTY_INSTRUMENT);
     return memo;
   }, [validate, selectedDM, linkedSRM, entityCode, memoNo, memoDate,
       invoiceDate, billingAddress, gstin, placeOfSupply, items,
-      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources]);
+      subTotal, taxTotal, grandTotal, narration, effectiveDate, multiSources, instrument]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
@@ -480,6 +493,24 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
             className="min-h-[64px] text-sm" />
         </CardContent>
       </Card>
+
+      {/* Sprint 2.7-c · Q2-d · IRN lock banner — renders only when IRN is generated */}
+      <IRNLockBanner record={{
+        irn: (selectedDM as unknown as { irn?: string | null })?.irn ?? null,
+        irn_status: (selectedDM as unknown as { irn_status?: 'generated' | 'pending' | 'cancelled' | 'failed' })?.irn_status,
+        irn_ack_date: (selectedDM as unknown as { irn_ack_date?: string | null })?.irn_ack_date ?? null,
+        posted_at: (selectedDM as unknown as { posted_at?: string | null })?.posted_at ?? null,
+      }} />
+
+      {/* Sprint 2.7-c · Q4-c · bank instrument · mandatory ≥ ₹50K via field_rules (Q1-c) */}
+      <BankInstrumentPicker
+        value={instrument}
+        onChange={setInstrument}
+        amount={grandTotal}
+        mandatoryReason={grandTotal >= 50000
+          ? `Total ₹${grandTotal.toLocaleString('en-IN')} ≥ ₹50,000 · bank instrument required by field_rules (min_amount)`
+          : null}
+      />
 
       {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST */}
       <Card>

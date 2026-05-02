@@ -39,6 +39,7 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 2.7-a | closed | 15 |
 | 2.7-a-fix | closed (HSN auto-resolve on 4 forms + streak doc cleanup) | 15 |
 | 2.7-b | closed (VoucherClassPicker · field-rule-engine · SaveButtonGroup · MobileApprovalsPage · ApprovalsPendingPage · VoucherClassMaster · 12 form mounts · 8 new tests · 224/224) | 16 |
+| 2.7-c | closed | 17 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).

@@ -242,3 +242,33 @@ voucher_type_id + multi_source_refs added as sibling abstractions
 - 3 demo voucher types seeded (vt-quotation-domestic-special · vt-im-export · vt-min-job-issue)
 - vitest 216 → 224 · tsc clean · D-127 vouchers/ untouched · D-128 voucher.ts + voucher-type.ts byte-identical
 
+
+## Sprint T-Phase-2.7-c · Bank Instrument + Cancel Hardening + IRN Lock (OOB-15)
+
+- Sprint T-Phase-2.7-c closed · count = **17**
+- BankInstrumentPicker (Q4-c · 10 instrument types) + bank-instrument-validator (NEFT/RTGS UTR · IMPS · UPI · NACH · Cheque · Card regex)
+- field-rule-engine extended with `min_amount` / `amount_field` (Q1-c · pure 2.7-b reuse · zero new validation)
+- IRN lock engine (Q2-d · OOB-15) · `computeIRNLockState` + `rejectSaveDueToIRNLock` wired into `postVoucher` · IRNLockBanner mounted in InvoiceMemo only · D-127 voucher .tsx files UNTOUCHED
+- Cancellation audit log (Q3-d UPGRADED) · `writeCancellationAuditEntry` + CancellationAuditRegister page + CancellationDashboardWidget mounted in FineCoreMastersModule
+- `instrument_type` / `instrument_ref_no` / `cheque_date` / `bank_name` / `deposit_date` added to InvoiceMemo + SecondarySales types only · D-128 voucher.ts + voucher-type.ts BYTE-IDENTICAL
+- 9 new tests (IC1–IC9) · D-127 vouchers/ untouched · D-128 preserved
+
+## DEFERRED · 1.2.6d-hdr Banner Mount Gap
+
+**Tracked:** Found during 2.7-c audit · explicit log entry to prevent re-discovery.
+
+**Gap:** Two header components built in Sprint 1.2.6d-hdr but never mounted in
+any transaction form:
+
+1. `TaxPeriodGateBanner` (`src/components/uth/TaxPeriodGateBanner.tsx`) — built
+   to surface period-lock + GSTR-1/3B filing-cutoff warnings on voucher headers.
+   Currently only `isPeriodLocked()` is consulted in 4 forms · banner asset is
+   dead code.
+2. `NotesAndReferenceCard` (`src/components/uth/NotesAndReferenceCard.tsx`) —
+   built to standardize narration + reference_no capture across all 12 forms ·
+   forms still use ad-hoc `<Textarea>` blocks for narration.
+
+**Closure plan (deferred — Phase 1.7):** Add a single mount sweep pass across
+the 12 transaction forms; replace ad-hoc narration blocks with
+`NotesAndReferenceCard`; mount `TaxPeriodGateBanner` once at the top of every
+form that has a primary date.
