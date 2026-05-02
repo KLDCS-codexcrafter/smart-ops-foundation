@@ -494,6 +494,24 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
+      {/* Sprint 2.7-c · Q2-d · IRN lock banner — renders only when IRN is generated */}
+      <IRNLockBanner record={{
+        irn: (selectedDM as unknown as { irn?: string | null })?.irn ?? null,
+        irn_status: (selectedDM as unknown as { irn_status?: 'generated' | 'pending' | 'cancelled' | 'failed' })?.irn_status,
+        irn_ack_date: (selectedDM as unknown as { irn_ack_date?: string | null })?.irn_ack_date ?? null,
+        posted_at: (selectedDM as unknown as { posted_at?: string | null })?.posted_at ?? null,
+      }} />
+
+      {/* Sprint 2.7-c · Q4-c · bank instrument · mandatory ≥ ₹50K via field_rules (Q1-c) */}
+      <BankInstrumentPicker
+        value={instrument}
+        onChange={setInstrument}
+        amount={grandTotal}
+        mandatoryReason={grandTotal >= 50000
+          ? `Total ₹${grandTotal.toLocaleString('en-IN')} ≥ ₹50,000 · bank instrument required by field_rules (min_amount)`
+          : null}
+      />
+
       {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST */}
       <Card>
         <CardContent className="p-4">
