@@ -5,7 +5,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
@@ -142,6 +142,3 @@ export function SecondarySalesRegisterPanel({ initialFilter }: SecondarySalesReg
   );
 }
 
-declare global {
-  interface Window { __secondary_sales_unused__?: Badge }
-}
