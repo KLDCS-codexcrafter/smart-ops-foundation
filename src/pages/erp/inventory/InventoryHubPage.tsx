@@ -12,8 +12,7 @@ import { GRNEntryPanel } from './transactions/GRNEntry';
 import { MaterialIssueNotePanel } from './transactions/MaterialIssueNote';
 import { ConsumptionEntryPanel } from './transactions/ConsumptionEntry';
 import { StockLedgerReportPanel } from './reports/StockLedgerReport';
-// Sprint T-Phase-1.2.6b · GRNRegisterPanel deprecated · removed in 1.2.6e governance pass
-import { GRNRegisterPanel } from './reports/GRNRegister';
+// Sprint T-Phase-1.2.6b · GRNRegister.tsx (legacy) kept on disk as fallback · file deletion + this comment removed in 1.2.6e governance pass
 import { GRNRegisterV2Panel } from './reports/GRNRegisterV2';
 import { MINRegisterPanel } from './reports/MINRegister';
 import { ConsumptionRegisterPanel } from './reports/ConsumptionRegister';
