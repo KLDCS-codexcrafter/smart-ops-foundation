@@ -114,8 +114,11 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
         <div>{children}</div>
 
         {/* Signatory rows */}
-        <div className="grid grid-cols-3 gap-8 pt-12">
-          {['Prepared by', 'Checked by', 'Authorised Signatory'].map(label => (
+        <div
+          className="grid gap-8 pt-12"
+          style={{ gridTemplateColumns: `repeat(${sigs.length}, minmax(0, 1fr))` }}
+        >
+          {sigs.map(label => (
             <div key={label} className="text-center">
               <div className="border-t pt-2 text-xs text-muted-foreground">{label}</div>
             </div>
