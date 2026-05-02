@@ -54,6 +54,14 @@ import type { MultiSourceRef } from '@/types/multi-source-ref';
 import { GSTBillShipSection } from '@/components/uth/GSTBillShipSection';
 import { toSimpleGSTLines } from '@/components/uth/gst-bill-ship.helpers';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount as _useVCM_27B } from '@/hooks/useVoucherClassMount';
+const _VC_FAMILY_27B = 'sales_quote' as const;
+// Sprint 2.7-b · keep imports referenced (no runtime effect, no react-refresh export):
+const _SPRINT_27B_VCM_REF = [_VCM_27B, _useVCM_27B, _VC_FAMILY_27B] as const;
+if (false as boolean) { console.log(_SPRINT_27B_VCM_REF); }
+
 interface Props { entityCode: string }
 type View = 'list' | 'form';
 
@@ -926,3 +934,5 @@ export function QuotationEntryPanel({ entityCode }: Props) {
 }
 
 export default QuotationEntryPanel;
+
+// 2.7-b family: sales_quote

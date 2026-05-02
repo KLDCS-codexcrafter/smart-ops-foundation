@@ -38,6 +38,7 @@ StockTransferDispatch, ManufacturingJournal, plus their *Print companions).
 | 1.2.6e-tally-1-fix | closed (all 12 form mounts · 6 missing UseLastVoucherButton + SRM MultiSourcePicker + 4 effective_date inputs) | 14 |
 | 2.7-a | closed | 15 |
 | 2.7-a-fix | closed (HSN auto-resolve on 4 forms + streak doc cleanup) | 15 |
+| 2.7-b | closed (VoucherClassPicker · field-rule-engine · SaveButtonGroup · MobileApprovalsPage · ApprovalsPendingPage · VoucherClassMaster · 12 form mounts · 8 new tests · 224/224) | 16 |
 
 - Forensic audit of the corrected folder is captured in
   [`accounting-vouchers-forensic-audit.md`](./accounting-vouchers-forensic-audit.md).

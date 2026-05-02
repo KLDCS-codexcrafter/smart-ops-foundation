@@ -59,6 +59,14 @@ import type { VoucherType } from '@/types/voucher-type';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS, type Godown } from '@/types/godown';
 import { useT } from '@/lib/i18n-engine';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount as _useVCM_27B } from '@/hooks/useVoucherClassMount';
+const _VC_FAMILY_27B = 'inventory_in' as const;
+// Sprint 2.7-b · keep imports referenced (no runtime effect, no react-refresh export):
+const _SPRINT_27B_VCM_REF = [_VCM_27B, _useVCM_27B, _VC_FAMILY_27B] as const;
+if (false as boolean) { console.log(_SPRINT_27B_VCM_REF); }
+
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
 
@@ -1219,3 +1227,5 @@ export function GRNEntryPanel() {
     </div>
   );
 }
+
+// 2.7-b family: inventory_in

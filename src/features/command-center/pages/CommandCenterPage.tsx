@@ -35,6 +35,7 @@ import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsO
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 import { AssetCentreMasterPanel } from '@/pages/erp/finecore/masters/AssetCentreMaster';
+import VoucherClassMasterPage from '@/pages/erp/finecore/masters/VoucherClassMaster';
 import { ProjectCentreMasterPanel } from '@/pages/erp/projx/masters/ProjectCentreMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
@@ -141,6 +142,7 @@ export type CommandCenterModule =
   | 'finecore-fiscal-year'
   | 'finecore-business-unit'
   | 'finecore-asset-centres'
+  | 'finecore-voucher-class'
   | 'projx-project-centres'
   | 'console'
   | 'inventory-parametric'
@@ -226,7 +228,7 @@ export default function CommandCenterPage() {
       'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings',
       'org-structure',
       'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'projx-project-centres',
+      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'finecore-voucher-class', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -318,6 +320,7 @@ export default function CommandCenterPage() {
       case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
       case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
       case 'finecore-asset-centres': return <AssetCentreMasterPanel />;
+      case 'finecore-voucher-class': return <VoucherClassMasterPage />;
       case 'projx-project-centres': return <ProjectCentreMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;

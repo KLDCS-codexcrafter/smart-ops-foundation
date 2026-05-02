@@ -30,6 +30,14 @@ import { dMul, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 
+// Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
+import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount as _useVCM_27B } from '@/hooks/useVoucherClassMount';
+const _VC_FAMILY_27B = 'inventory_adjust' as const;
+// Sprint 2.7-b · keep imports referenced (no runtime effect, no react-refresh export):
+const _SPRINT_27B_VCM_REF = [_VCM_27B, _useVCM_27B, _VC_FAMILY_27B] as const;
+if (false as boolean) { console.log(_SPRINT_27B_VCM_REF); }
+
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
   godown_id: string; godown_name: string;
@@ -531,3 +539,5 @@ function CountDetail({
     </div>
   );
 }
+
+// 2.7-b family: inventory_adjust

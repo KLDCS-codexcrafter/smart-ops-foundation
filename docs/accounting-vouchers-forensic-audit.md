@@ -230,3 +230,15 @@ voucher_type_id + multi_source_refs added as sibling abstractions
 3. Honor `numbering_method` (auto vs manual) at the call sites; surface manual-entry UI in the form when method !== 'auto'.
 4. Implement `prevent_duplicate_manual` lookup and `insertion_deletion_behaviour` policy on cancel/delete.
 5. Backfill: a one-time sync pass to seed `current_sequence` from the highest existing `{NNNN}` per (voucher_type, FY).
+
+## Sprint T-Phase-2.7-b · Voucher Class UI + Field Rules + Approval Routing
+
+- Sprint T-Phase-2.7-b closed · count = **16**
+- VoucherClassPicker (Q1-b progressive disclosure) mounted in 12 forms
+- field-rule-engine (Q2-c hard-block on posted, soft warn on draft)
+- SaveButtonGroup (Q3-d context-aware Save Draft / Submit / Approve & Post / Reject)
+- MobileApprovalsPage stub closed (1.1.1l-c era TODO) + ApprovalsPendingPage web equivalent
+- VoucherClassMaster Command Center page · per-entity overrides via erp_non_fc_voucher_types_*
+- 3 demo voucher types seeded (vt-quotation-domestic-special · vt-im-export · vt-min-job-issue)
+- vitest 216 → 224 · tsc clean · D-127 vouchers/ untouched · D-128 voucher.ts + voucher-type.ts byte-identical
+

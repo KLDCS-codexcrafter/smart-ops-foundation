@@ -58,6 +58,7 @@ export function FineCoreMastersModule({ onNavigate }: FineCoreMastersModuleProps
     { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'finecore-finframe', storageKey: 'erp_finframe_groups', section: 'account-structure' },
     { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'finecore-ledgers', storageKey: 'erp_ledgers', section: 'account-structure' },
     { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'finecore-voucher-types', storageKey: 'erp_voucher_types', section: 'account-structure' },
+    { title: 'Voucher Class Master', desc: 'Per-voucher-type defaults · approval thresholds · mandatory field rules (non-FineCore)', icon: FileSpreadsheet, module: 'finecore-voucher-class', storageKey: 'erp_non_fc_voucher_types_default', section: 'account-structure' },
     // Transaction Defaults
     { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'finecore-transaction-templates', storageKey: 'erp_transaction_templates', section: 'transaction-defaults' },
     { title: 'Mode of Payment', desc: '10 seeded modes — Cash, Cheque, NEFT, RTGS, UPI, IMPS, DD, LC, Bank Transfer, Advance Online', icon: Coins, module: 'finecore-mode-of-payment', storageKey: 'erp_group_mode_of_payment', section: 'transaction-defaults' },
