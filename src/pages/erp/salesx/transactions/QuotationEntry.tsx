@@ -38,6 +38,10 @@ import { Sparkles } from 'lucide-react';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
+// Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
+import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
+import { computeIRNLockState } from '@/lib/irn-lock-engine';
+import { getCurrentUser } from '@/lib/auth-helpers';
 import { useStockAvailability } from '@/hooks/useStockAvailability';
 import {
   upsertQuoteReservation,
