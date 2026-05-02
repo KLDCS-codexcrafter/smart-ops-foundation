@@ -215,7 +215,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
       const newRow: SecondarySales = {
         id: `ss-${Date.now()}`,
         entity_id: entityCode,
-        secondary_code: nextSecondaryCode(list),
+        secondary_code: nextSecondaryCode(list, entityCode),
         sale_date: form.sale_date,
         distributor_id: dist.id,
         distributor_name: dist.partyName,
