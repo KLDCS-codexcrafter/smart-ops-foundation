@@ -24,7 +24,7 @@ import {
 } from '@/types/projx/time-entry';
 import type { TimeEntry } from '@/types/projx/time-entry';
 import { dMul, round2 } from '@/lib/decimal-helpers';
-import { isPeriodLocked } from '@/lib/period-lock-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
