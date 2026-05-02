@@ -123,6 +123,18 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
     setItems(prev => prev.map((it, i) => {
       if (i !== idx) return it;
       const next = { ...it, ...patch };
+      // Sprint 2.7-a-fix · auto-resolve HSN/SAC when operator types item_name
+      if (typeof patch.item_name === 'string' && patch.item_name.trim()) {
+        const masterItem = findItemByName(patch.item_name, entityCode);
+        if (masterItem) {
+          const resolved = resolveHSNForItem(masterItem, entityCode);
+          if (resolved.hsn_sac_code) {
+            next.hsn_sac_code = resolved.hsn_sac_code;
+            next.gst_rate = resolved.gst_rate;
+            next.is_rcm_eligible = resolved.is_rcm_eligible;
+          }
+        }
+      }
       next.amount = round2(dMul(next.qty, next.rate));
       return next;
     }));
