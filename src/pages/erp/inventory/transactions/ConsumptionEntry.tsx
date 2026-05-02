@@ -516,6 +516,23 @@ export function ConsumptionEntryPanel() {
                 setHeader(h => ({ ...h, consumption_date: v }));
               }} />
           </div>
+          {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+          <div>
+            <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+            <Input type="date" disabled={readonly}
+              value={header.effective_date ?? ''}
+              placeholder={header.consumption_date}
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, effective_date: v || null }));
+              }} />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              accounting date · defaults to Date
+            </p>
+          </div>
           <div>
             <Label className="text-xs">Mode</Label>
             <Select disabled={readonly} value={header.mode}
