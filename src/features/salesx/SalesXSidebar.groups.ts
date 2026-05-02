@@ -81,6 +81,7 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-secondary-register':   'report',
   'sx-r-som-register':         'report',
   'sx-r-dom-register':         'report',
+  'sx-r-quotation-v2':         'report',
 };
 
 /** Default landing module per group when user clicks the tab */
