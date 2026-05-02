@@ -33,6 +33,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
+import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
