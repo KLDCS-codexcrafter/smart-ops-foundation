@@ -60,6 +60,10 @@ import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
 import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
 import type { MultiSourceRef } from '@/types/multi-source-ref';
+// Sprint T-Phase-2.7-c · Q4-c bank instrument + Q2-d IRN lock banner
+import { BankInstrumentPicker } from '@/components/uth/BankInstrumentPicker';
+import { EMPTY_INSTRUMENT, type InstrumentValue } from '@/components/uth/BankInstrumentPicker.helpers';
+import { IRNLockBanner } from '@/components/uth/IRNLockBanner';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
 import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
