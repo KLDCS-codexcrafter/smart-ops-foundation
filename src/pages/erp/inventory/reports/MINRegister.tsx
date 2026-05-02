@@ -25,18 +25,39 @@ import type { InventoryDrillFilter } from '@/types/drill-context';
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function MINRegisterPanel() {
+interface MINRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function MINRegisterPanel({ initialFilter }: MINRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printMIN, setPrintMIN] = useState<MaterialIssueNote | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const mins = useMemo<MaterialIssueNote[]>(() => {
+  const allMins = useMemo<MaterialIssueNote[]>(() => {
     try {
       // [JWT] GET /api/inventory/material-issue-notes/:entityCode
       return JSON.parse(localStorage.getItem(minNotesKey(safeEntity)) || '[]') as MaterialIssueNote[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const mins = useMemo<MaterialIssueNote[]>(() => {
+    if (!filter) return allMins;
+    return allMins.filter(m => {
+      if (filter.status && m.status !== filter.status) return false;
+      if (filter.godownId && m.from_godown_id !== filter.godownId && m.to_godown_id !== filter.godownId) return false;
+      if (filter.itemId && !m.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.departmentCode && m.department_code !== filter.departmentCode) return false;
+      const eff = m.effective_date ?? m.issue_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allMins, filter]);
 
   const meta: RegisterMeta<MaterialIssueNote> = {
     registerCode: 'min_register',
