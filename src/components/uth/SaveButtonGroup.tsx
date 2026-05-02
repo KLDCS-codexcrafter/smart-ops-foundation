@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, Send, CheckCircle2, XCircle } from 'lucide-react';
+import { Save, Send, CheckCircle2, XCircle, FilePlus2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { NonFineCoreVoucherType } from '@/lib/non-finecore-voucher-type-registry';
 
@@ -31,6 +31,9 @@ interface Props {
   onSubmitForApproval: () => void;
   onApproveAndPost: () => void;
   onReject: (reason: string) => void;
+  /** Sprint 2.7-d-1 · Q4-d · when set, renders a "Save & New" button (Ctrl+Enter)
+   *  ONLY when below approval threshold. High-value vouchers route through approval flow. */
+  onSaveAndNew?: () => void;
   saving?: boolean;
   className?: string;
 }
