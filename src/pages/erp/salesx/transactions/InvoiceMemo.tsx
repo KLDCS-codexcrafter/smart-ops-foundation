@@ -327,6 +327,28 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
+      {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Delivery Memos) */}
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedDM?.memo_no || undefined}
+        title="Linked Source Delivery Memos"
+        emptyState="No additional DMs linked · primary DM shown above (if any)"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onClose={() => setSourcePickerOpen(false)}
+        sourceType="dm"
+        partyId={selectedDM?.customer_id ?? null}
+        excludeIds={multiSources.map(r => r.voucher_id)}
+        entityCode={entityCode}
+        onSelect={(refs) => {
+          setMultiSources([...multiSources, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
+
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Billing</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
