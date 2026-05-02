@@ -221,12 +221,30 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
             Authorise Dispatch to pick · pack · ship goods against a confirmed Sales Order.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="supply_request_memo"
+            partyValue={selectedSO?.party_id ?? null}
+            partyLabel={selectedSO?.party_name ?? undefined}
+            onUse={(data) => {
+              setExpectedDispatchDate('');
+              setDeliveryAddress((data.delivery_address as string | null) ?? '');
+              setSpecialInstructions((data.special_instructions as string | null) ?? '');
+              const srcItems = (data.items as SRMItem[] | undefined) ?? [];
+              if (srcItems.length > 0) {
+                setItems(srcItems.map((it) => ({ ...it, id: `srm-it-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` })));
+              }
+              toast.success('Pre-filled from last SRM');
+            }}
+          />
+          <Badge variant="outline" className="font-mono text-xs">{memoNo}</Badge>
+        </div>
       </div>
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Label className="text-xs">Memo No</Label>
             <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
@@ -246,8 +264,44 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
               </div>
             )}
           </div>
+          <div>
+            <Label className="text-xs">{t('common.effective_date', 'Effective Date')}</Label>
+            <Input
+              type="date"
+              value={effectiveDate}
+              placeholder={memoDate}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, entityCode)) {
+                  toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                }
+                setEffectiveDate(v);
+              }}
+              className="h-9"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">accounting date · defaults to Memo Date</p>
+          </div>
         </CardContent>
       </Card>
+
+      <MultiSourcePicker
+        refs={multiSources}
+        onChange={setMultiSources}
+        onAddSource={() => setSourcePickerOpen(true)}
+        primaryRefLabel={selectedSO?.order_no}
+        primaryRefAmount={totalAmount}
+        title="Linked Source Sales Orders"
+      />
+      <SourceVoucherPickerDialog
+        open={sourcePickerOpen}
+        onOpenChange={setSourcePickerOpen}
+        sourceType="so"
+        partyId={selectedSO?.party_id ?? null}
+        onSelect={(refs) => {
+          setMultiSources((prev) => [...prev, ...refs]);
+          setSourcePickerOpen(false);
+        }}
+      />
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Raised By</CardTitle></CardHeader>
