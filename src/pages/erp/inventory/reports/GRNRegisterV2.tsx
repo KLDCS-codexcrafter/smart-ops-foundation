@@ -50,13 +50,30 @@ export function GRNRegisterV2Panel({ initialFilter }: GRNRegisterV2PanelProps = 
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printGRN, setPrintGRN] = useState<GRN | null>(null);
+  // Sprint 1.2.6b-rpt · pragmatic filter — apply on mount via memo when register UI lacks native dimension.
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const grns = useMemo<GRN[]>(() => {
+  const allGrns = useMemo<GRN[]>(() => {
     try {
       // [JWT] GET /api/inventory/grns/:entityCode
       return JSON.parse(localStorage.getItem(grnsKey(safeEntity)) || '[]') as GRN[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const grns = useMemo<GRN[]>(() => {
+    if (!filter) return allGrns;
+    return allGrns.filter(g => {
+      if (filter.status && g.status !== filter.status) return false;
+      if (filter.vendorId && g.vendor_id !== filter.vendorId) return false;
+      if (filter.godownId && g.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !g.lines.some(l => l.item_id === filter.itemId)) return false;
+      const eff = g.effective_date ?? g.receipt_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allGrns, filter]);
 
   const meta: RegisterMeta<GRN> = {
     registerCode: 'grn_register',
