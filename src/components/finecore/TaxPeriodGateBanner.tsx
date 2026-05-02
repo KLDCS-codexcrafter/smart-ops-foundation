@@ -14,29 +14,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { isPeriodLocked, getPeriodLock } from '@/lib/period-lock-engine';
+import { fyForDate, quarterForDate } from '@/lib/fy-helpers';
 
 interface Props {
   entityCode: string;
   /** Date the user is posting against (defaults to today). YYYY-MM-DD or ISO. */
   voucherDate?: string;
-}
-
-/** Indian FY label for a given date (April → March). Exported for reuse. */
-export function fyForDate(dateISO: string): string {
-  const d = new Date(dateISO);
-  if (Number.isNaN(d.getTime())) return 'FY ----';
-  const m = d.getMonth();
-  const y = d.getFullYear();
-  if (m >= 3) return `FY ${y}-${String(y + 1).slice(2)}`;
-  return `FY ${y - 1}-${String(y).slice(2)}`;
-}
-
-function quarterForDate(dateISO: string): string {
-  const m = new Date(dateISO).getMonth();
-  if (m >= 3 && m <= 5) return 'Q1';
-  if (m >= 6 && m <= 8) return 'Q2';
-  if (m >= 9 && m <= 11) return 'Q3';
-  return 'Q4';
 }
 
 function daysUntil(target: Date): number {

@@ -12,7 +12,7 @@
  * [JWT] Phase 2 backend may move this logic server-side for stronger guarantees.
  */
 
-import { fyForDate } from '@/components/finecore/TaxPeriodGateBanner';
+import { fyForDate } from '@/lib/fy-helpers';
 
 export type DuplicateRecordType = 'grn' | 'rtv' | 'quotation' | 'invoice_memo';
 
