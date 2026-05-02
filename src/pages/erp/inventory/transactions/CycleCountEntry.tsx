@@ -299,7 +299,23 @@ export function CycleCountEntryPanel() {
               onApprove={() => approveCount(active.id, userId, userName)}
               onReject={(reason) => rejectCount(active.id, reason)}
               onPost={() => postCount(active.id)}
-              onCancel={(reason) => cancelCount(active.id, reason)}
+              onCancel={(reason) => {
+                if (!active) return;
+                const u = getCurrentUser();
+                const irnState = computeIRNLockState(active as unknown as Parameters<typeof computeIRNLockState>[0]);
+                writeCancellationAuditEntry({
+                  entityCode, voucherId: active.id, voucherNo: active.count_no,
+                  voucherDate: String(active.count_date ?? ''),
+                  voucherTypeId: active.voucher_type_id ?? null, voucherTypeName: active.voucher_type_name ?? null,
+                  baseVoucherType: 'CC', partyId: null, partyName: null,
+                  cancelledBy: u.id, cancelledByName: u.displayName, cancelReason: reason,
+                  wasPostedBeforeCancel: ['posted','submitted','approved'].includes(String(active.status ?? '')),
+                  hadRcm: false, hadIrn: !!irnState.irn,
+                  linkedRcmJvId: null, linkedRcmJvNo: null,
+                  totalAmount: 0, totalTaxAmount: 0,
+                });
+                cancelCount(active.id, reason);
+              }}
             />
           )}
         </SheetContent>
