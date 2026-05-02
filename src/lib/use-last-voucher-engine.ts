@@ -55,8 +55,8 @@ const PARTY_FIELD_BY_TYPE: Record<string, string> = {
   material_issue_note:  'to_godown_id',
   cycle_count:          'godown_id',
   secondary_sales:      'distributor_id',
-  sample_outward_memo:  'recipient_id',
-  demo_outward_memo:    'recipient_id',
+  sample_outward_memo:  'recipient_name',
+  demo_outward_memo:    'recipient_name',
 };
 
 const STORAGE_KEYS: Record<string, (e: string) => string> = {
