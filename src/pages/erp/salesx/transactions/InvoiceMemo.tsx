@@ -235,6 +235,12 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       invoice_posted_at: null,
       effective_date: effectiveDate || null,
       multi_source_refs: multiSources,
+      // Sprint 2.7-c · Q4-c · bank instrument fields (D-128 voucher schema unchanged)
+      instrument_type: instrument.instrument_type,
+      instrument_ref_no: instrument.instrument_ref_no,
+      cheque_date: instrument.cheque_date,
+      bank_name: instrument.bank_name,
+      deposit_date: instrument.deposit_date,
       created_at: now,
       updated_at: now,
     };
