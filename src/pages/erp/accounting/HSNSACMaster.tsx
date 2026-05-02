@@ -2,12 +2,13 @@
  * HSNSACMaster.tsx — Read-only HSN/SAC Directory
  * Maintained by 4DSmartOps. No CRUD.
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -17,6 +18,9 @@ import {
 } from '@/components/ui/table';
 import { Search, Info } from 'lucide-react';
 import { HSN_CODES, SAC_CODES } from '@/data/hsn-sac-seed-data';
+import { loadHSNExtensions, saveHSNExtensions, type HSNExtension } from '@/lib/hsn-resolver';
+import { useEntityScope } from '@/hooks/useEntityScope';
+import { toast } from 'sonner';
 
 function HSNSACMasterPanelInner() {
   const [hsnSearch, setHsnSearch] = useState('');
