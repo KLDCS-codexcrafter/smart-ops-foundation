@@ -65,6 +65,8 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 interface FormHeader {
   consumption_date: string;
+  /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to consumption_date) */
+  effective_date: string | null;
   mode: ConsumptionMode;
   godown_id: string;
   project_centre_id: string | null;
@@ -80,6 +82,7 @@ interface FormHeader {
 
 const BLANK_HEADER: FormHeader = {
   consumption_date: todayISO(),
+  effective_date: null,
   mode: 'job',
   godown_id: '',
   project_centre_id: null,
