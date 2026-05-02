@@ -43,7 +43,6 @@ interface BinUtilizationReportPanelProps {
 }
 
 export function BinUtilizationReportPanel({ onNavigate }: BinUtilizationReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
 
   const data = useMemo(() => {
@@ -133,7 +132,15 @@ export function BinUtilizationReportPanel({ onNavigate }: BinUtilizationReportPa
                   <TableRow><TableCell colSpan={8} className="text-center py-6 text-xs text-muted-foreground">No measured bins · set capacity on Bin Labels</TableCell></TableRow>
                 )}
                 {data.measured.map(r => (
-                  <TableRow key={r.bin.id}>
+                  <TableRow
+                    key={r.bin.id}
+                    className="cursor-pointer hover:bg-muted/30"
+                    onClick={() => onNavigate?.('r-item-movement', {
+                      fromModule: 'r-bin-utilization',
+                      fromLabel: 'Bin Utilization',
+                      filter: { godownId: r.bin.godown_id, sourceLabel: `Bin ${r.bin.location_code}` },
+                    })}
+                  >
                     <TableCell className="font-mono text-xs">{r.bin.location_code}</TableCell>
                     <TableCell className="text-xs">{r.bin.godown_name}</TableCell>
                     <TableCell className="text-right font-mono text-xs">{r.bin.capacity} {r.bin.capacity_unit}</TableCell>
