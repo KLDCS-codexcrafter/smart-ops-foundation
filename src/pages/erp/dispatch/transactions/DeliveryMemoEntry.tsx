@@ -156,6 +156,8 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
       created_by: 'dispatch_user',
       delivered_at: status === 'delivered' ? now : null,
       pod_reference: podReference.trim() || null,
+      effective_date: effectiveDate || null,
+      multi_source_refs: multiSources,
       created_at: now,
       updated_at: now,
     };
@@ -188,10 +190,12 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
     setSrmId(''); setTransporterName(''); setVehicleNo('');
     setLrNo(''); setLrDate(''); setExpectedDeliveryDate('');
     setPodReference(''); setItems([]); setDeliveryAddress('');
+    setEffectiveDate(''); setMultiSources([]);
     return memo;
   }, [validate, selectedSRM, entityCode, memoNo, memoDate,
       deliveryAddress, transporterName, vehicleNo, lrNo, lrDate,
-      expectedDeliveryDate, podReference, items, totalAmount]);
+      expectedDeliveryDate, podReference, items, totalAmount,
+      effectiveDate, multiSources]);
 
   const handleSaveDraft = useCallback(() => {
     const m = persistMemo('draft');
