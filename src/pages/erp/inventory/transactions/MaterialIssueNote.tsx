@@ -124,6 +124,8 @@ const blankLine = (): FormLine => ({
 
 // Sprint T-Phase-2.7-d-1 · Stock viz + Save-and-New + Auto-save + Smart defaults
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+// Sprint T-Phase-2.7-d-2 · Universal keyboard nav + bulk-paste + line-item search
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
 import { StockReservationBadge as _SRB_27D1 } from '@/components/uth/StockReservationBadge';
 import { StockReservationSidePanel } from '@/components/uth/StockReservationSidePanel';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
@@ -427,6 +429,14 @@ export function MaterialIssueNotePanel() {
         onRecover={() => _sprint27d1.setRecoveryOpen(false)}
         onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
         onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      {/* Sprint T-Phase-2.7-d-2 · Universal keyboard nav + help overlay + line-item search + bulk paste */}
+      <Sprint27d2Mount
+        formName="Material Issue Note"
+        entityCode={typeof entityCode === 'string' ? entityCode : ''}
+        items={(_sprint27d1.itemRequestQtys as unknown as Array<Record<string, unknown>>)}
+        isLineItemForm={true}
+        onCommitBulkRows={(rows) => { /* Sprint 2.7-d-2 bulk paste · operator commits selected rows · form-specific append handled by panel */ void rows; }}
       />
       <StockReservationSidePanel
         entityCode={typeof entityCode === 'string' ? entityCode : ''}
