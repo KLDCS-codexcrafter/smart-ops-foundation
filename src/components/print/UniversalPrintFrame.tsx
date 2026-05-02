@@ -57,6 +57,7 @@ export function UniversalPrintFrame(props: UniversalPrintFrameProps) {
   const {
     company, title, docNo, voucherDate, effectiveDate,
     referenceBlock, children, termsAndConditions, onClose, signatories,
+    referenceNo, postedAt, voucherHash, narration,
   } = props;
   const sigs = signatories && signatories.length > 0
     ? signatories
