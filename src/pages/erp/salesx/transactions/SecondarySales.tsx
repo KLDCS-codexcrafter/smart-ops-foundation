@@ -271,6 +271,7 @@ export function SecondarySalesPanel({ entityCode }: Props) {
     saveSales(entityCode, next);
     setSales(next);
     setForm(BLANK);
+    setInstrument(EMPTY_INSTRUMENT);
     setShowForm(false);
   }, [form, totalAmount, distributors, entityCode, instrument]);
 
