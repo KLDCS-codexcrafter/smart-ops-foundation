@@ -42,7 +42,12 @@ interface Row {
   abc_class: 'A' | 'B' | 'C' | null;
 }
 
-export function SlowMovingDeadStockReportPanel() {
+interface SlowMovingDeadStockReportPanelProps {
+  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+}
+
+export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadStockReportPanelProps = {}) {
+  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
 
