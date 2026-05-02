@@ -321,6 +321,10 @@ export function ComplianceSettingsAutomationPanel() {
   const [outstandingConfig, setOutstandingConfig] = useState<OutstandingConfig>(DEFAULT_OUTSTANDING);
   const [entityGst, setEntityGst] = useState<EntityGSTConfig>(DEFAULT_ENTITY_GST_CONFIG);
   const [tallyConfig, setTallyConfig] = useState<TallyExportConfig>(DEFAULT_TALLY_EXPORT_CONFIG);
+  // Sprint 2.7-a · per-voucher-type RCM Auto-Post policy (Q9 founder catch).
+  const [rcmAutoPostPolicies, setRcmAutoPostPolicies] = useState<RCMAutoPostPolicy[]>(
+    DEFAULT_RCM_AUTO_POST_POLICIES,
+  );
 
   const [activeSection, setActiveSection] = useState('gst-entity');
 
