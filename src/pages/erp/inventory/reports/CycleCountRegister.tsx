@@ -142,6 +142,7 @@ export function CycleCountRegisterPanel({ initialFilter }: CycleCountRegisterPan
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="Cycle Count Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentCC ? (
         <UniversalRegisterGrid<CycleCount>
