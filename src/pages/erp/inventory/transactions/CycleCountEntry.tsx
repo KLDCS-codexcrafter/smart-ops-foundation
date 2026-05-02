@@ -314,7 +314,7 @@ export function CycleCountEntryPanel() {
                   linkedRcmJvId: null, linkedRcmJvNo: null,
                   totalAmount: 0, totalTaxAmount: 0,
                 });
-                cancelCount(active.id, reason);
+                return cancelCount(active.id, reason);
               }}
             />
           )}
