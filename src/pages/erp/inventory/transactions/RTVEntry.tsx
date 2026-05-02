@@ -28,6 +28,8 @@ import type { RTV, RTVLine } from '@/types/rtv';
 import { rtvsKey, RTV_STATUS_COLORS } from '@/types/rtv';
 import type { GRN } from '@/types/grn';
 import { useT } from '@/lib/i18n-engine';
+import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
+import { checkDuplicateReference } from '@/lib/duplicate-reference-check';
 
 interface BalanceRow {
   item_id: string; item_code: string; item_name: string;
@@ -43,6 +45,25 @@ function readKey<T>(key: string): T[] {
 }
 
 export function RTVEntryPanel() {
+  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
+  const [referenceNo, setReferenceNo] = useState('');
+  const [narration, setNarration] = useState('');
+  const [overrideReason, setOverrideReason] = useState('');
+
+  // D-228 UTH · Q7-b duplicate reference_no detection
+  const duplicateError = useMemo(() => {
+    if (!referenceNo.trim() || !vendorId) return null;
+    const result = checkDuplicateReference({
+      entityCode: typeof entityCode === 'string' ? entityCode : '',
+      recordType: 'rtv',
+      partyId: vendorId,
+      referenceNo: referenceNo.trim(),
+      recordDate: rtvDate,
+      overrideReason,
+    });
+    return result.blocked ? (result.message ?? 'Duplicate reference number') : null;
+  }, [referenceNo, vendorId, rtvDate, overrideReason]);
+
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const [rtvs, setRtvs] = useState<RTV[]>(() => readKey<RTV>(rtvsKey(entityCode)));
@@ -116,6 +137,8 @@ export function RTVEntryPanel() {
       cancelled_at: null, cancellation_reason: null,
       // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date (defaults to rtv_date)
       effective_date: null,
+      narration: narration.trim() || null,
+      reference_no: referenceNo.trim() || null,
       created_at: now, updated_at: now,
     };
     persist([rtv, ...rtvs]);

@@ -36,6 +36,7 @@ import {
   type DMItem,
   type DMStatus,
 } from '@/types/delivery-memo';
+import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 interface Props { entityCode: string }
 
@@ -63,6 +64,11 @@ function ls<T>(key: string): T[] {
 }
 
 export function DeliveryMemoEntryPanel({ entityCode }: Props) {
+  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
+  const [referenceNo, setReferenceNo] = useState('');
+  const [narration, setNarration] = useState('');
+  const [overrideReason, setOverrideReason] = useState('');
+
   const t = useT();
   const [memoNo] = useState(() => nextMemoNo(entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
@@ -147,6 +153,8 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
       created_by: 'dispatch_user',
       delivered_at: status === 'delivered' ? now : null,
       pod_reference: podReference.trim() || null,
+      narration: narration.trim() || null,
+      reference_no: referenceNo.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -330,6 +338,15 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
+            <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Customer Delivery Confirmation Ref"
+        narration={narration}
+        setNarration={setNarration}
+        setOverrideReason={setOverrideReason}
+      />
+      {/* /D-228 UTH card */}
       <Card className="border-blue-500/30">
         <CardContent className="pt-4 flex items-center justify-between flex-wrap gap-2">
           <div>

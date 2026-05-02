@@ -50,6 +50,7 @@ import {
 import { DEPARTMENT_LABELS } from '@/types/godown';
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
 import { useT } from '@/lib/i18n-engine';
+import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -116,6 +117,11 @@ const blankLine = (): FormLine => ({
 });
 
 export function ConsumptionEntryPanel() {
+  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
+  const [referenceNo, setReferenceNo] = useState('');
+  const [narration, setNarration] = useState('');
+  const [overrideReason, setOverrideReason] = useState('');
+
   const _t = useT();
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
@@ -322,6 +328,8 @@ export function ConsumptionEntryPanel() {
       total_value: totals.value,
       total_variance_value: totals.varianceVal,
       narration: header.narration,
+      narration: narration.trim() || null,
+      reference_no: referenceNo.trim() || null,
       created_at: existing?.created_at ?? now,
       updated_at: now,
       posted_at: existing?.posted_at ?? null,

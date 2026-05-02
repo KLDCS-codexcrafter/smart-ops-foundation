@@ -100,6 +100,7 @@ function loadItems(): ItemLite[] {
 // New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
 // Existing records keep their secondary_code as-is (backward compat).
 import { generateDocNo } from '@/lib/finecore-engine';
+import { NotesAndReferenceCard } from '@/components/uth/NotesAndReferenceCard';
 function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
   return generateDocNo('SEC', entityCode);
 }
@@ -127,6 +128,11 @@ const BLANK: FormState = {
 };
 
 export function SecondarySalesPanel({ entityCode }: Props) {
+  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
+  const [referenceNo, setReferenceNo] = useState('');
+  const [narration, setNarration] = useState('');
+  const [overrideReason, setOverrideReason] = useState('');
+
   const t = useT();
   const [sales, setSales] = useState<SecondarySales[]>(() => loadSales(entityCode));
   const [distributors, setDistributors] = useState<CustomerLite[]>(() => loadDistributors());
@@ -227,7 +233,9 @@ export function SecondarySalesPanel({ entityCode }: Props) {
         capture_mode: 'manual',
         api_request_id: null,
         notes: form.notes || null,
-        created_at: NOW(),
+        narration: narration.trim() || null,
+      reference_no: referenceNo.trim() || null,
+      created_at: NOW(),
         updated_at: NOW(),
       };
       next = [...list, newRow];
