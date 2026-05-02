@@ -448,6 +448,18 @@ export function QuotationEntryPanel({ entityCode }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
+          {!editingId && (
+            <UseLastVoucherButton
+              entityCode={entityCode}
+              recordType="quotation"
+              partyValue={form.customer_id}
+              partyLabel={form.customer_name ?? undefined}
+              onUse={(data) => {
+                setForm(prev => ({ ...prev, ...(data as Partial<FormState>) }));
+                toast.success('Pre-filled from last quotation · review and edit.');
+              }}
+            />
+          )}
           {editingId && (
             <div className="flex items-center gap-2">
               <Input
