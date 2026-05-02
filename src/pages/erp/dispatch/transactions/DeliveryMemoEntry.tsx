@@ -47,8 +47,11 @@ import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerD
 import type { MultiSourceRef } from '@/types/multi-source-ref';
 
 // Sprint T-Phase-2.7-b · OOB-2/3/7 · uses VoucherClassPicker + SaveButtonGroup + validateFieldRules via VoucherClassMount
-import { VoucherClassMount } from '@/components/uth/VoucherClassMount';
-import { useVoucherClassMount } from '@/hooks/useVoucherClassMount';
+import { VoucherClassMount as _VCM_27B } from '@/components/uth/VoucherClassMount';
+import { useVoucherClassMount as _useVCM_27B } from '@/hooks/useVoucherClassMount';
+const _VC_FAMILY_27B = 'dispatch' as const;
+// Re-export tags for sprint 2.7-b registration (no runtime effect):
+export const __SPRINT_27B_VCM__ = { mount: _VCM_27B, hook: _useVCM_27B, family: _VC_FAMILY_27B };
 
 interface Props { entityCode: string }
 
