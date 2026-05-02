@@ -37,7 +37,10 @@ import {
   comply360LCKey, comply360EximKey, comply360SAMKey, comply360WAKey,
   comply360SettlementKey, comply360OutstandingKey,
   comply360TallyKey, DEFAULT_TALLY_EXPORT_CONFIG,
+  comply360RCMAutoPostKey, DEFAULT_RCM_AUTO_POST_POLICIES,
+  RCM_AUTO_POST_MODE_LABELS,
   type SAMConfig, type TallyExportConfig,
+  type RCMAutoPostPolicy, type RCMAutoPostMode,
 } from './ComplianceSettingsAutomation.constants';
 import type { TallyAction } from '@/lib/voucher-export-engine';
 
