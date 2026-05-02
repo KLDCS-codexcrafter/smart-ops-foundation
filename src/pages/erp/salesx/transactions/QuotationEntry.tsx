@@ -49,6 +49,9 @@ import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { MultiSourcePicker } from '@/components/uth/MultiSourcePicker';
 import { SourceVoucherPickerDialog } from '@/components/uth/SourceVoucherPickerDialog';
 import type { MultiSourceRef } from '@/types/multi-source-ref';
+// Sprint T-Phase-2.7-a · Batch C2 · GST + Bill/Ship mount
+import { GSTBillShipSection } from '@/components/uth/GSTBillShipSection';
+import { toSimpleGSTLines } from '@/components/uth/gst-bill-ship.helpers';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -807,6 +810,17 @@ export function QuotationEntryPanel({ entityCode }: Props) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Sprint T-Phase-2.7-a · Batch C2 · Bill/Ship + GST summary */}
+      <Card>
+        <CardContent className="p-4">
+          <GSTBillShipSection
+            customerId={form.customer_id}
+            customerName={form.customer_name}
+            lines={toSimpleGSTLines(form.items)}
+          />
+        </CardContent>
+      </Card>
 
       {form.revision_number > 0 && (
         <Card>
