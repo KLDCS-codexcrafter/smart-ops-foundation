@@ -114,6 +114,8 @@ export function RTVEntryPanel() {
       narration: `Return to vendor for QC-failed GRN ${grn.grn_no}`,
       posted_at: null, shipped_at: null,
       cancelled_at: null, cancellation_reason: null,
+      // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date (defaults to rtv_date)
+      effective_date: null,
       created_at: now, updated_at: now,
     };
     persist([rtv, ...rtvs]);
