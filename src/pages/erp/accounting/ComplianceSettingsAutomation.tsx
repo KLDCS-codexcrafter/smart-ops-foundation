@@ -798,6 +798,81 @@ export function ComplianceSettingsAutomationPanel() {
           <Input value={rcmConfig.reverseChargeInputLedger} onKeyDown={onEnterNext} onChange={e => setRcmConfig(p => ({ ...p, reverseChargeInputLedger: e.target.value }))} className="h-8 text-sm" placeholder="UDF 5014" /></div>
       </div>
       <Button data-primary onClick={handleSaveRCM} className="w-full"><Save className="h-4 w-4 mr-1" /> Save RCM Config</Button>
+
+      {/* Sprint 2.7-a · RCM Auto-Post Policy (Q9 founder catch · per-voucher-type) */}
+      <div className="pt-4 border-t border-border space-y-3">
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">RCM Auto-Post Policy</h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            Per-voucher-type policy controls how detected RCM cases are handled.
+            "Always Post" books the RCM JV automatically · "Report Only" logs detection without posting · "Never Post" suppresses detection.
+          </p>
+        </div>
+        <div className="rounded-lg border border-border overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40">
+              <tr>
+                <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Voucher Type</th>
+                <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Policy</th>
+                <th className="px-3 py-2 text-right text-xs font-semibold text-muted-foreground">Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rcmAutoPostPolicies.map((p) => (
+                <tr key={p.voucher_type} className="border-t border-border">
+                  <td className="px-3 py-2 font-medium text-foreground">{p.voucher_type_label}</td>
+                  <td className="px-3 py-2">
+                    <Select
+                      value={p.mode}
+                      onValueChange={(v) => {
+                        const mode = v as RCMAutoPostMode;
+                        setRcmAutoPostPolicies((prev) =>
+                          prev.map((x) => (x.voucher_type === p.voucher_type ? { ...x, mode } : x)),
+                        );
+                      }}
+                    >
+                      <SelectTrigger className="h-8 text-xs w-[160px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.keys(RCM_AUTO_POST_MODE_LABELS) as RCMAutoPostMode[]).map((k) => (
+                          <SelectItem key={k} value={k}>{RCM_AUTO_POST_MODE_LABELS[k]}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <Switch
+                      checked={p.active}
+                      onCheckedChange={(v) =>
+                        setRcmAutoPostPolicies((prev) =>
+                          prev.map((x) => (x.voucher_type === p.voucher_type ? { ...x, active: v } : x)),
+                        )
+                      }
+                      aria-label={`Activate policy for ${p.voucher_type_label}`}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Button
+          data-primary
+          onClick={() => {
+            if (!selectedEntityId) return;
+            try {
+              localStorage.setItem(comply360RCMAutoPostKey(selectedEntityId), JSON.stringify(rcmAutoPostPolicies));
+              toast.success('RCM Auto-Post policies saved.');
+            } catch {
+              toast.error('Failed to save policies.');
+            }
+          }}
+          className="w-full"
+        >
+          <Save className="h-4 w-4 mr-1" /> Save Auto-Post Policies
+        </Button>
+      </div>
     </div>
   );
 
