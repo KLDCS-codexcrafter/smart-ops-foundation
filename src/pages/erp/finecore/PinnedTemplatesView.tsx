@@ -38,8 +38,10 @@ export default function PinnedTemplatesView() {
   const [vtFilter, setVtFilter] = useState<string>('all');
   const [tick, setTick] = useState(0);
 
-  // tick is read by `all` derivation to force refresh after mutations
-  const all = entityCode && tick >= 0 ? searchPinnedTemplates(entityCode, {}) : [];
+  const all = useMemo(
+    () => (entityCode && tick >= 0 ? searchPinnedTemplates(entityCode, {}) : []),
+    [entityCode, tick],
+  );
 
   const voucherTypes = useMemo(() => {
     const set = new Map<string, string>();
