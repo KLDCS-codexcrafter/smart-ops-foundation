@@ -146,18 +146,14 @@ describe('Sprint 2.7-c · bank-instrument + IRN + cancel-audit', () => {
   // ---------- IC9 · field-rule min_amount gates instrument-mandatory rule ----------
   describe('IC9 · field_rules min_amount gate (Q1-c)', () => {
     const rules: FieldRule[] = [{
-      voucher_type_id: 'sales_invoice_memo',
-      rule_no: 1,
       field_path: 'instrument_type',
       field_label: 'Bank Instrument',
       rule: 'mandatory',
       enforce_on: 'always',
       min_amount: 50000,
       amount_field: 'total_amount',
-      pattern: null,
-      min_length: null,
       custom_message: 'Bank instrument required for invoices ≥ ₹50,000',
-    } as unknown as FieldRule];
+    }];
 
     beforeEach(() => { /* no-op */ });
 
