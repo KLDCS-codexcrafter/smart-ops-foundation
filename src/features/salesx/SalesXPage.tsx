@@ -122,6 +122,12 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-t-pi-tracker':           'PI Tracker',
   'sx-t-order-desk':           'Order Desk',
   'sx-r-call-log-history':     'Call Log History',
+  'sx-r-quotation-v2':         'Quotation Register V2',
+  'sx-r-srm-register':         'SRM Register',
+  'sx-r-im-register':          'Invoice Memo Register',
+  'sx-r-secondary-register':   'Secondary Sales Register',
+  'sx-r-som-register':         'SOM Register',
+  'sx-r-dom-register':         'DOM Register',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
