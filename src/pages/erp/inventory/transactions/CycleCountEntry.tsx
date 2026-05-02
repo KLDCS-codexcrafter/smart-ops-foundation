@@ -272,10 +272,14 @@ export function CycleCountEntryPanel() {
 
 function CreateCountForm({ godowns, onCreate }: {
   godowns: GodownLite[];
-  onCreate: (kind: CycleCountKind, godownId: string | null) => void;
+  onCreate: (kind: CycleCountKind, godownId: string | null, effectiveDate: string | null) => void;
 }) {
+  const _t = useT();
   const [kind, setKind] = useState<CycleCountKind>('random');
   const [gd, setGd] = useState<string>('');
+  // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date capture
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  const todayStr = new Date().toISOString().slice(0, 10);
   return (
     <div className="space-y-3">
       <div>
@@ -298,8 +302,18 @@ function CreateCountForm({ godowns, onCreate }: {
           </SelectContent>
         </Select>
       </div>
+      {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+      <div>
+        <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+        <Input type="date" value={effectiveDate}
+          placeholder={todayStr}
+          onChange={e => setEffectiveDate(e.target.value)} />
+        <p className="text-[10px] text-muted-foreground mt-1">
+          accounting date · defaults to Count Date
+        </p>
+      </div>
       <DialogFooter>
-        <Button onClick={() => onCreate(kind, gd || null)}>Create</Button>
+        <Button onClick={() => onCreate(kind, gd || null, effectiveDate || null)}>Create</Button>
       </DialogFooter>
     </div>
   );
