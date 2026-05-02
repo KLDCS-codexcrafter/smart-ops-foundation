@@ -140,6 +140,12 @@ export function RTVEntryPanel() {
   function postRtv(id: string) {
     const rtv = rtvs.find(r => r.id === id);
     if (!rtv || rtv.status !== 'draft') return;
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = rtv.effective_date || rtv.rtv_date;
+    if (entityCode && eff && isPeriodLocked(eff, entityCode)) {
+      toast.error(periodLockMessage(eff, entityCode) ?? 'Period is locked');
+      return;
+    }
     const now = new Date().toISOString();
     // Decrement stock balance
     const balKey = `erp_stock_balance_${entityCode}`;
