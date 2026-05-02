@@ -65,6 +65,8 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 interface FormHeader {
   issue_date: string;
+  /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to issue_date) */
+  effective_date: string | null;
   from_godown_id: string;
   to_godown_id: string;
   requested_by_id: string;
@@ -75,6 +77,7 @@ interface FormHeader {
 
 const BLANK_HEADER: FormHeader = {
   issue_date: todayISO(),
+  effective_date: null,
   from_godown_id: '', to_godown_id: '',
   requested_by_id: '', issued_by_id: '',
   project_centre_id: null, narration: '',
@@ -195,6 +198,7 @@ export function MaterialIssueNotePanel() {
     setEditingId(m.id); setReadonly(ro);
     setHeader({
       issue_date: m.issue_date,
+      effective_date: m.effective_date ?? null,
       from_godown_id: m.from_godown_id, to_godown_id: m.to_godown_id,
       requested_by_id: m.requested_by_id, issued_by_id: m.issued_by_id,
       project_centre_id: m.project_centre_id, narration: m.narration,
@@ -295,6 +299,11 @@ export function MaterialIssueNotePanel() {
     if (!header.requested_by_id) return 'Requested by is required';
     if (!header.issued_by_id) return 'Issued by is required';
     if (lines.length === 0) return 'Add at least one line';
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = header.effective_date || header.issue_date;
+    if (eff && isPeriodLocked(eff, safeEntity)) {
+      return periodLockMessage(eff, safeEntity) ?? 'Period is locked';
+    }
     return null;
   };
 
@@ -321,6 +330,7 @@ export function MaterialIssueNotePanel() {
       min_no: existing?.min_no ?? generateDocNo('MIN', safeEntity),
       status,
       issue_date: header.issue_date,
+      effective_date: header.effective_date || null,
       from_godown_id: header.from_godown_id, from_godown_name: fromG?.name ?? '',
       to_godown_id: header.to_godown_id, to_godown_name: toG?.name ?? '',
       to_department_code: toG?.department_code ?? null,
@@ -493,6 +503,23 @@ export function MaterialIssueNotePanel() {
                 }
                 setHeader(h => ({ ...h, issue_date: v }));
               }} />
+          </div>
+          {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+          <div>
+            <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+            <Input type="date" disabled={readonly}
+              value={header.effective_date ?? ''}
+              placeholder={header.issue_date}
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, effective_date: v || null }));
+              }} />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              accounting date · defaults to Issue Date
+            </p>
           </div>
           <div>
             <Label className="text-xs">From Godown</Label>

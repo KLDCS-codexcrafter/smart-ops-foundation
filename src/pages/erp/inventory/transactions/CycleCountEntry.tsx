@@ -123,7 +123,7 @@ export function CycleCountEntryPanel() {
   void ccFieldErr; void fieldErrorText; void ccValidator;
 
   const _t = useT();
-  function handleCreateBlank(kind: CycleCountKind, godownId: string | null) {
+  function handleCreateBlank(kind: CycleCountKind, godownId: string | null, effectiveDate: string | null) {
     const gd = godowns.find(g => g.id === godownId) ?? null;
     const countDate = new Date().toISOString().slice(0, 10);
     // Sprint T-Phase-1.2.5h-b2 · Period-lock UX surfacing (Deliverable 6)
@@ -132,9 +132,16 @@ export function CycleCountEntryPanel() {
       toast.error(msg);
       return;
     }
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    if (entityCode && effectiveDate && isPeriodLocked(effectiveDate, entityCode)) {
+      const msg = periodLockMessage(effectiveDate, entityCode) ?? 'Effective date is in a locked period';
+      toast.error(msg);
+      return;
+    }
     const created = createCount({
       count_kind: kind,
       count_date: countDate,
+      effective_date: effectiveDate,
       godown_id: gd?.id ?? null,
       godown_name: gd?.name ?? null,
       lines: [],
@@ -265,10 +272,14 @@ export function CycleCountEntryPanel() {
 
 function CreateCountForm({ godowns, onCreate }: {
   godowns: GodownLite[];
-  onCreate: (kind: CycleCountKind, godownId: string | null) => void;
+  onCreate: (kind: CycleCountKind, godownId: string | null, effectiveDate: string | null) => void;
 }) {
+  const _t = useT();
   const [kind, setKind] = useState<CycleCountKind>('random');
   const [gd, setGd] = useState<string>('');
+  // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date capture
+  const [effectiveDate, setEffectiveDate] = useState<string>('');
+  const todayStr = new Date().toISOString().slice(0, 10);
   return (
     <div className="space-y-3">
       <div>
@@ -291,8 +302,18 @@ function CreateCountForm({ godowns, onCreate }: {
           </SelectContent>
         </Select>
       </div>
+      {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+      <div>
+        <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+        <Input type="date" value={effectiveDate}
+          placeholder={todayStr}
+          onChange={e => setEffectiveDate(e.target.value)} />
+        <p className="text-[10px] text-muted-foreground mt-1">
+          accounting date · defaults to Count Date
+        </p>
+      </div>
       <DialogFooter>
-        <Button onClick={() => onCreate(kind, gd || null)}>Create</Button>
+        <Button onClick={() => onCreate(kind, gd || null, effectiveDate || null)}>Create</Button>
       </DialogFooter>
     </div>
   );

@@ -114,6 +114,8 @@ export function RTVEntryPanel() {
       narration: `Return to vendor for QC-failed GRN ${grn.grn_no}`,
       posted_at: null, shipped_at: null,
       cancelled_at: null, cancellation_reason: null,
+      // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date (defaults to rtv_date)
+      effective_date: null,
       created_at: now, updated_at: now,
     };
     persist([rtv, ...rtvs]);
@@ -138,6 +140,12 @@ export function RTVEntryPanel() {
   function postRtv(id: string) {
     const rtv = rtvs.find(r => r.id === id);
     if (!rtv || rtv.status !== 'draft') return;
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = rtv.effective_date || rtv.rtv_date;
+    if (entityCode && eff && isPeriodLocked(eff, entityCode)) {
+      toast.error(periodLockMessage(eff, entityCode) ?? 'Period is locked');
+      return;
+    }
     const now = new Date().toISOString();
     // Decrement stock balance
     const balKey = `erp_stock_balance_${entityCode}`;
@@ -332,6 +340,23 @@ export function RTVEntryPanel() {
                       value={active.lr_no ?? ''}
                       onChange={e => persist(rtvs.map(r => r.id === active.id ? { ...r, lr_no: e.target.value } : r))}
                     />
+                  </div>
+                  {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+                  <div className="col-span-2">
+                    <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+                    <Input type="date"
+                      value={active.effective_date ?? ''}
+                      placeholder={active.rtv_date}
+                      onChange={e => {
+                        const v = e.target.value;
+                        if (v && entityCode && isPeriodLocked(v, entityCode)) {
+                          toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
+                        }
+                        persist(rtvs.map(r => r.id === active.id ? { ...r, effective_date: v || null } : r));
+                      }} />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      accounting date · defaults to RTV Date
+                    </p>
                   </div>
                 </div>
               )}

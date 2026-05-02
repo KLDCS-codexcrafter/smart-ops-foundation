@@ -65,6 +65,8 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 interface FormHeader {
   consumption_date: string;
+  /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to consumption_date) */
+  effective_date: string | null;
   mode: ConsumptionMode;
   godown_id: string;
   project_centre_id: string | null;
@@ -80,6 +82,7 @@ interface FormHeader {
 
 const BLANK_HEADER: FormHeader = {
   consumption_date: todayISO(),
+  effective_date: null,
   mode: 'job',
   godown_id: '',
   project_centre_id: null,
@@ -178,6 +181,7 @@ export function ConsumptionEntryPanel() {
     setEditingId(e.id); setReadonly(ro);
     setHeader({
       consumption_date: e.consumption_date,
+      effective_date: e.effective_date ?? null,
       mode: e.mode,
       godown_id: e.godown_id,
       project_centre_id: e.project_centre_id,
@@ -267,6 +271,11 @@ export function ConsumptionEntryPanel() {
     if (header.mode === 'job' && !header.project_centre_id) return 'Job mode requires a project';
     if (header.mode === 'overhead' && !header.overhead_ledger_id) return 'Overhead mode requires ledger ref';
     if (lines.length === 0) return 'Add at least one line';
+    // Sprint T-Phase-1.2.6b-fix · D-226 UTS · effective_date period-lock parity
+    const eff = header.effective_date || header.consumption_date;
+    if (eff && isPeriodLocked(eff, safeEntity)) {
+      return periodLockMessage(eff, safeEntity) ?? 'Period is locked';
+    }
     return null;
   };
 
@@ -293,6 +302,7 @@ export function ConsumptionEntryPanel() {
       ce_no: existing?.ce_no ?? generateDocNo('CE', safeEntity),
       status,
       consumption_date: header.consumption_date,
+      effective_date: header.effective_date || null,
       mode: header.mode,
       godown_id: header.godown_id,
       godown_name: g?.name ?? '',
@@ -505,6 +515,23 @@ export function ConsumptionEntryPanel() {
                 }
                 setHeader(h => ({ ...h, consumption_date: v }));
               }} />
+          </div>
+          {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
+          <div>
+            <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
+            <Input type="date" disabled={readonly}
+              value={header.effective_date ?? ''}
+              placeholder={header.consumption_date}
+              onChange={e => {
+                const v = e.target.value;
+                if (v && isPeriodLocked(v, safeEntity)) {
+                  toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
+                }
+                setHeader(h => ({ ...h, effective_date: v || null }));
+              }} />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              accounting date · defaults to Date
+            </p>
           </div>
           <div>
             <Label className="text-xs">Mode</Label>
