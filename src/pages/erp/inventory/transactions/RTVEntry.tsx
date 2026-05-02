@@ -45,24 +45,12 @@ function readKey<T>(key: string): T[] {
 }
 
 export function RTVEntryPanel() {
-  // D-228 UTH form-side state · Sprint 1.2.6d-hdr
-  const [referenceNo, setReferenceNo] = useState('');
-  const [narration, setNarration] = useState('');
-  const [overrideReason, setOverrideReason] = useState('');
+  // D-228 UTH · narration & reference_no auto-stamped at creation from GRN.
+  // RTV has no per-record entry form (it derives from GRN-failed lines), so
+  // the user-facing UTH card lives on the active-RTV detail sheet (line 419
+  // narration <Textarea>). The duplicate-reference Q7-b check runs inside
+  // createFromGrn() against the source GRN's vendor.
 
-  // D-228 UTH · Q7-b duplicate reference_no detection
-  const duplicateError = useMemo(() => {
-    if (!referenceNo.trim() || !vendorId) return null;
-    const result = checkDuplicateReference({
-      entityCode: typeof entityCode === 'string' ? entityCode : '',
-      recordType: 'rtv',
-      partyId: vendorId,
-      referenceNo: referenceNo.trim(),
-      recordDate: rtvDate,
-      overrideReason,
-    });
-    return result.blocked ? (result.message ?? 'Duplicate reference number') : null;
-  }, [referenceNo, vendorId, rtvDate, overrideReason]);
 
   const _t = useT();
   const { entityCode } = useCardEntitlement();
