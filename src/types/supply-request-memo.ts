@@ -20,6 +20,10 @@ export interface SRMItem {
   uom: string | null;
   rate: number;
   amount: number;
+  /** Sprint 2.7-a · GST line-level HSN/SAC + RCM eligibility (Q2-a). */
+  hsn_sac_code?: string | null;
+  gst_rate?: number | null;
+  is_rcm_eligible?: boolean | null;
 }
 
 export interface SupplyRequestMemo {
