@@ -108,7 +108,7 @@ export default function InventoryHubPage() {
       case 't-cycle-count':          return <CycleCountEntryPanel />;
       case 't-rtv':                  return <RTVEntryPanel />;
       case 'r-bin-utilization':      return <BinUtilizationReportPanel onNavigate={navigateToModule} />;
-      case 'r-item-movement':        return <ItemMovementHistoryReportPanel onNavigate={navigateToModule} initialFilter={drillContext?.filter} />;
+      case 'r-item-movement':        return <ItemMovementHistoryReportPanel onNavigate={navigateToModule} />;
       default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };

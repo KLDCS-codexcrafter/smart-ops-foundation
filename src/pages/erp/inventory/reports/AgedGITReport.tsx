@@ -40,7 +40,6 @@ interface AgedGITReportPanelProps {
 }
 
 export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'DEMO';
 
@@ -135,9 +134,15 @@ export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {})
                   <TableRow
                     key={g.id}
                     className={cn(
+                      'cursor-pointer',
                       isCritical && 'bg-rose-500/10 hover:bg-rose-500/15',
                       isWarning && 'bg-amber-500/10 hover:bg-amber-500/15',
                     )}
+                    onClick={() => onNavigate?.('r-grn-register', {
+                      fromModule: 'r-aged-git',
+                      fromLabel: 'Aged GIT',
+                      filter: { status: 'in_transit', sourceLabel: `Aged GIT · ${g.grn_no}` },
+                    })}
                   >
                     <TableCell><code className="text-xs font-mono">{g.grn_no}</code></TableCell>
                     <TableCell className="text-sm">{g.vendor_name}</TableCell>
@@ -158,7 +163,7 @@ export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {})
                       <Button
                         size="sm" variant="outline"
                         className="h-7 text-xs gap-1"
-                        onClick={() => navigateToStage2(g.id)}
+                        onClick={(e) => { e.stopPropagation(); navigateToStage2(g.id); }}
                       >
                         <CheckCircle2 className="h-3 w-3" /> Confirm Receipt
                       </Button>

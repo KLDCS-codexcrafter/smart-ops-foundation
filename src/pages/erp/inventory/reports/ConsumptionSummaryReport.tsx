@@ -50,7 +50,6 @@ interface ConsumptionSummaryReportPanelProps {
 }
 
 export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummaryReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { mins } = useMaterialIssueNotes(safeEntity);
@@ -176,7 +175,18 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
                   No consumption posted this month yet
                 </TableCell></TableRow>
               ) : deptGrid.map(d => (
-                <TableRow key={d.dept}>
+                <TableRow
+                  key={d.dept}
+                  className="cursor-pointer hover:bg-muted/30"
+                  onClick={() => onNavigate?.('r-consumption-register', {
+                    fromModule: 'r-consumption-summary',
+                    fromLabel: 'Consumption Summary',
+                    filter: {
+                      departmentCode: d.dept === 'unassigned' ? undefined : d.dept,
+                      sourceLabel: `Dept · ${DEPARTMENT_LABELS[d.dept as GodownDepartmentCode] ?? d.dept}`,
+                    },
+                  })}
+                >
                   <TableCell>
                     {d.dept === 'unassigned' ? (
                       <span className="text-xs text-muted-foreground">Unassigned</span>
@@ -221,7 +231,19 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
                   No job-mode consumption posted yet
                 </TableCell></TableRow>
               ) : jobLeaderboard.map(j => (
-                <TableRow key={j.id}>
+                <TableRow
+                  key={j.id}
+                  className="cursor-pointer hover:bg-muted/30"
+                  onClick={() => onNavigate?.('r-consumption-register', {
+                    fromModule: 'r-consumption-summary',
+                    fromLabel: 'Consumption Summary',
+                    filter: {
+                      projectCentreId: j.id,
+                      varianceThreshold: 1,
+                      sourceLabel: `Project · ${j.id.slice(0, 12)}`,
+                    },
+                  })}
+                >
                   <TableCell className="text-xs"><code className="font-mono">{j.id.slice(0, 12)}</code></TableCell>
                   <TableCell className="text-xs font-mono">{j.jobs}</TableCell>
                   <TableCell className="text-xs font-mono">{fmtINR(j.value)}</TableCell>
@@ -259,7 +281,20 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
               <p className="text-sm">No alerts · all consumption looks accounted-for and on-rate</p>
             </div>
           ) : alerts.map(a => (
-            <div key={a.id} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/30">
+            <div
+              key={a.id}
+              className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/30 cursor-pointer"
+              onClick={() => onNavigate?.('r-consumption-register', {
+                fromModule: 'r-consumption-summary',
+                fromLabel: 'Consumption Summary',
+                filter: {
+                  departmentCode: a.ref_department_code ?? undefined,
+                  itemId: a.ref_item_id ?? undefined,
+                  godownId: a.ref_godown_id ?? undefined,
+                  sourceLabel: `Alert · ${a.title}`,
+                },
+              })}
+            >
               <Badge className={`${ALERT_SEVERITY_COLORS[a.severity]} shrink-0 mt-0.5`}>
                 {a.severity}
               </Badge>

@@ -47,7 +47,6 @@ interface SlowMovingDeadStockReportPanelProps {
 }
 
 export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadStockReportPanelProps = {}) {
-  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
 
@@ -126,7 +125,15 @@ export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadSto
             <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground text-sm py-6">No items</TableCell></TableRow>
           )}
           {data.map(r => (
-            <TableRow key={r.item_id}>
+            <TableRow
+              key={r.item_id}
+              className="cursor-pointer hover:bg-muted/30"
+              onClick={() => onNavigate?.('r-item-movement', {
+                fromModule: 'r-slow-moving-dead',
+                fromLabel: 'Slow / Dead Stock',
+                filter: { itemId: r.item_id, sourceLabel: `Slow/Dead · ${r.item_name}` },
+              })}
+            >
               <TableCell className="text-sm">{r.item_name}</TableCell>
               <TableCell className="text-xs">{r.last_issued_at?.slice(0, 10) ?? 'Never'}</TableCell>
               <TableCell className="font-mono text-xs">{r.days_since >= 9999 ? '∞' : `${r.days_since}d`}</TableCell>
@@ -134,7 +141,7 @@ export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadSto
               <TableCell className="font-mono text-xs">{FMT(r.value)}</TableCell>
               <TableCell><Badge variant="outline" className={CLASS_BADGE(r.abc_class)}>{r.abc_class ?? '—'}</Badge></TableCell>
               <TableCell>
-                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => writeOff(r)}>
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); writeOff(r); }}>
                   {showRecommendation ? 'Initiate Write-off' : 'Suggest Action'}
                 </Button>
               </TableCell>

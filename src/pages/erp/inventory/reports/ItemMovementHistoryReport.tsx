@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Activity, Download } from 'lucide-react';
+import { Activity, Download, ExternalLink } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { getItemMovementHistory, type MovementType } from '@/lib/item-movement-engine';
 import type { InventoryItem } from '@/types/inventory-item';
+import type { InventoryHubModule } from '../InventoryHubSidebar.types';
 
 const TYPE_LABELS: Record<MovementType, string> = {
   grn_inward: 'GRN',
@@ -26,15 +27,24 @@ const TYPE_LABELS: Record<MovementType, string> = {
   demo_outward: 'Demo',
 };
 
+const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
+  grn_inward: 'r-grn-register',
+  min_outward: 'r-min-register',
+  consumption: 'r-consumption-register',
+  cycle_count_adjustment: 'r-cycle-count-register',
+  stock_transfer: 'r-min-register',
+  rtv: 'r-rtv-register',
+  sample_outward: null,
+  demo_outward: null,
+};
+
 const fmt = (n: number) => n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
 interface ItemMovementHistoryReportPanelProps {
   onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
-  initialFilter?: import('@/types/drill-context').InventoryDrillFilter;
 }
 
-export function ItemMovementHistoryReportPanel({ onNavigate, initialFilter }: ItemMovementHistoryReportPanelProps = {}) {
-  void onNavigate; void initialFilter;
+export function ItemMovementHistoryReportPanel({ onNavigate }: ItemMovementHistoryReportPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
 
   const items = useMemo<InventoryItem[]>(() => {
@@ -117,12 +127,15 @@ export function ItemMovementHistoryReportPanel({ onNavigate, initialFilter }: It
               <TableHead className="text-right">Value Δ</TableHead>
               <TableHead>From → To</TableHead>
               <TableHead>Party</TableHead>
+              <TableHead></TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {(!history || history.events.length === 0) && (
-                <TableRow><TableCell colSpan={8} className="text-center py-6 text-xs text-muted-foreground">No movements in this window</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-6 text-xs text-muted-foreground">No movements in this window</TableCell></TableRow>
               )}
-              {history?.events.map(e => (
+              {history?.events.map(e => {
+                const target = TYPE_TO_MODULE[e.event_type];
+                return (
                 <TableRow key={e.event_id}>
                   <TableCell className="text-xs">{e.event_date.slice(0, 10)}</TableCell>
                   <TableCell><Badge variant="outline" className="text-[10px]">{TYPE_LABELS[e.event_type]}</Badge></TableCell>
@@ -136,8 +149,22 @@ export function ItemMovementHistoryReportPanel({ onNavigate, initialFilter }: It
                   </TableCell>
                   <TableCell className="text-xs">{e.from_godown_name ?? '—'} → {e.to_godown_name ?? '—'}</TableCell>
                   <TableCell className="text-xs">{e.party_name ?? '—'}</TableCell>
+                  <TableCell>
+                    {target && onNavigate ? (
+                      <Button
+                        size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1"
+                        onClick={() => onNavigate(target, {
+                          fromModule: 'r-item-movement',
+                          fromLabel: 'Movement History',
+                          filter: { itemId, sourceLabel: `Movement · ${e.source_voucher_no}` },
+                        })}
+                      >
+                        <ExternalLink className="h-3 w-3" /> Open
+                      </Button>
+                    ) : null}
+                  </TableCell>
                 </TableRow>
-              ))}
+              );})}
             </TableBody>
           </Table>
         </CardContent>
