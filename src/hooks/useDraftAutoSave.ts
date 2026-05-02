@@ -77,20 +77,11 @@ export function useDraftAutoSave<T>(
   });
 
   const saveNow = useCallback(() => {
-    if (!entityCode) return;
-    try {
-      // [JWT] PUT /api/drafts/:formKey
-      const payload = JSON.stringify({
-        savedAt: new Date().toISOString(),
-        formData: JSON.stringify(stateRef.current),
-      });
-      localStorage.setItem(key, payload);
+    if (writeDraftToStorage(formKey, entityCode, stateRef.current)) {
       setHasDraft(true);
       setDraftAge(0);
-    } catch {
-      // Silent · quota or serialize failure must not break the form
     }
-  }, [entityCode, key]);
+  }, [entityCode, formKey]);
 
   const clearDraft = useCallback(() => {
     try {
