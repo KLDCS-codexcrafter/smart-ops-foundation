@@ -48,7 +48,7 @@ export function PinnedTemplatesQuickLauncher({ entityCode, voucherTypeId, onClon
       (t) => t.voucher_type_id === voucherTypeId,
     );
     // re-evaluate on dropdown open
-  }, [entityCode, voucherTypeId]);
+  }, [entityCode, voucherTypeId, open]);
 
   function applyClone(id: string) {
     const state = cloneTemplateToFormState(entityCode, id);
