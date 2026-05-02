@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Activity, Download } from 'lucide-react';
+import { Activity, Download, ExternalLink } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { getItemMovementHistory, type MovementType } from '@/lib/item-movement-engine';
 import type { InventoryItem } from '@/types/inventory-item';
+import type { InventoryHubModule } from '../InventoryHubSidebar.types';
 
 const TYPE_LABELS: Record<MovementType, string> = {
   grn_inward: 'GRN',
@@ -24,6 +25,17 @@ const TYPE_LABELS: Record<MovementType, string> = {
   rtv: 'RTV',
   sample_outward: 'Sample',
   demo_outward: 'Demo',
+};
+
+const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
+  grn_inward: 'r-grn-register',
+  min_outward: 'r-min-register',
+  consumption: 'r-consumption-register',
+  cycle_count_adjustment: 'r-cycle-count-register',
+  stock_transfer: 'r-min-register',
+  rtv: 'r-rtv-register',
+  sample_outward: null,
+  demo_outward: null,
 };
 
 const fmt = (n: number) => n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
