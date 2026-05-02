@@ -30,6 +30,8 @@ import { tagVoucher, getOperatorContext } from './voucher-org-tag-engine';
 import { logAudit } from './audit-trail-engine';
 // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4)
 import { checkWriteAllowed } from './storage-quota-engine';
+// Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock enforcement (D-127 voucher .tsx unchanged)
+import { rejectSaveDueToIRNLock } from './irn-lock-engine';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
