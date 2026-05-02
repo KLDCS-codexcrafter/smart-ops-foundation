@@ -55,7 +55,7 @@ export default function PinnedTemplatesView() {
       voucher_type_id: vtFilter === 'all' ? undefined : vtFilter,
       query: query || undefined,
     });
-  }, [entityCode, vtFilter, query, tick]);
+  }, [entityCode, vtFilter, query]);
 
   function handleUnpin(id: string) {
     if (!confirm('Unpin this template?')) return;
