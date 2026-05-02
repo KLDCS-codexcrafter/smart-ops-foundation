@@ -91,7 +91,7 @@ interface FormHeader {
   voucher_type_name: string;
   receipt_mode: 'direct' | 'two_stage';
   /** Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date (defaults to receipt_date) */
-  effective_date: string;
+  effective_date?: string;
 }
 
 const BLANK_HEADER: FormHeader = {
