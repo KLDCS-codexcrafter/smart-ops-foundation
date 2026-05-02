@@ -3,12 +3,13 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · D-226 UTS compliant · mode-grouped
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -20,22 +21,46 @@ import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CEDetailPanel } from './detail/CEDetailPanel';
 import { ConsumptionEntryPrint } from './print/ConsumptionEntryPrint';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function ConsumptionRegisterPanel() {
+interface ConsumptionRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function ConsumptionRegisterPanel({ initialFilter }: ConsumptionRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printCE, setPrintCE] = useState<ConsumptionEntry | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const entries = useMemo<ConsumptionEntry[]>(() => {
+  const allEntries = useMemo<ConsumptionEntry[]>(() => {
     try {
       // [JWT] GET /api/inventory/consumption-entries/:entityCode
       return JSON.parse(localStorage.getItem(consumptionEntriesKey(safeEntity)) || '[]') as ConsumptionEntry[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const entries = useMemo<ConsumptionEntry[]>(() => {
+    if (!filter) return allEntries;
+    return allEntries.filter(e => {
+      if (filter.status && e.status !== filter.status) return false;
+      if (filter.godownId && e.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !e.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.departmentCode && e.department_code !== filter.departmentCode) return false;
+      if (filter.projectCentreId && e.project_centre_id !== filter.projectCentreId) return false;
+      if (filter.varianceThreshold != null && Math.abs(e.total_variance_value) < filter.varianceThreshold) return false;
+      const eff = e.effective_date ?? e.consumption_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allEntries, filter]);
 
   const meta: RegisterMeta<ConsumptionEntry> = {
     registerCode: 'consumption_register',
@@ -112,6 +137,7 @@ export function ConsumptionRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="Consumption Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentCE ? (
         <UniversalRegisterGrid<ConsumptionEntry>

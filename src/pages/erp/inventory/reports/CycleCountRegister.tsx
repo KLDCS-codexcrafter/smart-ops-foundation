@@ -3,12 +3,13 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · D-226 UTS compliant · variance summary
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -19,6 +20,7 @@ import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CycleCountDetailPanel } from './detail/CycleCountDetailPanel';
 import { CycleCountPrint } from './print/CycleCountPrint';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -28,18 +30,39 @@ const STATUS_LABELS: Record<CycleCountStatus, string> = {
   rejected: 'Rejected', posted: 'Posted', cancelled: 'Cancelled',
 };
 
-export function CycleCountRegisterPanel() {
+interface CycleCountRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function CycleCountRegisterPanel({ initialFilter }: CycleCountRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printCC, setPrintCC] = useState<CycleCount | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const counts = useMemo<CycleCount[]>(() => {
+  const allCounts = useMemo<CycleCount[]>(() => {
     try {
       // [JWT] GET /api/inventory/cycle-counts/:entityCode
       return JSON.parse(localStorage.getItem(cycleCountsKey(safeEntity)) || '[]') as CycleCount[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const counts = useMemo<CycleCount[]>(() => {
+    if (!filter) return allCounts;
+    return allCounts.filter(c => {
+      if (filter.status && c.status !== filter.status) return false;
+      if (filter.godownId && c.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !c.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.varianceThreshold != null && Math.abs(c.total_variance_value) < filter.varianceThreshold) return false;
+      const eff = c.effective_date ?? c.count_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allCounts, filter]);
 
   const meta: RegisterMeta<CycleCount> = {
     registerCode: 'cycle_count_register',
@@ -119,6 +142,7 @@ export function CycleCountRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="Cycle Count Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentCC ? (
         <UniversalRegisterGrid<CycleCount>

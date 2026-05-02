@@ -35,7 +35,12 @@ function loadGrns(key: string): GRN[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
 }
 
-export function AgedGITReportPanel() {
+interface AgedGITReportPanelProps {
+  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+}
+
+export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {}) {
+  void onNavigate;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'DEMO';
 

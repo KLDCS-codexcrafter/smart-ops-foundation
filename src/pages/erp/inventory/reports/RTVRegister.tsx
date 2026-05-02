@@ -3,12 +3,13 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · D-226 UTS compliant · vendor-grouped + source GRN ref
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -19,6 +20,7 @@ import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RTVDetailPanel } from './detail/RTVDetailPanel';
 import { RTVPrint } from './print/RTVPrint';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -27,18 +29,39 @@ const RTV_STATUS_LABELS: Record<RTVStatus, string> = {
   draft: 'Draft', posted: 'Posted', shipped: 'Shipped', cancelled: 'Cancelled',
 };
 
-export function RTVRegisterPanel() {
+interface RTVRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function RTVRegisterPanel({ initialFilter }: RTVRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printRTV, setPrintRTV] = useState<RTV | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const rtvs = useMemo<RTV[]>(() => {
+  const allRtvs = useMemo<RTV[]>(() => {
     try {
       // [JWT] GET /api/inventory/rtvs/:entityCode
       return JSON.parse(localStorage.getItem(rtvsKey(safeEntity)) || '[]') as RTV[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const rtvs = useMemo<RTV[]>(() => {
+    if (!filter) return allRtvs;
+    return allRtvs.filter(r => {
+      if (filter.status && r.status !== filter.status) return false;
+      if (filter.vendorId && r.vendor_id !== filter.vendorId) return false;
+      if (filter.godownId && !r.lines.some(l => l.godown_id === filter.godownId)) return false;
+      if (filter.itemId && !r.lines.some(l => l.item_id === filter.itemId)) return false;
+      const eff = r.effective_date ?? r.rtv_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allRtvs, filter]);
 
   const meta: RegisterMeta<RTV> = {
     registerCode: 'rtv_register',
@@ -116,6 +139,7 @@ export function RTVRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="RTV Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentRTV ? (
         <UniversalRegisterGrid<RTV>

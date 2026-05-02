@@ -18,12 +18,13 @@
  *   8 Print/Export parity · UniversalPrintFrame + UniversalRegisterGrid export menu
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -34,22 +35,45 @@ import { dSum } from '@/lib/decimal-helpers';
 import { GRNDetailPanel } from './detail/GRNDetailPanel';
 import { GRNPrint } from './print/GRNPrint';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function GRNRegisterV2Panel() {
+interface GRNRegisterV2PanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function GRNRegisterV2Panel({ initialFilter }: GRNRegisterV2PanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printGRN, setPrintGRN] = useState<GRN | null>(null);
+  // Sprint 1.2.6b-rpt · pragmatic filter — apply on mount via memo when register UI lacks native dimension.
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const grns = useMemo<GRN[]>(() => {
+  const allGrns = useMemo<GRN[]>(() => {
     try {
       // [JWT] GET /api/inventory/grns/:entityCode
       return JSON.parse(localStorage.getItem(grnsKey(safeEntity)) || '[]') as GRN[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const grns = useMemo<GRN[]>(() => {
+    if (!filter) return allGrns;
+    return allGrns.filter(g => {
+      if (filter.status && g.status !== filter.status) return false;
+      if (filter.vendorId && g.vendor_id !== filter.vendorId) return false;
+      if (filter.godownId && g.godown_id !== filter.godownId) return false;
+      if (filter.itemId && !g.lines.some(l => l.item_id === filter.itemId)) return false;
+      const eff = g.effective_date ?? g.receipt_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allGrns, filter]);
 
   const meta: RegisterMeta<GRN> = {
     registerCode: 'grn_register',
@@ -136,6 +160,7 @@ export function GRNRegisterV2Panel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb
         rootLabel="GRN Register"
         trail={drill.trail}

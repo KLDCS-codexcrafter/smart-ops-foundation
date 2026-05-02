@@ -28,7 +28,27 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
   } catch { return []; }
 }
 
-export function StockLedgerReportPanel() {
+import type { InventoryHubModule } from '../InventoryHubSidebar.types';
+import type { DrillNavigationContext } from '@/types/drill-context';
+// DrillBreadcrumb pre-wired for level-1+ drill UI (Q1-c flagship 4-level plan).
+import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+void DrillBreadcrumb;
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { ChevronRight } from 'lucide-react';
+
+interface StockLedgerReportPanelProps {
+  /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c hybrid routing */
+  onNavigate?: (module: InventoryHubModule, ctx?: DrillNavigationContext) => void;
+}
+
+/**
+ * Stock Ledger flagship · 4-level drill (Q1-c):
+ *   L0 base summary → L1 ItemDetailView → L2 ItemMovementTimelineView →
+ *   L3 cross-panel via onNavigate to source register.
+ */
+export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelProps = {}) {
+  const drill = useDrillDown();
+  void drill; void onNavigate; void ChevronRight;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { godowns } = useGodowns();

@@ -3,12 +3,13 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · D-226 UTS compliant
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
+import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
@@ -19,22 +20,44 @@ import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { MINDetailPanel } from './detail/MINDetailPanel';
 import { MINPrint } from './print/MINPrint';
+import type { InventoryDrillFilter } from '@/types/drill-context';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
-export function MINRegisterPanel() {
+interface MINRegisterPanelProps {
+  /** Cross-panel drill filter applied on mount · Sprint 1.2.6b-rpt */
+  initialFilter?: InventoryDrillFilter;
+}
+
+export function MINRegisterPanel({ initialFilter }: MINRegisterPanelProps = {}) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printMIN, setPrintMIN] = useState<MaterialIssueNote | null>(null);
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
-  const mins = useMemo<MaterialIssueNote[]>(() => {
+  const allMins = useMemo<MaterialIssueNote[]>(() => {
     try {
       // [JWT] GET /api/inventory/material-issue-notes/:entityCode
       return JSON.parse(localStorage.getItem(minNotesKey(safeEntity)) || '[]') as MaterialIssueNote[];
     } catch { return []; }
   }, [safeEntity]);
+
+  const mins = useMemo<MaterialIssueNote[]>(() => {
+    if (!filter) return allMins;
+    return allMins.filter(m => {
+      if (filter.status && m.status !== filter.status) return false;
+      if (filter.godownId && m.from_godown_id !== filter.godownId && m.to_godown_id !== filter.godownId) return false;
+      if (filter.itemId && !m.lines.some(l => l.item_id === filter.itemId)) return false;
+      if (filter.departmentCode && m.to_department_code !== filter.departmentCode) return false;
+      const eff = m.effective_date ?? m.issue_date;
+      if (filter.dateFrom && eff < filter.dateFrom) return false;
+      if (filter.dateTo && eff > filter.dateTo) return false;
+      return true;
+    });
+  }, [allMins, filter]);
 
   const meta: RegisterMeta<MaterialIssueNote> = {
     registerCode: 'min_register',
@@ -106,6 +129,7 @@ export function MINRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="MIN Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentMIN ? (
         <UniversalRegisterGrid<MaterialIssueNote>
