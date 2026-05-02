@@ -66,6 +66,9 @@ export default function ProjXPage() {
       case 'r-milestone-status':      return <MilestoneStatusReportPanel />;
       case 'r-project-margin':        return <ProjectMarginReportPanel />;
       case 'r-cash-flow-projection':  return <CashFlowProjectionReportPanel />;
+      case 'r-project-register':      return <ProjectRegisterPanel />;
+      case 'r-milestone-register':    return <MilestoneRegisterPanel />;
+      case 'r-time-entry-register':   return <TimeEntryRegisterPanel />;
       default: return <ProjXWelcomePanel onNavigate={setActiveModule} />;
     }
   };
