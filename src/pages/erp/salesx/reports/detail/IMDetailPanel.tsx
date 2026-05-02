@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer, Activity } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -35,6 +36,12 @@ export function IMDetailPanel({ im, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={im.id}
+              entityType="invoice_memo"
+              entityCode={entityCode || ''}
+              currentRecord={im as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer, Activity } from 'lucide-react';
 import {
@@ -43,6 +44,12 @@ export function DeliveryMemoDetailPanel({ dm, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={dm.id}
+              entityType="voucher"
+              entityCode={entityCode || ''}
+              currentRecord={dm as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

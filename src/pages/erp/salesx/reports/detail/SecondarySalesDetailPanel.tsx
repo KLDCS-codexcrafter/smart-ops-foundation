@@ -8,6 +8,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -19,6 +21,7 @@ const fmtINR = (n: number): string =>
 interface Props { sec: SecondarySales; onPrint: () => void }
 
 export function SecondarySalesDetailPanel({ sec, onPrint }: Props) {
+  const { entityCode } = useCardEntitlement();
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -32,6 +35,12 @@ export function SecondarySalesDetailPanel({ sec, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={sec.id}
+              entityType="voucher"
+              entityCode={entityCode || ''}
+              currentRecord={sec as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>

@@ -5,6 +5,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import { Badge } from '@/components/ui/badge';
 import { Printer } from 'lucide-react';
 import {
@@ -23,6 +25,7 @@ interface Props {
 }
 
 export function TimeEntryDetailPanel({ entry, project, onPrint }: Props) {
+  const { entityCode } = useCardEntitlement();
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -43,6 +46,12 @@ export function TimeEntryDetailPanel({ entry, project, onPrint }: Props) {
             <Button size="sm" variant="outline" onClick={onPrint} className="gap-2">
               <Printer className="h-4 w-4" /> Print
             </Button>
+            <AuditHistoryButton
+              recordId={entry.id}
+              entityType="time_entry"
+              entityCode={entityCode || ''}
+              currentRecord={entry as unknown as Record<string, unknown>}
+            />
           </div>
         </div>
       </CardHeader>
