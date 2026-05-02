@@ -113,6 +113,10 @@ const blank = (): FormState => ({
   // Sprint T-Phase-1.1.1a — ProjX hookpoint stub (D-171 dual-phase)
   project_id: null,
   is_active: true,
+  // Sprint T-Phase-1.2.6b · D-226 UTS · accounting effective date
+  effective_date: null,
+  // Sprint T-Phase-1.2.6e-tally-1 · multi-source linking (Q2-c)
+  multi_source_refs: [],
 });
 
 function recalcLine(it: QuotationItem): QuotationItem {
@@ -137,6 +141,8 @@ export function QuotationEntryPanel({ entityCode }: Props) {
   const [stageFilter, setStageFilter] = useState<'all' | QuotationStage>('all');
   const [revisionReason, setRevisionReason] = useState('');
   const [snapshotId, setSnapshotId] = useState<string | null>(null);
+  // Sprint T-Phase-1.2.6e-tally-1-fix · multi-source + Use Last
+  const [sourcePickerOpen, setSourcePickerOpen] = useState(false);
 
   const update = useCallback((p: Partial<FormState>) => setForm(prev => ({ ...prev, ...p })), []);
 
