@@ -49,7 +49,7 @@ function daysBetween(a: string, b: string): number {
 }
 
 export default function CancellationAuditRegister(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const [rows, setRows] = useState<CancellationAuditEntry[]>([]);
 
   useEffect(() => {

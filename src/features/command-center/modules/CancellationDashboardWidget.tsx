@@ -26,7 +26,7 @@ function thisMonthRange(): { from: string; to: string } {
 }
 
 export function CancellationDashboardWidget(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [entries, setEntries] = useState<CancellationAuditEntry[]>([]);
 
