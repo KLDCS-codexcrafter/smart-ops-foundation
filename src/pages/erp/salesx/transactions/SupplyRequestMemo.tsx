@@ -323,6 +323,14 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
             <Plus className="h-3.5 w-3.5 mr-1" /> Add Line
           </Button>
         </CardHeader>
+      <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Customer PO / SO Ref"
+        narration={narration}
+        setNarration={setNarration}
+        setOverrideReason={setOverrideReason}
+      />
         <CardContent>
           {items.length === 0 ? (
             <p className="text-xs text-muted-foreground py-6 text-center">

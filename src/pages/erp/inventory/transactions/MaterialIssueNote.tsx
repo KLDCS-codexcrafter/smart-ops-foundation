@@ -614,6 +614,14 @@ export function MaterialIssueNotePanel() {
             </Button>
           )}
         </CardHeader>
+      <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Indent / Work Order Ref"
+        narration={narration}
+        setNarration={setNarration}
+        setOverrideReason={setOverrideReason}
+      />
         <CardContent className="p-0">
           <Table>
             <TableHeader><TableRow className="bg-muted/40 hover:bg-muted/40">

@@ -888,6 +888,18 @@ export function GRNEntryPanel() {
             </Button>
           )}
         </CardHeader>
+      <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Vendor Invoice / Challan No"
+        referenceHelp="CGST 36(4) · duplicate within FY+vendor will be blocked."
+        narration={narration}
+        setNarration={setNarration}
+        duplicateError={duplicateError}
+        overrideReason={overrideReason}
+        setOverrideReason={setOverrideReason}
+        showOverrideField
+      />
         <CardContent className="p-0">
           <Table>
             <TableHeader><TableRow className="bg-muted/40">

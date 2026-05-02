@@ -414,6 +414,18 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
 
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-sm">Narration</CardTitle></CardHeader>
+      <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Customer PO / Order Ref"
+        referenceHelp="Duplicate within FY+customer will be blocked."
+        narration={narration}
+        setNarration={setNarration}
+        duplicateError={duplicateError}
+        overrideReason={overrideReason}
+        setOverrideReason={setOverrideReason}
+        showOverrideField
+      />
         <CardContent>
           <Textarea value={narration} onChange={e => setNarration(e.target.value)}
             placeholder="Notes for the Accounts team"

@@ -675,6 +675,14 @@ export function ConsumptionEntryPanel() {
             </Button>
           )}
         </CardHeader>
+      <NotesAndReferenceCard
+        referenceNo={referenceNo}
+        setReferenceNo={setReferenceNo}
+        referenceLabel="Production / WO Ref"
+        narration={narration}
+        setNarration={setNarration}
+        setOverrideReason={setOverrideReason}
+      />
         <CardContent className="p-0">
           <Table>
             <TableHeader><TableRow className="bg-muted/40 hover:bg-muted/40">
