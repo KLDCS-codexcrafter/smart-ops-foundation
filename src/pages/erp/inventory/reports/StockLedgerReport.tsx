@@ -30,11 +30,23 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
 
 import type { InventoryHubModule } from '../InventoryHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
-// DrillBreadcrumb pre-wired for level-1+ drill UI (Q1-c flagship 4-level plan).
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
-void DrillBreadcrumb;
 import { useDrillDown } from '@/hooks/useDrillDown';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ExternalLink, ArrowLeft } from 'lucide-react';
+import { getItemMovementHistory, type MovementType } from '@/lib/item-movement-engine';
+import { dAdd } from '@/lib/decimal-helpers';
+
+const TYPE_LABELS: Record<MovementType, string> = {
+  grn_inward: 'GRN', min_outward: 'MIN', consumption: 'Consumption',
+  cycle_count_adjustment: 'Cycle Count', stock_transfer: 'Transfer',
+  rtv: 'RTV', sample_outward: 'Sample', demo_outward: 'Demo',
+};
+const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
+  grn_inward: 'r-grn-register', min_outward: 'r-min-register',
+  consumption: 'r-consumption-register', cycle_count_adjustment: 'r-cycle-count-register',
+  stock_transfer: 'r-min-register', rtv: 'r-rtv-register',
+  sample_outward: null, demo_outward: null,
+};
 
 interface StockLedgerReportPanelProps {
   /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c hybrid routing */
@@ -48,7 +60,6 @@ interface StockLedgerReportPanelProps {
  */
 export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelProps = {}) {
   const drill = useDrillDown();
-  void drill; void onNavigate; void ChevronRight;
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { godowns } = useGodowns();
