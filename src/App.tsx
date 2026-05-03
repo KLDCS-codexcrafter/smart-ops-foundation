@@ -261,6 +261,7 @@ const App = () => (
               <Route path="/auth/login" element={<Login />} />
               {/* Sprint 14a — OperixGo PWA (public; has its own login) */}
               <Route path="/mobile/*" element={<MobileRouter />} />
+              <Route path="/vendor-portal/rfq/:rfqId" element={<RFQPublicForm />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
