@@ -352,6 +352,70 @@ export const DEMO_PROCUREMENT_ENQUIRIES: ProcurementEnquiry[] = ENQUIRIES;
 export const DEMO_RFQS: RFQ[] = RFQS;
 export const DEMO_QUOTATIONS: VendorQuotation[] = QUOTATIONS;
 
+// ─── Sprint T-Phase-1.2.6f-b-2-fix-2 · Block P · Demo scenario polish ──────
+// 5 archetype scenarios × 7 blueprints = 35 labelled records.
+// Used by demo dashboards and Procure360 Welcome to surface curated examples.
+export type DemoProcurementScenario =
+  | 'awarded_scoring_fallback'
+  | 'pending_quotations'
+  | 'declined_with_fallback'
+  | 'timeout_no_alternate'
+  | 'single_vendor_quick_award';
+
+export interface DemoScenarioRecord {
+  blueprint: string;
+  short_code: string;
+  scenario: DemoProcurementScenario;
+  label: string;
+  description: string;
+}
+
+const SCENARIO_LABELS: Record<DemoProcurementScenario, { label: string; description: string }> = {
+  awarded_scoring_fallback: {
+    label: 'Awarded · Scoring + Fallback',
+    description: 'Scoring-mode enquiry where vendor was awarded after auto-fallback rotation.',
+  },
+  pending_quotations: {
+    label: 'Pending Quotations',
+    description: 'Active enquiry awaiting vendor responses · multiple RFQs sent.',
+  },
+  declined_with_fallback: {
+    label: 'Declined · Fallback Triggered',
+    description: 'Primary vendor declined · fallback automatically rolled to next vendor.',
+  },
+  timeout_no_alternate: {
+    label: 'Timeout · No Alternate',
+    description: 'RFQ timed out · no fallback candidate available · escalation needed.',
+  },
+  single_vendor_quick_award: {
+    label: 'Single Vendor · Quick Award',
+    description: 'Single-vendor mode award completed within 24h · urgent indent flow.',
+  },
+};
+
+const BLUEPRINTS: Array<{ blueprint: string; short_code: string }> = [
+  { blueprint: 'sinha', short_code: 'SINHA' },
+  { blueprint: 'amith', short_code: 'AMITH' },
+  { blueprint: 'bcpl',  short_code: 'BCPL'  },
+  { blueprint: 'abdos', short_code: 'ABDOS' },
+  { blueprint: 'chrse', short_code: 'CHRSE' },
+  { blueprint: 'smrtp', short_code: 'SMRTP' },
+  { blueprint: 'shkph', short_code: 'SHKPH' },
+];
+
+export const DEMO_PROCUREMENT_SCENARIOS: DemoScenarioRecord[] = BLUEPRINTS.flatMap((bp) =>
+  (Object.keys(SCENARIO_LABELS) as DemoProcurementScenario[]).map((scenario) => ({
+    blueprint: bp.blueprint,
+    short_code: bp.short_code,
+    scenario,
+    label: SCENARIO_LABELS[scenario].label,
+    description: SCENARIO_LABELS[scenario].description,
+  })),
+);
+
+export const demoScenariosKey = (entityCode: string): string =>
+  `demo_scenarios_v1_${entityCode}`;
+
 // ─── Sprint T-Phase-1.2.6f-b-1 · Block F · Vendor Portal demo seeds ─────────
 // 21 vendor portal sessions across 7 blueprints (3 per blueprint).
 // D-275: blueprint-shortcode password for "active" vendors · 'Welcome@123' for first-quote/never.

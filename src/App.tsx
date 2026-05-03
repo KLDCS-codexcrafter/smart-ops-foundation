@@ -152,6 +152,7 @@ const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
 const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
+const SupplyXPage = lazy(() => import('./pages/erp/supplyx/SupplyXPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorPortalLogin = lazy(() => import('./pages/vendor-portal/VendorPortalLogin'));
@@ -447,6 +448,8 @@ const App = () => (
               <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
               <Route path="/erp/procure-hub" element={<P><Procure360Page /></P>} />
               <Route path="/erp/procure-hub/*" element={<P><Procure360Page /></P>} />
+              <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
+              <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
               <Route path="/erp/inventory-hub/batch-grid" element={<P><BatchGrid /></P>} />

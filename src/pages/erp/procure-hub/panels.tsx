@@ -66,6 +66,22 @@ import type { Procure360Module } from './Procure360Sidebar.types';
 
 const inr = (n: number): string => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
+// Block K-fix · Q3=B · inline CSV helper (no shared util)
+function downloadCsv(filename: string, headers: string[], rows: (string | number)[][]): void {
+  const esc = (v: string | number): string => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [headers.map(esc).join(','), ...rows.map((r) => r.map(esc).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
 interface NavProps { onNavigate?: (m: Procure360Module) => void }
 
@@ -652,15 +668,250 @@ export function EnquiryListPanel(): JSX.Element {
   );
 }
 
+// Block I-fix · D-256 · RFQ list with Send / Decline / Timeout / Cancel + channel inline edit
 export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rfqs = listRfqs(entityCode);
+  const [version, setVersion] = useState(0);
+  const refresh = useCallback(() => setVersion((v) => v + 1), []);
+  const rfqs = useMemo(() => {
+    void version; // re-read on refresh
+    return listRfqs(entityCode);
+  }, [entityCode, version]);
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reasonOpen, setReasonOpen] = useState<{ id: string; mode: 'decline' | 'cancel' } | null>(null);
+  const [reasonText, setReasonText] = useState('');
+
+  const filtered = useMemo(() => rfqs.filter((r) => {
+    if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+    if (search) {
+      const s = search.toLowerCase();
+      if (!r.rfq_no.toLowerCase().includes(s) && !r.vendor_name.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  }), [rfqs, search, statusFilter]);
+
+  const fmtDate = (iso: string | null): string => {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return iso; }
+  };
+
+  const onChangeChannel = (rfq: typeof rfqs[number], channel: 'internal' | 'whatsapp' | 'email'): void => {
+    if (rfq.status !== 'draft') {
+      toast.error('Channel can be edited only on draft RFQs.');
+      return;
+    }
+    import('@/lib/rfq-engine').then(({ updateRfq }) => {
+      updateRfq(rfq.id, { primary_channel: channel }, entityCode);
+      toast.success(`Primary channel set to ${channel}.`);
+      refresh();
+    });
+  };
+
+  const onSend = async (rfq: typeof rfqs[number]): Promise<void> => {
+    setBusyId(rfq.id);
+    try {
+      const { sendRfq } = await import('@/lib/rfq-engine');
+      await sendRfq(
+        rfq.id,
+        { id: rfq.vendor_id, name: rfq.vendor_name, contact_email: undefined, contact_mobile: undefined },
+        rfq.send_channels.length > 0 ? rfq.send_channels : [rfq.primary_channel],
+        entityCode,
+        'mock-user',
+      );
+      toast.success(`RFQ ${rfq.rfq_no} sent.`);
+      refresh();
+    } catch (e) {
+      toast.error(`Send failed · ${(e as Error).message}`);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onTimeout = async (rfq: typeof rfqs[number]): Promise<void> => {
+    setBusyId(rfq.id);
+    try {
+      const { timeoutRfq } = await import('@/lib/rfq-engine');
+      const { triggerFallback } = await import('@/lib/rfq-fallback-engine');
+      timeoutRfq(rfq.id, entityCode);
+      // Q2=B · Timeout DOES call triggerFallback
+      const result = triggerFallback(rfq, 'timeout', entityCode, []);
+      toast.warning(`RFQ ${rfq.rfq_no} marked timeout · fallback ${result.success ? 'triggered' : result.reason}.`);
+      refresh();
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const submitReason = async (): Promise<void> => {
+    if (!reasonOpen) return;
+    const rfq = rfqs.find((r) => r.id === reasonOpen.id);
+    if (!rfq) return;
+    const reason = reasonText.trim() || (reasonOpen.mode === 'decline' ? 'Declined by vendor' : 'Cancelled by buyer');
+    setBusyId(rfq.id);
+    try {
+      if (reasonOpen.mode === 'decline') {
+        const { declineRfq } = await import('@/lib/rfq-engine');
+        const { triggerFallback } = await import('@/lib/rfq-fallback-engine');
+        declineRfq(rfq.id, reason, entityCode, 'mock-user');
+        // Q2=B · Decline DOES call triggerFallback
+        const result = triggerFallback(rfq, 'declined', entityCode, []);
+        toast.warning(`RFQ ${rfq.rfq_no} declined · fallback ${result.success ? 'triggered' : result.reason}.`);
+      } else {
+        // Q2=B · Cancel marks status='cancelled' + audit · NO triggerFallback
+        const { updateRfq } = await import('@/lib/rfq-engine');
+        updateRfq(rfq.id, { status: 'cancelled' }, entityCode);
+        await appendAuditEntry({
+          entityCode,
+          entityId: rfq.entity_id,
+          voucherId: rfq.id,
+          voucherKind: 'rfq',
+          action: 'rfq.cancelled',
+          actorUserId: 'mock-user',
+          payload: { rfq_no: rfq.rfq_no, reason },
+        }).catch(() => { /* best-effort */ });
+        toast.success(`RFQ ${rfq.rfq_no} cancelled.`);
+      }
+      refresh();
+    } finally {
+      setBusyId(null);
+      setReasonOpen(null);
+      setReasonText('');
+    }
+  };
+
+  const statusBadge = (s: string): JSX.Element => {
+    const variant: 'default' | 'secondary' | 'outline' =
+      s === 'awarded' || s === 'quoted' ? 'default'
+      : s === 'declined' || s === 'timeout' || s === 'cancelled' ? 'outline'
+      : 'secondary';
+    return <Badge variant={variant}>{s}</Badge>;
+  };
+
   return (
-    <PanelList
-      title="RFQ List"
-      headers={['RFQ No', 'Vendor', 'Channel', 'Status', 'Sent']}
-      rows={rfqs.map((r) => [r.rfq_no, r.vendor_name, r.primary_channel, r.status, r.sent_at ?? '—'])}
-    />
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">RFQ List</h1>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Search</label>
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="RFQ no or vendor" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Status</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="opened">Opened</SelectItem>
+                  <SelectItem value="quoted">Quoted</SelectItem>
+                  <SelectItem value="declined">Declined</SelectItem>
+                  <SelectItem value="timeout">Timeout</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="awarded">Awarded</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-end text-sm text-muted-foreground">
+              {filtered.length} of {rfqs.length} RFQs
+            </div>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>RFQ No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Channel</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Sent</TableHead>
+                <TableHead>Timeout</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
+                    No RFQs match the current filter.
+                  </TableCell>
+                </TableRow>
+              ) : filtered.map((r) => {
+                const canSend = r.status === 'draft';
+                const canDeclineOrTimeout = ['sent', 'opened', 'received_by_vendor'].includes(r.status);
+                const canCancel = ['draft', 'sent', 'opened', 'received_by_vendor'].includes(r.status);
+                const isBusy = busyId === r.id;
+                return (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-mono">{r.rfq_no}</TableCell>
+                    <TableCell>{r.vendor_name}</TableCell>
+                    <TableCell>
+                      {r.status === 'draft' ? (
+                        <Select value={r.primary_channel} onValueChange={(v) => onChangeChannel(r, v as 'internal' | 'whatsapp' | 'email')}>
+                          <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="internal">Internal</SelectItem>
+                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant="outline">{r.primary_channel}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>{statusBadge(r.status)}</TableCell>
+                    <TableCell className="text-xs">{fmtDate(r.sent_at)}</TableCell>
+                    <TableCell className="text-xs">{fmtDate(r.timeout_at)}</TableCell>
+                    <TableCell className="text-right space-x-1">
+                      <Button size="sm" variant="default" disabled={!canSend || isBusy} onClick={() => onSend(r)}>Send</Button>
+                      <Button size="sm" variant="outline" disabled={!canDeclineOrTimeout || isBusy}
+                        onClick={() => { setReasonOpen({ id: r.id, mode: 'decline' }); setReasonText(''); }}>
+                        Decline
+                      </Button>
+                      <Button size="sm" variant="outline" disabled={!canDeclineOrTimeout || isBusy} onClick={() => onTimeout(r)}>Timeout</Button>
+                      <Button size="sm" variant="ghost" disabled={!canCancel || isBusy}
+                        onClick={() => { setReasonOpen({ id: r.id, mode: 'cancel' }); setReasonText(''); }}>
+                        Cancel
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {reasonOpen && (
+        <Card className="border-warning">
+          <CardHeader><CardTitle className="text-base">
+            {reasonOpen.mode === 'decline' ? 'Decline RFQ · enter vendor reason' : 'Cancel RFQ · enter buyer reason'}
+          </CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Textarea value={reasonText} onChange={(e) => setReasonText(e.target.value)} rows={3}
+              placeholder={reasonOpen.mode === 'decline' ? 'e.g. Out of stock' : 'e.g. Requirement cancelled'} />
+            <div className="flex gap-2 justify-end">
+              <Button variant="ghost" onClick={() => { setReasonOpen(null); setReasonText(''); }}>Close</Button>
+              <Button onClick={submitReason} disabled={busyId !== null}>
+                Confirm {reasonOpen.mode === 'decline' ? 'Decline' : 'Cancel'}
+              </Button>
+            </div>
+            {reasonOpen.mode === 'decline' && (
+              <p className="text-xs text-muted-foreground">Decline triggers auto-fallback (Mode 2 · scoring).</p>
+            )}
+            {reasonOpen.mode === 'cancel' && (
+              <p className="text-xs text-muted-foreground">Cancel marks status only · audit appended · no fallback.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 
@@ -791,52 +1042,102 @@ export function RfqRegisterReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [filter, setFilter] = useState<ReportFilter>({});
   const all = computeRfqRegister(entityCode);
-  // applyReportFilter expects sent_at on rows
   const filtered = applyReportFilter(
-    all.map(r => ({ ...r, sent_at: r.sent_at ?? undefined })),
+    all.map((r) => ({ ...r, sent_at: r.sent_at ?? undefined })),
     filter,
   );
+  const headers = ['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)'];
+  const rows = filtered.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)]);
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">RFQ Register</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">RFQ Register</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('rfq-register.csv', headers, rows)}>
+          Export CSV
+        </Button>
+      </div>
       <Card>
         <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-4 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">From</label>
-            <Input type="date" value={filter.date_from ?? ''} onChange={e => setFilter(f => ({ ...f, date_from: e.target.value || undefined }))} />
+            <Input type="date" value={filter.date_from ?? ''} onChange={(e) => setFilter((f) => ({ ...f, date_from: e.target.value || undefined }))} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">To</label>
-            <Input type="date" value={filter.date_to ?? ''} onChange={e => setFilter(f => ({ ...f, date_to: e.target.value || undefined }))} />
+            <Input type="date" value={filter.date_to ?? ''} onChange={(e) => setFilter((f) => ({ ...f, date_to: e.target.value || undefined }))} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Status</label>
-            <Input value={filter.status ?? ''} onChange={e => setFilter(f => ({ ...f, status: e.target.value || undefined }))} placeholder="sent / quoted / …" />
+            <Input value={filter.status ?? ''} onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value || undefined }))} placeholder="sent / quoted / …" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Vendor ID</label>
-            <Input value={filter.vendor_id ?? ''} onChange={e => setFilter(f => ({ ...f, vendor_id: e.target.value || undefined }))} placeholder="vendor id" />
+            <Input value={filter.vendor_id ?? ''} onChange={(e) => setFilter((f) => ({ ...f, vendor_id: e.target.value || undefined }))} placeholder="vendor id" />
           </div>
         </CardContent>
       </Card>
-      <PanelList
-        title=""
-        headers={['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)']}
-        rows={filtered.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)])}
-      />
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-xs text-muted-foreground mb-2">{filtered.length} of {all.length} RFQs</p>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No rows match.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => <TableCell key={j} className={j === 0 ? 'font-mono' : ''}>{c}</TableCell>)}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
 export function PendingRfqReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computePendingRfqs(entityCode);
+  const [vendorFilter, setVendorFilter] = useState('');
+  const all = computePendingRfqs(entityCode);
+  const filtered = vendorFilter
+    ? all.filter((r) => r.vendor_name.toLowerCase().includes(vendorFilter.toLowerCase()))
+    : all;
+  const headers = ['RFQ No', 'Vendor', 'Status', 'Sent At', 'Timeout At', 'Days Overdue'];
+  const today = Date.now();
+  const rows = filtered.map((r) => {
+    const overdue = r.timeout_at && new Date(r.timeout_at).getTime() < today
+      ? Math.floor((today - new Date(r.timeout_at).getTime()) / 86400000)
+      : 0;
+    return [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', r.timeout_at ?? '—', String(overdue)];
+  });
   return (
-    <PanelList
-      title="Pending RFQs"
-      headers={['RFQ No', 'Vendor', 'Status', 'Timeout At']}
-      rows={rows.map((r) => [r.rfq_no, r.vendor_name, r.status, r.timeout_at ?? '—'])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Pending RFQs</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('pending-rfqs.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="md:max-w-sm">
+            <label className="text-xs text-muted-foreground">Vendor name contains</label>
+            <Input value={vendorFilter} onChange={(e) => setVendorFilter(e.target.value)} placeholder="filter by vendor" />
+          </div>
+          <p className="text-xs text-muted-foreground">{filtered.length} of {all.length} pending RFQs</p>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No pending RFQs.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j === 0 ? 'font-mono' : j === 5 && Number(c) > 0 ? 'text-warning font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -858,16 +1159,47 @@ export function AwardHistoryReportPanel(): JSX.Element {
 
 export function VendorPerfReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computeVendorPerformance(entityCode);
+  const [sortKey, setSortKey] = useState<'spend' | 'response' | 'awards'>('spend');
+  const all = computeVendorPerformance(entityCode);
+  const sorted = [...all].sort((a, b) => {
+    if (sortKey === 'spend') return b.total_spend - a.total_spend;
+    if (sortKey === 'response') return b.response_rate - a.response_rate;
+    return b.awarded_count - a.awarded_count;
+  });
+  const headers = ['Vendor', 'RFQs', 'Quoted', 'Awarded', 'Spend', 'Response %'];
+  const rows = sorted.map((r) => [
+    r.vendor_name, String(r.rfq_count), String(r.quoted_count),
+    String(r.awarded_count), inr(r.total_spend), `${r.response_rate}%`,
+  ]);
   return (
-    <PanelList
-      title="Vendor Performance"
-      headers={['Vendor', 'RFQs', 'Quoted', 'Awarded', 'Spend', 'Response %']}
-      rows={rows.map((r) => [
-        r.vendor_name, String(r.rfq_count), String(r.quoted_count),
-        String(r.awarded_count), inr(r.total_spend), `${r.response_rate}%`,
-      ])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Vendor Performance</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('vendor-performance.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="flex gap-2 items-center">
+            <span className="text-xs text-muted-foreground">Sort by:</span>
+            <Button size="sm" variant={sortKey === 'spend' ? 'default' : 'outline'} onClick={() => setSortKey('spend')}>Spend</Button>
+            <Button size="sm" variant={sortKey === 'response' ? 'default' : 'outline'} onClick={() => setSortKey('response')}>Response %</Button>
+            <Button size="sm" variant={sortKey === 'awards' ? 'default' : 'outline'} onClick={() => setSortKey('awards')}>Awards</Button>
+          </div>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No vendor activity yet.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -910,13 +1242,53 @@ export function BestPriceReportPanel(): JSX.Element {
 
 export function SpendByVendorReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computeSpendByVendor(entityCode);
+  const all = computeSpendByVendor(entityCode);
+  const totalSpend = all.reduce((s, r) => s + r.spend, 0);
+  const sorted = [...all].sort((a, b) => b.spend - a.spend);
+  const headers = ['Vendor', 'Spend', 'Awards', 'Share %'];
+  const rows = sorted.map((r) => [
+    r.vendor_name,
+    inr(r.spend),
+    String(r.award_count),
+    totalSpend > 0 ? `${((r.spend / totalSpend) * 100).toFixed(1)}%` : '0%',
+  ]);
   return (
-    <PanelList
-      title="Spend by Vendor"
-      headers={['Vendor', 'Spend', 'Awards']}
-      rows={rows.map((r) => [r.vendor_name, inr(r.spend), String(r.award_count)])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Spend by Vendor</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('spend-by-vendor.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Total spend</p>
+              <p className="text-xl font-bold font-mono">{inr(totalSpend)}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Vendors</p>
+              <p className="text-xl font-bold font-mono">{all.length}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Top vendor share</p>
+              <p className="text-xl font-bold font-mono">{rows[0]?.[3] ?? '0%'}</p>
+            </div>
+          </div>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No spend data.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
