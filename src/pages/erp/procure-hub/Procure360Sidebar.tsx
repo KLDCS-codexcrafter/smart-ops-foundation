@@ -65,6 +65,7 @@ const GROUPS: Group[] = [
       { id: 'spend-by-vendor-report', label: 'Spend by Vendor', icon: BarChart3 },
       { id: 'rfq-followup-register-report', label: 'Follow-up Register', icon: Activity },
       { id: 'cross-dept-procurement-handoff', label: 'Cross-Dept Handoff', icon: Users },
+      { id: 'bill-passing-pi-status', label: 'Bill Passing & PI Status', icon: Receipt },
     ],
   },
   {
