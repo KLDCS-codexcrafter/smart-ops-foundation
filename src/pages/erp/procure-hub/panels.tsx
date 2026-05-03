@@ -1159,16 +1159,47 @@ export function AwardHistoryReportPanel(): JSX.Element {
 
 export function VendorPerfReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computeVendorPerformance(entityCode);
+  const [sortKey, setSortKey] = useState<'spend' | 'response' | 'awards'>('spend');
+  const all = computeVendorPerformance(entityCode);
+  const sorted = [...all].sort((a, b) => {
+    if (sortKey === 'spend') return b.total_spend - a.total_spend;
+    if (sortKey === 'response') return b.response_rate - a.response_rate;
+    return b.awarded_count - a.awarded_count;
+  });
+  const headers = ['Vendor', 'RFQs', 'Quoted', 'Awarded', 'Spend', 'Response %'];
+  const rows = sorted.map((r) => [
+    r.vendor_name, String(r.rfq_count), String(r.quoted_count),
+    String(r.awarded_count), inr(r.total_spend), `${r.response_rate}%`,
+  ]);
   return (
-    <PanelList
-      title="Vendor Performance"
-      headers={['Vendor', 'RFQs', 'Quoted', 'Awarded', 'Spend', 'Response %']}
-      rows={rows.map((r) => [
-        r.vendor_name, String(r.rfq_count), String(r.quoted_count),
-        String(r.awarded_count), inr(r.total_spend), `${r.response_rate}%`,
-      ])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Vendor Performance</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('vendor-performance.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="flex gap-2 items-center">
+            <span className="text-xs text-muted-foreground">Sort by:</span>
+            <Button size="sm" variant={sortKey === 'spend' ? 'default' : 'outline'} onClick={() => setSortKey('spend')}>Spend</Button>
+            <Button size="sm" variant={sortKey === 'response' ? 'default' : 'outline'} onClick={() => setSortKey('response')}>Response %</Button>
+            <Button size="sm" variant={sortKey === 'awards' ? 'default' : 'outline'} onClick={() => setSortKey('awards')}>Awards</Button>
+          </div>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No vendor activity yet.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
