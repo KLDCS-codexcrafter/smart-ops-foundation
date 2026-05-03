@@ -351,3 +351,50 @@ const QUOTATIONS = QUO_SPECS.map((qs) => {
 export const DEMO_PROCUREMENT_ENQUIRIES: ProcurementEnquiry[] = ENQUIRIES;
 export const DEMO_RFQS: RFQ[] = RFQS;
 export const DEMO_QUOTATIONS: VendorQuotation[] = QUOTATIONS;
+
+// ─── Sprint T-Phase-1.2.6f-b-1 · Block F · Vendor Portal demo seeds ─────────
+// 21 vendor portal sessions across 7 blueprints (3 per blueprint).
+// D-275: blueprint-shortcode password for "active" vendors · 'Welcome@123' for first-quote/never.
+// vendor_id values match DEMO_RFQS so scoping works at portal load.
+export interface DemoVendorPortalSession {
+  blueprint: string;
+  entity_short_code: string;
+  vendor_id: string;
+  party_code: string;
+  party_name: string;
+  password: string;             // demo only · D-275
+  has_logged_in: boolean;
+  last_activity: 'active' | 'pending_first_quote' | 'never';
+}
+
+export const DEMO_VENDOR_PORTAL_SESSIONS: DemoVendorPortalSession[] = [
+  // SINHA
+  { blueprint: 'sinha', entity_short_code: 'SINHA', vendor_id: 'v-sinha-1', party_code: 'V-SINHA-001', party_name: 'Steelcraft Industries', password: 'Sinha@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'sinha', entity_short_code: 'SINHA', vendor_id: 'v-sinha-2', party_code: 'V-SINHA-002', party_name: 'MetalSource Pvt Ltd', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'sinha', entity_short_code: 'SINHA', vendor_id: 'v-sinha-3', party_code: 'V-SINHA-003', party_name: 'Coilworks LLP', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // AMITH
+  { blueprint: 'amith', entity_short_code: 'AMITH', vendor_id: 'v-amith-1', party_code: 'V-AMITH-001', party_name: 'Cotton Mills Co', password: 'Amith@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'amith', entity_short_code: 'AMITH', vendor_id: 'v-amith-2', party_code: 'V-AMITH-002', party_name: 'Raw Cotton Traders', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'amith', entity_short_code: 'AMITH', vendor_id: 'v-amith-3', party_code: 'V-AMITH-003', party_name: 'JuteWorks', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // BCPL
+  { blueprint: 'bcpl', entity_short_code: 'BCPL', vendor_id: 'v-bcpl-1', party_code: 'V-BCPL-001', party_name: 'MedSupply India', password: 'Bcpl@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'bcpl', entity_short_code: 'BCPL', vendor_id: 'v-bcpl-2', party_code: 'V-BCPL-002', party_name: 'Hospital Stores Ltd', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'bcpl', entity_short_code: 'BCPL', vendor_id: 'v-bcpl-3', party_code: 'V-BCPL-003', party_name: 'PharmaPacks', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // ABDOS
+  { blueprint: 'abdos', entity_short_code: 'ABDOS', vendor_id: 'v-abdos-1', party_code: 'V-ABDOS-001', party_name: 'PolymerSource', password: 'Abdos@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'abdos', entity_short_code: 'ABDOS', vendor_id: 'v-abdos-2', party_code: 'V-ABDOS-002', party_name: 'Resin India', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'abdos', entity_short_code: 'ABDOS', vendor_id: 'v-abdos-3', party_code: 'V-ABDOS-003', party_name: 'MoldCraft Pvt', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // CHRSE
+  { blueprint: 'chrse', entity_short_code: 'CHRSE', vendor_id: 'v-chrse-1', party_code: 'V-CHRSE-001', party_name: 'Educational Books', password: 'Chrse@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'chrse', entity_short_code: 'CHRSE', vendor_id: 'v-chrse-2', party_code: 'V-CHRSE-002', party_name: 'Text Publishers', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'chrse', entity_short_code: 'CHRSE', vendor_id: 'v-chrse-3', party_code: 'V-CHRSE-003', party_name: 'School Suppliers Co', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // SMRTP
+  { blueprint: 'smrtp', entity_short_code: 'SMRTP', vendor_id: 'v-smrtp-1', party_code: 'V-SMRTP-001', party_name: 'PCB Source', password: 'Smrtp@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'smrtp', entity_short_code: 'SMRTP', vendor_id: 'v-smrtp-2', party_code: 'V-SMRTP-002', party_name: 'CircuitWorks', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'smrtp', entity_short_code: 'SMRTP', vendor_id: 'v-smrtp-3', party_code: 'V-SMRTP-003', party_name: 'EnclosureFab', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+  // SHKPH
+  { blueprint: 'shkph', entity_short_code: 'SHKPH', vendor_id: 'v-shkph-1', party_code: 'V-SHKPH-001', party_name: 'API Source India', password: 'Shkph@123', has_logged_in: true, last_activity: 'active' },
+  { blueprint: 'shkph', entity_short_code: 'SHKPH', vendor_id: 'v-shkph-2', party_code: 'V-SHKPH-002', party_name: 'BulkAPI Ltd', password: 'Welcome@123', has_logged_in: false, last_activity: 'pending_first_quote' },
+  { blueprint: 'shkph', entity_short_code: 'SHKPH', vendor_id: 'v-shkph-3', party_code: 'V-SHKPH-003', party_name: 'PharmaActives', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
+];
+
