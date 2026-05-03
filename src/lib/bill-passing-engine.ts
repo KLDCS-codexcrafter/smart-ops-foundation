@@ -19,7 +19,7 @@ import { getPurchaseOrder } from './po-management-engine';
 import type { GitStage1Line } from '@/types/git';
 import { getGitStage1 } from './git-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
-import { dSub, dPct, dSum, dMul, dAdd, round2 } from './decimal-helpers';
+import { dSub, dSum, dMul, dAdd, round2 } from './decimal-helpers';
 import { emitLeakEvent } from './leak-register-engine';
 import { generateDocNo } from './finecore-engine';
 
