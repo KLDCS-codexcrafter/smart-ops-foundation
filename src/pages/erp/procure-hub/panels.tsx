@@ -1097,13 +1097,47 @@ export function RfqRegisterReportPanel(): JSX.Element {
 
 export function PendingRfqReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computePendingRfqs(entityCode);
+  const [vendorFilter, setVendorFilter] = useState('');
+  const all = computePendingRfqs(entityCode);
+  const filtered = vendorFilter
+    ? all.filter((r) => r.vendor_name.toLowerCase().includes(vendorFilter.toLowerCase()))
+    : all;
+  const headers = ['RFQ No', 'Vendor', 'Status', 'Sent At', 'Timeout At', 'Days Overdue'];
+  const today = Date.now();
+  const rows = filtered.map((r) => {
+    const overdue = r.timeout_at && new Date(r.timeout_at).getTime() < today
+      ? Math.floor((today - new Date(r.timeout_at).getTime()) / 86400000)
+      : 0;
+    return [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', r.timeout_at ?? '—', String(overdue)];
+  });
   return (
-    <PanelList
-      title="Pending RFQs"
-      headers={['RFQ No', 'Vendor', 'Status', 'Timeout At']}
-      rows={rows.map((r) => [r.rfq_no, r.vendor_name, r.status, r.timeout_at ?? '—'])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Pending RFQs</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('pending-rfqs.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="md:max-w-sm">
+            <label className="text-xs text-muted-foreground">Vendor name contains</label>
+            <Input value={vendorFilter} onChange={(e) => setVendorFilter(e.target.value)} placeholder="filter by vendor" />
+          </div>
+          <p className="text-xs text-muted-foreground">{filtered.length} of {all.length} pending RFQs</p>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No pending RFQs.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j === 0 ? 'font-mono' : j === 5 && Number(c) > 0 ? 'text-warning font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
