@@ -25,7 +25,7 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
   },
   {
     id: 'vt-service-request',
-    family: REQUEST_FAMILY,
+    family: 'request',
     display_name: 'Service Request',
     prefix: 'SR',
     is_default: true,
@@ -40,7 +40,7 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
   },
   {
     id: 'vt-capital-indent',
-    family: REQUEST_FAMILY,
+    family: 'request',
     display_name: 'Capital Indent',
     prefix: 'CAP',
     is_default: true,
