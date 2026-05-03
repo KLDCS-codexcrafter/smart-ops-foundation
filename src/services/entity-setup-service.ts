@@ -33,6 +33,8 @@ import {
 // Sprint T-Phase-1.2.6f-c-1 · Block G · PO + GIT canonical keys
 import { purchaseOrdersKey, type PurchaseOrderRecord, type PurchaseOrderLine } from '@/types/po';
 import { gitStage1Key, type GitStage1Record, type GitStage1Line } from '@/types/git';
+// Sprint T-Phase-1.2.6f-c-2-fix · Block F · Bill Passing demo seed (idempotent · per blueprint)
+import { billPassingKey, type BillPassingRecord, type BillPassingLine } from '@/types/bill-passing';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
