@@ -203,8 +203,27 @@ export function transitionEnquiryStatus(
   id: string,
   status: ProcurementEnquiryStatus,
   entityCode: string,
+  actorUserId: string = 'system',
 ): ProcurementEnquiry | null {
-  return updateEnquiry(id, { status }, entityCode);
+  const result = updateEnquiry(id, { status }, entityCode);
+  if (result && status === 'approved') {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'procurement_enquiry',
+      action: 'enquiry.approved',
+      actorUserId,
+      payload: { approver_user_id: actorUserId, tier: result.standalone_approval_tier },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `Enquiry ${result.enquiry_no} approved (Tier ${result.standalone_approval_tier ?? '—'})`,
+    });
+  }
+  return result;
 }
 
 export function applyTier2Override(
@@ -237,7 +256,7 @@ export function awardQuotations(
   notes: string,
   entityCode: string,
 ): ProcurementEnquiry | null {
-  return updateEnquiry(
+  const result = updateEnquiry(
     enquiryId,
     {
       awarded_quotation_ids: winningQuotationIds,
@@ -248,6 +267,24 @@ export function awardQuotations(
     },
     entityCode,
   );
+  if (result) {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'procurement_enquiry',
+      action: 'enquiry.awarded',
+      actorUserId: awardedByUserId,
+      payload: { winning_quotation_ids: winningQuotationIds },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `Enquiry ${result.enquiry_no} awarded · ${winningQuotationIds.length} quotations`,
+    });
+  }
+  return result;
 }
 
 export function setItemVendorMatrix(
