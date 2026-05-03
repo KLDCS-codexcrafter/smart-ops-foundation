@@ -15,12 +15,21 @@ export interface IndentStateTransition {
   requires_role?: string;
 }
 
+export interface ApprovalRoleStep {
+  role: string;
+  avg_response_hours: number;
+}
+
 export interface ApprovalMatrixTier {
   tier: 1 | 2 | 3;
   min_value: number;
   max_value: number;
   approver_role: string;
   approver_label: string;
+  // OOB-7 Approval Timeline Preview enrichment (FIX-5)
+  threshold_label: string;
+  required_approvals: ApprovalRoleStep[];
+  estimated_hours: number;
 }
 
 export type IndentVoucherKind = 'material' | 'service' | 'capital';
@@ -87,7 +96,32 @@ export const STATUS_COLOR: Record<IndentStatus, string> = {
 };
 
 export const APPROVAL_MATRIX: ApprovalMatrixTier[] = [
-  { tier: 1, min_value: 0,       max_value: 50000,    approver_role: 'department_head', approver_label: 'HOD' },
-  { tier: 2, min_value: 50001,   max_value: 500000,   approver_role: 'operations',      approver_label: 'Purchase Head' },
-  { tier: 3, min_value: 500001,  max_value: Number.MAX_SAFE_INTEGER, approver_role: 'finance', approver_label: 'Finance Head' },
+  {
+    tier: 1, min_value: 0, max_value: 50000,
+    approver_role: 'department_head', approver_label: 'HOD',
+    threshold_label: '≤ ₹50K',
+    required_approvals: [{ role: 'Department Head', avg_response_hours: 4 }],
+    estimated_hours: 4,
+  },
+  {
+    tier: 2, min_value: 50001, max_value: 500000,
+    approver_role: 'operations', approver_label: 'Purchase Head',
+    threshold_label: '₹50K - ₹5L',
+    required_approvals: [
+      { role: 'Department Head', avg_response_hours: 4 },
+      { role: 'Purchase Manager', avg_response_hours: 12 },
+    ],
+    estimated_hours: 16,
+  },
+  {
+    tier: 3, min_value: 500001, max_value: Number.MAX_SAFE_INTEGER,
+    approver_role: 'finance', approver_label: 'Finance Head',
+    threshold_label: '> ₹5L (or any CAPEX)',
+    required_approvals: [
+      { role: 'Department Head', avg_response_hours: 4 },
+      { role: 'Purchase Head', avg_response_hours: 12 },
+      { role: 'Director / Finance Head', avg_response_hours: 24 },
+    ],
+    estimated_hours: 40,
+  },
 ];

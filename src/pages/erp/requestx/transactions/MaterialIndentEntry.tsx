@@ -28,7 +28,8 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createMaterialIndent, runAutoRules, submitIndent } from '@/lib/request-engine';
+import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent } from '@/lib/request-engine';
+import { APPROVAL_MATRIX } from '@/types/requisition-common';
 import type { IndentCategory, MaterialIndentLine, Priority } from '@/types/material-indent';
 
 // useSmartDefaults — re-exported via useSprint27d1Mount (smartLedger / smartWarehouse)
@@ -133,6 +134,19 @@ export function MaterialIndentEntry(): JSX.Element {
     () => runAutoRules({ lines, total_estimated_value: total, preferred_vendor_id: null }, 5000000),
     [lines, total],
   );
+
+  const approvalChain = useMemo(() => {
+    if (lines.length === 0) return null;
+    const tier = getApprovalTier(total, false);
+    const tierConfig = APPROVAL_MATRIX.find(t => t.tier === tier);
+    if (!tierConfig) return null;
+    return {
+      tier,
+      approvers: tierConfig.required_approvals,
+      estimated_total_hours: tierConfig.estimated_hours,
+      threshold_label: tierConfig.threshold_label,
+    };
+  }, [lines, total]);
 
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
@@ -311,12 +325,35 @@ export function MaterialIndentEntry(): JSX.Element {
         </Card>
       )}
 
-      <Card>
-        <CardHeader><CardTitle className="text-sm">Approval Timeline</CardTitle></CardHeader>
-        <CardContent className="text-xs text-muted-foreground">
-          Pre-submit preview · routing through HOD → Purchase → Finance based on value tier (OOB-7 stub).
-        </CardContent>
-      </Card>
+      {approvalChain && lines.some(l => l.item_name) && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              Approval Timeline Preview (OOB-7)
+              <Badge variant="outline" className="text-[10px]">Tier {approvalChain.tier}</Badge>
+              <Badge variant="outline" className="text-[10px]">{approvalChain.threshold_label}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground mb-2">On submit · this indent will route to:</p>
+            <ol className="space-y-1">
+              {approvalChain.approvers.map((a, i) => (
+                <li key={`${a.role}-${i}`} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2">
+                    <span className="font-mono text-muted-foreground">{i + 1}.</span>
+                    <span className="font-semibold">{a.role}</span>
+                  </span>
+                  <span className="text-muted-foreground">avg {a.avg_response_hours}h SLA</span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-3 pt-3 border-t flex justify-between text-xs">
+              <span className="text-muted-foreground">Estimated total approval time:</span>
+              <span className="font-semibold">~{approvalChain.estimated_total_hours} hours</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Sprint27eMount
         entityCode={entityCode}
