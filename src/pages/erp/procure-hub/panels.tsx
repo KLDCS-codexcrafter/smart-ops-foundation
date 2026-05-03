@@ -2233,3 +2233,81 @@ export function AgedGitProcurePanel(): JSX.Element {
     </div>
   );
 }
+
+// ============================================================================
+// Sprint T-Phase-1.2.6f-c-2 · Block E · BillPassingPiStatusPanel
+// ============================================================================
+import { listFcpiDrafts } from '@/lib/finance-pi-bridge';
+import { getBillsForPo } from '@/lib/bill-passing-engine';
+
+export function BillPassingPiStatusPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const pos = useMemo(() => listPurchaseOrders(entityCode), [entityCode]);
+  const fcpiDrafts = useMemo(() => listFcpiDrafts(entityCode), [entityCode]);
+
+  const rows = pos.map((p) => {
+    const bills = getBillsForPo(p.id, entityCode);
+    const drafts = fcpiDrafts.filter((d) => d.source_po_id === p.id);
+    const lastBill = bills[bills.length - 1];
+    return {
+      po: p,
+      billCount: bills.length,
+      draftCount: drafts.length,
+      lastStatus: lastBill?.status ?? '—',
+      lastUpdate: lastBill?.updated_at ?? '',
+    };
+  });
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Bill Passing & PI Status</h1>
+        <p className="text-sm text-muted-foreground">
+          Read-only status · drill-down to Bill Passing FCPI inbox.
+        </p>
+      </div>
+      <Card>
+        <CardContent className="p-0">
+          {rows.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">No POs yet.</div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-left p-2">PO #</th>
+                  <th className="text-left p-2">Vendor</th>
+                  <th className="text-right p-2">PO Total</th>
+                  <th className="text-right p-2">Bills</th>
+                  <th className="text-right p-2">FCPI Drafts</th>
+                  <th className="text-left p-2">Last Status</th>
+                  <th className="text-left p-2">Last Update</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr
+                    key={r.po.id}
+                    className="border-t hover:bg-accent cursor-pointer"
+                    onClick={() => { window.location.href = `/erp/bill-passing?po_id=${r.po.id}`; }}
+                  >
+                    <td className="p-2 font-mono">{r.po.po_no}</td>
+                    <td className="p-2">{r.po.vendor_name}</td>
+                    <td className="p-2 text-right font-mono">
+                      ₹{r.po.total_after_tax.toLocaleString('en-IN')}
+                    </td>
+                    <td className="p-2 text-right font-mono">{r.billCount}</td>
+                    <td className="p-2 text-right font-mono">{r.draftCount}</td>
+                    <td className="p-2">{r.lastStatus}</td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {r.lastUpdate ? new Date(r.lastUpdate).toLocaleString('en-IN') : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
