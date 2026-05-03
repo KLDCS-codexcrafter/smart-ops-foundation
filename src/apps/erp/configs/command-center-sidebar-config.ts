@@ -152,6 +152,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'crm-vendor', requiredCards: ['command-center'] },
       { id: 'crm-logistic', type: 'item', label: 'Logistic Master', icon: Truck,
         moduleId: 'crm-logistic', requiredCards: ['command-center'] },
+      // Sprint T-Phase-1.2.6f-c-2-fix · Block F · Bill Passing launcher (route-based · external module)
+      { id: 'cc-bill-passing-launcher', type: 'item', label: 'Bill Passing', icon: Receipt,
+        route: '/erp/bill-passing', requiredCards: ['command-center'] },
     ],
   },
   {
