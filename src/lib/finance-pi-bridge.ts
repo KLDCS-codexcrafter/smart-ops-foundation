@@ -393,5 +393,3 @@ export async function transitionFcpiStatus(
 
 // 3-c-3 ENRICHES with rate-contract validation · CC masters wiring (D-289 narration · T&C)
 // 3-c-2 produces functional auto-draft · 3-c-3 polishes
-// Helper for total dSum sanity (keeps dSum import non-shaken)
-void dSum;
