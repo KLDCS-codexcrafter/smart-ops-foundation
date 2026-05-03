@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity, ListChecks,
-  ShoppingCart, Truck, PackageCheck, Clock,
+  ShoppingCart, Truck, PackageCheck, Clock, Receipt,
 } from 'lucide-react';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
