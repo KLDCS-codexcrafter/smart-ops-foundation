@@ -57,6 +57,15 @@ function appendLog(entityCode: string, entries: CommunicationLogEntry[]): void {
   }
 }
 
+/**
+ * generateWhatsAppFallbackUrl — Sprint 3-b-2 D-266 (per D-280 in vendor-rfq-notify directly).
+ * Mirrors distributor-whatsapp-notify.ts:62, 101 pattern exactly.
+ */
+export function generateWhatsAppFallbackUrl(phone: string, body: string): string {
+  const cleanPhone = phone.replace(/\D/g, '');
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(body)}`;
+}
+
 export function generateRFQTokenUrl(rfqId: string, entityCode: string): string {
   const token = (typeof crypto !== 'undefined' && crypto.randomUUID)
     ? crypto.randomUUID()
@@ -80,20 +89,27 @@ export async function notifyVendorRFQ(
     `Dear ${vendor.name},\n\nPlease submit your quotation for RFQ ${rfq.rfq_no}.\n` +
     `Submit via portal: ${tokenUrl}\n\nThank you.`;
 
-  const logged: CommunicationLogEntry[] = resolvedChannels.map((ch) => ({
-    id: `cl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${ch}`,
-    entity_id: entityCode,
-    party_id: vendor.id,
-    party_name: vendor.name,
-    channel: ch,
-    direction: 'outbound',
-    subject,
-    body,
-    ref_rfq_no: rfq.rfq_no,
-    token_url: tokenUrl,
-    sent_at: now,
-    status: 'queued',
-  }));
+  const logged: CommunicationLogEntry[] = resolvedChannels.map((ch) => {
+    const entry: CommunicationLogEntry = {
+      id: `cl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${ch}`,
+      entity_id: entityCode,
+      party_id: vendor.id,
+      party_name: vendor.name,
+      channel: ch,
+      direction: 'outbound',
+      subject,
+      body,
+      ref_rfq_no: rfq.rfq_no,
+      token_url: tokenUrl,
+      sent_at: now,
+      status: 'queued',
+    };
+    // D-266 / D-280 · populate wa_fallback_url for whatsapp channel
+    if (ch === 'whatsapp' && vendor.contact_mobile) {
+      entry.wa_fallback_url = generateWhatsAppFallbackUrl(vendor.contact_mobile, body);
+    }
+    return entry;
+  });
 
   appendLog(entityCode, logged);
   // STUB: real provider wired in Phase 1.4
