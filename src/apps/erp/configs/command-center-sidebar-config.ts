@@ -148,6 +148,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'pinned-templates-master', requiredCards: ['command-center'] },
     ],
   },
+  {
+    id: 'people-core-group', type: 'group', label: 'People Core', icon: Users,
     children: [
       { id: 'ph-employee', type: 'item', label: 'Employee Master',
         moduleId: 'ph-employee', requiredCards: ['command-center'] },
