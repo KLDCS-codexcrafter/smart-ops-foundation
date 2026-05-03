@@ -12,9 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import {
-  loadPinnedTemplates, deletePinnedTemplate,
-} from '@/lib/pinned-templates-engine';
+import { loadPinnedTemplates, unpinTemplate } from '@/lib/pinned-templates-engine';
 import type { PinnedTemplate } from '@/types/pinned-template';
 
 export function PinnedTemplatesPanel(): JSX.Element {
@@ -33,7 +31,7 @@ export function PinnedTemplatesPanel(): JSX.Element {
   }, [templates, q]);
 
   const onDelete = (id: string): void => {
-    deletePinnedTemplate(entityCode, id);
+    unpinTemplate(entityCode, id);
     setTemplates(loadPinnedTemplates(entityCode));
     toast.success('Template removed');
   };
