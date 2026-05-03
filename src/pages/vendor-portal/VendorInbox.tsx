@@ -62,8 +62,6 @@ export default function VendorInbox(): JSX.Element {
     return scopeRfqsForVendor(all, session);
   }, [session]);
 
-  if (!session) return <Navigate to="/vendor-portal/login" replace />;
-
   const filtered = useMemo(() => {
     if (tab === 'all') return myRfqs;
     if (tab === 'pending') {
@@ -74,6 +72,15 @@ export default function VendorInbox(): JSX.Element {
     }
     return myRfqs.filter(r => ['declined', 'timeout', 'cancelled'].includes(r.status));
   }, [myRfqs, tab]);
+
+  const counts = useMemo(() => ({
+    pending: myRfqs.filter(r => ['sent', 'received_by_vendor', 'opened', 'draft'].includes(r.status)).length,
+    quoted: myRfqs.filter(r => ['quoted', 'partial_quoted', 'awarded'].includes(r.status)).length,
+    declined: myRfqs.filter(r => ['declined', 'timeout', 'cancelled'].includes(r.status)).length,
+    all: myRfqs.length,
+  }), [myRfqs]);
+
+  if (!session) return <Navigate to="/vendor-portal/login" replace />;
 
   const handleOpen = (rfq: RFQ): void => {
     recordVendorActivity(session.vendor_id, session.entity_code, 'rfq_view', 'rfq', rfq.id, rfq.rfq_no);
