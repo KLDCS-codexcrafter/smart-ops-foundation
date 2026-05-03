@@ -443,8 +443,71 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     const nfcKey = nonFineCoreVoucherTypesKey(opts.shortCode);
     if (!localStorage.getItem(nfcKey)) {
       localStorage.setItem(nfcKey, JSON.stringify(DEFAULT_NON_FINECORE_VOUCHER_TYPES));
-    }
-  } catch { /* ignore */ }
+      }
+    } catch { /* ignore */ }
+    // 8b-vendor-portal. Sprint T-Phase-1.2.6f-b-1 · Block E.3 · seed parties + passwords + activity per D-275.
+    try {
+      // [JWT] POST /api/vendor/portal/demo-seed
+      const myVendorSessions = DEMO_VENDOR_PORTAL_SESSIONS.filter(
+        v => v.entity_short_code === opts.shortCode,
+      );
+      if (myVendorSessions.length > 0) {
+        // Ensure parties exist for these vendors so portal login can resolve them
+        const partyKey = `parties_v1_${opts.shortCode}`;
+        const existingParties: Array<Record<string, unknown>> = JSON.parse(localStorage.getItem(partyKey) || '[]');
+        const existingIds = new Set(existingParties.map(p => p.id as string));
+        const nowIso = new Date().toISOString();
+        const newParties = myVendorSessions
+          .filter(v => !existingIds.has(v.vendor_id))
+          .map(v => ({
+            id: v.vendor_id,
+            entity_id: opts.entityId,
+            party_code: v.party_code,
+            party_name: v.party_name,
+            party_type: 'vendor' as const,
+            gstin: null,
+            state_code: null,
+            created_via_quick_add: false,
+            audit_flag_resolved_at: null,
+            created_at: nowIso,
+            updated_at: nowIso,
+            created_by: 'demo-seed',
+          }));
+        if (newParties.length > 0) {
+          localStorage.setItem(partyKey, JSON.stringify([...existingParties, ...newParties]));
+        }
+        // Seed passwords (btoa hash matches vendor-portal-auth-engine mockHashEquals)
+        for (const v of myVendorSessions) {
+          const pwdKey = `erp_vendor_portal_password_${opts.shortCode}_${v.vendor_id}`;
+          if (v.has_logged_in && !localStorage.getItem(pwdKey)) {
+            try { localStorage.setItem(pwdKey, btoa(v.password)); } catch { /* silent */ }
+          }
+        }
+        // Seed activity log so "Last login" populates for active vendors
+        const actKey = `erp_vendor_activity_${opts.shortCode}`;
+        if (!localStorage.getItem(actKey)) {
+          const acts: Array<Record<string, unknown>> = [];
+          for (const v of myVendorSessions) {
+            if (v.last_activity === 'active') {
+              acts.push({
+                id: `va-seed-${v.vendor_id}`,
+                vendor_id: v.vendor_id, entity_code: opts.shortCode,
+                kind: 'login',
+                at: new Date(Date.now() - 2 * 86400000).toISOString(),
+              });
+            } else if (v.last_activity === 'pending_first_quote') {
+              acts.push({
+                id: `va-seed-${v.vendor_id}`,
+                vendor_id: v.vendor_id, entity_code: opts.shortCode,
+                kind: 'token_landing',
+                at: new Date(Date.now() - 1 * 86400000).toISOString(),
+              });
+            }
+          }
+          if (acts.length > 0) localStorage.setItem(actKey, JSON.stringify(acts));
+        }
+      }
+    } catch { /* ignore */ }
 
   // 3. Load industry L4 groups into FinFrame
   const l4GroupsCreated = opts.loadIndustryPack ? loadIndustryPack(opts.businessActivity) : 0;
