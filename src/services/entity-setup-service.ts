@@ -489,6 +489,26 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         if (myCapitals.length > 0) localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(myCapitals));
       }
     } catch { /* ignore */ }
+    // 8b-procure. Sprint T-Phase-1.2.6f-a-fix · FIX-2 · Procure360 demo seed (per-entity prefix).
+    try {
+      // [JWT] POST /api/procure360/demo-seed
+      const peKey = procurementEnquiriesKey(opts.shortCode);
+      if (!localStorage.getItem(peKey)) {
+        const codePrefix = opts.shortCode.toLowerCase().slice(0, 5);
+        const matchingEnq = DEMO_PROCUREMENT_ENQUIRIES
+          .filter((e) => e.id.includes(`-${codePrefix}-`))
+          .map((e) => ({ ...e, entity_id: opts.entityId }));
+        const matchingRfqs = DEMO_RFQS
+          .filter((r) => r.id.includes(`-${codePrefix}-`))
+          .map((r) => ({ ...r, entity_id: opts.entityId }));
+        const matchingQuotations = DEMO_QUOTATIONS
+          .filter((q) => q.id.includes(`-${codePrefix}-`))
+          .map((q) => ({ ...q, entity_id: opts.entityId }));
+        if (matchingEnq.length > 0) localStorage.setItem(peKey, JSON.stringify(matchingEnq));
+        if (matchingRfqs.length > 0) localStorage.setItem(rfqsKey(opts.shortCode), JSON.stringify(matchingRfqs));
+        if (matchingQuotations.length > 0) localStorage.setItem(vendorQuotationsKey(opts.shortCode), JSON.stringify(matchingQuotations));
+      }
+    } catch { /* ignore */ }
     // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
