@@ -139,6 +139,8 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFineCoreVoucherType[] = [
   // Dispatch
   { id: 'vt-dm-standard', family: 'dispatch', display_name: 'Delivery Memo', prefix: 'DM', is_default: true, is_active: true },
   { id: 'vt-dm-export', family: 'dispatch', display_name: 'Delivery Memo Export', prefix: 'DM', is_default: false, is_active: true },
+  // Sprint T-Phase-1.2.6f-pre-1 · RequestX seeds (sibling addition · D-128 discipline preserved)
+  ...REQUESTX_VOUCHER_TYPE_SEEDS,
 ];
 
 /** Storage key (per-entity custom voucher types · entities can extend defaults). */
