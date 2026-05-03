@@ -573,6 +573,49 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         if (matchingQuotations.length > 0) localStorage.setItem(vendorQuotationsKey(opts.shortCode), JSON.stringify(matchingQuotations));
       }
     } catch { /* ignore */ }
+    // 8b-procure-pin. T-Phase-1.2.6f-b-2-fix-1 · touchup · Block H · Pinned Template seed for Procurement Enquiry (per blueprint).
+    try {
+      // [JWT] POST /api/templates/voucher (bulk seed)
+      const pinKey = `pinned_templates_v1_${opts.shortCode}`;
+      if (!localStorage.getItem(pinKey)) {
+        const now = new Date().toISOString();
+        const seed = [
+          {
+            id: `tpl-${opts.shortCode}-pe-bulk`,
+            entity_id: opts.entityId,
+            template_name: 'Quarterly Bulk Materials Enquiry',
+            voucher_type_id: 'procurement_enquiry',
+            voucher_type_name: 'Procurement Enquiry',
+            party_id: null, party_name: null, party_type: null,
+            line_items: [],
+            narration: JSON.stringify({ vendor_mode: 'scoring', expected_delivery_days: 14, is_capex: false }),
+            reference_no: null,
+            use_count: 0,
+            last_used_at: now,
+            pinned_by: 'system-seed',
+            pinned_at: now,
+            updated_at: now,
+          },
+          {
+            id: `tpl-${opts.shortCode}-pe-urgent`,
+            entity_id: opts.entityId,
+            template_name: 'Urgent Single-Item Quotation',
+            voucher_type_id: 'procurement_enquiry',
+            voucher_type_name: 'Procurement Enquiry',
+            party_id: null, party_name: null, party_type: null,
+            line_items: [],
+            narration: JSON.stringify({ vendor_mode: 'single', expected_delivery_days: 3, is_capex: false }),
+            reference_no: null,
+            use_count: 0,
+            last_used_at: now,
+            pinned_by: 'system-seed',
+            pinned_at: now,
+            updated_at: now,
+          },
+        ];
+        localStorage.setItem(pinKey, JSON.stringify(seed));
+      }
+    } catch { /* ignore */ }
     // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed

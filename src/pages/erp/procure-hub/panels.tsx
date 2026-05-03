@@ -56,7 +56,8 @@ import { APPROVAL_MATRIX } from '@/types/requisition-common';
 import { buildItemVendorMatrix } from '@/lib/item-vendor-matrix-builder';
 import { useItemVendors } from '@/hooks/useItemVendors';
 // Block M · D-269
-import { ApprovalActionPanel, tierFor, type ApprovalRecord } from '@/components/procure-hub/ApprovalActionPanel';
+import { ApprovalActionPanel, type ApprovalRecord } from '@/components/procure-hub/ApprovalActionPanel';
+import { tierFor } from '@/lib/approval-tier-helper';
 import type {
   ProcurementEnquiry, ProcurementEnquiryLine, VendorSelectionMode,
 } from '@/types/procurement-enquiry';
