@@ -461,6 +461,19 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       const archetype = mod.detectArchetype(opts.businessActivity);
       mod.seedEntityDemoData(opts.shortCode, archetype);
     } catch { /* demo module optional */ }
+
+    // 8b. Sprint T-Phase-1.2.6f-pre-1 — RequestX demo data (idempotent · skip if any key already present).
+    try {
+      // [JWT] POST /api/requestx/demo-seed
+      const miKey = materialIndentsKey(opts.shortCode);
+      if (!localStorage.getItem(miKey)) {
+        const stamp = (rows: Array<{ entity_id: string }>) =>
+          rows.map(r => ({ ...r, entity_id: opts.entityId }));
+        localStorage.setItem(miKey, JSON.stringify(stamp(DEMO_MATERIAL_INDENTS)));
+        localStorage.setItem(serviceRequestsKey(opts.shortCode), JSON.stringify(stamp(DEMO_SERVICE_REQUESTS)));
+        localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(stamp(DEMO_CAPITAL_INDENTS)));
+      }
+    } catch { /* ignore */ }
   }
 
   // 9. Sprint T-Phase-1.1.1p-v2 — Auto-create
