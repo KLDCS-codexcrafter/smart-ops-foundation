@@ -14,9 +14,9 @@ import type {
   BillPassingRecord, BillPassingLine, BillPassingStatus, MatchType, LineMatchStatus,
 } from '@/types/bill-passing';
 import { billPassingKey } from '@/types/bill-passing';
-import type { PurchaseOrderRecord, PurchaseOrderLine } from '@/types/po';
+import type { PurchaseOrderLine } from '@/types/po';
 import { getPurchaseOrder } from './po-management-engine';
-import type { GitStage1Record, GitStage1Line } from '@/types/git';
+import type { GitStage1Line } from '@/types/git';
 import { getGitStage1 } from './git-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { dSub, dPct, dSum, dMul, dAdd, round2 } from './decimal-helpers';
