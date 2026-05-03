@@ -279,13 +279,42 @@ export function AwardHistoryPanel(): JSX.Element {
 
 export function RfqRegisterReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computeRfqRegister(entityCode);
+  const [filter, setFilter] = useState<ReportFilter>({});
+  const all = computeRfqRegister(entityCode);
+  // applyReportFilter expects sent_at on rows
+  const filtered = applyReportFilter(
+    all.map(r => ({ ...r, sent_at: r.sent_at ?? undefined })),
+    filter,
+  );
   return (
-    <PanelList
-      title="RFQ Register"
-      headers={['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)']}
-      rows={rows.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)])}
-    />
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">RFQ Register</h1>
+      <Card>
+        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground">From</label>
+            <Input type="date" value={filter.date_from ?? ''} onChange={e => setFilter(f => ({ ...f, date_from: e.target.value || undefined }))} />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">To</label>
+            <Input type="date" value={filter.date_to ?? ''} onChange={e => setFilter(f => ({ ...f, date_to: e.target.value || undefined }))} />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Status</label>
+            <Input value={filter.status ?? ''} onChange={e => setFilter(f => ({ ...f, status: e.target.value || undefined }))} placeholder="sent / quoted / …" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Vendor ID</label>
+            <Input value={filter.vendor_id ?? ''} onChange={e => setFilter(f => ({ ...f, vendor_id: e.target.value || undefined }))} placeholder="vendor id" />
+          </div>
+        </CardContent>
+      </Card>
+      <PanelList
+        title=""
+        headers={['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)']}
+        rows={filtered.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)])}
+      />
+    </div>
   );
 }
 
