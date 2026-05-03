@@ -10,6 +10,7 @@
  *
  *   [JWT] GET/PUT /api/voucher-types/non-finecore?entityCode=:entityCode
  */
+import { REQUESTX_VOUCHER_TYPE_SEEDS } from '@/data/requestx-voucher-type-seed-data';
 
 export type NonFineCoreVoucherFamily =
   | 'inventory_in'
