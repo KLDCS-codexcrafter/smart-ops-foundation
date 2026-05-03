@@ -1,16 +1,33 @@
 /**
- * Procure360 panels — Sprint T-Phase-1.2.6f-a
- * Minimal compilable panels covering all module IDs.
+ * @file        panels.tsx
+ * @sprint      T-Phase-1.2.6f-b-2-fix-1 · Block H + M
+ * @purpose     Procure360 panels (welcome · enquiry entry · enquiry list · RFQ · quotation · reports)
+ * @decisions   D-269 OOB-12 3-Tier · D-278 ALL 12 Card #2.7 mounts · D-242/D-243/D-247
+ * @disciplines SD-13 · SD-15 · FR-25 · FR-58
+ * @reuses      decimal-helpers · useSprint27d1Mount · Sprint27d2Mount · Sprint27eMount ·
+ *              UseLastVoucherButton · DraftRecoveryDialog · KeyboardShortcutOverlay ·
+ *              ApprovalTimelinePanel · APPROVAL_MATRIX · buildItemVendorMatrix · useItemVendors
+ * @[JWT]       /api/procure360/enquiries · /api/procure360/enquiries/:id/approvals
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { Plus, Trash2, Save, IndianRupee, Keyboard } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { listEnquiries, promoteIndentToProcurementEnquiry } from '@/lib/procurement-enquiry-engine';
+import {
+  listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
+  transitionEnquiryStatus,
+} from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
 import { listRfqs } from '@/lib/rfq-engine';
 import {
@@ -20,15 +37,34 @@ import {
 } from '@/lib/procure360-report-engine';
 import { listQuotations, compareQuotations, validateQuotationCompliance } from '@/lib/vendor-quotation-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
-import { Input } from '@/components/ui/input';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
 import { subscribeProcurementPulse, type PulseAlert } from '@/lib/procurement-pulse-stub';
 import { getExpiringContracts } from '@/lib/oob/contract-expiry-alerts';
+// Block H · D-278 · ALL 12 Card #2.7 mounts
+import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
+import { ApprovalTimelinePanel } from '@/components/uth/ApprovalTimelinePanel';
+import { APPROVAL_MATRIX } from '@/types/requisition-common';
+import { buildItemVendorMatrix } from '@/lib/item-vendor-matrix-builder';
+import { useItemVendors } from '@/hooks/useItemVendors';
+// Block M · D-269
+import { ApprovalActionPanel, tierFor, type ApprovalRecord } from '@/components/procure-hub/ApprovalActionPanel';
+import type {
+  ProcurementEnquiry, ProcurementEnquiryLine, VendorSelectionMode,
+} from '@/types/procurement-enquiry';
 import { toast } from 'sonner';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
 const inr = (n: number): string => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
 
 interface NavProps { onNavigate?: (m: Procure360Module) => void }
 
