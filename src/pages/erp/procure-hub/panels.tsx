@@ -650,7 +650,6 @@ export function EnquiryListPanel(): JSX.Element {
     </div>
   );
 }
-}
 
 export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
