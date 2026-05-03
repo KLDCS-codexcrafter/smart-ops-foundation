@@ -17,6 +17,14 @@ import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } fr
 import { materialIndentsKey } from '@/types/material-indent';
 import { serviceRequestsKey } from '@/types/service-request';
 import { capitalIndentsKey } from '@/types/capital-indent';
+import { procurementEnquiriesKey } from '@/types/procurement-enquiry';
+import { rfqsKey } from '@/types/rfq';
+import { vendorQuotationsKey } from '@/types/vendor-quotation';
+import {
+  DEMO_PROCUREMENT_ENQUIRIES,
+  DEMO_RFQS,
+  DEMO_QUOTATIONS,
+} from '@/data/demo-procurement-data';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
