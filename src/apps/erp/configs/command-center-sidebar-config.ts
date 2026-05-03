@@ -138,7 +138,16 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     ],
   },
   {
-    id: 'people-core-group', type: 'group', label: 'People Core', icon: Users,
+    id: 'procurement-sourcing-group', type: 'group', label: 'Procurement & Sourcing', icon: ShoppingCart,
+    children: [
+      { id: 'requestx-voucher-types', type: 'item', label: 'RequestX Voucher Types', icon: FileText,
+        moduleId: 'requestx-voucher-types', requiredCards: ['command-center'] },
+      { id: 'approval-matrix-templates', type: 'item', label: 'Approval Matrix Templates', icon: ListChecks,
+        moduleId: 'approval-matrix-templates', requiredCards: ['command-center'] },
+      { id: 'pinned-templates-master', type: 'item', label: 'Pinned Templates', icon: Tag,
+        moduleId: 'pinned-templates-master', requiredCards: ['command-center'] },
+    ],
+  },
     children: [
       { id: 'ph-employee', type: 'item', label: 'Employee Master',
         moduleId: 'ph-employee', requiredCards: ['command-center'] },
