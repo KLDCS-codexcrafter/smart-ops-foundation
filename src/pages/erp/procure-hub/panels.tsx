@@ -16,9 +16,11 @@ import { listRfqs } from '@/lib/rfq-engine';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
   computeVendorPerformance, computeBestPriceAnalysis, computeSpendByVendor,
-  computeWelcomeKpis,
+  computeWelcomeKpis, applyReportFilter, type ReportFilter,
 } from '@/lib/procure360-report-engine';
-import { listQuotations, compareQuotations } from '@/lib/vendor-quotation-engine';
+import { listQuotations, compareQuotations, validateQuotationCompliance } from '@/lib/vendor-quotation-engine';
+import { emitLeakEvent } from '@/lib/leak-register-engine';
+import { Input } from '@/components/ui/input';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
 import { subscribeProcurementPulse, type PulseAlert } from '@/lib/procurement-pulse-stub';
