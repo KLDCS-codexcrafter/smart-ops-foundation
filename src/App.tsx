@@ -153,6 +153,12 @@ const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
 const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
+// Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
+const VendorPortalLogin = lazy(() => import('./pages/vendor-portal/VendorPortalLogin'));
+const VendorInbox = lazy(() => import('./pages/vendor-portal/VendorInbox'));
+const VendorPortalProfile = lazy(() => import('./pages/vendor-portal/VendorPortalProfile'));
+const VendorCommLog = lazy(() => import('./pages/vendor-portal/VendorCommLog'));
+const VendorOnboardingFirstQuote = lazy(() => import('./pages/vendor-portal/VendorOnboardingFirstQuote'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
@@ -261,6 +267,12 @@ const App = () => (
               <Route path="/auth/login" element={<Login />} />
               {/* Sprint 14a — OperixGo PWA (public; has its own login) */}
               <Route path="/mobile/*" element={<MobileRouter />} />
+              {/* Sprint 3-b-1 · vendor portal public routes · token replaces auth · NO <P> wrapper */}
+              <Route path="/vendor-portal/login" element={<VendorPortalLogin />} />
+              <Route path="/vendor-portal/inbox" element={<VendorInbox />} />
+              <Route path="/vendor-portal/profile" element={<VendorPortalProfile />} />
+              <Route path="/vendor-portal/commlog" element={<VendorCommLog />} />
+              <Route path="/vendor-portal/onboarding" element={<VendorOnboardingFirstQuote />} />
               <Route path="/vendor-portal/rfq/:rfqId" element={<RFQPublicForm />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
