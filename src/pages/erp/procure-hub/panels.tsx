@@ -1320,37 +1320,105 @@ export function CrossDeptHandoffPanel(): JSX.Element {
   const enquiries = listEnquiries(entityCode);
   const rfqs = listRfqs(entityCode);
   const quotations = listQuotations(entityCode);
+  const pos = listPurchaseOrders(entityCode);
+  const gitRecords = listGitStage1(entityCode);
+
+  const stageBadge = (count: number, total: number): JSX.Element => {
+    if (total === 0 && count === 0) return <Badge variant="outline">—</Badge>;
+    if (count === 0) return <Badge variant="outline">0/{total}</Badge>;
+    if (count < total) return <Badge variant="secondary">{count}/{total}</Badge>;
+    return <Badge variant="default">{count}/{total} ✓</Badge>;
+  };
+
+  // Summary KPIs · bottleneck detection
+  const totalAwarded = quotations.filter((q) => q.is_awarded).length;
+  const pendingPoCreation = quotations.filter(
+    (q) => q.is_awarded && !pos.some((p) => p.source_quotation_id === q.id),
+  ).length;
+  const pendingReceipt = pos.filter(
+    (p) => (p.status === 'sent_to_vendor' || p.status === 'approved')
+      && !gitRecords.some((g) => g.po_id === p.id),
+  ).length;
+  const pendingStage2 = gitRecords.filter(
+    (g) => (g.status === 'received_at_gate' || g.status === 'partial_receive') && g.stage2_grn_id === null,
+  ).length;
+  const stalled15Plus = gitRecords.filter(
+    (g) => g.stage2_grn_id === null && computeAgedGitDays(g) > 14,
+  ).length;
+
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Cross-Dept Procurement Handoff</h1>
-      <p className="text-sm text-muted-foreground">8-stage pipeline · MOAT #20</p>
+      <div>
+        <h1 className="text-2xl font-bold">Cross-Dept Procurement Handoff</h1>
+        <p className="text-sm text-muted-foreground">11-stage pipeline · MOAT #20 · POFU-2 extension</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Pending PO Creation</div>
+          <div className="text-2xl font-mono font-bold">{pendingPoCreation}</div>
+          <div className="text-xs text-muted-foreground">of {totalAwarded} awarded</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Pending Receipt</div>
+          <div className="text-2xl font-mono font-bold">{pendingReceipt}</div>
+          <div className="text-xs text-muted-foreground">POs awaiting GIT-S1</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Pending Stage 2</div>
+          <div className="text-2xl font-mono font-bold">{pendingStage2}</div>
+          <div className="text-xs text-muted-foreground">received at gate</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Stalled (15+ days)</div>
+          <div className="text-2xl font-mono font-bold text-destructive">{stalled15Plus}</div>
+          <div className="text-xs text-muted-foreground">awaiting Stage 2</div>
+        </CardContent></Card>
+      </div>
+
       <Card><CardContent className="pt-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Enquiry</TableHead><TableHead>Source Indents</TableHead>
-              <TableHead>RFQs</TableHead><TableHead>Quotes</TableHead>
-              <TableHead>Awarded</TableHead><TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {enquiries.map((e) => {
-              const rs = rfqs.filter((r) => r.parent_enquiry_id === e.id);
-              const qs = quotations.filter((q) => q.parent_enquiry_id === e.id);
-              const aw = qs.filter((q) => q.is_awarded).length;
-              return (
-                <TableRow key={e.id}>
-                  <TableCell className="font-mono">{e.enquiry_no}</TableCell>
-                  <TableCell>{e.source_indent_ids.length}</TableCell>
-                  <TableCell>{rs.length}</TableCell>
-                  <TableCell>{qs.length}</TableCell>
-                  <TableCell>{aw}</TableCell>
-                  <TableCell><Badge variant="outline">{e.status}</Badge></TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        {enquiries.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No enquiries yet.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Enquiry</TableHead>
+                <TableHead>Source Indents</TableHead>
+                <TableHead>RFQs</TableHead>
+                <TableHead>Quotes</TableHead>
+                <TableHead>Awarded</TableHead>
+                <TableHead>POs</TableHead>
+                <TableHead>GIT Stage 1</TableHead>
+                <TableHead>GIT Stage 2</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {enquiries.map((e) => {
+                const rs = rfqs.filter((r) => r.parent_enquiry_id === e.id);
+                const qs = quotations.filter((q) => q.parent_enquiry_id === e.id);
+                const aw = qs.filter((q) => q.is_awarded);
+                const enquiryPos = pos.filter((p) => aw.some((q) => q.id === p.source_quotation_id));
+                const enquiryGitS1 = gitRecords.filter((g) => enquiryPos.some((p) => p.id === g.po_id));
+                const enquiryGitS2Count = enquiryGitS1.filter((g) => g.stage2_grn_id !== null).length;
+                return (
+                  <TableRow key={e.id}>
+                    <TableCell className="font-mono">{e.enquiry_no}</TableCell>
+                    <TableCell>{e.source_indent_ids.length}</TableCell>
+                    <TableCell>{rs.length}</TableCell>
+                    <TableCell>{qs.length}</TableCell>
+                    <TableCell>{aw.length}</TableCell>
+                    <TableCell>{stageBadge(enquiryPos.length, aw.length)}</TableCell>
+                    <TableCell>{stageBadge(enquiryGitS1.length, enquiryPos.length)}</TableCell>
+                    <TableCell>{stageBadge(enquiryGitS2Count, enquiryGitS1.length)}</TableCell>
+                    <TableCell><Badge variant="outline">{e.status}</Badge></TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </CardContent></Card>
     </div>
   );
