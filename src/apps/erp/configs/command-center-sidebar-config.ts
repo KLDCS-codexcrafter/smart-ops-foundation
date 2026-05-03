@@ -11,7 +11,7 @@ import {
   Package, LayoutTemplate, QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
-  Truck, Network, Layers, Briefcase,
+  Truck, Network, Layers, Briefcase, FileText, ListChecks,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
