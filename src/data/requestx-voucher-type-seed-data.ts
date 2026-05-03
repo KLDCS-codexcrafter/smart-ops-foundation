@@ -28,7 +28,7 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
     family: 'request',
     display_name: 'Service Request',
     prefix: 'SR',
-    is_default: true,
+    is_default: false,
     is_active: true,
     approval_threshold_value: 10000,
     approval_role: 'department_head',
