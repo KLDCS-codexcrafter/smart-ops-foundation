@@ -213,7 +213,11 @@ export type CommandCenterModule =
   // Sprint 12 — Schemes
   | 'sales-schemes'
   // Sprint 13a — CRM Customer Segments
-  | 'crm-customer-segments';
+  | 'crm-customer-segments'
+  // T-Phase-1.2.6f-pre-2 · Procurement & Sourcing group
+  | 'requestx-voucher-types'
+  | 'approval-matrix-templates'
+  | 'pinned-templates-master';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
