@@ -657,8 +657,10 @@ export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [version, setVersion] = useState(0);
   const refresh = useCallback(() => setVersion((v) => v + 1), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- version triggers manual refresh after mutations
-  const rfqs = useMemo(() => listRfqs(entityCode), [entityCode, version]);
+  const rfqs = useMemo(() => {
+    void version; // re-read on refresh
+    return listRfqs(entityCode);
+  }, [entityCode, version]);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
