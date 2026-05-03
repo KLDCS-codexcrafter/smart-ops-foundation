@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2 } from 'lucide-react';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
+import { tierFor } from '@/lib/approval-tier-helper';
 import { ApprovalTimelinePanel } from '@/components/uth/ApprovalTimelinePanel';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 import { toast } from 'sonner';
@@ -37,14 +38,6 @@ interface Props {
   onApprove: (tier: 1 | 2 | 3, role: string) => void;
   onReject: (reason: string) => void;
 }
-
-export const tierFor = (value: number, isCapex: boolean): 1 | 2 | 3 => {
-  if (isCapex) return 3;
-  for (const t of APPROVAL_MATRIX) {
-    if (value >= t.min_value && value <= t.max_value) return t.tier;
-  }
-  return 3;
-};
 
 export function ApprovalActionPanel({
   enquiryId, enquiryNo, totalEstimatedValue, isCapex,
