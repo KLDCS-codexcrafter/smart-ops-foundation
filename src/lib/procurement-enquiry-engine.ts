@@ -12,6 +12,12 @@ import {
   type ItemVendorMatchPair,
 } from '@/types/procurement-enquiry';
 import { materialIndentsKey, type MaterialIndent } from '@/types/material-indent';
+import { appendAuditEntry } from './audit-trail-hash-chain';
+import { publishProcurementPulse } from './procurement-pulse-stub';
+
+function totalEnquiryValue(e: ProcurementEnquiry): number {
+  return e.lines.reduce((s, l) => s + (l.estimated_value ?? 0), 0);
+}
 
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -105,6 +111,26 @@ export function createEnquiry(input: CreateEnquiryInput, entityCode: string): Pr
     updated_at: now,
   };
   writeEnquiries(entityCode, [enquiry, ...list]);
+  // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+  void appendAuditEntry({
+    entityCode,
+    entityId: input.entity_id,
+    voucherId: enquiry.id,
+    voucherKind: 'procurement_enquiry',
+    action: 'enquiry.created',
+    actorUserId: input.requested_by_user_id,
+    payload: {
+      enquiry_no: enquiry.enquiry_no,
+      total_value: totalEnquiryValue(enquiry),
+      vendor_mode: enquiry.vendor_mode,
+      source_indent_ids: enquiry.source_indent_ids,
+    },
+  }).catch(() => { /* best-effort · forensic chain */ });
+  // FIX-3 · D-248 procurement-pulse emit
+  publishProcurementPulse({
+    severity: 'info',
+    message: `New procurement enquiry ${enquiry.enquiry_no} · ₹${totalEnquiryValue(enquiry).toLocaleString('en-IN')}`,
+  });
   return enquiry;
 }
 
@@ -177,8 +203,27 @@ export function transitionEnquiryStatus(
   id: string,
   status: ProcurementEnquiryStatus,
   entityCode: string,
+  actorUserId: string = 'system',
 ): ProcurementEnquiry | null {
-  return updateEnquiry(id, { status }, entityCode);
+  const result = updateEnquiry(id, { status }, entityCode);
+  if (result && status === 'approved') {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'procurement_enquiry',
+      action: 'enquiry.approved',
+      actorUserId,
+      payload: { approver_user_id: actorUserId, tier: result.standalone_approval_tier },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `Enquiry ${result.enquiry_no} approved (Tier ${result.standalone_approval_tier ?? '—'})`,
+    });
+  }
+  return result;
 }
 
 export function applyTier2Override(
@@ -211,7 +256,7 @@ export function awardQuotations(
   notes: string,
   entityCode: string,
 ): ProcurementEnquiry | null {
-  return updateEnquiry(
+  const result = updateEnquiry(
     enquiryId,
     {
       awarded_quotation_ids: winningQuotationIds,
@@ -222,6 +267,24 @@ export function awardQuotations(
     },
     entityCode,
   );
+  if (result) {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'procurement_enquiry',
+      action: 'enquiry.awarded',
+      actorUserId: awardedByUserId,
+      payload: { winning_quotation_ids: winningQuotationIds },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `Enquiry ${result.enquiry_no} awarded · ${winningQuotationIds.length} quotations`,
+    });
+  }
+  return result;
 }
 
 export function setItemVendorMatrix(

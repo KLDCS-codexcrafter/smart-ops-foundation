@@ -17,6 +17,14 @@ import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } fr
 import { materialIndentsKey } from '@/types/material-indent';
 import { serviceRequestsKey } from '@/types/service-request';
 import { capitalIndentsKey } from '@/types/capital-indent';
+import { procurementEnquiriesKey } from '@/types/procurement-enquiry';
+import { rfqsKey } from '@/types/rfq';
+import { vendorQuotationsKey } from '@/types/vendor-quotation';
+import {
+  DEMO_PROCUREMENT_ENQUIRIES,
+  DEMO_RFQS,
+  DEMO_QUOTATIONS,
+} from '@/data/demo-procurement-data';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
@@ -479,6 +487,26 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         if (myMaterials.length > 0) localStorage.setItem(miKey, JSON.stringify(myMaterials));
         if (myServices.length > 0) localStorage.setItem(serviceRequestsKey(opts.shortCode), JSON.stringify(myServices));
         if (myCapitals.length > 0) localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(myCapitals));
+      }
+    } catch { /* ignore */ }
+    // 8b-procure. Sprint T-Phase-1.2.6f-a-fix · FIX-2 · Procure360 demo seed (per-entity prefix).
+    try {
+      // [JWT] POST /api/procure360/demo-seed
+      const peKey = procurementEnquiriesKey(opts.shortCode);
+      if (!localStorage.getItem(peKey)) {
+        const codePrefix = opts.shortCode.toLowerCase().slice(0, 5);
+        const matchingEnq = DEMO_PROCUREMENT_ENQUIRIES
+          .filter((e) => e.id.includes(`-${codePrefix}-`))
+          .map((e) => ({ ...e, entity_id: opts.entityId }));
+        const matchingRfqs = DEMO_RFQS
+          .filter((r) => r.id.includes(`-${codePrefix}-`))
+          .map((r) => ({ ...r, entity_id: opts.entityId }));
+        const matchingQuotations = DEMO_QUOTATIONS
+          .filter((q) => q.id.includes(`-${codePrefix}-`))
+          .map((q) => ({ ...q, entity_id: opts.entityId }));
+        if (matchingEnq.length > 0) localStorage.setItem(peKey, JSON.stringify(matchingEnq));
+        if (matchingRfqs.length > 0) localStorage.setItem(rfqsKey(opts.shortCode), JSON.stringify(matchingRfqs));
+        if (matchingQuotations.length > 0) localStorage.setItem(vendorQuotationsKey(opts.shortCode), JSON.stringify(matchingQuotations));
       }
     } catch { /* ignore */ }
     // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.

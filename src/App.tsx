@@ -152,6 +152,7 @@ const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
 const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
+const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
@@ -260,6 +261,7 @@ const App = () => (
               <Route path="/auth/login" element={<Login />} />
               {/* Sprint 14a — OperixGo PWA (public; has its own login) */}
               <Route path="/mobile/*" element={<MobileRouter />} />
+              <Route path="/vendor-portal/rfq/:rfqId" element={<RFQPublicForm />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">

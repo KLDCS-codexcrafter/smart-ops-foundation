@@ -10,7 +10,7 @@ export interface AuditChainEntry {
   id: string;
   entity_id: string;
   voucher_id: string;
-  voucher_kind: 'material' | 'service' | 'capital';
+  voucher_kind: 'material' | 'service' | 'capital' | 'procurement_enquiry' | 'rfq' | 'vendor_quotation';
   action: string;
   actor_user_id: string;
   prev_hash: string;

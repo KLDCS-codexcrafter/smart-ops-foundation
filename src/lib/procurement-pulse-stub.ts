@@ -1,7 +1,8 @@
 /**
  * @file        procurement-pulse-stub.ts
  * @sprint      T-Phase-1.2.6f-pre-2 · Block I · OOB-18 · SD-14 stub
- * @purpose     Procurement Pulse · setInterval mock real-time alerts.
+ *              T-Phase-1.2.6f-a-fix · FIX-3 · D-261 · D-263 single emit pipeline
+ * @purpose     Procurement Pulse · setInterval mock + engine publish API.
  * @[JWT]       WSS /ws/procurement-pulse
  */
 
@@ -24,22 +25,38 @@ export interface PulseHandle {
   stop: () => void;
 }
 
+// FIX-3 · D-263 Option B · single emit pipeline
+const subscribers = new Set<(alert: PulseAlert) => void>();
+
+export function publishProcurementPulse(
+  alert: Omit<PulseAlert, 'id' | 'emitted_at'> & Partial<Pick<PulseAlert, 'id' | 'emitted_at'>>,
+): void {
+  const full: PulseAlert = {
+    id: alert.id ?? `pulse-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    emitted_at: alert.emitted_at ?? new Date().toISOString(),
+    severity: alert.severity,
+    message: alert.message,
+  };
+  subscribers.forEach((cb) => cb(full));
+}
+
 export function subscribeProcurementPulse(
   onAlert: (alert: PulseAlert) => void,
   intervalMs: number = 30000,
 ): PulseHandle {
   // [JWT] WSS /ws/procurement-pulse
+  subscribers.add(onAlert);
   let i = 0;
   const tick = (): void => {
     const sample = SAMPLE_ALERTS[i % SAMPLE_ALERTS.length];
     i += 1;
-    onAlert({
-      id: `pulse-${Date.now()}-${i}`,
-      severity: sample.severity,
-      message: sample.message,
-      emitted_at: new Date().toISOString(),
-    });
+    publishProcurementPulse(sample);
   };
   const handle = setInterval(tick, intervalMs);
-  return { stop: () => clearInterval(handle) };
+  return {
+    stop: () => {
+      clearInterval(handle);
+      subscribers.delete(onAlert);
+    },
+  };
 }

@@ -5,6 +5,7 @@
  */
 import type { RFQFollowUp, FollowupDepartmentRole } from '@/types/procure-followup';
 import { getRfq, listRfqs, updateRfq } from './rfq-engine';
+import { publishProcurementPulse } from './procurement-pulse-stub';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -79,14 +80,23 @@ export function getRfqFollowups(
 
 export function getOverdueRfqFollowups(entityCode: string): { rfq_id: string; days_overdue: number }[] {
   const today = Date.now();
-  return listRfqs(entityCode)
+  const overdue = listRfqs(entityCode)
     .filter((r) => r.next_followup_due && new Date(r.next_followup_due).getTime() < today)
     .map((r) => ({
       rfq_id: r.id,
+      rfq_no: r.rfq_no,
       days_overdue: Math.floor(
         (today - new Date(r.next_followup_due ?? r.created_at).getTime()) / 86400000,
       ),
     }));
+  // FIX-3 · D-248 procurement-pulse emit · critical for overdue follow-ups
+  for (const o of overdue) {
+    publishProcurementPulse({
+      severity: 'critical',
+      message: `RFQ ${o.rfq_no} follow-up overdue ${o.days_overdue} days`,
+    });
+  }
+  return overdue.map((o) => ({ rfq_id: o.rfq_id, days_overdue: o.days_overdue }));
 }
 
 export function computeNextFollowupDue(rfq: { sent_at: string | null; opened_at: string | null; responded_at: string | null }): string {

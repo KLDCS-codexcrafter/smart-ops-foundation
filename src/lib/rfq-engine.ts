@@ -5,6 +5,8 @@
  */
 import { rfqsKey, type RFQ, type RFQSendChannel, type RFQStatus } from '@/types/rfq';
 import { generateRFQTokenUrl, notifyVendorRFQ, type VendorNotifyTarget } from './vendor-rfq-notify';
+import { appendAuditEntry } from './audit-trail-hash-chain';
+import { publishProcurementPulse } from './procurement-pulse-stub';
 
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -115,12 +117,13 @@ export async function sendRfq(
   vendor: VendorNotifyTarget,
   channels: RFQSendChannel[],
   entityCode: string,
+  actorUserId: string = 'system',
 ): Promise<RFQ | null> {
   const rfq = getRfq(id, entityCode);
   if (!rfq) return null;
   await notifyVendorRFQ(rfq, vendor, channels, entityCode);
   const now = new Date().toISOString();
-  return updateRfq(
+  const result = updateRfq(
     id,
     {
       status: 'sent',
@@ -129,30 +132,98 @@ export async function sendRfq(
     },
     entityCode,
   );
+  if (result) {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'rfq',
+      action: 'rfq.sent',
+      actorUserId,
+      payload: { rfq_no: result.rfq_no, vendor_id: result.vendor_id, channels },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `RFQ ${result.rfq_no} sent to ${vendor.name}`,
+    });
+  }
+  return result;
 }
 
 export function captureQuotation(
   id: string,
   vendorQuotationId: string,
   entityCode: string,
+  actorUserId: string = 'system',
 ): RFQ | null {
-  return updateRfq(
+  const result = updateRfq(
     id,
     { status: 'quoted', vendor_quotation_id: vendorQuotationId, responded_at: new Date().toISOString() },
     entityCode,
   );
+  if (result) {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'rfq',
+      action: 'rfq.quoted',
+      actorUserId,
+      payload: { vendor_quotation_id: vendorQuotationId },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'info',
+      message: `Quotation captured for RFQ ${result.rfq_no}`,
+    });
+  }
+  return result;
 }
 
-export function declineRfq(id: string, reason: string, entityCode: string): RFQ | null {
-  return updateRfq(
+export function declineRfq(
+  id: string,
+  reason: string,
+  entityCode: string,
+  actorUserId: string = 'system',
+): RFQ | null {
+  const result = updateRfq(
     id,
     { status: 'declined', declined_at: new Date().toISOString(), decline_reason: reason },
     entityCode,
   );
+  if (result) {
+    // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+    void appendAuditEntry({
+      entityCode,
+      entityId: result.entity_id,
+      voucherId: result.id,
+      voucherKind: 'rfq',
+      action: 'rfq.declined',
+      actorUserId,
+      payload: { reason },
+    }).catch(() => { /* best-effort · forensic chain */ });
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'warning',
+      message: `RFQ ${result.rfq_no} declined by vendor · ${reason}`,
+    });
+  }
+  return result;
 }
 
 export function timeoutRfq(id: string, entityCode: string): RFQ | null {
-  return updateRfq(id, { status: 'timeout' }, entityCode);
+  const result = updateRfq(id, { status: 'timeout' }, entityCode);
+  if (result) {
+    // FIX-3 · D-248 procurement-pulse emit
+    publishProcurementPulse({
+      severity: 'warning',
+      message: `RFQ ${result.rfq_no} timeout · auto-fallback ${result.fallback_triggered_at ? 'triggered' : 'skipped'}`,
+    });
+  }
+  return result;
 }
 
 export function checkOverdueRfqs(entityCode: string): RFQ[] {

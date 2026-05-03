@@ -10,6 +10,8 @@ import {
   type VendorQuotationStatus,
   type QuotationSubmissionSource,
 } from '@/types/vendor-quotation';
+import { appendAuditEntry } from './audit-trail-hash-chain';
+import { publishProcurementPulse } from './procurement-pulse-stub';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -118,6 +120,26 @@ export function submitQuotation(input: SubmitQuotationInput, entityCode: string)
     updated_at: now,
   };
   writeQ(entityCode, [q, ...list]);
+  // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+  void appendAuditEntry({
+    entityCode,
+    entityId: input.entity_id,
+    voucherId: q.id,
+    voucherKind: 'vendor_quotation',
+    action: 'quotation.captured',
+    actorUserId: input.submitted_by,
+    payload: {
+      quotation_no: q.quotation_no,
+      parent_rfq_id: q.parent_rfq_id,
+      vendor_id: q.vendor_id,
+      total_after_tax: q.total_after_tax,
+    },
+  }).catch(() => { /* best-effort · forensic chain */ });
+  // FIX-3 · D-248 procurement-pulse emit
+  publishProcurementPulse({
+    severity: 'info',
+    message: `Quotation captured for RFQ ${q.parent_rfq_id}`,
+  });
   return q;
 }
 
