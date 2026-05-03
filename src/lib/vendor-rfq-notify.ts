@@ -6,6 +6,7 @@
  * [JWT] POST /api/mas/whatsapp/send · POST /api/mas/email/send
  */
 import type { RFQ, RFQSendChannel } from '@/types/rfq';
+import { getVendorChannels } from './vendor-channel-preference';
 
 export interface CommunicationLogEntry {
   id: string;
