@@ -152,6 +152,7 @@ const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
 const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
+const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
