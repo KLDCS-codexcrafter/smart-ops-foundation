@@ -3,15 +3,12 @@
  * @sprint      T-Phase-1.2.6f-pre-1
  * @purpose     Seed 3 RequestX voucher types (sibling to non-finecore registry · D-128 discipline).
  */
-import type { NonFineCoreVoucherType, NonFineCoreVoucherFamily } from '@/lib/non-finecore-voucher-type-registry';
-
-// 'request' family is added contextually here; registry uses string-typed family.
-const REQUEST_FAMILY = 'request' as NonFineCoreVoucherFamily;
+import type { NonFineCoreVoucherType } from '@/lib/non-finecore-voucher-type-registry';
 
 export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
   {
     id: 'vt-material-indent',
-    family: REQUEST_FAMILY,
+    family: 'request',
     display_name: 'Material Indent',
     prefix: 'MI',
     is_default: true,
@@ -28,10 +25,10 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
   },
   {
     id: 'vt-service-request',
-    family: REQUEST_FAMILY,
+    family: 'request',
     display_name: 'Service Request',
     prefix: 'SR',
-    is_default: true,
+    is_default: false,
     is_active: true,
     approval_threshold_value: 10000,
     approval_role: 'department_head',
@@ -43,10 +40,10 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
   },
   {
     id: 'vt-capital-indent',
-    family: REQUEST_FAMILY,
+    family: 'request',
     display_name: 'Capital Indent',
     prefix: 'CAP',
-    is_default: true,
+    is_default: false,
     is_active: true,
     approval_threshold_value: 1,
     approval_role: 'finance_head',
