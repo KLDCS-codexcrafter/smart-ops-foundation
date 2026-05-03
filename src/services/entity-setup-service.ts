@@ -24,6 +24,7 @@ import {
   DEMO_PROCUREMENT_ENQUIRIES,
   DEMO_RFQS,
   DEMO_QUOTATIONS,
+  DEMO_VENDOR_PORTAL_SESSIONS,
 } from '@/data/demo-procurement-data';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
