@@ -193,8 +193,7 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'crm-customer', requiredCards: ['command-center'] },
       { id: 'crm-customer-segments', type: 'item', label: 'Customer Segments',
         moduleId: 'crm-customer-segments', requiredCards: ['command-center'] },
-      { id: 'crm-vendor', type: 'item', label: 'Vendor Master',
-        moduleId: 'crm-vendor', requiredCards: ['command-center'] },
+      // crm-vendor moved to procurement-sourcing-group per D-277 (CCV-1 reorganization)
     ],
   },
   {
