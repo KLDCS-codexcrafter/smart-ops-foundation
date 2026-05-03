@@ -25,6 +25,8 @@ import {
   DEMO_RFQS,
   DEMO_QUOTATIONS,
   DEMO_VENDOR_PORTAL_SESSIONS,
+  DEMO_PROCUREMENT_SCENARIOS,
+  demoScenariosKey,
 } from '@/data/demo-procurement-data';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
@@ -614,6 +616,18 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
           },
         ];
         localStorage.setItem(pinKey, JSON.stringify(seed));
+      }
+    } catch { /* ignore */ }
+    // 8c-demo-scenarios. Sprint T-Phase-1.2.6f-b-2-fix-2 · Block P · Demo scenario polish (5 × 7 = 35 records).
+    try {
+      // [JWT] POST /api/demo/scenarios (idempotent · per-entity)
+      const scenarioKey = demoScenariosKey(opts.shortCode);
+      if (!localStorage.getItem(scenarioKey)) {
+        const bpKey = opts.shortCode.toLowerCase().slice(0, 5);
+        const matching = DEMO_PROCUREMENT_SCENARIOS.filter((s) => s.blueprint === bpKey);
+        if (matching.length > 0) {
+          localStorage.setItem(scenarioKey, JSON.stringify(matching));
+        }
       }
     } catch { /* ignore */ }
     // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.
