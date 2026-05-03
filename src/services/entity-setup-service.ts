@@ -17,6 +17,9 @@ import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } fr
 import { materialIndentsKey } from '@/types/material-indent';
 import { serviceRequestsKey } from '@/types/service-request';
 import { capitalIndentsKey } from '@/types/capital-indent';
+// Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
+import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
+import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -476,6 +479,42 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         if (myMaterials.length > 0) localStorage.setItem(miKey, JSON.stringify(myMaterials));
         if (myServices.length > 0) localStorage.setItem(serviceRequestsKey(opts.shortCode), JSON.stringify(myServices));
         if (myCapitals.length > 0) localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(myCapitals));
+      }
+    } catch { /* ignore */ }
+    // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.
+    try {
+      // [JWT] POST /api/foundation/org-structure/auto-seed
+      const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
+        : ['Trading', 'Distribution', 'Import / Export'].includes(opts.businessActivity) ? 'trading'
+        : ['Services', 'IT Services', 'Consulting'].includes(opts.businessActivity) ? 'services'
+        : opts.businessActivity === 'Retail' ? 'retail' : 'minimal';
+      const preset = ORG_PRESETS.find(p => p.id === presetId);
+      if (preset) {
+        const existingDivs: Division[] = JSON.parse(localStorage.getItem(DIVISIONS_KEY) || '[]');
+        const existingDepts: Department[] = JSON.parse(localStorage.getItem(DEPARTMENTS_KEY) || '[]');
+        const alreadySeeded = existingDivs.some(d => d.entity_id === opts.entityId)
+          || existingDepts.some(d => d.entity_id === opts.entityId);
+        if (!alreadySeeded) {
+          const now = new Date().toISOString();
+          const { divisions: newDivs, departments: newDepts } = resolvePreset(preset, now);
+          const stampedDivs = newDivs.map((d, i) => ({
+            ...d,
+            id: `div-${opts.shortCode}-${Date.now()}-${i}`,
+            code: `DIV-${opts.shortCode}-${String(i + 1).padStart(3, '0')}`,
+            entity_id: opts.entityId,
+          }));
+          const divIdMap = new Map<string, string>();
+          newDivs.forEach((d, i) => divIdMap.set(d.id, stampedDivs[i].id));
+          const stampedDepts = newDepts.map((d, i) => ({
+            ...d,
+            id: `dept-${opts.shortCode}-${Date.now()}-${i}`,
+            code: `DEPT-${opts.shortCode}-${String(i + 1).padStart(3, '0')}`,
+            entity_id: opts.entityId,
+            division_id: d.division_id ? (divIdMap.get(d.division_id) ?? null) : null,
+          }));
+          localStorage.setItem(DIVISIONS_KEY, JSON.stringify([...existingDivs, ...stampedDivs]));
+          localStorage.setItem(DEPARTMENTS_KEY, JSON.stringify([...existingDepts, ...stampedDepts]));
+        }
       }
     } catch { /* ignore */ }
   }
