@@ -747,6 +747,102 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         localStorage.setItem(gitKey, JSON.stringify([record]));
       }
     } catch { /* ignore */ }
+    // 8e-bill-passing. Sprint T-Phase-1.2.6f-c-2-fix · Block F · Bill Passing demo seed (per blueprint, idempotent).
+    try {
+      // [JWT] POST /api/bill-passing/seed (idempotent · per-entity)
+      const bpKey = opts.shortCode.toLowerCase().slice(0, 5);
+      const billsKey = billPassingKey(opts.shortCode);
+      const poListRaw = localStorage.getItem(purchaseOrdersKey(opts.shortCode));
+      const gitListRaw = localStorage.getItem(gitStage1Key(opts.shortCode));
+      if (!localStorage.getItem(billsKey) && poListRaw && gitListRaw) {
+        const pos = JSON.parse(poListRaw) as PurchaseOrderRecord[];
+        const gits = JSON.parse(gitListRaw) as GitStage1Record[];
+        // Seed against any GIT that is "received_at_gate" (eligible for billing)
+        const eligibleGit = gits.find(
+          (g) => g.status === 'received_at_gate' || g.status === 'partial_receive',
+        );
+        const matchedPo = eligibleGit ? pos.find((p) => p.id === eligibleGit.po_id) : null;
+        if (eligibleGit && matchedPo) {
+          const now = new Date().toISOString();
+          const lines: BillPassingLine[] = matchedPo.lines.map((pl, idx) => {
+            const gl = eligibleGit.lines.find((g) => g.po_line_id === pl.id) ?? null;
+            const grnQty = gl ? gl.qty_accepted : pl.qty;
+            const invQty = grnQty;
+            const invRate = pl.rate;
+            const invValue = Math.round(invQty * invRate * 100) / 100;
+            const invTax = Math.round((invValue * pl.tax_pct) / 100 * 100) / 100;
+            const invTotal = Math.round((invValue + invTax) * 100) / 100;
+            return {
+              id: `bpl-seed-${bpKey}-${idx}`,
+              line_no: idx + 1,
+              po_line_id: pl.id,
+              git_line_id: gl ? gl.id : null,
+              item_id: pl.item_id,
+              item_name: pl.item_name,
+              po_qty: pl.qty,
+              po_rate: pl.rate,
+              po_value: pl.amount_after_tax,
+              grn_qty: grnQty,
+              invoice_qty: invQty,
+              invoice_rate: invRate,
+              invoice_value: invValue,
+              invoice_tax_pct: pl.tax_pct,
+              invoice_tax_value: invTax,
+              invoice_total: invTotal,
+              qty_variance: 0,
+              rate_variance: 0,
+              total_variance: 0,
+              match_status: 'clean',
+              variance_reason: '',
+              requires_inspection: false,
+              qa_passed: null,
+            } satisfies BillPassingLine;
+          });
+          const totalInv = Math.round(lines.reduce((s, l) => s + l.invoice_total, 0) * 100) / 100;
+          const totalPo  = Math.round(lines.reduce((s, l) => s + l.po_value, 0) * 100) / 100;
+          const totalGrn = Math.round(lines.reduce((s, l) => s + l.grn_qty * l.po_rate, 0) * 100) / 100;
+          const bill: BillPassingRecord = {
+            id: `bp-seed-${bpKey}`,
+            bill_no: `BILL/SEED/${opts.shortCode}/0001`,
+            bill_date: now.slice(0, 10),
+            entity_id: opts.shortCode,
+            branch_id: null,
+            po_id: matchedPo.id,
+            po_no: matchedPo.po_no,
+            git_id: eligibleGit.id,
+            vendor_id: matchedPo.vendor_id,
+            vendor_name: matchedPo.vendor_name,
+            vendor_invoice_no: `VINV/${bpKey.toUpperCase()}/0001`,
+            vendor_invoice_date: now.slice(0, 10),
+            match_type: '3-way',
+            qa_inspection_id: null,
+            lines,
+            total_invoice_value: totalInv,
+            total_po_value: totalPo,
+            total_grn_value: totalGrn,
+            total_variance: 0,
+            variance_pct: 0,
+            tolerance_pct: 2,
+            tolerance_amount: 500,
+            approver_user_id: null,
+            approval_notes: '',
+            approved_at: null,
+            fcpi_voucher_id: null,
+            fcpi_drafted_at: null,
+            mode_of_payment_id: null,
+            terms_of_payment_id: null,
+            terms_of_delivery_id: null,
+            narration: '',
+            terms_conditions: '',
+            status: 'matched_clean',
+            notes: 'Demo seed bill — Sprint 3-c-2-fix Block F.',
+            created_at: now,
+            updated_at: now,
+          };
+          localStorage.setItem(billsKey, JSON.stringify([bill]));
+        }
+      }
+    } catch { /* ignore */ }
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
       const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
