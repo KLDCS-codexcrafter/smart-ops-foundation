@@ -462,16 +462,20 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       mod.seedEntityDemoData(opts.shortCode, archetype);
     } catch { /* demo module optional */ }
 
-    // 8b. Sprint T-Phase-1.2.6f-pre-1 — RequestX demo data (idempotent · skip if any key already present).
+    // 8b. Sprint T-Phase-1.2.6f-pre-1-fix · Multi-entity demo seed · per-entity filtering by id-prefix.
     try {
       // [JWT] POST /api/requestx/demo-seed
       const miKey = materialIndentsKey(opts.shortCode);
       if (!localStorage.getItem(miKey)) {
-        const stamp = (rows: Array<{ entity_id: string }>) =>
-          rows.map(r => ({ ...r, entity_id: opts.entityId }));
-        localStorage.setItem(miKey, JSON.stringify(stamp(DEMO_MATERIAL_INDENTS)));
-        localStorage.setItem(serviceRequestsKey(opts.shortCode), JSON.stringify(stamp(DEMO_SERVICE_REQUESTS)));
-        localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(stamp(DEMO_CAPITAL_INDENTS)));
+        const codePrefix = opts.shortCode.toLowerCase().slice(0, 5);
+        const stamp = <T extends { id: string; entity_id: string }>(rows: readonly T[]): T[] =>
+          rows.filter(r => r.id.includes(codePrefix)).map(r => ({ ...r, entity_id: opts.entityId }));
+        const myMaterials = stamp(DEMO_MATERIAL_INDENTS);
+        const myServices = stamp(DEMO_SERVICE_REQUESTS);
+        const myCapitals = stamp(DEMO_CAPITAL_INDENTS);
+        if (myMaterials.length > 0) localStorage.setItem(miKey, JSON.stringify(myMaterials));
+        if (myServices.length > 0) localStorage.setItem(serviceRequestsKey(opts.shortCode), JSON.stringify(myServices));
+        if (myCapitals.length > 0) localStorage.setItem(capitalIndentsKey(opts.shortCode), JSON.stringify(myCapitals));
       }
     } catch { /* ignore */ }
   }
