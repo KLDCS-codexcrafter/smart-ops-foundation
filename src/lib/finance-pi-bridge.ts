@@ -15,7 +15,7 @@ import type { BillPassingRecord, BillPassingLine } from '@/types/bill-passing';
 import { getBillPassing, setFcpiLink } from './bill-passing-engine';
 import { generateDocNo } from './finecore-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
-import { dMul, dSum, dAdd, round2 } from './decimal-helpers';
+import { dMul, dAdd, round2 } from './decimal-helpers';
 
 // ---------------- Types ----------------
 
