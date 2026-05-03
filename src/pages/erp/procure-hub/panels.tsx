@@ -206,6 +206,33 @@ export function QuotationComparisonPanel(): JSX.Element {
   const enquiries = listEnquiries(entityCode);
   const [selected, setSelected] = useState<string>('');
   const rows = selected ? compareQuotations(selected, entityCode) : [];
+  const quotes = selected ? listQuotations(entityCode).filter(q => q.parent_enquiry_id === selected) : [];
+  const complianceByVendor = useMemo(() => {
+    const m = new Map<string, ReturnType<typeof validateQuotationCompliance>>();
+    quotes.forEach(q => m.set(q.vendor_id, validateQuotationCompliance(q)));
+    return m;
+  }, [quotes]);
+
+  const checkLeak = (vendorId: string, rate: number, bestRate: number): void => {
+    if (bestRate <= 0) return;
+    const variance = ((rate - bestRate) / bestRate) * 100;
+    if (variance > 10) {
+      // D-274 / D-279 · cost leakage when selected vendor is >110% of best
+      emitLeakEvent({
+        entity_id: entityCode,
+        category: 'cost',
+        sub_kind: 'quotation_above_best_price',
+        ref_type: 'quotation',
+        ref_id: vendorId,
+        amount: rate,
+        baseline_amount: bestRate,
+        variance_pct: Math.round(variance * 100) / 100,
+        notes: `Vendor rate ${variance.toFixed(1)}% above best`,
+        emitted_by: 'mock-user',
+      });
+      toast.info(`Cost leakage logged · ${variance.toFixed(1)}% above best`);
+    }
+  };
 
   return (
     <div className="p-6 space-y-4">
@@ -241,19 +268,39 @@ export function QuotationComparisonPanel(): JSX.Element {
                       <TableHead>Rate</TableHead>
                       <TableHead>Total</TableHead>
                       <TableHead>Delivery (days)</TableHead>
+                      <TableHead>Compliance</TableHead>
                       <TableHead>Best</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {r.cells.map((c) => (
-                      <TableRow key={c.vendor_id}>
-                        <TableCell>{c.vendor_name}</TableCell>
-                        <TableCell className="font-mono">{inr(c.rate)}</TableCell>
-                        <TableCell className="font-mono">{inr(c.amount_after_tax)}</TableCell>
-                        <TableCell>{c.delivery_days}</TableCell>
-                        <TableCell>{c.vendor_id === r.best_price_vendor_id ? '★' : ''}</TableCell>
-                      </TableRow>
-                    ))}
+                    {r.cells.map((c) => {
+                      const comp = complianceByVendor.get(c.vendor_id);
+                      const bestCell = r.cells.find(x => x.vendor_id === r.best_price_vendor_id);
+                      return (
+                        <TableRow key={c.vendor_id}>
+                          <TableCell>{c.vendor_name}</TableCell>
+                          <TableCell className="font-mono">{inr(c.rate)}</TableCell>
+                          <TableCell className="font-mono">{inr(c.amount_after_tax)}</TableCell>
+                          <TableCell>{c.delivery_days}</TableCell>
+                          <TableCell>
+                            {comp ? (
+                              comp.ok
+                                ? <Badge variant="outline" className="text-success">OK</Badge>
+                                : <Badge variant="outline" className="text-warning" title={comp.warnings.join(' · ')}>{comp.failed_rules.length} issue(s)</Badge>
+                            ) : <span className="text-muted-foreground">—</span>}
+                          </TableCell>
+                          <TableCell>
+                            {c.vendor_id === r.best_price_vendor_id
+                              ? '★'
+                              : (
+                                <Button size="sm" variant="ghost" onClick={() => checkLeak(c.vendor_id, c.rate, bestCell?.rate ?? 0)}>
+                                  Check leak
+                                </Button>
+                              )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </CardContent>
