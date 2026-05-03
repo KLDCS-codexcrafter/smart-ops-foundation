@@ -1482,3 +1482,754 @@ function PanelList(props: { title: string; headers: string[]; rows: string[][] }
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sprint T-Phase-1.2.6f-c-1 · Block B · PO panels (per D-283)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const PO_STATUS_TABS: Array<{ id: 'all' | PoStatus; label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'draft', label: 'Draft' },
+  { id: 'pending_approval', label: 'Pending Approval' },
+  { id: 'approved', label: 'Approved' },
+  { id: 'sent_to_vendor', label: 'Sent' },
+  { id: 'partially_received', label: 'Partial' },
+  { id: 'fully_received', label: 'Received' },
+  { id: 'closed', label: 'Closed' },
+  { id: 'cancelled', label: 'Cancelled' },
+];
+
+export function PoListPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const [pos, setPos] = useState<PurchaseOrderRecord[]>(() => listPurchaseOrders(entityCode));
+  const [activeTab, setActiveTab] = useState<'all' | PoStatus>('all');
+  const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+
+  const refresh = useCallback(() => setPos(listPurchaseOrders(entityCode)), [entityCode]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: pos.length };
+    for (const p of pos) c[p.status] = (c[p.status] ?? 0) + 1;
+    return c;
+  }, [pos]);
+
+  const filteredPos = useMemo(
+    () => (activeTab === 'all' ? pos : pos.filter((p) => p.status === activeTab)),
+    [pos, activeTab],
+  );
+
+  const selected = useMemo(
+    () => (selectedPoId ? pos.find((p) => p.id === selectedPoId) ?? null : null),
+    [selectedPoId, pos],
+  );
+
+  const handleApprove = async (po: PurchaseOrderRecord): Promise<void> => {
+    const updated = await approvePo(po.id, entityCode, 'mock-user');
+    if (updated) {
+      refresh();
+      toast.success(`PO ${po.po_no} approved`);
+    } else {
+      toast.error('Approval failed');
+    }
+  };
+
+  const handleSend = async (po: PurchaseOrderRecord): Promise<void> => {
+    const updated = await sendPoToVendor(po.id, entityCode, 'mock-user');
+    if (updated) {
+      refresh();
+      toast.success(`PO ${po.po_no} sent to ${po.vendor_name}`);
+    } else {
+      toast.error('Send failed');
+    }
+  };
+
+  const handleCancel = async (po: PurchaseOrderRecord): Promise<void> => {
+    const updated = await transitionPoStatus(po.id, 'cancelled', entityCode, 'mock-user');
+    if (updated) {
+      refresh();
+      toast.info(`PO ${po.po_no} cancelled`);
+    } else {
+      toast.error('Cancel not allowed');
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Purchase Orders</h1>
+        <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FineCore PurchaseOrder voucher (D-283)</p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {PO_STATUS_TABS.map((t) => (
+          <Button
+            key={t.id}
+            size="sm"
+            variant={activeTab === t.id ? 'default' : 'outline'}
+            onClick={() => setActiveTab(t.id)}
+          >
+            {t.label} <span className="ml-1 font-mono text-xs">{counts[t.id] ?? 0}</span>
+          </Button>
+        ))}
+      </div>
+
+      <Card><CardContent className="pt-6">
+        {filteredPos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No purchase orders.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PO No</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+                <TableHead>Expected</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPos.map((po) => (
+                <TableRow
+                  key={po.id}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedPoId(po.id === selectedPoId ? null : po.id)}
+                >
+                  <TableCell className="font-mono">{po.po_no}</TableCell>
+                  <TableCell className="font-mono text-xs">{po.po_date.slice(0, 10)}</TableCell>
+                  <TableCell>{po.vendor_name}</TableCell>
+                  <TableCell className="text-right font-mono">{inr(po.total_after_tax)}</TableCell>
+                  <TableCell className="font-mono text-xs">{po.expected_delivery_date.slice(0, 10)}</TableCell>
+                  <TableCell><Badge variant="outline">{po.status}</Badge></TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-1">
+                      {(po.status === 'draft' || po.status === 'pending_approval') && (
+                        <Button size="sm" variant="outline" onClick={() => handleApprove(po)}>Approve</Button>
+                      )}
+                      {po.status === 'approved' && (
+                        <Button size="sm" variant="outline" onClick={() => handleSend(po)}>Send</Button>
+                      )}
+                      {po.status !== 'cancelled' && po.status !== 'closed' && po.status !== 'fully_received' && (
+                        <Button size="sm" variant="ghost" onClick={() => handleCancel(po)}>Cancel</Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent></Card>
+
+      {selected && (
+        <Card><CardHeader><CardTitle>{selected.po_no} · Detail</CardTitle></CardHeader><CardContent>
+          <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div><span className="text-muted-foreground">Vendor: </span>{selected.vendor_name}</div>
+            <div><span className="text-muted-foreground">Status: </span><Badge variant="outline">{selected.status}</Badge></div>
+            <div><span className="text-muted-foreground">PO Date: </span><span className="font-mono">{selected.po_date.slice(0, 10)}</span></div>
+            <div><span className="text-muted-foreground">Expected: </span><span className="font-mono">{selected.expected_delivery_date.slice(0, 10)}</span></div>
+            <div><span className="text-muted-foreground">Source Quotation: </span><span className="font-mono text-xs">{selected.source_quotation_id}</span></div>
+            <div><span className="text-muted-foreground">Approved: </span>{selected.approved_at ? selected.approved_at.slice(0, 10) : '—'}</div>
+          </div>
+          <h4 className="font-semibold mb-2">Lines</h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
+                <TableHead className="text-right">Rate</TableHead>
+                <TableHead className="text-right">After Tax</TableHead>
+                <TableHead className="text-right">Received</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {selected.lines.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell>{l.item_name}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty}</TableCell>
+                  <TableCell className="text-right font-mono">{inr(l.rate)}</TableCell>
+                  <TableCell className="text-right font-mono">{inr(l.amount_after_tax)}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_received}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {selected.followups.length > 0 && (
+            <>
+              <h4 className="font-semibold mt-4 mb-2">Followup History</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Channel</TableHead>
+                    <TableHead>Outcome</TableHead>
+                    <TableHead>Notes</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selected.followups.map((f) => (
+                    <TableRow key={f.id}>
+                      <TableCell className="font-mono text-xs">{f.created_at.slice(0, 10)}</TableCell>
+                      <TableCell>{f.channel}</TableCell>
+                      <TableCell><Badge variant="outline">{f.outcome}</Badge></TableCell>
+                      <TableCell className="text-sm">{f.notes}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
+          )}
+        </CardContent></Card>
+      )}
+    </div>
+  );
+}
+
+export function PoFollowupRegisterPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const [overdue, setOverdue] = useState<PurchaseOrderRecord[]>(() => listOverduePos(entityCode));
+  const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+  const [channel, setChannel] = useState<PoFollowup['channel']>('call');
+  const [outcome, setOutcome] = useState<PoFollowup['outcome']>('no_response');
+  const [notes, setNotes] = useState('');
+  const [nextAction, setNextAction] = useState('');
+
+  const refresh = useCallback(() => setOverdue(listOverduePos(entityCode)), [entityCode]);
+
+  const handleLog = async (): Promise<void> => {
+    if (!selectedPoId || !notes.trim()) {
+      toast.error('Select PO and enter notes');
+      return;
+    }
+    const followup: PoFollowup = {
+      id: `fup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      po_id: selectedPoId,
+      channel,
+      outcome,
+      notes,
+      next_action_due: nextAction || null,
+      created_by_user_id: 'mock-user',
+      created_at: new Date().toISOString(),
+    };
+    const updated = await recordPoFollowup(selectedPoId, followup, entityCode, 'mock-user');
+    if (updated) {
+      toast.success('Followup logged');
+      setNotes('');
+      setNextAction('');
+      setSelectedPoId(null);
+      refresh();
+    } else {
+      toast.error('Log failed');
+    }
+  };
+
+  const selected = useMemo(
+    () => (selectedPoId ? overdue.find((p) => p.id === selectedPoId) ?? null : null),
+    [selectedPoId, overdue],
+  );
+
+  const ageBadge = (days: number): JSX.Element => {
+    if (days > 7) return <Badge variant="destructive">{days}d overdue</Badge>;
+    if (days >= 3) return <Badge variant="secondary">{days}d overdue</Badge>;
+    return <Badge variant="outline">{days}d overdue</Badge>;
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">PO Followup Register</h1>
+        <p className="text-sm text-muted-foreground">Overdue purchase orders · log followup activity</p>
+      </div>
+
+      <Card><CardContent className="pt-6">
+        {overdue.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No overdue purchase orders.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PO No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Expected</TableHead>
+                <TableHead>Aging</TableHead>
+                <TableHead>Followups</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {overdue.map((po) => (
+                <TableRow key={po.id}>
+                  <TableCell className="font-mono">{po.po_no}</TableCell>
+                  <TableCell>{po.vendor_name}</TableCell>
+                  <TableCell className="font-mono text-xs">{po.expected_delivery_date.slice(0, 10)}</TableCell>
+                  <TableCell>{ageBadge(computePoOverdueDays(po))}</TableCell>
+                  <TableCell className="font-mono">{po.followups.length}</TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline" onClick={() => setSelectedPoId(po.id)}>
+                      Log Followup
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent></Card>
+
+      {selected && (
+        <Card><CardHeader><CardTitle>{selected.po_no} · Log Followup</CardTitle></CardHeader><CardContent>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <Label htmlFor="channel">Channel</Label>
+              <Select value={channel} onValueChange={(v) => setChannel(v as PoFollowup['channel'])}>
+                <SelectTrigger id="channel"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="call">Call</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  <SelectItem value="visit">Visit</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="outcome">Outcome</Label>
+              <Select value={outcome} onValueChange={(v) => setOutcome(v as PoFollowup['outcome'])}>
+                <SelectTrigger id="outcome"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="committed">Committed</SelectItem>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="no_response">No Response</SelectItem>
+                  <SelectItem value="declined">Declined</SelectItem>
+                  <SelectItem value="delayed">Delayed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="fup-notes">Notes</Label>
+            <Textarea
+              id="fup-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="What was discussed?"
+              rows={3}
+            />
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="next-action">Next action due (YYYY-MM-DD · optional)</Label>
+            <Input
+              id="next-action"
+              value={nextAction}
+              onChange={(e) => setNextAction(e.target.value)}
+              placeholder="2026-05-10"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleLog}>Log Followup</Button>
+            <Button variant="ghost" onClick={() => setSelectedPoId(null)}>Cancel</Button>
+          </div>
+
+          {selected.followups.length > 0 && (
+            <>
+              <h4 className="font-semibold mt-6 mb-2">Followup History</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Channel</TableHead>
+                    <TableHead>Outcome</TableHead>
+                    <TableHead>Notes</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selected.followups.map((f) => (
+                    <TableRow key={f.id}>
+                      <TableCell className="font-mono text-xs">{f.created_at.slice(0, 10)}</TableCell>
+                      <TableCell>{f.channel}</TableCell>
+                      <TableCell><Badge variant="outline">{f.outcome}</Badge></TableCell>
+                      <TableCell className="text-sm">{f.notes}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
+          )}
+        </CardContent></Card>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sprint T-Phase-1.2.6f-c-1 · Block D · GIT panels (per D-284)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function GitInTransitPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const [pos, setPos] = useState<PurchaseOrderRecord[]>(() => listInTransit(entityCode));
+  const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+  const [vehicleNo, setVehicleNo] = useState('');
+  const [driverName, setDriverName] = useState('');
+  const [invoiceNo, setInvoiceNo] = useState('');
+  const [qualityNotes, setQualityNotes] = useState('');
+  const [lineQtys, setLineQtys] = useState<Record<string, number>>({});
+
+  const refresh = useCallback(() => setPos(listInTransit(entityCode)), [entityCode]);
+
+  const selected = useMemo(
+    () => (selectedPoId ? pos.find((p) => p.id === selectedPoId) ?? null : null),
+    [selectedPoId, pos],
+  );
+
+  const openReceive = (po: PurchaseOrderRecord): void => {
+    setSelectedPoId(po.id);
+    const initial: Record<string, number> = {};
+    for (const l of po.lines) initial[l.id] = Math.max(0, l.qty - l.qty_received);
+    setLineQtys(initial);
+    setVehicleNo('');
+    setDriverName('');
+    setInvoiceNo('');
+    setQualityNotes('');
+  };
+
+  const handleReceive = async (): Promise<void> => {
+    if (!selected) return;
+    const lines = selected.lines.map((pl) => ({
+      po_line_id: pl.id,
+      qty_received: lineQtys[pl.id] ?? 0,
+      qty_accepted: lineQtys[pl.id] ?? 0,
+      qty_rejected: 0,
+      rejection_reason: null,
+    }));
+    const result = await createGitStage1FromPo(
+      selected.id,
+      {
+        vehicle_no: vehicleNo || null,
+        driver_name: driverName || null,
+        invoice_no: invoiceNo || null,
+        quality_notes: qualityNotes,
+        quality_check_passed: true,
+        lines,
+      },
+      entityCode,
+      'mock-user',
+    );
+    if (result) {
+      toast.success(`GIT ${result.git_no} · Stage 1 receipt recorded`);
+      setSelectedPoId(null);
+      setLineQtys({});
+      refresh();
+    } else {
+      toast.error('Receive failed');
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">GIT · In Transit</h1>
+        <p className="text-sm text-muted-foreground">Purchase orders awaiting gate-receipt (Stage 1)</p>
+      </div>
+
+      <Card><CardContent className="pt-6">
+        {pos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No POs in transit.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PO No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Expected</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pos.map((po) => (
+                <TableRow key={po.id}>
+                  <TableCell className="font-mono">{po.po_no}</TableCell>
+                  <TableCell>{po.vendor_name}</TableCell>
+                  <TableCell className="font-mono text-xs">{po.expected_delivery_date.slice(0, 10)}</TableCell>
+                  <TableCell><Badge variant="outline">{po.status}</Badge></TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline" onClick={() => openReceive(po)}>
+                      Receive at Gate
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent></Card>
+
+      {selected && (
+        <Card><CardHeader><CardTitle>{selected.po_no} · Gate Receipt Form</CardTitle></CardHeader><CardContent>
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <Label htmlFor="veh">Vehicle No</Label>
+              <Input id="veh" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} placeholder="MH-12-AB-1234" />
+            </div>
+            <div>
+              <Label htmlFor="drv">Driver Name</Label>
+              <Input id="drv" value={driverName} onChange={(e) => setDriverName(e.target.value)} placeholder="Ramesh Kumar" />
+            </div>
+            <div>
+              <Label htmlFor="inv">Vendor Invoice No</Label>
+              <Input id="inv" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} placeholder="INV-2026-0042" />
+            </div>
+          </div>
+          <h4 className="font-semibold mb-2">Lines · Received Quantity</h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead className="text-right">Ordered</TableHead>
+                <TableHead className="text-right">Already Received</TableHead>
+                <TableHead className="text-right">Receive Now</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {selected.lines.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell>{l.item_name}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_received}</TableCell>
+                  <TableCell className="text-right">
+                    <Input
+                      type="number"
+                      className="w-24 text-right font-mono ml-auto"
+                      value={lineQtys[l.id] ?? 0}
+                      onChange={(e) => setLineQtys((prev) => ({ ...prev, [l.id]: Number(e.target.value) || 0 }))}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="mt-4">
+            <Label htmlFor="qnotes">Quality Notes</Label>
+            <Textarea id="qnotes" value={qualityNotes} onChange={(e) => setQualityNotes(e.target.value)} rows={2} />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleReceive}><Save className="h-4 w-4 mr-1" />Confirm Receipt</Button>
+            <Button variant="ghost" onClick={() => setSelectedPoId(null)}>Cancel</Button>
+          </div>
+        </CardContent></Card>
+      )}
+    </div>
+  );
+}
+
+export function GitReceivedPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const allGit = useMemo(() => listGitStage1(entityCode), [entityCode]);
+  const [statusFilter, setStatusFilter] = useState<GitStage1Status | 'all'>('all');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const filtered = useMemo(
+    () => (statusFilter === 'all' ? allGit : allGit.filter((g) => g.status === statusFilter)),
+    [allGit, statusFilter],
+  );
+
+  const selected = useMemo(
+    () => (selectedId ? allGit.find((g) => g.id === selectedId) ?? null : null),
+    [selectedId, allGit],
+  );
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">GIT · Received at Gate</h1>
+        <p className="text-sm text-muted-foreground">Stage 1 records · awaiting Stage 2 inventory acceptance</p>
+      </div>
+
+      <div className="flex gap-2 items-center">
+        <Label className="text-sm">Status:</Label>
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as GitStage1Status | 'all')}>
+          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="in_transit">In Transit</SelectItem>
+            <SelectItem value="received_at_gate">Received at Gate</SelectItem>
+            <SelectItem value="rejected_at_gate">Rejected at Gate</SelectItem>
+            <SelectItem value="partial_receive">Partial Receive</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Card><CardContent className="pt-6">
+        {filtered.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No GIT records.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>GIT No</TableHead>
+                <TableHead>PO No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Receipt Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Days at Gate</TableHead>
+                <TableHead>Stage 2</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((g) => (
+                <TableRow
+                  key={g.id}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedId(g.id === selectedId ? null : g.id)}
+                >
+                  <TableCell className="font-mono">{g.git_no}</TableCell>
+                  <TableCell className="font-mono">{g.po_no}</TableCell>
+                  <TableCell>{g.vendor_name}</TableCell>
+                  <TableCell className="font-mono text-xs">{g.receipt_date.slice(0, 10)}</TableCell>
+                  <TableCell><Badge variant="outline">{g.status}</Badge></TableCell>
+                  <TableCell className="text-right font-mono">{computeAgedGitDays(g)}</TableCell>
+                  <TableCell>
+                    {g.stage2_grn_id ? (
+                      <Badge variant="default">Linked ✓</Badge>
+                    ) : (
+                      <Badge variant="outline">Pending</Badge>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent></Card>
+
+      {selected && (
+        <Card><CardHeader><CardTitle>{selected.git_no} · Line Detail</CardTitle></CardHeader><CardContent>
+          <div className="grid grid-cols-3 gap-4 text-sm mb-4">
+            <div><span className="text-muted-foreground">Vehicle: </span>{selected.vehicle_no ?? '—'}</div>
+            <div><span className="text-muted-foreground">Driver: </span>{selected.driver_name ?? '—'}</div>
+            <div><span className="text-muted-foreground">Invoice: </span>{selected.invoice_no ?? '—'}</div>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead className="text-right">Ordered</TableHead>
+                <TableHead className="text-right">Received</TableHead>
+                <TableHead className="text-right">Accepted</TableHead>
+                <TableHead className="text-right">Rejected</TableHead>
+                <TableHead>Reason</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {selected.lines.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell>{l.item_name}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_ordered}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_received}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_accepted}</TableCell>
+                  <TableCell className="text-right font-mono">{l.qty_rejected}</TableCell>
+                  <TableCell className="text-sm">{l.rejection_reason ?? '—'}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent></Card>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sprint T-Phase-1.2.6f-c-1 · Block E · Aged GIT Procure View (sibling pattern · SD-9)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function AgedGitProcurePanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const aged = useMemo(() => listAgedAwaitingStage2(entityCode), [entityCode]);
+
+  const buckets = useMemo(() => ({
+    fresh: aged.filter((g) => computeAgedGitDays(g) <= 3),
+    p3_7: aged.filter((g) => { const d = computeAgedGitDays(g); return d > 3 && d <= 7; }),
+    o8_14: aged.filter((g) => { const d = computeAgedGitDays(g); return d > 7 && d <= 14; }),
+    c15: aged.filter((g) => computeAgedGitDays(g) > 14),
+  }), [aged]);
+
+  const handleNotify = (g: GitStage1Record): void => {
+    // [JWT] POST /api/finecore/notify · Stage 2 reminder · Phase 1 stub
+    toast.success(`Notification sent to FineCore for ${g.git_no}`);
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Aged Goods in Transit · Procure360 View</h1>
+        <p className="text-sm text-muted-foreground">
+          Stage 1 received at gate · awaiting Stage 2 inventory acceptance (FineCore Receipt Note)
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Fresh (0-3 days)</div>
+          <div className="text-2xl font-mono font-bold text-success">{buckets.fresh.length}</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Pending (4-7 days)</div>
+          <div className="text-2xl font-mono font-bold text-warning">{buckets.p3_7.length}</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Overdue (8-14 days)</div>
+          <div className="text-2xl font-mono font-bold text-warning">{buckets.o8_14.length}</div>
+        </CardContent></Card>
+        <Card><CardContent className="pt-6">
+          <div className="text-xs text-muted-foreground">Critical (15+ days)</div>
+          <div className="text-2xl font-mono font-bold text-destructive">{buckets.c15.length}</div>
+        </CardContent></Card>
+      </div>
+
+      <Card><CardContent className="pt-6">
+        {aged.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No aged GIT records awaiting Stage 2.</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>GIT No</TableHead>
+                <TableHead>PO No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead className="text-right">Days at Gate</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {aged.map((g) => {
+                const d = computeAgedGitDays(g);
+                const badge = d > 14
+                  ? <Badge variant="destructive">{d}d</Badge>
+                  : d > 7
+                  ? <Badge variant="secondary">{d}d</Badge>
+                  : <Badge variant="outline">{d}d</Badge>;
+                return (
+                  <TableRow key={g.id}>
+                    <TableCell className="font-mono">{g.git_no}</TableCell>
+                    <TableCell className="font-mono">{g.po_no}</TableCell>
+                    <TableCell>{g.vendor_name}</TableCell>
+                    <TableCell className="text-right">{badge}</TableCell>
+                    <TableCell><Badge variant="outline">{g.status}</Badge></TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="outline" onClick={() => handleNotify(g)}>
+                        <Bell className="h-3 w-3 mr-1" />Notify FineCore
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent></Card>
+    </div>
+  );
+}
