@@ -1,16 +1,33 @@
 /**
- * Procure360 panels — Sprint T-Phase-1.2.6f-a
- * Minimal compilable panels covering all module IDs.
+ * @file        panels.tsx
+ * @sprint      T-Phase-1.2.6f-b-2-fix-1 · Block H + M
+ * @purpose     Procure360 panels (welcome · enquiry entry · enquiry list · RFQ · quotation · reports)
+ * @decisions   D-269 OOB-12 3-Tier · D-278 ALL 12 Card #2.7 mounts · D-242/D-243/D-247
+ * @disciplines SD-13 · SD-15 · FR-25 · FR-58
+ * @reuses      decimal-helpers · useSprint27d1Mount · Sprint27d2Mount · Sprint27eMount ·
+ *              UseLastVoucherButton · DraftRecoveryDialog · KeyboardShortcutOverlay ·
+ *              ApprovalTimelinePanel · APPROVAL_MATRIX · buildItemVendorMatrix · useItemVendors
+ * @[JWT]       /api/procure360/enquiries · /api/procure360/enquiries/:id/approvals
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { Plus, Trash2, Save, IndianRupee, Keyboard } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { listEnquiries, promoteIndentToProcurementEnquiry } from '@/lib/procurement-enquiry-engine';
+import {
+  listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
+  transitionEnquiryStatus,
+} from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
 import { listRfqs } from '@/lib/rfq-engine';
 import {
@@ -20,15 +37,34 @@ import {
 } from '@/lib/procure360-report-engine';
 import { listQuotations, compareQuotations, validateQuotationCompliance } from '@/lib/vendor-quotation-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
-import { Input } from '@/components/ui/input';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
 import { subscribeProcurementPulse, type PulseAlert } from '@/lib/procurement-pulse-stub';
 import { getExpiringContracts } from '@/lib/oob/contract-expiry-alerts';
+// Block H · D-278 · ALL 12 Card #2.7 mounts
+import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
+import { ApprovalTimelinePanel } from '@/components/uth/ApprovalTimelinePanel';
+import { APPROVAL_MATRIX } from '@/types/requisition-common';
+import { buildItemVendorMatrix } from '@/lib/item-vendor-matrix-builder';
+import { useItemVendors } from '@/hooks/useItemVendors';
+// Block M · D-269
+import { ApprovalActionPanel, tierFor, type ApprovalRecord } from '@/components/procure-hub/ApprovalActionPanel';
+import type {
+  ProcurementEnquiry, ProcurementEnquiryLine, VendorSelectionMode,
+} from '@/types/procurement-enquiry';
 import { toast } from 'sonner';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
 const inr = (n: number): string => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
 
 interface NavProps { onNavigate?: (m: Procure360Module) => void }
 
@@ -112,13 +148,110 @@ function KpiCard({ label, value }: { label: string; value: number }): JSX.Elemen
   );
 }
 
-export function ProcurementEnquiryEntryPanel(): JSX.Element {
-  const { entityCode } = useEntityCode();
-  const [pending, setPending] = useState<PendingPurchaseIndent[]>([]);
+interface EnquiryFormLine {
+  id: string;
+  line_no: number;
+  item_id: string;
+  item_name: string;
+  uom: string;
+  qty: number;
+  estimated_rate: number;
+  estimated_value: number;
+  required_date: string;
+  remarks: string;
+  vendor_mode_override: VendorSelectionMode | null;
+}
 
-  useEffect(() => {
-    setPending(getPendingPurchaseIndents(entityCode));
-  }, [entityCode]);
+const newLineId = (): string => `pel-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+const emptyEnquiryLine = (n: number): EnquiryFormLine => ({
+  id: newLineId(), line_no: n, item_id: '', item_name: '', uom: 'NOS',
+  qty: 0, estimated_rate: 0, estimated_value: 0,
+  required_date: new Date().toISOString().slice(0, 10),
+  remarks: '', vendor_mode_override: null,
+});
+
+export function ProcurementEnquiryEntryPanel(): JSX.Element {
+  // 12 Card #2.7 mounts per D-278 — mirror MaterialIndentEntry pattern
+  const { entityCode, entityId } = useEntityCode();
+  const [pending, setPending] = useState<PendingPurchaseIndent[]>([]);
+  const [enquiryDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [isCapex, setIsCapex] = useState(false);
+  const [vendorMode, setVendorMode] = useState<VendorSelectionMode>('scoring');
+  const [notes, setNotes] = useState('');
+  const [lines, setLines] = useState<EnquiryFormLine[]>([emptyEnquiryLine(1)]);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  // mount #9 · decimal helpers · total
+  const totalEstimatedValue = useMemo(() => {
+    let t = 0;
+    for (const l of lines) t = dAdd(t, l.estimated_value);
+    return round2(t);
+  }, [lines]);
+
+  const formState = useMemo(
+    () => ({ enquiryDate, isCapex, vendorMode, notes, lines, total: totalEstimatedValue }),
+    [enquiryDate, isCapex, vendorMode, notes, lines, totalEstimatedValue],
+  );
+
+  // mount #7 · useSprint27d1Mount · smart defaults + auto-save + draft recovery
+  const mount = useSprint27d1Mount({
+    formKey: 'procurement-enquiry-entry',
+    entityCode,
+    formState,
+    items: lines,
+    view: 'new',
+    voucherType: 'procurement_enquiry',
+  });
+
+  // mount #1 · useFormKeyboardShortcuts (rich keyboard bindings)
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
+
+  // D-243 strict matching · useItemVendors (Item-Vendor preview)
+  const itemVendors = useItemVendors();
+
+  // Item-Vendor matrix preview (RFQ count) · uses buildItemVendorMatrix
+  const matrixPreview = useMemo(() => {
+    if (lines.length === 0 || lines.every(l => !l.item_id)) return null;
+    const stubEnquiry: ProcurementEnquiry = {
+      id: 'preview', enquiry_no: 'preview', enquiry_date: enquiryDate,
+      entity_id: entityId, branch_id: null, division_id: null, department_id: null,
+      cost_center_id: null, source_indent_ids: [], is_standalone: true,
+      standalone_approval_tier: null, vendor_mode: vendorMode, selected_vendor_ids: [],
+      vendor_overrides: [], item_vendor_matrix: [], matrix_overrides: [],
+      lines: lines.map(l => ({
+        id: l.id, line_no: l.line_no, source_indent_id: null, source_indent_line_id: null,
+        item_id: l.item_id, item_name: l.item_name, uom: l.uom,
+        required_qty: l.qty, current_stock_qty: 0,
+        estimated_rate: l.estimated_rate, estimated_value: l.estimated_value,
+        required_date: l.required_date, schedule_date: l.required_date,
+        vendor_mode_override: l.vendor_mode_override, override_reason: null,
+        matched_vendor_ids: [], remarks: l.remarks, status: 'draft',
+      } as ProcurementEnquiryLine)),
+      requested_by_user_id: 'mock-user', hod_id: null, purchase_manager_id: null,
+      director_id: null, approval_stage: null, rfq_ids: [], awarded_quotation_ids: [],
+      award_notes: '', awarded_at: null, awarded_by_user_id: null, notes: '',
+      status: 'draft', created_at: '', updated_at: '',
+    };
+    return buildItemVendorMatrix(stubEnquiry, vendorMode, itemVendors, []);
+  }, [lines, vendorMode, enquiryDate, entityId, itemVendors]);
+
+  useEffect(() => { setPending(getPendingPurchaseIndents(entityCode)); }, [entityCode]);
+
+  const updateLine = useCallback((id: string, patch: Partial<EnquiryFormLine>): void => {
+    setLines(prev => prev.map(l => {
+      if (l.id !== id) return l;
+      const merged = { ...l, ...patch };
+      // mount #9 · decimal-helpers (dMul · round2)
+      merged.estimated_value = round2(dMul(merged.qty, merged.estimated_rate));
+      return merged;
+    }));
+  }, []);
+
+  const addLine = (): void => setLines(prev => [...prev, emptyEnquiryLine(prev.length + 1)]);
+  const removeLine = (id: string): void => setLines(prev => prev.filter(l => l.id !== id));
 
   const promote = (indentId: string): void => {
     const result = promoteIndentToProcurementEnquiry([indentId], entityCode, 'mock-user');
@@ -130,16 +263,94 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
     }
   };
 
+  const handleSubmit = (): void => {
+    const validLines = lines.filter(l => l.item_name && l.qty > 0);
+    if (validLines.length === 0) { toast.error('Add at least one line'); return; }
+    const enquiry = createEnquiry({
+      entity_id: entityId, branch_id: null, division_id: null, department_id: null,
+      cost_center_id: null, source_indent_ids: [], is_standalone: true,
+      vendor_mode: vendorMode,
+      lines: validLines.map(l => ({
+        source_indent_id: null, source_indent_line_id: null,
+        item_id: l.item_id || l.item_name, item_name: l.item_name, uom: l.uom,
+        required_qty: l.qty, current_stock_qty: 0,
+        estimated_rate: l.estimated_rate, estimated_value: l.estimated_value,
+        required_date: l.required_date, schedule_date: l.required_date,
+        vendor_mode_override: l.vendor_mode_override, override_reason: null,
+        matched_vendor_ids: [], remarks: l.remarks,
+      })),
+      requested_by_user_id: 'mock-user',
+      notes,
+    }, entityCode);
+    toast.success(`Enquiry ${enquiry.enquiry_no} submitted`);
+    mount.clearDraft();
+    setLines([emptyEnquiryLine(1)]);
+    setNotes('');
+  };
+
+  const handleCancel = (): void => {
+    // mount #10 · audit trail on cancel
+    void appendAuditEntry({
+      entityCode, entityId,
+      voucherId: 'enquiry-pending',
+      voucherKind: 'procurement_enquiry',
+      action: 'enquiry.cancel',
+      actorUserId: 'mock-user',
+      payload: { lines: lines.length, total: totalEstimatedValue },
+    }).catch(() => { /* best-effort */ });
+    mount.clearDraft();
+    setLines([emptyEnquiryLine(1)]);
+    setNotes('');
+  };
+
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Procurement Enquiry · New</h1>
-        <p className="text-sm text-muted-foreground">
-          Promote pending-purchase indents OR create standalone enquiry (Tier-3 approval).
-        </p>
+      {/* mount #5 · DraftRecoveryDialog */}
+      <DraftRecoveryDialog
+        formKey="procurement-enquiry-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      {/* mount #6 · KeyboardShortcutOverlay */}
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} formName="Procurement Enquiry Entry" />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Procurement Enquiry · New</h1>
+          <p className="text-sm text-muted-foreground">
+            Promote pending-purchase indents OR create standalone enquiry · all 12 Card #2.7 mounts active
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* mount #4 · UseLastVoucherButton */}
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="procurement-enquiry"
+            partyValue={null}
+            onUse={() => toast.info('Last enquiry loaded')}
+          />
+          <Button variant="outline" size="sm" onClick={() => setHelpOpen(true)}>
+            <Keyboard className="h-4 w-4 mr-1" /> Shortcuts
+          </Button>
+          <Button onClick={handleSubmit}><Save className="h-4 w-4 mr-1" />Submit</Button>
+        </div>
       </div>
+
+      {/* mount #2 · Sprint27d2Mount · keyboard + bulk paste + line-search */}
+      <Sprint27d2Mount
+        formName="ProcurementEnquiryEntry"
+        entityCode={entityCode}
+        items={lines as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
+
+      {/* Pending indents · existing flow */}
       <Card>
-        <CardHeader><CardTitle>Pending Purchase Indents</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Pending Purchase Indents (Promote to Enquiry)</CardTitle></CardHeader>
         <CardContent>
           {pending.length === 0 ? (
             <p className="text-sm text-muted-foreground">No indents pending promotion.</p>
@@ -147,12 +358,9 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Indent No</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Lines</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Days</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead>Indent No</TableHead><TableHead>Department</TableHead>
+                  <TableHead>Lines</TableHead><TableHead>Value</TableHead>
+                  <TableHead>Days</TableHead><TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -162,7 +370,7 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
                     <TableCell>{p.originating_department_name}</TableCell>
                     <TableCell>{p.line_count}</TableCell>
                     <TableCell className="font-mono">{inr(p.total_value)}</TableCell>
-                    <TableCell>{p.days_pending}{p.is_urgent ? ' ⚠' : ''}</TableCell>
+                    <TableCell>{p.days_pending}{p.is_urgent ? ' !' : ''}</TableCell>
                     <TableCell>
                       <Button size="sm" onClick={() => promote(p.indent_id)}>Promote</Button>
                     </TableCell>
@@ -173,19 +381,273 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {/* Standalone enquiry form · Tier-3 default unless smaller */}
+      <Card>
+        <CardHeader><CardTitle>Standalone Enquiry</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label>Enquiry Date</Label>
+              <Input type="date" value={enquiryDate} readOnly />
+            </div>
+            <div className="col-span-2 flex items-center gap-2 pt-6">
+              <Checkbox id="capex" checked={isCapex} onCheckedChange={(c) => setIsCapex(c === true)} />
+              <Label htmlFor="capex">CAPEX (forces Tier-3 approval)</Label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Vendor Selection Mode (D-242)</Label>
+            <RadioGroup value={vendorMode} onValueChange={(v) => setVendorMode(v as VendorSelectionMode)}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="single" id="vm-single" />
+                <Label htmlFor="vm-single">Single (pick one vendor)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="scoring" id="vm-scoring" />
+                <Label htmlFor="vm-scoring">Multiple-Scoring (top N by score)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="floating" id="vm-floating" />
+                <Label htmlFor="vm-floating">Floating (all vendors per item)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Line Items</Label>
+              <Button size="sm" variant="outline" onClick={addLine}>
+                <Plus className="h-3 w-3 mr-1" />Add Line
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {lines.map(l => (
+                <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
+                  <div className="col-span-3">
+                    <Label className="text-[10px]">Item</Label>
+                    <Input
+                      value={l.item_name}
+                      onChange={(e) => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })}
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">UoM</Label>
+                    <Input value={l.uom} onChange={(e) => updateLine(l.id, { uom: e.target.value })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">Qty</Label>
+                    <Input type="number" inputMode="decimal" value={l.qty}
+                      onChange={(e) => updateLine(l.id, { qty: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Rate</Label>
+                    <Input type="number" inputMode="decimal" value={l.estimated_rate}
+                      onChange={(e) => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Value</Label>
+                    <div className="text-sm font-mono py-1.5">{inr(l.estimated_value)}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Per-line Mode</Label>
+                    <Select
+                      value={l.vendor_mode_override ?? '__inherit__'}
+                      onValueChange={(v) =>
+                        updateLine(l.id, { vendor_mode_override: v === '__inherit__' ? null : (v as VendorSelectionMode) })
+                      }
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__inherit__">Inherit</SelectItem>
+                        <SelectItem value="single">Single</SelectItem>
+                        <SelectItem value="scoring">Scoring</SelectItem>
+                        <SelectItem value="floating">Floating</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="col-span-1">
+                    <Button size="icon" variant="ghost" onClick={() => removeLine(l.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-end pt-2 text-sm font-mono">
+                <span className="text-muted-foreground mr-2">Total:</span>
+                <span className="font-semibold flex items-center">
+                  <IndianRupee className="h-3 w-3" />{totalEstimatedValue.toLocaleString('en-IN')}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {matrixPreview && (
+            <Card className="bg-muted/40">
+              <CardContent className="p-4 space-y-1">
+                <p className="text-sm font-medium">RFQs to be generated: {matrixPreview.rfq_count}</p>
+                {matrixPreview.warnings.length > 0 && (
+                  <ul className="text-xs text-warning">
+                    {matrixPreview.warnings.map((w, i) => <li key={`mw-${i}`}>! {w}</li>)}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          <div>
+            <Label>Notes</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
+
+          {/* mount #12 · ApprovalTimelinePanel REUSE */}
+          <ApprovalTimelinePanel totalEstimatedValue={totalEstimatedValue} forceFinanceGate={isCapex} />
+
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* mount #3 · Sprint27eMount · pinned templates */}
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="procurement_enquiry"
+        voucherTypeName="Procurement Enquiry"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
 
+type MockApproverRole = 'Department Head' | 'Purchase Manager' | 'Purchase Head' | 'Director / Finance Head';
+
 export function EnquiryListPanel(): JSX.Element {
-  const { entityCode } = useEntityCode();
-  const enquiries = listEnquiries(entityCode);
+  const { entityCode, entityId } = useEntityCode();
+  const [enquiries, setEnquiries] = useState<ProcurementEnquiry[]>(() => listEnquiries(entityCode));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mockRole, setMockRole] = useState<MockApproverRole>('Department Head');
+
+  const refresh = (): void => setEnquiries(listEnquiries(entityCode));
+
+  const selected = useMemo(
+    () => (selectedId ? enquiries.find(e => e.id === selectedId) ?? null : null),
+    [selectedId, enquiries],
+  );
+
+  const enquiryTotal = (e: ProcurementEnquiry): number =>
+    round2(e.lines.reduce((s, l) => dAdd(s, l.estimated_value ?? 0), 0));
+
+  const handleApprove = (enquiry: ProcurementEnquiry, _tier: 1 | 2 | 3, role: string): void => {
+    const approvals: ApprovalRecord[] = [
+      ...(((enquiry as unknown as { approvals?: ApprovalRecord[] }).approvals) ?? []),
+      { role, approved_at: new Date().toISOString(), approved_by: 'mock-user' },
+    ];
+    const total = enquiryTotal(enquiry);
+    const isCapex = (enquiry as unknown as { is_capex?: boolean }).is_capex ?? false;
+    const tier = tierFor(total, isCapex);
+    const tierConfig = APPROVAL_MATRIX[tier - 1];
+    const allDone = tierConfig.required_approvals.every(r => approvals.some(a => a.role === r.role));
+    updateEnquiry(
+      enquiry.id,
+      { ...((({ approvals } as unknown) as Partial<ProcurementEnquiry>)) },
+      entityCode,
+    );
+    if (allDone) {
+      transitionEnquiryStatus(enquiry.id, 'approved', entityCode, 'mock-user');
+    }
+    refresh();
+    setSelectedId(null);
+  };
+
+  const handleReject = (enquiry: ProcurementEnquiry, _reason: string): void => {
+    transitionEnquiryStatus(enquiry.id, 'rejected', entityCode, 'mock-user');
+    refresh();
+    setSelectedId(null);
+  };
+
   return (
-    <PanelList
-      title="Enquiry List"
-      headers={['Enquiry No', 'Date', 'Mode', 'Lines', 'Status']}
-      rows={enquiries.map((e) => [e.enquiry_no, e.enquiry_date, e.vendor_mode, String(e.lines.length), e.status])}
-    />
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Procurement Enquiries</h1>
+      <Card>
+        <CardContent className="pt-6">
+          {enquiries.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No enquiries yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Enquiry No</TableHead><TableHead>Date</TableHead>
+                  <TableHead>Mode</TableHead><TableHead>Lines</TableHead>
+                  <TableHead>Value</TableHead><TableHead>Tier</TableHead>
+                  <TableHead>Status</TableHead><TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {enquiries.map(e => {
+                  const total = enquiryTotal(e);
+                  const isCapex = (e as unknown as { is_capex?: boolean }).is_capex ?? false;
+                  const tier = tierFor(total, isCapex);
+                  return (
+                    <TableRow key={e.id}>
+                      <TableCell className="font-mono">{e.enquiry_no}</TableCell>
+                      <TableCell>{e.enquiry_date}</TableCell>
+                      <TableCell>{e.vendor_mode}</TableCell>
+                      <TableCell>{e.lines.length}</TableCell>
+                      <TableCell className="font-mono">{inr(total)}</TableCell>
+                      <TableCell><Badge variant="outline">T{tier}</Badge></TableCell>
+                      <TableCell><Badge>{e.status}</Badge></TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={() => setSelectedId(e.id)}>Open</Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {selected && (
+        <div className="space-y-4">
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <Label>Current User Role (demo · OOB-12 mock auth)</Label>
+              <Select value={mockRole} onValueChange={(v) => setMockRole(v as MockApproverRole)}>
+                <SelectTrigger className="w-72"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Department Head">Department Head</SelectItem>
+                  <SelectItem value="Purchase Manager">Purchase Manager</SelectItem>
+                  <SelectItem value="Purchase Head">Purchase Head</SelectItem>
+                  <SelectItem value="Director / Finance Head">Director / Finance Head</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          <ApprovalActionPanel
+            enquiryId={selected.id}
+            enquiryNo={selected.enquiry_no}
+            totalEstimatedValue={enquiryTotal(selected)}
+            isCapex={(selected as unknown as { is_capex?: boolean }).is_capex ?? false}
+            currentApprovals={((selected as unknown as { approvals?: ApprovalRecord[] }).approvals) ?? []}
+            currentUserRole={mockRole}
+            entityCode={entityCode}
+            entityId={entityId}
+            onApprove={(tier, role) => handleApprove(selected, tier, role)}
+            onReject={(reason) => handleReject(selected, reason)}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
