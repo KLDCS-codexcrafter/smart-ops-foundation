@@ -43,7 +43,7 @@ export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
     family: 'request',
     display_name: 'Capital Indent',
     prefix: 'CAP',
-    is_default: true,
+    is_default: false,
     is_active: true,
     approval_threshold_value: 1,
     approval_role: 'finance_head',
