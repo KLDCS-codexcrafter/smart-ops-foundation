@@ -71,6 +71,8 @@ export async function notifyVendorRFQ(
   channels: RFQSendChannel[],
   entityCode: string,
 ): Promise<{ success: boolean; logged: CommunicationLogEntry[] }> {
+  // FIX-5 · D-254 · resolve from per-vendor preference if caller passed empty array
+  const resolvedChannels = channels.length > 0 ? channels : getVendorChannels(vendor.id, entityCode);
   const tokenUrl = rfq.token_url ?? generateRFQTokenUrl(rfq.id, entityCode);
   const now = new Date().toISOString();
   const subject = `RFQ ${rfq.rfq_no} — Quotation requested`;
@@ -78,7 +80,7 @@ export async function notifyVendorRFQ(
     `Dear ${vendor.name},\n\nPlease submit your quotation for RFQ ${rfq.rfq_no}.\n` +
     `Submit via portal: ${tokenUrl}\n\nThank you.`;
 
-  const logged: CommunicationLogEntry[] = channels.map((ch) => ({
+  const logged: CommunicationLogEntry[] = resolvedChannels.map((ch) => ({
     id: `cl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${ch}`,
     entity_id: entityCode,
     party_id: vendor.id,
