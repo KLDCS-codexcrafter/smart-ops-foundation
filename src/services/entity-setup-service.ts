@@ -426,6 +426,15 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore */ }
 
+  // 2c. Sprint T-Phase-1.2.6f-pre-1 — Seed Non-FineCore voucher types (RequestX + sibling families).
+  try {
+    // [JWT] POST /api/voucher-types/non-finecore/bulk-seed
+    const nfcKey = nonFineCoreVoucherTypesKey(opts.shortCode);
+    if (!localStorage.getItem(nfcKey)) {
+      localStorage.setItem(nfcKey, JSON.stringify(DEFAULT_NON_FINECORE_VOUCHER_TYPES));
+    }
+  } catch { /* ignore */ }
+
   // 3. Load industry L4 groups into FinFrame
   const l4GroupsCreated = opts.loadIndustryPack ? loadIndustryPack(opts.businessActivity) : 0;
 
