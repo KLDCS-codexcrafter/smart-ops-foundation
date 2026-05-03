@@ -88,13 +88,6 @@ export default function VendorInbox(): JSX.Element {
     navigate(url);
   };
 
-  const counts = {
-    pending: myRfqs.filter(r => ['sent', 'received_by_vendor', 'opened', 'draft'].includes(r.status)).length,
-    quoted: myRfqs.filter(r => ['quoted', 'partial_quoted', 'awarded'].includes(r.status)).length,
-    declined: myRfqs.filter(r => ['declined', 'timeout', 'cancelled'].includes(r.status)).length,
-    all: myRfqs.length,
-  };
-
   return (
     <VendorPortalShell>
       <Card>
