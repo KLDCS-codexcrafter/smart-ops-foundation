@@ -29,7 +29,7 @@ import {
 import { listPurchaseOrders, getPurchaseOrder } from '@/lib/po-management-engine';
 import { listGitStage1 } from '@/lib/git-engine';
 import { draftPiFromBill } from '@/lib/finance-pi-bridge';
-import type { BillPassingRecord, BillPassingLine, LineMatchStatus } from '@/types/bill-passing';
+import type { BillPassingRecord, LineMatchStatus } from '@/types/bill-passing';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
 // ----------------------------------------------------------------------------
