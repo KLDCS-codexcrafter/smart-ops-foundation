@@ -16,6 +16,8 @@ import {
   // Sprint T-Phase-1.2.6f-c-1 · Block G
   PoListPanel, PoFollowupRegisterPanel,
   GitInTransitPanel, GitReceivedPanel, AgedGitProcurePanel,
+  // Sprint T-Phase-1.2.6f-c-2 · Block E
+  BillPassingPiStatusPanel,
 } from './panels';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
