@@ -449,6 +449,7 @@ const App = () => (
               <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
               <Route path="/erp/procure-hub" element={<P><Procure360Page /></P>} />
               <Route path="/erp/procure-hub/*" element={<P><Procure360Page /></P>} />
+              <Route path="/erp/bill-passing" element={<P><BillPassingPage /></P>} />
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
