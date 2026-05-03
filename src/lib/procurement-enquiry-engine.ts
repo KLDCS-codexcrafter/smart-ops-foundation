@@ -12,6 +12,12 @@ import {
   type ItemVendorMatchPair,
 } from '@/types/procurement-enquiry';
 import { materialIndentsKey, type MaterialIndent } from '@/types/material-indent';
+import { appendAuditEntry } from './audit-trail-hash-chain';
+import { publishProcurementPulse } from './procurement-pulse-stub';
+
+function totalEnquiryValue(e: ProcurementEnquiry): number {
+  return e.lines.reduce((s, l) => s + (l.estimated_value ?? 0), 0);
+}
 
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
