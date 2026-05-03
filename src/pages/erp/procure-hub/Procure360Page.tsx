@@ -48,6 +48,7 @@ export default function Procure360Page(): JSX.Element {
       case 'git-in-transit':                return <GitInTransitPanel />;
       case 'git-received':                  return <GitReceivedPanel />;
       case 'aged-git-procure':              return <AgedGitProcurePanel />;
+      case 'bill-passing-pi-status':        return <BillPassingPiStatusPanel />;
       default:                              return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
