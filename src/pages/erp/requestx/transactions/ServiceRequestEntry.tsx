@@ -325,7 +325,7 @@ export function ServiceRequestEntry(): JSX.Element {
         defaultPartyType="vendor"
         partyId={null}
         partyName={null}
-        lineItems={lines.map(l => ({ name: l.service_name, qty: l.qty, rate: l.estimated_rate, amount: l.estimated_value }))}
+        lineItems={lines.map(l => ({ item_name: l.service_name, qty: l.qty, rate: l.estimated_rate, uom: l.uom, description: l.description }))}
         onPartyCreated={() => { /* no-op */ }}
         onCloneTemplate={() => { /* no-op */ }}
       />
