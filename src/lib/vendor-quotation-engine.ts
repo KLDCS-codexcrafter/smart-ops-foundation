@@ -10,6 +10,8 @@ import {
   type VendorQuotationStatus,
   type QuotationSubmissionSource,
 } from '@/types/vendor-quotation';
+import { appendAuditEntry } from './audit-trail-hash-chain';
+import { publishProcurementPulse } from './procurement-pulse-stub';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
