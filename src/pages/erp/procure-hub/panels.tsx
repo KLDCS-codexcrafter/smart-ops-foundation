@@ -1242,13 +1242,53 @@ export function BestPriceReportPanel(): JSX.Element {
 
 export function SpendByVendorReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = computeSpendByVendor(entityCode);
+  const all = computeSpendByVendor(entityCode);
+  const totalSpend = all.reduce((s, r) => s + r.spend, 0);
+  const sorted = [...all].sort((a, b) => b.spend - a.spend);
+  const headers = ['Vendor', 'Spend', 'Awards', 'Share %'];
+  const rows = sorted.map((r) => [
+    r.vendor_name,
+    inr(r.spend),
+    String(r.award_count),
+    totalSpend > 0 ? `${((r.spend / totalSpend) * 100).toFixed(1)}%` : '0%',
+  ]);
   return (
-    <PanelList
-      title="Spend by Vendor"
-      headers={['Vendor', 'Spend', 'Awards']}
-      rows={rows.map((r) => [r.vendor_name, inr(r.spend), String(r.award_count)])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Spend by Vendor</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('spend-by-vendor.csv', headers, rows)}>Export CSV</Button>
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Total spend</p>
+              <p className="text-xl font-bold font-mono">{inr(totalSpend)}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Vendors</p>
+              <p className="text-xl font-bold font-mono">{all.length}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30">
+              <p className="text-xs text-muted-foreground">Top vendor share</p>
+              <p className="text-xl font-bold font-mono">{rows[0]?.[3] ?? '0%'}</p>
+            </div>
+          </div>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No spend data.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
+                  <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
+                ))}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
