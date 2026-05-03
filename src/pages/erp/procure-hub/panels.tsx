@@ -652,15 +652,247 @@ export function EnquiryListPanel(): JSX.Element {
   );
 }
 
+// Block I-fix · D-256 · RFQ list with Send / Decline / Timeout / Cancel + channel inline edit
 export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rfqs = listRfqs(entityCode);
+  const [version, setVersion] = useState(0);
+  const refresh = useCallback(() => setVersion((v) => v + 1), []);
+  const rfqs = useMemo(() => listRfqs(entityCode), [entityCode, version]);
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reasonOpen, setReasonOpen] = useState<{ id: string; mode: 'decline' | 'cancel' } | null>(null);
+  const [reasonText, setReasonText] = useState('');
+
+  const filtered = useMemo(() => rfqs.filter((r) => {
+    if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+    if (search) {
+      const s = search.toLowerCase();
+      if (!r.rfq_no.toLowerCase().includes(s) && !r.vendor_name.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  }), [rfqs, search, statusFilter]);
+
+  const fmtDate = (iso: string | null): string => {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return iso; }
+  };
+
+  const onChangeChannel = (rfq: typeof rfqs[number], channel: 'internal' | 'whatsapp' | 'email'): void => {
+    if (rfq.status !== 'draft') {
+      toast.error('Channel can be edited only on draft RFQs.');
+      return;
+    }
+    import('@/lib/rfq-engine').then(({ updateRfq }) => {
+      updateRfq(rfq.id, { primary_channel: channel }, entityCode);
+      toast.success(`Primary channel set to ${channel}.`);
+      refresh();
+    });
+  };
+
+  const onSend = async (rfq: typeof rfqs[number]): Promise<void> => {
+    setBusyId(rfq.id);
+    try {
+      const { sendRfq } = await import('@/lib/rfq-engine');
+      await sendRfq(
+        rfq.id,
+        { id: rfq.vendor_id, name: rfq.vendor_name, contact_email: undefined, contact_mobile: undefined },
+        rfq.send_channels.length > 0 ? rfq.send_channels : [rfq.primary_channel],
+        entityCode,
+        'mock-user',
+      );
+      toast.success(`RFQ ${rfq.rfq_no} sent.`);
+      refresh();
+    } catch (e) {
+      toast.error(`Send failed · ${(e as Error).message}`);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const onTimeout = async (rfq: typeof rfqs[number]): Promise<void> => {
+    setBusyId(rfq.id);
+    try {
+      const { timeoutRfq } = await import('@/lib/rfq-engine');
+      const { triggerFallback } = await import('@/lib/rfq-fallback-engine');
+      timeoutRfq(rfq.id, entityCode);
+      // Q2=B · Timeout DOES call triggerFallback
+      const result = triggerFallback(rfq, 'timeout', entityCode, []);
+      toast.warning(`RFQ ${rfq.rfq_no} marked timeout · fallback ${result.success ? 'triggered' : result.reason}.`);
+      refresh();
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const submitReason = async (): Promise<void> => {
+    if (!reasonOpen) return;
+    const rfq = rfqs.find((r) => r.id === reasonOpen.id);
+    if (!rfq) return;
+    const reason = reasonText.trim() || (reasonOpen.mode === 'decline' ? 'Declined by vendor' : 'Cancelled by buyer');
+    setBusyId(rfq.id);
+    try {
+      if (reasonOpen.mode === 'decline') {
+        const { declineRfq } = await import('@/lib/rfq-engine');
+        const { triggerFallback } = await import('@/lib/rfq-fallback-engine');
+        declineRfq(rfq.id, reason, entityCode, 'mock-user');
+        // Q2=B · Decline DOES call triggerFallback
+        const result = triggerFallback(rfq, 'declined', entityCode, []);
+        toast.warning(`RFQ ${rfq.rfq_no} declined · fallback ${result.success ? 'triggered' : result.reason}.`);
+      } else {
+        // Q2=B · Cancel marks status='cancelled' + audit · NO triggerFallback
+        const { updateRfq } = await import('@/lib/rfq-engine');
+        updateRfq(rfq.id, { status: 'cancelled' }, entityCode);
+        await appendAuditEntry({
+          entityCode,
+          entityId: rfq.entity_id,
+          voucherId: rfq.id,
+          voucherKind: 'rfq',
+          action: 'rfq.cancelled',
+          actorUserId: 'mock-user',
+          payload: { rfq_no: rfq.rfq_no, reason },
+        }).catch(() => { /* best-effort */ });
+        toast.success(`RFQ ${rfq.rfq_no} cancelled.`);
+      }
+      refresh();
+    } finally {
+      setBusyId(null);
+      setReasonOpen(null);
+      setReasonText('');
+    }
+  };
+
+  const statusBadge = (s: string): JSX.Element => {
+    const variant: 'default' | 'secondary' | 'outline' =
+      s === 'awarded' || s === 'quoted' ? 'default'
+      : s === 'declined' || s === 'timeout' || s === 'cancelled' ? 'outline'
+      : 'secondary';
+    return <Badge variant={variant}>{s}</Badge>;
+  };
+
   return (
-    <PanelList
-      title="RFQ List"
-      headers={['RFQ No', 'Vendor', 'Channel', 'Status', 'Sent']}
-      rows={rfqs.map((r) => [r.rfq_no, r.vendor_name, r.primary_channel, r.status, r.sent_at ?? '—'])}
-    />
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">RFQ List</h1>
+      <Card>
+        <CardContent className="pt-6 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Search</label>
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="RFQ no or vendor" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Status</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="opened">Opened</SelectItem>
+                  <SelectItem value="quoted">Quoted</SelectItem>
+                  <SelectItem value="declined">Declined</SelectItem>
+                  <SelectItem value="timeout">Timeout</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="awarded">Awarded</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-end text-sm text-muted-foreground">
+              {filtered.length} of {rfqs.length} RFQs
+            </div>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>RFQ No</TableHead>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Channel</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Sent</TableHead>
+                <TableHead>Timeout</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
+                    No RFQs match the current filter.
+                  </TableCell>
+                </TableRow>
+              ) : filtered.map((r) => {
+                const canSend = r.status === 'draft';
+                const canDeclineOrTimeout = ['sent', 'opened', 'received_by_vendor'].includes(r.status);
+                const canCancel = ['draft', 'sent', 'opened', 'received_by_vendor'].includes(r.status);
+                const isBusy = busyId === r.id;
+                return (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-mono">{r.rfq_no}</TableCell>
+                    <TableCell>{r.vendor_name}</TableCell>
+                    <TableCell>
+                      {r.status === 'draft' ? (
+                        <Select value={r.primary_channel} onValueChange={(v) => onChangeChannel(r, v as 'internal' | 'whatsapp' | 'email')}>
+                          <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="internal">Internal</SelectItem>
+                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant="outline">{r.primary_channel}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>{statusBadge(r.status)}</TableCell>
+                    <TableCell className="text-xs">{fmtDate(r.sent_at)}</TableCell>
+                    <TableCell className="text-xs">{fmtDate(r.timeout_at)}</TableCell>
+                    <TableCell className="text-right space-x-1">
+                      <Button size="sm" variant="default" disabled={!canSend || isBusy} onClick={() => onSend(r)}>Send</Button>
+                      <Button size="sm" variant="outline" disabled={!canDeclineOrTimeout || isBusy}
+                        onClick={() => { setReasonOpen({ id: r.id, mode: 'decline' }); setReasonText(''); }}>
+                        Decline
+                      </Button>
+                      <Button size="sm" variant="outline" disabled={!canDeclineOrTimeout || isBusy} onClick={() => onTimeout(r)}>Timeout</Button>
+                      <Button size="sm" variant="ghost" disabled={!canCancel || isBusy}
+                        onClick={() => { setReasonOpen({ id: r.id, mode: 'cancel' }); setReasonText(''); }}>
+                        Cancel
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {reasonOpen && (
+        <Card className="border-warning">
+          <CardHeader><CardTitle className="text-base">
+            {reasonOpen.mode === 'decline' ? 'Decline RFQ · enter vendor reason' : 'Cancel RFQ · enter buyer reason'}
+          </CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Textarea value={reasonText} onChange={(e) => setReasonText(e.target.value)} rows={3}
+              placeholder={reasonOpen.mode === 'decline' ? 'e.g. Out of stock' : 'e.g. Requirement cancelled'} />
+            <div className="flex gap-2 justify-end">
+              <Button variant="ghost" onClick={() => { setReasonOpen(null); setReasonText(''); }}>Close</Button>
+              <Button onClick={submitReason} disabled={busyId !== null}>
+                Confirm {reasonOpen.mode === 'decline' ? 'Decline' : 'Cancel'}
+              </Button>
+            </div>
+            {reasonOpen.mode === 'decline' && (
+              <p className="text-xs text-muted-foreground">Decline triggers auto-fallback (Mode 2 · scoring).</p>
+            )}
+            {reasonOpen.mode === 'cancel' && (
+              <p className="text-xs text-muted-foreground">Cancel marks status only · audit appended · no fallback.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 
