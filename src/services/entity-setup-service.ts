@@ -635,7 +635,116 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         }
       }
     } catch { /* ignore */ }
-    // 8c. Sprint T-Phase-1.2.6f-pre-2 · Block K · Auto-seed divisions/departments per industry preset.
+    // 8d-procure-po-git. Sprint T-Phase-1.2.6f-c-1 · Block G · PO + GIT demo seed (per blueprint, idempotent).
+    try {
+      // [JWT] POST /api/procure360/po-git/seed (idempotent · per-entity)
+      const bpKey = opts.shortCode.toLowerCase().slice(0, 5);
+      const poKey = purchaseOrdersKey(opts.shortCode);
+      const gitKey = gitStage1Key(opts.shortCode);
+      const poSpec = DEMO_POS.find((p) => p.blueprint === bpKey);
+      const gitSpec = DEMO_GIT_RECORDS.find((g) => g.blueprint === bpKey);
+      const awarded = DEMO_QUOTATIONS.find((q) => q.entity_id === opts.shortCode && q.is_awarded);
+      let createdPo: PurchaseOrderRecord | null = null;
+      if (poSpec && awarded && !localStorage.getItem(poKey)) {
+        const now = new Date().toISOString();
+        const expected = new Date(Date.now() + poSpec.expected_delivery_days_offset * 86400000).toISOString();
+        const lines: PurchaseOrderLine[] = awarded.lines.map((l, idx) => {
+          const basic = Math.round(l.qty_quoted * l.rate * 100) / 100;
+          const taxValue = Math.round((basic * l.tax_percent) / 100 * 100) / 100;
+          const afterTax = Math.round((basic + taxValue) * 100) / 100;
+          const fullyReceived = poSpec.status === 'fully_received';
+          return {
+            id: `pol-seed-${bpKey}-${idx}`,
+            line_no: idx + 1,
+            item_id: l.item_id,
+            item_name: l.item_id,
+            qty: l.qty_quoted,
+            uom: 'NOS',
+            rate: l.rate,
+            basic_value: basic,
+            tax_pct: l.tax_percent,
+            tax_value: taxValue,
+            amount_after_tax: afterTax,
+            qty_received: fullyReceived ? l.qty_quoted : (poSpec.status === 'partially_received' ? l.qty_quoted / 2 : 0),
+          };
+        });
+        const totalBasic = Math.round(lines.reduce((s, l) => s + l.basic_value, 0) * 100) / 100;
+        const totalTax = Math.round(lines.reduce((s, l) => s + l.tax_value, 0) * 100) / 100;
+        const totalAfter = Math.round(lines.reduce((s, l) => s + l.amount_after_tax, 0) * 100) / 100;
+        createdPo = {
+          id: `po-seed-${bpKey}`,
+          po_no: `PO/SEED/${poSpec.short_code}/0001`,
+          po_date: now,
+          entity_id: opts.shortCode,
+          branch_id: null, division_id: null, department_id: null, cost_center_id: null,
+          source_quotation_id: awarded.id,
+          source_enquiry_id: awarded.parent_enquiry_id,
+          vendor_id: awarded.vendor_id,
+          vendor_name: awarded.vendor_name,
+          lines,
+          total_basic_value: totalBasic,
+          total_tax_value: totalTax,
+          total_after_tax: totalAfter,
+          expected_delivery_date: expected,
+          delivery_address: '',
+          approved_by_user_id: poSpec.status === 'draft' || poSpec.status === 'pending_approval' ? null : 'mock-user',
+          approved_at: poSpec.status === 'draft' || poSpec.status === 'pending_approval' ? null : now,
+          status: poSpec.status,
+          followups: [],
+          notes: '',
+          created_at: now,
+          updated_at: now,
+        };
+        localStorage.setItem(poKey, JSON.stringify([createdPo]));
+      }
+      if (gitSpec && createdPo && !localStorage.getItem(gitKey)) {
+        const now = new Date().toISOString();
+        const created = new Date(Date.now() - gitSpec.age_days * 86400000).toISOString();
+        const acceptedPct = gitSpec.qty_accepted_pct / 100;
+        const gitLines: GitStage1Line[] = createdPo.lines.map((pl, idx) => {
+          const accepted = Math.round(pl.qty * acceptedPct);
+          const rejected = Math.round(pl.qty - accepted);
+          return {
+            id: `gitl-seed-${bpKey}-${idx}`,
+            po_line_id: pl.id,
+            item_id: pl.item_id,
+            item_name: pl.item_name,
+            qty_ordered: pl.qty,
+            qty_received: accepted + rejected,
+            qty_accepted: accepted,
+            qty_rejected: rejected,
+            uom: pl.uom,
+            rejection_reason: rejected > 0 ? 'quality variance' : null,
+          };
+        });
+        const record: GitStage1Record = {
+          id: `git-seed-${bpKey}`,
+          git_no: `GIT/SEED/${gitSpec.short_code}/0001`,
+          po_id: createdPo.id,
+          po_no: createdPo.po_no,
+          vendor_id: createdPo.vendor_id,
+          vendor_name: createdPo.vendor_name,
+          entity_id: opts.shortCode,
+          branch_id: null,
+          godown_id: null,
+          receipt_date: created,
+          vehicle_no: null,
+          driver_name: null,
+          invoice_no: null,
+          lines: gitLines,
+          quality_check_passed: gitSpec.qty_accepted_pct === 100,
+          quality_notes: '',
+          status: gitSpec.status,
+          stage2_grn_id: gitSpec.link_stage2 ? `grn-seed-${bpKey}` : null,
+          stage2_completed_at: gitSpec.link_stage2 ? now : null,
+          notes: '',
+          received_by_user_id: 'mock-user',
+          created_at: created,
+          updated_at: now,
+        };
+        localStorage.setItem(gitKey, JSON.stringify([record]));
+      }
+    } catch { /* ignore */ }
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
       const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
