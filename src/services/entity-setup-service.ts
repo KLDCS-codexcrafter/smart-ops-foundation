@@ -11,6 +11,12 @@ import {
   type ModeOfPayment, type TermsOfPayment, type TermsOfDelivery,
 } from '@/data/masters-seed-data';
 import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
+// Sprint T-Phase-1.2.6f-pre-1 · RequestX wiring (sibling additions only)
+import { DEFAULT_NON_FINECORE_VOUCHER_TYPES, nonFineCoreVoucherTypesKey } from '@/lib/non-finecore-voucher-type-registry';
+import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } from '@/data/demo-requestx-data';
+import { materialIndentsKey } from '@/types/material-indent';
+import { serviceRequestsKey } from '@/types/service-request';
+import { capitalIndentsKey } from '@/types/capital-indent';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
