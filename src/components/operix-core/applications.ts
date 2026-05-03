@@ -62,7 +62,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/procure-hub',
     icon: 'ShoppingCart',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'inventory-hub',
@@ -80,7 +80,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/qulicheak',
     icon: 'CheckSquare',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'gateflow',
@@ -89,7 +89,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/gateflow',
     icon: 'DoorOpen',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'production',
@@ -98,7 +98,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/production',
     icon: 'Factory',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'maintainpro',
@@ -107,7 +107,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/maintainpro',
     icon: 'Wrench',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'requestx',
@@ -116,7 +116,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/requestx',
     icon: 'ClipboardList',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'supplyx',
@@ -125,7 +125,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/supplyx',
     icon: 'Truck',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'salesx',
@@ -170,7 +170,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/webstorex',
     icon: 'ShoppingBag',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'unicomm',
@@ -179,7 +179,7 @@ export const applications: AppDefinition[] = [
     category: 'Sales Hub',
     route: '/erp/unicomm',
     icon: 'Network',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'finecore',
@@ -197,7 +197,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/comply360',
     icon: 'Shield',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'payout',
@@ -224,7 +224,7 @@ export const applications: AppDefinition[] = [
     category: 'International Trade',
     route: '/erp/eximx',
     icon: 'Globe',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'peoplepay',
@@ -260,7 +260,7 @@ export const applications: AppDefinition[] = [
     category: 'FrontDesk Hub',
     route: '/erp/frontdesk',
     icon: 'Building2',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'servicedesk',
@@ -269,7 +269,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/servicedesk',
     icon: 'Headphones',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'taskflow',
@@ -278,7 +278,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/taskflow',
     icon: 'CheckSquare',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'docvault',
@@ -287,7 +287,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/docvault',
     icon: 'FileText',
-    status: 'coming_soon',
+    status: 'active',
   },
   // ─── INSIGHTX ARCHITECTURAL RULE — LOCKED BEFORE BUILD ──────────────────────
   // InsightX is a read-only analytics layer for top management.
@@ -304,6 +304,6 @@ export const applications: AppDefinition[] = [
     category: 'InsightX',
     route: '/erp/insightx',
     icon: 'BarChart3',
-    status: 'coming_soon',
+    status: 'active',
   },
 ];
