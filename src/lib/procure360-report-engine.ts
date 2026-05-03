@@ -147,3 +147,50 @@ export function computeWelcomeKpis(entityCode: string): {
     overdueFollowups: rfqs.filter((r) => r.is_overdue_followup).length,
   };
 }
+
+// Sprint 3-b-2 · Block K filter helpers (~50 LOC)
+export interface ReportFilter {
+  date_from?: string;
+  date_to?: string;
+  vendor_id?: string;
+  status?: string;
+  channel?: string;
+}
+
+export function applyReportFilter<T extends { sent_at?: string | null; vendor_id?: string; status?: string; primary_channel?: string }>(
+  rows: T[],
+  filter: ReportFilter,
+): T[] {
+  return rows.filter(r => {
+    if (filter.date_from && r.sent_at && r.sent_at < filter.date_from) return false;
+    if (filter.date_to && r.sent_at && r.sent_at > filter.date_to) return false;
+    if (filter.vendor_id && r.vendor_id !== filter.vendor_id) return false;
+    if (filter.status && r.status !== filter.status) return false;
+    if (filter.channel && r.primary_channel !== filter.channel) return false;
+    return true;
+  });
+}
+
+export function aggregateByPeriod<T extends Record<string, unknown>>(
+  rows: T[],
+  period: 'mom' | 'qoq' | 'yoy',
+  dateField: keyof T,
+  amountField: keyof T,
+): { period: string; total: number; count: number }[] {
+  const buckets = new Map<string, { total: number; count: number }>();
+  for (const row of rows) {
+    const dateVal = row[dateField];
+    if (typeof dateVal !== 'string') continue;
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) continue;
+    let key: string;
+    if (period === 'yoy') key = String(d.getFullYear());
+    else if (period === 'qoq') key = `${d.getFullYear()}-Q${Math.floor(d.getMonth() / 3) + 1}`;
+    else key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const amt = Number(row[amountField] ?? 0);
+    const existing = buckets.get(key) ?? { total: 0, count: 0 };
+    buckets.set(key, { total: existing.total + amt, count: existing.count + 1 });
+  }
+  return Array.from(buckets, ([period, v]) => ({ period, ...v })).sort((a, b) => a.period.localeCompare(b.period));
+}
+
