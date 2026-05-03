@@ -88,10 +88,8 @@ export function computeBillPassingTotals(lines: BillPassingLine[]): {
   const po = round2(dSum(lines, (l) => l.po_value));
   const grn = round2(dSum(lines, (l) => dMul(l.grn_qty, l.po_rate)));
   const variance = round2(dSub(invoice, po));
-  const variance_pct = po > 0 ? round2(dPct(variance, 100) / po * 100) : 0;
-  // simpler safe: variance_pct = (variance / po) * 100 rounded
-  const safePct = po > 0 ? round2((variance / po) * 100) : 0;
-  return { invoice, po, grn, variance, variance_pct: safePct };
+  const variance_pct = po > 0 ? round2((variance / po) * 100) : 0;
+  return { invoice, po, grn, variance, variance_pct };
 }
 
 // ---------- Line match (mirrors freight-match-engine 3-way pattern) ----------
