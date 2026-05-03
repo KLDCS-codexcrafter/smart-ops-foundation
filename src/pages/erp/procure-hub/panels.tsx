@@ -1042,39 +1042,55 @@ export function RfqRegisterReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [filter, setFilter] = useState<ReportFilter>({});
   const all = computeRfqRegister(entityCode);
-  // applyReportFilter expects sent_at on rows
   const filtered = applyReportFilter(
-    all.map(r => ({ ...r, sent_at: r.sent_at ?? undefined })),
+    all.map((r) => ({ ...r, sent_at: r.sent_at ?? undefined })),
     filter,
   );
+  const headers = ['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)'];
+  const rows = filtered.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)]);
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">RFQ Register</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">RFQ Register</h1>
+        <Button size="sm" variant="outline" onClick={() => downloadCsv('rfq-register.csv', headers, rows)}>
+          Export CSV
+        </Button>
+      </div>
       <Card>
         <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-4 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">From</label>
-            <Input type="date" value={filter.date_from ?? ''} onChange={e => setFilter(f => ({ ...f, date_from: e.target.value || undefined }))} />
+            <Input type="date" value={filter.date_from ?? ''} onChange={(e) => setFilter((f) => ({ ...f, date_from: e.target.value || undefined }))} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">To</label>
-            <Input type="date" value={filter.date_to ?? ''} onChange={e => setFilter(f => ({ ...f, date_to: e.target.value || undefined }))} />
+            <Input type="date" value={filter.date_to ?? ''} onChange={(e) => setFilter((f) => ({ ...f, date_to: e.target.value || undefined }))} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Status</label>
-            <Input value={filter.status ?? ''} onChange={e => setFilter(f => ({ ...f, status: e.target.value || undefined }))} placeholder="sent / quoted / …" />
+            <Input value={filter.status ?? ''} onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value || undefined }))} placeholder="sent / quoted / …" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Vendor ID</label>
-            <Input value={filter.vendor_id ?? ''} onChange={e => setFilter(f => ({ ...f, vendor_id: e.target.value || undefined }))} placeholder="vendor id" />
+            <Input value={filter.vendor_id ?? ''} onChange={(e) => setFilter((f) => ({ ...f, vendor_id: e.target.value || undefined }))} placeholder="vendor id" />
           </div>
         </CardContent>
       </Card>
-      <PanelList
-        title=""
-        headers={['RFQ No', 'Vendor', 'Status', 'Sent', 'Age (days)']}
-        rows={filtered.map((r) => [r.rfq_no, r.vendor_name, r.status, r.sent_at ?? '—', String(r.age_days)])}
-      />
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-xs text-muted-foreground mb-2">{filtered.length} of {all.length} RFQs</p>
+          <Table>
+            <TableHeader><TableRow>{headers.map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No rows match.</TableCell></TableRow>
+              ) : rows.map((r, i) => (
+                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => <TableCell key={j} className={j === 0 ? 'font-mono' : ''}>{c}</TableCell>)}</TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
