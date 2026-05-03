@@ -140,6 +140,29 @@ export default function RFQPublicForm(): JSX.Element {
     setLines(drafts);
   }, [rfq, enquiry]);
 
+  const totals = useMemo(() => {
+    const supplied = lines.filter(l => l.is_supplied);
+    const totalValue = supplied.reduce((s, l) => s + l.qty_quoted * l.rate, 0);
+    const totalAfterTax = supplied.reduce((s, l) => s + lineAfterTax(l), 0);
+    return {
+      total_value: Math.round(totalValue * 100) / 100,
+      total_tax: Math.round((totalAfterTax - totalValue) * 100) / 100,
+      total_after_tax: Math.round(totalAfterTax * 100) / 100,
+    };
+  }, [lines]);
+
+  const validityUntil = useMemo(() => {
+    const d = new Date(Date.now() + validityDays * 86_400_000);
+    return d.toISOString().slice(0, 10);
+  }, [validityDays]);
+
+  const canSubmit = useMemo(() => {
+    if (busy) return false;
+    if (lines.every(l => !l.is_supplied)) return false;
+    if (!paymentTerms.trim() || !deliveryTerms.trim()) return false;
+    return true;
+  }, [busy, lines, paymentTerms, deliveryTerms]);
+
   // Gate: must have session OR be on a token-landing URL
   if (!session) {
     const tokenLanding = !!params.get('token');
@@ -185,29 +208,6 @@ export default function RFQPublicForm(): JSX.Element {
   const updateLine = (idx: number, patch: Partial<LineDraft>): void => {
     setLines(prev => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
   };
-
-  const totals = useMemo(() => {
-    const supplied = lines.filter(l => l.is_supplied);
-    const totalValue = supplied.reduce((s, l) => s + l.qty_quoted * l.rate, 0);
-    const totalAfterTax = supplied.reduce((s, l) => s + lineAfterTax(l), 0);
-    return {
-      total_value: Math.round(totalValue * 100) / 100,
-      total_tax: Math.round((totalAfterTax - totalValue) * 100) / 100,
-      total_after_tax: Math.round(totalAfterTax * 100) / 100,
-    };
-  }, [lines]);
-
-  const validityUntil = useMemo(() => {
-    const d = new Date(Date.now() + validityDays * 86_400_000);
-    return d.toISOString().slice(0, 10);
-  }, [validityDays]);
-
-  const canSubmit = useMemo(() => {
-    if (busy) return false;
-    if (lines.every(l => !l.is_supplied)) return false;
-    if (!paymentTerms.trim() || !deliveryTerms.trim()) return false;
-    return true;
-  }, [busy, lines, paymentTerms, deliveryTerms]);
 
   const doSubmit = async (status: 'draft' | 'submitted'): Promise<void> => {
     if (gstin.trim() && !GSTIN_RE.test(gstin.trim().toUpperCase())) {
