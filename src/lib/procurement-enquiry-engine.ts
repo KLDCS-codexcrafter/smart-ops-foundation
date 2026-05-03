@@ -111,6 +111,26 @@ export function createEnquiry(input: CreateEnquiryInput, entityCode: string): Pr
     updated_at: now,
   };
   writeEnquiries(entityCode, [enquiry, ...list]);
+  // FIX-1 · D-247 hash chain · D-262 fire-and-forget
+  void appendAuditEntry({
+    entityCode,
+    entityId: input.entity_id,
+    voucherId: enquiry.id,
+    voucherKind: 'procurement_enquiry',
+    action: 'enquiry.created',
+    actorUserId: input.requested_by_user_id,
+    payload: {
+      enquiry_no: enquiry.enquiry_no,
+      total_value: totalEnquiryValue(enquiry),
+      vendor_mode: enquiry.vendor_mode,
+      source_indent_ids: enquiry.source_indent_ids,
+    },
+  }).catch(() => { /* best-effort · forensic chain */ });
+  // FIX-3 · D-248 procurement-pulse emit
+  publishProcurementPulse({
+    severity: 'info',
+    message: `New procurement enquiry ${enquiry.enquiry_no} · ₹${totalEnquiryValue(enquiry).toLocaleString('en-IN')}`,
+  });
   return enquiry;
 }
 
