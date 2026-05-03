@@ -13,4 +13,10 @@ export type Procure360Module =
   | 'spend-by-vendor-report'
   | 'rfq-followup-register-report'
   | 'cross-dept-procurement-handoff'
-  | 'vendor-scoring-dashboard';
+  | 'vendor-scoring-dashboard'
+  // Sprint T-Phase-1.2.6f-c-1 · Block G · 5 NEW
+  | 'po-list'
+  | 'po-followup-register'
+  | 'git-in-transit'
+  | 'git-received'
+  | 'aged-git-procure';

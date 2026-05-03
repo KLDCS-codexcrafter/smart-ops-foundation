@@ -462,3 +462,48 @@ export const DEMO_VENDOR_PORTAL_SESSIONS: DemoVendorPortalSession[] = [
   { blueprint: 'shkph', entity_short_code: 'SHKPH', vendor_id: 'v-shkph-3', party_code: 'V-SHKPH-003', party_name: 'PharmaActives', password: 'Welcome@123', has_logged_in: false, last_activity: 'never' },
 ];
 
+// ─── Sprint T-Phase-1.2.6f-c-1 · Block G · PO + GIT demo seed skeletons ─────
+// Per-blueprint seed specs (one entry per blueprint × scenario).
+// entity-setup-service.ts section 8d hydrates these into PurchaseOrderRecord +
+// GitStage1Record using existing DEMO_QUOTATIONS as genesis.
+import type { PoStatus } from '@/types/po';
+import type { GitStage1Status } from '@/types/git';
+
+export interface DemoPoSpec {
+  blueprint: string;          // e.g. 'sinha'
+  short_code: string;         // 'SINHA'
+  status: PoStatus;
+  expected_delivery_days_offset: number;  // -3 = overdue · 0 = today · +5 = future
+}
+
+export const DEMO_POS: DemoPoSpec[] = [
+  { blueprint: 'sinha', short_code: 'SINHA', status: 'sent_to_vendor',     expected_delivery_days_offset:  5 },
+  { blueprint: 'amith', short_code: 'AMITH', status: 'partially_received', expected_delivery_days_offset:  3 },
+  { blueprint: 'bcpl',  short_code: 'BCPL',  status: 'sent_to_vendor',     expected_delivery_days_offset: -4 },
+  { blueprint: 'abdos', short_code: 'ABDOS', status: 'fully_received',     expected_delivery_days_offset: -2 },
+  { blueprint: 'chrse', short_code: 'CHRSE', status: 'approved',           expected_delivery_days_offset:  7 },
+  { blueprint: 'smrtp', short_code: 'SMRTP', status: 'sent_to_vendor',     expected_delivery_days_offset:  2 },
+  { blueprint: 'shkph', short_code: 'SHKPH', status: 'partially_received', expected_delivery_days_offset:  4 },
+];
+
+export interface DemoGitSpec {
+  blueprint: string;
+  short_code: string;
+  status: GitStage1Status;
+  age_days: number;            // age bucket driver
+  qty_accepted_pct: number;    // 0-100 · 100 = full · <100 = partial
+  link_stage2: boolean;        // true → stage2_grn_id stamped (otherwise null)
+}
+
+export const DEMO_GIT_RECORDS: DemoGitSpec[] = [
+  { blueprint: 'sinha', short_code: 'SINHA', status: 'received_at_gate', age_days:  2, qty_accepted_pct: 100, link_stage2: false },
+  { blueprint: 'amith', short_code: 'AMITH', status: 'partial_receive',  age_days:  6, qty_accepted_pct:  60, link_stage2: false },
+  { blueprint: 'bcpl',  short_code: 'BCPL',  status: 'received_at_gate', age_days: 16, qty_accepted_pct: 100, link_stage2: false },
+  { blueprint: 'abdos', short_code: 'ABDOS', status: 'received_at_gate', age_days: 10, qty_accepted_pct: 100, link_stage2: true  },
+  { blueprint: 'chrse', short_code: 'CHRSE', status: 'in_transit',       age_days:  1, qty_accepted_pct:   0, link_stage2: false },
+  { blueprint: 'smrtp', short_code: 'SMRTP', status: 'received_at_gate', age_days:  5, qty_accepted_pct: 100, link_stage2: false },
+  { blueprint: 'shkph', short_code: 'SHKPH', status: 'partial_receive',  age_days: 12, qty_accepted_pct:  75, link_stage2: false },
+];
+
+export const purchaseOrdersDemoKey = (entityCode: string): string => `demo_pos_${entityCode}`;
+export const gitDemoKey = (entityCode: string): string => `demo_git_${entityCode}`;

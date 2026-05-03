@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity, ListChecks,
+  ShoppingCart, Truck, PackageCheck, Clock,
 } from 'lucide-react';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
@@ -34,6 +35,22 @@ const GROUPS: Group[] = [
       { id: 'rfq-list', label: 'RFQ List', icon: Send },
       { id: 'quotation-comparison', label: 'Compare Quotations', icon: BarChart3 },
       { id: 'award-history', label: 'Awards', icon: Award },
+    ],
+  },
+  // Sprint T-Phase-1.2.6f-c-1 · Block G · Purchase Orders + GIT groups
+  {
+    label: 'Purchase Orders',
+    items: [
+      { id: 'po-list', label: 'PO List', icon: ShoppingCart },
+      { id: 'po-followup-register', label: 'PO Followup Register', icon: Activity },
+    ],
+  },
+  {
+    label: 'Goods in Transit',
+    items: [
+      { id: 'git-in-transit', label: 'In Transit', icon: Truck },
+      { id: 'git-received', label: 'Received at Gate', icon: PackageCheck },
+      { id: 'aged-git-procure', label: 'Aged GIT (Procure View)', icon: Clock },
     ],
   },
   {
