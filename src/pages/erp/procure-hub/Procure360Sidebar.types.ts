@@ -19,4 +19,6 @@ export type Procure360Module =
   | 'po-followup-register'
   | 'git-in-transit'
   | 'git-received'
-  | 'aged-git-procure';
+  | 'aged-git-procure'
+  // Sprint T-Phase-1.2.6f-c-2 · Block E
+  | 'bill-passing-pi-status';
