@@ -206,12 +206,12 @@ export function QuotationComparisonPanel(): JSX.Element {
   const enquiries = listEnquiries(entityCode);
   const [selected, setSelected] = useState<string>('');
   const rows = selected ? compareQuotations(selected, entityCode) : [];
-  const quotes = selected ? listQuotations(entityCode).filter(q => q.parent_enquiry_id === selected) : [];
   const complianceByVendor = useMemo(() => {
+    const quotes = selected ? listQuotations(entityCode).filter(q => q.parent_enquiry_id === selected) : [];
     const m = new Map<string, ReturnType<typeof validateQuotationCompliance>>();
     quotes.forEach(q => m.set(q.vendor_id, validateQuotationCompliance(q)));
     return m;
-  }, [quotes]);
+  }, [selected, entityCode]);
 
   const checkLeak = (vendorId: string, rate: number, bestRate: number): void => {
     if (bestRate <= 0) return;
