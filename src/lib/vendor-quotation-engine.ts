@@ -222,13 +222,39 @@ export function compareQuotations(enquiryId: string, entityCode: string): Compar
   return rows;
 }
 
-export function validateQuotationCompliance(q: VendorQuotation): {
+import { COMPLIANCE_RULES } from './oob/vendor-compliance-rules';
+
+export interface ComplianceCheckResult {
   ok: boolean;
   warnings: string[];
-} {
-  const warnings: string[] = [];
-  if (!q.vendor_gstin) warnings.push('Vendor GSTIN missing');
-  if (!q.vendor_msme_status) warnings.push('MSME status not declared');
-  if (q.rcm_applicable && !q.tds_section) warnings.push('RCM applicable but TDS section missing');
-  return { ok: warnings.length === 0, warnings };
+  passed_rules: string[];
+  failed_rules: { rule_id: string; rule_name: string; reason: string }[];
+}
+
+export function validateQuotationCompliance(q: VendorQuotation): ComplianceCheckResult {
+  const passed: string[] = [];
+  const failed: { rule_id: string; rule_name: string; reason: string }[] = [];
+
+  for (const rule of COMPLIANCE_RULES) {
+    const result = rule.validate(q);
+    if (result.ok) {
+      passed.push(rule.id);
+    } else {
+      failed.push({
+        rule_id: rule.id,
+        rule_name: rule.name,
+        reason: result.reason ?? 'failed',
+      });
+    }
+  }
+
+  // Backward-compat: warnings array stays
+  const warnings = failed.map(f => `${f.rule_name}: ${f.reason}`);
+
+  return {
+    ok: failed.length === 0,
+    warnings,
+    passed_rules: passed,
+    failed_rules: failed,
+  };
 }
