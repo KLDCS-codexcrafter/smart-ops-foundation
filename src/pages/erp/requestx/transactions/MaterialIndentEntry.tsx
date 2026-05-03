@@ -108,8 +108,8 @@ export function MaterialIndentEntry(): JSX.Element {
     items: lines,
     view: 'new',
     voucherType: 'vt-material-indent',
-    userId: user?.id ?? null,
-    partyId: null,
+    userId: user?.id ?? undefined,
+    partyId: undefined,
   });
 
   useFormKeyboardShortcuts({
