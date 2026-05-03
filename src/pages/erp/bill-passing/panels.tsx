@@ -148,23 +148,22 @@ function NewBillDialog({ open, onOpenChange, entityCode, onCreated }: NewBillDia
       toast.error('PO and Vendor Invoice No are required');
       return;
     }
-    const lines: CreateBillPassingLineInput[] = (selectedPo?.lines ?? [])
-      .map((pl) => {
-        const li = linesInput[pl.id];
-        if (!li) return null;
-        const qty = parseFloat(li.qty);
-        const rate = parseFloat(li.rate);
-        const tax = parseFloat(li.tax);
-        if (!Number.isFinite(qty) || !Number.isFinite(rate)) return null;
-        return {
-          po_line_id: pl.id,
-          invoice_qty: qty,
-          invoice_rate: rate,
-          invoice_tax_pct: Number.isFinite(tax) ? tax : 0,
-          requires_inspection: li.insp,
-        };
-      })
-      .filter((x): x is CreateBillPassingLineInput => x !== null);
+    const lines: CreateBillPassingLineInput[] = [];
+    for (const pl of selectedPo?.lines ?? []) {
+      const li = linesInput[pl.id];
+      if (!li) continue;
+      const qty = parseFloat(li.qty);
+      const rate = parseFloat(li.rate);
+      const tax = parseFloat(li.tax);
+      if (!Number.isFinite(qty) || !Number.isFinite(rate)) continue;
+      lines.push({
+        po_line_id: pl.id,
+        invoice_qty: qty,
+        invoice_rate: rate,
+        invoice_tax_pct: Number.isFinite(tax) ? tax : 0,
+        requires_inspection: li.insp,
+      });
+    }
     if (lines.length === 0) {
       toast.error('At least one line required');
       return;
