@@ -40,6 +40,12 @@ export default function Procure360Page(): JSX.Element {
       case 'rfq-followup-register-report':  return <RfqFollowupRegisterReportPanel />;
       case 'cross-dept-procurement-handoff': return <CrossDeptHandoffPanel />;
       case 'vendor-scoring-dashboard':      return <VendorScoringDashboardPanel />;
+      // Sprint T-Phase-1.2.6f-c-1 · Block G
+      case 'po-list':                       return <PoListPanel />;
+      case 'po-followup-register':          return <PoFollowupRegisterPanel />;
+      case 'git-in-transit':                return <GitInTransitPanel />;
+      case 'git-received':                  return <GitReceivedPanel />;
+      case 'aged-git-procure':              return <AgedGitProcurePanel />;
       default:                              return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
