@@ -66,6 +66,22 @@ import type { Procure360Module } from './Procure360Sidebar.types';
 
 const inr = (n: number): string => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
+// Block K-fix · Q3=B · inline CSV helper (no shared util)
+function downloadCsv(filename: string, headers: string[], rows: (string | number)[][]): void {
+  const esc = (v: string | number): string => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [headers.map(esc).join(','), ...rows.map((r) => r.map(esc).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
 interface NavProps { onNavigate?: (m: Procure360Module) => void }
 
