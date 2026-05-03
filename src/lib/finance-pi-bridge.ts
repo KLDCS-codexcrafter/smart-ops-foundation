@@ -117,7 +117,8 @@ const newId = (p: string): string =>
 // ---------------- Compute helpers ----------------
 
 const TDS_194Q_RATE = 0.1; // 0.1%
-const TDS_194Q_THRESHOLD = 5000000; // ₹50L · annual aggregate (we apply transaction-level for simplicity)
+// Annual aggregate threshold (₹50L) reserved for 3-c-3 YTD enrichment.
+// const TDS_194Q_THRESHOLD = 5000000;
 const TDS_194Q_TXN_THRESHOLD = 50000; // ₹50K transaction skip (simplified)
 
 export interface GstBreakdown {
