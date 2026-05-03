@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, ShoppingCart, Truck, PackageCheck, Clock, Bell } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
@@ -61,6 +61,17 @@ import { tierFor } from '@/lib/approval-tier-helper';
 import type {
   ProcurementEnquiry, ProcurementEnquiryLine, VendorSelectionMode,
 } from '@/types/procurement-enquiry';
+// Sprint 3-c-1 · Blocks A · B · C · D · E · F · per D-283 + D-284
+import {
+  listPurchaseOrders, transitionPoStatus, approvePo, sendPoToVendor,
+  recordPoFollowup, listOverduePos, computePoOverdueDays,
+} from '@/lib/po-management-engine';
+import type { PurchaseOrderRecord, PoStatus, PoFollowup } from '@/types/po';
+import {
+  listGitStage1, listInTransit, createGitStage1FromPo,
+  listAgedAwaitingStage2, computeAgedGitDays,
+} from '@/lib/git-engine';
+import type { GitStage1Record, GitStage1Status } from '@/types/git';
 import { toast } from 'sonner';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
