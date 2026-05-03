@@ -11,7 +11,7 @@ import {
   Package, LayoutTemplate, QrCode, ScanLine, MapPin, Printer, Wifi,
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
-  Truck, Network, Layers, Briefcase,
+  Truck, Network, Layers, Briefcase, FileText, ListChecks,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -135,6 +135,17 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'inventory-print-queue', requiredCards: ['command-center'] },
       { id: 'inventory-rfid', type: 'item', label: 'RFID Manager', icon: Wifi,
         moduleId: 'inventory-rfid', requiredCards: ['command-center'] },
+    ],
+  },
+  {
+    id: 'procurement-sourcing-group', type: 'group', label: 'Procurement & Sourcing', icon: ShoppingCart,
+    children: [
+      { id: 'requestx-voucher-types', type: 'item', label: 'RequestX Voucher Types', icon: FileText,
+        moduleId: 'requestx-voucher-types', requiredCards: ['command-center'] },
+      { id: 'approval-matrix-templates', type: 'item', label: 'Approval Matrix Templates', icon: ListChecks,
+        moduleId: 'approval-matrix-templates', requiredCards: ['command-center'] },
+      { id: 'pinned-templates-master', type: 'item', label: 'Pinned Templates', icon: Tag,
+        moduleId: 'pinned-templates-master', requiredCards: ['command-center'] },
     ],
   },
   {

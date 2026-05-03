@@ -15,15 +15,22 @@ import { REQUESTX_GROUPS } from './RequestXSidebar.groups';
 import type { RequestXModule } from './RequestXSidebar.types';
 
 const ICONS: Record<RequestXModule, React.ElementType> = {
-  'welcome':              ListChecks,
-  'tx-material-indent':   ClipboardList,
-  'tx-service-request':   FileText,
-  'tx-capital-indent':    Building2,
-  'tx-approval-inbox':    Inbox,
-  'rpt-indent-register':  FileText,
-  'rpt-indent-pending':   FileText,
-  'rpt-indent-closed':    FileText,
-  'master-departments':   Building2,
+  'welcome':                ListChecks,
+  'tx-material-indent':     ClipboardList,
+  'tx-service-request':     FileText,
+  'tx-capital-indent':      Building2,
+  'tx-approval-inbox':      Inbox,
+  'rpt-indent-register':    FileText,
+  'rpt-indent-pending':     FileText,
+  'rpt-indent-closed':      FileText,
+  'rpt-po-against-indent':  FileText,
+  'rpt-department-summary': FileText,
+  'rpt-category-spend':     FileText,
+  'rpt-ageing-pending':     FileText,
+  'master-departments':     Building2,
+  'master-approval-matrix': ListChecks,
+  'master-voucher-types':   FileText,
+  'master-pinned-templates':FileText,
 };
 
 interface Props {

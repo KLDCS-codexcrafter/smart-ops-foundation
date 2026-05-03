@@ -111,6 +111,9 @@ import { EmployeeMasterPanel } from '@/pages/erp/pay-hub/masters/EmployeeMaster'
 
 // Sprint 12 — Scheme Master
 import { SchemeMasterPanel } from '@/pages/erp/masters/SchemeMaster';
+import { RequestXVoucherTypesMasterPanel } from '@/pages/erp/requestx/masters/RequestXVoucherTypesMaster';
+import { ApprovalMatrixTemplatesPanel } from '@/pages/erp/requestx/masters/ApprovalMatrixTemplates';
+import { PinnedTemplatesPanel } from '@/pages/erp/requestx/masters/PinnedTemplatesPanel';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { getPrimaryEntity } from '@/data/mock-entities';
@@ -213,7 +216,11 @@ export type CommandCenterModule =
   // Sprint 12 — Schemes
   | 'sales-schemes'
   // Sprint 13a — CRM Customer Segments
-  | 'crm-customer-segments';
+  | 'crm-customer-segments'
+  // T-Phase-1.2.6f-pre-2 · Procurement & Sourcing group
+  | 'requestx-voucher-types'
+  | 'approval-matrix-templates'
+  | 'pinned-templates-master';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -359,6 +366,11 @@ export default function CommandCenterPage() {
       case 'ph-bonus-config': return <BonusConfigMasterPanel />;
       case 'ph-gratuity-nps': return <GratuityNPSPanel />;
       case 'ph-asset-master': return <AssetMasterPanel />;
+
+      // T-Phase-1.2.6f-pre-2 · Procurement & Sourcing
+      case 'requestx-voucher-types': return <RequestXVoucherTypesMasterPanel />;
+      case 'approval-matrix-templates': return <ApprovalMatrixTemplatesPanel />;
+      case 'pinned-templates-master': return <PinnedTemplatesPanel />;
 
       // Stage 1 — CRM
       case 'crm-hub':       return <CRMMastersModule onNavigate={handleNavigate} />;
