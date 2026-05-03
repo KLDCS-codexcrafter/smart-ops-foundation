@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard, ShoppingCart, Truck, PackageCheck, Clock, Bell } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
