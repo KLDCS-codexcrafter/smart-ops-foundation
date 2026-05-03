@@ -9,7 +9,7 @@
  *              ApprovalTimelinePanel · APPROVAL_MATRIX · buildItemVendorMatrix · useItemVendors
  * @[JWT]       /api/procure360/enquiries · /api/procure360/enquiries/:id/approvals
  */
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
