@@ -27,7 +27,12 @@ import {
   DEMO_VENDOR_PORTAL_SESSIONS,
   DEMO_PROCUREMENT_SCENARIOS,
   demoScenariosKey,
+  DEMO_POS,
+  DEMO_GIT_RECORDS,
 } from '@/data/demo-procurement-data';
+// Sprint T-Phase-1.2.6f-c-1 · Block G · PO + GIT canonical keys
+import { purchaseOrdersKey, type PurchaseOrderRecord, type PurchaseOrderLine } from '@/types/po';
+import { gitStage1Key, type GitStage1Record, type GitStage1Line } from '@/types/git';
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
