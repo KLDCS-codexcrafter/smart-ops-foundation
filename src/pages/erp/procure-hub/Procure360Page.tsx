@@ -13,6 +13,9 @@ import {
   AwardHistoryReportPanel, VendorPerfReportPanel, BestPriceReportPanel,
   SpendByVendorReportPanel, RfqFollowupRegisterReportPanel,
   CrossDeptHandoffPanel, VendorScoringDashboardPanel,
+  // Sprint T-Phase-1.2.6f-c-1 · Block G
+  PoListPanel, PoFollowupRegisterPanel,
+  GitInTransitPanel, GitReceivedPanel, AgedGitProcurePanel,
 } from './panels';
 import type { Procure360Module } from './Procure360Sidebar.types';
 
