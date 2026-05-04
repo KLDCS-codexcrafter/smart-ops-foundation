@@ -382,8 +382,8 @@ function BillDetailDialog({
 
 export function PendingBillsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick, setTick] = useState(0);
-  const list = useMemo(() => listPendingMatch(entityCode), [entityCode, tick]);
+  const [list, setList] = useState<BillPassingRecord[]>(() => listPendingMatch(entityCode));
+  const refresh = (): void => setList(listPendingMatch(entityCode));
   const [newOpen, setNewOpen] = useState(false);
   const [detail, setDetail] = useState<BillPassingRecord | null>(null);
 
@@ -391,7 +391,7 @@ export function PendingBillsPanel(): JSX.Element {
     try {
       await runMatch(id, entityCode, MOCK_USER);
       toast.success('Match recomputed');
-      setTick((t) => t + 1);
+      refresh();
     } catch (e) {
       toast.error(`Match failed: ${(e as Error).message}`);
     }
@@ -453,7 +453,7 @@ export function PendingBillsPanel(): JSX.Element {
         open={newOpen}
         onOpenChange={setNewOpen}
         entityCode={entityCode}
-        onCreated={() => setTick((t) => t + 1)}
+        onCreated={refresh}
       />
       <BillDetailDialog bill={detail} open={!!detail} onOpenChange={(v) => !v && setDetail(null)} />
     </div>
@@ -466,8 +466,8 @@ export function PendingBillsPanel(): JSX.Element {
 
 export function MatchReviewPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick, setTick] = useState(0);
-  const list = useMemo(() => listMatchedWithVariance(entityCode), [entityCode, tick]);
+  const [list, setList] = useState<BillPassingRecord[]>(() => listMatchedWithVariance(entityCode));
+  const refresh = (): void => setList(listMatchedWithVariance(entityCode));
   const [reviewBill, setReviewBill] = useState<BillPassingRecord | null>(null);
   const [approvalNotes, setApprovalNotes] = useState('');
   const [rejectReason, setRejectReason] = useState('');
@@ -498,7 +498,7 @@ export function MatchReviewPanel(): JSX.Element {
       toast.success('Bill approved · FCPI draft created');
       setReviewBill(null);
       reset();
-      setTick((t) => t + 1);
+      refresh();
     } catch (e) {
       toast.error(`Approve failed: ${(e as Error).message}`);
     }
@@ -512,7 +512,7 @@ export function MatchReviewPanel(): JSX.Element {
       toast.success('Bill rejected');
       setReviewBill(null);
       reset();
-      setTick((t) => t + 1);
+      refresh();
     } catch (e) {
       toast.error(`Reject failed: ${(e as Error).message}`);
     }
