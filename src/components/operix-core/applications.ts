@@ -118,6 +118,16 @@ export const applications: AppDefinition[] = [
     icon: 'ClipboardList',
     status: 'active',
   },
+  // Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing (live stock + reorder + forecast)
+  {
+    id: 'store-hub',
+    name: 'Store Hub',
+    description: 'Live stock view · reorder suggestions · 30/60/90-day demand forecast — read-only operator console derived from voucher inventory lines',
+    category: 'Ops Hub',
+    route: '/erp/store-hub',
+    icon: 'Warehouse',
+    status: 'active',
+  },
   {
     id: 'supplyx',
     name: 'SupplyX',
