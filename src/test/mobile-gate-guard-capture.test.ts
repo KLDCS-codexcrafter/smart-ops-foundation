@@ -3,7 +3,7 @@
  * Tests the canProceed step-validation logic (pure function · no DOM needed).
  */
 import { describe, it, expect } from 'vitest';
-import { canProceedForTests as canProceed } from '@/components/mobile/MobileGateGuardCapture';
+import { canProceed } from '@/lib/mobile-gate-guard-validation';
 
 const base = {
   direction: 'inward' as const,
