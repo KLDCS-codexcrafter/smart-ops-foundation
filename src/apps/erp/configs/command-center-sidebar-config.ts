@@ -12,7 +12,7 @@ import {
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
-  Receipt,
+  Receipt, FileSignature,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -154,6 +154,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'crm-logistic', requiredCards: ['command-center'] },
       // Sprint T-Phase-1.2.6f-c-2-fix · Block F · Bill Passing launcher (route-based · external module)
       { id: 'cc-bill-passing-launcher', type: 'item', label: 'Bill Passing', icon: Receipt,
+        route: '/erp/bill-passing', requiredCards: ['command-center'] },
+      // Sprint T-Phase-1.2.6f-c-3-fix · Fix-E · Q3=A · Rate Contracts launcher (route-based)
+      { id: 'cc-rate-contract-launcher', type: 'item', label: 'Rate Contracts', icon: FileSignature,
         route: '/erp/bill-passing', requiredCards: ['command-center'] },
     ],
   },

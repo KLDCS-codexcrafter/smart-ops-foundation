@@ -49,4 +49,5 @@ export interface RateContract {
   updated_at: string;
 }
 
-export const rateContractKey = (e: string): string => `erp_rate_contracts_${e}`;
+// Sprint T-Phase-1.2.6f-c-3-fix · Fix-D · Q1=A REPLACE OOB-54 · unified vendor contracts key
+export const rateContractKey = (e: string): string => `erp_vendor_contracts_${e}`;

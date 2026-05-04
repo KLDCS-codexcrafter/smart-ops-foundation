@@ -901,7 +901,7 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         localStorage.setItem(todKey, JSON.stringify(tods));
       }
       // Rate Contracts seed — first vendor + first 2 PO lines (if available).
-      const rcKey = `erp_rate_contracts_${opts.shortCode}`;
+      const rcKey = `erp_vendor_contracts_${opts.shortCode}`; // 3-c-3-fix · Fix-D · unified key
       const poListRaw2 = localStorage.getItem(purchaseOrdersKey(opts.shortCode));
       if (!localStorage.getItem(rcKey) && poListRaw2) {
         const pos2 = JSON.parse(poListRaw2) as PurchaseOrderRecord[];

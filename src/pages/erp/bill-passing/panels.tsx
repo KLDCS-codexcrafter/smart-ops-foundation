@@ -26,12 +26,20 @@ import {
   runMatch, approveBill, rejectBill, createBillPassing,
   type CreateBillPassingLineInput,
 } from '@/lib/bill-passing-engine';
+import { setBillMasterFields } from '@/lib/bill-passing-masters-bridge';
 import { listPurchaseOrders, getPurchaseOrder } from '@/lib/po-management-engine';
 import { listGitStage1 } from '@/lib/git-engine';
 import { draftPiFromBill } from '@/lib/finance-pi-bridge';
 import {
   listModeOfPayment, listTermsOfPayment, listTermsOfDelivery,
 } from '@/lib/cc-masters-engine';
+import {
+  validateContractCompliance,
+  type ComplianceResult, type ComplianceStatus,
+} from '@/lib/rate-contract-engine';
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from '@/components/ui/tooltip';
 import type { BillPassingRecord, LineMatchStatus } from '@/types/bill-passing';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
@@ -60,6 +68,26 @@ function lineStatusBadge(s: LineMatchStatus): { variant: 'default' | 'secondary'
     case 'tax_variance': return { variant: 'destructive', label: 'Tax Δ' };
     case 'total_variance': return { variant: 'destructive', label: 'Total Δ' };
     case 'unmatched': return { variant: 'destructive', label: 'Unmatched' };
+  }
+}
+
+function complianceBadgeVariant(s: ComplianceStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+  switch (s) {
+    case 'within_contract': return 'default';
+    case 'qty_outside_range': return 'secondary';
+    case 'rate_exceeds_ceiling': case 'contract_expired': return 'destructive';
+    case 'no_contract': return 'outline';
+    default: return 'outline';
+  }
+}
+function complianceBadgeLabel(s: ComplianceStatus): string {
+  switch (s) {
+    case 'within_contract': return 'Within Contract';
+    case 'qty_outside_range': return 'Qty Out of Range';
+    case 'rate_exceeds_ceiling': return 'Rate > Ceiling';
+    case 'contract_expired': return 'Contract Expired';
+    case 'no_contract': return 'No Contract';
+    default: return s;
   }
 }
 
@@ -493,17 +521,35 @@ export function MatchReviewPanel(): JSX.Element {
     setNarration(''); setTnc('');
   };
 
+  // 3-c-3-fix · Fix-C · per-line compliance results (D-296)
+  const complianceByLine = useMemo<Map<string, ComplianceResult>>(() => {
+    if (!reviewBill) return new Map();
+    const m = new Map<string, ComplianceResult>();
+    reviewBill.lines.forEach((line) => {
+      m.set(line.id, validateContractCompliance(
+        { item_id: line.item_id, invoice_qty: line.invoice_qty, invoice_rate: line.invoice_rate },
+        reviewBill.vendor_id,
+        entityCode,
+        reviewBill.bill_date,
+      ));
+    });
+    return m;
+  }, [reviewBill, entityCode]);
+
   const handleApprove = async (): Promise<void> => {
     if (!reviewBill) return;
     if (!approvalNotes.trim()) { toast.error('Approval notes required for variance override'); return; }
     try {
-      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER, {
+      // 3-c-3-fix · Fix-A · Step 1 · persist masters via sibling bridge
+      await setBillMasterFields(reviewBill.id, {
         mode_of_payment_id: modeOfPaymentId || null,
         terms_of_payment_id: termsOfPaymentId || null,
         terms_of_delivery_id: termsOfDeliveryId || null,
         narration,
         terms_conditions: tnc,
-      });
+      }, entityCode, MOCK_USER);
+      // Step 2 · approve (4-arg · 3-c-2 byte-identical signature)
+      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER);
       // D-287: trigger FinCore PI auto-draft
       if (approved) {
         await draftPiFromBill(approved.id, entityCode, MOCK_USER);
@@ -598,16 +644,45 @@ export function MatchReviewPanel(): JSX.Element {
                   <TableRow>
                     <TableHead>Item</TableHead>
                     <TableHead>Match</TableHead>
+                    <TableHead>Contract</TableHead>
                     <TableHead>Reason</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {reviewBill.lines.filter((l) => l.match_status !== 'clean').map((l) => {
                     const b = lineStatusBadge(l.match_status);
+                    const compliance = complianceByLine.get(l.id);
                     return (
                       <TableRow key={l.id}>
                         <TableCell>{l.item_name}</TableCell>
                         <TableCell><Badge variant={b.variant}>{b.label}</Badge></TableCell>
+                        <TableCell>
+                          {compliance && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant={complianceBadgeVariant(compliance.compliance_status)}>
+                                    {complianceBadgeLabel(compliance.compliance_status)}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-sm">
+                                  <div className="space-y-1 text-xs">
+                                    {compliance.contract_no && (
+                                      <div><strong>Contract:</strong> {compliance.contract_no}</div>
+                                    )}
+                                    {compliance.ceiling_rate !== null && (
+                                      <div><strong>Ceiling:</strong> ₹{compliance.ceiling_rate}</div>
+                                    )}
+                                    {compliance.variance_pct !== null && (
+                                      <div><strong>Variance:</strong> {compliance.variance_pct >= 0 ? '+' : ''}{compliance.variance_pct.toFixed(2)}%</div>
+                                    )}
+                                    <div className="pt-1 border-t">{compliance.recommendation}</div>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </TableCell>
                         <TableCell className="text-xs text-muted-foreground">{l.variance_reason}</TableCell>
                       </TableRow>
                     );

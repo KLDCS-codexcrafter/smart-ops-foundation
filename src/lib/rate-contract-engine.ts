@@ -110,3 +110,114 @@ export function findActiveRate(
   }
   return null;
 }
+
+// ============================================================================
+// Sprint T-Phase-1.2.6f-c-3-fix · Fix-B (D-296) + Fix-D (OOB-54 unification)
+// ============================================================================
+
+export type ComplianceStatus =
+  | 'no_contract'
+  | 'within_contract'
+  | 'rate_exceeds_ceiling'
+  | 'qty_outside_range'
+  | 'contract_expired';
+
+export interface ComplianceResult {
+  has_contract: boolean;
+  contract_id: string | null;
+  contract_no: string | null;
+  agreed_rate: number | null;
+  ceiling_rate: number | null;
+  variance_pct: number | null;
+  compliance_status: ComplianceStatus;
+  recommendation: string;
+}
+
+/**
+ * Validate Bill Passing line against active Rate Contract · D-296.
+ * 5 statuses adapted to current single-rate + ceiling model (D-293-rev).
+ */
+export function validateContractCompliance(
+  invoiceLine: { item_id: string; invoice_qty: number; invoice_rate: number },
+  vendorId: string,
+  entityCode: string,
+  asOfDate: string,
+): ComplianceResult {
+  const found = findActiveRate(entityCode, vendorId, invoiceLine.item_id);
+
+  if (!found) {
+    return {
+      has_contract: false,
+      contract_id: null, contract_no: null,
+      agreed_rate: null, ceiling_rate: null,
+      variance_pct: null,
+      compliance_status: 'no_contract',
+      recommendation: 'No active rate contract for this vendor-item. Consider creating one for pricing discipline.',
+    };
+  }
+
+  const { contract, line } = found;
+  const today = asOfDate.slice(0, 10);
+
+  if (contract.status === 'expired' || contract.valid_to < today) {
+    return {
+      has_contract: true,
+      contract_id: contract.id, contract_no: contract.contract_no,
+      agreed_rate: line.agreed_rate, ceiling_rate: line.ceiling_rate,
+      variance_pct: null,
+      compliance_status: 'contract_expired',
+      recommendation: `Contract ${contract.contract_no} expired on ${contract.valid_to}. Renew before further bills.`,
+    };
+  }
+
+  if (invoiceLine.invoice_qty < line.min_qty || invoiceLine.invoice_qty > line.max_qty) {
+    return {
+      has_contract: true,
+      contract_id: contract.id, contract_no: contract.contract_no,
+      agreed_rate: line.agreed_rate, ceiling_rate: line.ceiling_rate,
+      variance_pct: null,
+      compliance_status: 'qty_outside_range',
+      recommendation: `Invoice qty ${invoiceLine.invoice_qty} outside contract range [${line.min_qty}-${line.max_qty}]. Verify or amend.`,
+    };
+  }
+
+  const variancePct = line.agreed_rate > 0
+    ? ((invoiceLine.invoice_rate - line.agreed_rate) / line.agreed_rate) * 100
+    : 0;
+  const variancePctRounded = Math.round(variancePct * 100) / 100;
+
+  if (invoiceLine.invoice_rate > line.ceiling_rate) {
+    return {
+      has_contract: true,
+      contract_id: contract.id, contract_no: contract.contract_no,
+      agreed_rate: line.agreed_rate, ceiling_rate: line.ceiling_rate,
+      variance_pct: variancePctRounded,
+      compliance_status: 'rate_exceeds_ceiling',
+      recommendation: `Invoice rate ₹${invoiceLine.invoice_rate} exceeds ceiling ₹${line.ceiling_rate} (${variancePct.toFixed(2)}% above agreed ₹${line.agreed_rate}).`,
+    };
+  }
+
+  return {
+    has_contract: true,
+    contract_id: contract.id, contract_no: contract.contract_no,
+    agreed_rate: line.agreed_rate, ceiling_rate: line.ceiling_rate,
+    variance_pct: variancePctRounded,
+    compliance_status: 'within_contract',
+    recommendation: variancePct === 0
+      ? `Within contract ${contract.contract_no} at agreed rate.`
+      : `Within contract ${contract.contract_no} (${variancePct >= 0 ? '+' : ''}${variancePct.toFixed(2)}% vs agreed · within ceiling).`,
+  };
+}
+
+/**
+ * List rate contracts expiring within `withinDays` · used by OOB-54 thin wrapper (Fix-D).
+ */
+export function listExpiringContracts(entityCode: string, withinDays: number = 30): RateContract[] {
+  const today = Date.now();
+  const limit = today + withinDays * 86400000;
+  return listRateContracts(entityCode).filter((c) => {
+    if (c.status !== 'active') return false;
+    const expiry = new Date(c.valid_to).getTime();
+    return expiry >= today && expiry <= limit;
+  });
+}
