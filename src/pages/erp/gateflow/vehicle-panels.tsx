@@ -724,6 +724,3 @@ export function WeighbridgeTicketRegisterPanel(): JSX.Element {
   );
 }
 
-// Reference helper to satisfy linter when listTicketsByGatePass isn't used directly here.
-// (Re-exported for downstream consumers · 4-pre-3 mobile panels.)
-export { listTicketsByGatePass };
