@@ -33,7 +33,7 @@ import {
   listInwardQueue, listOutwardQueue,
 } from '@/lib/gateflow-engine';
 import {
-  createTicket, weighIn, weighOut, closeTicket, listTickets, listTicketsByGatePass,
+  createTicket, weighIn, weighOut, closeTicket, listTickets,
 } from '@/lib/weighbridge-engine';
 import {
   createVehicle, listVehicles,
