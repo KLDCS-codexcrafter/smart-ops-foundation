@@ -7,6 +7,7 @@ import { rfqsKey, type RFQ, type RFQSendChannel, type RFQStatus } from '@/types/
 import { generateRFQTokenUrl, notifyVendorRFQ, type VendorNotifyTarget } from './vendor-rfq-notify';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
+import { getQuotationsByRfq } from './vendor-quotation-engine';
 
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -232,3 +233,131 @@ export function checkOverdueRfqs(entityCode: string): RFQ[] {
     (r) => r.status === 'sent' && r.timeout_at && new Date(r.timeout_at).getTime() < now,
   );
 }
+
+// ============================================================
+// Sprint T-Phase-1.2.6f-d-2 · Block E · per D-300 (Q6=A smart threshold · 3 triggers)
+// NEW function added · existing rfq-engine functions UNCHANGED.
+// Pure read-only computation · no writes · no side effects.
+// ============================================================
+
+export type PreCloseReason =
+  | 'deadline_passed_with_quotes'   // Trigger 1: deadline AND ≥1 quote received
+  | 'majority_quoted_early'         // Trigger 2: 75%-elapsed AND ≥1 quote
+  | 'deadline_passed_low_response'  // Trigger 3: deadline AND 0 quotes (forced timeout)
+  | 'not_eligible';
+
+export interface PreCloseRecommendation {
+  rfq_id: string;
+  rfq_no: string;
+  should_pre_close: boolean;
+  reason: PreCloseReason;
+  reason_text: string;
+  vendors_invited: number;
+  vendors_quoted: number;
+  vendors_missing: string[];
+  partial_response_count: number;
+  timeout_at: string | null;
+  pct_elapsed: number;
+  recommended_action: string;
+}
+
+/**
+ * Compute pre-close recommendation for an RFQ.
+ *
+ * Smart threshold logic (Q6=A · 3 triggers):
+ *  1. Deadline passed AND ≥1 quote received  → pre-close (don't wait for laggards)
+ *  2. 75%+ of timeout elapsed AND ≥1 quote   → early pre-close possible
+ *  3. Deadline passed AND 0 quotes received  → forced pre-close (timeout / re-RFQ)
+ *
+ * Eligibility: only active sourcing states
+ * (sent · received_by_vendor · opened · partial_quoted).
+ * RFQs already awarded / cancelled / timeout / declined / quoted return not_eligible.
+ *
+ * Returns null if the RFQ id is unknown.
+ */
+export function computePreCloseRecommendation(
+  rfqId: string,
+  entityCode: string,
+): PreCloseRecommendation | null {
+  const rfq = getRfq(rfqId, entityCode);
+  if (!rfq) return null;
+
+  const activeStates: RFQStatus[] = ['sent', 'received_by_vendor', 'opened', 'partial_quoted'];
+  if (!activeStates.includes(rfq.status)) {
+    return buildResponse(rfq, false, 'not_eligible',
+      `RFQ status "${rfq.status}" is not in active sourcing state.`,
+      0, 'No action required.', 0);
+  }
+
+  const quotes = getQuotationsByRfq(rfqId, entityCode);
+  const vendorsQuoted = quotes.length;
+
+  const now = Date.now();
+  const sentAt = rfq.sent_at ? new Date(rfq.sent_at).getTime() : null;
+  const timeoutAt = rfq.timeout_at ? new Date(rfq.timeout_at).getTime() : null;
+  let pctElapsed = 0;
+  if (sentAt !== null && timeoutAt !== null && timeoutAt > sentAt) {
+    pctElapsed = Math.max(0, Math.min(100, ((now - sentAt) / (timeoutAt - sentAt)) * 100));
+  }
+  const deadlinePassed = timeoutAt !== null && now > timeoutAt;
+
+  // Trigger 1 · deadline passed AND ≥1 quote
+  if (deadlinePassed && vendorsQuoted >= 1) {
+    return buildResponse(rfq, true, 'deadline_passed_with_quotes',
+      `Deadline passed · ${vendorsQuoted} quote(s) received · pre-close to award without further delay.`,
+      vendorsQuoted,
+      'Pre-close RFQ and proceed to comparison/award.',
+      pctElapsed);
+  }
+
+  // Trigger 3 · deadline passed AND 0 quotes (check before Trigger 2 since deadline is decisive)
+  if (deadlinePassed && vendorsQuoted === 0) {
+    return buildResponse(rfq, true, 'deadline_passed_low_response',
+      'Deadline passed · no quotes received · forced pre-close (timeout · trigger fallback or re-RFQ).',
+      0,
+      'Pre-close as timeout · trigger auto_fallback or create new RFQ to alternate vendor.',
+      pctElapsed);
+  }
+
+  // Trigger 2 · 75%+ elapsed AND quote received
+  if (pctElapsed >= 75 && vendorsQuoted >= 1) {
+    return buildResponse(rfq, true, 'majority_quoted_early',
+      `${pctElapsed.toFixed(0)}% of timeout window elapsed · ${vendorsQuoted} quote(s) received · early pre-close possible.`,
+      vendorsQuoted,
+      'Consider pre-closing if quote is competitive · saves wait time.',
+      pctElapsed);
+  }
+
+  // Not eligible
+  return buildResponse(rfq, false, 'not_eligible',
+    `RFQ within timeout window (${pctElapsed.toFixed(0)}% elapsed) · ${vendorsQuoted} quote(s) received.`,
+    vendorsQuoted,
+    'Continue waiting for quotes.',
+    pctElapsed);
+}
+
+function buildResponse(
+  rfq: RFQ,
+  shouldPreClose: boolean,
+  reason: PreCloseReason,
+  reasonText: string,
+  partialCount: number,
+  recommendedAction: string,
+  pctElapsed: number,
+): PreCloseRecommendation {
+  return {
+    rfq_id: rfq.id,
+    rfq_no: rfq.rfq_no,
+    should_pre_close: shouldPreClose,
+    reason,
+    reason_text: reasonText,
+    vendors_invited: 1,
+    vendors_quoted: partialCount,
+    vendors_missing: shouldPreClose && partialCount === 0 ? [rfq.vendor_name] : [],
+    partial_response_count: partialCount,
+    timeout_at: rfq.timeout_at,
+    pct_elapsed: Math.round(pctElapsed * 10) / 10,
+    recommended_action: recommendedAction,
+  };
+}
+
