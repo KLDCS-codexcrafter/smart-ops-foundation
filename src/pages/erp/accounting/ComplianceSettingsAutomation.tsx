@@ -493,6 +493,13 @@ export function ComplianceSettingsAutomationPanel() {
     toast.success('Tally export configuration saved');
   }, [tallyConfig, selectedEntityId]);
 
+  // Sprint 5-pre-1 · Block H · D-334 · save QualiCheck Section 11
+  const handleSaveQC = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/qc/:entityId
+    localStorage.setItem(comply360QCKey(selectedEntityId), JSON.stringify(qcConfig));
+    toast.success('QualiCheck configuration saved');
+  }, [qcConfig, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
       case 'gst-entity': handleSaveEntityGst(); break;
@@ -508,9 +515,10 @@ export function ComplianceSettingsAutomationPanel() {
       case 'settlement': handleSaveSettlement(); break;
       case 'outstanding': handleSaveOutstanding(); break;
       case 'tally': handleSaveTally(); break;
+      case 'qc': handleSaveQC(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally, handleSaveQC]);
 
   const isConfigActive = true;
   useCtrlS(isConfigActive ? handleCtrlS : () => {});
@@ -529,6 +537,8 @@ export function ComplianceSettingsAutomationPanel() {
   const isSectionEnabled = (sectionId: string) => {
     // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
     if (sectionId === 'tally') return true;
+    // Sprint 5-pre-1 · Block H · D-334 · QualiCheck always-on (matches Tally pattern)
+    if (sectionId === 'qc') return true;
     const sec = SECTIONS.find(s => s.id === sectionId);
     if (!sec) return false;
     return groupConfig[sec.toggle] === true;
@@ -564,6 +574,7 @@ export function ComplianceSettingsAutomationPanel() {
       case 'settlement': return renderSettlementSection();
       case 'outstanding': return renderOutstandingSection();
       case 'tally': return renderTallySection();
+      case 'qc': return renderQCSection();
       default: return null;
     }
   };
