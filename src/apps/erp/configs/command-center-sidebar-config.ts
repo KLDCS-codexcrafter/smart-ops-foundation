@@ -82,6 +82,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-fiscal-year', requiredCards: ['command-center'] },
       { id: 'finecore-asset-centres', type: 'item', label: 'Asset Centres', icon: Building2,
         moduleId: 'finecore-asset-centres', requiredCards: ['command-center'] },
+      { id: 'fc-divider-4', type: 'divider', label: '' },
+      { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
+        route: '/erp/finecore/settings/print-config', requiredCards: ['command-center'] },
     ],
   },
   {
