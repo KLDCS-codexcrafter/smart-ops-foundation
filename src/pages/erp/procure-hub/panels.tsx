@@ -686,6 +686,7 @@ export function EnquiryListPanel(): JSX.Element {
 }
 
 // Block I-fix · D-256 · RFQ list with Send / Decline / Timeout / Cancel + channel inline edit
+// Sprint T-Phase-1.2.6f-d-2 · Block F · Pre-close recommendation banner (Q6=A · 3 triggers)
 export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [version, setVersion] = useState(0);
@@ -700,6 +701,16 @@ export function RfqListPanel(): JSX.Element {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [reasonOpen, setReasonOpen] = useState<{ id: string; mode: 'decline' | 'cancel' } | null>(null);
   const [reasonText, setReasonText] = useState('');
+
+  // Block F · D-299 · pre-close recommendations (live computed · no writes)
+  const preCloseRecs = useMemo(() => {
+    void version;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { computePreCloseRecommendation } = require('@/lib/rfq-engine') as typeof import('@/lib/rfq-engine');
+    return rfqs
+      .map((r) => computePreCloseRecommendation(r.id, entityCode))
+      .filter((rec): rec is NonNullable<typeof rec> => rec !== null && rec.should_pre_close);
+  }, [rfqs, entityCode, version]);
 
   const filtered = useMemo(() => rfqs.filter((r) => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
