@@ -66,6 +66,13 @@ export interface GatePass {
   verified_by_user_id?: string;
   verified_by_name?: string;
 
+  // Sprint 4-pre-2 · Block E · D-307 (master FKs) · D-310 (ANPR)
+  vehicle_id?: string;                    // optional FK to vehicle-master · existing vehicle_no preserved as fallback
+  driver_id?: string;                     // optional FK to driver-master · existing driver_name preserved as fallback
+  weighbridge_in_ticket_id?: string;      // FK to weighbridge-ticket (first weigh)
+  weighbridge_out_ticket_id?: string;     // FK to weighbridge-ticket (second weigh)
+  anpr_image_url?: string;                // ANPR camera capture · captured at gate entry · manual verify
+
   // Audit
   created_at: string;
   created_by_user_id: string;
