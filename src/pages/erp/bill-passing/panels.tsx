@@ -508,6 +508,14 @@ export function MatchReviewPanel(): JSX.Element {
   const [approvalNotes, setApprovalNotes] = useState('');
   const [rejectReason, setRejectReason] = useState('');
   const [mode, setMode] = useState<'approve' | 'reject'>('approve');
+  const [printBillId, setPrintBillId] = useState<string | null>(null);
+
+  const printPayload = useMemo(() => {
+    if (!printBillId) return null;
+    const bill = list.find((b) => b.id === printBillId);
+    if (!bill) return null;
+    return buildBillPassingPrintPayload(bill, loadEntityGst(entityCode), BILL_PASSING_COPY_CONFIG.default, loadPrintConfig(entityCode));
+  }, [printBillId, list, entityCode]);
 
   // 3-c-3 · CC Masters wired (D-289)
   const modes = useMemo(() => listModeOfPayment(entityCode).filter((m) => m.status === 'active'), [entityCode]);
