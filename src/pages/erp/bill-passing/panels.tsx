@@ -624,16 +624,45 @@ export function MatchReviewPanel(): JSX.Element {
                   <TableRow>
                     <TableHead>Item</TableHead>
                     <TableHead>Match</TableHead>
+                    <TableHead>Contract</TableHead>
                     <TableHead>Reason</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {reviewBill.lines.filter((l) => l.match_status !== 'clean').map((l) => {
                     const b = lineStatusBadge(l.match_status);
+                    const compliance = complianceByLine.get(l.id);
                     return (
                       <TableRow key={l.id}>
                         <TableCell>{l.item_name}</TableCell>
                         <TableCell><Badge variant={b.variant}>{b.label}</Badge></TableCell>
+                        <TableCell>
+                          {compliance && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant={complianceBadgeVariant(compliance.compliance_status)}>
+                                    {complianceBadgeLabel(compliance.compliance_status)}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-sm">
+                                  <div className="space-y-1 text-xs">
+                                    {compliance.contract_no && (
+                                      <div><strong>Contract:</strong> {compliance.contract_no}</div>
+                                    )}
+                                    {compliance.ceiling_rate !== null && (
+                                      <div><strong>Ceiling:</strong> ₹{compliance.ceiling_rate}</div>
+                                    )}
+                                    {compliance.variance_pct !== null && (
+                                      <div><strong>Variance:</strong> {compliance.variance_pct >= 0 ? '+' : ''}{compliance.variance_pct.toFixed(2)}%</div>
+                                    )}
+                                    <div className="pt-1 border-t">{compliance.recommendation}</div>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </TableCell>
                         <TableCell className="text-xs text-muted-foreground">{l.variance_reason}</TableCell>
                       </TableRow>
                     );
