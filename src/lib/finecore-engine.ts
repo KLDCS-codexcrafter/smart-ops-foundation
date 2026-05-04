@@ -204,7 +204,9 @@ export function generateDocNo(
     | 'PSV'    // Physical Stock Voucher (Cycle Count)
     | 'RJO'    // Rejections Out (Return to Vendor)
     // Sprint T-Phase-1.2.6a · UTS doc-no consolidation (D-226)
-    | 'SEC',   // SEC — SalesX Secondary Sales (was custom prefix; now FY-scoped via generateDocNo)
+    | 'SEC'   // SEC — SalesX Secondary Sales (was custom prefix; now FY-scoped via generateDocNo)
+    // Sprint T-Phase-1.2.6f-c-3 · Rate Contract (D-293)
+    | 'RC',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
