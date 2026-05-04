@@ -1510,6 +1510,15 @@ export function PoListPanel(): JSX.Element {
   const [pos, setPos] = useState<PurchaseOrderRecord[]>(() => listPurchaseOrders(entityCode));
   const [activeTab, setActiveTab] = useState<'all' | PoStatus>('all');
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+  const [printPoId, setPrintPoId] = useState<string | null>(null);
+  const [printCopy, setPrintCopy] = useState<string>(PO_COPY_CONFIG.default);
+
+  const printPayload = useMemo(() => {
+    if (!printPoId) return null;
+    const po = pos.find((p) => p.id === printPoId);
+    if (!po) return null;
+    return buildPoPrintPayload(po, loadEntityGst(entityCode), printCopy, loadPrintConfig(entityCode));
+  }, [printPoId, pos, entityCode, printCopy]);
 
   const refresh = useCallback(() => setPos(listPurchaseOrders(entityCode)), [entityCode]);
 
