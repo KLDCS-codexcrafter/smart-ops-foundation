@@ -1628,6 +1628,14 @@ export function PoListPanel(): JSX.Element {
                       {po.status !== 'cancelled' && po.status !== 'closed' && po.status !== 'fully_received' && (
                         <Button size="sm" variant="ghost" onClick={() => handleCancel(po)}>Cancel</Button>
                       )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setPrintCopy(PO_COPY_CONFIG.default); setPrintPoId(po.id); }}
+                        aria-label="Print PO"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
