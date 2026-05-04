@@ -22,7 +22,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer } from 'lucide-react';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import { buildPoPrintPayload, PO_COPY_CONFIG } from '@/lib/po-print-engine';
+import { loadEntityGst, formatINR as fmtINR, formatDDMMMYYYY as fmtDate } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
