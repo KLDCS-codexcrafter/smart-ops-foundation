@@ -39,6 +39,8 @@ import {
   comply360TallyKey, DEFAULT_TALLY_EXPORT_CONFIG,
   comply360RCMAutoPostKey, DEFAULT_RCM_AUTO_POST_POLICIES,
   RCM_AUTO_POST_MODE_LABELS,
+  // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block H · D-334 · QualiCheck Section 11
+  comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
   type SAMConfig, type TallyExportConfig,
   type RCMAutoPostPolicy, type RCMAutoPostMode,
 } from './ComplianceSettingsAutomation.constants';
@@ -276,6 +278,8 @@ const SECTIONS = [
   { id: 'outstanding', label: 'Outstanding', toggle: 'enableBillByBill' as keyof GroupConfig },
   // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
   { id: 'tally', label: 'Tally export', toggle: 'enableInventory' as keyof GroupConfig },
+  // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block H · D-334 · QualiCheck (always-on like Tally)
+  { id: 'qc', label: 'QualiCheck', toggle: 'enableInventory' as keyof GroupConfig },
 ];
 
 const IMPORT_DUTY_TYPES = [
@@ -325,6 +329,8 @@ export function ComplianceSettingsAutomationPanel() {
   const [rcmAutoPostPolicies, setRcmAutoPostPolicies] = useState<RCMAutoPostPolicy[]>(
     DEFAULT_RCM_AUTO_POST_POLICIES,
   );
+  // Sprint 5-pre-1 · Block H · D-334 · QualiCheck config
+  const [qcConfig, setQcConfig] = useState<QualiCheckConfig>(DEFAULT_QC_CONFIG);
 
   const [activeSection, setActiveSection] = useState('gst-entity');
 
@@ -345,6 +351,8 @@ export function ComplianceSettingsAutomationPanel() {
     setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
     setTallyConfig(loadOrDefault(comply360TallyKey(entityId), DEFAULT_TALLY_EXPORT_CONFIG));
     setRcmAutoPostPolicies(loadOrDefault(comply360RCMAutoPostKey(entityId), DEFAULT_RCM_AUTO_POST_POLICIES));
+    // Sprint 5-pre-1 · Block H · D-334
+    setQcConfig(loadOrDefault(comply360QCKey(entityId), DEFAULT_QC_CONFIG));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
@@ -485,6 +493,13 @@ export function ComplianceSettingsAutomationPanel() {
     toast.success('Tally export configuration saved');
   }, [tallyConfig, selectedEntityId]);
 
+  // Sprint 5-pre-1 · Block H · D-334 · save QualiCheck Section 11
+  const handleSaveQC = useCallback(() => {
+    // [JWT] PATCH /api/compliance/comply360/qc/:entityId
+    localStorage.setItem(comply360QCKey(selectedEntityId), JSON.stringify(qcConfig));
+    toast.success('QualiCheck configuration saved');
+  }, [qcConfig, selectedEntityId]);
+
   const handleCtrlS = useCallback(() => {
     switch (activeSection) {
       case 'gst-entity': handleSaveEntityGst(); break;
@@ -500,9 +515,10 @@ export function ComplianceSettingsAutomationPanel() {
       case 'settlement': handleSaveSettlement(); break;
       case 'outstanding': handleSaveOutstanding(); break;
       case 'tally': handleSaveTally(); break;
+      case 'qc': handleSaveQC(); break;
       default:      handleSaveGroup(); break;
     }
-  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally]);
+  }, [activeSection, handleSaveGroup, handleSaveRCM, handleSaveTDSP, handleSaveTDSR, handleSaveLC, handleSaveExim, handleSaveSAM, handleSaveWA, handleSaveFeatures, handleSaveSettlement, handleSaveOutstanding, handleSaveEntityGst, handleSaveTally, handleSaveQC]);
 
   const isConfigActive = true;
   useCtrlS(isConfigActive ? handleCtrlS : () => {});
@@ -521,6 +537,8 @@ export function ComplianceSettingsAutomationPanel() {
   const isSectionEnabled = (sectionId: string) => {
     // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
     if (sectionId === 'tally') return true;
+    // Sprint 5-pre-1 · Block H · D-334 · QualiCheck always-on (matches Tally pattern)
+    if (sectionId === 'qc') return true;
     const sec = SECTIONS.find(s => s.id === sectionId);
     if (!sec) return false;
     return groupConfig[sec.toggle] === true;
@@ -556,6 +574,7 @@ export function ComplianceSettingsAutomationPanel() {
       case 'settlement': return renderSettlementSection();
       case 'outstanding': return renderOutstandingSection();
       case 'tally': return renderTallySection();
+      case 'qc': return renderQCSection();
       default: return null;
     }
   };
@@ -2017,6 +2036,83 @@ export function ComplianceSettingsAutomationPanel() {
       <Switch checked={groupConfig[toggleKey] as boolean} disabled={disabled} onCheckedChange={v => updateGroup(toggleKey, v)} />
     </div>
   );
+
+  // Sprint 5-pre-1 · Block H · D-334 + D-337 · QualiCheck Section 11
+  const renderQCSection = () => {
+    const upd = <K extends keyof QualiCheckConfig>(k: K, v: QualiCheckConfig[K]): void =>
+      setQcConfig(prev => ({ ...prev, [k]: v }));
+    const row = (label: string, key: keyof QualiCheckConfig, disabled = false): JSX.Element => (
+      <div className="flex items-center justify-between">
+        <Label className={`text-sm ${disabled ? 'text-muted-foreground' : ''}`}>{label}</Label>
+        <Switch
+          checked={qcConfig[key] as boolean}
+          disabled={disabled}
+          onCheckedChange={v => upd(key, v as QualiCheckConfig[typeof key])}
+        />
+      </div>
+    );
+    const godownInput = (label: string, key: 'quarantineGodownId' | 'sampleGodownId' | 'rejectionGodownId' | 'approvedGodownId'): JSX.Element => (
+      <div className="space-y-1">
+        <Label className="text-xs">{label}</Label>
+        <Input
+          value={qcConfig[key]}
+          onChange={e => upd(key, e.target.value)}
+          placeholder="Godown ID"
+          className="h-8 text-sm font-mono"
+        />
+      </div>
+    );
+    const gated = qcConfig.enableQualiCheck;
+    return (
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">QualiCheck (D-334)</h3>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <Label className="text-sm">Enable QualiCheck Module</Label>
+            <p className="text-[10px] text-muted-foreground">Master gate · Tally F11 cascade pattern</p>
+          </div>
+          <Switch checked={qcConfig.enableQualiCheck} onCheckedChange={v => upd('enableQualiCheck', v)} />
+        </div>
+
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Inspection Scope</h4>
+        {row('Incoming inspection (GRN/MIN)', 'enableIncomingInspection', !gated)}
+        {row('In-process inspection', 'enableInProcessInspection', !gated)}
+        {row('Outgoing inspection (DLN)', 'enableOutgoingInspection', !gated)}
+        {row('Sample inspection (D-333)', 'enableSampleInspection', !gated)}
+
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Authority (D-335)</h4>
+        {row('Allow external lab inspections', 'enableExternalLab', !gated)}
+        {row('Allow customer-witnessed (FAT/SAT)', 'enableCustomerWitnessed', !gated)}
+
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Acceptance & CoA</h4>
+        {row('Enforce IS 2500 AQL', 'enforceIS2500AQL', !gated)}
+        {row('Generate incoming CoA', 'generateIncomingCoA', !gated)}
+        {row('Generate outgoing CoA', 'generateOutgoingCoA', !gated)}
+        {row('Allow bulk inspection entry', 'allowBulkInspectionEntry', !gated)}
+
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Godown Routing (D-337 · routing logic in 5-pre-2)
+        </h4>
+        <div className="grid grid-cols-2 gap-3">
+          {godownInput('Quarantine godown', 'quarantineGodownId')}
+          {godownInput('Sample godown', 'sampleGodownId')}
+          {godownInput('Rejection godown', 'rejectionGodownId')}
+          {godownInput('Approved godown', 'approvedGodownId')}
+        </div>
+
+        <div className="pt-2">
+          <Button onClick={handleSaveQC} size="sm">
+            <Save className="h-4 w-4 mr-1" /> Save QualiCheck
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6" data-keyboard-form>

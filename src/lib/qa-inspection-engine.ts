@@ -275,3 +275,42 @@ export async function cancelInspection(
   });
   return list[idx];
 }
+
+// ════════════════════════════════════════════════════════════════════════
+// Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block C · D-329 MINIMAL EXTENSION
+// CORE 9 functions above are BYTE-IDENTICAL preserved.
+// Only the helper + closure-trigger-stub below are NEW.
+// ════════════════════════════════════════════════════════════════════════
+
+import { findApplicablePlan, type PartyKind } from './qa-plan-engine';
+import type { QaPlan, QaPlanVoucherKind } from '@/types/qa-plan';
+
+/**
+ * D-329 helper · resolve plan applicable to an inspection's item+party+voucher kind.
+ * Sibling delegation to qa-plan-engine; existing inspection logic unchanged.
+ */
+export function findApplicablePlanForInspection(
+  itemId: string | null,
+  partyId: string | null,
+  partyKind: PartyKind,
+  voucherKind: QaPlanVoucherKind | null,
+  entityCode: string,
+): QaPlan | null {
+  return findApplicablePlan(itemId, partyId, partyKind, voucherKind, entityCode);
+}
+
+/**
+ * D-329 stub · 5-pre-2 will replace with qa-closure-resolver auto-routing
+ * (movement journals → quarantine / sample / rejection / approved godowns).
+ * For now it is a no-op that reports intent so callers can wire safely.
+ */
+export interface InspectionClosureIntent {
+  qa_id: string;
+  routed: false;
+  reason: 'pending-resolver';
+}
+
+export function triggerInspectionClosure(qaId: string): InspectionClosureIntent {
+  return { qa_id: qaId, routed: false, reason: 'pending-resolver' };
+}
+
