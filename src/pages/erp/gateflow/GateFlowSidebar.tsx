@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, LogIn, LogOut, FileText } from 'lucide-react';
+import { Home, LogIn, LogOut, FileText, Truck, IdCard, UserCheck, Weight } from 'lucide-react';
 import type { GateFlowModule } from './GateFlowSidebar.types';
 
 interface Group {
@@ -32,10 +32,26 @@ const GROUPS: Group[] = [
       { id: 'gate-outward-queue', label: 'Outward Queue', icon: LogOut },
     ],
   },
+  // Sprint 4-pre-2 · Block H · NEW
+  {
+    label: 'Vehicle Operations',
+    items: [
+      { id: 'vehicle-inward', label: 'Vehicle Inward', icon: Truck },
+      { id: 'vehicle-outward', label: 'Vehicle Outward', icon: Truck },
+    ],
+  },
+  {
+    label: 'Masters',
+    items: [
+      { id: 'vehicle-master', label: 'Vehicle Master', icon: IdCard },
+      { id: 'driver-master', label: 'Driver Master', icon: UserCheck },
+    ],
+  },
   {
     label: 'Reports',
     items: [
       { id: 'gate-pass-register', label: 'Gate Pass Register', icon: FileText },
+      { id: 'weighbridge-register', label: 'Weighbridge Tickets', icon: Weight },
     ],
   },
 ];

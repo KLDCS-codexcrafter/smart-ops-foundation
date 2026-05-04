@@ -1085,16 +1085,99 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       }
     } catch (e) { console.warn('[entity-setup] section 8h GateFlow demo seed skipped:', e); }
 
+    // 8i. Sprint T-Phase-1.2.6f-d-2-card4-4-pre-2 · Block I · Vehicle + Weighbridge demo seed
+    //     Idempotent · marker check prevents re-running. Links to 8h gate pass (gp-seed-...-in-1).
+    try {
+      const sec8iMarker = `entity_setup_section_8i_${opts.shortCode}_v1`;
+      if (!localStorage.getItem(sec8iMarker)) {
+        const nowI = new Date().toISOString();
+
+        // 8i-1: 2 demo vehicles
+        const vmKey = `erp_vehicle_master_${opts.shortCode}`;
+        const seedVehicles = [
+          {
+            id: `vm-seed-${opts.shortCode}-1`,
+            entity_id: opts.shortCode,
+            vehicle_no: 'KA-01-AB-1234',
+            vehicle_type: 'truck' as const,
+            make: 'Tata', model: '407 Gold', capacity_kg: 3000, fuel_type: 'diesel' as const,
+            rc_no: `RC/${opts.shortCode}/0001`, rc_expiry: '2027-12-31',
+            insurance_no: 'INS-2026-001', insurance_expiry: '2027-03-31',
+            status: 'active' as const,
+            created_at: nowI, created_by_user_id: 'mock-user', updated_at: nowI,
+          },
+          {
+            id: `vm-seed-${opts.shortCode}-2`,
+            entity_id: opts.shortCode,
+            vehicle_no: 'KA-03-EF-9012',
+            vehicle_type: 'truck' as const,
+            make: 'Ashok Leyland', model: 'Dost Plus', capacity_kg: 2500, fuel_type: 'diesel' as const,
+            status: 'active' as const,
+            created_at: nowI, created_by_user_id: 'mock-user', updated_at: nowI,
+          },
+        ];
+        localStorage.setItem(vmKey, JSON.stringify(seedVehicles));
+
+        // 8i-2: 2 demo drivers
+        const dmKey = `erp_driver_master_${opts.shortCode}`;
+        const seedDrivers = [
+          {
+            id: `dm-seed-${opts.shortCode}-1`,
+            entity_id: opts.shortCode,
+            driver_name: 'Rajesh Kumar', driver_phone: '+91-9876543210',
+            driver_license_no: `KA01${opts.shortCode.slice(0, 3)}001`, license_expiry: '2027-08-31',
+            license_class: 'HMV' as const, aadhaar_last_4: '1234',
+            default_vehicle_id: `vm-seed-${opts.shortCode}-1`,
+            status: 'active' as const,
+            created_at: nowI, created_by_user_id: 'mock-user', updated_at: nowI,
+          },
+          {
+            id: `dm-seed-${opts.shortCode}-2`,
+            entity_id: opts.shortCode,
+            driver_name: 'Mahesh Iyer', driver_phone: '+91-9876543212',
+            driver_license_no: `KA03${opts.shortCode.slice(0, 3)}002`, license_expiry: '2026-11-30',
+            license_class: 'HMV' as const,
+            status: 'active' as const,
+            created_at: nowI, created_by_user_id: 'mock-user', updated_at: nowI,
+          },
+        ];
+        localStorage.setItem(dmKey, JSON.stringify(seedDrivers));
+
+        // 8i-3: 1 closed inward weighbridge ticket linked to 4-pre-1 demo gate pass
+        const wbKey = `erp_weighbridge_tickets_${opts.shortCode}`;
+        const seedTicket = {
+          id: `wb-seed-${opts.shortCode}-1`,
+          ticket_no: `WB/${opts.shortCode}/26-27/0001`,
+          entity_id: opts.shortCode, entity_code: opts.shortCode,
+          status: 'closed' as const,
+          gate_pass_id: `gp-seed-${opts.shortCode}-in-1`,
+          gate_pass_no: `GP/${opts.shortCode}/26-27/0001`,
+          direction: 'inward' as const,
+          vehicle_no: 'KA-01-AB-1234', vehicle_id: `vm-seed-${opts.shortCode}-1`,
+          gross_in_kg: 8500, tare_in_kg: 5500, net_in_kg: 3000, weighed_in_at: nowI,
+          gross_out_kg: 5500, net_dispatched_kg: 3000, weighed_out_at: nowI,
+          variance_kg: 0, variance_pct: 0,
+          weighbridge_serial: 'WB-DEMO-01',
+          remarks: 'Demo · received per PO',
+          created_at: nowI, created_by_user_id: 'mock-user', updated_at: nowI,
+          closed_at: nowI, closed_by_user_id: 'mock-user',
+        };
+        localStorage.setItem(wbKey, JSON.stringify([seedTicket]));
+
+        localStorage.setItem(sec8iMarker, nowI);
+      }
+    } catch (e) {
+      console.warn('[entity-setup] section 8i Vehicle/Weighbridge demo seed skipped:', e);
+    }
+
     /*
      * ═══════════════════════════════════════════════════════════════════════════
-     * CARD #4 · GATEFLOW · 4-pre-1 FOUNDATION OPENED
+     * CARD #4 · GATEFLOW · 4-pre-2 VEHICLE + WEIGHBRIDGE INTEGRATION COMPLETE
      * ═══════════════════════════════════════════════════════════════════════════
-     * Sub-sprints planned (3): 4-pre-1 Foundation · 4-pre-2 Vehicle/Weighbridge · 4-pre-3 Mobile/Polish
-     * D-decisions issued: D-301 · D-302 · D-303 · D-304 · D-305
-     * Streaks: D-127 65 · D-128 65 · ESLint 39 · TSC 42 · D-249 15 cycles · Vitest 281+
-     * Card #3 P2P arc preserved (~50 audited engines · architectural debt zero).
-     * Foundation MVP: Shell + 4 panels + engine + state machine + linking · operational.
-     * Next: 4-pre-2 Vehicle/Weighbridge integration (gate_pass_id wiring into GIT).
+     * Sub-sprint progress (2 of 3): 4-pre-1 ✅ · 4-pre-2 ✅ · 4-pre-3 (Mobile/Polish · queued)
+     * D-decisions: D-306 · D-307 · D-308 · D-309 · D-310
+     * Streaks at 4-pre-2 close: D-127 66 · D-128 66 · ESLint 40 ⭐ decade-mark · TSC 43 · D-249 16 cycles · Vitest 288
+     * Weighbridge connected with ERP · Vehicle/Driver masters operational · GIT auto-link via sibling resolver.
      * ═══════════════════════════════════════════════════════════════════════════
      */
 

@@ -10,6 +10,11 @@ import { GateFlowSidebar } from './GateFlowSidebar';
 import {
   GateFlowWelcome, GateInwardQueuePanel, GateOutwardQueuePanel, GatePassRegisterPanel,
 } from './panels';
+// Sprint 4-pre-2 · Block H · 5 NEW panels
+import {
+  VehicleInwardPanel, VehicleOutwardPanel, VehicleMasterPanel,
+  DriverMasterPanel, WeighbridgeTicketRegisterPanel,
+} from './vehicle-panels';
 import type { GateFlowModule } from './GateFlowSidebar.types';
 
 export default function GateFlowPage(): JSX.Element {
@@ -21,6 +26,12 @@ export default function GateFlowPage(): JSX.Element {
       case 'gate-inward-queue':    return <GateInwardQueuePanel />;
       case 'gate-outward-queue':   return <GateOutwardQueuePanel />;
       case 'gate-pass-register':   return <GatePassRegisterPanel />;
+      // Sprint 4-pre-2 · Block H
+      case 'vehicle-inward':       return <VehicleInwardPanel />;
+      case 'vehicle-outward':      return <VehicleOutwardPanel />;
+      case 'vehicle-master':       return <VehicleMasterPanel />;
+      case 'driver-master':        return <DriverMasterPanel />;
+      case 'weighbridge-register': return <WeighbridgeTicketRegisterPanel />;
       default:                     return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

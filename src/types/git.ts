@@ -57,6 +57,10 @@ export interface GitStage1Record {
   stage2_grn_id: string | null;
   stage2_completed_at: string | null;
 
+  // Sprint 4-pre-2 · Block F · D-309 (GateFlow ↔ GIT integration)
+  // Additive nullable · matches D-291 precedent · git-engine.ts ZERO TOUCH
+  gate_pass_id?: string;                  // optional FK to gate-pass (when GIT created from inward GatePass)
+
   notes: string;
   received_by_user_id: string;
   created_at: string;
