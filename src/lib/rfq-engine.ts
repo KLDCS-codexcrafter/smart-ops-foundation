@@ -7,6 +7,7 @@ import { rfqsKey, type RFQ, type RFQSendChannel, type RFQStatus } from '@/types/
 import { generateRFQTokenUrl, notifyVendorRFQ, type VendorNotifyTarget } from './vendor-rfq-notify';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
+import { getQuotationsByRfq } from './vendor-quotation-engine';
 
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
