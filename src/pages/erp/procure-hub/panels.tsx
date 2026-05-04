@@ -35,7 +35,7 @@ import {
   transitionEnquiryStatus,
 } from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
-import { listRfqs } from '@/lib/rfq-engine';
+import { listRfqs, computePreCloseRecommendation } from '@/lib/rfq-engine';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
   computeVendorPerformance, computeBestPriceAnalysis, computeSpendByVendor,
