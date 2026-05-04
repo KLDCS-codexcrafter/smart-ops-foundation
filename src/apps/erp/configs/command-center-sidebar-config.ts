@@ -167,6 +167,14 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow launcher (route-based · Card #4 Foundation)
+    id: 'operations-group', type: 'group', label: 'Operations', icon: DoorOpen,
+    children: [
+      { id: 'cc-gateflow-launcher', type: 'item', label: 'GateFlow', icon: DoorOpen,
+        route: '/erp/gateflow', requiredCards: ['command-center'] },
+    ],
+  },
+  {
     id: 'people-core-group', type: 'group', label: 'People Core', icon: Users,
     children: [
       { id: 'ph-employee', type: 'item', label: 'Employee Master',
