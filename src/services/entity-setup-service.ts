@@ -843,6 +843,110 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         }
       }
     } catch { /* ignore */ }
+    // 8f-cc-masters. Sprint T-Phase-1.2.6f-c-3 · Block H · D-289 demo seed (idempotent).
+    try {
+      // [JWT] POST /api/masters/cc/seed (idempotent · per-entity)
+      const now = new Date().toISOString();
+      const mopKey = `erp_mode_of_payment_${opts.shortCode}`;
+      if (!localStorage.getItem(mopKey)) {
+        const mops = [
+          { code: 'NEFT',   name: 'NEFT Transfer',         description: 'Bank-to-bank electronic transfer' },
+          { code: 'RTGS',   name: 'RTGS Transfer',         description: 'High-value electronic transfer' },
+          { code: 'CHEQUE', name: 'Cheque',                description: 'Physical bank cheque' },
+          { code: 'CASH',   name: 'Cash',                  description: 'Cash payment' },
+          { code: 'UPI',    name: 'UPI Payment',           description: 'Unified Payments Interface' },
+        ].map((m, i) => ({
+          id: `mop-seed-${opts.shortCode}-${i}`,
+          ...m,
+          status: 'active' as const,
+          is_default: i === 0,
+          created_at: now,
+          updated_at: now,
+        }));
+        localStorage.setItem(mopKey, JSON.stringify(mops));
+      }
+      const topKey = `erp_terms_of_payment_${opts.shortCode}`;
+      if (!localStorage.getItem(topKey)) {
+        const tops = [
+          { code: 'IMM',     name: 'Immediate',           credit_days: 0,  advance_pct: 0,  description: 'Pay on delivery' },
+          { code: 'NET15',   name: 'Net 15 Days',         credit_days: 15, advance_pct: 0,  description: '15 days credit' },
+          { code: 'NET30',   name: 'Net 30 Days',         credit_days: 30, advance_pct: 0,  description: '30 days credit' },
+          { code: 'NET45',   name: 'Net 45 Days',         credit_days: 45, advance_pct: 0,  description: '45 days credit' },
+          { code: 'ADV50',   name: 'Advance 50% / Bal',   credit_days: 30, advance_pct: 50, description: '50% advance · 50% on delivery' },
+        ].map((t, i) => ({
+          id: `top-seed-${opts.shortCode}-${i}`,
+          ...t,
+          status: 'active' as const,
+          is_default: i === 2,
+          created_at: now,
+          updated_at: now,
+        }));
+        localStorage.setItem(topKey, JSON.stringify(tops));
+      }
+      const todKey = `erp_terms_of_delivery_${opts.shortCode}`;
+      if (!localStorage.getItem(todKey)) {
+        const tods = [
+          { code: 'FOR-DEST', name: 'FOR Destination',  incoterm: 'DDP', description: 'Free On Road · seller pays freight' },
+          { code: 'EXW',      name: 'Ex-Works',         incoterm: 'EXW', description: 'Buyer collects from seller premises' },
+          { code: 'CIF',      name: 'CIF',              incoterm: 'CIF', description: 'Cost · Insurance · Freight' },
+          { code: 'FOB',      name: 'FOB',              incoterm: 'FOB', description: 'Free On Board' },
+        ].map((t, i) => ({
+          id: `tod-seed-${opts.shortCode}-${i}`,
+          ...t,
+          status: 'active' as const,
+          is_default: i === 0,
+          created_at: now,
+          updated_at: now,
+        }));
+        localStorage.setItem(todKey, JSON.stringify(tods));
+      }
+      // Rate Contracts seed — first vendor + first 2 PO lines (if available).
+      const rcKey = `erp_rate_contracts_${opts.shortCode}`;
+      const poListRaw2 = localStorage.getItem(purchaseOrdersKey(opts.shortCode));
+      if (!localStorage.getItem(rcKey) && poListRaw2) {
+        const pos2 = JSON.parse(poListRaw2) as PurchaseOrderRecord[];
+        const seedPo = pos2[0];
+        if (seedPo && seedPo.lines.length > 0) {
+          const lines = seedPo.lines.slice(0, 2).map((pl, idx) => ({
+            id: `rcl-seed-${opts.shortCode}-${idx}`,
+            item_id: pl.item_id,
+            item_name: pl.item_name,
+            hsn_sac: '',
+            uom: 'NOS',
+            agreed_rate: pl.rate,
+            ceiling_rate: Math.round(pl.rate * 1.05 * 100) / 100,
+            min_qty: 1,
+            max_qty: pl.qty * 4,
+            tax_pct: pl.tax_pct,
+            notes: '',
+          }));
+          const totalValue = lines.reduce((s, l) => s + l.agreed_rate * l.max_qty, 0);
+          const today = now.slice(0, 10);
+          const validTo = new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10);
+          const rc = {
+            id: `rc-seed-${opts.shortCode}`,
+            contract_no: `RC/SEED/${opts.shortCode}/0001`,
+            contract_date: today,
+            entity_id: opts.shortCode,
+            vendor_id: seedPo.vendor_id,
+            vendor_name: seedPo.vendor_name,
+            valid_from: today,
+            valid_to: validTo,
+            currency: 'INR' as const,
+            payment_terms: 'NET30',
+            delivery_terms: 'FOR Destination',
+            lines,
+            total_value: Math.round(totalValue * 100) / 100,
+            status: 'active' as const,
+            notes: 'Demo seed rate contract — Sprint 3-c-3 Block H.',
+            created_by: 'mock-user',
+            created_at: now,
+            updated_at: now,
+          };
+          localStorage.setItem(rcKey, JSON.stringify([rc]));
+        }
+      }
+    } catch { /* ignore */ }
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
       const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
