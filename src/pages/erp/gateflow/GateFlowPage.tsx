@@ -15,6 +15,10 @@ import {
   VehicleInwardPanel, VehicleOutwardPanel, VehicleMasterPanel,
   DriverMasterPanel, WeighbridgeTicketRegisterPanel,
 } from './vehicle-panels';
+// Sprint 4-pre-3 · Block G · D-314 · 3 NEW alert panels
+import {
+  VehicleExpiryAlertsPanel, DriverExpiryAlertsPanel, GateDwellAlertsPanel,
+} from './alerts-panels';
 import type { GateFlowModule } from './GateFlowSidebar.types';
 
 export default function GateFlowPage(): JSX.Element {
@@ -32,6 +36,10 @@ export default function GateFlowPage(): JSX.Element {
       case 'vehicle-master':       return <VehicleMasterPanel />;
       case 'driver-master':        return <DriverMasterPanel />;
       case 'weighbridge-register': return <WeighbridgeTicketRegisterPanel />;
+      // Sprint 4-pre-3 · Block G · D-314
+      case 'alert-vehicle-expiry': return <VehicleExpiryAlertsPanel />;
+      case 'alert-driver-expiry':  return <DriverExpiryAlertsPanel />;
+      case 'alert-gate-dwell':     return <GateDwellAlertsPanel />;
       default:                     return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

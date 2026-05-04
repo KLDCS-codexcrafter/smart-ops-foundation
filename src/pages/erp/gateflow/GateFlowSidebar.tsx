@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, LogIn, LogOut, FileText, Truck, IdCard, UserCheck, Weight } from 'lucide-react';
+import { Home, LogIn, LogOut, FileText, Truck, IdCard, UserCheck, Weight, CalendarX, Clock, AlertTriangle } from 'lucide-react';
 import type { GateFlowModule } from './GateFlowSidebar.types';
 
 interface Group {
@@ -52,6 +52,15 @@ const GROUPS: Group[] = [
     items: [
       { id: 'gate-pass-register', label: 'Gate Pass Register', icon: FileText },
       { id: 'weighbridge-register', label: 'Weighbridge Tickets', icon: Weight },
+    ],
+  },
+  // Sprint 4-pre-3 · Block G · D-314 · NEW
+  {
+    label: 'Alerts',
+    items: [
+      { id: 'alert-vehicle-expiry', label: 'Vehicle Doc Expiry', icon: CalendarX },
+      { id: 'alert-driver-expiry', label: 'Driver License Expiry', icon: AlertTriangle },
+      { id: 'alert-gate-dwell', label: 'Gate Dwell', icon: Clock },
     ],
   },
 ];
