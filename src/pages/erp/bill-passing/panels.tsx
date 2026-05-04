@@ -71,6 +71,26 @@ function lineStatusBadge(s: LineMatchStatus): { variant: 'default' | 'secondary'
   }
 }
 
+function complianceBadgeVariant(s: ComplianceStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+  switch (s) {
+    case 'within_contract': return 'default';
+    case 'qty_outside_range': return 'secondary';
+    case 'rate_exceeds_ceiling': case 'contract_expired': return 'destructive';
+    case 'no_contract': return 'outline';
+    default: return 'outline';
+  }
+}
+function complianceBadgeLabel(s: ComplianceStatus): string {
+  switch (s) {
+    case 'within_contract': return 'Within Contract';
+    case 'qty_outside_range': return 'Qty Out of Range';
+    case 'rate_exceeds_ceiling': return 'Rate > Ceiling';
+    case 'contract_expired': return 'Contract Expired';
+    case 'no_contract': return 'No Contract';
+    default: return s;
+  }
+}
+
 const MOCK_USER = 'mock-user-001';
 
 // ----------------------------------------------------------------------------
