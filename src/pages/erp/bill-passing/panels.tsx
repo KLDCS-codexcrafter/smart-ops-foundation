@@ -799,6 +799,90 @@ export function MatchReviewPanel(): JSX.Element {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!printBillId} onOpenChange={(o) => { if (!o) setPrintBillId(null); }}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-foreground">
+          <DialogHeader>
+            <DialogTitle>Print Preview · {printPayload?.bill_no}</DialogTitle>
+          </DialogHeader>
+          {printPayload && (
+            <div className="space-y-3 text-sm">
+              <div className="border-t border-b py-2">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{printPayload.copy_label}</div>
+                <h2 className="text-lg font-bold">BILL PASSING — MATCH REVIEW</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="font-semibold">{printPayload.buyer.legal_name}</div>
+                  <div className="text-xs whitespace-pre-line">{printPayload.buyer_address}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">Bill No</div>
+                  <div className="font-mono font-semibold">{printPayload.bill_no}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Bill Date</div>
+                  <div className="font-mono">{fmtDate(printPayload.bill_date)}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-xs">
+                <div><span className="text-muted-foreground">Vendor:</span> {printPayload.vendor_name}</div>
+                <div><span className="text-muted-foreground">Vendor Inv:</span> <span className="font-mono">{printPayload.vendor_invoice_no}</span></div>
+                <div><span className="text-muted-foreground">PO:</span> <span className="font-mono">{printPayload.po_no}</span></div>
+                <div><span className="text-muted-foreground">Match:</span> {printPayload.match_type}</div>
+                <div><span className="text-muted-foreground">Status:</span> {printPayload.status}</div>
+                <div><span className="text-muted-foreground">Variance:</span> <span className="font-mono">{fmtINR(printPayload.total_variance)} ({printPayload.variance_pct.toFixed(2)}%)</span></div>
+              </div>
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-1">#</th>
+                    <th className="text-left py-1">Item</th>
+                    <th className="text-right py-1">PO Qty</th>
+                    <th className="text-right py-1">GRN Qty</th>
+                    <th className="text-right py-1">Inv Qty</th>
+                    <th className="text-right py-1">Inv Rate</th>
+                    <th className="text-right py-1">Variance</th>
+                    <th className="text-left py-1">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {printPayload.lines.map((l) => (
+                    <tr key={l.sl_no} className="border-b">
+                      <td className="py-1">{l.sl_no}</td>
+                      <td className="py-1">{l.item_name}</td>
+                      <td className="py-1 text-right font-mono">{l.po_qty}</td>
+                      <td className="py-1 text-right font-mono">{l.grn_qty}</td>
+                      <td className="py-1 text-right font-mono">{l.invoice_qty}</td>
+                      <td className="py-1 text-right font-mono">{fmtINR(l.invoice_rate)}</td>
+                      <td className="py-1 text-right font-mono">{fmtINR(l.total_variance)}</td>
+                      <td className="py-1">{l.match_status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="font-semibold">
+                    <td colSpan={6} className="text-right py-1">Total Invoice</td>
+                    <td className="text-right py-1 font-mono">{fmtINR(printPayload.total_variance)}</td>
+                    <td className="text-right py-1 font-mono">{fmtINR(printPayload.total_invoice_value)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              {printPayload.resolved_toggles.showAmountInWords && (
+                <div className="text-xs italic">Amount in words: {printPayload.amount_in_words}</div>
+              )}
+              {printPayload.approval_notes && (
+                <div className="text-xs"><strong>Notes:</strong> {printPayload.approval_notes}</div>
+              )}
+              {printPayload.resolved_toggles.showAuthorisedSignatory && (
+                <div className="text-right pt-8 text-xs">{printPayload.authorised_signatory}</div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPrintBillId(null)}>Close</Button>
+            <Button onClick={() => window.print()}><Printer className="w-3.5 h-3.5 mr-1" /> Print</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
