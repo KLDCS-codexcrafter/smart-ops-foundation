@@ -12,7 +12,7 @@ import {
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
-  Receipt, FileSignature,
+  Receipt, FileSignature, DoorOpen,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
