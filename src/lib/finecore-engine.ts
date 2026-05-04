@@ -206,7 +206,9 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.6a · UTS doc-no consolidation (D-226)
     | 'SEC'   // SEC — SalesX Secondary Sales (was custom prefix; now FY-scoped via generateDocNo)
     // Sprint T-Phase-1.2.6f-c-3 · Rate Contract (D-293)
-    | 'RC',
+    | 'RC'
+    // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · GateFlow (D-303 · matches 'RC' precedent · audit-clean concession)
+    | 'GP',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
