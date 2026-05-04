@@ -63,6 +63,9 @@ export interface BillPassingLine {
   // QA (4-way)
   requires_inspection: boolean;
   qa_passed: boolean | null;
+
+  // Sprint T-Phase-1.2.6f-d-1 · Block E · D-291 Parametric Hub backfill (optional)
+  parameter_values?: Record<string, string>;
 }
 
 export interface BillPassingRecord {
