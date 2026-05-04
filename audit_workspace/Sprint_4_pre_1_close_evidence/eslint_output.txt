@@ -1,0 +1,1 @@
+eslint src --max-warnings 0 · 0 warnings · ESLint streak 38 → 39
