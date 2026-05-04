@@ -1182,6 +1182,90 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       console.warn('[entity-setup] section 8j Card #4 closure marker skipped:', e);
     }
 
+    // 8k. Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block I · D-328 · QualiCheck demo seed
+    //     Idempotent · marker check prevents re-run · 1 criteria + 2 specs + 2 plans.
+    try {
+      const sec8kMarker = `entity_setup_section_8k_${opts.shortCode}_v1`;
+      if (!localStorage.getItem(sec8kMarker)) {
+        const nowK = new Date().toISOString();
+        const ec = opts.shortCode;
+
+        // Acceptance criteria (IS 2500 Normal Level II)
+        const critKey = `erp_qa_acceptance_criteria_${ec}`;
+        const crit = {
+          id: `qac-seed-${ec}-1`,
+          code: 'AQL-IS2500-N-II',
+          name: 'IS 2500 — Normal Inspection Level II',
+          standard: 'IS 2500 (Part 1) : 2000',
+          inspection_level: 'II',
+          levels: [
+            { severity: 'critical', aql: 0.65, sample_size: 32, accept: 0, reject: 1 },
+            { severity: 'major',    aql: 1.0,  sample_size: 32, accept: 1, reject: 2 },
+            { severity: 'minor',    aql: 2.5,  sample_size: 32, accept: 2, reject: 3 },
+          ],
+          notes: 'Seeded by entity-setup section 8k',
+          entity_id: ec,
+          created_at: nowK, updated_at: nowK,
+        };
+        localStorage.setItem(critKey, JSON.stringify([crit]));
+
+        // 2 specs (RM Physical with 3 param types · FG Quality with master_lookup)
+        const specKey = `erp_qa_specs_${ec}`;
+        const spec1 = {
+          id: `qs-seed-${ec}-1`, code: 'SPEC-RM-PHYSICAL', name: 'RM Physical Properties',
+          item_id: null, item_name: null, status: 'active', notes: '',
+          entity_id: ec, created_at: nowK, updated_at: nowK,
+          parameters: [
+            { id: `qsp-${ec}-1-1`, sl_no: 1, name: 'Tensile Strength', parameter_type: 'numeric',
+              unit: 'MPa', min_value: 200, max_value: 350, expected_text: null,
+              lookup_master: null, is_critical: true, test_method: 'ASTM E8' },
+            { id: `qsp-${ec}-1-2`, sl_no: 2, name: 'Surface Finish OK', parameter_type: 'boolean',
+              unit: null, min_value: null, max_value: null, expected_text: 'true',
+              lookup_master: null, is_critical: false, test_method: 'Visual' },
+            { id: `qsp-${ec}-1-3`, sl_no: 3, name: 'Material Grade', parameter_type: 'text',
+              unit: null, min_value: null, max_value: null, expected_text: 'SS-304',
+              lookup_master: null, is_critical: true, test_method: 'Mill Cert' },
+          ],
+        };
+        const spec2 = {
+          id: `qs-seed-${ec}-2`, code: 'SPEC-FG-QUALITY', name: 'FG Quality Check',
+          item_id: null, item_name: null, status: 'active', notes: '',
+          entity_id: ec, created_at: nowK, updated_at: nowK,
+          parameters: [
+            { id: `qsp-${ec}-2-1`, sl_no: 1, name: 'Colour', parameter_type: 'master_lookup',
+              unit: null, min_value: null, max_value: null, expected_text: null,
+              lookup_master: 'colour_master', is_critical: false, test_method: 'Visual' },
+          ],
+        };
+        localStorage.setItem(specKey, JSON.stringify([spec1, spec2]));
+
+        // 2 plans (default + vendor-A specific variant)
+        const planKey = `erp_qa_plans_${ec}`;
+        const planDef = {
+          id: `qp-seed-${ec}-1`, code: 'QP/26/0001', name: 'Default Incoming RM Plan',
+          plan_type: 'incoming', item_id: null, item_name: null,
+          spec_id: spec1.id, acceptance_criteria_id: crit.id,
+          vendor_id: null, vendor_name: null, customer_id: null, customer_name: null,
+          status: 'active', applicable_voucher_kinds: ['grn'], notes: 'Seeded',
+          entity_id: ec, created_at: nowK, updated_at: nowK,
+        };
+        const planVA = {
+          id: `qp-seed-${ec}-2`, code: 'QP/26/0002', name: 'Vendor-A Strict Plan',
+          plan_type: 'incoming', item_id: null, item_name: null,
+          spec_id: spec1.id, acceptance_criteria_id: crit.id,
+          vendor_id: 'V-DEMO-A', vendor_name: 'Demo Vendor A',
+          customer_id: null, customer_name: null,
+          status: 'active', applicable_voucher_kinds: ['grn', 'sample_in'], notes: 'Per-vendor variant',
+          entity_id: ec, created_at: nowK, updated_at: nowK,
+        };
+        localStorage.setItem(planKey, JSON.stringify([planDef, planVA]));
+
+        localStorage.setItem(sec8kMarker, nowK);
+      }
+    } catch (e) {
+      console.warn('[entity-setup] section 8k QualiCheck demo seed skipped:', e);
+    }
+
     /*
      * ═══════════════════════════════════════════════════════════════════════════
      * CARD #4 · GATEFLOW MVP · COMPLETE (3 of 3 sub-sprints CLOSED)
