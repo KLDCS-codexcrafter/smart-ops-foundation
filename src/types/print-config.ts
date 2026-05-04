@@ -26,7 +26,10 @@ export type VoucherTypeCode =
   | 'stock_adjustment'
   | 'stock_journal'
   | 'stock_transfer'
-  | 'mfg_journal';
+  | 'mfg_journal'
+  // Sprint T-Phase-1.2.6f-d-1 · D-290 Track 2 partial — Procure360 print engines.
+  | 'purchase_order'
+  | 'bill_passing';
 
 // [Abstract] The 20 universal toggle keys. Not every toggle applies to every voucher —
 // the applicability matrix is in PRINT_TOGGLES below. Engine consumers check applicability
@@ -125,6 +128,7 @@ const ALL_VOUCHERS: VoucherTypeCode[] = [
   'purchase_invoice', 'credit_note', 'debit_note',
   'delivery_note', 'receipt_note',
   'stock_adjustment', 'stock_journal', 'stock_transfer', 'mfg_journal',
+  'purchase_order', 'bill_passing',
 ];
 
 const GL_VOUCHERS: VoucherTypeCode[] = ['receipt', 'payment', 'contra', 'journal'];
@@ -133,6 +137,7 @@ const INV_VOUCHERS: VoucherTypeCode[] = [
   'invoice', 'purchase_invoice', 'credit_note', 'debit_note',
   'delivery_note', 'receipt_note',
   'stock_adjustment', 'stock_journal', 'stock_transfer', 'mfg_journal',
+  'purchase_order', 'bill_passing',
 ];
 const TRANSPORT_VOUCHERS: VoucherTypeCode[] = ['invoice', 'delivery_note', 'receipt_note'];
 
@@ -184,6 +189,8 @@ export const VOUCHER_TYPE_LABELS: Record<VoucherTypeCode, string> = {
   stock_journal: 'Stock Journal',
   stock_transfer: 'Stock Transfer',
   mfg_journal: 'Manufacturing Journal',
+  purchase_order: 'Purchase Order',
+  bill_passing: 'Bill Passing',
 };
 
 export const TOGGLE_GROUP_LABELS: Record<ToggleGroup, string> = {

@@ -19,6 +19,8 @@ export interface RateContractLine {
   max_qty: number;
   tax_pct: number;
   notes: string;
+  // Sprint T-Phase-1.2.6f-d-1 · Block E · D-291 Parametric Hub backfill (optional)
+  parameter_values?: Record<string, string>;
 }
 
 export interface RateContract {

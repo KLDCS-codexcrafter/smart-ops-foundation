@@ -22,7 +22,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer } from 'lucide-react';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import { buildPoPrintPayload, PO_COPY_CONFIG } from '@/lib/po-print-engine';
+import { loadEntityGst, formatINR as fmtINR, formatDDMMMYYYY as fmtDate } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listEnquiries, promoteIndentToProcurementEnquiry, createEnquiry, updateEnquiry,
@@ -1504,6 +1510,15 @@ export function PoListPanel(): JSX.Element {
   const [pos, setPos] = useState<PurchaseOrderRecord[]>(() => listPurchaseOrders(entityCode));
   const [activeTab, setActiveTab] = useState<'all' | PoStatus>('all');
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+  const [printPoId, setPrintPoId] = useState<string | null>(null);
+  const [printCopy, setPrintCopy] = useState<string>(PO_COPY_CONFIG.default);
+
+  const printPayload = useMemo(() => {
+    if (!printPoId) return null;
+    const po = pos.find((p) => p.id === printPoId);
+    if (!po) return null;
+    return buildPoPrintPayload(po, loadEntityGst(entityCode), printCopy, loadPrintConfig(entityCode));
+  }, [printPoId, pos, entityCode, printCopy]);
 
   const refresh = useCallback(() => setPos(listPurchaseOrders(entityCode)), [entityCode]);
 
@@ -1613,6 +1628,14 @@ export function PoListPanel(): JSX.Element {
                       {po.status !== 'cancelled' && po.status !== 'closed' && po.status !== 'fully_received' && (
                         <Button size="sm" variant="ghost" onClick={() => handleCancel(po)}>Cancel</Button>
                       )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setPrintCopy(PO_COPY_CONFIG.default); setPrintPoId(po.id); }}
+                        aria-label="Print PO"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -1682,6 +1705,104 @@ export function PoListPanel(): JSX.Element {
           )}
         </CardContent></Card>
       )}
+
+      <Dialog open={!!printPoId} onOpenChange={(o) => { if (!o) setPrintPoId(null); }}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-foreground">
+          <DialogHeader>
+            <DialogTitle>Print Preview · {printPayload?.po_no}</DialogTitle>
+          </DialogHeader>
+          {printPayload && (
+            <div className="space-y-4 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Copy:</span>
+                {PO_COPY_CONFIG.keys.map((k) => (
+                  <Button
+                    key={k}
+                    size="sm"
+                    variant={printCopy === k ? 'default' : 'outline'}
+                    onClick={() => setPrintCopy(k)}
+                  >
+                    {PO_COPY_CONFIG.labels[k]}
+                  </Button>
+                ))}
+              </div>
+              <div className="border-t border-b py-2">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{printPayload.copy_label}</div>
+                <h2 className="text-lg font-bold">PURCHASE ORDER</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="font-semibold">{printPayload.buyer.legal_name}</div>
+                  <div className="text-xs whitespace-pre-line">{printPayload.buyer_address}</div>
+                  {printPayload.resolved_toggles.showHeaderGstin && printPayload.buyer.gstin && (
+                    <div className="text-xs font-mono">GSTIN: {printPayload.buyer.gstin}</div>
+                  )}
+                  {printPayload.resolved_toggles.showHeaderPan && printPayload.buyer.pan && (
+                    <div className="text-xs font-mono">PAN: {printPayload.buyer.pan}</div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">PO No</div>
+                  <div className="font-mono font-semibold">{printPayload.po_no}</div>
+                  <div className="text-xs text-muted-foreground mt-1">PO Date</div>
+                  <div className="font-mono">{fmtDate(printPayload.po_date)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Expected Delivery</div>
+                  <div className="font-mono">{fmtDate(printPayload.expected_delivery_date)}</div>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Vendor</div>
+                <div className="font-semibold">{printPayload.vendor_name}</div>
+              </div>
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-1">#</th>
+                    <th className="text-left py-1">Item</th>
+                    <th className="text-right py-1">Qty</th>
+                    <th className="text-left py-1">UoM</th>
+                    {printPayload.resolved_toggles.showRate && <th className="text-right py-1">Rate</th>}
+                    {printPayload.resolved_toggles.showValue && <th className="text-right py-1">Basic</th>}
+                    <th className="text-right py-1">Tax %</th>
+                    <th className="text-right py-1">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {printPayload.lines.map((l) => (
+                    <tr key={l.sl_no} className="border-b">
+                      <td className="py-1">{l.sl_no}</td>
+                      <td className="py-1">{l.item_name}</td>
+                      <td className="py-1 text-right font-mono">{l.qty}</td>
+                      <td className="py-1">{l.uom}</td>
+                      {printPayload.resolved_toggles.showRate && <td className="py-1 text-right font-mono">{fmtINR(l.rate)}</td>}
+                      {printPayload.resolved_toggles.showValue && <td className="py-1 text-right font-mono">{fmtINR(l.basic_value)}</td>}
+                      <td className="py-1 text-right font-mono">{l.tax_pct}</td>
+                      <td className="py-1 text-right font-mono">{fmtINR(l.amount_after_tax)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="font-semibold">
+                    <td colSpan={6} className="text-right py-1">Total</td>
+                    <td className="text-right py-1 font-mono">{fmtINR(printPayload.total_tax_value)}</td>
+                    <td className="text-right py-1 font-mono">{fmtINR(printPayload.total_after_tax)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              {printPayload.resolved_toggles.showAmountInWords && (
+                <div className="text-xs italic">Amount in words: {printPayload.amount_in_words}</div>
+              )}
+              {printPayload.resolved_toggles.showAuthorisedSignatory && (
+                <div className="text-right pt-8 text-xs">{printPayload.authorised_signatory}</div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPrintPoId(null)}>Close</Button>
+            <Button onClick={() => window.print()}><Printer className="w-3.5 h-3.5 mr-1" /> Print</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -24,6 +24,8 @@ export interface GitStage1Line {
   qty_rejected: number;
   uom: string;
   rejection_reason: string | null;
+  // Sprint T-Phase-1.2.6f-d-1 · Block E · D-291 Parametric Hub backfill (optional)
+  parameter_values?: Record<string, string>;
 }
 
 export interface GitStage1Record {

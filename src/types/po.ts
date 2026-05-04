@@ -30,6 +30,11 @@ export interface PurchaseOrderLine {
   tax_value: number;
   amount_after_tax: number;
   qty_received: number;
+  // Sprint T-Phase-1.2.6f-d-1 · Block E · D-291 Parametric Hub backfill (optional · backward-compat)
+  parameter_values?: Record<string, string>;
+  // Sprint T-Phase-1.2.6f-d-1 · Block F · D-297 PO auto-resolve from Rate Contract (optional)
+  auto_resolved?: boolean;
+  rate_contract_id?: string | null;
 }
 
 export interface PoFollowup {

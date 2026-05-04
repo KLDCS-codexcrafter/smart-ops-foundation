@@ -64,8 +64,9 @@ const blankForm = (): ContractFormState => ({
 
 export function RateContractListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick, setTick] = useState(0);
-  const all = useMemo(() => listRateContracts(entityCode), [entityCode, tick]);
+  const [list, setList] = useState<RateContract[]>(() => listRateContracts(entityCode));
+  const refresh = (): void => setList(listRateContracts(entityCode));
+  const all = list;
   const [q, setQ] = useState('');
   const [detail, setDetail] = useState<RateContract | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -106,7 +107,7 @@ export function RateContractListPanel(): JSX.Element {
       toast.success('Rate contract created');
       setCreateOpen(false);
       setForm(blankForm());
-      setTick((t) => t + 1);
+      refresh();
     } catch (e) {
       toast.error(`Create failed: ${(e as Error).message}`);
     }
