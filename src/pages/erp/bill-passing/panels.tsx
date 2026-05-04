@@ -629,7 +629,12 @@ export function MatchReviewPanel(): JSX.Element {
                       </TableCell>
                       <TableCell><span className="font-mono">{vCount}</span> / {b.lines.length}</TableCell>
                       <TableCell>
-                        <Button size="sm" onClick={() => setReviewBill(b)}>Review</Button>
+                        <div className="flex gap-1">
+                          <Button size="sm" onClick={() => setReviewBill(b)}>Review</Button>
+                          <Button size="sm" variant="ghost" onClick={() => setPrintBillId(b.id)} aria-label="Print bill">
+                            <Printer className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
