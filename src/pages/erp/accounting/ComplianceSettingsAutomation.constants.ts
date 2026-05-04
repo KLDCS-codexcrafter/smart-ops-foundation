@@ -190,3 +190,53 @@ export const RCM_AUTO_POST_MODE_LABELS: Record<RCMAutoPostMode, string> = {
 export const comply360RCMAutoPostKey = (entityId: string | null | undefined): string =>
   `erp_comply360_rcm_autopost_${entityId ?? 'default'}`;
 
+// ─── Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block H · D-334 + D-337 · QualiCheck ──
+// Section 11 'QualiCheck' on ComplianceSettingsAutomation. Tally F11 cascade pattern.
+// [JWT] GET/PATCH /api/compliance/comply360/qc/:entityId
+
+export interface QualiCheckConfig {
+  // Master gate (D-334)
+  enableQualiCheck: boolean;
+  // 4 cascading scope toggles
+  enableIncomingInspection: boolean;
+  enableInProcessInspection: boolean;
+  enableOutgoingInspection: boolean;
+  enableSampleInspection: boolean;
+  // External / witnessed (D-335)
+  enableExternalLab: boolean;
+  enableCustomerWitnessed: boolean;
+  // IS 2500 AQL toggle (D-323)
+  enforceIS2500AQL: boolean;
+  // CoA (Certificate of Analysis) toggles
+  generateIncomingCoA: boolean;
+  generateOutgoingCoA: boolean;
+  // Bulk operations
+  allowBulkInspectionEntry: boolean;
+  // 4 godown picker fields (D-337 · routing logic in 5-pre-2)
+  quarantineGodownId: string;
+  sampleGodownId: string;
+  rejectionGodownId: string;
+  approvedGodownId: string;
+}
+
+export const DEFAULT_QC_CONFIG: QualiCheckConfig = {
+  enableQualiCheck: false,
+  enableIncomingInspection: false,
+  enableInProcessInspection: false,
+  enableOutgoingInspection: false,
+  enableSampleInspection: false,
+  enableExternalLab: false,
+  enableCustomerWitnessed: false,
+  enforceIS2500AQL: false,
+  generateIncomingCoA: false,
+  generateOutgoingCoA: false,
+  allowBulkInspectionEntry: false,
+  quarantineGodownId: '',
+  sampleGodownId: '',
+  rejectionGodownId: '',
+  approvedGodownId: '',
+};
+
+export const comply360QCKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_qc_${entityId ?? 'default'}`;
+
