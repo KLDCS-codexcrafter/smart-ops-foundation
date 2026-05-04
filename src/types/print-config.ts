@@ -128,6 +128,7 @@ const ALL_VOUCHERS: VoucherTypeCode[] = [
   'purchase_invoice', 'credit_note', 'debit_note',
   'delivery_note', 'receipt_note',
   'stock_adjustment', 'stock_journal', 'stock_transfer', 'mfg_journal',
+  'purchase_order', 'bill_passing',
 ];
 
 const GL_VOUCHERS: VoucherTypeCode[] = ['receipt', 'payment', 'contra', 'journal'];
@@ -136,6 +137,7 @@ const INV_VOUCHERS: VoucherTypeCode[] = [
   'invoice', 'purchase_invoice', 'credit_note', 'debit_note',
   'delivery_note', 'receipt_note',
   'stock_adjustment', 'stock_journal', 'stock_transfer', 'mfg_journal',
+  'purchase_order', 'bill_passing',
 ];
 const TRANSPORT_VOUCHERS: VoucherTypeCode[] = ['invoice', 'delivery_note', 'receipt_note'];
 
