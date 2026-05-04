@@ -210,7 +210,9 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · GateFlow (D-303 · matches 'RC' precedent · audit-clean concession)
     | 'GP'
     // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-2 · Weighbridge (D-308 · matches 'GP'/'RC' precedent · audit-clean concession)
-    | 'WB',
+    | 'WB'
+    // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · QualiCheck (D-327 · matches 'GP'/'WB'/'RC' precedent · audit-clean concession)
+    | 'QP',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
