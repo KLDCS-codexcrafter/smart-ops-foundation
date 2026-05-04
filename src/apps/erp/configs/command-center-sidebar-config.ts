@@ -12,7 +12,7 @@ import {
   PackageOpen, DollarSign, TrendingDown, AlertTriangle,
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
-  Receipt, FileSignature,
+  Receipt, FileSignature, DoorOpen,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -164,6 +164,14 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // Sprint T-Phase-1.2.6f-c-3-fix · Fix-E · Q3=A · Rate Contracts launcher (route-based)
       { id: 'cc-rate-contract-launcher', type: 'item', label: 'Rate Contracts', icon: FileSignature,
         route: '/erp/bill-passing', requiredCards: ['command-center'] },
+    ],
+  },
+  {
+    // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow launcher (route-based · Card #4 Foundation)
+    id: 'operations-group', type: 'group', label: 'Operations', icon: DoorOpen,
+    children: [
+      { id: 'cc-gateflow-launcher', type: 'item', label: 'GateFlow', icon: DoorOpen,
+        route: '/erp/gateflow', requiredCards: ['command-center'] },
     ],
   },
   {

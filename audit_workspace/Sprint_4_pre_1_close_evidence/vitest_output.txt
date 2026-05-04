@@ -1,0 +1,4 @@
+Test Files  31 passed (31)
+     Tests  281 passed (281)
++5 NEW tests in src/test/gateflow-engine.test.ts
+276 (baseline) → 281

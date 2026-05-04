@@ -1004,15 +1004,100 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         localStorage.setItem(sec8gMarker, nowG);
       }
     } catch (e) { console.warn('[entity-setup] section 8g demo enrichment skipped:', e); }
+
+    // 8h. Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block F · GateFlow demo seed (Card #4 Foundation OPENED)
+    //     · Idempotent · marker check prevents re-running on subsequent setup calls
+    //     · Reaffirms D-301 / D-302 / D-303 / D-304 / D-305 · 3 demo passes (2 inward + 1 outward)
+    //     · Demonstrates linked_voucher_type variations (po · null · dln) + status variations (in_progress · pending · verified)
+    try {
+      const sec8hMarker = `entity_setup_section_8h_${opts.shortCode}_v1`;
+      if (!localStorage.getItem(sec8hMarker)) {
+        const nowH = new Date().toISOString();
+        const gpKey = `erp_gate_passes_${opts.shortCode}`;
+        const seedPasses = [
+          {
+            id: `gp-seed-${opts.shortCode}-in-1`,
+            gate_pass_no: `GP/${opts.shortCode}/26-27/0001`,
+            direction: 'inward' as const,
+            entity_id: opts.shortCode,
+            entity_code: opts.shortCode,
+            status: 'in_progress' as const,
+            vehicle_no: 'KA-01-AB-1234',
+            vehicle_type: 'truck',
+            driver_name: 'Rajesh Kumar',
+            driver_phone: '+91-9876543210',
+            linked_voucher_type: 'po' as const,
+            linked_voucher_id: `po-seed-${opts.shortCode}-1`,
+            linked_voucher_no: `PO/${opts.shortCode}/26-27/0001`,
+            counterparty_name: 'Demo Vendor 1',
+            entry_time: nowH,
+            verified_time: nowH,
+            in_progress_time: nowH,
+            purpose: `Material Receipt against PO/${opts.shortCode}/26-27/0001`,
+            created_at: nowH,
+            created_by_user_id: 'mock-user',
+            updated_at: nowH,
+          },
+          {
+            id: `gp-seed-${opts.shortCode}-in-2`,
+            gate_pass_no: `GP/${opts.shortCode}/26-27/0002`,
+            direction: 'inward' as const,
+            entity_id: opts.shortCode,
+            entity_code: opts.shortCode,
+            status: 'pending' as const,
+            vehicle_no: 'KA-02-CD-5678',
+            vehicle_type: 'tempo',
+            driver_name: 'Suresh Reddy',
+            driver_phone: '+91-9876543211',
+            linked_voucher_type: null,
+            counterparty_name: 'Walk-in Visitor · Service Vendor',
+            entry_time: nowH,
+            purpose: 'Service vendor visit · maintenance check',
+            created_at: nowH,
+            created_by_user_id: 'mock-user',
+            updated_at: nowH,
+          },
+          {
+            id: `gp-seed-${opts.shortCode}-out-1`,
+            gate_pass_no: `GP/${opts.shortCode}/26-27/0003`,
+            direction: 'outward' as const,
+            entity_id: opts.shortCode,
+            entity_code: opts.shortCode,
+            status: 'verified' as const,
+            vehicle_no: 'KA-03-EF-9012',
+            vehicle_type: 'truck',
+            driver_name: 'Mahesh Iyer',
+            driver_phone: '+91-9876543212',
+            linked_voucher_type: 'dln' as const,
+            linked_voucher_id: `dln-seed-${opts.shortCode}-1`,
+            linked_voucher_no: `DLN/${opts.shortCode}/26-27/0001`,
+            counterparty_name: 'Demo Customer 1',
+            entry_time: nowH,
+            verified_time: nowH,
+            purpose: `Goods Dispatch against DLN/${opts.shortCode}/26-27/0001`,
+            created_at: nowH,
+            created_by_user_id: 'mock-user',
+            updated_at: nowH,
+          },
+        ];
+        localStorage.setItem(gpKey, JSON.stringify(seedPasses));
+        localStorage.setItem(sec8hMarker, nowH);
+      }
+    } catch (e) { console.warn('[entity-setup] section 8h GateFlow demo seed skipped:', e); }
+
     /*
      * ═══════════════════════════════════════════════════════════════════════════
-     * CARD #3 P2P ARC · 100% FUNCTIONAL CLOSURE
+     * CARD #4 · GATEFLOW · 4-pre-1 FOUNDATION OPENED
      * ═══════════════════════════════════════════════════════════════════════════
-     * Sub-sprints (8 of 8): pre-1 · pre-2 · 3-a · 3-b · 3-c · 3-c-3-fix · 3-d-1 · 3-d-2 · 3-d-2-touchup-G
-     * Streaks: D-127 64 · D-128 64 · ESLint 38 · TSC 41 · D-249 14 cycles · Vitest 276
-     * All Roadmap v42 P2P items closed · architectural debt zero · Card #4 unblocked.
+     * Sub-sprints planned (3): 4-pre-1 Foundation · 4-pre-2 Vehicle/Weighbridge · 4-pre-3 Mobile/Polish
+     * D-decisions issued: D-301 · D-302 · D-303 · D-304 · D-305
+     * Streaks: D-127 65 · D-128 65 · ESLint 39 · TSC 42 · D-249 15 cycles · Vitest 281+
+     * Card #3 P2P arc preserved (~50 audited engines · architectural debt zero).
+     * Foundation MVP: Shell + 4 panels + engine + state machine + linking · operational.
+     * Next: 4-pre-2 Vehicle/Weighbridge integration (gate_pass_id wiring into GIT).
      * ═══════════════════════════════════════════════════════════════════════════
      */
+
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
       const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
