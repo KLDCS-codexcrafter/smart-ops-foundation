@@ -13,4 +13,8 @@ export type GateFlowModule =
   | 'vehicle-outward'
   | 'vehicle-master'
   | 'driver-master'
-  | 'weighbridge-register';
+  | 'weighbridge-register'
+  // Sprint 4-pre-3 · Block G · 3 NEW alert modules · D-314
+  | 'alert-vehicle-expiry'
+  | 'alert-driver-expiry'
+  | 'alert-gate-dwell';
