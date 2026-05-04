@@ -18,7 +18,12 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Inbox, AlertTriangle, CheckCircle2, FileSearch, Activity } from 'lucide-react';
+import { Inbox, AlertTriangle, CheckCircle2, FileSearch, Activity, Printer } from 'lucide-react';
+import {
+  buildBillPassingPrintPayload, BILL_PASSING_COPY_CONFIG,
+} from '@/lib/bill-passing-print-engine';
+import { loadEntityGst, formatINR as fmtINR, formatDDMMMYYYY as fmtDate } from '@/lib/voucher-print-shared';
+import { loadPrintConfig } from '@/lib/print-config-storage';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
