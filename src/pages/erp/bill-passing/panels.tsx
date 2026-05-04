@@ -476,16 +476,20 @@ export function MatchReviewPanel(): JSX.Element {
   const [rejectReason, setRejectReason] = useState('');
   const [mode, setMode] = useState<'approve' | 'reject'>('approve');
 
-  // 3-c-3 placeholder fields (free text in 3-c-2 · 3-c-3 wires CC masters)
-  const [modeOfPayment, setModeOfPayment] = useState('');
-  const [termsOfPayment, setTermsOfPayment] = useState('');
-  const [termsOfDelivery, setTermsOfDelivery] = useState('');
+  // 3-c-3 · CC Masters wired (D-289)
+  const modes = useMemo(() => listModeOfPayment(entityCode).filter((m) => m.status === 'active'), [entityCode]);
+  const termsPay = useMemo(() => listTermsOfPayment(entityCode).filter((t) => t.status === 'active'), [entityCode]);
+  const termsDel = useMemo(() => listTermsOfDelivery(entityCode).filter((t) => t.status === 'active'), [entityCode]);
+
+  const [modeOfPaymentId, setModeOfPaymentId] = useState('');
+  const [termsOfPaymentId, setTermsOfPaymentId] = useState('');
+  const [termsOfDeliveryId, setTermsOfDeliveryId] = useState('');
   const [narration, setNarration] = useState('');
   const [tnc, setTnc] = useState('');
 
   const reset = (): void => {
     setApprovalNotes(''); setRejectReason(''); setMode('approve');
-    setModeOfPayment(''); setTermsOfPayment(''); setTermsOfDelivery('');
+    setModeOfPaymentId(''); setTermsOfPaymentId(''); setTermsOfDeliveryId('');
     setNarration(''); setTnc('');
   };
 
@@ -493,7 +497,13 @@ export function MatchReviewPanel(): JSX.Element {
     if (!reviewBill) return;
     if (!approvalNotes.trim()) { toast.error('Approval notes required for variance override'); return; }
     try {
-      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER);
+      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER, {
+        mode_of_payment_id: modeOfPaymentId || null,
+        terms_of_payment_id: termsOfPaymentId || null,
+        terms_of_delivery_id: termsOfDeliveryId || null,
+        narration,
+        terms_conditions: tnc,
+      });
       // D-287: trigger FinCore PI auto-draft
       if (approved) {
         await draftPiFromBill(approved.id, entityCode, MOCK_USER);
