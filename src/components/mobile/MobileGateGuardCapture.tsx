@@ -39,44 +39,13 @@ import { findByVehicleNo } from '@/lib/vehicle-master-engine';
 import { getDriver } from '@/lib/driver-master-engine';
 import { createInwardEntry, createOutwardEntry } from '@/lib/gateflow-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import type { GatePassDirection, LinkedVoucherType } from '@/types/gate-pass';
+import type { LinkedVoucherType } from '@/types/gate-pass';
+import {
+  canProceed, EMPTY_FORM_STATE, type FormState, type Step,
+} from '@/lib/mobile-gate-guard-validation';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-type Step = 1 | 2 | 3 | 4 | 5;
-
-interface FormState {
-  direction: GatePassDirection;
-  vehicleNo: string;
-  vehicleType: string;
-  driverName: string;
-  driverPhone: string;
-  driverLicenseNo: string;
-  purpose: string;
-  counterpartyName: string;
-  linkedVoucherType: LinkedVoucherType;
-  linkedVoucherNo: string;
-  remarks: string;
-  driverLicenseImageUrl?: string;
-  vehicleInspectionImageUrl?: string;
-  anprImageUrl?: string;
-  podImageUrls: string[];
-}
-
-const EMPTY: FormState = {
-  direction: 'inward', vehicleNo: '', vehicleType: 'truck',
-  driverName: '', driverPhone: '', driverLicenseNo: '',
-  purpose: '', counterpartyName: '',
-  linkedVoucherType: null, linkedVoucherNo: '', remarks: '',
-  podImageUrls: [],
-};
-
-function canProceed(s: FormState, step: Step): boolean {
-  if (step === 1) return s.vehicleNo.trim().length >= 4;
-  if (step === 2) return s.driverName.trim().length >= 2 && /^[6-9]\d{9}$/.test(s.driverPhone.trim());
-  if (step === 3) return s.purpose.trim().length >= 3 && s.counterpartyName.trim().length >= 2;
-  if (step === 4) return true; // photos optional
-  return false;
-}
+const EMPTY = EMPTY_FORM_STATE;
 
 export default function MobileGateGuardCapture() {
   const [step, setStep] = useState<Step>(1);
