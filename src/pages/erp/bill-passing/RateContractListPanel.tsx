@@ -107,7 +107,7 @@ export function RateContractListPanel(): JSX.Element {
       toast.success('Rate contract created');
       setCreateOpen(false);
       setForm(blankForm());
-      setTick((t) => t + 1);
+      refresh();
     } catch (e) {
       toast.error(`Create failed: ${(e as Error).message}`);
     }
