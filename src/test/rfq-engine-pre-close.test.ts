@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { computePreCloseRecommendation } from '@/lib/rfq-engine';
 import { rfqsKey, type RFQ } from '@/types/rfq';
-import { vendorQuotationsKey, type VendorQuotation } from '@/types/vendor-quotation';
+import { vendorQuotationsKey } from '@/types/vendor-quotation';
 
 const E = 'TST';
 
@@ -52,27 +52,15 @@ function seedRfq(overrides: Partial<RFQ>): RFQ {
 }
 
 function seedQuotations(rfqId: string, count: number): void {
-  const list: VendorQuotation[] = Array.from({ length: count }, (_, i) => ({
+  // Engine only reads `parent_rfq_id` from each record (filter via getQuotationsByRfq).
+  // We persist minimal shape directly to localStorage to avoid coupling the test
+  // to the full VendorQuotation interface (which has 25+ fields irrelevant to pre-close logic).
+  const list = Array.from({ length: count }, (_, i) => ({
     id: `vq-${i}`,
-    quotation_no: `VQ/202605/${String(i + 1).padStart(4, '0')}`,
     parent_rfq_id: rfqId,
-    parent_enquiry_id: 'enq-1',
-    entity_id: 'e1',
     vendor_id: `v-${i}`,
     vendor_name: `Vendor ${i}`,
-    quotation_date: new Date().toISOString().slice(0, 10),
-    valid_till: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
-    lines: [],
-    payment_terms: '30 days',
-    delivery_terms: 'FOB',
-    sub_total: 0,
-    total_tax: 0,
-    grand_total: 0,
-    status: 'submitted' as VendorQuotation['status'],
-    submission_source: 'internal' as VendorQuotation['submission_source'],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as VendorQuotation));
+  }));
   localStorage.setItem(vendorQuotationsKey(E), JSON.stringify(list));
 }
 
