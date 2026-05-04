@@ -439,11 +439,20 @@ export async function transitionBillPassingStatus(
 }
 
 // ---------- Approve ----------
+export interface ApproveBillMasterFields {
+  mode_of_payment_id?: string | null;
+  terms_of_payment_id?: string | null;
+  terms_of_delivery_id?: string | null;
+  narration?: string;
+  terms_conditions?: string;
+}
+
 export async function approveBill(
   id: string,
   approvalNotes: string,
   entityCode: string,
   byUserId: string,
+  masters?: ApproveBillMasterFields,
 ): Promise<BillPassingRecord | null> {
   const list = read(entityCode);
   const idx = list.findIndex((b) => b.id === id);
@@ -465,6 +474,11 @@ export async function approveBill(
     approval_notes: approvalNotes,
     approved_at: now,
     updated_at: now,
+    mode_of_payment_id: masters?.mode_of_payment_id ?? cur.mode_of_payment_id,
+    terms_of_payment_id: masters?.terms_of_payment_id ?? cur.terms_of_payment_id,
+    terms_of_delivery_id: masters?.terms_of_delivery_id ?? cur.terms_of_delivery_id,
+    narration: masters?.narration ?? cur.narration,
+    terms_conditions: masters?.terms_conditions ?? cur.terms_conditions,
   };
   list[idx] = updated;
   write(entityCode, list);
