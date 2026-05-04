@@ -180,6 +180,70 @@ export function RateContractListPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      <Dialog open={createOpen} onOpenChange={(o) => { if (!o) { setCreateOpen(false); setForm(blankForm()); } }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>New Rate Contract</DialogTitle></DialogHeader>
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+            <div>
+              <Label>Vendor Name</Label>
+              <Input value={form.vendor_name} onChange={(e) => setForm({ ...form, vendor_name: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Valid From</Label>
+                <Input type="date" value={form.valid_from} onChange={(e) => setForm({ ...form, valid_from: e.target.value })} />
+              </div>
+              <div>
+                <Label>Valid To</Label>
+                <Input type="date" value={form.valid_to} onChange={(e) => setForm({ ...form, valid_to: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Payment Terms</Label>
+                <Input value={form.payment_terms} onChange={(e) => setForm({ ...form, payment_terms: e.target.value })} />
+              </div>
+              <div>
+                <Label>Delivery Terms</Label>
+                <Input value={form.delivery_terms} onChange={(e) => setForm({ ...form, delivery_terms: e.target.value })} />
+              </div>
+            </div>
+            <div className="border-t pt-3 space-y-2">
+              <Label className="font-semibold">Item Line</Label>
+              <Input placeholder="Item Name" value={form.item_name} onChange={(e) => setForm({ ...form, item_name: e.target.value })} />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs">Agreed Rate (₹)</Label>
+                  <Input type="number" value={form.agreed_rate} onChange={(e) => setForm({ ...form, agreed_rate: Number(e.target.value) })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Ceiling Rate (₹)</Label>
+                  <Input type="number" value={form.ceiling_rate} onChange={(e) => setForm({ ...form, ceiling_rate: Number(e.target.value) })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Label className="text-xs">Min Qty</Label>
+                  <Input type="number" value={form.min_qty} onChange={(e) => setForm({ ...form, min_qty: Number(e.target.value) })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Max Qty</Label>
+                  <Input type="number" value={form.max_qty} onChange={(e) => setForm({ ...form, max_qty: Number(e.target.value) })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Tax %</Label>
+                  <Input type="number" value={form.tax_pct} onChange={(e) => setForm({ ...form, tax_pct: Number(e.target.value) })} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCreateOpen(false); setForm(blankForm()); }}>Cancel</Button>
+            <Button onClick={handleCreate}>Create Contract</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
