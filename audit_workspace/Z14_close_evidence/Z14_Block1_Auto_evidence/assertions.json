@@ -1,6 +1,6 @@
 {
   "sprint": "T-H1.5-Z-Z14-Block1-Auto",
-  "timestamp": "2026-05-04T14:25:23.253Z",
+  "timestamp": "2026-05-04T17:44:19.114Z",
   "totalAssertions": 16,
   "pass": 16,
   "fail": 0,
@@ -85,7 +85,7 @@
           }
         ]
       },
-      "timestamp": "2026-05-04T14:25:23.187Z"
+      "timestamp": "2026-05-04T17:44:19.076Z"
     },
     {
       "id": "z2a-trial-balance",
@@ -98,7 +98,7 @@
         "diff": "0",
         "journalLineCount": 6
       },
-      "timestamp": "2026-05-04T14:25:23.195Z"
+      "timestamp": "2026-05-04T17:44:19.085Z"
     },
     {
       "id": "z2b-tds",
@@ -111,7 +111,7 @@
         "applicable": true,
         "decimalString": "10000"
       },
-      "timestamp": "2026-05-04T14:25:23.200Z"
+      "timestamp": "2026-05-04T17:44:19.088Z"
     },
     {
       "id": "z2c-a-commission",
@@ -131,7 +131,7 @@
           "net": 4750
         }
       },
-      "timestamp": "2026-05-04T14:25:23.201Z"
+      "timestamp": "2026-05-04T17:44:19.088Z"
     },
     {
       "id": "z3-mock-auth",
@@ -150,7 +150,7 @@
           "role": "accountant"
         }
       },
-      "timestamp": "2026-05-04T14:25:23.212Z"
+      "timestamp": "2026-05-04T17:44:19.095Z"
     },
     {
       "id": "z3-actor-thread",
@@ -161,7 +161,7 @@
         "stored_created_by": "accountant1",
         "voucher_no": "SMK/ACT1"
       },
-      "timestamp": "2026-05-04T14:25:23.215Z"
+      "timestamp": "2026-05-04T17:44:19.096Z"
     },
     {
       "id": "z3-period-lock-set",
@@ -171,11 +171,11 @@
       "actual": {
         "config": {
           "lockedThrough": "2026-03-31",
-          "lastModifiedAt": "2026-05-04T14:25:23.217Z",
+          "lastModifiedAt": "2026-05-04T17:44:19.099Z",
           "lastModifiedBy": "admin1"
         }
       },
-      "timestamp": "2026-05-04T14:25:23.217Z"
+      "timestamp": "2026-05-04T17:44:19.099Z"
     },
     {
       "id": "z3-period-lock-reject",
@@ -189,7 +189,7 @@
         ],
         "isPeriodLocked": true
       },
-      "timestamp": "2026-05-04T14:25:23.219Z"
+      "timestamp": "2026-05-04T17:44:19.100Z"
     },
     {
       "id": "z3-period-lock-accept",
@@ -201,7 +201,7 @@
         "errors": [],
         "isPeriodLocked": false
       },
-      "timestamp": "2026-05-04T14:25:23.220Z"
+      "timestamp": "2026-05-04T17:44:19.101Z"
     },
     {
       "id": "z9-customer-roundtrip",
@@ -224,7 +224,7 @@
           }
         ]
       },
-      "timestamp": "2026-05-04T14:25:23.223Z"
+      "timestamp": "2026-05-04T17:44:19.103Z"
     },
     {
       "id": "z9-vendor-excel",
@@ -247,7 +247,7 @@
         "recordCount": 2,
         "recordKeyParity": true
       },
-      "timestamp": "2026-05-04T14:25:23.228Z"
+      "timestamp": "2026-05-04T17:44:19.104Z"
     },
     {
       "id": "z9-logistic-template",
@@ -265,7 +265,7 @@
           "Logistic Name"
         ]
       },
-      "timestamp": "2026-05-04T14:25:23.237Z"
+      "timestamp": "2026-05-04T17:44:19.105Z"
     },
     {
       "id": "z9-scheme-error",
@@ -283,7 +283,7 @@
         "codeErrorFound": true,
         "errorLine": 2
       },
-      "timestamp": "2026-05-04T14:25:23.238Z"
+      "timestamp": "2026-05-04T17:44:19.108Z"
     },
     {
       "id": "z10-cash-roundtrip",
@@ -296,7 +296,7 @@
         "importedCount": 1,
         "updatedCount": 0
       },
-      "timestamp": "2026-05-04T14:25:23.244Z"
+      "timestamp": "2026-05-04T17:44:19.110Z"
     },
     {
       "id": "z10-bank-template",
@@ -313,7 +313,7 @@
         ],
         "hasBankFields": true
       },
-      "timestamp": "2026-05-04T14:25:23.250Z"
+      "timestamp": "2026-05-04T17:44:19.112Z"
     },
     {
       "id": "z10-asset-error",
@@ -329,7 +329,7 @@
           }
         ]
       },
-      "timestamp": "2026-05-04T14:25:23.250Z"
+      "timestamp": "2026-05-04T17:44:19.112Z"
     }
   ],
   "bonusEvidence": {
