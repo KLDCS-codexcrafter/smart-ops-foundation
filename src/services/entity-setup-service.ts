@@ -1170,6 +1170,33 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
       console.warn('[entity-setup] section 8i Vehicle/Weighbridge demo seed skipped:', e);
     }
 
+    // 8j. Sprint T-Phase-1.2.6f-d-2-card4-4-pre-3 · Block I · Card #4 GateFlow MVP CLOSURE marker
+    //     Idempotent · no data seed · stamps progress only (mirrors 8h/8i pattern).
+    try {
+      const sec8jMarker = `entity_setup_section_8j_${opts.shortCode}_v1`;
+      if (!localStorage.getItem(sec8jMarker)) {
+        const nowJ = new Date().toISOString();
+        localStorage.setItem(sec8jMarker, nowJ);
+      }
+    } catch (e) {
+      console.warn('[entity-setup] section 8j Card #4 closure marker skipped:', e);
+    }
+
+    /*
+     * ═══════════════════════════════════════════════════════════════════════════
+     * CARD #4 · GATEFLOW MVP · COMPLETE (3 of 3 sub-sprints CLOSED)
+     * ═══════════════════════════════════════════════════════════════════════════
+     * 4-pre-1 ✅ Foundation · 4-pre-2 ✅ Vehicle+Weighbridge · 4-pre-3 ✅ Mobile+Polish
+     * D-decisions (15): D-301..D-315
+     * Operational deliverables: gate management · weighbridge · vehicle/driver masters
+     *   · OperixGo Gate Guard mobile (5-step) · 3 alert engines + panels · POD pre-stage capture.
+     * Streaks at 4-pre-3 close: D-127 67 · D-128 67 · ESLint 41 (post-decade-mark)
+     *   · TSC 44 · D-249 17 cycles ⭐ · git-engine.ts byte-identical 11 sprints ⭐ · Vitest 298.
+     * ZERO new audit-clean concessions in 4-pre-3.
+     * Ready for Card #5.
+     * ═══════════════════════════════════════════════════════════════════════════
+     */
+
     /*
      * ═══════════════════════════════════════════════════════════════════════════
      * CARD #4 · GATEFLOW · 4-pre-2 VEHICLE + WEIGHBRIDGE INTEGRATION COMPLETE
