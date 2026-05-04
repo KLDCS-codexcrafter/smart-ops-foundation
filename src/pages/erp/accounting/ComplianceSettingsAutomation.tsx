@@ -39,6 +39,8 @@ import {
   comply360TallyKey, DEFAULT_TALLY_EXPORT_CONFIG,
   comply360RCMAutoPostKey, DEFAULT_RCM_AUTO_POST_POLICIES,
   RCM_AUTO_POST_MODE_LABELS,
+  // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block H · D-334 · QualiCheck Section 11
+  comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
   type SAMConfig, type TallyExportConfig,
   type RCMAutoPostPolicy, type RCMAutoPostMode,
 } from './ComplianceSettingsAutomation.constants';
@@ -276,6 +278,8 @@ const SECTIONS = [
   { id: 'outstanding', label: 'Outstanding', toggle: 'enableBillByBill' as keyof GroupConfig },
   // [T-T10-pre.2c-TallyNative] Tally export is always-on (no group toggle gating).
   { id: 'tally', label: 'Tally export', toggle: 'enableInventory' as keyof GroupConfig },
+  // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block H · D-334 · QualiCheck (always-on like Tally)
+  { id: 'qc', label: 'QualiCheck', toggle: 'enableInventory' as keyof GroupConfig },
 ];
 
 const IMPORT_DUTY_TYPES = [
@@ -325,6 +329,8 @@ export function ComplianceSettingsAutomationPanel() {
   const [rcmAutoPostPolicies, setRcmAutoPostPolicies] = useState<RCMAutoPostPolicy[]>(
     DEFAULT_RCM_AUTO_POST_POLICIES,
   );
+  // Sprint 5-pre-1 · Block H · D-334 · QualiCheck config
+  const [qcConfig, setQcConfig] = useState<QualiCheckConfig>(DEFAULT_QC_CONFIG);
 
   const [activeSection, setActiveSection] = useState('gst-entity');
 
@@ -345,6 +351,8 @@ export function ComplianceSettingsAutomationPanel() {
     setEntityGst(loadOrDefault(entityGstKey(entityId), { ...DEFAULT_ENTITY_GST_CONFIG, entity_id: entityId }));
     setTallyConfig(loadOrDefault(comply360TallyKey(entityId), DEFAULT_TALLY_EXPORT_CONFIG));
     setRcmAutoPostPolicies(loadOrDefault(comply360RCMAutoPostKey(entityId), DEFAULT_RCM_AUTO_POST_POLICIES));
+    // Sprint 5-pre-1 · Block H · D-334
+    setQcConfig(loadOrDefault(comply360QCKey(entityId), DEFAULT_QC_CONFIG));
   }, [selectedEntityId]);
 
   // Auto-disable dependent toggles
