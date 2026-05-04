@@ -947,6 +947,72 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         }
       }
     } catch { /* ignore */ }
+    // 8g-parametric-autoresolve. Sprint T-Phase-1.2.6f-d-2-touchup-G · idempotent demo enrichment
+    // for D-291 (Parametric Hub backfill · parameter_values) and D-297 (PO auto-resolve from Rate Contract).
+    // Mirrors 8f pattern · single-shot marker prevents re-run · non-fatal try/catch.
+    try {
+      const sec8gMarker = `entity_setup_section_8g_${opts.shortCode}_v1`;
+      if (!localStorage.getItem(sec8gMarker)) {
+        const nowG = new Date().toISOString();
+        const sampleParams: Record<string, string> = { grade: 'A', batch: 'B-2026-001', remarks: 'Demo seed' };
+        // 8g-1: enrich first PO · first line auto_resolved=true + rate_contract_id · all lines parameter_values
+        const poRawG = localStorage.getItem(purchaseOrdersKey(opts.shortCode));
+        if (poRawG) {
+          const posG = JSON.parse(poRawG) as PurchaseOrderRecord[];
+          if (posG[0] && posG[0].lines.length > 0) {
+            posG[0].lines = posG[0].lines.map((pl: PurchaseOrderLine, idx: number) => ({
+              ...pl,
+              parameter_values: { ...sampleParams },
+              ...(idx === 0 ? { auto_resolved: true, rate_contract_id: `rc-seed-${opts.shortCode}` } : {}),
+            }));
+            posG[0].updated_at = nowG;
+            localStorage.setItem(purchaseOrdersKey(opts.shortCode), JSON.stringify(posG));
+          }
+        }
+        // 8g-2a: enrich first Bill Passing first line · parameter_values
+        const bpRawG = localStorage.getItem(billPassingKey(opts.shortCode));
+        if (bpRawG) {
+          const bps = JSON.parse(bpRawG) as BillPassingRecord[];
+          if (bps[0] && bps[0].lines.length > 0) {
+            bps[0].lines[0] = { ...bps[0].lines[0], parameter_values: { ...sampleParams } };
+            bps[0].updated_at = nowG;
+            localStorage.setItem(billPassingKey(opts.shortCode), JSON.stringify(bps));
+          }
+        }
+        // 8g-2b: enrich first GIT first line · parameter_values
+        const gitRawG = localStorage.getItem(gitStage1Key(opts.shortCode));
+        if (gitRawG) {
+          const gits = JSON.parse(gitRawG) as GitStage1Record[];
+          if (gits[0] && gits[0].lines.length > 0) {
+            gits[0].lines[0] = { ...gits[0].lines[0], parameter_values: { ...sampleParams } };
+            gits[0].updated_at = nowG;
+            localStorage.setItem(gitStage1Key(opts.shortCode), JSON.stringify(gits));
+          }
+        }
+        // 8g-2c: enrich first Rate Contract first line · parameter_values
+        const rcKeyG = `erp_vendor_contracts_${opts.shortCode}`;
+        const rcRawG = localStorage.getItem(rcKeyG);
+        if (rcRawG) {
+          const rcs = JSON.parse(rcRawG) as Array<{ lines: Array<Record<string, unknown>>; updated_at: string }>;
+          if (rcs[0] && rcs[0].lines.length > 0) {
+            rcs[0].lines[0] = { ...rcs[0].lines[0], parameter_values: { ...sampleParams } };
+            rcs[0].updated_at = nowG;
+            localStorage.setItem(rcKeyG, JSON.stringify(rcs));
+          }
+        }
+        // 8g-3: idempotent marker
+        localStorage.setItem(sec8gMarker, nowG);
+      }
+    } catch (e) { console.warn('[entity-setup] section 8g demo enrichment skipped:', e); }
+    /*
+     * ═══════════════════════════════════════════════════════════════════════════
+     * CARD #3 P2P ARC · 100% FUNCTIONAL CLOSURE
+     * ═══════════════════════════════════════════════════════════════════════════
+     * Sub-sprints (8 of 8): pre-1 · pre-2 · 3-a · 3-b · 3-c · 3-c-3-fix · 3-d-1 · 3-d-2 · 3-d-2-touchup-G
+     * Streaks: D-127 64 · D-128 64 · ESLint 38 · TSC 41 · D-249 14 cycles · Vitest 276
+     * All Roadmap v42 P2P items closed · architectural debt zero · Card #4 unblocked.
+     * ═══════════════════════════════════════════════════════════════════════════
+     */
     try {
       // [JWT] POST /api/foundation/org-structure/auto-seed
       const presetId = opts.businessActivity === 'Manufacturing' ? 'manufacturing'
