@@ -29,6 +29,9 @@ import {
 import { listPurchaseOrders, getPurchaseOrder } from '@/lib/po-management-engine';
 import { listGitStage1 } from '@/lib/git-engine';
 import { draftPiFromBill } from '@/lib/finance-pi-bridge';
+import {
+  listModeOfPayment, listTermsOfPayment, listTermsOfDelivery,
+} from '@/lib/cc-masters-engine';
 import type { BillPassingRecord, LineMatchStatus } from '@/types/bill-passing';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
@@ -473,16 +476,20 @@ export function MatchReviewPanel(): JSX.Element {
   const [rejectReason, setRejectReason] = useState('');
   const [mode, setMode] = useState<'approve' | 'reject'>('approve');
 
-  // 3-c-3 placeholder fields (free text in 3-c-2 · 3-c-3 wires CC masters)
-  const [modeOfPayment, setModeOfPayment] = useState('');
-  const [termsOfPayment, setTermsOfPayment] = useState('');
-  const [termsOfDelivery, setTermsOfDelivery] = useState('');
+  // 3-c-3 · CC Masters wired (D-289)
+  const modes = useMemo(() => listModeOfPayment(entityCode).filter((m) => m.status === 'active'), [entityCode]);
+  const termsPay = useMemo(() => listTermsOfPayment(entityCode).filter((t) => t.status === 'active'), [entityCode]);
+  const termsDel = useMemo(() => listTermsOfDelivery(entityCode).filter((t) => t.status === 'active'), [entityCode]);
+
+  const [modeOfPaymentId, setModeOfPaymentId] = useState('');
+  const [termsOfPaymentId, setTermsOfPaymentId] = useState('');
+  const [termsOfDeliveryId, setTermsOfDeliveryId] = useState('');
   const [narration, setNarration] = useState('');
   const [tnc, setTnc] = useState('');
 
   const reset = (): void => {
     setApprovalNotes(''); setRejectReason(''); setMode('approve');
-    setModeOfPayment(''); setTermsOfPayment(''); setTermsOfDelivery('');
+    setModeOfPaymentId(''); setTermsOfPaymentId(''); setTermsOfDeliveryId('');
     setNarration(''); setTnc('');
   };
 
@@ -490,7 +497,13 @@ export function MatchReviewPanel(): JSX.Element {
     if (!reviewBill) return;
     if (!approvalNotes.trim()) { toast.error('Approval notes required for variance override'); return; }
     try {
-      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER);
+      const approved = await approveBill(reviewBill.id, approvalNotes, entityCode, MOCK_USER, {
+        mode_of_payment_id: modeOfPaymentId || null,
+        terms_of_payment_id: termsOfPaymentId || null,
+        terms_of_delivery_id: termsOfDeliveryId || null,
+        narration,
+        terms_conditions: tnc,
+      });
       // D-287: trigger FinCore PI auto-draft
       if (approved) {
         await draftPiFromBill(approved.id, entityCode, MOCK_USER);
@@ -603,19 +616,40 @@ export function MatchReviewPanel(): JSX.Element {
               </Table>
 
               <div className="border rounded-md p-3 space-y-3">
-                <div className="text-sm font-semibold">3-c-3 Placeholder Fields (free text in 3-c-2 · masters in 3-c-3)</div>
+                <div className="text-sm font-semibold">Master Selections (D-289)</div>
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <Label>Mode of Payment</Label>
-                    <Input value={modeOfPayment} onChange={(e) => setModeOfPayment(e.target.value)} placeholder="e.g. NEFT" className="h-8" />
+                    <Select value={modeOfPaymentId} onValueChange={setModeOfPaymentId}>
+                      <SelectTrigger className="h-8"><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>
+                        {modes.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>{m.code} · {m.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label>Terms of Payment</Label>
-                    <Input value={termsOfPayment} onChange={(e) => setTermsOfPayment(e.target.value)} placeholder="e.g. 30 days credit" className="h-8" />
+                    <Select value={termsOfPaymentId} onValueChange={setTermsOfPaymentId}>
+                      <SelectTrigger className="h-8"><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>
+                        {termsPay.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>{t.code} · {t.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label>Terms of Delivery</Label>
-                    <Input value={termsOfDelivery} onChange={(e) => setTermsOfDelivery(e.target.value)} placeholder="e.g. FOR Destination" className="h-8" />
+                    <Select value={termsOfDeliveryId} onValueChange={setTermsOfDeliveryId}>
+                      <SelectTrigger className="h-8"><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>
+                        {termsDel.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>{t.code} · {t.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label>Narration</Label>

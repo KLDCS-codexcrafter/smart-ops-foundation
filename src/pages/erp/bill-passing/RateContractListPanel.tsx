@@ -1,0 +1,180 @@
+/**
+ * RateContractListPanel.tsx — Sprint T-Phase-1.2.6f-c-3 · Blocks E-G · D-293
+ * Vendor-locked rate contracts · view/list panel.
+ */
+import { useMemo, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
+import { FileSignature } from 'lucide-react';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { listRateContracts } from '@/lib/rate-contract-engine';
+import type { RateContract, RateContractStatus } from '@/types/rate-contract';
+
+function inr(n: number): string {
+  return `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+function fmt(d: string): string {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function statusVariant(s: RateContractStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+  switch (s) {
+    case 'active': return 'default';
+    case 'draft': return 'secondary';
+    case 'expired': case 'cancelled': return 'destructive';
+    default: return 'outline';
+  }
+}
+
+export function RateContractListPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const all = useMemo(() => listRateContracts(entityCode), [entityCode]);
+  const [q, setQ] = useState('');
+  const [detail, setDetail] = useState<RateContract | null>(null);
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return all;
+    return all.filter(
+      (r) =>
+        r.contract_no.toLowerCase().includes(term) ||
+        r.vendor_name.toLowerCase().includes(term),
+    );
+  }, [all, q]);
+
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Rate Contracts</h1>
+        <p className="text-sm text-muted-foreground">
+          Vendor-locked rate agreements · feed PO auto-fill (D-293).
+        </p>
+      </div>
+
+      <Input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search by contract no or vendor…"
+        className="max-w-sm"
+      />
+
+      <Card>
+        <CardContent className="p-0">
+          {filtered.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              <FileSignature className="h-10 w-10 mx-auto mb-2 opacity-50" />
+              No rate contracts.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Contract No</TableHead>
+                  <TableHead>Vendor</TableHead>
+                  <TableHead>Validity</TableHead>
+                  <TableHead className="text-right">Lines</TableHead>
+                  <TableHead className="text-right">Total Value</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((r) => (
+                  <TableRow key={r.id} className="cursor-pointer" onClick={() => setDetail(r)}>
+                    <TableCell className="font-mono">{r.contract_no}</TableCell>
+                    <TableCell>{r.vendor_name}</TableCell>
+                    <TableCell className="text-xs">
+                      {fmt(r.valid_from)} → {fmt(r.valid_to)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">{r.lines.length}</TableCell>
+                    <TableCell className="text-right font-mono">{inr(r.total_value)}</TableCell>
+                    <TableCell><Badge variant={statusVariant(r.status)}>{r.status}</Badge></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {detail?.contract_no} · {detail?.vendor_name}
+            </DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Validity:</span>{' '}
+                  {fmt(detail.valid_from)} → {fmt(detail.valid_to)}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Status:</span>{' '}
+                  <Badge variant={statusVariant(detail.status)}>{detail.status}</Badge>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Total:</span>{' '}
+                  <span className="font-mono">{inr(detail.total_value)}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Pay Terms:</span>{' '}
+                  {detail.payment_terms || '—'}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Delivery:</span>{' '}
+                  {detail.delivery_terms || '—'}
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item</TableHead>
+                    <TableHead>HSN</TableHead>
+                    <TableHead>UoM</TableHead>
+                    <TableHead className="text-right">Agreed</TableHead>
+                    <TableHead className="text-right">Ceiling</TableHead>
+                    <TableHead className="text-right">Qty Range</TableHead>
+                    <TableHead className="text-right">Tax %</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {detail.lines.map((l) => (
+                    <TableRow key={l.id}>
+                      <TableCell>{l.item_name}</TableCell>
+                      <TableCell className="font-mono text-xs">{l.hsn_sac}</TableCell>
+                      <TableCell>{l.uom}</TableCell>
+                      <TableCell className="text-right font-mono">{inr(l.agreed_rate)}</TableCell>
+                      <TableCell className="text-right font-mono">{inr(l.ceiling_rate)}</TableCell>
+                      <TableCell className="text-right font-mono">
+                        {l.min_qty} – {l.max_qty}
+                      </TableCell>
+                      <TableCell className="text-right font-mono">{l.tax_pct}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {detail.notes && (
+                <div className="text-xs text-muted-foreground whitespace-pre-wrap">
+                  {detail.notes}
+                </div>
+              )}
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => setDetail(null)}>Close</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

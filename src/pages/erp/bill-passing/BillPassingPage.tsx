@@ -10,6 +10,8 @@ import { BillPassingSidebar } from './BillPassingSidebar';
 import {
   BillPassingWelcome, PendingBillsPanel, MatchReviewPanel, ApprovedForFcpiPanel,
 } from './panels';
+import { BillPassingRegisterPanel } from './BillPassingRegisterPanel';
+import { RateContractListPanel } from './RateContractListPanel';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
 export default function BillPassingPage(): JSX.Element {
@@ -17,11 +19,13 @@ export default function BillPassingPage(): JSX.Element {
 
   const render = (): JSX.Element => {
     switch (active) {
-      case 'welcome':              return <BillPassingWelcome onNavigate={setActive} />;
-      case 'pending-bills':        return <PendingBillsPanel />;
-      case 'match-review':         return <MatchReviewPanel />;
-      case 'approved-for-fcpi':    return <ApprovedForFcpiPanel />;
-      default:                     return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
+      case 'welcome':                return <BillPassingWelcome onNavigate={setActive} />;
+      case 'pending-bills':          return <PendingBillsPanel />;
+      case 'match-review':           return <MatchReviewPanel />;
+      case 'approved-for-fcpi':      return <ApprovedForFcpiPanel />;
+      case 'bill-passing-register':  return <BillPassingRegisterPanel />;
+      case 'rate-contract-list':     return <RateContractListPanel />;
+      default:                       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
 
