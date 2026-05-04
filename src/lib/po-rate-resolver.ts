@@ -130,7 +130,7 @@ export async function createPOFromAwardWithRateResolution(
     entityCode,
     entityId: patchedPo.entity_id,
     voucherId: patchedPo.id,
-    voucherKind: 'purchase_order',
+    voucherKind: 'vendor_quotation',
     action: 'po_rate_auto_resolved',
     actorUserId: byUserId,
     payload: {
