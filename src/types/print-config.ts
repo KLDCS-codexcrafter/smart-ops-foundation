@@ -189,6 +189,8 @@ export const VOUCHER_TYPE_LABELS: Record<VoucherTypeCode, string> = {
   stock_journal: 'Stock Journal',
   stock_transfer: 'Stock Transfer',
   mfg_journal: 'Manufacturing Journal',
+  purchase_order: 'Purchase Order',
+  bill_passing: 'Bill Passing',
 };
 
 export const TOGGLE_GROUP_LABELS: Record<ToggleGroup, string> = {
