@@ -73,6 +73,12 @@ export interface GatePass {
   weighbridge_out_ticket_id?: string;     // FK to weighbridge-ticket (second weigh)
   anpr_image_url?: string;                // ANPR camera capture · captured at gate entry · manual verify
 
+  // Sprint 4-pre-3 · Block A · D-313 (Q3=A · POD pre-stage capture)
+  // 3 NEW nullable image fields · matches D-291 additive precedent · existing fields preserved
+  pod_image_urls?: string[];              // multi-image · vehicle/load photos · inward + outward
+  driver_license_image_url?: string;      // license document photo · captured once at Step 2
+  vehicle_inspection_image_url?: string;  // overall vehicle photo at gate · Step 4
+
   // Audit
   created_at: string;
   created_by_user_id: string;
