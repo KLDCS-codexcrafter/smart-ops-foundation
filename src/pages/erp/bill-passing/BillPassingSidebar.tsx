@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, Inbox, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Home, Inbox, AlertTriangle, CheckCircle2, FileText, FileSignature } from 'lucide-react';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
 interface Group {
@@ -31,6 +31,18 @@ const GROUPS: Group[] = [
       { id: 'pending-bills', label: 'Pending Bills', icon: Inbox },
       { id: 'match-review', label: 'Match Review', icon: AlertTriangle },
       { id: 'approved-for-fcpi', label: 'Approved for FCPI', icon: CheckCircle2 },
+    ],
+  },
+  {
+    label: 'Reports',
+    items: [
+      { id: 'bill-passing-register', label: 'Bill Passing Register', icon: FileText },
+    ],
+  },
+  {
+    label: 'Rate Contracts',
+    items: [
+      { id: 'rate-contract-list', label: 'Rate Contracts', icon: FileSignature },
     ],
   },
 ];
