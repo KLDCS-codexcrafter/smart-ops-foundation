@@ -152,6 +152,8 @@ const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
 const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
+// Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing
+const StoreHubPage = lazy(() => import('./pages/erp/store-hub/StoreHubPage'));
 const BillPassingPage = lazy(() => import('./pages/erp/bill-passing/BillPassingPage'));
 const SupplyXPage = lazy(() => import('./pages/erp/supplyx/SupplyXPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
@@ -449,6 +451,8 @@ const App = () => (
               <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
               <Route path="/erp/procure-hub" element={<P><Procure360Page /></P>} />
               <Route path="/erp/procure-hub/*" element={<P><Procure360Page /></P>} />
+              {/* Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing */}
+              <Route path="/erp/store-hub" element={<P><StoreHubPage /></P>} />
               <Route path="/erp/bill-passing" element={<P><BillPassingPage /></P>} />
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />

@@ -1,7 +1,9 @@
 /**
  * @file        IndentRegister.tsx
  * @sprint      T-Phase-1.2.6f-pre-2 · Block B
+ *              T-Phase-1.2.6f-d-2 · Block D · D-299 · Strategy badge column added
  * @purpose     Unified register (Material/Service/Capital) · health column · drill-in.
+ *              Adds sourcing-strategy recommendation badge per indent (Q3=A · 3 strategies).
  */
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,10 +14,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { STATUS_LABEL } from '@/types/requisition-common';
 import { computeIndentHealthScore } from '@/lib/requestx-report-engine';
 import { bandFromScore } from '@/lib/indent-health-score-engine';
 import { inrFmt } from '@/lib/requestx-report-engine';
+import {
+  recommendStrategy,
+  type VendorPoolEntry,
+  type SourcingStrategy,
+} from '@/lib/multi-sourcing-strategy-engine';
 
 type Kind = 'all' | 'material' | 'service' | 'capital';
 
@@ -26,18 +34,64 @@ const bandColor = (b: ReturnType<typeof bandFromScore>): string => {
   return 'text-destructive';
 };
 
+// Block D · D-299 · Strategy badge presentation
+const strategyLabel = (s: SourcingStrategy): string => {
+  if (s === 'single_source') return 'Single Source';
+  if (s === 'reverse_auction') return 'Reverse Auction';
+  return 'Multi Quote';
+};
+const strategyBadge = (s: SourcingStrategy): JSX.Element => {
+  if (s === 'reverse_auction') return <Badge className="text-[10px]">{strategyLabel(s)}</Badge>;
+  if (s === 'single_source') return <Badge variant="secondary" className="text-[10px]">{strategyLabel(s)}</Badge>;
+  return <Badge variant="outline" className="text-[10px]">{strategyLabel(s)}</Badge>;
+};
+
+// Block D · read group-wide vendor pool (D-249 zero-touch · structural typing only)
+function loadVendorPool(): VendorPoolEntry[] {
+  try {
+    const raw = localStorage.getItem('erp_group_vendor_master');
+    if (!raw) return [];
+    const arr = JSON.parse(raw) as Array<Record<string, unknown>>;
+    return arr.map((v) => ({
+      id: String(v.id ?? ''),
+      name: typeof v.name === 'string' ? v.name : undefined,
+      status: typeof v.status === 'string' ? v.status : undefined,
+      is_preferred: Boolean(v.is_preferred),
+      categories: Array.isArray(v.categories) ? (v.categories as string[]) : undefined,
+    }));
+  } catch { return []; }
+}
+
 export function IndentRegisterPanel(): JSX.Element {
   const mi = useMaterialIndents();
   const sr = useServiceRequests();
   const ci = useCapitalIndents();
+  const { entityCode } = useEntityCode();
   const [tab, setTab] = useState<Kind>('all');
   const [q, setQ] = useState('');
 
+  const vendorPool = useMemo(() => loadVendorPool(), []);
+
   const rows = useMemo(() => {
     const all = [
-      ...mi.map(x => ({ ...x, kind: 'material' as const, health: computeIndentHealthScore(x) })),
-      ...sr.map(x => ({ ...x, kind: 'service' as const, health: 100 })),
-      ...ci.map(x => ({ ...x, kind: 'capital' as const, health: 100 })),
+      ...mi.map(x => ({
+        ...x,
+        kind: 'material' as const,
+        health: computeIndentHealthScore(x),
+        strategy: recommendStrategy(x, vendorPool, entityCode).strategy,
+      })),
+      ...sr.map(x => ({
+        ...x,
+        kind: 'service' as const,
+        health: 100,
+        strategy: recommendStrategy(x, vendorPool, entityCode).strategy,
+      })),
+      ...ci.map(x => ({
+        ...x,
+        kind: 'capital' as const,
+        health: 100,
+        strategy: recommendStrategy(x, vendorPool, entityCode).strategy,
+      })),
     ];
     const filtered = tab === 'all' ? all : all.filter(r => r.kind === tab);
     if (!q.trim()) return filtered;
@@ -47,13 +101,13 @@ export function IndentRegisterPanel(): JSX.Element {
       r.requested_by_name.toLowerCase().includes(needle) ||
       r.originating_department_name.toLowerCase().includes(needle),
     );
-  }, [mi, sr, ci, tab, q]);
+  }, [mi, sr, ci, tab, q, vendorPool, entityCode]);
 
   return (
     <div className="p-6 space-y-4">
       <div>
         <h1 className="text-2xl font-bold">Indent Register</h1>
-        <p className="text-sm text-muted-foreground">All indents · Material · Service · Capital · with health score</p>
+        <p className="text-sm text-muted-foreground">All indents · Material · Service · Capital · with health score and sourcing strategy</p>
       </div>
 
       <Card>
@@ -85,12 +139,13 @@ export function IndentRegisterPanel(): JSX.Element {
                     <TableHead>Requester</TableHead>
                     <TableHead className="text-right">Value</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Strategy</TableHead>
                     <TableHead className="text-right">Health</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {rows.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground">
+                    <TableRow><TableCell colSpan={9} className="text-center text-xs text-muted-foreground">
                       No indents found.
                     </TableCell></TableRow>
                   )}
@@ -105,6 +160,7 @@ export function IndentRegisterPanel(): JSX.Element {
                         <TableCell className="text-xs">{r.requested_by_name}</TableCell>
                         <TableCell className="font-mono text-xs text-right">{inrFmt(r.total_estimated_value)}</TableCell>
                         <TableCell><Badge variant="outline" className="text-[10px]">{STATUS_LABEL[r.status]}</Badge></TableCell>
+                        <TableCell>{strategyBadge(r.strategy)}</TableCell>
                         <TableCell className={`font-mono text-xs text-right ${bandColor(band)}`}>
                           {r.kind === 'material' ? r.health : '—'}
                         </TableCell>

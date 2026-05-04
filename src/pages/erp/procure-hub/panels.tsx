@@ -35,7 +35,7 @@ import {
   transitionEnquiryStatus,
 } from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
-import { listRfqs } from '@/lib/rfq-engine';
+import { listRfqs, computePreCloseRecommendation } from '@/lib/rfq-engine';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
   computeVendorPerformance, computeBestPriceAnalysis, computeSpendByVendor,
@@ -686,6 +686,7 @@ export function EnquiryListPanel(): JSX.Element {
 }
 
 // Block I-fix · D-256 · RFQ list with Send / Decline / Timeout / Cancel + channel inline edit
+// Sprint T-Phase-1.2.6f-d-2 · Block F · Pre-close recommendation banner (Q6=A · 3 triggers)
 export function RfqListPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [version, setVersion] = useState(0);
@@ -700,6 +701,14 @@ export function RfqListPanel(): JSX.Element {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [reasonOpen, setReasonOpen] = useState<{ id: string; mode: 'decline' | 'cancel' } | null>(null);
   const [reasonText, setReasonText] = useState('');
+
+  // Block F · D-299 · pre-close recommendations (live computed · no writes)
+  const preCloseRecs = useMemo(() => {
+    void version;
+    return rfqs
+      .map((r) => computePreCloseRecommendation(r.id, entityCode))
+      .filter((rec): rec is NonNullable<typeof rec> => rec !== null && rec.should_pre_close);
+  }, [rfqs, entityCode, version]);
 
   const filtered = useMemo(() => rfqs.filter((r) => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
@@ -812,6 +821,32 @@ export function RfqListPanel(): JSX.Element {
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold">RFQ List</h1>
+
+      {/* Sprint T-Phase-1.2.6f-d-2 · Block F · D-299 · Pre-close recommendation banner */}
+      {preCloseRecs.length > 0 && (
+        <Card className="border-warning bg-warning/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">
+              Pre-close Recommendations · {preCloseRecs.length} RFQ{preCloseRecs.length > 1 ? 's' : ''} ready
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-2">
+            {preCloseRecs.slice(0, 5).map((rec) => (
+              <div key={rec.rfq_id} className="text-xs flex items-start gap-2">
+                <Badge variant="outline" className="font-mono shrink-0">{rec.rfq_no}</Badge>
+                <div className="flex-1">
+                  <p className="text-foreground">{rec.reason_text}</p>
+                  <p className="text-muted-foreground">→ {rec.recommended_action}</p>
+                </div>
+              </div>
+            ))}
+            {preCloseRecs.length > 5 && (
+              <p className="text-xs text-muted-foreground">+{preCloseRecs.length - 5} more · filter list to view.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardContent className="pt-6 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
