@@ -26,7 +26,10 @@ export type VoucherTypeCode =
   | 'stock_adjustment'
   | 'stock_journal'
   | 'stock_transfer'
-  | 'mfg_journal';
+  | 'mfg_journal'
+  // Sprint T-Phase-1.2.6f-d-1 · D-290 Track 2 partial — Procure360 print engines.
+  | 'purchase_order'
+  | 'bill_passing';
 
 // [Abstract] The 20 universal toggle keys. Not every toggle applies to every voucher —
 // the applicability matrix is in PRINT_TOGGLES below. Engine consumers check applicability
