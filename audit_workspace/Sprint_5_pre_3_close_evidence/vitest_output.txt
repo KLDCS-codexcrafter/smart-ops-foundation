@@ -1,0 +1,344 @@
+
+ RUN  v3.2.4 /dev-server
+
+ ✓ src/test/error-engine-deep.test.ts (8 tests) 135ms
+ ✓ src/test/audit-trail-deep.test.ts (8 tests) 43ms
+stderr | src/test/uth-stamper.test.ts > UTH Stamper · D-228 audit metadata > cleanup · clearCurrentUser does not break stampCreate (fallback user)
+[auth-helpers] No mock user set · returning unknown-user
+
+ ✓ src/test/uth-stamper.test.ts (9 tests) 44ms
+ ✓ src/test/approval-workflow.test.ts (12 tests) 22ms
+ ✓ src/test/gate-alerts-engines.test.ts (5 tests) 44ms
+ ✓ src/test/gateflow-engine.test.ts (5 tests) 95ms
+ ✓ src/test/rate-contract-engine.test.ts (12 tests) 37ms
+ ✓ src/test/weighbridge-engine.test.ts (4 tests) 61ms
+ ✓ src/test/voucher-type-multisource-oob.test.ts (8 tests) 32ms
+ ✓ src/test/engine-coverage-suite.test.ts (29 tests) 477ms
+   ✓ stock-reservation-engine · smoke > SR1 · module imports without runtime error  353ms
+ ✓ src/test/qa-mobile-capture.test.ts (6 tests) 39ms
+stderr | src/test/qa-closure-coa-scorecard.test.ts > qa-closure-resolver · D-338 > routes 3 stock-journal vouchers when QC config has all 4 godowns
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+
+stderr | src/test/z14-smoke-harness.test.ts > Z14 Block 1 Auto · Phase 1 close smoke harness > A1 · 14 voucher types validate correctly
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+
+ ✓ src/test/qa-closure-coa-scorecard.test.ts (7 tests) 41ms
+stderr | src/test/z14-smoke-harness.test.ts > Z14 Block 1 Auto · Phase 1 close smoke harness > A2 · Trial balance Dr - Cr === 0 exactly after odd-paise vouchers
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+[auth-helpers] No mock user set · returning unknown-user
+
+stderr | src/test/z14-smoke-harness.test.ts > Z14 Block 1 Auto · Phase 1 close smoke harness > A8 · Out-of-period save (2026-03-15) rejected by validateVoucher
+[auth-helpers] No mock user set · returning unknown-user
+
+stderr | src/test/z14-smoke-harness.test.ts > Z14 Block 1 Auto · Phase 1 close smoke harness > A9 · In-period save (2026-04-15) accepted
+[auth-helpers] No mock user set · returning unknown-user
+
+ ✓ src/test/uth-wiring.test.ts (20 tests) 1973ms
+   ✓ UTH-1 · NotesAndReferenceCard component exports > exposes the controlled API expected by forms  943ms
+   ✓ UTH-2 · AuditHistoryButton component exports > exposes the button + opens VoucherDiffViewer  941ms
+ ✓ src/test/drill-down.test.ts (10 tests) 3379ms
+   ✓ Drill-down state machine + module exports (UD1-UD10) > UD7 · GRNRegisterV2 module exports panel  3184ms
+stderr | src/test/z14-smoke-harness.test.ts > Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail > A33 · error-engine writes to entity-scoped key with circular buffer cap
+[validation] test-0 { i: [33m0[39m } 
+[validation] test-1 { i: [33m1[39m } 
+[validation] test-2 { i: [33m2[39m } 
+[validation] test-3 { i: [33m3[39m } 
+[validation] test-4 { i: [33m4[39m } 
+[validation] test-5 { i: [33m5[39m } 
+[validation] test-6 { i: [33m6[39m } 
+[validation] test-7 { i: [33m7[39m } 
+[validation] test-8 { i: [33m8[39m } 
+[validation] test-9 { i: [33m9[39m } 
+[validation] test-10 { i: [33m10[39m } 
+[validation] test-11 { i: [33m11[39m } 
+[validation] test-12 { i: [33m12[39m } 
+[validation] test-13 { i: [33m13[39m } 
+[validation] test-14 { i: [33m14[39m } 
+[validation] test-15 { i: [33m15[39m } 
+[validation] test-16 { i: [33m16[39m } 
+[validation] test-17 { i: [33m17[39m } 
+[validation] test-18 { i: [33m18[39m } 
+[validation] test-19 { i: [33m19[39m } 
+[validation] test-20 { i: [33m20[39m } 
+[validation] test-21 { i: [33m21[39m } 
+[validation] test-22 { i: [33m22[39m } 
+[validation] test-23 { i: [33m23[39m } 
+[validation] test-24 { i: [33m24[39m } 
+[validation] test-25 { i: [33m25[39m } 
+[validation] test-26 { i: [33m26[39m } 
+[validation] test-27 { i: [33m27[39m } 
+[validation] test-28 { i: [33m28[39m } 
+[validation] test-29 { i: [33m29[39m } 
+[validation] test-30 { i: [33m30[39m } 
+[validation] test-31 { i: [33m31[39m } 
+[validation] test-32 { i: [33m32[39m } 
+[validation] test-33 { i: [33m33[39m } 
+[validation] test-34 { i: [33m34[39m } 
+[validation] test-35 { i: [33m35[39m } 
+[validation] test-36 { i: [33m36[39m } 
+[validation] test-37 { i: [33m37[39m } 
+[validation] test-38 { i: [33m38[39m } 
+[validation] test-39 { i: [33m39[39m } 
+[validation] test-40 { i: [33m40[39m } 
+[validation] test-41 { i: [33m41[39m } 
+[validation] test-42 { i: [33m42[39m } 
+[validation] test-43 { i: [33m43[39m } 
+[validation] test-44 { i: [33m44[39m } 
+[validation] test-45 { i: [33m45[39m } 
+[validation] test-46 { i: [33m46[39m } 
+[validation] test-47 { i: [33m47[39m } 
+[validation] test-48 { i: [33m48[39m } 
+[validation] test-49 { i: [33m49[39m } 
+[validation] test-50 { i: [33m50[39m } 
+[validation] test-51 { i: [33m51[39m } 
+[validation] test-52 { i: [33m52[39m } 
+[validation] test-53 { i: [33m53[39m } 
+[validation] test-54 { i: [33m54[39m } 
+[validation] test-55 { i: [33m55[39m } 
+[validation] test-56 { i: [33m56[39m } 
+[validation] test-57 { i: [33m57[39m } 
+[validation] test-58 { i: [33m58[39m } 
+[validation] test-59 { i: [33m59[39m } 
+[validation] test-60 { i: [33m60[39m } 
+[validation] test-61 { i: [33m61[39m } 
+[validation] test-62 { i: [33m62[39m } 
+[validation] test-63 { i: [33m63[39m } 
+[validation] test-64 { i: [33m64[39m } 
+[validation] test-65 { i: [33m65[39m } 
+[validation] test-66 { i: [33m66[39m } 
+[validation] test-67 { i: [33m67[39m } 
+[validation] test-68 { i: [33m68[39m } 
+[validation] test-69 { i: [33m69[39m } 
+[validation] test-70 { i: [33m70[39m } 
+[validation] test-71 { i: [33m71[39m } 
+[validation] test-72 { i: [33m72[39m } 
+[validation] test-73 { i: [33m73[39m } 
+[validation] test-74 { i: [33m74[39m } 
+[validation] test-75 { i: [33m75[39m } 
+[validation] test-76 { i: [33m76[39m } 
+[validation] test-77 { i: [33m77[39m } 
+[validation] test-78 { i: [33m78[39m } 
+[validation] test-79 { i: [33m79[39m } 
+[validation] test-80 { i: [33m80[39m } 
+[validation] test-81 { i: [33m81[39m } 
+[validation] test-82 { i: [33m82[39m } 
+[validation] test-83 { i: [33m83[39m } 
+[validation] test-84 { i: [33m84[39m } 
+[validation] test-85 { i: [33m85[39m } 
+[validation] test-86 { i: [33m86[39m } 
+[validation] test-87 { i: [33m87[39m } 
+[validation] test-88 { i: [33m88[39m } 
+[validation] test-89 { i: [33m89[39m } 
+[validation] test-90 { i: [33m90[39m } 
+[validation] test-91 { i: [33m91[39m } 
+[validation] test-92 { i: [33m92[39m } 
+[validation] test-93 { i: [33m93[39m } 
+[validation] test-94 { i: [33m94[39m } 
+[validation] test-95 { i: [33m95[39m } 
+[validation] test-96 { i: [33m96[39m } 
+[validation] test-97 { i: [33m97[39m } 
+[validation] test-98 { i: [33m98[39m } 
+[validation] test-99 { i: [33m99[39m } 
+[validation] test-100 { i: [33m100[39m } 
+[validation] test-101 { i: [33m101[39m } 
+[validation] test-102 { i: [33m102[39m } 
+[validation] test-103 { i: [33m103[39m } 
+[validation] test-104 { i: [33m104[39m } 
+[validation] test-105 { i: [33m105[39m } 
+[validation] test-106 { i: [33m106[39m } 
+[validation] test-107 { i: [33m107[39m } 
+[validation] test-108 { i: [33m108[39m } 
+[validation] test-109 { i: [33m109[39m } 
+[validation] test-110 { i: [33m110[39m } 
+[validation] test-111 { i: [33m111[39m } 
+[validation] test-112 { i: [33m112[39m } 
+[validation] test-113 { i: [33m113[39m } 
+[validation] test-114 { i: [33m114[39m } 
+[validation] test-115 { i: [33m115[39m } 
+[validation] test-116 { i: [33m116[39m } 
+[validation] test-117 { i: [33m117[39m } 
+[validation] test-118 { i: [33m118[39m } 
+[validation] test-119 { i: [33m119[39m } 
+[validation] test-120 { i: [33m120[39m } 
+[validation] test-121 { i: [33m121[39m } 
+[validation] test-122 { i: [33m122[39m } 
+[validation] test-123 { i: [33m123[39m } 
+[validation] test-124 { i: [33m124[39m } 
+[validation] test-125 { i: [33m125[39m } 
+[validation] test-126 { i: [33m126[39m } 
+[validation] test-127 { i: [33m127[39m } 
+[validation] test-128 { i: [33m128[39m } 
+[validation] test-129 { i: [33m129[39m } 
+[validation] test-130 { i: [33m130[39m } 
+[validation] test-131 { i: [33m131[39m } 
+[validation] test-132 { i: [33m132[39m } 
+[validation] test-133 { i: [33m133[39m } 
+[validation] test-134 { i: [33m134[39m } 
+[validation] test-135 { i: [33m135[39m } 
+[validation] test-136 { i: [33m136[39m } 
+[validation] test-137 { i: [33m137[39m } 
+[validation] test-138 { i: [33m138[39m } 
+[validation] test-139 { i: [33m139[39m } 
+[validation] test-140 { i: [33m140[39m } 
+[validation] test-141 { i: [33m141[39m } 
+[validation] test-142 { i: [33m142[39m } 
+[validation] test-143 { i: [33m143[39m } 
+[validation] test-144 { i: [33m144[39m } 
+[validation] test-145 { i: [33m145[39m } 
+[validation] test-146 { i: [33m146[39m } 
+[validation] test-147 { i: [33m147[39m } 
+[validation] test-148 { i: [33m148[39m } 
+[validation] test-149 { i: [33m149[39m } 
+[validation] test-150 { i: [33m150[39m } 
+[validation] test-151 { i: [33m151[39m } 
+[validation] test-152 { i: [33m152[39m } 
+[validation] test-153 { i: [33m153[39m } 
+[validation] test-154 { i: [33m154[39m } 
+[validation] test-155 { i: [33m155[39m } 
+[validation] test-156 { i: [33m156[39m } 
+[validation] test-157 { i: [33m157[39m } 
+[validation] test-158 { i: [33m158[39m } 
+[validation] test-159 { i: [33m159[39m } 
+[validation] test-160 { i: [33m160[39m } 
+[validation] test-161 { i: [33m161[39m } 
+[validation] test-162 { i: [33m162[39m } 
+[validation] test-163 { i: [33m163[39m } 
+[validation] test-164 { i: [33m164[39m } 
+[validation] test-165 { i: [33m165[39m } 
+[validation] test-166 { i: [33m166[39m } 
+[validation] test-167 { i: [33m167[39m } 
+[validation] test-168 { i: [33m168[39m } 
+[validation] test-169 { i: [33m169[39m } 
+[validation] test-170 { i: [33m170[39m } 
+[validation] test-171 { i: [33m171[39m } 
+[validation] test-172 { i: [33m172[39m } 
+[validation] test-173 { i: [33m173[39m } 
+[validation] test-174 { i: [33m174[39m } 
+[validation] test-175 { i: [33m175[39m } 
+[validation] test-176 { i: [33m176[39m } 
+[validation] test-177 { i: [33m177[39m } 
+[validation] test-178 { i: [33m178[39m } 
+[validation] test-179 { i: [33m179[39m } 
+[validation] test-180 { i: [33m180[39m } 
+[validation] test-181 { i: [33m181[39m } 
+[validation] test-182 { i: [33m182[39m } 
+[validation] test-183 { i: [33m183[39m } 
+[validation] test-184 { i: [33m184[39m } 
+[validation] test-185 { i: [33m185[39m } 
+[validation] test-186 { i: [33m186[39m } 
+[validation] test-187 { i: [33m187[39m } 
+[validation] test-188 { i: [33m188[39m } 
+[validation] test-189 { i: [33m189[39m } 
+[validation] test-190 { i: [33m190[39m } 
+[validation] test-191 { i: [33m191[39m } 
+[validation] test-192 { i: [33m192[39m } 
+[validation] test-193 { i: [33m193[39m } 
+[validation] test-194 { i: [33m194[39m } 
+[validation] test-195 { i: [33m195[39m } 
+[validation] test-196 { i: [33m196[39m } 
+[validation] test-197 { i: [33m197[39m } 
+[validation] test-198 { i: [33m198[39m } 
+[validation] test-199 { i: [33m199[39m } 
+[validation] test-200 { i: [33m200[39m } 
+[validation] test-201 { i: [33m201[39m } 
+[validation] test-202 { i: [33m202[39m } 
+[validation] test-203 { i: [33m203[39m } 
+[validation] test-204 { i: [33m204[39m } 
+[validation] test-205 { i: [33m205[39m } 
+[validation] test-206 { i: [33m206[39m } 
+[validation] test-207 { i: [33m207[39m } 
+[validation] test-208 { i: [33m208[39m } 
+[validation] test-209 { i: [33m209[39m } 
+[validation] test-210 { i: [33m210[39m } 
+[validation] test-211 { i: [33m211[39m } 
+[validation] test-212 { i: [33m212[39m } 
+[validation] test-213 { i: [33m213[39m } 
+[validation] test-214 { i: [33m214[39m } 
+[validation] test-215 { i: [33m215[39m } 
+[validation] test-216 { i: [33m216[39m } 
+[validation] test-217 { i: [33m217[39m } 
+[validation] test-218 { i: [33m218[39m } 
+[validation] test-219 { i: [33m219[39m } 
+[validation] test-220 { i: [33m220[39m } 
+[validation] test-221 { i: [33m221[39m } 
+[validation] test-222 { i: [33m222[39m } 
+[validation] test-223 { i: [33m223[39m } 
+[validation] test-224 { i: [33m224[39m } 
+[validation] test-225 { i: [33m225[39m } 
+[validation] test-226 { i: [33m226[39m } 
+[validation] test-227 { i: [33m227[39m } 
+[validation] test-228 { i: [33m228[39m } 
+[validation] test-229 { i: [33m229[39m } 
+[validation] test-230 { i: [33m230[39m } 
+[validation] test-231 { i: [33m231[39m } 
+[validation] test-232 { i: [33m232[39m } 
+[validation] test-233 { i: [33m233[39m } 
+[validation] test-234 { i: [33m234[39m } 
+[validation] test-235 { i: [33m235[39m } 
+[validation] test-236 { i: [33m236[39m } 
+[validation] test-237 { i: [33m237[39m } 
+[validation] test-238 { i: [33m238[39m } 
+[validation] test-239 { i: [33m239[39m } 
+[validation] test-240 { i: [33m240[39m } 
+[validation] test-241 { i: [33m241[39m } 
+[validation] test-242 { i: [33m242[39m } 
+[validation] test-243 { i: [33m243[39m } 
+[validation] test-244 { i: [33m244[39m } 
+[validation] test-245 { i: [33m245[39m } 
+[validation] test-246 { i: [33m246[39m } 
+[validation] test-247 { i: [33m247[39m } 
+[validation] test-248 { i: [33m248[39m } 
+[validation] test-249 { i: [33m249[39m } 
+
+ ✓ src/test/z14-smoke-harness.test.ts (34 tests) 2059ms
+   ✓ Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1 > A23 · voucherTypesKey produces entity-scoped key with template fallback  1702ms
+ ✓ src/test/multi-sourcing-strategy-engine.test.ts (5 tests) 36ms
+ ✓ src/test/keyboard-bulk-paste-search.test.ts (6 tests) 17ms
+ ✓ src/test/stock-viz-saveandnew-autosave-smartdefaults.test.ts (7 tests) 34ms
+ ✓ src/test/period-lock.test.ts (7 tests) 11ms
+ ✓ src/test/cc-masters-engine.test.ts (4 tests) 15ms
+ ✓ src/test/rfq-engine-pre-close.test.ts (3 tests) 10ms
+ ✓ src/test/validate-first-deep.test.ts (6 tests) 10ms
+ ✓ src/test/gateflow-git-bridge.test.ts (1 test) 37ms
+ ✓ src/test/storage-quota-deep.test.ts (7 tests) 16ms
+ ✓ src/test/quickadd-pinnedtemplates.test.ts (4 tests) 30ms
+ ✓ src/test/i18n.test.ts (6 tests) 19ms
+ ✓ src/test/mobile-gate-guard-capture.test.ts (4 tests) 23ms
+ ✓ src/test/gst-rcm-detection.test.ts (11 tests) 19ms
+ ✓ src/test/decimal-helpers.test.ts (8 tests) 11ms
+ ✓ src/test/qa-plan-spec-engine.test.ts (4 tests) 11ms
+ ✓ src/test/voucher-version-engine.test.ts (6 tests) 19ms
+ ✓ src/test/bank-instrument-irn-cancel-audit.test.ts (11 tests) 12ms
+ ✓ src/test/operix-go-gate-guard-card.test.ts (1 test) 5ms
+ ✓ src/test/vehicle-driver-master-engine.test.ts (2 tests) 12ms
+ ✓ src/test/voucher-class-field-rules-approval.test.ts (8 tests) 21ms
+ ✓ src/test/universal-register-grid.test.ts (8 tests) 7ms
+ ✓ src/test/example.test.ts (1 test) 4ms
+ ✓ src/test/salesx-uts.test.ts (6 tests) 13ms
+ ✓ src/test/inventory-drill-context.test.ts (6 tests) 6ms
+ ✓ src/test/projx-dispatch-uts.test.ts (6 tests) 6ms
+
+ Test Files  40 passed (40)
+      Tests  315 passed (315)
+   Start at  03:05:39
+   Duration  26.87s (transform 7.46s, setup 29.43s, collect 20.78s, tests 8.89s, environment 208.20s, prepare 30.40s)
+
