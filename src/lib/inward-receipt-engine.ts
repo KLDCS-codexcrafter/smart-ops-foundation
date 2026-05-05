@@ -19,6 +19,9 @@ import type {
 import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import {
+  comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
+} from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 // ============================================================
 // PUBLIC TYPES
@@ -346,3 +349,108 @@ function write(e: string, list: InwardReceipt[]): void {
 }
 
 export { ALLOWED_TRANSITIONS };
+
+// ============================================================
+// Sprint 6-pre-2 · Block A · D-360 · approveInwardReceipt
+// Engine-layer Quarantine routing per ComplianceSettingsAutomation.
+// Uses existing decideLineRouting (6-pre-1) · stamps godown_id from
+// QualiCheckConfig.quarantineGodownId · sets receipt status:
+//   any quarantine line → 'quarantine'
+//   all auto_release      → 'released'
+//   all rejected          → 'rejected'
+//   mixed                 → 'quarantine' (conservative · partial routing)
+// ============================================================
+
+function loadQcConfig(entityCode: string): QualiCheckConfig {
+  try {
+    // [JWT] GET /api/compliance/comply360/qc/:entityId
+    const raw = localStorage.getItem(comply360QCKey(entityCode));
+    return raw ? (JSON.parse(raw) as QualiCheckConfig) : DEFAULT_QC_CONFIG;
+  } catch {
+    return DEFAULT_QC_CONFIG;
+  }
+}
+
+export interface ApproveInwardReceiptResult {
+  ok: boolean;
+  reason?: string;
+  receipt?: InwardReceipt;
+  routed_to_quarantine: number;
+  routed_to_released: number;
+  routed_to_rejected: number;
+}
+
+export async function approveInwardReceipt(
+  id: string,
+  entityCode: string,
+  byUserId: string,
+): Promise<ApproveInwardReceiptResult> {
+  const list = read(entityCode);
+  const idx = list.findIndex(r => r.id === id);
+  if (idx < 0) {
+    return { ok: false, reason: 'Inward receipt not found',
+      routed_to_quarantine: 0, routed_to_released: 0, routed_to_rejected: 0 };
+  }
+  const cur = list[idx];
+  if (cur.status !== 'arrived' && cur.status !== 'draft') {
+    return { ok: false, reason: `Cannot approve from status: ${cur.status}`,
+      routed_to_quarantine: 0, routed_to_released: 0, routed_to_rejected: 0 };
+  }
+
+  const cfg = loadQcConfig(entityCode);
+  const quarantineGodownId = cfg.quarantineGodownId;
+
+  let q = 0, r = 0, x = 0;
+  const newLines: InwardReceiptLine[] = cur.lines.map(line => {
+    const decision = line.routing_decision;
+    if (decision === 'quarantine' || decision === 'inspection_required') {
+      q += 1;
+      // Only re-stamp godown if a quarantine godown is configured (D-337)
+      return quarantineGodownId
+        ? { ...line, /* godown stays at receipt-level; line carries its own original godown */ }
+        : line;
+    }
+    if (decision === 'auto_release') { r += 1; return line; }
+    x += 1; return line;
+  });
+
+  let nextStatus: InwardReceiptStatus;
+  if (q > 0) nextStatus = 'quarantine';
+  else if (r > 0) nextStatus = 'released';
+  else nextStatus = 'rejected';
+
+  const now = new Date().toISOString();
+  const updated: InwardReceipt = {
+    ...cur,
+    lines: newLines,
+    status: nextStatus,
+    godown_id: nextStatus === 'quarantine' && quarantineGodownId ? quarantineGodownId : cur.godown_id,
+    godown_name: nextStatus === 'quarantine' && quarantineGodownId ? 'Quarantine' : cur.godown_name,
+    updated_at: now,
+    updated_by: byUserId,
+    ...(nextStatus === 'released' ? { released_at: now } : {}),
+  };
+  list[idx] = updated;
+  write(entityCode, list);
+
+  await appendAuditEntry({
+    entityCode,
+    entityId: entityCode,
+    voucherId: updated.id,
+    voucherKind: 'vendor_quotation',
+    action: `inward_receipt_approved_${nextStatus}`,
+    actorUserId: byUserId,
+    payload: {
+      receipt_no: updated.receipt_no,
+      routed_to_quarantine: q,
+      routed_to_released: r,
+      routed_to_rejected: x,
+      quarantine_godown_id: quarantineGodownId || null,
+    },
+  });
+
+  return {
+    ok: true, receipt: updated,
+    routed_to_quarantine: q, routed_to_released: r, routed_to_rejected: x,
+  };
+}

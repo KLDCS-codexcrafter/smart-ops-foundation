@@ -185,6 +185,35 @@ export async function routeInspectionClosure(
     payload: { qa_id: qaId, journal_ids: journalIds, log_entry_id: logEntry.id },
   });
 
+  // ─── Sprint 6-pre-2 · Block G · D-366 · Auto-DN trigger (D-349 closure) ──
+  // Pure additive · D-291 precedent · D-309 sibling discipline. Existing 3-leg
+  // routing (above) is UNTOUCHED. Non-blocking — auto-DN failure does not roll
+  // back closure.
+  const enableAutoDN = cfg.enableAutoDebitNoteOnRejection ?? false;
+  if (enableAutoDN && (line.qty_failed ?? 0) > 0 && inspection.vendor_id) {
+    try {
+      const { createAutoDebitNote } = await import('@/lib/vendor-return-engine');
+      await createAutoDebitNote({
+        entity_id: entityCode,
+        vendor_id: inspection.vendor_id,
+        vendor_name: inspection.vendor_name ?? inspection.vendor_id,
+        source_inspection_id: qaId,
+        source_inspection_no: inspection.qa_no ?? qaId,
+        source_grn_id: inspection.bill_id ?? null,
+        source_grn_no: inspection.bill_no ?? null,
+        item_id: line.item_id,
+        item_code: line.item_id,
+        item_name: line.item_name,
+        uom: line.uom ?? 'nos',
+        qty_failed: line.qty_failed ?? 0,
+        unit_rate: 0,
+        batch_no: line.batch_id ?? null,
+      }, entityCode);
+    } catch {
+      /* non-critical · auto-DN failure does not block closure */
+    }
+  }
+
   return {
     ok: true, log_entry_id: logEntry.id,
     approved_voucher_id: approvedVoucher?.id ?? null,

@@ -44,6 +44,9 @@ import type { InvoiceMemo, IMStatus } from '@/types/invoice-memo';
 import { invoiceMemosKey, IM_STATUS_LABELS } from '@/types/invoice-memo';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/finecore-engine';
+// Sprint 6-pre-2 · Block H · D-367 · FT-DISPATCH-013 closure
+import type { InwardReceipt, InwardReceiptStatus } from '@/types/inward-receipt';
+import { inwardReceiptsKey } from '@/types/inward-receipt';
 
 interface Props {
   entityCode: string;
@@ -81,7 +84,10 @@ interface HandoffRow {
   // Sprint 1.1.2-c · ProjX cross-module
   projectId: string | null;
   projectNo: string | null;
-  pipelineStage: number;   // 0-4
+  // Sprint 6-pre-2 · D-367 · FT-DISPATCH-013
+  inwardReceiptNo: string | null;
+  inwardReceiptStage: InwardReceiptStatus | null;
+  pipelineStage: number;   // 0-5
   daysSinceActivity: number;
 }
 
@@ -101,6 +107,8 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
   const ims = ls<InvoiceMemo>(invoiceMemosKey(entityCode));
   // [JWT] GET /api/accounting/vouchers?entityCode=:e
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
+  // [JWT] GET /api/logistic/inward-receipts?entityCode=:e (D-367)
+  const inwardReceipts = ls<InwardReceipt>(inwardReceiptsKey(entityCode));
 
   const quotByNo = new Map(quotations.map(q => [q.quotation_no, q]));
   const enqMap = new Map(enquiries.map(e => [e.id, e]));
@@ -114,6 +122,9 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
   vouchers.filter(v => v.base_voucher_type === 'Sales').forEach(v => {
     if (v.so_ref) siBySORef.set(v.so_ref, v);
   });
+  // D-367 · best-effort backlink · IR.po_no may carry SO ref
+  const irBySoRef = new Map<string, InwardReceipt>();
+  inwardReceipts.forEach(ir => { if (ir.po_no) irBySoRef.set(ir.po_no, ir); });
 
   return orders.map((so): HandoffRow => {
     const quot = so.ref_no ? quotByNo.get(so.ref_no) ?? null : null;
@@ -122,8 +133,9 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
     const dm = srm ? dmBySRM.get(srm.memo_no) ?? null : null;
     const im = dm ? imByDM.get(dm.memo_no) ?? null : null;
     const si = siBySORef.get(so.order_no) ?? null;
+    const ir = irBySoRef.get(so.order_no) ?? null;
 
-    const pipelineStage = si ? 4 : im ? 3 : dm ? 2 : srm ? 1 : 0;
+    const pipelineStage = ir ? 5 : si ? 4 : im ? 3 : dm ? 2 : srm ? 1 : 0;
 
     const stamps: string[] = [
       so.updated_at, quot?.updated_at, srm?.updated_at,
@@ -149,6 +161,8 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
       siAmount: si ? si.net_amount : null,
       projectId: so.project_id ?? null,
       projectNo: so.project_no ?? null,
+      inwardReceiptNo: ir?.receipt_no ?? null,
+      inwardReceiptStage: ir?.status ?? null,
       pipelineStage, daysSinceActivity: daysSince,
     };
   });
@@ -347,6 +361,7 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">DM · Dispatch</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">IM · SalesX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">SI · Accounts</TableHead>
+                  <TableHead className="text-[10px] uppercase tracking-wider h-9">GRN/IR · Logistic</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">Project · ProjX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9 text-right">Days</TableHead>
                 </TableRow>
@@ -354,7 +369,7 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
               <TableBody>
                 {filtered.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={12} className="text-center text-xs text-muted-foreground py-8">
                       No Sales Orders found. Load demo data or create a Sales Order to see the pipeline.
                     </TableCell>
                   </TableRow>
@@ -419,6 +434,18 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                           docNo={r.siVoucherNo}
                           label={r.siVoucherNo ? 'Posted' : null}
                           className={r.siVoucherNo ? SI_COLOR_PRESENT : DASH_COLOR}
+                        />
+                      </TableCell>
+                      <TableCell className="py-2">
+                        <StageCell
+                          docNo={r.inwardReceiptNo}
+                          label={r.inwardReceiptStage ?? null}
+                          className={
+                            r.inwardReceiptStage === 'released' ? SI_COLOR_PRESENT
+                              : r.inwardReceiptStage === 'quarantine'
+                                ? 'bg-destructive/15 text-destructive border-destructive/30'
+                                : DASH_COLOR
+                          }
                         />
                       </TableCell>
                       <TableCell className="py-2">

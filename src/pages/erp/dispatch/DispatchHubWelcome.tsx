@@ -16,6 +16,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchHubModule } from './DispatchHubSidebar';
 import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';
+import { listPendingVendorReturns } from '@/lib/vendor-return-engine';
 import { useT } from '@/lib/i18n-engine';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
