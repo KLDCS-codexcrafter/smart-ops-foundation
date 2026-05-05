@@ -13,6 +13,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Inbox, Search, PackageOpen } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   INWARD_STATUS_LABELS, INWARD_STATUS_COLORS,
