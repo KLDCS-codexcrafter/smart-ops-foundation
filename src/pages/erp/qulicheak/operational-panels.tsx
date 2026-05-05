@@ -20,7 +20,35 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheck, Award, FileCheck, AlertTriangle, Layers, FileDown } from 'lucide-react';
+
+// Sprint 6-pre-1 · Block 0 · D-359 · 5-pre-3 polish absorption
+// 3-row skeleton + icon-decorated empty state · matches panels.tsx 5-pre-3 Block F precedent
+function LoadingRows(): JSX.Element {
+  return (
+    <div className="p-4 space-y-2">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+    </div>
+  );
+}
+
+function EmptyState(props: {
+  Icon: React.ComponentType<{ className?: string }>;
+  heading: string;
+  description: string;
+}): JSX.Element {
+  const { Icon, heading, description } = props;
+  return (
+    <div className="py-12 text-center space-y-3">
+      <Icon className="w-12 h-12 mx-auto text-muted-foreground" />
+      <h3 className="text-lg font-semibold">{heading}</h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto">{description}</p>
+    </div>
+  );
+}
 import { toast } from 'sonner';
 import { listClosureLog } from '@/lib/qa-closure-resolver';
 import { computeVendorScorecard } from '@/lib/oob/vendor-quality-scorecard-engine';
