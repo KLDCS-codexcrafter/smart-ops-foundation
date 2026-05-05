@@ -253,10 +253,12 @@ export async function postDebitNote(
   const ledgerLines: VoucherLedgerLine[] = [{
     id: newId('vll'),
     ledger_id: rtv.vendor_id,
+    ledger_code: rtv.vendor_id,
     ledger_name: rtv.vendor_name,
-    type: 'debit',
-    amount: rtv.total_value,
-    bill_allocations: [],
+    ledger_group_code: 'sundry-creditors',
+    dr_amount: rtv.total_value,
+    cr_amount: 0,
+    narration: `Vendor Return ${rtv.return_no}`,
   }];
 
   const voucher: Voucher = {
