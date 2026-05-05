@@ -11,6 +11,8 @@ import {
   TrendingUp,
   FileSpreadsheet, AlertCircle, Scale,
   FileUp, Award,
+  // Sprint 6-pre-1 · Card #6 Inward Logistic
+  PackageOpen, ShieldAlert, Undo2, Inbox,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
