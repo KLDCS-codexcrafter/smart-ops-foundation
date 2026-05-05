@@ -136,7 +136,7 @@ export async function createVendorReturn(
   const rtv: VendorReturn = {
     id: newId('vr'),
     entity_id: input.entity_id,
-    return_no: generateDocNo('RTV', entityCode),
+    return_no: generateDocNo('RJO', entityCode),
     status: 'draft',
     vendor_id: input.vendor_id,
     vendor_name: input.vendor_name,
