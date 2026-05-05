@@ -247,8 +247,10 @@ export function CoARegisterPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [generated, setGenerated] = useState<CoARegisterRow[]>([]);
   const [pending, setPending] = useState<{ id: string; qa_no: string; item_name: string }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const refresh = useCallback((): void => {
+    setLoading(true);
     setGenerated(listGeneratedCoA(entityCode));
     const completed = listQaInspections(entityCode).filter(q =>
       (q.status === 'passed' || q.status === 'failed' || q.status === 'partial_pass')
@@ -257,6 +259,7 @@ export function CoARegisterPanel(): JSX.Element {
     setPending(completed.map(q => ({
       id: q.id, qa_no: q.qa_no, item_name: q.lines?.[0]?.item_name ?? '',
     })));
+    setLoading(false);
   }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
