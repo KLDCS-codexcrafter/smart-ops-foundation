@@ -107,6 +107,8 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
   const ims = ls<InvoiceMemo>(invoiceMemosKey(entityCode));
   // [JWT] GET /api/accounting/vouchers?entityCode=:e
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
+  // [JWT] GET /api/logistic/inward-receipts?entityCode=:e (D-367)
+  const inwardReceipts = ls<InwardReceipt>(inwardReceiptsKey(entityCode));
 
   const quotByNo = new Map(quotations.map(q => [q.quotation_no, q]));
   const enqMap = new Map(enquiries.map(e => [e.id, e]));
