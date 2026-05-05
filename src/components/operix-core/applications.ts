@@ -248,7 +248,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'dispatch-hub',
     name: 'Logistics Hub',
-    description: 'Transporter & courier management — LR tracking, freight reconciliation, transporter portal, POD, domestic & international logistics',
+    description: 'Inward & outward logistics — GRN inward receipts, vendor return DN, transporter & courier management, LR tracking, POD, freight reconciliation, domestic & international logistics',
     category: 'Ops Hub',
     route: '/erp/logistics',
     icon: 'Truck',
