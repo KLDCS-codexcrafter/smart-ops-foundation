@@ -155,36 +155,63 @@ export function MaterialIndentEntry(): JSX.Element {
     };
   }, [lines, total]);
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-material-indent',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    category,
+    sub_type: subType,
+    priority,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    preferred_vendor_id: null,
+    payment_terms: null,
+    lines,
+    parent_indent_id: null,
+    cascade_reason: null,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
-    const indent = createMaterialIndent({
-      entity_id: entityId,
-      voucher_type_id: 'vt-material-indent',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      category,
-      sub_type: subType,
-      priority,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      preferred_vendor_id: null,
-      payment_terms: null,
-      lines,
-      parent_indent_id: null,
-      cascade_reason: null,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const indent = createMaterialIndent(buildPayload(), entityCode);
     submitIndent(indent.id, 'material', entityCode, 'user-hod-placeholder');
     toast.success(`Material Indent ${indent.voucher_no} submitted`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const indent = createMaterialIndent(buildPayload(), entityCode);
+    setCurrentDraft(indent);
+    toast.success(`Draft ${indent.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'material', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Indent cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
