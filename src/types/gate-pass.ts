@@ -25,8 +25,9 @@ export type LinkedVoucherType =
   | 'dln'          // Delivery Note (FineCore voucher)
   | 'som'          // Sample Outward Memo (Dispatch)
   | 'dom'          // Demo Outward Memo (Dispatch)
-  | 'gst_invoice'  // GST Invoice (FineCore)
-  | null;          // Walk-in · visitor · service vendor · ad-hoc
+  | 'gst_invoice'      // GST Invoice (FineCore)
+  | 'inward_receipt'   // Inward Receipt (Card #6 · 6-pre-1 · Block E bridge)
+  | null;              // Walk-in · visitor · service vendor · ad-hoc
 
 export interface GatePass {
   id: string;
