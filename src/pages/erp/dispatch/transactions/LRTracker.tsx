@@ -183,6 +183,7 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
           </Tabs>
         </CardContent>
       </Card>
+      <PODDetailDialog pod={podDialog} open={podOpen} onOpenChange={setPodOpen} />
     </div>
   );
 }
