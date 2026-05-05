@@ -17,6 +17,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import type { DispatchHubModule } from '../DispatchHubSidebar';
+import PODDetailDialog from '../components/PODDetailDialog';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
 
