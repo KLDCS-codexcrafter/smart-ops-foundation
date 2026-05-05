@@ -214,7 +214,11 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · QualiCheck (D-327 · matches 'GP'/'WB'/'RC' precedent · audit-clean concession)
     | 'QP'
     // Sprint T-Phase-1.2.6f-d-2-card6-6-pre-1 · Inward Logistic (Card #6 · matches 'GP'/'WB'/'QP' precedent · audit-clean concession)
-    | 'IR',
+    | 'IR'
+    // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Stock Issue (Card #7 · matches 'GP'/'WB'/'QP'/'IR' precedent · audit-clean concession)
+    | 'SI'
+    // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Stock Receipt Ack (Card #7 · matches lineage)
+    | 'SRA',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.

@@ -17,6 +17,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchHubModule } from './DispatchHubSidebar';
 import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';
 import { listPendingVendorReturns } from '@/lib/vendor-return-engine';
+import { countPendingReceiptAcks } from '@/lib/stock-receipt-ack-engine';
 import { useT } from '@/lib/i18n-engine';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
@@ -39,6 +40,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   const [quarantineCount, setQuarantineCount] = useState(0);
   const [vendorReturnCount, setVendorReturnCount] = useState(0);
   const [releasedTodayCount, setReleasedTodayCount] = useState(0);
+  const [pendingAcksCount, setPendingAcksCount] = useState(0);
 
   useEffect(() => {
     // [JWT] GET /api/accounting/vouchers
@@ -56,6 +58,8 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     );
     // [JWT] GET /api/logistic/vendor-returns?status=pending
     setVendorReturnCount(listPendingVendorReturns(entityCode).length);
+    // Card #7 D-384 cross-card · Pending Stores acknowledgment of released IRs
+    setPendingAcksCount(countPendingReceiptAcks(entityCode));
   }, [entityCode]);
 
   const dlns = useMemo(
@@ -100,6 +104,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     { label: 'In Quarantine', value: quarantineCount, icon: AlertTriangle, accent: 'text-warning bg-warning/10' },
     { label: 'Released Today', value: releasedTodayCount, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-500/10' },
     { label: 'Vendor Returns', value: vendorReturnCount, icon: ArrowRight, accent: 'text-amber-600 bg-amber-500/10' },
+    { label: 'Pending Acks', value: pendingAcksCount, icon: Inbox, accent: 'text-indigo-600 bg-indigo-500/10' },
   ];
 
   return (
