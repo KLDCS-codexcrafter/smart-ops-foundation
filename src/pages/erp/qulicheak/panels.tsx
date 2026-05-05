@@ -99,20 +99,24 @@ export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {kpis.map(k => (
-          <Card key={k.label} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <k.icon className={`h-4 w-4 ${k.accent}`} />
-                {k.label}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-mono font-semibold">{k.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Card key={`sk-${i}`}><CardContent className="p-4"><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-7 w-12" /></CardContent></Card>
+            ))
+          : kpis.map(k => (
+              <Card key={k.label} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                    <k.icon className={`h-4 w-4 ${k.accent}`} />
+                    {k.label}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-mono font-semibold">{k.value}</div>
+                </CardContent>
+              </Card>
+            ))}
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
