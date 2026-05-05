@@ -3,6 +3,7 @@
  * @sprint      T-Phase-1.2.6f-pre-2 · Block B
  */
 import { useMemo } from 'react';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
@@ -39,7 +40,7 @@ export function DepartmentWiseSummaryPanel(): JSX.Element {
       <Card>
         <CardHeader><CardTitle className="text-base">Total: {inrFmt(total)}</CardTitle></CardHeader>
         <CardContent>
-          <Table>
+          <SkeletonRows><Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Department</TableHead>
@@ -65,7 +66,7 @@ export function DepartmentWiseSummaryPanel(): JSX.Element {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table></SkeletonRows>
         </CardContent>
       </Card>
     </div>

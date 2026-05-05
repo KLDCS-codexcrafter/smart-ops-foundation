@@ -3,6 +3,7 @@
  * @sprint      T-Phase-1.2.6f-pre-2 · Block B
  */
 import { useMemo } from 'react';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -49,7 +50,7 @@ export function CategoryWiseSpendEstimatePanel(): JSX.Element {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <Table>
+          <SkeletonRows><Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Category</TableHead>
@@ -69,7 +70,7 @@ export function CategoryWiseSpendEstimatePanel(): JSX.Element {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table></SkeletonRows>
         </CardContent>
       </Card>
     </div>
