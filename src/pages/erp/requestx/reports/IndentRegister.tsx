@@ -210,6 +210,26 @@ export function IndentRegisterPanel(): JSX.Element {
           </Tabs>
         </CardContent>
       </Card>
+
+      <Dialog open={!!cancelTarget} onOpenChange={(open) => { if (!open) setCancelTarget(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel {cancelTarget?.voucher_no}</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={cancelReason}
+            onChange={e => setCancelReason(e.target.value)}
+            placeholder="Reason for cancellation (required · max 500 chars)"
+            maxLength={500}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelTarget(null)}>Back</Button>
+            <Button variant="destructive" disabled={cancelling || !cancelReason.trim()} onClick={handleCancel}>
+              {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
