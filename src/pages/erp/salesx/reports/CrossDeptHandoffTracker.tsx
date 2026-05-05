@@ -117,6 +117,9 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
   vouchers.filter(v => v.base_voucher_type === 'Sales').forEach(v => {
     if (v.so_ref) siBySORef.set(v.so_ref, v);
   });
+  // D-367 · best-effort backlink · IR.po_no may carry SO ref
+  const irBySoRef = new Map<string, InwardReceipt>();
+  inwardReceipts.forEach(ir => { if (ir.po_no) irBySoRef.set(ir.po_no, ir); });
 
   return orders.map((so): HandoffRow => {
     const quot = so.ref_no ? quotByNo.get(so.ref_no) ?? null : null;
@@ -125,6 +128,7 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
     const dm = srm ? dmBySRM.get(srm.memo_no) ?? null : null;
     const im = dm ? imByDM.get(dm.memo_no) ?? null : null;
     const si = siBySORef.get(so.order_no) ?? null;
+    const ir = irBySoRef.get(so.order_no) ?? null;
 
     const pipelineStage = si ? 4 : im ? 3 : dm ? 2 : srm ? 1 : 0;
 
@@ -152,6 +156,8 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
       siAmount: si ? si.net_amount : null,
       projectId: so.project_id ?? null,
       projectNo: so.project_no ?? null,
+      inwardReceiptNo: ir?.receipt_no ?? null,
+      inwardReceiptStage: ir?.status ?? null,
       pipelineStage, daysSinceActivity: daysSince,
     };
   });
