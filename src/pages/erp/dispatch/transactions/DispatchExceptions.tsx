@@ -24,6 +24,8 @@ const TYPES: PODExceptionType[] = ['damage', 'short_qty', 'wrong_item', 'refused
 export function DispatchExceptionsPanel() {
   const { entityCode } = useCardEntitlement();
   const [pods, setPods] = useState<POD[]>([]);
+  const [podDialog, setPodDialog] = useState<POD | null>(null);
+  const [podOpen, setPodOpen] = useState(false);
 
   useEffect(() => { setPods(ls<POD>(podsKey(entityCode))); }, [entityCode]);
 
