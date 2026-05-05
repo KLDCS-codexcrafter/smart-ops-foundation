@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, AlertTriangle, IndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { dMul, round2 } from '@/lib/decimal-helpers';
@@ -28,9 +30,10 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createServiceRequest, submitIndent, runAutoRules, recomputeTotal } from '@/lib/request-engine';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
+import { createServiceRequest, submitIndent, runAutoRules, recomputeTotal, cancelIndent } from '@/lib/request-engine';
 import type {
-  ServiceRequestLine, ServiceCategory, ServiceSubType, ServiceTrack,
+  ServiceRequest, ServiceRequestLine, ServiceCategory, ServiceSubType, ServiceTrack,
 } from '@/types/service-request';
 import type { Priority } from '@/types/material-indent';
 
