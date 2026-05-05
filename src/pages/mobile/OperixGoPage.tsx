@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -64,6 +64,24 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Warehouse 5-step capture · vendor + gate-pass auto-link · items + condition · photos · auto-routes Quarantine on QA-plan or qty>tolerance.',
     details: 'Live: Sprint 6-pre-3 · D-369 + D-370 + D-371. Mirrors GateFlow Gate Guard / QualiCheck 5-step pattern. Calls inward-receipt-engine.createInwardReceipt on submit · D-360 quarantine routing applied · gate-pass auto-link via listInwardQueue. Offline queue when no network.',
     route: '/operix-go/inward-receipt',
+    phase: 'live',
+  },
+  {
+    id: 'store-issue',
+    title: 'Store Issue Mobile',
+    icon: PackageOpen,
+    description: 'Stores 4-step capture · department + recipient · items + qty · photos · review · auto-posts Stock Journal on submit.',
+    details: 'Live: Sprint 7-pre-3 · D-394 + D-395. Mirrors MobileInwardReceiptCapture (4-step trim · no vendor · no gate-link). Calls stock-issue-engine.createStockIssue + postStockIssue (D-128 schemas preserved). Offline queue when no network.',
+    route: '/operix-go/store-issue',
+    phase: 'live',
+  },
+  {
+    id: 'receipt-ack',
+    title: 'Receipt Ack Mobile',
+    icon: Truck,
+    description: 'Stores 4-step capture · pick released IR · acknowledge qty + variance · photos · review · auto-posts Stock Journal on submit.',
+    details: 'Live: Sprint 7-pre-3 · D-396 + D-397. Cross-card consumes Card #6 inward-receipt-engine.listInwardReceipts read-only via 7-pre-1 wrapper. Calls stock-receipt-ack-engine.createReceiptAck + postReceiptAck.',
+    route: '/operix-go/receipt-ack',
     phase: 'live',
   },
   {
