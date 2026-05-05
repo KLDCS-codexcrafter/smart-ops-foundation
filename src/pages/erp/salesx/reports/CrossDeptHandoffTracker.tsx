@@ -84,7 +84,10 @@ interface HandoffRow {
   // Sprint 1.1.2-c · ProjX cross-module
   projectId: string | null;
   projectNo: string | null;
-  pipelineStage: number;   // 0-4
+  // Sprint 6-pre-2 · D-367 · FT-DISPATCH-013
+  inwardReceiptNo: string | null;
+  inwardReceiptStage: InwardReceiptStatus | null;
+  pipelineStage: number;   // 0-5
   daysSinceActivity: number;
 }
 
