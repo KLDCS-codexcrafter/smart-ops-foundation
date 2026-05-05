@@ -172,6 +172,38 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
           </SidebarMenu>
         </Collapsible>
 
+        {/* Inward (Sprint 6-pre-1 · Card #6) */}
+        <Collapsible open={inwardOpen} onOpenChange={setInwardOpen} className="mt-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CollapsibleTrigger asChild>
+                <SidebarMenuButton
+                  isActive={activeModule.startsWith('dh-i-')}
+                  className={cn(activeModule.startsWith('dh-i-') && 'bg-blue-500/15 text-blue-600')}
+                >
+                  <PackageOpen className="h-4 w-4" />
+                  <span>Inward</span>
+                  <ChevronRight className={`ml-auto h-3 w-3 transition-transform ${inwardOpen ? 'rotate-90' : ''}`} />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {INWARD_ITEMS.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </Collapsible>
+
         {/* Reports */}
         <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="mt-2">
           <SidebarMenu>
