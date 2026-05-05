@@ -5,7 +5,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createMaterialIndent, createServiceRequest, cancelIndent, submitIndent, type CreateMaterialIndentInput, type CreateServiceRequestInput } from '@/lib/request-engine';
 import { materialIndentsKey, type MaterialIndentLine } from '@/types/material-indent';
-import type { ServiceRequestLine } from '@/types/service-request';
 
 const ENTITY = 'TEST-CARD8P2';
 
@@ -79,15 +78,15 @@ describe('Card #8 8-pre-2 · cancelIndent (D-410)', () => {
       voucher_type_id: 'vt-service-request',
       date: '2026-05-05', branch_id: 'main', division_id: 'default',
       originating_department_id: 'maintenance', originating_department_name: 'Maintenance',
-      cost_center_id: 'cc-maint', category: 'housekeeping', sub_type: 'general',
-      priority: 'normal', requested_by_user_id: 'mobile-staff', requested_by_name: 'Mobile Staff',
-      hod_user_id: 'hod-maint', project_id: null, preferred_vendor_id: null, payment_terms: null,
+      cost_center_id: 'cc-maint', category: 'maintenance', sub_type: 'amc',
+      priority: 'normal', service_track: 'standard_enquiry', vendor_id: null,
+      requested_by_user_id: 'mobile-staff', requested_by_name: 'Mobile Staff',
+      hod_user_id: 'hod-maint', project_id: null,
       lines: [{
         id: 'srl-1', line_no: 1, service_id: 'svc-1', service_name: 'Cleaning',
         description: '', uom: 'job', qty: 1, estimated_rate: 1000, estimated_value: 1000,
-        required_date: '2026-05-05', schedule_qty: null, schedule_date: null, remarks: '',
-      } as ServiceRequestLine],
-      parent_indent_id: null, cascade_reason: null,
+        required_date: '2026-05-05', sla_days: 7, remarks: '',
+      }],
       created_by: 'mobile-staff', updated_by: 'mobile-staff',
     };
     const srv = createServiceRequest(srvInput, ENTITY);
