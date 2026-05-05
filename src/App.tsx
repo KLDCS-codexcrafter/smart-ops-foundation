@@ -199,6 +199,8 @@ const OperixGoPage = lazy(() => import('./pages/mobile/OperixGoPage'));
 const MobileGateGuardPage = lazy(() => import('./pages/mobile/MobileGateGuardPage'));
 // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-3 · Block E · D-346 · Mobile QualiCheck
 const MobileQualiCheckPage = lazy(() => import('./pages/mobile/MobileQualiCheckPage'));
+// Sprint T-Phase-1.2.6f-d-2-card6-6-pre-3 · Block C · D-371 · Mobile Inward Receipt
+const MobileInwardReceiptPage = lazy(() => import('./pages/mobile/MobileInwardReceiptPage'));
 const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
