@@ -20,7 +20,35 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheck, Award, FileCheck, AlertTriangle, Layers, FileDown } from 'lucide-react';
+
+// Sprint 6-pre-1 · Block 0 · D-359 · 5-pre-3 polish absorption
+// 3-row skeleton + icon-decorated empty state · matches panels.tsx 5-pre-3 Block F precedent
+function LoadingRows(): JSX.Element {
+  return (
+    <div className="p-4 space-y-2">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+    </div>
+  );
+}
+
+function EmptyState(props: {
+  Icon: React.ComponentType<{ className?: string }>;
+  heading: string;
+  description: string;
+}): JSX.Element {
+  const { Icon, heading, description } = props;
+  return (
+    <div className="py-12 text-center space-y-3">
+      <Icon className="w-12 h-12 mx-auto text-muted-foreground" />
+      <h3 className="text-lg font-semibold">{heading}</h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto">{description}</p>
+    </div>
+  );
+}
 import { toast } from 'sonner';
 import { listClosureLog } from '@/lib/qa-closure-resolver';
 import { computeVendorScorecard } from '@/lib/oob/vendor-quality-scorecard-engine';
@@ -57,7 +85,12 @@ function fmtDate(iso?: string | null): string {
 export function ClosureLogPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [list, setList] = useState<QaClosureLogEntry[]>([]);
-  const refresh = useCallback((): void => { setList(listClosureLog(entityCode)); }, [entityCode]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const refresh = useCallback((): void => {
+    setLoading(true);
+    setList(listClosureLog(entityCode));
+    setLoading(false);
+  }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
   return (
@@ -73,11 +106,14 @@ export function ClosureLogPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No closures yet. Closures are recorded when an inspection completes
-              and the resolver routes Quarantine→Approved/Sample/Rejection vouchers.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={FileCheck}
+              heading="No closure log entries yet"
+              description="When inspections complete, their stock journal vouchers appear here."
+            />
           ) : (
             <Table>
               <TableHeader>
@@ -128,7 +164,12 @@ export function ClosureLogPanel(): JSX.Element {
 export function VendorScorecardPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [list, setList] = useState<VendorScorecardMetrics[]>([]);
-  const refresh = useCallback((): void => { setList(computeVendorScorecard(entityCode)); }, [entityCode]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const refresh = useCallback((): void => {
+    setLoading(true);
+    setList(computeVendorScorecard(entityCode));
+    setLoading(false);
+  }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
   const grade = (acc: number): { label: string; v: 'default' | 'secondary' | 'destructive' | 'outline' } => {
@@ -151,10 +192,14 @@ export function VendorScorecardPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No vendor inspection data yet.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={Award}
+              heading="No vendor scorecards yet"
+              description="Vendor scorecards appear after their inspections are completed."
+            />
           ) : (
             <Table>
               <TableHeader>
@@ -202,8 +247,10 @@ export function CoARegisterPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [generated, setGenerated] = useState<CoARegisterRow[]>([]);
   const [pending, setPending] = useState<{ id: string; qa_no: string; item_name: string }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const refresh = useCallback((): void => {
+    setLoading(true);
     setGenerated(listGeneratedCoA(entityCode));
     const completed = listQaInspections(entityCode).filter(q =>
       (q.status === 'passed' || q.status === 'failed' || q.status === 'partial_pass')
@@ -212,6 +259,7 @@ export function CoARegisterPanel(): JSX.Element {
     setPending(completed.map(q => ({
       id: q.id, qa_no: q.qa_no, item_name: q.lines?.[0]?.item_name ?? '',
     })));
+    setLoading(false);
   }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
@@ -269,10 +317,14 @@ export function CoARegisterPanel(): JSX.Element {
           <CardTitle className="text-base">Generated</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {generated.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No CoAs generated yet.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : generated.length === 0 ? (
+            <EmptyState
+              Icon={FileCheck}
+              heading="No generated CoAs"
+              description="Generate CoAs from completed inspections to send to customers."
+            />
           ) : (
             <Table>
               <TableHeader>
@@ -309,8 +361,11 @@ export function PendingAlertsPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [threshold, setThreshold] = useState<number>(DEFAULT_PENDING_THRESHOLD_HOURS);
   const [list, setList] = useState<QaPendingAlert[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const refresh = useCallback((): void => {
+    setLoading(true);
     setList(getPendingInspectionAlerts(entityCode, threshold));
+    setLoading(false);
   }, [entityCode, threshold]);
   useEffect(() => { refresh(); }, [refresh]);
 
@@ -335,10 +390,14 @@ export function PendingAlertsPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No pending inspections older than {threshold}h.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={AlertTriangle}
+              heading="No pending alerts"
+              description={`All inspections within threshold (${threshold}h) · no alerts.`}
+            />
           ) : (
             <Table>
               <TableHeader>
