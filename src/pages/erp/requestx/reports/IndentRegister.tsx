@@ -121,7 +121,6 @@ export function IndentRegisterPanel(): JSX.Element {
       toast.success(`${cancelTarget.voucher_no} cancelled`);
       setCancelTarget(null);
       setCancelReason('');
-      setRefreshTick(t => t + 1);
     } else {
       toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
     }
