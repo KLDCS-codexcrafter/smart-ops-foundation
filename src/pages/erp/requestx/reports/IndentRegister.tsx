@@ -79,7 +79,6 @@ export function IndentRegisterPanel(): JSX.Element {
   const [cancelTarget, setCancelTarget] = useState<{ id: string; kind: IndentKind; voucher_no: string } | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
-  const [refreshTick, setRefreshTick] = useState(0);
 
   const vendorPool = useMemo(() => loadVendorPool(), []);
 
