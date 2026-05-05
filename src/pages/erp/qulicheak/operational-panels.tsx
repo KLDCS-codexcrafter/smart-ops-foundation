@@ -164,7 +164,12 @@ export function ClosureLogPanel(): JSX.Element {
 export function VendorScorecardPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [list, setList] = useState<VendorScorecardMetrics[]>([]);
-  const refresh = useCallback((): void => { setList(computeVendorScorecard(entityCode)); }, [entityCode]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const refresh = useCallback((): void => {
+    setLoading(true);
+    setList(computeVendorScorecard(entityCode));
+    setLoading(false);
+  }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
   const grade = (acc: number): { label: string; v: 'default' | 'secondary' | 'destructive' | 'outline' } => {
@@ -187,10 +192,14 @@ export function VendorScorecardPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No vendor inspection data yet.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={Award}
+              heading="No vendor scorecards yet"
+              description="Vendor scorecards appear after their inspections are completed."
+            />
           ) : (
             <Table>
               <TableHeader>
