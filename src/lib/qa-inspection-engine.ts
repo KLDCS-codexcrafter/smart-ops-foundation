@@ -300,11 +300,6 @@ export function findApplicablePlanForInspection(
 }
 
 /**
- * D-329 stub · 5-pre-2 will replace with qa-closure-resolver auto-routing
- * (movement journals → quarantine / sample / rejection / approved godowns).
- * For now it is a no-op that reports intent so callers can wire safely.
- */
-/**
  * D-339 (5-pre-2 Block C · Q2=a stub→real swap) · CORE 9 fns above BYTE-IDENTICAL preserved.
  * Function delegates to qa-closure-resolver.routeInspectionClosure.
  */
