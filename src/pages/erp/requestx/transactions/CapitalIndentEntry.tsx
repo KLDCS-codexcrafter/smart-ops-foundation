@@ -346,6 +346,7 @@ export function CapitalIndentEntry(): JSX.Element {
             <span className="font-mono flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
             <span className="text-warning font-semibold">→ Finance approval required</span>
           </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
