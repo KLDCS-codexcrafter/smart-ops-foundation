@@ -300,17 +300,25 @@ export function findApplicablePlanForInspection(
 }
 
 /**
- * D-329 stub · 5-pre-2 will replace with qa-closure-resolver auto-routing
- * (movement journals → quarantine / sample / rejection / approved godowns).
- * For now it is a no-op that reports intent so callers can wire safely.
+ * D-339 (5-pre-2 Block C · Q2=a stub→real swap) · CORE 9 fns above BYTE-IDENTICAL preserved.
+ * Function delegates to qa-closure-resolver.routeInspectionClosure.
  */
 export interface InspectionClosureIntent {
   qa_id: string;
-  routed: false;
-  reason: 'pending-resolver';
+  routed: boolean;
+  reason: 'pending-resolver' | 'routed' | string;
 }
 
-export function triggerInspectionClosure(qaId: string): InspectionClosureIntent {
-  return { qa_id: qaId, routed: false, reason: 'pending-resolver' };
+export async function triggerInspectionClosure(
+  qaId: string,
+  entityCode: string,
+): Promise<InspectionClosureIntent> {
+  const { routeInspectionClosure } = await import('./qa-closure-resolver');
+  const result = await routeInspectionClosure(qaId, entityCode);
+  return {
+    qa_id: qaId,
+    routed: result.ok,
+    reason: result.ok ? 'routed' : (result.reason ?? 'pending-resolver'),
+  };
 }
 
