@@ -27,9 +27,19 @@ import {
 } from '@/lib/store-hub-engine';
 import { promoteReorderToIndent } from '@/lib/reorder-indent-bridge';
 
+function SkeletonRows(): JSX.Element {
+  return (
+    <div className="space-y-2 p-4">
+      {[1, 2, 3].map(i => <Skeleton key={`sk-${i}`} className="h-9 w-full" />)}
+    </div>
+  );
+}
+
 export function StockCheckPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { const t = setTimeout(() => setLoading(false), 100); return () => clearTimeout(t); }, []);
   const rows = useMemo(() => computeStockBalance(entityCode), [entityCode]);
   const filtered = useMemo(() => {
     if (!q.trim()) return rows;
