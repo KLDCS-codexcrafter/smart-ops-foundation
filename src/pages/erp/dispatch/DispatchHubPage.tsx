@@ -29,6 +29,8 @@ import { InwardReceiptEntryPanel } from './inward/InwardReceiptEntry';
 import { InwardReceiptRegisterPanel } from './inward/InwardReceiptRegister';
 import { QuarantineQueuePanel } from './inward/QuarantineQueue';
 import { VendorReturnPanel } from './inward/VendorReturn';
+// Sprint 6-pre-2 · D-362
+import { StockHoldReportPanel } from './inward/StockHoldReport';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -59,6 +61,7 @@ function renderModule(
     case 'dh-i-inward-receipt-register':return <InwardReceiptRegisterPanel onModuleChange={onModuleChange} />;
     case 'dh-i-quarantine-queue':       return <QuarantineQueuePanel />;
     case 'dh-i-vendor-return':          return <VendorReturnPanel />;
+    case 'dh-i-stock-hold-report':      return <StockHoldReportPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }

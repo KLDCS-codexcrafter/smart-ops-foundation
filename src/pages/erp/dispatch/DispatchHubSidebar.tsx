@@ -41,7 +41,9 @@ export type DispatchHubModule =
   | 'dh-i-inward-receipt-entry'
   | 'dh-i-inward-receipt-register'
   | 'dh-i-quarantine-queue'
-  | 'dh-i-vendor-return';
+  | 'dh-i-vendor-return'
+  // Sprint 6-pre-2 · D-362
+  | 'dh-i-stock-hold-report';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -74,6 +76,7 @@ const INWARD_ITEMS: MenuItem[] = [
   { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen },
   { label: 'Inward Receipt Register', module: 'dh-i-inward-receipt-register', icon: Inbox },
   { label: 'Quarantine Queue',        module: 'dh-i-quarantine-queue',        icon: ShieldAlert },
+  { label: 'Stock Hold Report',       module: 'dh-i-stock-hold-report',       icon: PackageX },
   { label: 'Vendor Return',           module: 'dh-i-vendor-return',           icon: Undo2 },
 ];
 
