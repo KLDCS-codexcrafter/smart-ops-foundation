@@ -58,7 +58,7 @@ export interface ApprovalEvent {
   id: string;
   approver_user_id: string;
   approver_role: string;
-  action: 'approved' | 'rejected' | 'sent_back' | 'on_hold';
+  action: 'approved' | 'rejected' | 'sent_back' | 'on_hold' | 'cancelled';
   remarks: string;
   acted_at: string;
 }
