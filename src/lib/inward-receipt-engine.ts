@@ -19,6 +19,9 @@ import type {
 import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import {
+  comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
+} from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 // ============================================================
 // PUBLIC TYPES
