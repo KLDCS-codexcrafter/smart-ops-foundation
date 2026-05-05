@@ -70,7 +70,7 @@ describe('qa-pending-inspection-alerts · D-344 3-tier severity', () => {
     expect(lab.warning).toBeGreaterThan(internal.warning);
   });
   it('emits severity field on each alert', () => {
-    const old = new Date(Date.now() - 80 * 3600 * 1000).toISOString().slice(0, 10);
+    const old = new Date(Date.now() - 80 * 3600 * 1000).toISOString();
     seed({ inspection_date: old, inspection_authority: 'internal' });
     const alerts = getPendingInspectionAlerts(E, 24);
     expect(alerts).toHaveLength(1);
@@ -78,7 +78,7 @@ describe('qa-pending-inspection-alerts · D-344 3-tier severity', () => {
     expect(alerts[0].authority).toBe('internal');
   });
   it('respects user-facing threshold override', () => {
-    const old = new Date(Date.now() - 12 * 3600 * 1000).toISOString().slice(0, 10);
+    const old = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
     seed({ inspection_date: old });
     expect(getPendingInspectionAlerts(E, 24)).toHaveLength(0);
     expect(getPendingInspectionAlerts(E, 6).length).toBeGreaterThanOrEqual(0);

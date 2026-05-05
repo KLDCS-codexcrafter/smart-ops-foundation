@@ -12,14 +12,16 @@ import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   ClipboardCheck, FileText, Beaker, ListChecks, ShieldCheck, FlaskConical,
-  Activity, AlertCircle, CheckCircle2,
+  Activity, AlertCircle, CheckCircle2, AlertTriangle,
 } from 'lucide-react';
 import { listQaInspections, listPendingQa } from '@/lib/qa-inspection-engine';
 import { listQaPlans } from '@/lib/qa-plan-engine';
 import { listQaSpecs } from '@/lib/qa-spec-engine';
+import { getPendingInspectionAlerts } from '@/lib/oob/qa-pending-inspection-alerts';
 import type { QaInspectionRecord, QaInspectionStatus } from '@/types/qa-inspection';
 import type { QaPlan } from '@/types/qa-plan';
 import type { QaSpec } from '@/types/qa-spec';
@@ -54,17 +56,26 @@ interface WelcomeProps { onNavigate: (m: QualiCheckModule) => void }
 
 export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
   const entityCode = getActiveEntityCode();
+  const [loading, setLoading] = useState(true);
   const [inspections, setInspections] = useState<QaInspectionRecord[]>([]);
   const [plans, setPlans] = useState<QaPlan[]>([]);
   const [specs, setSpecs] = useState<QaSpec[]>([]);
+  const [criticalAlerts, setCriticalAlerts] = useState(0);
 
   const refresh = useCallback((): void => {
     setInspections(listQaInspections(entityCode));
     setPlans(listQaPlans(entityCode));
     setSpecs(listQaSpecs(entityCode));
+    const a = getPendingInspectionAlerts(entityCode);
+    setCriticalAlerts(a.filter(x => x.severity === 'critical' || x.severity === 'escalated').length);
+    setLoading(false);
   }, [entityCode]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+    const i = setInterval(refresh, 5000);
+    return () => clearInterval(i);
+  }, [refresh]);
 
   const pending = inspections.filter(q => q.status === 'pending' || q.status === 'in_progress').length;
   const passed = inspections.filter(q => q.status === 'passed').length;
@@ -72,6 +83,7 @@ export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
 
   const kpis = [
     { label: 'Pending Inspections', value: pending, icon: AlertCircle, accent: 'text-warning' },
+    { label: 'Critical Alerts', value: criticalAlerts, icon: AlertTriangle, accent: 'text-destructive' },
     { label: 'Passed (all-time)', value: passed, icon: CheckCircle2, accent: 'text-primary' },
     { label: 'Failed (all-time)', value: failed, icon: AlertCircle, accent: 'text-destructive' },
     { label: 'Active Plans', value: plans.filter(p => p.status === 'active').length, icon: FileText, accent: 'text-primary' },
@@ -87,20 +99,24 @@ export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {kpis.map(k => (
-          <Card key={k.label} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <k.icon className={`h-4 w-4 ${k.accent}`} />
-                {k.label}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-mono font-semibold">{k.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Card key={`sk-${i}`}><CardContent className="p-4"><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-7 w-12" /></CardContent></Card>
+            ))
+          : kpis.map(k => (
+              <Card key={k.label} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                    <k.icon className={`h-4 w-4 ${k.accent}`} />
+                    {k.label}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-mono font-semibold">{k.value}</div>
+                </CardContent>
+              </Card>
+            ))}
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
