@@ -365,8 +365,32 @@ export function CapitalIndentEntry(): JSX.Element {
       )}
 
       <div className="flex gap-2">
+        <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+        {currentDraft?.status === 'draft' && (
+          <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>Cancel Capital Indent</Button>
+        )}
         <Button onClick={handleSave}>Submit Capital Indent (→ Finance)</Button>
       </div>
+
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Capital Indent</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={cancelReason}
+            onChange={e => setCancelReason(e.target.value)}
+            placeholder="Reason for cancellation (required · max 500 chars)"
+            maxLength={500}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>Back</Button>
+            <Button variant="destructive" disabled={cancelling || !cancelReason.trim()} onClick={handleCancel}>
+              {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Sprint27eMount
         entityCode={entityCode}
