@@ -11,6 +11,8 @@ import type { POD, PODExceptionType } from '@/types/pod';
 import { podsKey } from '@/types/pod';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
+import { Eye } from 'lucide-react';
+import PODDetailDialog from '../components/PODDetailDialog';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? JSON.parse(r) as T[] : []; }
