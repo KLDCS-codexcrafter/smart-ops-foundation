@@ -8,13 +8,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Truck, ClipboardEdit, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Truck, ClipboardEdit, CheckCircle2, AlertTriangle, ArrowRight, Inbox } from 'lucide-react';
 import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
 import { vouchersKey } from '@/lib/finecore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchHubModule } from './DispatchHubSidebar';
+import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';
 import { useT } from '@/lib/i18n-engine';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
@@ -33,12 +34,17 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   const { entityCode } = useCardEntitlement();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [pods, setPods] = useState<POD[]>([]);
+  const [inwardCount, setInwardCount] = useState(0);
+  const [quarantineCount, setQuarantineCount] = useState(0);
 
   useEffect(() => {
     // [JWT] GET /api/accounting/vouchers
     setVouchers(ls<Voucher>(vouchersKey(entityCode)));
     // [JWT] GET /api/dispatch/pods
     setPods(ls<POD>(podsKey(entityCode)));
+    // [JWT] GET /api/logistic/inward-receipts
+    setInwardCount(listInwardReceipts(entityCode).length);
+    setQuarantineCount(listQuarantineQueue(entityCode).length);
   }, [entityCode]);
 
   const dlns = useMemo(
