@@ -39,6 +39,8 @@ import {
   DEMO_CAMPAIGN_TEMPLATES,
 } from '@/data/demo-salesx-data';
 import { DEMO_DELIVERY_MEMOS } from '@/data/demo-dispatch-data';
+import { DEMO_INWARD_RECEIPTS } from '@/data/demo-inward-data';
+import { inwardReceiptsKey } from '@/types/inward-receipt';
 import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
   DEMO_COLLECTION_EXECS, DEMO_INCENTIVE_SCHEMES,
@@ -183,6 +185,10 @@ export function seedEntityDemoData(
   safeSetArray(`erp_supply_request_memos_${entityCode}`, srmData);
   const dmData = DEMO_DELIVERY_MEMOS.map(m => ({ ...m, entity_id: entityCode }));
   safeSetArray(`erp_delivery_memos_${entityCode}`, dmData);
+
+  // Card #6 Inward Logistic FOUNDATION (Sprint T-Phase-1.2.6f-d-2-card6-6-pre-1 · Block F)
+  const irData = DEMO_INWARD_RECEIPTS.map(r => ({ ...r, entity_id: entityCode }));
+  safeSetArray(inwardReceiptsKey(entityCode), irData);
 
   // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
   // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /dev-server
+
+ ✓ src/test/inward-receipt-engine.test.ts (11 tests) 40ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  06:52:59
+   Duration  3.74s (transform 390ms, setup 140ms, collect 507ms, tests 40ms, environment 1.03s, prepare 147ms)
+
