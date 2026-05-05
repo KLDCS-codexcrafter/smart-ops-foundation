@@ -12,12 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Send } from 'lucide-react';
+import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   computeStockBalance,
   listReorderSuggestions,
   computeDemandForecast,
+  type ReorderSuggestion,
 } from '@/lib/store-hub-engine';
+import { promoteReorderToIndent } from '@/lib/reorder-indent-bridge';
 
 export function StockCheckPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -84,7 +91,15 @@ export function StockCheckPanel(): JSX.Element {
 
 export function ReorderSuggestionsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = useMemo(() => listReorderSuggestions(entityCode), [entityCode]);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const rows = useMemo(
+    () => { void refreshTick; return listReorderSuggestions(entityCode); },
+    [entityCode, refreshTick],
+  );
+  const [selected, setSelected] = useState<ReorderSuggestion | null>(null);
+  const [deptName, setDeptName] = useState('');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const urgencyBadge = (u: 'critical' | 'warning' | 'normal'): JSX.Element => {
     if (u === 'critical') return <Badge variant="destructive">Critical</Badge>;
