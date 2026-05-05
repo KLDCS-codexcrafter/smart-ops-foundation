@@ -11,6 +11,8 @@ import {
   TrendingUp,
   FileSpreadsheet, AlertCircle, Scale,
   FileUp, Award,
+  // Sprint 6-pre-1 · Card #6 Inward Logistic
+  PackageOpen, ShieldAlert, Undo2, Inbox,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -32,7 +34,12 @@ export type DispatchHubModule =
   // Sprint 15c-3
   | 'dh-t-pdf-invoice-upload'
   | 'dh-r-transporter-scorecard'
-  | 'dh-r-savings-roi';
+  | 'dh-r-savings-roi'
+  // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
+  | 'dh-i-inward-receipt-entry'
+  | 'dh-i-inward-receipt-register'
+  | 'dh-i-quarantine-queue'
+  | 'dh-i-vendor-return';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -60,12 +67,21 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp },
 ];
 
+// Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
+const INWARD_ITEMS: MenuItem[] = [
+  { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen },
+  { label: 'Inward Receipt Register', module: 'dh-i-inward-receipt-register', icon: Inbox },
+  { label: 'Quarantine Queue',        module: 'dh-i-quarantine-queue',        icon: ShieldAlert },
+  { label: 'Vendor Return',           module: 'dh-i-vendor-return',           icon: Undo2 },
+];
+
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   const navigate = useNavigate();
   const { activeModule, onModuleChange } = props;
   const [mastersOpen, setMastersOpen] = useState(activeModule.startsWith('dh-m-'));
   const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
+  const [inwardOpen, setInwardOpen] = useState(activeModule.startsWith('dh-i-'));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -140,6 +156,38 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 {TRANSACTIONS_ITEMS.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </Collapsible>
+
+        {/* Inward (Sprint 6-pre-1 · Card #6) */}
+        <Collapsible open={inwardOpen} onOpenChange={setInwardOpen} className="mt-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CollapsibleTrigger asChild>
+                <SidebarMenuButton
+                  isActive={activeModule.startsWith('dh-i-')}
+                  className={cn(activeModule.startsWith('dh-i-') && 'bg-blue-500/15 text-blue-600')}
+                >
+                  <PackageOpen className="h-4 w-4" />
+                  <span>Inward</span>
+                  <ChevronRight className={`ml-auto h-3 w-3 transition-transform ${inwardOpen ? 'rotate-90' : ''}`} />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {INWARD_ITEMS.map(i => (
                   <SidebarMenuItem key={i.module}>
                     <SidebarMenuButton
                       onClick={() => onModuleChange(i.module)}
