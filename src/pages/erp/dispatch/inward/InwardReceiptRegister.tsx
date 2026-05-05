@@ -33,9 +33,12 @@ export function InwardReceiptRegisterPanel(_props: Props) {
   const [rows, setRows] = useState<InwardReceipt[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     setRows(listInwardReceipts(entityCode));
+    setLoading(false);
   }, [entityCode]);
 
   const filtered = useMemo(() => {
