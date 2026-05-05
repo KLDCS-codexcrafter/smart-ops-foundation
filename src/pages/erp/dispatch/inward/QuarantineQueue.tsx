@@ -32,9 +32,12 @@ export function QuarantineQueuePanel() {
   const [active, setActive] = useState<InwardReceipt | null>(null);
   const [decision, setDecision] = useState<InwardReceiptStatus | null>(null);
   const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
+    setLoading(true);
     setRows(listQuarantineQueue(entityCode));
+    setLoading(false);
   }, [entityCode]);
 
   useEffect(() => { refresh(); }, [refresh]);
