@@ -283,54 +283,58 @@ export function ServiceRequestEntry(): JSX.Element {
           <Button size="sm" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-xs">#</TableHead>
-                <TableHead className="text-xs">Service Name</TableHead>
-                <TableHead className="text-xs">Description</TableHead>
-                <TableHead className="text-xs">Qty</TableHead>
-                <TableHead className="text-xs">UoM</TableHead>
-                <TableHead className="text-xs">Rate (₹)</TableHead>
-                <TableHead className="text-xs">Value (₹)</TableHead>
-                <TableHead className="text-xs">Required</TableHead>
-                <TableHead className="text-xs">SLA Days</TableHead>
-                <TableHead className="text-xs">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lines.map(l => (
-                <TableRow key={l.id}>
-                  <TableCell className="text-xs">{l.line_no}</TableCell>
-                  <TableCell>
-                    <Input value={l.service_name} onChange={e => updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
-                  </TableCell>
-                  <TableCell><Input value={l.description} onChange={e => updateLine(l.id, { description: e.target.value })} /></TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell>
-                    <Select value={l.uom} onValueChange={v => updateLine(l.id, { uom: v })}>
-                      <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="JOB">JOB</SelectItem>
-                        <SelectItem value="HRS">HRS</SelectItem>
-                        <SelectItem value="VISIT">VISIT</SelectItem>
-                        <SelectItem value="MTH">MTH</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
-                  <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
-                  <TableCell><Input type="date" value={l.required_date} onChange={e => updateLine(l.id, { required_date: e.target.value })} /></TableCell>
-                  <TableCell><Input type="number" value={l.sla_days} onChange={e => updateLine(l.id, { sla_days: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell><Button size="sm" variant="ghost" onClick={() => removeLine(l.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-end pt-2 text-sm font-mono">
-            <span className="text-muted-foreground mr-2">Total:</span>
-            <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
-          </div>
+          <SkeletonRows>
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">#</TableHead>
+                    <TableHead className="text-xs">Service Name</TableHead>
+                    <TableHead className="text-xs">Description</TableHead>
+                    <TableHead className="text-xs">Qty</TableHead>
+                    <TableHead className="text-xs">UoM</TableHead>
+                    <TableHead className="text-xs">Rate (₹)</TableHead>
+                    <TableHead className="text-xs">Value (₹)</TableHead>
+                    <TableHead className="text-xs">Required</TableHead>
+                    <TableHead className="text-xs">SLA Days</TableHead>
+                    <TableHead className="text-xs">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lines.map(l => (
+                    <TableRow key={l.id}>
+                      <TableCell className="text-xs">{l.line_no}</TableCell>
+                      <TableCell>
+                        <Input value={l.service_name} onChange={e => updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
+                      </TableCell>
+                      <TableCell><Input value={l.description} onChange={e => updateLine(l.id, { description: e.target.value })} /></TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
+                      <TableCell>
+                        <Select value={l.uom} onValueChange={v => updateLine(l.id, { uom: v })}>
+                          <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="JOB">JOB</SelectItem>
+                            <SelectItem value="HRS">HRS</SelectItem>
+                            <SelectItem value="VISIT">VISIT</SelectItem>
+                            <SelectItem value="MTH">MTH</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
+                      <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
+                      <TableCell><Input type="date" value={l.required_date} onChange={e => updateLine(l.id, { required_date: e.target.value })} /></TableCell>
+                      <TableCell><Input type="number" value={l.sla_days} onChange={e => updateLine(l.id, { sla_days: Number(e.target.value) })} className="w-16" /></TableCell>
+                      <TableCell><Button size="sm" variant="ghost" onClick={() => removeLine(l.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex justify-end pt-2 text-sm font-mono">
+                <span className="text-muted-foreground mr-2">Total:</span>
+                <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
