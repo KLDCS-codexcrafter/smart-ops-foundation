@@ -20,6 +20,8 @@ import {
 import { StockIssueEntryPanel } from './transactions/StockIssueEntry';
 import { StockIssueRegisterPanel } from './transactions/StockIssueRegister';
 import { StockReceiptAckPanel } from './transactions/StockReceiptAck';
+import { CycleCountStatusPanel } from './reports/CycleCountStatus';
+import { StoreHubWelcomePanel } from './StoreHubWelcome';
 
 function WelcomePanel(): JSX.Element {
   return (
@@ -49,13 +51,15 @@ function renderModule(
 ): React.ReactElement {
   switch (mod) {
     case 'sh-welcome':                  return <WelcomePanel />;
+    case 'sh-r-welcome':                return <StoreHubWelcomePanel onModuleChange={onModuleChange} />;
     case 'sh-r-stock-check':            return <StockCheckPanel />;
     case 'sh-r-reorder-suggestions':    return <ReorderSuggestionsPanel />;
     case 'sh-r-demand-forecast':        return <DemandForecastPanel />;
+    case 'sh-r-cycle-count-status':     return <CycleCountStatusPanel />;
     case 'sh-t-stock-issue-entry':      return <StockIssueEntryPanel onModuleChange={onModuleChange} />;
     case 'sh-t-stock-issue-register':   return <StockIssueRegisterPanel onModuleChange={onModuleChange} />;
     case 'sh-t-receipt-ack':            return <StockReceiptAckPanel />;
-    default:                            return <WelcomePanel />;
+    default:                            return <StoreHubWelcomePanel onModuleChange={onModuleChange} />;
   }
 }
 
@@ -63,11 +67,11 @@ export default function StoreHubPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<StoreHubModule>(() => {
     const hash = window.location.hash.replace('#', '');
     if (hash.startsWith('sh-')) return hash as StoreHubModule;
-    return 'sh-welcome';
+    return 'sh-r-welcome';
   });
 
   useEffect(() => {
-    if (activeModule !== 'sh-welcome') {
+    if (activeModule !== 'sh-r-welcome') {
       window.history.replaceState(null, '', `#${activeModule}`);
     } else {
       window.history.replaceState(null, '', window.location.pathname);

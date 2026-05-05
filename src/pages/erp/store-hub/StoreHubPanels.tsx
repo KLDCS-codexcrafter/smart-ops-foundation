@@ -12,12 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Send } from 'lucide-react';
+import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   computeStockBalance,
   listReorderSuggestions,
   computeDemandForecast,
+  type ReorderSuggestion,
 } from '@/lib/store-hub-engine';
+import { promoteReorderToIndent } from '@/lib/reorder-indent-bridge';
 
 export function StockCheckPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -84,7 +91,15 @@ export function StockCheckPanel(): JSX.Element {
 
 export function ReorderSuggestionsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = useMemo(() => listReorderSuggestions(entityCode), [entityCode]);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const rows = useMemo(
+    () => { void refreshTick; return listReorderSuggestions(entityCode); },
+    [entityCode, refreshTick],
+  );
+  const [selected, setSelected] = useState<ReorderSuggestion | null>(null);
+  const [deptName, setDeptName] = useState('');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const urgencyBadge = (u: 'critical' | 'warning' | 'normal'): JSX.Element => {
     if (u === 'critical') return <Badge variant="destructive">Critical</Badge>;
@@ -92,46 +107,111 @@ export function ReorderSuggestionsPanel(): JSX.Element {
     return <Badge variant="outline">Normal</Badge>;
   };
 
+  const handlePromote = (): void => {
+    if (!selected || !deptName) { toast.error('Department required'); return; }
+    setSubmitting(true);
+    const r = promoteReorderToIndent({
+      suggestion: selected,
+      department_id: deptName.toLowerCase().replace(/\s+/g, '-'),
+      department_name: deptName,
+      notes,
+      created_by: 'stores-mgr',
+    }, entityCode);
+    setSubmitting(false);
+    if (r.ok) {
+      toast.success(`Material Indent ${r.voucher_no} created · routing to approval`);
+      setSelected(null); setDeptName(''); setNotes('');
+      setRefreshTick(t => t + 1);
+    } else {
+      toast.error(`Promote failed: ${r.reason}`);
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Reorder Suggestions ({rows.length})</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Item</TableHead>
-              <TableHead>Godown</TableHead>
-              <TableHead className="text-right">Current</TableHead>
-              <TableHead className="text-right">Reorder Level</TableHead>
-              <TableHead className="text-right">Shortfall</TableHead>
-              <TableHead className="text-right">Suggested Qty</TableHead>
-              <TableHead>Urgency</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length === 0 ? (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Reorder Suggestions ({rows.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">
-                  No items currently below reorder threshold.
-                </TableCell>
+                <TableHead>Item</TableHead>
+                <TableHead>Godown</TableHead>
+                <TableHead className="text-right">Current</TableHead>
+                <TableHead className="text-right">Reorder Level</TableHead>
+                <TableHead className="text-right">Shortfall</TableHead>
+                <TableHead className="text-right">Suggested Qty</TableHead>
+                <TableHead>Urgency</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
-            ) : rows.map((r) => (
-              <TableRow key={`${r.item_id}:${r.godown_id}`}>
-                <TableCell className="text-xs">{r.item_name || r.item_id}</TableCell>
-                <TableCell className="text-xs">{r.godown_name}</TableCell>
-                <TableCell className="font-mono text-xs text-right">{r.current_balance} {r.uom}</TableCell>
-                <TableCell className="font-mono text-xs text-right">{r.reorder_level}</TableCell>
-                <TableCell className="font-mono text-xs text-right text-destructive">{r.shortfall}</TableCell>
-                <TableCell className="font-mono text-xs text-right">{r.reorder_qty}</TableCell>
-                <TableCell>{urgencyBadge(r.urgency)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">
+                    No items currently below reorder threshold.
+                  </TableCell>
+                </TableRow>
+              ) : rows.map((r) => (
+                <TableRow key={`${r.item_id}:${r.godown_id}`}>
+                  <TableCell className="text-xs">{r.item_name || r.item_id}</TableCell>
+                  <TableCell className="text-xs">{r.godown_name}</TableCell>
+                  <TableCell className="font-mono text-xs text-right">{r.current_balance} {r.uom}</TableCell>
+                  <TableCell className="font-mono text-xs text-right">{r.reorder_level}</TableCell>
+                  <TableCell className="font-mono text-xs text-right text-destructive">{r.shortfall}</TableCell>
+                  <TableCell className="font-mono text-xs text-right">{r.reorder_qty}</TableCell>
+                  <TableCell>{urgencyBadge(r.urgency)}</TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline" onClick={() => setSelected(r)}>
+                      <Send className="h-3 w-3 mr-1" />Promote to Indent
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Promote {selected?.item_name} to Material Indent</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-muted/50 rounded space-y-1">
+                <div className="flex justify-between"><span className="text-muted-foreground">Item:</span><span className="font-medium">{selected.item_name}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Godown:</span><span>{selected.godown_name}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Current:</span><span>{selected.current_balance} {selected.uom}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Reorder Level:</span><span>{selected.reorder_level} {selected.uom}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Shortfall:</span><span className="text-amber-600 font-medium">{selected.shortfall} {selected.uom}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Suggested Qty:</span><span className="font-bold">{selected.reorder_qty} {selected.uom}</span></div>
+              </div>
+              <div>
+                <Label>Department</Label>
+                <Input value={deptName} onChange={e => setDeptName(e.target.value)} placeholder="Production / QC / Maintenance" />
+              </div>
+              <div>
+                <Label>Notes (optional)</Label>
+                <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Reason for promotion" />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Indent will be created in submitted state · Card #3 Indent Approval Inbox takes over routing.
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelected(null)}>Cancel</Button>
+            <Button onClick={handlePromote} disabled={submitting}>
+              <Send className="h-4 w-4 mr-1" />Promote
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
