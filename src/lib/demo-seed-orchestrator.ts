@@ -45,6 +45,7 @@ import { DEMO_STOCK_ISSUES, DEMO_STOCK_RECEIPT_ACKS } from '@/data/demo-store-hu
 import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 import { DEMO_PROMOTED_INDENTS } from '@/data/demo-store-hub-workflow-data';
+import { DEMO_REQUESTX_MOBILE_INDENTS } from '@/data/demo-requestx-mobile-data';
 import { materialIndentsKey } from '@/types/material-indent';
 import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
