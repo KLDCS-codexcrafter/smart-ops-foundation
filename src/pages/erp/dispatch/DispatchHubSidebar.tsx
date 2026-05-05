@@ -67,12 +67,21 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp },
 ];
 
+// Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
+const INWARD_ITEMS: MenuItem[] = [
+  { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen },
+  { label: 'Inward Receipt Register', module: 'dh-i-inward-receipt-register', icon: Inbox },
+  { label: 'Quarantine Queue',        module: 'dh-i-quarantine-queue',        icon: ShieldAlert },
+  { label: 'Vendor Return',           module: 'dh-i-vendor-return',           icon: Undo2 },
+];
+
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   const navigate = useNavigate();
   const { activeModule, onModuleChange } = props;
   const [mastersOpen, setMastersOpen] = useState(activeModule.startsWith('dh-m-'));
   const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
+  const [inwardOpen, setInwardOpen] = useState(activeModule.startsWith('dh-i-'));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
