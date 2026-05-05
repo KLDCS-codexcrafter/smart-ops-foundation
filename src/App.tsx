@@ -204,6 +204,9 @@ const MobileInwardReceiptPage = lazy(() => import('./pages/mobile/MobileInwardRe
 // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-3 · Block E · D-398 · Store Hub Mobile
 const MobileStoreIssuePage = lazy(() => import('./pages/mobile/MobileStoreIssuePage'));
 const MobileReceiptAckPage = lazy(() => import('./pages/mobile/MobileReceiptAckPage'));
+// Sprint T-Phase-1.2.6f-d-2-card8-8-pre-1 · Block E · D-407 · RequestX Mobile
+const MobileMaterialIndentPage = lazy(() => import('./pages/mobile/MobileMaterialIndentPage'));
+const MobileApprovalInboxPage = lazy(() => import('./pages/mobile/MobileApprovalInboxPage'));
 const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
