@@ -308,6 +308,7 @@ const App = () => (
               <Route path="/operix-go/receivx" element={<P><ReceivXGoMobile /></P>} />
               <Route path="/operix-go/gate-guard" element={<P><MobileGateGuardPage /></P>} />
               <Route path="/operix-go/qulicheak" element={<P><MobileQualiCheckPage /></P>} />
+              <Route path="/operix-go/inward-receipt" element={<P><MobileInwardReceiptPage /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
