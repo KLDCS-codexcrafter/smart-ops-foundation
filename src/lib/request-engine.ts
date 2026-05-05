@@ -313,3 +313,51 @@ export function runAutoRules(
   }
   return warnings;
 }
+
+// ── CANCEL (DRAFT-only · D-410 · 8-pre-2) ───────────────────────────────────
+
+/**
+ * cancelIndent — DRAFT-only cancellation (D-410 · 8-pre-2)
+ * Mirrors rejectIndent pattern EXACTLY but for status='draft' transitions to 'cancelled'.
+ * Uses approval_history audit pattern (NOT separate fields) · cleaner than Card #7 D-399.
+ *
+ * D-128 boundary respect: rejects non-DRAFT statuses (use rejectIndent or finecore.cancelVoucher).
+ */
+export function cancelIndent(
+  id: string,
+  kind: IndentKind,
+  cancellerId: string,
+  role: string,
+  cancelReason: string,
+  entityCode: string,
+): { ok: boolean; reason?: string } {
+  // [JWT] PATCH /api/requestx/{kind}-indents/:id/cancel
+  if (!cancelReason.trim()) return { ok: false, reason: 'cancel-reason-required' };
+  if (cancelReason.length > 500) return { ok: false, reason: 'cancel-reason-too-long' };
+  const key = keyFor(kind, entityCode);
+  const list = readArr<BaseIndent>(key);
+  const idx = list.findIndex(x => x.id === id);
+  if (idx === -1) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  if (cur.status === 'cancelled') return { ok: false, reason: 'already-cancelled' };
+  if (cur.status !== 'draft') return { ok: false, reason: 'cancel-only-allowed-for-draft' };
+  if (!transitionState(cur.status, 'cancelled')) return { ok: false, reason: 'state-transition-forbidden' };
+
+  const event: ApprovalEvent = {
+    id: newId('apv'),
+    approver_user_id: cancellerId,
+    approver_role: role,
+    action: 'cancelled',
+    remarks: cancelReason,
+    acted_at: new Date().toISOString(),
+  };
+  list[idx] = {
+    ...cur,
+    status: 'cancelled',
+    pending_approver_user_id: null,
+    approval_history: [...cur.approval_history, event],
+    updated_at: new Date().toISOString(),
+  };
+  writeArr(key, list);
+  return { ok: true };
+}

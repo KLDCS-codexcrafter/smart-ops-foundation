@@ -3,6 +3,7 @@
  * @sprint      T-Phase-1.2.6f-pre-2 · Block B
  */
 import { useMemo } from 'react';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -48,7 +49,7 @@ export function IndentPendingPanel(): JSX.Element {
       <Card>
         <CardHeader><CardTitle className="text-base">Open queue ({rows.length})</CardTitle></CardHeader>
         <CardContent>
-          <Table>
+          <SkeletonRows><Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Voucher</TableHead>
@@ -82,7 +83,7 @@ export function IndentPendingPanel(): JSX.Element {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table></SkeletonRows>
         </CardContent>
       </Card>
     </div>
