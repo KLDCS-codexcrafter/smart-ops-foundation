@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { ShieldAlert, CheckCircle2, XCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
@@ -31,9 +32,12 @@ export function QuarantineQueuePanel() {
   const [active, setActive] = useState<InwardReceipt | null>(null);
   const [decision, setDecision] = useState<InwardReceiptStatus | null>(null);
   const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
+    setLoading(true);
     setRows(listQuarantineQueue(entityCode));
+    setLoading(false);
   }, [entityCode]);
 
   useEffect(() => { refresh(); }, [refresh]);
@@ -81,12 +85,19 @@ export function QuarantineQueuePanel() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <TableRow key={`sk-${i}`}>
+                    <TableCell colSpan={6}><Skeleton className="h-6 w-full" /></TableCell>
+                  </TableRow>
+                ))
+              ) : rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                     <div className="flex flex-col items-center gap-2">
                       <ShieldAlert className="h-8 w-8 text-muted-foreground/40" />
                       <p className="text-sm">No quarantine items</p>
+                      <p className="text-xs">QA-routed receipts pending disposition will appear here.</p>
                     </div>
                   </TableCell>
                 </TableRow>

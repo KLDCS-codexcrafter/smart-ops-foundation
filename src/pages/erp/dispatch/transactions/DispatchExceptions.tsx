@@ -11,6 +11,8 @@ import type { POD, PODExceptionType } from '@/types/pod';
 import { podsKey } from '@/types/pod';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
+import { Eye } from 'lucide-react';
+import PODDetailDialog from '../components/PODDetailDialog';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? JSON.parse(r) as T[] : []; }
@@ -22,6 +24,8 @@ const TYPES: PODExceptionType[] = ['damage', 'short_qty', 'wrong_item', 'refused
 export function DispatchExceptionsPanel() {
   const { entityCode } = useCardEntitlement();
   const [pods, setPods] = useState<POD[]>([]);
+  const [podDialog, setPodDialog] = useState<POD | null>(null);
+  const [podOpen, setPodOpen] = useState(false);
 
   useEffect(() => { setPods(ls<POD>(podsKey(entityCode))); }, [entityCode]);
 
@@ -110,6 +114,10 @@ export function DispatchExceptionsPanel() {
                       </td>
                       <td className="text-right space-x-1">
                         <Button size="sm" variant="ghost" className="h-7 text-xs"
+                          onClick={() => { setPodDialog(p); setPodOpen(true); }}>
+                          <Eye className="h-3.5 w-3.5 mr-1" />POD
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-xs"
                           onClick={() => updatePod(p.id, { status: 'disputed' })}>
                           Mark Review
                         </Button>
@@ -130,6 +138,7 @@ export function DispatchExceptionsPanel() {
           )}
         </CardContent>
       </Card>
+      <PODDetailDialog pod={podDialog} open={podOpen} onOpenChange={setPodOpen} />
     </div>
   );
 }

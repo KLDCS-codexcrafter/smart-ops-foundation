@@ -17,6 +17,7 @@ import { vouchersKey } from '@/lib/finecore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import type { DispatchHubModule } from '../DispatchHubSidebar';
+import PODDetailDialog from '../components/PODDetailDialog';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
 
@@ -37,6 +38,8 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
   const [pods, setPods] = useState<POD[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [search, setSearch] = useState('');
+  const [podDialog, setPodDialog] = useState<POD | null>(null);
+  const [podOpen, setPodOpen] = useState(false);
 
   useEffect(() => {
     setVouchers(ls<Voucher>(vouchersKey(entityCode)));
@@ -152,7 +155,11 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
                             <td className="font-mono text-xs">{d.lr_date ?? '—'}</td>
                             <td className="font-mono text-xs">{age}d</td>
                             <td>
-                              <Badge variant="outline" className="text-[10px]">
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] ${pod ? 'cursor-pointer hover:bg-blue-500/10' : ''}`}
+                                onClick={() => { if (pod) { setPodDialog(pod); setPodOpen(true); } }}
+                              >
                                 {pod?.status ?? 'none'}
                               </Badge>
                             </td>
@@ -176,6 +183,7 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
           </Tabs>
         </CardContent>
       </Card>
+      <PODDetailDialog pod={podDialog} open={podOpen} onOpenChange={setPodOpen} />
     </div>
   );
 }

@@ -38,6 +38,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   const [inwardCount, setInwardCount] = useState(0);
   const [quarantineCount, setQuarantineCount] = useState(0);
   const [vendorReturnCount, setVendorReturnCount] = useState(0);
+  const [releasedTodayCount, setReleasedTodayCount] = useState(0);
 
   useEffect(() => {
     // [JWT] GET /api/accounting/vouchers
@@ -45,8 +46,14 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     // [JWT] GET /api/dispatch/pods
     setPods(ls<POD>(podsKey(entityCode)));
     // [JWT] GET /api/logistic/inward-receipts
-    setInwardCount(listInwardReceipts(entityCode).length);
+    const inward = listInwardReceipts(entityCode);
+    setInwardCount(inward.length);
     setQuarantineCount(listQuarantineQueue(entityCode).length);
+    // D-368 absorption · "Released Today" KPI
+    const todayStr = new Date().toISOString().slice(0, 10);
+    setReleasedTodayCount(
+      inward.filter(r => r.status === 'released' && (r.released_at ?? '').slice(0, 10) === todayStr).length,
+    );
     // [JWT] GET /api/logistic/vendor-returns?status=pending
     setVendorReturnCount(listPendingVendorReturns(entityCode).length);
   }, [entityCode]);
@@ -91,6 +98,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     { label: 'Exceptions',  value: kpis.exceptions, icon: AlertTriangle, accent: 'text-red-600 bg-red-500/10' },
     { label: 'Inward Receipts', value: inwardCount, icon: Inbox, accent: 'text-primary bg-primary/10' },
     { label: 'In Quarantine', value: quarantineCount, icon: AlertTriangle, accent: 'text-warning bg-warning/10' },
+    { label: 'Released Today', value: releasedTodayCount, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-500/10' },
     { label: 'Vendor Returns', value: vendorReturnCount, icon: ArrowRight, accent: 'text-amber-600 bg-amber-500/10' },
   ];
 

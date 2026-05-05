@@ -13,6 +13,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Inbox, Search, PackageOpen } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   INWARD_STATUS_LABELS, INWARD_STATUS_COLORS,
@@ -32,9 +33,12 @@ export function InwardReceiptRegisterPanel(_props: Props) {
   const [rows, setRows] = useState<InwardReceipt[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     setRows(listInwardReceipts(entityCode));
+    setLoading(false);
   }, [entityCode]);
 
   const filtered = useMemo(() => {
@@ -110,12 +114,19 @@ export function InwardReceiptRegisterPanel(_props: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.length === 0 ? (
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell colSpan={8}><Skeleton className="h-6 w-full" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                       <div className="flex flex-col items-center gap-2">
                         <PackageOpen className="h-8 w-8 text-muted-foreground/40" />
                         <p className="text-sm">No inward receipts</p>
+                        <p className="text-xs">Vendor arrivals will appear here once captured.</p>
                       </div>
                     </TableCell>
                   </TableRow>

@@ -153,7 +153,16 @@ export function InwardReceiptEntryPanel({ onModuleChange }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {lines.map(l => {
+              {lines.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                    <div className="flex flex-col items-center gap-1">
+                      <PackageOpen className="h-6 w-6 text-muted-foreground/40" />
+                      <p className="text-sm">No lines yet · click Add Line to begin</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : lines.map(l => {
                 const r = previewRouting(l);
                 return (
                   <TableRow key={l.id}>

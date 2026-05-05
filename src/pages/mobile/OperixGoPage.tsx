@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -55,6 +55,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Inspector 5-step capture · pick pending · qty (P/F/S) · spec parameters · photos · review · auto-routes 3 Stock Journals on submit.',
     details: 'Live: Sprint 5-pre-3 · D-346. Mirrors GateFlow Gate Guard 5-step pattern. Triggers D-339 closure resolver on submit (Quarantine→Approved/Sample/Rejection Stock Journals · D-128 schemas preserved). Offline queue when no network. PWA — no install.',
     route: '/operix-go/qulicheak',
+    phase: 'live',
+  },
+  {
+    id: 'inward-receipt-mobile',
+    title: 'Inward Receipt Mobile',
+    icon: PackageOpen,
+    description: 'Warehouse 5-step capture · vendor + gate-pass auto-link · items + condition · photos · auto-routes Quarantine on QA-plan or qty>tolerance.',
+    details: 'Live: Sprint 6-pre-3 · D-369 + D-370 + D-371. Mirrors GateFlow Gate Guard / QualiCheck 5-step pattern. Calls inward-receipt-engine.createInwardReceipt on submit · D-360 quarantine routing applied · gate-pass auto-link via listInwardQueue. Offline queue when no network.',
+    route: '/operix-go/inward-receipt',
     phase: 'live',
   },
   {
