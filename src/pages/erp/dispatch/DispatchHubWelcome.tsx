@@ -85,6 +85,8 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     { label: 'In Transit',  value: kpis.inTransit,  icon: Truck,         accent: 'text-blue-600 bg-blue-500/10' },
     { label: 'Delivered',   value: kpis.delivered,  icon: CheckCircle2,  accent: 'text-emerald-600 bg-emerald-500/10' },
     { label: 'Exceptions',  value: kpis.exceptions, icon: AlertTriangle, accent: 'text-red-600 bg-red-500/10' },
+    { label: 'Inward Receipts', value: inwardCount, icon: Inbox, accent: 'text-primary bg-primary/10' },
+    { label: 'In Quarantine', value: quarantineCount, icon: AlertTriangle, accent: 'text-warning bg-warning/10' },
   ];
 
   return (
