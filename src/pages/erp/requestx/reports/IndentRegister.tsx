@@ -156,46 +156,56 @@ export function IndentRegisterPanel(): JSX.Element {
               <TabsTrigger value="capital">Capital</TabsTrigger>
             </TabsList>
             <TabsContent value={tab}>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Voucher</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Requester</TableHead>
-                    <TableHead className="text-right">Value</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Strategy</TableHead>
-                    <TableHead className="text-right">Health</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.length === 0 && (
-                    <TableRow><TableCell colSpan={9} className="text-center text-xs text-muted-foreground">
-                      No indents found.
-                    </TableCell></TableRow>
-                  )}
-                  {rows.map(r => {
-                    const band = bandFromScore(r.health);
-                    return (
-                      <TableRow key={`${r.kind}-${r.id}`}>
-                        <TableCell className="font-mono text-xs">{r.voucher_no}</TableCell>
-                        <TableCell className="font-mono text-xs">{r.date}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px]">{r.kind}</Badge></TableCell>
-                        <TableCell className="text-xs">{r.originating_department_name}</TableCell>
-                        <TableCell className="text-xs">{r.requested_by_name}</TableCell>
-                        <TableCell className="font-mono text-xs text-right">{inrFmt(r.total_estimated_value)}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px]">{STATUS_LABEL[r.status]}</Badge></TableCell>
-                        <TableCell>{strategyBadge(r.strategy)}</TableCell>
-                        <TableCell className={`font-mono text-xs text-right ${bandColor(band)}`}>
-                          {r.kind === 'material' ? r.health : '—'}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <SkeletonRows>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Voucher</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Kind</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Requester</TableHead>
+                      <TableHead className="text-right">Value</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Strategy</TableHead>
+                      <TableHead className="text-right">Health</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rows.length === 0 && (
+                      <TableRow><TableCell colSpan={10} className="text-center text-xs text-muted-foreground">
+                        No indents found.
+                      </TableCell></TableRow>
+                    )}
+                    {rows.map(r => {
+                      const band = bandFromScore(r.health);
+                      return (
+                        <TableRow key={`${r.kind}-${r.id}`}>
+                          <TableCell className="font-mono text-xs">{r.voucher_no}</TableCell>
+                          <TableCell className="font-mono text-xs">{r.date}</TableCell>
+                          <TableCell><Badge variant="outline" className="text-[10px]">{r.kind}</Badge></TableCell>
+                          <TableCell className="text-xs">{r.originating_department_name}</TableCell>
+                          <TableCell className="text-xs">{r.requested_by_name}</TableCell>
+                          <TableCell className="font-mono text-xs text-right">{inrFmt(r.total_estimated_value)}</TableCell>
+                          <TableCell><Badge variant="outline" className="text-[10px]">{STATUS_LABEL[r.status]}</Badge></TableCell>
+                          <TableCell>{strategyBadge(r.strategy)}</TableCell>
+                          <TableCell className={`font-mono text-xs text-right ${bandColor(band)}`}>
+                            {r.kind === 'material' ? r.health : '—'}
+                          </TableCell>
+                          <TableCell>
+                            {r.status === 'draft' && (
+                              <Button variant="destructive" size="sm" onClick={() => setCancelTarget({ id: r.id, kind: r.kind, voucher_no: r.voucher_no })}>
+                                Cancel
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </SkeletonRows>
             </TabsContent>
           </Tabs>
         </CardContent>
