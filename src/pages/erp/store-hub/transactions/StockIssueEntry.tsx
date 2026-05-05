@@ -17,7 +17,7 @@ import { Plus, Trash2, Send, Save, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { createStockIssue, postStockIssue } from '@/lib/stock-issue-engine';
-import type { StoreHubModule } from './StoreHubSidebar';
+import type { StoreHubModule } from '../StoreHubSidebar';
 
 interface LineDraft {
   key: string;
