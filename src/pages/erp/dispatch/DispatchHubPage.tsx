@@ -55,6 +55,10 @@ function renderModule(
     case 'dh-t-pdf-invoice-upload':     return <PDFInvoiceUploadPanel />;
     case 'dh-r-transporter-scorecard':  return <TransporterScorecardPanel />;
     case 'dh-r-savings-roi':            return <SavingsROIDashboardPanel />;
+    case 'dh-i-inward-receipt-entry':   return <InwardReceiptEntryPanel onModuleChange={onModuleChange} />;
+    case 'dh-i-inward-receipt-register':return <InwardReceiptRegisterPanel onModuleChange={onModuleChange} />;
+    case 'dh-i-quarantine-queue':       return <QuarantineQueuePanel />;
+    case 'dh-i-vendor-return':          return <VendorReturnPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
