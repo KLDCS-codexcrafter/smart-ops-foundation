@@ -24,6 +24,11 @@ import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummar
 import { PDFInvoiceUploadPanel } from './transactions/PDFInvoiceUpload';
 import { TransporterScorecardPanel } from './reports/TransporterScorecard';
 import { SavingsROIDashboardPanel } from './reports/SavingsROIDashboard';
+// Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION · Block D
+import { InwardReceiptEntryPanel } from './inward/InwardReceiptEntry';
+import { InwardReceiptRegisterPanel } from './inward/InwardReceiptRegister';
+import { QuarantineQueuePanel } from './inward/QuarantineQueue';
+import { VendorReturnPanel } from './inward/VendorReturn';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
