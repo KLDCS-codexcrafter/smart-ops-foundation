@@ -274,4 +274,37 @@ function write(e: string, list: StockIssue[]): void {
   localStorage.setItem(stockIssuesKey(e), JSON.stringify(list));
 }
 
+/**
+ * Cancel a Stock Issue · DRAFT-ONLY (D-399 · D-128 boundary respect)
+ * Posted vouchers (status='issued') must use finecore.cancelVoucher API
+ * to maintain CGST Rule 56(8) edit/delete chain compliance.
+ * [JWT] PATCH /api/store-hub/stock-issues/:id/cancel
+ */
+export async function cancelStockIssue(
+  id: string,
+  cancelReason: string,
+  entityCode: string,
+  byUserId: string,
+): Promise<{ ok: boolean; reason?: string }> {
+  if (!cancelReason.trim()) return { ok: false, reason: 'cancel-reason-required' };
+  const list = read(entityCode);
+  const idx = list.findIndex(s => s.id === id);
+  if (idx === -1) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  if (cur.status === 'cancelled') return { ok: false, reason: 'already-cancelled' };
+  if (cur.status === 'issued') return { ok: false, reason: 'use-finecore-cancel-voucher-for-posted-issues' };
+
+  const now = new Date().toISOString();
+  list[idx] = { ...cur, status: 'cancelled', cancelled_at: now, cancel_reason: cancelReason, updated_at: now, updated_by: byUserId };
+  write(entityCode, list);
+
+  await appendAuditEntry({
+    entityCode, entityId: entityCode, voucherId: id, voucherKind: 'vendor_quotation',
+    action: 'stock_issue_cancelled', actorUserId: byUserId,
+    payload: { issue_no: cur.issue_no, reason: cancelReason, prior_status: 'draft' },
+  });
+
+  return { ok: true };
+}
+
 export type { StockIssueStatus };

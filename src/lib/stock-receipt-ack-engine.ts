@@ -312,4 +312,35 @@ function write(e: string, list: StockReceiptAck[]): void {
   localStorage.setItem(stockReceiptAcksKey(e), JSON.stringify(list));
 }
 
+/**
+ * Cancel a Receipt Ack · DRAFT-ONLY (D-399 · D-128 boundary respect)
+ * [JWT] PATCH /api/store-hub/receipt-acks/:id/cancel
+ */
+export async function cancelReceiptAck(
+  id: string,
+  cancelReason: string,
+  entityCode: string,
+  byUserId: string,
+): Promise<{ ok: boolean; reason?: string }> {
+  if (!cancelReason.trim()) return { ok: false, reason: 'cancel-reason-required' };
+  const list = read(entityCode);
+  const idx = list.findIndex(a => a.id === id);
+  if (idx === -1) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  if (cur.status === 'cancelled') return { ok: false, reason: 'already-cancelled' };
+  if (cur.status === 'acknowledged') return { ok: false, reason: 'use-finecore-cancel-voucher-for-posted-acks' };
+
+  const now = new Date().toISOString();
+  list[idx] = { ...cur, status: 'cancelled', cancelled_at: now, cancel_reason: cancelReason, updated_at: now, updated_by: byUserId };
+  write(entityCode, list);
+
+  await appendAuditEntry({
+    entityCode, entityId: entityCode, voucherId: id, voucherKind: 'vendor_quotation',
+    action: 'stock_receipt_ack_cancelled', actorUserId: byUserId,
+    payload: { ack_no: cur.ack_no, reason: cancelReason, prior_status: 'draft' },
+  });
+
+  return { ok: true };
+}
+
 export type { StockReceiptAckStatus };
