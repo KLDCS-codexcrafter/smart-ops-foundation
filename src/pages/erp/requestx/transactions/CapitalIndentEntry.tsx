@@ -278,6 +278,7 @@ export function CapitalIndentEntry(): JSX.Element {
           <Button size="sm" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent>
+          <SkeletonRows>
           <Table>
             <TableHeader>
               <TableRow>
