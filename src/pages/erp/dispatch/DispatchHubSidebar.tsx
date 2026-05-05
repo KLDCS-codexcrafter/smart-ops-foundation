@@ -13,6 +13,8 @@ import {
   FileUp, Award,
   // Sprint 6-pre-1 · Card #6 Inward Logistic
   PackageOpen, ShieldAlert, Undo2, Inbox,
+  // Sprint 6-pre-2 · D-362
+  PackageX,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
