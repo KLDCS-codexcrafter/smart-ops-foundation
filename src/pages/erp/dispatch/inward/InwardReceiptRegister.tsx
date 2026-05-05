@@ -114,12 +114,19 @@ export function InwardReceiptRegisterPanel(_props: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.length === 0 ? (
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell colSpan={8}><Skeleton className="h-6 w-full" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                       <div className="flex flex-col items-center gap-2">
                         <PackageOpen className="h-8 w-8 text-muted-foreground/40" />
                         <p className="text-sm">No inward receipts</p>
+                        <p className="text-xs">Vendor arrivals will appear here once captured.</p>
                       </div>
                     </TableCell>
                   </TableRow>
