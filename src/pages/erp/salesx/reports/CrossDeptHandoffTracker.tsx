@@ -361,6 +361,7 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">DM · Dispatch</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">IM · SalesX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">SI · Accounts</TableHead>
+                  <TableHead className="text-[10px] uppercase tracking-wider h-9">GRN/IR · Logistic</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9">Project · ProjX</TableHead>
                   <TableHead className="text-[10px] uppercase tracking-wider h-9 text-right">Days</TableHead>
                 </TableRow>
