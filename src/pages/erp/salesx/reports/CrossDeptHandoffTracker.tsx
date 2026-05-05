@@ -437,6 +437,18 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
                         />
                       </TableCell>
                       <TableCell className="py-2">
+                        <StageCell
+                          docNo={r.inwardReceiptNo}
+                          label={r.inwardReceiptStage ?? null}
+                          className={
+                            r.inwardReceiptStage === 'released' ? SI_COLOR_PRESENT
+                              : r.inwardReceiptStage === 'quarantine'
+                                ? 'bg-destructive/15 text-destructive border-destructive/30'
+                                : DASH_COLOR
+                          }
+                        />
+                      </TableCell>
+                      <TableCell className="py-2">
                         {r.projectId ? (
                           <Badge
                             variant="outline"
