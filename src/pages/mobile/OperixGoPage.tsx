@@ -58,6 +58,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     phase: 'live',
   },
   {
+    id: 'inward-receipt-mobile',
+    title: 'Inward Receipt Mobile',
+    icon: PackageOpen,
+    description: 'Warehouse 5-step capture · vendor + gate-pass auto-link · items + condition · photos · auto-routes Quarantine on QA-plan or qty>tolerance.',
+    details: 'Live: Sprint 6-pre-3 · D-369 + D-370 + D-371. Mirrors GateFlow Gate Guard / QualiCheck 5-step pattern. Calls inward-receipt-engine.createInwardReceipt on submit · D-360 quarantine routing applied · gate-pass auto-link via listInwardQueue. Offline queue when no network.',
+    route: '/operix-go/inward-receipt',
+    phase: 'live',
+  },
+  {
     id: 'gateflow',
     title: 'GateFlow Mobile (legacy planned)',
     icon: DoorOpen,
