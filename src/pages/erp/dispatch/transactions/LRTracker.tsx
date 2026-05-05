@@ -155,7 +155,11 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
                             <td className="font-mono text-xs">{d.lr_date ?? '—'}</td>
                             <td className="font-mono text-xs">{age}d</td>
                             <td>
-                              <Badge variant="outline" className="text-[10px]">
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] ${pod ? 'cursor-pointer hover:bg-blue-500/10' : ''}`}
+                                onClick={() => { if (pod) { setPodDialog(pod); setPodOpen(true); } }}
+                              >
                                 {pod?.status ?? 'none'}
                               </Badge>
                             </td>
