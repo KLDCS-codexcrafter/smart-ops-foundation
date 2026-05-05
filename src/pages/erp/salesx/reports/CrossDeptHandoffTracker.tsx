@@ -135,7 +135,7 @@ function buildHandoffRows(entityCode: string): HandoffRow[] {
     const si = siBySORef.get(so.order_no) ?? null;
     const ir = irBySoRef.get(so.order_no) ?? null;
 
-    const pipelineStage = si ? 4 : im ? 3 : dm ? 2 : srm ? 1 : 0;
+    const pipelineStage = ir ? 5 : si ? 4 : im ? 3 : dm ? 2 : srm ? 1 : 0;
 
     const stamps: string[] = [
       so.updated_at, quot?.updated_at, srm?.updated_at,
