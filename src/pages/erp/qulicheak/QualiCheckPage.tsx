@@ -11,6 +11,10 @@ import {
   QualiCheckWelcome, PendingInspectionsPanel, QualityPlansPanel,
   QualitySpecsPanel, InspectionRegisterPanel,
 } from './panels';
+import {
+  ClosureLogPanel, VendorScorecardPanel, CoARegisterPanel,
+  PendingAlertsPanel, BulkPlanAssignmentPanel,
+} from './operational-panels';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 
 export default function QualiCheckPage(): JSX.Element {
@@ -23,6 +27,11 @@ export default function QualiCheckPage(): JSX.Element {
       case 'quality-plans':        return <QualityPlansPanel />;
       case 'quality-specs':        return <QualitySpecsPanel />;
       case 'inspection-register':  return <InspectionRegisterPanel />;
+      case 'closure-log':          return <ClosureLogPanel />;
+      case 'vendor-scorecard':     return <VendorScorecardPanel />;
+      case 'coa-register':         return <CoARegisterPanel />;
+      case 'pending-alerts':       return <PendingAlertsPanel />;
+      case 'bulk-plan-assignment': return <BulkPlanAssignmentPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
