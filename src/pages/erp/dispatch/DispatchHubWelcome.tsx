@@ -37,6 +37,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   const [pods, setPods] = useState<POD[]>([]);
   const [inwardCount, setInwardCount] = useState(0);
   const [quarantineCount, setQuarantineCount] = useState(0);
+  const [vendorReturnCount, setVendorReturnCount] = useState(0);
 
   useEffect(() => {
     // [JWT] GET /api/accounting/vouchers
@@ -46,6 +47,8 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     // [JWT] GET /api/logistic/inward-receipts
     setInwardCount(listInwardReceipts(entityCode).length);
     setQuarantineCount(listQuarantineQueue(entityCode).length);
+    // [JWT] GET /api/logistic/vendor-returns?status=pending
+    setVendorReturnCount(listPendingVendorReturns(entityCode).length);
   }, [entityCode]);
 
   const dlns = useMemo(
