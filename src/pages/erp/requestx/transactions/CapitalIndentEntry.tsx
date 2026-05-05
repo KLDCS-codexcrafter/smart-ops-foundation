@@ -138,38 +138,65 @@ export function CapitalIndentEntry(): JSX.Element {
     [lines, total],
   );
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-capital-indent',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    capital_sub_type: subType,
+    priority,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    preferred_vendor_id: null,
+    lines,
+    parent_indent_id: null,
+    cascade_reason: null,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
     if (lines.length === 0 || lines.every(l => !l.item_name)) {
       toast.error('Add at least one capital line');
       return;
     }
-    const ci = createCapitalIndent({
-      entity_id: entityId,
-      voucher_type_id: 'vt-capital-indent',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      capital_sub_type: subType,
-      priority,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      preferred_vendor_id: null,
-      lines,
-      parent_indent_id: null,
-      cascade_reason: null,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const ci = createCapitalIndent(buildPayload(), entityCode);
     submitIndent(ci.id, 'capital', entityCode, 'user-finance-head-placeholder');
     toast.success(`Capital Indent ${ci.voucher_no} submitted (₹${total.toLocaleString('en-IN')}) · Finance gate active`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyCapitalLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const ci = createCapitalIndent(buildPayload(), entityCode);
+    setCurrentDraft(ci);
+    toast.success(`Draft ${ci.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'capital', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Capital indent cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyCapitalLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
