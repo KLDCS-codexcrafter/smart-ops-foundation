@@ -17,6 +17,7 @@ import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
 import { approveIndent, rejectIndent, type IndentKind } from '@/lib/request-engine';
 import { STATUS_LABEL } from '@/types/requisition-common';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
 
 type Tab = 'material' | 'service' | 'capital';
 
@@ -105,22 +106,26 @@ export function IndentApprovalInbox(): JSX.Element {
           <Card>
             <CardHeader><CardTitle className="text-sm">Pending Queue ({queue.length})</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {queue.length === 0 && <p className="text-xs text-muted-foreground">No pending approvals.</p>}
-              {queue.map(q => (
-                <button
-                  key={q.id}
-                  type="button"
-                  onClick={() => setSelectedId(q.id)}
-                  className={`flex w-full items-center justify-between border-b pb-2 text-left p-2 rounded transition-colors ${selectedId === q.id ? 'bg-accent' : 'hover:bg-accent/50'}`}
-                >
-                  <div className="text-sm">
-                    <div className="font-mono text-xs">{q.voucher_no}</div>
-                    <div className="text-xs text-muted-foreground">{q.requested_by_name} · {q.date}</div>
-                    <div className="text-xs font-mono mt-0.5">₹{q.total_estimated_value.toLocaleString('en-IN')}</div>
-                  </div>
-                  <Badge variant="outline" className="text-[10px]">{STATUS_LABEL[q.status]}</Badge>
-                </button>
-              ))}
+              <SkeletonRows>
+                <div className="space-y-2">
+                  {queue.length === 0 && <p className="text-xs text-muted-foreground">No pending approvals.</p>}
+                  {queue.map(q => (
+                    <button
+                      key={q.id}
+                      type="button"
+                      onClick={() => setSelectedId(q.id)}
+                      className={`flex w-full items-center justify-between border-b pb-2 text-left p-2 rounded transition-colors ${selectedId === q.id ? 'bg-accent' : 'hover:bg-accent/50'}`}
+                    >
+                      <div className="text-sm">
+                        <div className="font-mono text-xs">{q.voucher_no}</div>
+                        <div className="text-xs text-muted-foreground">{q.requested_by_name} · {q.date}</div>
+                        <div className="text-xs font-mono mt-0.5">₹{q.total_estimated_value.toLocaleString('en-IN')}</div>
+                      </div>
+                      <Badge variant="outline" className="text-[10px]">{STATUS_LABEL[q.status]}</Badge>
+                    </button>
+                  ))}
+                </div>
+              </SkeletonRows>
             </CardContent>
           </Card>
         </div>
