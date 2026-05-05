@@ -44,6 +44,9 @@ import type { InvoiceMemo, IMStatus } from '@/types/invoice-memo';
 import { invoiceMemosKey, IM_STATUS_LABELS } from '@/types/invoice-memo';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/finecore-engine';
+// Sprint 6-pre-2 · Block H · D-367 · FT-DISPATCH-013 closure
+import type { InwardReceipt, InwardReceiptStatus } from '@/types/inward-receipt';
+import { inwardReceiptsKey, INWARD_STATUS_LABELS } from '@/types/inward-receipt';
 
 interface Props {
   entityCode: string;
