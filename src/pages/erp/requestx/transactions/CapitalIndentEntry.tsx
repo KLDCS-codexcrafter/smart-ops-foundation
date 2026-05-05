@@ -81,6 +81,10 @@ export function CapitalIndentEntry(): JSX.Element {
   const [priority, setPriority] = useState<Priority>('normal');
   const [lines, setLines] = useState<CapitalIndentLine[]>([emptyCapitalLine(1)]);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState<CapitalIndent | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const total = useMemo(() => recomputeTotal(lines), [lines]);
 
