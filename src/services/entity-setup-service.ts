@@ -1258,7 +1258,48 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
           status: 'active', applicable_voucher_kinds: ['grn', 'sample_in'], notes: 'Per-vendor variant',
           entity_id: ec, created_at: nowK, updated_at: nowK,
         };
-        localStorage.setItem(planKey, JSON.stringify([planDef, planVA]));
+        // Sprint 5-pre-3 · Block B · 5-pre-2 Block J gap absorption
+        // 1 customer-specific plan (outgoing variant · D-336)
+        const planCust = {
+          id: `qp-seed-${ec}-3`, code: 'QP/26/0003', name: 'Customer-X Outgoing Plan',
+          plan_type: 'outgoing', item_id: null, item_name: null,
+          spec_id: spec2.id, acceptance_criteria_id: crit.id,
+          vendor_id: null, vendor_name: null,
+          customer_id: 'C-DEMO-X', customer_name: 'Demo Customer X',
+          status: 'active', applicable_voucher_kinds: ['delivery_note', 'sales_invoice'],
+          notes: 'Per-customer outgoing variant · 5-pre-3 seed',
+          entity_id: ec, created_at: nowK, updated_at: nowK,
+        };
+        localStorage.setItem(planKey, JSON.stringify([planDef, planVA, planCust]));
+
+        // 1 completed inspection with parameter_results (drives Welcome KPI + Scorecard demo)
+        const insKey = `erp_qa_inspections_${ec}`;
+        const insSeed = {
+          id: `qa-seed-${ec}-1`, qa_no: 'QA/202605/0001',
+          bill_id: 'bp-seed-1', bill_no: 'BP/0001',
+          git_id: null, po_id: 'po-seed-1', po_no: 'PO/0001',
+          entity_id: ec, branch_id: null,
+          inspector_user_id: 'demo-inspector',
+          inspection_date: nowK.slice(0, 10),
+          inspection_location: 'Stores',
+          lines: [{
+            id: `qal-seed-${ec}-1`, bill_line_id: 'bl-1',
+            item_id: 'i-1', item_name: 'Steel Rod 12mm',
+            qty_inspected: 100, qty_passed: 95, qty_failed: 5,
+            failure_reason: 'minor surface scratch', inspection_parameters: {},
+            qty_sample: 0, qty_pending: 0, uom: 'kg', batch_id: 'B-SEED-1',
+          }],
+          status: 'passed', notes: 'Seeded by 5-pre-3 Block B',
+          coa_url: null, coa_generated_at: null, closure_journal_ids: null,
+          vendor_id: 'V-DEMO-A', vendor_name: 'Demo Vendor A',
+          customer_id: null, customer_name: null,
+          parameter_results: { tensile: 'pass', surface: 'pass', grade: 'pass' },
+          inspection_type: 'incoming', parent_inspection_id: null,
+          created_at: nowK, updated_at: nowK,
+          plan_id: planVA.id, spec_id: spec1.id,
+          inspection_authority: 'internal',
+        };
+        localStorage.setItem(insKey, JSON.stringify([insSeed]));
 
         localStorage.setItem(sec8kMarker, nowK);
       }
