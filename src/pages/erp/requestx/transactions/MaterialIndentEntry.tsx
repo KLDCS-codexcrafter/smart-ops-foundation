@@ -16,6 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, AlertTriangle, IndianRupee, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
@@ -28,9 +30,10 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent } from '@/lib/request-engine';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
+import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent, cancelIndent } from '@/lib/request-engine';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
-import type { IndentCategory, MaterialIndentLine, Priority } from '@/types/material-indent';
+import type { IndentCategory, MaterialIndent, MaterialIndentLine, Priority } from '@/types/material-indent';
 
 // useSmartDefaults — re-exported via useSprint27d1Mount (smartLedger / smartWarehouse)
 // Card #2.7-d-1 SD-13 marker · OOB-1 carry-forward
