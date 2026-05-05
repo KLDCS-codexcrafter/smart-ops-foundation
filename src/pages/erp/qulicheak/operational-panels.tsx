@@ -85,7 +85,12 @@ function fmtDate(iso?: string | null): string {
 export function ClosureLogPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [list, setList] = useState<QaClosureLogEntry[]>([]);
-  const refresh = useCallback((): void => { setList(listClosureLog(entityCode)); }, [entityCode]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const refresh = useCallback((): void => {
+    setLoading(true);
+    setList(listClosureLog(entityCode));
+    setLoading(false);
+  }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
   return (
@@ -101,11 +106,14 @@ export function ClosureLogPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No closures yet. Closures are recorded when an inspection completes
-              and the resolver routes Quarantine→Approved/Sample/Rejection vouchers.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={FileCheck}
+              heading="No closure log entries yet"
+              description="When inspections complete, their stock journal vouchers appear here."
+            />
           ) : (
             <Table>
               <TableHeader>
