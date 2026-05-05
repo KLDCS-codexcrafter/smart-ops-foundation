@@ -34,7 +34,12 @@ export type DispatchHubModule =
   // Sprint 15c-3
   | 'dh-t-pdf-invoice-upload'
   | 'dh-r-transporter-scorecard'
-  | 'dh-r-savings-roi';
+  | 'dh-r-savings-roi'
+  // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
+  | 'dh-i-inward-receipt-entry'
+  | 'dh-i-inward-receipt-register'
+  | 'dh-i-quarantine-queue'
+  | 'dh-i-vendor-return';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
