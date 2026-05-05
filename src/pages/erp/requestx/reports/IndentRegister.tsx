@@ -8,9 +8,13 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
@@ -19,6 +23,8 @@ import { STATUS_LABEL } from '@/types/requisition-common';
 import { computeIndentHealthScore } from '@/lib/requestx-report-engine';
 import { bandFromScore } from '@/lib/indent-health-score-engine';
 import { inrFmt } from '@/lib/requestx-report-engine';
+import { cancelIndent, type IndentKind } from '@/lib/request-engine';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import {
   recommendStrategy,
   type VendorPoolEntry,
@@ -70,6 +76,11 @@ export function IndentRegisterPanel(): JSX.Element {
   const [tab, setTab] = useState<Kind>('all');
   const [q, setQ] = useState('');
 
+  const [cancelTarget, setCancelTarget] = useState<{ id: string; kind: IndentKind; voucher_no: string } | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
+
   const vendorPool = useMemo(() => loadVendorPool(), []);
 
   const rows = useMemo(() => {
@@ -101,7 +112,23 @@ export function IndentRegisterPanel(): JSX.Element {
       r.requested_by_name.toLowerCase().includes(needle) ||
       r.originating_department_name.toLowerCase().includes(needle),
     );
-  }, [mi, sr, ci, tab, q, vendorPool, entityCode]);
+    // refreshTick triggers re-evaluation after cancel
+  }, [mi, sr, ci, tab, q, vendorPool, entityCode, refreshTick]);
+
+  const handleCancel = (): void => {
+    if (!cancelTarget || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(cancelTarget.id, cancelTarget.kind, 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success(`${cancelTarget.voucher_no} cancelled`);
+      setCancelTarget(null);
+      setCancelReason('');
+      setRefreshTick(t => t + 1);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
+  };
 
   return (
     <div className="p-6 space-y-4">
