@@ -30,6 +30,9 @@ export interface QaInspectionLine {
   // Sprint 5-pre-1 · Block A · D-332 · 5-field qty tracking (matches Tally VCHBatchQC*)
   qty_sample?: number | null;
   qty_pending?: number | null;
+  // Sprint 5-pre-2 · Block A · D-338/D-341 · UoM + batch surface for closure resolver + CoA print
+  uom?: string | null;
+  batch_id?: string | null;
 }
 
 export interface QaInspectionRecord {
