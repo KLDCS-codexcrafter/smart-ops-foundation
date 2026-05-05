@@ -66,11 +66,15 @@ describe('Card #7 7-pre-3 · DRAFT-ONLY cancel discipline', () => {
       entity_id: E,
       inward_receipt_id: 'ir-1',
       inward_receipt_no: 'IR/0001',
-      receiving_godown_id: 'g-main',
-      receiving_godown_name: 'Main Stores',
+      vendor_name: 'Acme Steel',
+      acknowledged_by_id: 'u1',
+      acknowledged_by_name: 'Stores Manager',
       lines: [{
+        inward_line_id: 'irl-1',
         item_id: 'i1', item_code: 'STL-12', item_name: 'Steel Rod',
-        uom: 'nos', qty_inward: 50, qty_accepted: 50, rate: 100,
+        uom: 'nos', qty_inward: 50, qty_acknowledged: 50,
+        source_godown_id: 'g-quar', source_godown_name: 'Quarantine',
+        dest_godown_id: 'g-main', dest_godown_name: 'Main Stores',
       }],
     }, E, 'u1');
     const r = await cancelReceiptAck(ack.id, 'duplicate entry', E, 'u1');
