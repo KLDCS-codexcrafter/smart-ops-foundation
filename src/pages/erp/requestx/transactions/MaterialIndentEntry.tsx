@@ -239,6 +239,10 @@ export function MaterialIndentEntry(): JSX.Element {
             partyValue={null}
             onUse={() => toast.info('Last voucher loaded')}
           />
+          <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+          {currentDraft?.status === 'draft' && (
+            <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>Cancel Indent</Button>
+          )}
           <Button onClick={handleSave}><Save className="h-4 w-4 mr-1" />Submit</Button>
         </div>
       </div>
