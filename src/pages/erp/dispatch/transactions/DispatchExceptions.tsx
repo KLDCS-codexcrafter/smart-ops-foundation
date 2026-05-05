@@ -138,6 +138,7 @@ export function DispatchExceptionsPanel() {
           )}
         </CardContent>
       </Card>
+      <PODDetailDialog pod={podDialog} open={podOpen} onOpenChange={setPodOpen} />
     </div>
   );
 }
