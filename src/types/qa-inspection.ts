@@ -51,6 +51,20 @@ export interface QaInspectionRecord {
   lines: QaInspectionLine[];
   status: QaInspectionStatus;
   notes: string;
+  // Sprint 5-pre-2 · Block A · D-341 (Q4=a) · CoA on-demand reference (D-291 additive precedent)
+  coa_url?: string | null;
+  coa_generated_at?: string | null;
+  // Sprint 5-pre-2 · Block A · D-338 (Q1=a) · closure journal trace · audit visibility
+  closure_journal_ids?: string[] | null;
+  // Sprint 5-pre-2 · Block A · D-340/D-341 · vendor + customer linkage + parameter results for scorecard + CoA
+  vendor_id?: string | null;
+  vendor_name?: string | null;
+  customer_id?: string | null;
+  customer_name?: string | null;
+  parameter_results?: Record<string, string> | null;
+  // Sprint 5-pre-2 · Block A · D-333 · inspection_type for rework cascade
+  inspection_type?: 'incoming' | 'in_process' | 'outgoing' | 'sample' | null;
+  parent_inspection_id?: string | null;
   created_at: string;
   updated_at: string;
   // Sprint 5-pre-1 · Block A · D-321 · plan + spec linkage (nullable additive)
