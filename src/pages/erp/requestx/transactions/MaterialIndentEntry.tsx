@@ -303,49 +303,53 @@ export function MaterialIndentEntry(): JSX.Element {
           <Button size="sm" variant="outline" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent className="space-y-2">
-          {lines.map(l => (
-            <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
-              <div className="col-span-3">
-                <Label className="text-[10px]">Item</Label>
-                <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">UoM</Label>
-                <Input value={l.uom} onChange={e => updateLine(l.id, { uom: e.target.value })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">Qty</Label>
-                <Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">Stock</Label>
-                <Input type="number" value={l.current_stock_qty} onChange={e => updateLine(l.id, { current_stock_qty: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-2">
-                <Label className="text-[10px]">Est. Rate</Label>
-                <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-2">
-                <Label className="text-[10px]">Est. Value</Label>
-                <div className="text-sm font-mono py-1.5">₹{l.estimated_value.toLocaleString('en-IN')}</div>
-              </div>
-              <div className="col-span-1">
-                <Badge variant={l.is_stocked ? 'default' : 'outline'} className="text-[10px] cursor-pointer"
-                  onClick={() => updateLine(l.id, { is_stocked: !l.is_stocked })}>
-                  {l.is_stocked ? 'Stocked' : 'Non-stocked'}
-                </Badge>
-              </div>
-              <div className="col-span-1">
-                <Button size="icon" variant="ghost" onClick={() => removeLine(l.id)}>
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+          <SkeletonRows>
+            <div className="space-y-2">
+              {lines.map(l => (
+                <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
+                  <div className="col-span-3">
+                    <Label className="text-[10px]">Item</Label>
+                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">UoM</Label>
+                    <Input value={l.uom} onChange={e => updateLine(l.id, { uom: e.target.value })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">Qty</Label>
+                    <Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">Stock</Label>
+                    <Input type="number" value={l.current_stock_qty} onChange={e => updateLine(l.id, { current_stock_qty: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Rate</Label>
+                    <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Value</Label>
+                    <div className="text-sm font-mono py-1.5">₹{l.estimated_value.toLocaleString('en-IN')}</div>
+                  </div>
+                  <div className="col-span-1">
+                    <Badge variant={l.is_stocked ? 'default' : 'outline'} className="text-[10px] cursor-pointer"
+                      onClick={() => updateLine(l.id, { is_stocked: !l.is_stocked })}>
+                      {l.is_stocked ? 'Stocked' : 'Non-stocked'}
+                    </Badge>
+                  </div>
+                  <div className="col-span-1">
+                    <Button size="icon" variant="ghost" onClick={() => removeLine(l.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-end pt-2 text-sm font-mono">
+                <span className="text-muted-foreground mr-2">Total:</span>
+                <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
               </div>
             </div>
-          ))}
-          <div className="flex justify-end pt-2 text-sm font-mono">
-            <span className="text-muted-foreground mr-2">Total:</span>
-            <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
-          </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
