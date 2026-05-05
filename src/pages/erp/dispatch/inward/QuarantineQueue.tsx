@@ -85,12 +85,19 @@ export function QuarantineQueuePanel() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <TableRow key={`sk-${i}`}>
+                    <TableCell colSpan={6}><Skeleton className="h-6 w-full" /></TableCell>
+                  </TableRow>
+                ))
+              ) : rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                     <div className="flex flex-col items-center gap-2">
                       <ShieldAlert className="h-8 w-8 text-muted-foreground/40" />
                       <p className="text-sm">No quarantine items</p>
+                      <p className="text-xs">QA-routed receipts pending disposition will appear here.</p>
                     </div>
                   </TableCell>
                 </TableRow>
