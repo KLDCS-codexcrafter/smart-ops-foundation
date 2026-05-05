@@ -217,6 +217,9 @@ export interface QualiCheckConfig {
   sampleGodownId: string;
   rejectionGodownId: string;
   approvedGodownId: string;
+  // Sprint 5-pre-3 · Block A · D-346 · 5-pre-2 Block I gap absorption (2 NEW fields)
+  pendingAlertThresholdHours: number;   // single user-facing override for 3-tier severity (D-344)
+  coaFooterText: string;                 // CoA print footer · entity-specific declaration line
 }
 
 export const DEFAULT_QC_CONFIG: QualiCheckConfig = {
@@ -235,6 +238,8 @@ export const DEFAULT_QC_CONFIG: QualiCheckConfig = {
   sampleGodownId: '',
   rejectionGodownId: '',
   approvedGodownId: '',
+  pendingAlertThresholdHours: 24,
+  coaFooterText: '',
 };
 
 export const comply360QCKey = (entityId: string | null | undefined): string =>

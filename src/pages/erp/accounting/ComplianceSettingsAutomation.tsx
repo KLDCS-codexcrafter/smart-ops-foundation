@@ -2105,6 +2105,34 @@ export function ComplianceSettingsAutomationPanel() {
           {godownInput('Approved godown', 'approvedGodownId')}
         </div>
 
+        <Separator />
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Pending Alerts &amp; CoA (Sprint 5-pre-3 · D-346 · Block I absorption)
+        </h4>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="text-xs">Pending alert threshold (hours · D-344)</Label>
+            <Input
+              type="number"
+              min={1}
+              value={qcConfig.pendingAlertThresholdHours}
+              disabled={!gated}
+              onChange={e => upd('pendingAlertThresholdHours', Math.max(1, Number(e.target.value) || 1))}
+              className="h-8 text-sm font-mono"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">CoA print footer text</Label>
+            <Input
+              value={qcConfig.coaFooterText}
+              disabled={!gated}
+              onChange={e => upd('coaFooterText', e.target.value)}
+              placeholder="Authorised signatory · for and on behalf of …"
+              className="h-8 text-sm"
+            />
+          </div>
+        </div>
+
         <div className="pt-2">
           <Button onClick={handleSaveQC} size="sm">
             <Save className="h-4 w-4 mr-1" /> Save QualiCheck
