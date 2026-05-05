@@ -12,14 +12,16 @@ import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   ClipboardCheck, FileText, Beaker, ListChecks, ShieldCheck, FlaskConical,
-  Activity, AlertCircle, CheckCircle2,
+  Activity, AlertCircle, CheckCircle2, AlertTriangle,
 } from 'lucide-react';
 import { listQaInspections, listPendingQa } from '@/lib/qa-inspection-engine';
 import { listQaPlans } from '@/lib/qa-plan-engine';
 import { listQaSpecs } from '@/lib/qa-spec-engine';
+import { getPendingInspectionAlerts } from '@/lib/oob/qa-pending-inspection-alerts';
 import type { QaInspectionRecord, QaInspectionStatus } from '@/types/qa-inspection';
 import type { QaPlan } from '@/types/qa-plan';
 import type { QaSpec } from '@/types/qa-spec';
