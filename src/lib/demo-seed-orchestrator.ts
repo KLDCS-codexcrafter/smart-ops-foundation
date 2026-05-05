@@ -215,6 +215,19 @@ export function seedEntityDemoData(
     }
   } catch { /* silent */ }
 
+  // Card #8 RequestX MOBILE demo seeds (Sprint 8-pre-1 · Block G · D-409 · idempotency dedup matches D-393)
+  try {
+    const mobileIndents = DEMO_REQUESTX_MOBILE_INDENTS.map(i => ({ ...i, entity_id: entityCode }));
+    const existing = JSON.parse(localStorage.getItem(materialIndentsKey(entityCode)) || '[]');
+    if (!Array.isArray(existing) || existing.length === 0) {
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(mobileIndents));
+    } else {
+      const have = new Set(existing.map((i: { id: string }) => i.id));
+      const merged = [...existing, ...mobileIndents.filter(i => !have.has(i.id))];
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(merged));
+    }
+  } catch { /* silent */ }
+
   // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
   // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.
   const orderData = DEMO_ORDERS.map(o => ({ ...o, entity_id: entityCode }));
