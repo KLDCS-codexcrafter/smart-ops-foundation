@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, AlertTriangle, IndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { dMul, round2 } from '@/lib/decimal-helpers';
@@ -28,9 +30,10 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createServiceRequest, submitIndent, runAutoRules, recomputeTotal } from '@/lib/request-engine';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
+import { createServiceRequest, submitIndent, runAutoRules, recomputeTotal, cancelIndent } from '@/lib/request-engine';
 import type {
-  ServiceRequestLine, ServiceCategory, ServiceSubType, ServiceTrack,
+  ServiceRequest, ServiceRequestLine, ServiceCategory, ServiceSubType, ServiceTrack,
 } from '@/types/service-request';
 import type { Priority } from '@/types/material-indent';
 
@@ -72,6 +75,10 @@ export function ServiceRequestEntry(): JSX.Element {
   const [priority, setPriority] = useState<Priority>('normal');
   const [lines, setLines] = useState<ServiceRequestLine[]>([emptyServiceLine(1)]);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState<ServiceRequest | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const total = useMemo(() => recomputeTotal(lines), [lines]);
 
@@ -120,38 +127,65 @@ export function ServiceRequestEntry(): JSX.Element {
     [lines, total],
   );
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-service-request',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    category,
+    sub_type: subType,
+    priority,
+    service_track: track,
+    vendor_id: null,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    lines,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
     if (lines.length === 0 || lines.every(l => !l.service_name)) {
       toast.error('Add at least one service line');
       return;
     }
-    const sr = createServiceRequest({
-      entity_id: entityId,
-      voucher_type_id: 'vt-service-request',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      category,
-      sub_type: subType,
-      priority,
-      service_track: track,
-      vendor_id: null,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      lines,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const sr = createServiceRequest(buildPayload(), entityCode);
     submitIndent(sr.id, 'service', entityCode, 'user-hod-placeholder');
     toast.success(`Service Request ${sr.voucher_no} submitted (₹${total.toLocaleString('en-IN')})`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyServiceLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const sr = createServiceRequest(buildPayload(), entityCode);
+    setCurrentDraft(sr);
+    toast.success(`Draft ${sr.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'service', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Service request cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyServiceLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
@@ -249,54 +283,58 @@ export function ServiceRequestEntry(): JSX.Element {
           <Button size="sm" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-xs">#</TableHead>
-                <TableHead className="text-xs">Service Name</TableHead>
-                <TableHead className="text-xs">Description</TableHead>
-                <TableHead className="text-xs">Qty</TableHead>
-                <TableHead className="text-xs">UoM</TableHead>
-                <TableHead className="text-xs">Rate (₹)</TableHead>
-                <TableHead className="text-xs">Value (₹)</TableHead>
-                <TableHead className="text-xs">Required</TableHead>
-                <TableHead className="text-xs">SLA Days</TableHead>
-                <TableHead className="text-xs">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lines.map(l => (
-                <TableRow key={l.id}>
-                  <TableCell className="text-xs">{l.line_no}</TableCell>
-                  <TableCell>
-                    <Input value={l.service_name} onChange={e => updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
-                  </TableCell>
-                  <TableCell><Input value={l.description} onChange={e => updateLine(l.id, { description: e.target.value })} /></TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell>
-                    <Select value={l.uom} onValueChange={v => updateLine(l.id, { uom: v })}>
-                      <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="JOB">JOB</SelectItem>
-                        <SelectItem value="HRS">HRS</SelectItem>
-                        <SelectItem value="VISIT">VISIT</SelectItem>
-                        <SelectItem value="MTH">MTH</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
-                  <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
-                  <TableCell><Input type="date" value={l.required_date} onChange={e => updateLine(l.id, { required_date: e.target.value })} /></TableCell>
-                  <TableCell><Input type="number" value={l.sla_days} onChange={e => updateLine(l.id, { sla_days: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell><Button size="sm" variant="ghost" onClick={() => removeLine(l.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-end pt-2 text-sm font-mono">
-            <span className="text-muted-foreground mr-2">Total:</span>
-            <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
-          </div>
+          <SkeletonRows>
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">#</TableHead>
+                    <TableHead className="text-xs">Service Name</TableHead>
+                    <TableHead className="text-xs">Description</TableHead>
+                    <TableHead className="text-xs">Qty</TableHead>
+                    <TableHead className="text-xs">UoM</TableHead>
+                    <TableHead className="text-xs">Rate (₹)</TableHead>
+                    <TableHead className="text-xs">Value (₹)</TableHead>
+                    <TableHead className="text-xs">Required</TableHead>
+                    <TableHead className="text-xs">SLA Days</TableHead>
+                    <TableHead className="text-xs">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lines.map(l => (
+                    <TableRow key={l.id}>
+                      <TableCell className="text-xs">{l.line_no}</TableCell>
+                      <TableCell>
+                        <Input value={l.service_name} onChange={e => updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
+                      </TableCell>
+                      <TableCell><Input value={l.description} onChange={e => updateLine(l.id, { description: e.target.value })} /></TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
+                      <TableCell>
+                        <Select value={l.uom} onValueChange={v => updateLine(l.id, { uom: v })}>
+                          <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="JOB">JOB</SelectItem>
+                            <SelectItem value="HRS">HRS</SelectItem>
+                            <SelectItem value="VISIT">VISIT</SelectItem>
+                            <SelectItem value="MTH">MTH</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
+                      <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
+                      <TableCell><Input type="date" value={l.required_date} onChange={e => updateLine(l.id, { required_date: e.target.value })} /></TableCell>
+                      <TableCell><Input type="number" value={l.sla_days} onChange={e => updateLine(l.id, { sla_days: Number(e.target.value) })} className="w-16" /></TableCell>
+                      <TableCell><Button size="sm" variant="ghost" onClick={() => removeLine(l.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex justify-end pt-2 text-sm font-mono">
+                <span className="text-muted-foreground mr-2">Total:</span>
+                <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
@@ -315,8 +353,32 @@ export function ServiceRequestEntry(): JSX.Element {
       )}
 
       <div className="flex gap-2">
+        <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+        {currentDraft?.status === 'draft' && (
+          <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>Cancel Service Request</Button>
+        )}
         <Button onClick={handleSave}>Submit Service Request</Button>
       </div>
+
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Service Request</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={cancelReason}
+            onChange={e => setCancelReason(e.target.value)}
+            placeholder="Reason for cancellation (required · max 500 chars)"
+            maxLength={500}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>Back</Button>
+            <Button variant="destructive" disabled={cancelling || !cancelReason.trim()} onClick={handleCancel}>
+              {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Sprint27eMount
         entityCode={entityCode}

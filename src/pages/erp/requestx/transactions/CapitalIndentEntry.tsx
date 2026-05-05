@@ -16,6 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, AlertTriangle, IndianRupee } from 'lucide-react';
 import { toast } from 'sonner';
 import { dMul, round2 } from '@/lib/decimal-helpers';
@@ -29,8 +31,9 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createCapitalIndent, submitIndent, runAutoRules, recomputeTotal } from '@/lib/request-engine';
-import type { CapitalIndentLine, CapitalSubType } from '@/types/capital-indent';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
+import { createCapitalIndent, submitIndent, runAutoRules, recomputeTotal, cancelIndent } from '@/lib/request-engine';
+import type { CapitalIndent, CapitalIndentLine, CapitalSubType } from '@/types/capital-indent';
 import type { Priority } from '@/types/material-indent';
 
 // useSmartDefaults marker — via useSprint27d1Mount
@@ -78,6 +81,10 @@ export function CapitalIndentEntry(): JSX.Element {
   const [priority, setPriority] = useState<Priority>('normal');
   const [lines, setLines] = useState<CapitalIndentLine[]>([emptyCapitalLine(1)]);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState<CapitalIndent | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const total = useMemo(() => recomputeTotal(lines), [lines]);
 
@@ -131,38 +138,65 @@ export function CapitalIndentEntry(): JSX.Element {
     [lines, total],
   );
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-capital-indent',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    capital_sub_type: subType,
+    priority,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    preferred_vendor_id: null,
+    lines,
+    parent_indent_id: null,
+    cascade_reason: null,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
     if (lines.length === 0 || lines.every(l => !l.item_name)) {
       toast.error('Add at least one capital line');
       return;
     }
-    const ci = createCapitalIndent({
-      entity_id: entityId,
-      voucher_type_id: 'vt-capital-indent',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      capital_sub_type: subType,
-      priority,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      preferred_vendor_id: null,
-      lines,
-      parent_indent_id: null,
-      cascade_reason: null,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const ci = createCapitalIndent(buildPayload(), entityCode);
     submitIndent(ci.id, 'capital', entityCode, 'user-finance-head-placeholder');
     toast.success(`Capital Indent ${ci.voucher_no} submitted (₹${total.toLocaleString('en-IN')}) · Finance gate active`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyCapitalLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const ci = createCapitalIndent(buildPayload(), entityCode);
+    setCurrentDraft(ci);
+    toast.success(`Draft ${ci.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'capital', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Capital indent cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyCapitalLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
@@ -244,6 +278,7 @@ export function CapitalIndentEntry(): JSX.Element {
           <Button size="sm" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent>
+          <SkeletonRows>
           <Table>
             <TableHeader>
               <TableRow>
@@ -311,6 +346,7 @@ export function CapitalIndentEntry(): JSX.Element {
             <span className="font-mono flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
             <span className="text-warning font-semibold">→ Finance approval required</span>
           </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
@@ -329,8 +365,32 @@ export function CapitalIndentEntry(): JSX.Element {
       )}
 
       <div className="flex gap-2">
+        <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+        {currentDraft?.status === 'draft' && (
+          <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>Cancel Capital Indent</Button>
+        )}
         <Button onClick={handleSave}>Submit Capital Indent (→ Finance)</Button>
       </div>
+
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Capital Indent</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={cancelReason}
+            onChange={e => setCancelReason(e.target.value)}
+            placeholder="Reason for cancellation (required · max 500 chars)"
+            maxLength={500}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>Back</Button>
+            <Button variant="destructive" disabled={cancelling || !cancelReason.trim()} onClick={handleCancel}>
+              {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Sprint27eMount
         entityCode={entityCode}

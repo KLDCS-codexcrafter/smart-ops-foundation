@@ -16,6 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, AlertTriangle, IndianRupee, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
@@ -28,9 +30,10 @@ import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
-import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent } from '@/lib/request-engine';
+import { SkeletonRows } from '@/components/ui/SkeletonRows';
+import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent, cancelIndent } from '@/lib/request-engine';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
-import type { IndentCategory, MaterialIndentLine, Priority } from '@/types/material-indent';
+import type { IndentCategory, MaterialIndent, MaterialIndentLine, Priority } from '@/types/material-indent';
 
 // useSmartDefaults — re-exported via useSprint27d1Mount (smartLedger / smartWarehouse)
 // Card #2.7-d-1 SD-13 marker · OOB-1 carry-forward
@@ -93,6 +96,10 @@ export function MaterialIndentEntry(): JSX.Element {
   const [priority, setPriority] = useState<Priority>('normal');
   const [lines, setLines] = useState<MaterialIndentLine[]>([emptyLine(1)]);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState<MaterialIndent | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const total = useMemo(() => {
     let t = 0;
@@ -148,36 +155,63 @@ export function MaterialIndentEntry(): JSX.Element {
     };
   }, [lines, total]);
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-material-indent',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    category,
+    sub_type: subType,
+    priority,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    preferred_vendor_id: null,
+    payment_terms: null,
+    lines,
+    parent_indent_id: null,
+    cascade_reason: null,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
-    const indent = createMaterialIndent({
-      entity_id: entityId,
-      voucher_type_id: 'vt-material-indent',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      category,
-      sub_type: subType,
-      priority,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      preferred_vendor_id: null,
-      payment_terms: null,
-      lines,
-      parent_indent_id: null,
-      cascade_reason: null,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const indent = createMaterialIndent(buildPayload(), entityCode);
     submitIndent(indent.id, 'material', entityCode, 'user-hod-placeholder');
     toast.success(`Material Indent ${indent.voucher_no} submitted`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const indent = createMaterialIndent(buildPayload(), entityCode);
+    setCurrentDraft(indent);
+    toast.success(`Draft ${indent.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'material', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Indent cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
@@ -205,6 +239,10 @@ export function MaterialIndentEntry(): JSX.Element {
             partyValue={null}
             onUse={() => toast.info('Last voucher loaded')}
           />
+          <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+          {currentDraft?.status === 'draft' && (
+            <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>Cancel Indent</Button>
+          )}
           <Button onClick={handleSave}><Save className="h-4 w-4 mr-1" />Submit</Button>
         </div>
       </div>
@@ -265,49 +303,53 @@ export function MaterialIndentEntry(): JSX.Element {
           <Button size="sm" variant="outline" onClick={addLine}><Plus className="h-3 w-3 mr-1" />Add Line</Button>
         </CardHeader>
         <CardContent className="space-y-2">
-          {lines.map(l => (
-            <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
-              <div className="col-span-3">
-                <Label className="text-[10px]">Item</Label>
-                <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">UoM</Label>
-                <Input value={l.uom} onChange={e => updateLine(l.id, { uom: e.target.value })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">Qty</Label>
-                <Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-1">
-                <Label className="text-[10px]">Stock</Label>
-                <Input type="number" value={l.current_stock_qty} onChange={e => updateLine(l.id, { current_stock_qty: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-2">
-                <Label className="text-[10px]">Est. Rate</Label>
-                <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
-              </div>
-              <div className="col-span-2">
-                <Label className="text-[10px]">Est. Value</Label>
-                <div className="text-sm font-mono py-1.5">₹{l.estimated_value.toLocaleString('en-IN')}</div>
-              </div>
-              <div className="col-span-1">
-                <Badge variant={l.is_stocked ? 'default' : 'outline'} className="text-[10px] cursor-pointer"
-                  onClick={() => updateLine(l.id, { is_stocked: !l.is_stocked })}>
-                  {l.is_stocked ? 'Stocked' : 'Non-stocked'}
-                </Badge>
-              </div>
-              <div className="col-span-1">
-                <Button size="icon" variant="ghost" onClick={() => removeLine(l.id)}>
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+          <SkeletonRows>
+            <div className="space-y-2">
+              {lines.map(l => (
+                <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
+                  <div className="col-span-3">
+                    <Label className="text-[10px]">Item</Label>
+                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">UoM</Label>
+                    <Input value={l.uom} onChange={e => updateLine(l.id, { uom: e.target.value })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">Qty</Label>
+                    <Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px]">Stock</Label>
+                    <Input type="number" value={l.current_stock_qty} onChange={e => updateLine(l.id, { current_stock_qty: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Rate</Label>
+                    <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-[10px]">Est. Value</Label>
+                    <div className="text-sm font-mono py-1.5">₹{l.estimated_value.toLocaleString('en-IN')}</div>
+                  </div>
+                  <div className="col-span-1">
+                    <Badge variant={l.is_stocked ? 'default' : 'outline'} className="text-[10px] cursor-pointer"
+                      onClick={() => updateLine(l.id, { is_stocked: !l.is_stocked })}>
+                      {l.is_stocked ? 'Stocked' : 'Non-stocked'}
+                    </Badge>
+                  </div>
+                  <div className="col-span-1">
+                    <Button size="icon" variant="ghost" onClick={() => removeLine(l.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-end pt-2 text-sm font-mono">
+                <span className="text-muted-foreground mr-2">Total:</span>
+                <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
               </div>
             </div>
-          ))}
-          <div className="flex justify-end pt-2 text-sm font-mono">
-            <span className="text-muted-foreground mr-2">Total:</span>
-            <span className="font-semibold flex items-center"><IndianRupee className="h-3 w-3" />{total.toLocaleString('en-IN')}</span>
-          </div>
+          </SkeletonRows>
         </CardContent>
       </Card>
 
@@ -366,6 +408,26 @@ export function MaterialIndentEntry(): JSX.Element {
         onPartyCreated={() => { /* no-op */ }}
         onCloneTemplate={() => { /* no-op */ }}
       />
+
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Indent</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={cancelReason}
+            onChange={e => setCancelReason(e.target.value)}
+            placeholder="Reason for cancellation (required · max 500 chars)"
+            maxLength={500}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>Back</Button>
+            <Button variant="destructive" disabled={cancelling || !cancelReason.trim()} onClick={handleCancel}>
+              {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -79,7 +79,6 @@ export function IndentRegisterPanel(): JSX.Element {
   const [cancelTarget, setCancelTarget] = useState<{ id: string; kind: IndentKind; voucher_no: string } | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
-  const [refreshTick, setRefreshTick] = useState(0);
 
   const vendorPool = useMemo(() => loadVendorPool(), []);
 
@@ -112,8 +111,7 @@ export function IndentRegisterPanel(): JSX.Element {
       r.requested_by_name.toLowerCase().includes(needle) ||
       r.originating_department_name.toLowerCase().includes(needle),
     );
-    // refreshTick triggers re-evaluation after cancel
-  }, [mi, sr, ci, tab, q, vendorPool, entityCode, refreshTick]);
+  }, [mi, sr, ci, tab, q, vendorPool, entityCode]);
 
   const handleCancel = (): void => {
     if (!cancelTarget || !cancelReason.trim()) return;
@@ -123,7 +121,6 @@ export function IndentRegisterPanel(): JSX.Element {
       toast.success(`${cancelTarget.voucher_no} cancelled`);
       setCancelTarget(null);
       setCancelReason('');
-      setRefreshTick(t => t + 1);
     } else {
       toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
     }
