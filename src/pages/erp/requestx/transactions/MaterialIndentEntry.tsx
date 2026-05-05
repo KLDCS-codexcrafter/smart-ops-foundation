@@ -96,6 +96,10 @@ export function MaterialIndentEntry(): JSX.Element {
   const [priority, setPriority] = useState<Priority>('normal');
   const [lines, setLines] = useState<MaterialIndentLine[]>([emptyLine(1)]);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [currentDraft, setCurrentDraft] = useState<MaterialIndent | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const total = useMemo(() => {
     let t = 0;
