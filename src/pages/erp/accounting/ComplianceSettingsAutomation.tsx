@@ -2133,6 +2133,21 @@ export function ComplianceSettingsAutomationPanel() {
           </div>
         </div>
 
+        {/* Sprint 6-pre-2 · D-363 · Auto Debit Note on QA rejection (D-349 closure) */}
+        <div className="flex items-center justify-between p-2 rounded border border-border/60 bg-muted/30">
+          <div>
+            <Label className="text-sm">Auto Debit Note on QA Rejection (D-349)</Label>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              When QA closure routes rejected qty, automatically draft a vendor Debit Note.
+            </p>
+          </div>
+          <Switch
+            checked={qcConfig.enableAutoDebitNoteOnRejection ?? false}
+            disabled={!gated}
+            onCheckedChange={v => upd('enableAutoDebitNoteOnRejection', v)}
+          />
+        </div>
+
         <div className="pt-2">
           <Button onClick={handleSaveQC} size="sm">
             <Save className="h-4 w-4 mr-1" /> Save QualiCheck
