@@ -317,6 +317,8 @@ const App = () => (
               <Route path="/operix-go/inward-receipt" element={<P><MobileInwardReceiptPage /></P>} />
               <Route path="/operix-go/store-issue" element={<P><MobileStoreIssuePage /></P>} />
               <Route path="/operix-go/receipt-ack" element={<P><MobileReceiptAckPage /></P>} />
+              <Route path="/operix-go/material-indent" element={<P><MobileMaterialIndentPage /></P>} />
+              <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
