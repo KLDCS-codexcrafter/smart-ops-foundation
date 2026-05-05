@@ -57,9 +57,9 @@ describe('MobileInwardReceiptPage stats · D-368 absorption (D-370)', () => {
   it('listInwardReceipts returns released-today subset by status + released_at', () => {
     const today = new Date().toISOString().slice(0, 10);
     const seed = [
-      { id: 'a', status: 'released', released_at: `${today}T10:00:00.000Z`, arrival_date: today },
-      { id: 'b', status: 'released', released_at: '2025-01-01T10:00:00.000Z', arrival_date: today },
-      { id: 'c', status: 'quarantine', released_at: null, arrival_date: today },
+      { id: 'a', status: 'released', released_at: `${today}T10:00:00.000Z`, arrival_date: today, arrival_time: `${today}T10:00:00.000Z` },
+      { id: 'b', status: 'released', released_at: '2025-01-01T10:00:00.000Z', arrival_date: today, arrival_time: `${today}T09:00:00.000Z` },
+      { id: 'c', status: 'quarantine', released_at: null, arrival_date: today, arrival_time: `${today}T08:00:00.000Z` },
     ];
     localStorage.setItem(inwardReceiptsKey(ENTITY), JSON.stringify(seed));
     const all = listInwardReceipts(ENTITY);
