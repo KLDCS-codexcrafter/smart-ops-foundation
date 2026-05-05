@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -82,6 +82,24 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Stores 4-step capture · pick released IR · acknowledge qty + variance · photos · review · auto-posts Stock Journal on submit.',
     details: 'Live: Sprint 7-pre-3 · D-396 + D-397. Cross-card consumes Card #6 inward-receipt-engine.listInwardReceipts read-only via 7-pre-1 wrapper. Calls stock-receipt-ack-engine.createReceiptAck + postReceiptAck.',
     route: '/operix-go/receipt-ack',
+    phase: 'live',
+  },
+  {
+    id: 'material-indent',
+    title: 'Material Indent Mobile',
+    icon: ClipboardList,
+    description: 'Floor staff 3-step capture · department + category · items + qty + rate · review · saves DRAFT for HOD approval.',
+    details: 'Live: Sprint 8-pre-1 · D-403 + D-404. Calls request-engine.createMaterialIndent (Card #3 · NO MODIFICATIONS · D-128 schemas preserved). Offline queue when no network.',
+    route: '/operix-go/material-indent',
+    phase: 'live',
+  },
+  {
+    id: 'approval-inbox',
+    title: 'Approval Inbox Mobile',
+    icon: ClipboardCheck,
+    description: 'HOD/Purchase/Finance 2-step approval · pick pending · approve/reject + remarks · supports Material/Service/Capital indents.',
+    details: 'Live: Sprint 8-pre-1 · D-405 + D-406. Calls request-engine.approveIndent + rejectIndent (Card #3 · NO MODIFICATIONS · 22-status state machine respected · transitionState validated).',
+    route: '/operix-go/approval-inbox',
     phase: 'live',
   },
   {

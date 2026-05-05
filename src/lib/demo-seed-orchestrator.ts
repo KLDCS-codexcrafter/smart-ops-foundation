@@ -45,6 +45,7 @@ import { DEMO_STOCK_ISSUES, DEMO_STOCK_RECEIPT_ACKS } from '@/data/demo-store-hu
 import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 import { DEMO_PROMOTED_INDENTS } from '@/data/demo-store-hub-workflow-data';
+import { DEMO_REQUESTX_MOBILE_INDENTS } from '@/data/demo-requestx-mobile-data';
 import { materialIndentsKey } from '@/types/material-indent';
 import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
@@ -210,6 +211,19 @@ export function seedEntityDemoData(
     } else {
       const have = new Set(existingIndents.map((i: { id: string }) => i.id));
       const merged = [...existingIndents, ...promotedIndents.filter(i => !have.has(i.id))];
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(merged));
+    }
+  } catch { /* silent */ }
+
+  // Card #8 RequestX MOBILE demo seeds (Sprint 8-pre-1 · Block G · D-409 · idempotency dedup matches D-393)
+  try {
+    const mobileIndents = DEMO_REQUESTX_MOBILE_INDENTS.map(i => ({ ...i, entity_id: entityCode }));
+    const existing = JSON.parse(localStorage.getItem(materialIndentsKey(entityCode)) || '[]');
+    if (!Array.isArray(existing) || existing.length === 0) {
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(mobileIndents));
+    } else {
+      const have = new Set(existing.map((i: { id: string }) => i.id));
+      const merged = [...existing, ...mobileIndents.filter(i => !have.has(i.id))];
       localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(merged));
     }
   } catch { /* silent */ }
