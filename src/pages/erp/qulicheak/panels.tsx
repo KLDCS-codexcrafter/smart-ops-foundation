@@ -56,17 +56,26 @@ interface WelcomeProps { onNavigate: (m: QualiCheckModule) => void }
 
 export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
   const entityCode = getActiveEntityCode();
+  const [loading, setLoading] = useState(true);
   const [inspections, setInspections] = useState<QaInspectionRecord[]>([]);
   const [plans, setPlans] = useState<QaPlan[]>([]);
   const [specs, setSpecs] = useState<QaSpec[]>([]);
+  const [criticalAlerts, setCriticalAlerts] = useState(0);
 
   const refresh = useCallback((): void => {
     setInspections(listQaInspections(entityCode));
     setPlans(listQaPlans(entityCode));
     setSpecs(listQaSpecs(entityCode));
+    const a = getPendingInspectionAlerts(entityCode);
+    setCriticalAlerts(a.filter(x => x.severity === 'critical' || x.severity === 'escalated').length);
+    setLoading(false);
   }, [entityCode]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+    const i = setInterval(refresh, 5000);
+    return () => clearInterval(i);
+  }, [refresh]);
 
   const pending = inspections.filter(q => q.status === 'pending' || q.status === 'in_progress').length;
   const passed = inspections.filter(q => q.status === 'passed').length;
@@ -74,6 +83,7 @@ export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
 
   const kpis = [
     { label: 'Pending Inspections', value: pending, icon: AlertCircle, accent: 'text-warning' },
+    { label: 'Critical Alerts', value: criticalAlerts, icon: AlertTriangle, accent: 'text-destructive' },
     { label: 'Passed (all-time)', value: passed, icon: CheckCircle2, accent: 'text-primary' },
     { label: 'Failed (all-time)', value: failed, icon: AlertCircle, accent: 'text-destructive' },
     { label: 'Active Plans', value: plans.filter(p => p.status === 'active').length, icon: FileText, accent: 'text-primary' },
