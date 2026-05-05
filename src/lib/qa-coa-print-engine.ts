@@ -76,15 +76,29 @@ function judgeResult(
   return observed === specVal ? 'pass' : 'fail';
 }
 
+function specValueOf(p: import('@/types/qa-spec').QaSpecParameter): string {
+  if (p.parameter_type === 'numeric') {
+    if (p.min_value !== null && p.max_value !== null) return `${p.min_value}-${p.max_value}`;
+    if (p.min_value !== null) return `>=${p.min_value}`;
+    if (p.max_value !== null) return `<=${p.max_value}`;
+    return '';
+  }
+  return p.expected_text ?? '';
+}
+
 function buildParamRows(spec: QaSpec | null, observed: Record<string, string>): CoAParameterRow[] {
   if (!spec) return [];
-  return spec.parameters.map(p => ({
-    parameter_name: p.name,
-    parameter_type: p.parameter_type,
-    spec_value: p.expected_value ?? '',
-    observed_value: observed[p.id] ?? observed[p.name] ?? '',
-    result: judgeResult(p.parameter_type, p.expected_value ?? '', observed[p.id] ?? observed[p.name]),
-  }));
+  return spec.parameters.map(p => {
+    const specVal = specValueOf(p);
+    const obs = observed[p.id] ?? observed[p.name];
+    return {
+      parameter_name: p.name,
+      parameter_type: p.parameter_type,
+      spec_value: specVal,
+      observed_value: obs ?? '',
+      result: judgeResult(p.parameter_type, specVal, obs),
+    };
+  });
 }
 
 /** Build a CoA payload for an inspection. Returns null if the inspection is missing. */
