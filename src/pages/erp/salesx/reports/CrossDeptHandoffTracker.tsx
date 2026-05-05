@@ -369,7 +369,7 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
               <TableBody>
                 {filtered.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={12} className="text-center text-xs text-muted-foreground py-8">
                       No Sales Orders found. Load demo data or create a Sales Order to see the pipeline.
                     </TableCell>
                   </TableRow>
