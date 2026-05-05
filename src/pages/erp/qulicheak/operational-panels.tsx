@@ -317,10 +317,14 @@ export function CoARegisterPanel(): JSX.Element {
           <CardTitle className="text-base">Generated</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {generated.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No CoAs generated yet.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : generated.length === 0 ? (
+            <EmptyState
+              Icon={FileCheck}
+              heading="No generated CoAs"
+              description="Generate CoAs from completed inspections to send to customers."
+            />
           ) : (
             <Table>
               <TableHeader>
