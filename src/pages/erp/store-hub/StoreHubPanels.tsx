@@ -61,6 +61,7 @@ export function StockCheckPanel(): JSX.Element {
         />
       </CardHeader>
       <CardContent>
+        {loading ? <SkeletonRows /> : (
         <Table>
           <TableHeader>
             <TableRow>
@@ -95,6 +96,7 @@ export function StockCheckPanel(): JSX.Element {
             ))}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   );
