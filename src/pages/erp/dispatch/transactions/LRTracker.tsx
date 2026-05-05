@@ -38,6 +38,8 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
   const [pods, setPods] = useState<POD[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [search, setSearch] = useState('');
+  const [podDialog, setPodDialog] = useState<POD | null>(null);
+  const [podOpen, setPodOpen] = useState(false);
 
   useEffect(() => {
     setVouchers(ls<Voucher>(vouchersKey(entityCode)));
