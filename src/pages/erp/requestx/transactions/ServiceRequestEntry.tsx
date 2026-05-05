@@ -127,38 +127,65 @@ export function ServiceRequestEntry(): JSX.Element {
     [lines, total],
   );
 
+  const buildPayload = () => ({
+    entity_id: entityId,
+    voucher_type_id: 'vt-service-request',
+    date,
+    branch_id: 'branch-default',
+    division_id: 'div-default',
+    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_name: user?.department_code ?? 'Department',
+    cost_center_id: 'cc-default',
+    category,
+    sub_type: subType,
+    priority,
+    service_track: track,
+    vendor_id: null,
+    requested_by_user_id: user?.id ?? '',
+    requested_by_name: user?.name ?? '',
+    hod_user_id: 'user-hod-placeholder',
+    project_id: null,
+    lines,
+    created_by: user?.id ?? '',
+    updated_by: user?.id ?? '',
+  });
+
   const handleSave = (): void => {
     if (!user) { toast.error('User not resolved'); return; }
     if (lines.length === 0 || lines.every(l => !l.service_name)) {
       toast.error('Add at least one service line');
       return;
     }
-    const sr = createServiceRequest({
-      entity_id: entityId,
-      voucher_type_id: 'vt-service-request',
-      date,
-      branch_id: 'branch-default',
-      division_id: 'div-default',
-      originating_department_id: user.department_id ?? 'dept-default',
-      originating_department_name: user.department_code ?? 'Department',
-      cost_center_id: 'cc-default',
-      category,
-      sub_type: subType,
-      priority,
-      service_track: track,
-      vendor_id: null,
-      requested_by_user_id: user.id,
-      requested_by_name: user.name,
-      hod_user_id: 'user-hod-placeholder',
-      project_id: null,
-      lines,
-      created_by: user.id,
-      updated_by: user.id,
-    }, entityCode);
+    const sr = createServiceRequest(buildPayload(), entityCode);
     submitIndent(sr.id, 'service', entityCode, 'user-hod-placeholder');
     toast.success(`Service Request ${sr.voucher_no} submitted (₹${total.toLocaleString('en-IN')})`);
     mount.clearDraft();
+    setCurrentDraft(null);
     setLines([emptyServiceLine(1)]);
+  };
+
+  const handleSaveDraft = (): void => {
+    if (!user) { toast.error('User not resolved'); return; }
+    const sr = createServiceRequest(buildPayload(), entityCode);
+    setCurrentDraft(sr);
+    toast.success(`Draft ${sr.voucher_no} saved`);
+  };
+
+  const handleCancel = (): void => {
+    if (!currentDraft || !cancelReason.trim()) return;
+    setCancelling(true);
+    const result = cancelIndent(currentDraft.id, 'service', user?.id ?? 'current-user', 'department_head', cancelReason, entityCode);
+    if (result.ok) {
+      toast.success('Service request cancelled');
+      setCancelOpen(false);
+      setCancelReason('');
+      setCurrentDraft(null);
+      mount.clearDraft();
+      setLines([emptyServiceLine(1)]);
+    } else {
+      toast.error(`Cancel failed: ${result.reason ?? 'unknown'}`);
+    }
+    setCancelling(false);
   };
 
   return (
