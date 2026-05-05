@@ -11,7 +11,7 @@ import { computeVendorScorecard } from '@/lib/oob/vendor-quality-scorecard-engin
 import { generateAndCacheCoA, listGeneratedCoA } from '@/lib/qa-coa-print-engine';
 import { getPendingInspectionAlerts } from '@/lib/oob/qa-pending-inspection-alerts';
 import { qaInspectionKey, type QaInspectionRecord } from '@/types/qa-inspection';
-import { qaSpecKey, type QaSpec } from '@/types/qa-spec';
+import { qaSpecKey } from '@/types/qa-spec';
 import { qaClosureLogKey } from '@/types/qa-closure-log';
 import { comply360QCKey, DEFAULT_QC_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { vouchersKey } from '@/lib/finecore-engine';
