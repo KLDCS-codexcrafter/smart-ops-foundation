@@ -44,6 +44,8 @@ import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { DEMO_STOCK_ISSUES, DEMO_STOCK_RECEIPT_ACKS } from '@/data/demo-store-hub-data';
 import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
+import { DEMO_PROMOTED_INDENTS } from '@/data/demo-store-hub-workflow-data';
+import { materialIndentsKey } from '@/types/material-indent';
 import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
   DEMO_COLLECTION_EXECS, DEMO_INCENTIVE_SCHEMES,
@@ -198,6 +200,19 @@ export function seedEntityDemoData(
   safeSetArray(stockIssuesKey(entityCode), siData);
   const sraData = DEMO_STOCK_RECEIPT_ACKS.map(a => ({ ...a, entity_id: entityCode }));
   safeSetArray(stockReceiptAcksKey(entityCode), sraData);
+
+  // Card #7 Store Hub WORKFLOW (Sprint T-Phase-1.2.6f-d-2-card7-7-pre-2 · Block I · D-393)
+  try {
+    const promotedIndents = DEMO_PROMOTED_INDENTS.map(i => ({ ...i, entity_id: entityCode }));
+    const existingIndents = JSON.parse(localStorage.getItem(materialIndentsKey(entityCode)) || '[]');
+    if (!Array.isArray(existingIndents) || existingIndents.length === 0) {
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(promotedIndents));
+    } else {
+      const have = new Set(existingIndents.map((i: { id: string }) => i.id));
+      const merged = [...existingIndents, ...promotedIndents.filter(i => !have.has(i.id))];
+      localStorage.setItem(materialIndentsKey(entityCode), JSON.stringify(merged));
+    }
+  } catch { /* silent */ }
 
   // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
   // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.

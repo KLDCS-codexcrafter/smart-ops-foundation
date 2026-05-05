@@ -24,10 +24,12 @@ import { cn } from '@/lib/utils';
 
 export type StoreHubModule =
   | 'sh-welcome'
+  | 'sh-r-welcome'
   // Reports (existing 3 panels preserved as modules · D-298)
   | 'sh-r-stock-check'
   | 'sh-r-reorder-suggestions'
   | 'sh-r-demand-forecast'
+  | 'sh-r-cycle-count-status'
   // Transactions (NEW · Card #7 · D-381 + D-382)
   | 'sh-t-stock-issue-entry'
   | 'sh-t-stock-issue-register'
@@ -48,6 +50,7 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'Stock Check',         module: 'sh-r-stock-check',         icon: Boxes },
   { label: 'Reorder Suggestions', module: 'sh-r-reorder-suggestions', icon: Layers },
   { label: 'Demand Forecast',     module: 'sh-r-demand-forecast',     icon: TrendingUp },
+  { label: 'Cycle Count Status',  module: 'sh-r-cycle-count-status',  icon: ClipboardCheck },
 ];
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
