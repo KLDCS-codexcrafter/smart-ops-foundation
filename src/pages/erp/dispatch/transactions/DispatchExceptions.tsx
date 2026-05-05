@@ -114,6 +114,10 @@ export function DispatchExceptionsPanel() {
                       </td>
                       <td className="text-right space-x-1">
                         <Button size="sm" variant="ghost" className="h-7 text-xs"
+                          onClick={() => { setPodDialog(p); setPodOpen(true); }}>
+                          <Eye className="h-3.5 w-3.5 mr-1" />POD
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-xs"
                           onClick={() => updatePod(p.id, { status: 'disputed' })}>
                           Mark Review
                         </Button>
