@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -46,6 +46,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Gate guard 5-step capture · QR scan · camera · offline-resilient · creates inward + outward gate passes.',
     details: 'Live: Sprint 4-pre-3 · D-312. QR-first vehicle lookup with auto-fill from vehicle-master · driver verify · purpose + linked voucher · photos (license + vehicle + ANPR + POD pre-stage) · review + submit. Offline queue when no network. PWA — no install.',
     route: '/operix-go/gate-guard',
+    phase: 'live',
+  },
+  {
+    id: 'qualicheck-mobile',
+    title: 'QualiCheck Mobile',
+    icon: FlaskConical,
+    description: 'Inspector 5-step capture · pick pending · qty (P/F/S) · spec parameters · photos · review · auto-routes 3 Stock Journals on submit.',
+    details: 'Live: Sprint 5-pre-3 · D-346. Mirrors GateFlow Gate Guard 5-step pattern. Triggers D-339 closure resolver on submit (Quarantine→Approved/Sample/Rejection Stock Journals · D-128 schemas preserved). Offline queue when no network. PWA — no install.',
+    route: '/operix-go/qulicheak',
     phase: 'live',
   },
   {
