@@ -361,8 +361,11 @@ export function PendingAlertsPanel(): JSX.Element {
   const entityCode = getActiveEntityCode();
   const [threshold, setThreshold] = useState<number>(DEFAULT_PENDING_THRESHOLD_HOURS);
   const [list, setList] = useState<QaPendingAlert[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const refresh = useCallback((): void => {
+    setLoading(true);
     setList(getPendingInspectionAlerts(entityCode, threshold));
+    setLoading(false);
   }, [entityCode, threshold]);
   useEffect(() => { refresh(); }, [refresh]);
 
@@ -387,10 +390,14 @@ export function PendingAlertsPanel(): JSX.Element {
 
       <Card>
         <CardContent className="p-0">
-          {list.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              No pending inspections older than {threshold}h.
-            </div>
+          {loading ? (
+            <LoadingRows />
+          ) : list.length === 0 ? (
+            <EmptyState
+              Icon={AlertTriangle}
+              heading="No pending alerts"
+              description={`All inspections within threshold (${threshold}h) · no alerts.`}
+            />
           ) : (
             <Table>
               <TableHeader>
