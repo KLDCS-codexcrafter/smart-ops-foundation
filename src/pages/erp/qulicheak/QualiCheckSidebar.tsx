@@ -6,7 +6,10 @@ import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, ClipboardCheck, FileText, Beaker, ListChecks } from 'lucide-react';
+import {
+  Home, ClipboardCheck, FileText, Beaker, ListChecks,
+  ShieldCheck, Award, FileCheck, AlertTriangle, Layers,
+} from 'lucide-react';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 
 interface Group {
@@ -18,18 +21,27 @@ const GROUPS: Group[] = [
   { label: 'Overview', items: [{ id: 'welcome', label: 'Welcome', icon: Home }] },
   {
     label: 'Operations',
-    items: [{ id: 'pending-inspections', label: 'Pending Inspections', icon: ClipboardCheck }],
+    items: [
+      { id: 'pending-inspections', label: 'Pending Inspections', icon: ClipboardCheck },
+      { id: 'pending-alerts', label: 'Pending Alerts', icon: AlertTriangle },
+      { id: 'closure-log', label: 'Closure Log', icon: ShieldCheck },
+    ],
   },
   {
     label: 'Masters',
     items: [
       { id: 'quality-plans', label: 'Quality Plans', icon: FileText },
       { id: 'quality-specs', label: 'Quality Specs', icon: Beaker },
+      { id: 'bulk-plan-assignment', label: 'Bulk Plan Assignment', icon: Layers },
     ],
   },
   {
     label: 'Reports',
-    items: [{ id: 'inspection-register', label: 'Inspection Register', icon: ListChecks }],
+    items: [
+      { id: 'inspection-register', label: 'Inspection Register', icon: ListChecks },
+      { id: 'vendor-scorecard', label: 'Vendor Scorecard', icon: Award },
+      { id: 'coa-register', label: 'CoA Register', icon: FileCheck },
+    ],
   },
 ];
 
