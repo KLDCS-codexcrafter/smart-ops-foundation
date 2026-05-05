@@ -24,6 +24,11 @@ import { ReconciliationSummaryReportPanel } from './reports/ReconciliationSummar
 import { PDFInvoiceUploadPanel } from './transactions/PDFInvoiceUpload';
 import { TransporterScorecardPanel } from './reports/TransporterScorecard';
 import { SavingsROIDashboardPanel } from './reports/SavingsROIDashboard';
+// Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION · Block D
+import { InwardReceiptEntryPanel } from './inward/InwardReceiptEntry';
+import { InwardReceiptRegisterPanel } from './inward/InwardReceiptRegister';
+import { QuarantineQueuePanel } from './inward/QuarantineQueue';
+import { VendorReturnPanel } from './inward/VendorReturn';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -50,6 +55,10 @@ function renderModule(
     case 'dh-t-pdf-invoice-upload':     return <PDFInvoiceUploadPanel />;
     case 'dh-r-transporter-scorecard':  return <TransporterScorecardPanel />;
     case 'dh-r-savings-roi':            return <SavingsROIDashboardPanel />;
+    case 'dh-i-inward-receipt-entry':   return <InwardReceiptEntryPanel onModuleChange={onModuleChange} />;
+    case 'dh-i-inward-receipt-register':return <InwardReceiptRegisterPanel onModuleChange={onModuleChange} />;
+    case 'dh-i-quarantine-queue':       return <QuarantineQueuePanel />;
+    case 'dh-i-vendor-return':          return <VendorReturnPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
