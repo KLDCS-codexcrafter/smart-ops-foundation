@@ -41,7 +41,7 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
   const [lineQc, setLineQc] = useState<Record<string, boolean>>({});
 
   const jwos = useMemo<JobWorkOutOrder[]>(() => {
-    return listJWOs(entityCode).filter(j => j.status === 'sent' || j.status === 'partially_received');
+    return listJobWorkOutOrders(entityCode).filter(j => j.status === 'sent' || j.status === 'partially_received');
   }, [entityCode]);
 
   const selectedJWO = useMemo(() => jwos.find(j => j.id === jwoId), [jwos, jwoId]);
