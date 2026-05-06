@@ -230,6 +230,12 @@ function emp(
     prevEmployerDetails: [],
     entityId: 'e1',
     status: 'active',
+    is_production_operator: false,
+    certified_machine_ids: [],
+    production_skills: [],
+    hourly_rate_production: 0,
+    current_machine_id: null,
+    production_team_id: null,
     created_at: now,
     updated_at: now,
   };

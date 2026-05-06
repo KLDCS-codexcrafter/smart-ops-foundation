@@ -3,7 +3,7 @@
  * @sprint   T-Phase-1.3-3a-pre-1
  */
 import { useState } from 'react';
-import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList } from 'lucide-react';
+import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList, CalendarRange } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -21,12 +21,14 @@ const ICONS: Record<ProductionModule, React.ElementType> = {
   'tx-production-confirmation': CheckCircle,
   'tx-job-work-out': Truck,
   'tx-job-work-receipt': PackagePlus,
+  'tx-job-card-entry': ClipboardList,
   'rpt-production-order-register': FileText,
   'rpt-production-plan-register': ClipboardList,
   'rpt-variance-dashboard': FileText,
   'rpt-plan-actual-rolling': FileText,
   'rpt-itc04-export': FileText,
   'rpt-wip': Layers,
+  'rpt-daily-work-register': CalendarRange,
 };
 
 interface Props {
