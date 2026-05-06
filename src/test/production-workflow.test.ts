@@ -229,4 +229,36 @@ describe('production-workflow · Blocks B/D/F/H', () => {
     expect(stored[0].status).toBe('received');
     expect(stored[0].lines[0].received_qty).toBe(10);
   });
+
+  it('Multi-level BOM explosion · semi-finished sub-BOMs flatten with wastage compounding', () => {
+    const subBom: Bom = {
+      id: 'bom-sub', entity_id: 'e1',
+      product_item_id: 'item-sub-asm', product_item_code: 'SUB-ASM', product_item_name: 'Sub Assembly',
+      version_no: 1, output_qty: 1, output_uom: 'nos',
+      valid_from: '2026-01-01', valid_to: null, is_active: true,
+      components: [
+        { id: 'cs1', item_id: 'rm-x', item_code: 'RM-X', item_name: 'Leaf X',
+          component_type: 'raw_material', qty: 3, uom: 'nos', wastage_percent: 0, sub_bom_id: null },
+        { id: 'cs2', item_id: 'rm-y', item_code: 'RM-Y', item_name: 'Leaf Y',
+          component_type: 'raw_material', qty: 5, uom: 'nos', wastage_percent: 10, sub_bom_id: null },
+      ],
+      byproducts: [],
+      created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z',
+    };
+    const topBom: Bom = {
+      ...subBom, id: 'bom-top',
+      product_item_id: 'item-widget', product_item_code: 'WIDGET', product_item_name: 'Widget',
+      components: [
+        { id: 'ct1', item_id: 'item-sub-asm', item_code: 'SUB-ASM', item_name: 'Sub Assembly',
+          component_type: 'semi_finished', qty: 2, uom: 'nos', wastage_percent: 0, sub_bom_id: 'bom-sub' },
+        { id: 'ct2', item_id: 'rm-a', item_code: 'RM-A', item_name: 'Direct A',
+          component_type: 'raw_material', qty: 1, uom: 'nos', wastage_percent: 0, sub_bom_id: null },
+      ],
+    };
+    const exploded = explodeBOM(topBom, 10, [topBom, subBom]);
+    expect(exploded).toHaveLength(3);
+    expect(exploded.find(c => c.item_id === 'rm-x')?.required_qty).toBe(60);
+    expect(exploded.find(c => c.item_id === 'rm-y')?.required_qty).toBe(110);
+    expect(exploded.find(c => c.item_id === 'rm-a')?.required_qty).toBe(10);
+  });
 });
