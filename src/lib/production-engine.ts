@@ -66,6 +66,91 @@ export interface CreateProductionOrderInput {
   created_by: string;
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 1a. Multi-level BOM explosion (Sprint 3a-pre-2 · Block A · D-528 · Q3=a)
+// ════════════════════════════════════════════════════════════════════
+
+export interface ExplodedBomComponent {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  component_type: BomComponentType;
+  required_qty: number;
+  uom: string;
+  bom_component_ids: string[];     // for traceability
+  bom_path: string[];              // 'TopBOM@L0', 'SubBOM@L1' for audit trail
+}
+
+/**
+ * Recursively explode a BOM into a flat list of raw-material requirements.
+ * Per Q3=a · Sprint 3a-pre-2 · D-528 lineage.
+ *
+ * If a BomComponent.sub_bom_id is non-null AND component_type === 'semi_finished',
+ * the function recursively resolves the sub-BOM and accumulates its components.
+ * Wastage compounds at each level: effective_qty = qty * (1 + wastage_pct/100).
+ *
+ * Backward-compatible: a BOM with no semi-finished components produces the
+ * same flat list the legacy single-level path would.
+ */
+export function explodeBOM(
+  bom: Bom,
+  outputQty: number,
+  allBoms: Bom[],
+  maxDepth: number = 5,
+): ExplodedBomComponent[] {
+  const accumulator = new Map<string, ExplodedBomComponent>();
+  explodeBOMRecursive(bom, outputQty, allBoms, accumulator, maxDepth, 0);
+  return Array.from(accumulator.values());
+}
+
+function explodeBOMRecursive(
+  bom: Bom,
+  outputQty: number,
+  allBoms: Bom[],
+  acc: Map<string, ExplodedBomComponent>,
+  maxDepth: number,
+  currentDepth: number,
+): void {
+  if (currentDepth > maxDepth) {
+    console.warn(`[explodeBOM] Max depth ${maxDepth} reached at BOM ${bom.id} · semi-finished components beyond this depth treated as RM`);
+    return;
+  }
+  for (const c of bom.components) {
+    const effectiveQty = c.qty * outputQty * (1 + (c.wastage_percent || 0) / 100);
+
+    if (c.component_type === 'semi_finished' && c.sub_bom_id) {
+      const subBom = allBoms.find(b => b.id === c.sub_bom_id && b.is_active);
+      if (subBom) {
+        explodeBOMRecursive(subBom, effectiveQty, allBoms, acc, maxDepth, currentDepth + 1);
+        continue;
+      }
+      console.warn(`[explodeBOM] sub_bom_id ${c.sub_bom_id} not found · treating as RM`);
+    }
+
+    const existing = acc.get(c.item_id);
+    if (existing) {
+      existing.required_qty += effectiveQty;
+      existing.bom_component_ids.push(c.id);
+      existing.bom_path.push(`${bom.product_item_code}@L${currentDepth}`);
+    } else {
+      acc.set(c.item_id, {
+        item_id: c.item_id,
+        item_code: c.item_code,
+        item_name: c.item_name,
+        component_type: c.component_type,
+        required_qty: effectiveQty,
+        uom: c.uom,
+        bom_component_ids: [c.id],
+        bom_path: [`${bom.product_item_code}@L${currentDepth}`],
+      });
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 1b. CRUD · CREATE
+// ════════════════════════════════════════════════════════════════════
+
 export function createProductionOrder(
   input: CreateProductionOrderInput,
   bom: Bom,
