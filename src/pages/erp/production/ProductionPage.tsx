@@ -17,6 +17,9 @@ import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
 import { JobWorkReceiptEntryPanel } from './transactions/JobWorkReceiptEntry';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { ProductionPlanRegisterPanel } from './reports/ProductionPlanRegister';
+import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDashboard';
+import { PlanActualRollingPanel } from './reports/PlanActualRolling';
+import { ITC04ExportPanel } from './reports/ITC04Export';
 import { WIPReportPanel } from './reports/WIPReport';
 import type { ProductionModule } from './ProductionSidebar.types';
 
