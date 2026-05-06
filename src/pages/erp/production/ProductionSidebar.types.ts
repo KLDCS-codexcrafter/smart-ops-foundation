@@ -12,4 +12,7 @@ export type ProductionModule =
   | 'tx-job-work-receipt'
   | 'rpt-production-order-register'
   | 'rpt-production-plan-register'
+  | 'rpt-variance-dashboard'
+  | 'rpt-plan-actual-rolling'
+  | 'rpt-itc04-export'
   | 'rpt-wip';
