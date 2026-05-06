@@ -98,8 +98,28 @@ export const MANUFACTURING_TEMPLATES: ManufacturingTemplate[] = [
     icon: 'Cog',
     color_class: 'bg-primary',
   },
-  stub('cellular-mfg', 'primary_type', 'Cellular Manufacturing', 'Group-tech cells · TODO 3-PlantOps-pre-2'),
-  stub('repetitive-mfg', 'primary_type', 'Repetitive Manufacturing', 'Repetitive flow · TODO 3-PlantOps-pre-2'),
+  {
+    id: 'cellular-mfg', category: 'primary_type',
+    name: 'Cellular Manufacturing', description: 'Group-technology cells · multi-skill operators',
+    default_costing_method: 'standard', default_production_model: 'mto',
+    primary_kpis: ['cycle_time', 'flexibility_index', 'on_time_delivery'],
+    secondary_kpis: ['utilization'],
+    enabled_modules: ['production-plan', 'job-card'],
+    qc_parameters: [{ key: 'visual_check', label: 'Visual Check', type: 'pass_fail' }],
+    compliance_standards: [],
+    icon: 'LayoutGrid', color_class: 'bg-accent',
+  },
+  {
+    id: 'repetitive-mfg', category: 'primary_type',
+    name: 'Repetitive Manufacturing', description: 'Repetitive flow · stable demand',
+    default_costing_method: 'standard', default_production_model: 'mts',
+    primary_kpis: ['oee', 'throughput', 'first_pass_yield'],
+    secondary_kpis: ['rework_pct'],
+    enabled_modules: ['production-plan', 'oee', 'qc-outgoing'],
+    qc_parameters: [{ key: 'inline_check', label: 'Inline Check', type: 'pass_fail' }],
+    compliance_standards: ['ISO9001'],
+    icon: 'Repeat', color_class: 'bg-primary',
+  },
 
   // ── SECONDARY TYPE (4) ──
   {
@@ -147,7 +167,17 @@ export const MANUFACTURING_TEMPLATES: ManufacturingTemplate[] = [
     icon: 'Layers',
     color_class: 'bg-warning',
   },
-  stub('assemble-to-order', 'secondary_type', 'Assemble To Order', 'Configure-and-assemble · TODO 3-PlantOps-pre-2'),
+  {
+    id: 'assemble-to-order', category: 'secondary_type',
+    name: 'Assemble To Order', description: 'Configure-and-assemble from sub-stocked modules',
+    default_costing_method: 'standard', default_production_model: 'ato',
+    primary_kpis: ['on_time_delivery', 'configuration_accuracy', 'cycle_time'],
+    secondary_kpis: ['oee'],
+    enabled_modules: ['production-plan', 'job-card'],
+    qc_parameters: [{ key: 'config_check', label: 'Configuration Check', type: 'pass_fail' }],
+    compliance_standards: ['ISO9001'],
+    icon: 'Boxes', color_class: 'bg-warning',
+  },
 
   // ── INDUSTRY SECTOR (8) ──
   {
