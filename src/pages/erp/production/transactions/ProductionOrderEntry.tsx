@@ -330,6 +330,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           production_plan_id: productionPlanId || undefined,
           linked_letter_of_credit_id: linkedLcId || undefined,
           outputs: multiOutputMode ? outputs : undefined,
+          linked_production_plan_ids: linkedPlanIds.length ? linkedPlanIds : undefined,
           notes,
           created_by: 'current-user',
         },
