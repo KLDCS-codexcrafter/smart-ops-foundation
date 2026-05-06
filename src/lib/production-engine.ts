@@ -8,6 +8,7 @@
 import type {
   ProductionOrder,
   ProductionOrderLine,
+  ProductionOrderOutput,
   ProductionOrderStatus,
   ProductionOrderStatusEvent,
   SalesOrderLineMapping,
@@ -61,6 +62,8 @@ export interface CreateProductionOrderInput {
   is_job_work_in?: boolean;
   production_team_id?: string;
   production_plan_id?: string;
+  linked_production_plan_ids?: string[];
+  outputs?: ProductionOrderOutput[];
   linked_letter_of_credit_id?: string;
   notes?: string;
   created_by: string;
@@ -185,6 +188,20 @@ export function createProductionOrder(
     batch_no: null,
     serial_nos: [],
     heat_no: null,
+    // Substitution defaults (D-543 · 3a-pre-2.5)
+    original_bom_item_id: c.item_id,
+    original_bom_qty: c.required_qty,
+    is_substituted: false,
+    substitute_reason: null,
+    substitute_item_substitute_id: null,
+    substitute_notes: '',
+    substituted_by: null,
+    substituted_at: null,
+    original_unit_rate: 0,
+    substituted_unit_rate: 0,
+    cost_variance_amount: 0,
+    cost_variance_pct: 0,
+    yield_impact_pct: 0,
   }));
 
   const output_godown_id = resolveFGOutputGodown(
@@ -246,6 +263,31 @@ export function createProductionOrder(
     linked_letter_of_credit_id: input.linked_letter_of_credit_id || null,
     cost_structure,
     lines,
+    outputs: input.outputs && input.outputs.length > 0 ? input.outputs : [{
+      id: `pout-${doc_no.replace(/\//g, '-')}-1`,
+      output_no: 1,
+      output_kind: 'main',
+      item_id: input.output_item_id,
+      item_code: bom.product_item_code || '',
+      item_name: bom.product_item_name || '',
+      planned_qty: input.planned_qty,
+      uom: bom.output_uom || 'nos',
+      bom_id: input.bom_id,
+      bom_version: bom.version_no || 1,
+      batch_no: input.batch_no || null,
+      qc_required: input.qc_required ?? qcConfig.enableQualiCheck,
+      qc_scenario: input.qc_scenario || (input.is_export_project ? 'export_oriented' : null),
+      linked_test_report_ids: [],
+      output_cost_master: cost_structure.master.total,
+      output_cost_budget: 0,
+      output_cost_actual: 0,
+      cost_allocation_basis: 'qty',
+      cost_allocation_pct: 100,
+      actual_qty: null,
+      yield_pct: null,
+      output_godown_id,
+    }],
+    linked_production_plan_ids: input.linked_production_plan_ids ?? (input.production_plan_id ? [input.production_plan_id] : []),
     approval_history: [],
     status_history: [makeInitialStatusEvent(user, now)],
     notes: input.notes || '',

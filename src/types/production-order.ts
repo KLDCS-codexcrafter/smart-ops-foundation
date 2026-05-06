@@ -46,6 +46,50 @@ export interface ProductionOrderStatusEvent {
   note: string;
 }
 
+/**
+ * Multi-item Production Order output · Q13=a · 3a-pre-2.5
+ */
+export type ProductionOrderOutputKind =
+  | 'main' | 'co_product' | 'by_product' | 'scrap';
+
+export type CostAllocationBasis = 'qty' | 'value' | 'manual_pct';
+
+export interface ProductionOrderOutput {
+  id: string;
+  output_no: number;
+  output_kind: ProductionOrderOutputKind;
+
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  planned_qty: number;
+  uom: string;
+
+  bom_id: string;
+  bom_version: number;
+
+  batch_no: string | null;
+  qc_required: boolean;
+  qc_scenario: QCScenario | null;
+  linked_test_report_ids: string[];
+
+  output_cost_master: number;
+  output_cost_budget: number;
+  output_cost_actual: number;
+  cost_allocation_basis: CostAllocationBasis;
+  cost_allocation_pct: number;
+
+  actual_qty: number | null;
+  yield_pct: number | null;
+
+  output_godown_id: string;
+}
+
+/** BOM-line substitution reasons · D-543 · 3a-pre-2.5 */
+export type SubstituteReason =
+  | 'stock_unavailable' | 'cost_optimization' | 'quality_upgrade'
+  | 'sourcing_constraint' | 'customer_specification' | 'export_compliance' | 'other';
+
 export interface ProductionOrderLine {
   id: string;
   line_no: number;
@@ -60,6 +104,21 @@ export interface ProductionOrderLine {
   batch_no: string | null;
   serial_nos: string[];
   heat_no: string | null;
+
+  // 🆕 Substitution tracking (D-543 · 3a-pre-2.5)
+  original_bom_item_id: string;
+  original_bom_qty: number;
+  is_substituted: boolean;
+  substitute_reason: SubstituteReason | null;
+  substitute_item_substitute_id: string | null;
+  substitute_notes: string;
+  substituted_by: string | null;
+  substituted_at: string | null;
+  original_unit_rate: number;
+  substituted_unit_rate: number;
+  cost_variance_amount: number;
+  cost_variance_pct: number;
+  yield_impact_pct: number;
 }
 
 export interface ProductionOrder {
@@ -126,6 +185,13 @@ export interface ProductionOrder {
   cost_structure: ProductionCostStructure;
 
   lines: ProductionOrderLine[];
+
+  // 🆕 Multi-item outputs (Q13=a · 3a-pre-2.5)
+  outputs: ProductionOrderOutput[];
+
+  // 🆕 Plan linkage (Q14=a · M:N · 3a-pre-2.5)
+  linked_production_plan_ids: string[];
+
   approval_history: ApprovalEvent[];
   status_history: ProductionOrderStatusEvent[];
 

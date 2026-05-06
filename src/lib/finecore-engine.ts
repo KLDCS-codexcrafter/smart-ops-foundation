@@ -226,7 +226,9 @@ export function generateDocNo(
     // Sprint T-Phase-1.3-3a-pre-2 · Job Work Out Order (Card 3a · 1 NEW concession · matches lineage)
     | 'JWO'
     // Sprint T-Phase-1.3-3a-pre-2 · Job Work Receipt (Card 3a · 1 NEW concession · matches lineage)
-    | 'JWR',
+    | 'JWR'
+    // Sprint T-Phase-1.3-3a-pre-2.5 · Production Plan (Card 3a · 1 NEW concession · matches lineage)
+    | 'PP',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.

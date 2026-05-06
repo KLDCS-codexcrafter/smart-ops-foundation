@@ -47,6 +47,8 @@ export function getDemoProductionData(entityCode: string): ProductionOrder[] {
     export_destination_country: null, export_regulatory_body: null, linked_letter_of_credit_id: null,
     cost_structure: baseCost(),
     lines: [],
+    outputs: [],
+    linked_production_plan_ids: [],
     approval_history: [],
     status_history: [],
     notes: '',
