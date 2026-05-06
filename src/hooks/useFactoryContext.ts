@@ -5,7 +5,7 @@
  * Hooks moved here to satisfy react-refresh/only-export-components.
  */
 import { useContext } from 'react';
-import { FactoryContext, type FactoryContextValue } from '@/contexts/FactoryContext';
+import { FactoryContext, type FactoryContextValue } from '@/contexts/FactoryContext.types';
 
 export function useFactoryContext(): FactoryContextValue {
   const ctx = useContext(FactoryContext);
