@@ -255,6 +255,13 @@ export const BLANK_EMPLOYEE: Omit<Employee, "id" | "empCode" | "created_at" | "u
   elOpeningBalance: 0, medicalRembCap: 15000, prevEmployerDetails: [],
   entityId: 'parent-root',
   status: 'active',
+  // Production extension defaults
+  is_production_operator: false,
+  certified_machine_ids: [],
+  production_skills: [],
+  hourly_rate_production: 0,
+  current_machine_id: null,
+  production_team_id: null,
 };
 
 // ── DOC_TYPE_LABELS ───────────────────────────────────────────────────
