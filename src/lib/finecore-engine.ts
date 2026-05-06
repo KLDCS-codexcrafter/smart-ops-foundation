@@ -220,7 +220,13 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Stock Receipt Ack (Card #7 · matches lineage)
     | 'SRA'
     // Sprint T-Phase-1.3-3a-pre-1 · Production Order (Card 3a · 1 NEW concession · matches lineage)
-    | 'MO',
+    | 'MO'
+    // Sprint T-Phase-1.3-3a-pre-2 · Production Confirmation (Card 3a · 1 NEW concession · matches lineage)
+    | 'PC'
+    // Sprint T-Phase-1.3-3a-pre-2 · Job Work Out Order (Card 3a · 1 NEW concession · matches lineage)
+    | 'JWO'
+    // Sprint T-Phase-1.3-3a-pre-2 · Job Work Receipt (Card 3a · 1 NEW concession · matches lineage)
+    | 'JWR',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
