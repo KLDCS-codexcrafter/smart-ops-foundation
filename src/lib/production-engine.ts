@@ -605,3 +605,112 @@ function makeInitialStatusEvent(
 export function listProductionOrders(entityCode: string): ProductionOrder[] {
   return readPOs(entityCode);
 }
+
+// ════════════════════════════════════════════════════════════════════
+// 6. CLOSURE · Q19=b maker-checker + cost freeze + variance freeze (D-559)
+// ════════════════════════════════════════════════════════════════════
+import type { ApprovalEvent } from '@/types/material-indent';
+import {
+  computeProductionVariance,
+  persistProductionVariance,
+  freezeProductionVariance,
+} from '@/lib/production-variance-engine';
+import { listMaterialIssues } from '@/lib/material-issue-engine';
+import { listProductionConfirmations } from '@/lib/production-confirmation-engine';
+import { listJobWorkOutOrders } from '@/lib/job-work-out-engine';
+import { listJobWorkReceipts } from '@/lib/job-work-receipt-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+
+export interface CloseProductionOrderInput {
+  po: ProductionOrder;
+  closureRemarks: string;
+  closer: { id: string; name: string };
+  thresholdPct: number;
+}
+
+export function closeProductionOrder(input: CloseProductionOrderInput): ProductionOrder {
+  const { po, closureRemarks, closer, thresholdPct } = input;
+
+  if (po.status !== 'completed') {
+    throw new Error(`Cannot close PO in '${po.status}' status · must be 'completed' first`);
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(today, po.entity_id)) {
+    throw new Error(periodLockMessage(today, po.entity_id));
+  }
+  // Q19=b · Maker-checker
+  if (closer.id === po.created_by || closer.name === po.created_by) {
+    throw new Error('Maker-checker · PO creator cannot close (Q19=b)');
+  }
+  const pcs = listProductionConfirmations(po.entity_id).filter(pc => pc.production_order_id === po.id);
+  if (pcs.length > 0) {
+    const latestPC = pcs.reduce((latest, pc) =>
+      new Date(pc.confirmation_date) > new Date(latest.confirmation_date) ? pc : latest, pcs[0]);
+    if (closer.id === latestPC.confirmed_by_user_id) {
+      throw new Error('Maker-checker · latest PC creator cannot close (Q19=b)');
+    }
+  }
+  const mins = listMaterialIssues(po.entity_id).filter(m => m.production_order_id === po.id);
+  if (mins.some(m => m.status === 'draft')) {
+    throw new Error('Cannot close · pending DRAFT Material Issues exist');
+  }
+  const jwos = listJobWorkOutOrders(po.entity_id).filter(j => j.production_order_id === po.id);
+  const jwrs = listJobWorkReceipts(po.entity_id);
+  for (const jwo of jwos) {
+    if (jwo.status === 'sent' || jwo.status === 'partially_received') {
+      throw new Error(`Cannot close · JWO ${jwo.doc_no} has unreceived stock`);
+    }
+  }
+
+  // Compute & freeze variance
+  const variance = computeProductionVariance({ po, mins, pcs, jwos, jwrs, thresholdPct });
+  persistProductionVariance(po.entity_id, variance);
+  freezeProductionVariance(po.entity_id, po.id, closer);
+
+  // Cost freeze snapshot
+  const closed_cost_snapshot: ProductionCostStructure = JSON.parse(JSON.stringify(po.cost_structure));
+
+  const now = new Date().toISOString();
+  const closure_approval: ApprovalEvent = {
+    id: `apv-${Date.now()}`,
+    approver_user_id: closer.id,
+    approver_role: 'closer',
+    action: 'approved',
+    remarks: closureRemarks,
+    acted_at: now,
+  };
+
+  const updated: ProductionOrder = {
+    ...po,
+    status: 'closed',
+    closed_at: now,
+    closed_by_user_id: closer.id,
+    closed_by_name: closer.name,
+    closure_approval,
+    closure_remarks: closureRemarks,
+    closed_cost_snapshot,
+    closed_variance_id: variance.id,
+    status_history: [
+      ...po.status_history,
+      {
+        id: `pose-${Date.now()}`,
+        from_status: 'completed',
+        to_status: 'closed',
+        changed_by_id: closer.id,
+        changed_by_name: closer.name,
+        changed_at: now,
+        note: `Closed (maker-checker · ${variance.threshold_breach_count} breaches · ₹${variance.total_variance_amount} total)`,
+      },
+    ],
+    updated_at: now,
+    updated_by: closer.name,
+  };
+
+  const all = readPOs(po.entity_id);
+  const idx = all.findIndex(p => p.id === po.id);
+  if (idx >= 0) {
+    all[idx] = updated;
+    writePOs(po.entity_id, all);
+  }
+  return updated;
+}
