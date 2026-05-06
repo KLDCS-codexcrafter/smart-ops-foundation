@@ -45,6 +45,13 @@ const emptyLine = (): LineDraft => ({
 
 export function JobWorkOutEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
   const { items } = useInventoryItems();
