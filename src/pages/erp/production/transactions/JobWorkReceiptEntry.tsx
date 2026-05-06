@@ -39,6 +39,13 @@ import type { JobWorkOutOrder } from '@/types/job-work-out-order';
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { godowns } = useGodowns();
 
   const [jwoId, setJwoId] = useState<string>('');
