@@ -73,6 +73,25 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
 
   const willQuarantine = !!(selectedPO?.qc_required && qcConfig.enableOutgoingInspection);
 
+  const formStateForMount = useMemo(
+    () => ({ poId, confirmDate, actualQty, destinationGodownId, batchNo }),
+    [poId, confirmDate, actualQty, destinationGodownId, batchNo],
+  );
+  const itemsForMount = useMemo(
+    () => selectedPO ? [{ item_name: selectedPO.output_item_name, qty: actualQty }] : [],
+    [selectedPO, actualQty],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'production-confirmation-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-production-confirmation',
+    userId: user?.id ?? undefined,
+    partyId: undefined,
+  });
+
   const yieldPct = selectedPO && selectedPO.planned_qty > 0
     ? (actualQty / selectedPO.planned_qty) * 100
     : 0;
