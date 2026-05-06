@@ -126,6 +126,39 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     }
   }, [entityCode]);
 
+  // Card #2.7-d-1 · 12-item carry-forward retrofit
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
+
+  const formStateForMount = useMemo(() => ({
+    bomId, plannedQty, startDate, targetEnd, departmentId, customerId,
+    isExport, qcRequired, qcScenario, shiftId,
+  }), [bomId, plannedQty, startDate, targetEnd, departmentId, customerId, isExport, qcRequired, qcScenario, shiftId]);
+
+  const itemsForMount = useMemo(
+    () => (selectedBom?.components ?? []).map(c => ({
+      item_name: c.item_name,
+      qty: c.qty * plannedQty,
+    })),
+    [selectedBom, plannedQty],
+  );
+
+  const mount = useSprint27d1Mount({
+    formKey: 'production-order-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-production-order',
+    userId: user?.id ?? undefined,
+    partyId: customerId || undefined,
+  });
+
   // Block K · Deep-link prefill from Block I (SalesX SO) and Block J (ProjX Project)
   useEffect(() => {
     const soId = searchParams.get('so_id');
