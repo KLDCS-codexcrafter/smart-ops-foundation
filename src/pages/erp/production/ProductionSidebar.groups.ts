@@ -1,0 +1,27 @@
+/**
+ * @file     ProductionSidebar.groups.ts
+ * @sprint   T-Phase-1.3-3a-pre-1
+ */
+import type { ProductionModule } from './ProductionSidebar.types';
+
+export interface ProductionGroup {
+  id: string;
+  label: string;
+  modules: { id: ProductionModule; label: string }[];
+}
+
+export const PRODUCTION_GROUPS: ProductionGroup[] = [
+  {
+    id: 'transactions', label: 'Transactions',
+    modules: [
+      { id: 'tx-production-order-entry', label: 'Production Order Entry' },
+    ],
+  },
+  {
+    id: 'reports', label: 'Reports',
+    modules: [
+      { id: 'rpt-production-order-register', label: 'Production Order Register' },
+      { id: 'rpt-wip', label: 'WIP Report' },
+    ],
+  },
+];
