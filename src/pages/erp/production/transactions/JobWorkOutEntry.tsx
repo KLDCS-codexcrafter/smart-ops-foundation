@@ -343,6 +343,18 @@ export function JobWorkOutEntryPanel(): JSX.Element {
           <Send className="h-4 w-4 mr-2" /> Save and Send
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-job-work-out-order"
+        voucherTypeName="Job Work Out Order"
+        defaultPartyType="vendor"
+        partyId={vendorId || null}
+        partyName={vendor?.partyName ?? null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
