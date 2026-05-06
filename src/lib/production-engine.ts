@@ -27,6 +27,7 @@ import { emptyCostStructure } from '@/types/production-cost';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
+import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // 1. CRUD · CREATE
