@@ -79,6 +79,7 @@ export function EmployeeMasterPanel() {
   const [revisionReason, setRevisionReason] = useState('');
 
   const { employees, stats, createEmployee, updateEmployee, toggleStatus, search: searchFn, yearsOfService } = useEmployees();
+  const { machines } = useMachines();
 
   // ── SAM context ─────────────────────────────────────────────────────
   const [selectedCompany] = useERPCompany();
