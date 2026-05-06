@@ -1,10 +1,11 @@
 /**
  * @file     ProductionConfirmationEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block E
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Production Confirmation entry panel — confirm actual FG output against a PO.
- *           Single-output (3a-pre-2 · multi-output deferred to 3a-pre-2.5).
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,10 +14,18 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, Save, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Save, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import {
   comply360QCKey,
   DEFAULT_QC_CONFIG,
@@ -30,6 +39,13 @@ import type { ProductionOrder } from '@/types/production-order';
 
 export function ProductionConfirmationEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
 
@@ -56,6 +72,25 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
   }, [entityCode]);
 
   const willQuarantine = !!(selectedPO?.qc_required && qcConfig.enableOutgoingInspection);
+
+  const formStateForMount = useMemo(
+    () => ({ poId, confirmDate, actualQty, destinationGodownId, batchNo }),
+    [poId, confirmDate, actualQty, destinationGodownId, batchNo],
+  );
+  const itemsForMount = useMemo(
+    () => selectedPO ? [{ item_name: selectedPO.output_item_name, qty: actualQty }] : [],
+    [selectedPO, actualQty],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'production-confirmation-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-production-confirmation',
+    userId: user?.id ?? undefined,
+    partyId: undefined,
+  });
 
   const yieldPct = selectedPO && selectedPO.planned_qty > 0
     ? (actualQty / selectedPO.planned_qty) * 100
@@ -103,13 +138,51 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-primary" />
-          Production Confirmation
-        </h1>
-        <p className="text-sm text-muted-foreground">Confirm actual FG output · auto-quarantine when QC enabled</p>
+      <DraftRecoveryDialog
+        formKey="production-confirmation-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-primary" />
+            Production Confirmation
+          </h1>
+          <p className="text-sm text-muted-foreground">Confirm actual FG output · auto-quarantine when QC enabled</p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="production-confirmation"
+          partyValue={null}
+          onUse={() => toast.info('Last voucher loaded')}
+        />
       </div>
+
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
+
+      <Sprint27d2Mount
+        formName="ProductionConfirmationEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Header</CardTitle></CardHeader>
@@ -210,6 +283,18 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
           Save and Confirm
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-production-confirmation"
+        voucherTypeName="Production Confirmation"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }

@@ -1,10 +1,11 @@
 /**
  * @file     MaterialIssueEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block C
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Material Issue Note (MIN) entry panel — issue RM/components against a released PO.
- *           Mirrors the ProductionOrderEntry layout pattern (header · cards · footer actions).
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,15 +13,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PackageMinus, Save, Send } from 'lucide-react';
+import { PackageMinus, Save, Send, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import type { ProductionOrder } from '@/types/production-order';
 
 export function MaterialIssueEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
 
@@ -39,6 +55,25 @@ export function MaterialIssueEntryPanel(): JSX.Element {
 
   const wipGodownId = selectedPO?.wip_godown_id ?? selectedPO?.output_godown_id ?? '';
   const wipGodownName = godowns.find(g => g.id === wipGodownId)?.name ?? 'WIP';
+
+  const formStateForMount = useMemo(
+    () => ({ poId, issueDate, departmentId, lineCount: Object.keys(lineQtys).length }),
+    [poId, issueDate, departmentId, lineQtys],
+  );
+  const itemsForMount = useMemo(
+    () => (selectedPO?.lines ?? []).map(l => ({ item_name: l.item_name, qty: lineQtys[l.id] ?? 0 })),
+    [selectedPO, lineQtys],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'material-issue-note-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-material-issue-note',
+    userId: user?.id ?? undefined,
+    partyId: undefined,
+  });
 
   const handleSave = (issue: boolean) => {
     if (!selectedPO) { toast.error('Select a Production Order'); return; }
@@ -101,13 +136,51 @@ export function MaterialIssueEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <PackageMinus className="h-5 w-5 text-primary" />
-          Material Issue Note
-        </h1>
-        <p className="text-sm text-muted-foreground">Issue RM/components against a released Production Order</p>
+      <DraftRecoveryDialog
+        formKey="material-issue-note-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <PackageMinus className="h-5 w-5 text-primary" />
+            Material Issue Note
+          </h1>
+          <p className="text-sm text-muted-foreground">Issue RM/components against a released Production Order</p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="material-issue-note"
+          partyValue={null}
+          onUse={() => toast.info('Last voucher loaded')}
+        />
       </div>
+
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
+
+      <Sprint27d2Mount
+        formName="MaterialIssueEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Header</CardTitle></CardHeader>
@@ -203,6 +276,18 @@ export function MaterialIssueEntryPanel(): JSX.Element {
           <Send className="h-4 w-4 mr-2" /> Save and Issue
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-material-issue-note"
+        voucherTypeName="Material Issue Note"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }

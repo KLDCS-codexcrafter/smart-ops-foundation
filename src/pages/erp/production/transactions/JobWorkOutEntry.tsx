@@ -1,9 +1,11 @@
 /**
  * @file     JobWorkOutEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block G
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Job Work Out Order — send RM/components to a sub-contractor.
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,11 +13,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, Save, Send, Plus, Trash2 } from 'lucide-react';
+import { Truck, Save, Send, Plus, Trash2, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { DEMO_VENDORS } from '@/data/demo-customers-vendors';
 import { createJobWorkOutOrder, sendJobWorkOutOrder } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrderLine } from '@/types/job-work-out-order';
@@ -35,6 +45,13 @@ const emptyLine = (): LineDraft => ({
 
 export function JobWorkOutEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
   const { items } = useInventoryItems();
@@ -52,6 +69,25 @@ export function JobWorkOutEntryPanel(): JSX.Element {
 
   const linkedPO = useMemo(() => orders.find(o => o.id === poId), [orders, poId]);
   const vendor = useMemo(() => vendors.find(v => v.partyCode === vendorId), [vendors, vendorId]);
+
+  const formStateForMount = useMemo(
+    () => ({ poId, vendorId, jwoDate, returnDate, lineCount: lines.length }),
+    [poId, vendorId, jwoDate, returnDate, lines.length],
+  );
+  const itemsForMount = useMemo(
+    () => lines.map(l => ({ item_name: l.item_name, qty: l.sent_qty })),
+    [lines],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'job-work-out-order-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-job-work-out-order',
+    userId: user?.id ?? undefined,
+    partyId: vendorId || undefined,
+  });
 
   const updateLine = (i: number, patch: Partial<LineDraft>) =>
     setLines(s => s.map((l, idx) => idx === i ? { ...l, ...patch } : l));
@@ -93,13 +129,51 @@ export function JobWorkOutEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Truck className="h-5 w-5 text-primary" />
-          Job Work Out Order
-        </h1>
-        <p className="text-sm text-muted-foreground">Send components to sub-contractor for processing</p>
+      <DraftRecoveryDialog
+        formKey="job-work-out-order-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Truck className="h-5 w-5 text-primary" />
+            Job Work Out Order
+          </h1>
+          <p className="text-sm text-muted-foreground">Send components to sub-contractor for processing</p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="job-work-out-order"
+          partyValue={vendorId || null}
+          onUse={() => toast.info('Last voucher loaded')}
+        />
       </div>
+
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
+
+      <Sprint27d2Mount
+        formName="JobWorkOutEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Header</CardTitle></CardHeader>
@@ -269,6 +343,18 @@ export function JobWorkOutEntryPanel(): JSX.Element {
           <Send className="h-4 w-4 mr-2" /> Save and Send
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-job-work-out-order"
+        voucherTypeName="Job Work Out Order"
+        defaultPartyType="vendor"
+        partyId={vendorId || null}
+        partyName={vendor?.partyName ?? null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }

@@ -1,9 +1,11 @@
 /**
  * @file     JobWorkReceiptEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block H
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Job Work Receipt — receive processed/finished goods from sub-contractor.
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,9 +14,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PackagePlus, Save, AlertTriangle } from 'lucide-react';
+import { PackagePlus, Save, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import {
   comply360QCKey,
   DEFAULT_QC_CONFIG,
@@ -29,6 +39,13 @@ import type { JobWorkOutOrder } from '@/types/job-work-out-order';
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { godowns } = useGodowns();
 
   const [jwoId, setJwoId] = useState<string>('');
@@ -54,6 +71,28 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
   }, [entityCode]);
 
   const anyQuarantine = selectedJWO?.lines.some(l => qcConfig.enableIncomingInspection && (lineQc[l.id] ?? false));
+
+  const formStateForMount = useMemo(
+    () => ({ jwoId, receiptDate, lineCount: Object.keys(lineRecv).length }),
+    [jwoId, receiptDate, lineRecv],
+  );
+  const itemsForMount = useMemo(
+    () => (selectedJWO?.lines ?? []).map(l => ({
+      item_name: l.expected_output_item_name,
+      qty: lineRecv[l.id] ?? 0,
+    })),
+    [selectedJWO, lineRecv],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'job-work-receipt-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-job-work-receipt',
+    userId: user?.id ?? undefined,
+    partyId: selectedJWO?.vendor_id ?? undefined,
+  });
 
   const handleSave = (confirm: boolean) => {
     if (!selectedJWO) { toast.error('Select a Job Work Out Order'); return; }
@@ -114,13 +153,51 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <PackagePlus className="h-5 w-5 text-primary" />
-          Job Work Receipt
-        </h1>
-        <p className="text-sm text-muted-foreground">Receive processed goods from sub-contractor</p>
+      <DraftRecoveryDialog
+        formKey="job-work-receipt-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <PackagePlus className="h-5 w-5 text-primary" />
+            Job Work Receipt
+          </h1>
+          <p className="text-sm text-muted-foreground">Receive processed goods from sub-contractor</p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="job-work-receipt"
+          partyValue={selectedJWO?.vendor_id ?? null}
+          onUse={() => toast.info('Last voucher loaded')}
+        />
       </div>
+
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
+
+      <Sprint27d2Mount
+        formName="JobWorkReceiptEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Header</CardTitle></CardHeader>
@@ -221,6 +298,18 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
           Save and Confirm
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-job-work-receipt"
+        voucherTypeName="Job Work Receipt"
+        defaultPartyType="vendor"
+        partyId={selectedJWO?.vendor_id ?? null}
+        partyName={selectedJWO?.vendor_name ?? null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }

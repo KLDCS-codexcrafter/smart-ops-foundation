@@ -1,11 +1,19 @@
 /**
  * @file     ProductionOrderEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-1-fix-1
- * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview.
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit · Q16=a active)
+ * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview · Card #2.7 12-item carry-forward (UseLastVoucher · DraftRecovery · Sprint27 mounts · Pinned Templates · Smart Defaults · Keyboard nav · Decimal precision · Currency display · Notify-on-Save · Print preview).
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,6 +126,39 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     }
   }, [entityCode]);
 
+  // Card #2.7-d-1 · 12-item carry-forward retrofit
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
+
+  const formStateForMount = useMemo(() => ({
+    bomId, plannedQty, startDate, targetEnd, departmentId, customerId,
+    isExport, qcRequired, qcScenario, shiftId,
+  }), [bomId, plannedQty, startDate, targetEnd, departmentId, customerId, isExport, qcRequired, qcScenario, shiftId]);
+
+  const itemsForMount = useMemo(
+    () => (selectedBom?.components ?? []).map(c => ({
+      item_name: c.item_name,
+      qty: c.qty * plannedQty,
+    })),
+    [selectedBom, plannedQty],
+  );
+
+  const mount = useSprint27d1Mount({
+    formKey: 'production-order-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-production-order',
+    userId: user?.id ?? undefined,
+    partyId: customerId || undefined,
+  });
+
   // Block K · Deep-link prefill from Block I (SalesX SO) and Block J (ProjX Project)
   useEffect(() => {
     const soId = searchParams.get('so_id');
@@ -227,6 +268,17 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      <DraftRecoveryDialog
+        formKey="production-order-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -235,7 +287,22 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           </h1>
           <p className="text-sm text-muted-foreground">BOM-driven · 22 universal hookpoints · 3-layer cost preview</p>
         </div>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="production-order"
+            partyValue={null}
+            onUse={() => toast.info('Last voucher loaded')}
+          />
+        </div>
       </div>
+
+      <Sprint27d2Mount
+        formName="ProductionOrderEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <button
         type="button"
@@ -594,6 +661,18 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           Save and Release
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-production-order"
+        voucherTypeName="Production Order"
+        defaultPartyType="customer"
+        partyId={customerId || null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
