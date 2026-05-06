@@ -1,10 +1,11 @@
 /**
  * @file     ProductionConfirmationEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block E
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Production Confirmation entry panel — confirm actual FG output against a PO.
- *           Single-output (3a-pre-2 · multi-output deferred to 3a-pre-2.5).
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,10 +14,18 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, Save, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Save, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import {
   comply360QCKey,
   DEFAULT_QC_CONFIG,
