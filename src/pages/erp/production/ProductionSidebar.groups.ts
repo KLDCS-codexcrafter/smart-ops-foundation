@@ -20,6 +20,7 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
       { id: 'tx-production-confirmation', label: 'Production Confirmation' },
       { id: 'tx-job-work-out', label: 'Job Work Out Order' },
       { id: 'tx-job-work-receipt', label: 'Job Work Receipt' },
+      { id: 'tx-job-card-entry', label: 'Job Card Entry' },
     ],
   },
   {
@@ -31,6 +32,7 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
       { id: 'rpt-plan-actual-rolling', label: 'Plan vs Actual Rolling' },
       { id: 'rpt-itc04-export', label: 'ITC-04 Export' },
       { id: 'rpt-wip', label: 'WIP Report' },
+      { id: 'rpt-daily-work-register', label: 'Daily Work Register' },
     ],
   },
 ];
