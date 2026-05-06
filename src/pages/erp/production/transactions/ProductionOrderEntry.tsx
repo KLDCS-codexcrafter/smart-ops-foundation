@@ -43,7 +43,7 @@ import {
   computeMasterCost,
 } from '@/lib/production-engine';
 import type { Bom } from '@/types/bom';
-import type { QCScenario, SalesOrderLineMapping } from '@/types/production-order';
+import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis } from '@/types/production-order';
 
 const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
 const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
