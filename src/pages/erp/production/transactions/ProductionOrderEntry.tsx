@@ -661,6 +661,18 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           Save and Release
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-production-order"
+        voucherTypeName="Production Order"
+        defaultPartyType="customer"
+        partyId={customerId || null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
