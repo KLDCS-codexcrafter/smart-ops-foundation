@@ -17,4 +17,6 @@ export type ProductionModule =
   | 'rpt-plan-actual-rolling'
   | 'rpt-itc04-export'
   | 'rpt-wip'
-  | 'rpt-daily-work-register';
+  | 'rpt-daily-work-register'
+  | 'rpt-capacity-planning'
+  | 'rpt-oee-dashboard';
