@@ -302,6 +302,13 @@ export function createProductionOrder(
   all.push(po);
   writePOs(input.entity_id, all);
 
+  // Block J · D-551 · Q14=a — back-link plan(s) → PO (M:N)
+  const planIds = po.linked_production_plan_ids ?? [];
+  for (const pid of planIds) {
+    const plan = getProductionPlanById(input.entity_id, pid);
+    if (plan) linkProductionOrder(plan, po.id, user);
+  }
+
   return po;
 }
 
