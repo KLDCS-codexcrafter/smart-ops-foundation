@@ -310,6 +310,13 @@ export interface ProductionConfig {
   requireSubstitutionApproval: boolean;
   enableCapacityCheck: boolean;
   enableExportLineFlag: boolean;
+
+  // Sprint 3a-pre-3 · Block K · v6.5 closure + variance + ITC-04
+  varianceThresholdPct: number;
+  enableMakerCheckerClosure: boolean;
+  enableITC04Export: boolean;
+  mobileOfflineQueueEnabled: boolean;
+  closureAutoFreezeCost: boolean;
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -366,4 +373,11 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   requireSubstitutionApproval: true,
   enableCapacityCheck: true,
   enableExportLineFlag: false,
+
+  // Sprint 3a-pre-3 · v6.5
+  varianceThresholdPct: 10,
+  enableMakerCheckerClosure: true,
+  enableITC04Export: true,
+  mobileOfflineQueueEnabled: false,
+  closureAutoFreezeCost: true,
 };

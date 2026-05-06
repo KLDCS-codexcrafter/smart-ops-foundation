@@ -17,6 +17,9 @@ import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
 import { JobWorkReceiptEntryPanel } from './transactions/JobWorkReceiptEntry';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { ProductionPlanRegisterPanel } from './reports/ProductionPlanRegister';
+import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDashboard';
+import { PlanActualRollingPanel } from './reports/PlanActualRolling';
+import { ITC04ExportPanel } from './reports/ITC04Export';
 import { WIPReportPanel } from './reports/WIPReport';
 import type { ProductionModule } from './ProductionSidebar.types';
 
@@ -51,6 +54,9 @@ export default function ProductionPage(): JSX.Element {
       case 'tx-job-work-receipt': return <JobWorkReceiptEntryPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-production-plan-register': return <ProductionPlanRegisterPanel />;
+      case 'rpt-variance-dashboard': return <ProductionVarianceDashboardPanel />;
+      case 'rpt-plan-actual-rolling': return <PlanActualRollingPanel />;
+      case 'rpt-itc04-export': return <ITC04ExportPanel />;
       case 'rpt-wip': return <WIPReportPanel />;
       default: return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

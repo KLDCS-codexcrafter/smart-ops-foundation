@@ -195,6 +195,30 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            v6.5 · Variance + Closure + Mobile + ITC-04
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          {sw('enableMakerCheckerClosure', 'Maker-Checker on PO Closure (Q19=b)')}
+          {sw('closureAutoFreezeCost', 'Freeze cost_structure on close')}
+          {sw('enableITC04Export', 'ITC-04 Quarterly Export (Q20=c)')}
+          {sw('mobileOfflineQueueEnabled', 'Mobile Offline Queue (PWA)')}
+          <div className="flex items-center justify-between py-1.5 col-span-2">
+            <Label className="text-sm">Variance Threshold % (per-component breach)</Label>
+            <Input
+              type="number"
+              className="font-mono w-24"
+              value={config.varianceThresholdPct}
+              onChange={(e) => update('varianceThresholdPct', Number(e.target.value))}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
         ⓘ Resources · Mobile · Printing · Approval · Multi-BU · Visibility flags TODO 3a-pre-2 expand to all 52 flags.
       </div>

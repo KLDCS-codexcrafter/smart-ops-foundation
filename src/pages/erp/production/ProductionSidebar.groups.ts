@@ -27,6 +27,9 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
     modules: [
       { id: 'rpt-production-order-register', label: 'Production Order Register' },
       { id: 'rpt-production-plan-register', label: 'Production Plan Register' },
+      { id: 'rpt-variance-dashboard', label: 'Variance Dashboard (7-way)' },
+      { id: 'rpt-plan-actual-rolling', label: 'Plan vs Actual Rolling' },
+      { id: 'rpt-itc04-export', label: 'ITC-04 Export' },
       { id: 'rpt-wip', label: 'WIP Report' },
     ],
   },
