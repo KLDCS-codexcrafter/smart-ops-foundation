@@ -40,7 +40,7 @@ export default function ProductionPage(): JSX.Element {
 
   const render = (): JSX.Element => {
     switch (active) {
-      case 'welcome': return <ProductionWelcome onNavigate={(m) => setActive(m as ProductionModule)} />;
+      case 'welcome': return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
       case 'tx-production-order-entry': return <ProductionOrderEntryPanel />;
       case 'tx-material-issue': return <MaterialIssueEntryPanel />;
       case 'tx-production-confirmation': return <ProductionConfirmationEntryPanel />;
@@ -57,7 +57,7 @@ export default function ProductionPage(): JSX.Element {
       <div className="min-h-screen flex flex-col w-full bg-background">
         <ERPHeader />
         <div className="flex-1 flex w-full overflow-hidden">
-          <ProductionSidebar active={active} onNavigate={setActive} />
+          <ProductionSidebar active={active} onNavigate={navigate} />
           <main className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">{render()}</ScrollArea>
           </main>
