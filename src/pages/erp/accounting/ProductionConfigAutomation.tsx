@@ -132,6 +132,33 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      {/* Sprint 3b-pre-1 · v6.5 · Card 3b QC Integration · Q45=c polymorphic */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">v6.5 · Card 3b QC Integration</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label className="text-sm">QC Auto-Create Mode (Q45)</Label>
+            <RadioGroup
+              value={config.qcAutoCreateMode ?? 'config_per_scenario'}
+              onValueChange={v => update('qcAutoCreateMode', v as ProductionConfig['qcAutoCreateMode'])}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="always" id="qcam-always" />
+                <Label htmlFor="qcam-always" className="text-xs">Always · auto-create on every completion (qc_required=true)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="manual" id="qcam-manual" />
+                <Label htmlFor="qcam-manual" className="text-xs">Manual · operator triggers via UI · no auto-create</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="config_per_scenario" id="qcam-cps" />
+                <Label htmlFor="qcam-cps" className="text-xs">Per-scenario · auto for internal/third-party · manual for customer/export</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader><CardTitle className="text-base">Doc Numbering</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
