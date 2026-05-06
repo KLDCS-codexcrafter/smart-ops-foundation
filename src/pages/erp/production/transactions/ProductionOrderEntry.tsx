@@ -28,6 +28,8 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { useProductionPlans } from '@/hooks/useProductionPlans';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useProjects } from '@/hooks/useProjects';
 import { useOrders } from '@/hooks/useOrders';
 import { useShifts } from '@/hooks/usePayHubMasters3';
