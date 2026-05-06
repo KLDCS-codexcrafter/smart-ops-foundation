@@ -541,7 +541,7 @@ export function ProductionPlanEntryPanel(): JSX.Element {
         </Button>
       </div>
 
-      <Sprint27eMount entityCode={entityCode} formName="ProductionPlanEntry" />
+      <Sprint27eMount entityCode={entityCode} />
     </div>
   );
 }
