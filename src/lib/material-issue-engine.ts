@@ -13,7 +13,6 @@
 import type {
   MaterialIssueNote,
   MaterialIssueLine,
-  MaterialIssueStatus,
 } from '@/types/material-issue-note';
 import { materialIssueNotesKey } from '@/types/material-issue-note';
 import type { ProductionOrder } from '@/types/production-order';
