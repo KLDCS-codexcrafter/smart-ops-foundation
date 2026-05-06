@@ -283,6 +283,18 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
           Save and Confirm
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-production-confirmation"
+        voucherTypeName="Production Confirmation"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
