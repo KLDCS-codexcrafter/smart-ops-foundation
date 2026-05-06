@@ -23,14 +23,9 @@ import {
 import {
   createJobWorkReceipt,
   confirmJobWorkReceipt,
-  listJobWorkOutOrders,
 } from '@/lib/job-work-receipt-engine';
-import { listJobWorkOutOrders as listJWOExt } from '@/lib/job-work-out-engine';
+import { listJobWorkOutOrders } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrder } from '@/types/job-work-out-order';
-
-// keep listJobWorkOutOrders imported reference for tree-shake clarity; use canonical export
-const listJWOs = listJWOExt;
-void listJobWorkOutOrders;
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();

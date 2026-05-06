@@ -168,7 +168,7 @@ export function JobWorkOutEntryPanel(): JSX.Element {
                         item_id: v,
                         item_code: it?.code ?? '',
                         item_name: it?.name ?? '',
-                        uom: it?.base_uom ?? 'NOS',
+                        uom: it?.primary_uom_symbol ?? 'NOS',
                       });
                     }}
                   >
@@ -231,7 +231,7 @@ export function JobWorkOutEntryPanel(): JSX.Element {
                         expected_output_item_id: v,
                         expected_output_item_code: it?.code ?? '',
                         expected_output_item_name: it?.name ?? '',
-                        expected_output_uom: it?.base_uom ?? 'NOS',
+                        expected_output_uom: it?.primary_uom_symbol ?? 'NOS',
                       });
                     }}
                   >
