@@ -34,7 +34,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const config = useProductionConfig();
   const { boms } = useBOM(entityCode);
-  const items = useInventoryItems();
+  const { items } = useInventoryItems();
 
   const [bomId, setBomId] = useState<string>('');
   const [plannedQty, setPlannedQty] = useState<number>(1);
