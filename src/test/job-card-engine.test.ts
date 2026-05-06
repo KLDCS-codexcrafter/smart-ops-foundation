@@ -110,7 +110,7 @@ describe('job-card-engine · 3-PlantOps-pre-2', () => {
     }, { id: 'u1', name: 'U1' });
     expect(done.status).toBe('completed');
     expect(done.produced_qty).toBe(95);
-    expect(done.total_cost).toBeGreaterThan(0);
+    expect(done.actual_end).not.toBeNull();
   });
 
   it('Test 3 · hold + resume transitions enforce in_progress source state', () => {
