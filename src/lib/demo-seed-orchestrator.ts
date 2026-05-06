@@ -230,7 +230,8 @@ export function seedEntityDemoData(
     }
   } catch { /* silent */ }
 
-  // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
+  // Card 3a Production demo seeds (Sprint T-Phase-1.3-3a-pre-1 · Block I · D-509)
+  safeSetArray(productionOrdersKey(entityCode), getDemoProductionData(entityCode));
   // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.
   const orderData = DEMO_ORDERS.map(o => ({ ...o, entity_id: entityCode }));
   safeSetArray(`erp_orders_${entityCode}`, orderData);
