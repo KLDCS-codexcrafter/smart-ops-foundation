@@ -15,6 +15,8 @@ import { MaterialIssueEntryPanel } from './transactions/MaterialIssueEntry';
 import { ProductionConfirmationEntryPanel } from './transactions/ProductionConfirmationEntry';
 import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
 import { JobWorkReceiptEntryPanel } from './transactions/JobWorkReceiptEntry';
+import { JobCardEntryPanel } from './transactions/JobCardEntry';
+import { DailyWorkRegisterReportPanel } from './reports/DailyWorkRegisterReport';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { ProductionPlanRegisterPanel } from './reports/ProductionPlanRegister';
 import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDashboard';
@@ -52,6 +54,8 @@ export default function ProductionPage(): JSX.Element {
       case 'tx-production-confirmation': return <ProductionConfirmationEntryPanel />;
       case 'tx-job-work-out': return <JobWorkOutEntryPanel />;
       case 'tx-job-work-receipt': return <JobWorkReceiptEntryPanel />;
+      case 'tx-job-card-entry': return <JobCardEntryPanel />;
+      case 'rpt-daily-work-register': return <DailyWorkRegisterReportPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-production-plan-register': return <ProductionPlanRegisterPanel />;
       case 'rpt-variance-dashboard': return <ProductionVarianceDashboardPanel />;
