@@ -50,6 +50,8 @@ export function getDemoProductionPlans(entityCode: string): ProductionPlan[] {
     status_history: [],
     capacity_check_status: 'not_run',
     capacity_warnings: [],
+    capacity_check_run_at: null,
+    capacity_check_details: {},
     notes: '',
     created_at: now,
     created_by: 'seed',
