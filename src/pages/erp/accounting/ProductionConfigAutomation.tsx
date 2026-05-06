@@ -301,6 +301,80 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      {/* Sprint 3-PlantOps-pre-3b · v6.5 · Wastage + Scheduling · D-612 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            v6.5 · Wastage + Scheduling
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-sm">Default Wastage Taxonomy (Q36=ALL polymorphic)</Label>
+            <RadioGroup
+              className="mt-2"
+              value={config.defaultWastageTaxonomy}
+              onValueChange={v => update('defaultWastageTaxonomy', v as ProductionConfig['defaultWastageTaxonomy'])}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="6_reason" id="wt-6r" />
+                <Label htmlFor="wt-6r" className="text-xs">6-Reason (direct JC values)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="12_category" id="wt-12c" />
+                <Label htmlFor="wt-12c" className="text-xs">12-Category (Lean 6BL + TIM WOODS superset)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="template_driven" id="wt-tpl" />
+                <Label htmlFor="wt-tpl" className="text-xs">Template-Driven (per factory)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div>
+            <Label className="text-sm">Default Scheduling Mode (Q38=ALL polymorphic)</Label>
+            <RadioGroup
+              className="mt-2"
+              value={config.defaultSchedulingMode}
+              onValueChange={v => update('defaultSchedulingMode', v as ProductionConfig['defaultSchedulingMode'])}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="view_only" id="sm-vo" />
+                <Label htmlFor="sm-vo" className="text-xs">View Only</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="click_to_reschedule" id="sm-cr" />
+                <Label htmlFor="sm-cr" className="text-xs">Click to Reschedule</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">Enable Scheduling Conflict Detection</Label>
+            <Switch
+              checked={config.enableSchedulingConflictDetection}
+              onCheckedChange={v => update('enableSchedulingConflictDetection', v)}
+            />
+          </div>
+
+          <div>
+            <Label className="text-xs">Scheduling Date Range Default</Label>
+            <Select
+              value={config.schedulingDateRangeDefault}
+              onValueChange={v => update('schedulingDateRangeDefault', v as ProductionConfig['schedulingDateRangeDefault'])}
+            >
+              <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">7 days</SelectItem>
+                <SelectItem value="30d">30 days</SelectItem>
+                <SelectItem value="90d">90 days</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
         ⓘ Resources · Mobile · Printing · Approval · Multi-BU · Visibility flags TODO 3a-pre-2 expand to all 52 flags.
       </div>
