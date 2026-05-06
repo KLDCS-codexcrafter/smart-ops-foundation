@@ -5,6 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { buildGanttData, rescheduleProductionOrder } from '@/lib/scheduling-engine';
 import type { ProductionOrder } from '@/types/production-order';
 import type { ProductionPlan } from '@/types/production-plan';
+import { emptyCostStructure } from '@/types/production-cost';
 
 function mkPO(over: Partial<ProductionOrder>): ProductionOrder {
   return {
@@ -26,7 +27,7 @@ function mkPO(over: Partial<ProductionOrder>): ProductionOrder {
     qc_required: false, qc_scenario: null, linked_test_report_ids: [], production_plan_id: null,
     shift_id: null, production_team_id: 'm1',
     export_destination_country: null, export_regulatory_body: null, linked_letter_of_credit_id: null,
-    cost_structure: { material_cost: 0, labour_cost: 0, machine_cost: 0, overhead_cost: 0, total_cost: 0 } as ProductionOrder['cost_structure'],
+    cost_structure: emptyCostStructure(),
     lines: [],
     outputs: [],
     linked_production_plan_ids: [],
