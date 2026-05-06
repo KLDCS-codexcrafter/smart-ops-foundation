@@ -28,7 +28,12 @@ export function buildWastageSourceRows(input: BuildWastageSourceRowsInput): Wast
 
   for (const jc of job_cards) {
     if (factory_id && jc.factory_id !== factory_id) continue;
-    if (jc.wastage_qty <= 0 && jc.status !== 'on_hold') continue;
+    const hasAutoCandidate =
+      jc.status === 'on_hold' ||
+      jc.produced_qty > jc.planned_qty * 1.1 ||
+      jc.rejected_qty > jc.planned_qty * 0.1 ||
+      (jc.actual_start && jc.actual_end);
+    if (jc.wastage_qty <= 0 && !hasAutoCandidate) continue;
 
     const machine = machines.find(m => m.id === jc.machine_id);
     const valuePerQty = (machine?.hourly_run_cost ?? 0) / 8;
