@@ -2,35 +2,12 @@
  * FactoryContext.tsx — Global Factory selection state (D-574)
  * Sprint T-Phase-1.3-3-PlantOps-pre-1 · adapted from craft-company-canvas
  */
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import type { Factory, ManufacturingConfig } from '@/types/factory';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useFactories } from '@/hooks/useFactories';
-import { getTemplateById, type ManufacturingTemplate } from '@/config/manufacturing-templates';
+import { getTemplateById } from '@/config/manufacturing-templates';
+import { FactoryContext } from '@/contexts/FactoryContext.types';
+import type { FactoryContextValue } from '@/contexts/FactoryContext.types';
 
-interface FactoryContextValue {
-  selectedFactoryId: string | null;
-  selectedFactory: Factory | null;
-  factoryConfig: ManufacturingConfig | null;
-  template: ManufacturingTemplate | null;
-
-  configuredFactories: Factory[];
-  unconfiguredFactories: Factory[];
-  allFactories: Factory[];
-
-  isLoading: boolean;
-
-  selectFactory: (factoryId: string) => void;
-  clearSelection: () => void;
-  refreshFactories: () => void;
-
-  isModuleEnabled: (moduleKey: string) => boolean;
-  getPrimaryKPIs: () => string[];
-  getSecondaryKPIs: () => string[];
-  getQCParameters: () => ManufacturingTemplate['qc_parameters'];
-  getComplianceStandards: () => string[];
-}
-
-const FactoryContext = createContext<FactoryContextValue | undefined>(undefined);
 const STORAGE_KEY = 'erp_selected_factory_id';
 
 export function FactoryProvider({ children }: { children: React.ReactNode }) {
@@ -100,12 +77,3 @@ export function FactoryProvider({ children }: { children: React.ReactNode }) {
   return <FactoryContext.Provider value={value}>{children}</FactoryContext.Provider>;
 }
 
-export function useFactoryContext(): FactoryContextValue {
-  const ctx = useContext(FactoryContext);
-  if (!ctx) throw new Error('useFactoryContext must be used within FactoryProvider');
-  return ctx;
-}
-
-export function useOptionalFactoryContext(): FactoryContextValue | null {
-  return useContext(FactoryContext) ?? null;
-}
