@@ -40,7 +40,7 @@ export function getDemoMaterialIssues(entityCode: string): MaterialIssueNote[] {
       { id: 'mis-1', from_status: null, to_status: 'draft', changed_by_id: 'seed', changed_by_name: 'Demo Seed', changed_at: ts, note: 'Created' },
       { id: 'mis-2', from_status: 'draft', to_status: 'issued', changed_by_id: 'seed', changed_by_name: 'Demo Seed', changed_at: ts, note: 'Issued' },
     ],
-    notes: 'Demo MIN', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed',
+    notes: 'Demo MIN', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed', qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false,
   }];
 }
 
@@ -71,7 +71,7 @@ export function getDemoProductionConfirmations(entityCode: string): ProductionCo
       { id: 'pcs-1', from_status: null, to_status: 'draft', changed_by_id: 'seed', changed_by_name: 'Demo Seed', changed_at: ts, note: 'Created' },
       { id: 'pcs-2', from_status: 'draft', to_status: 'confirmed', changed_by_id: 'seed', changed_by_name: 'Demo Seed', changed_at: ts, note: 'Confirmed' },
     ],
-    notes: 'Demo PC', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed',
+    notes: 'Demo PC', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed', linked_test_report_ids: [],
   }];
 }
 
@@ -137,6 +137,6 @@ export function getDemoJobWorkReceipts(entityCode: string): JobWorkReceipt[] {
     status_history: [
       { id: 'jwrs-1', from_status: null, to_status: 'draft', changed_by_id: 'seed', changed_by_name: 'Demo Seed', changed_at: ts, note: 'Created' },
     ],
-    notes: 'Demo JWR', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed',
+    notes: 'Demo JWR', created_at: ts, created_by: 'seed', updated_at: ts, updated_by: 'seed', linked_test_report_ids: [], qc_scenario: null,
   }];
 }
