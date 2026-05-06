@@ -47,20 +47,72 @@ export function computeRateVariance(
   };
 }
 
-// ─── 2. EFFICIENCY VARIANCE (Phase 2 stub) ────────────────────────
+// ─── 2. EFFICIENCY VARIANCE · ACTIVATED in 3-PlantOps-pre-3a (D-597) ──
+import { listJobCards } from '@/lib/job-card-engine';
+
 export function computeEfficiencyVariance(
-  _po: ProductionOrder,
+  po: ProductionOrder,
   pcs: ProductionConfirmation[],
-  _thresholdPct: number,
+  thresholdPct: number,
 ): VarianceComponent {
+  const jobCards = listJobCards(po.entity_id).filter(jc =>
+    jc.production_order_id === po.id && jc.status === 'completed'
+  );
+
+  if (jobCards.length === 0) {
+    return {
+      type: 'efficiency',
+      amount: 0, pct: 0,
+      is_unfavourable: false,
+      threshold_breached: false,
+      contributing_factors: ['No completed Job Cards yet · efficiency variance N/A'],
+      drilldown_data: { pcs_count: pcs.length, jc_count: 0, status: 'no_data' },
+    };
+  }
+
+  const actualHours = jobCards.reduce((sum, jc) => {
+    if (!jc.actual_start || !jc.actual_end) return sum;
+    return sum + (new Date(jc.actual_end).getTime() - new Date(jc.actual_start).getTime()) / (1000 * 60 * 60);
+  }, 0);
+
+  const totalPlannedQty = po.outputs.reduce((s, o) => s + (o.planned_qty ?? 0), 0);
+  // Phase 1 proxy: 10 units/hour benchmark · Phase 2 derives from machine.rated_capacity_per_hour
+  const stdHours = totalPlannedQty / 10;
+
+  const avgHourlyRate = jobCards.reduce((sum, jc) => {
+    const hours = jc.actual_start && jc.actual_end
+      ? (new Date(jc.actual_end).getTime() - new Date(jc.actual_start).getTime()) / (1000 * 60 * 60)
+      : 0;
+    return sum + (hours > 0 ? jc.labour_cost / hours : 0);
+  }, 0) / Math.max(1, jobCards.length);
+
+  const hoursDelta = actualHours - stdHours;
+  const amount = round2(hoursDelta * avgHourlyRate);
+  const baseline = po.cost_structure.master.direct_labour || po.cost_structure.master.total || 1;
+  const pct = round2((amount / baseline) * 100);
+
+  const factors: string[] = [];
+  if (hoursDelta > 0) factors.push(`${round2(hoursDelta)} hours over std · cost ₹${amount}`);
+  else if (hoursDelta < 0) factors.push(`${round2(Math.abs(hoursDelta))} hours under std · saving ₹${Math.abs(amount)}`);
+  else factors.push('Hours matched std · no efficiency variance');
+  factors.push(`${jobCards.length} Job Card(s) consumed · avg rate ₹${round2(avgHourlyRate)}/hr`);
+
   return {
     type: 'efficiency',
-    amount: 0,
-    pct: 0,
-    is_unfavourable: false,
-    threshold_breached: false,
-    contributing_factors: ['Labour-hour capture pending · Phase 2 active'],
-    drilldown_data: { pcs_count: pcs.length, status: 'phase_2_pending' },
+    amount,
+    pct,
+    is_unfavourable: amount > 0,
+    threshold_breached: Math.abs(pct) > thresholdPct,
+    contributing_factors: factors,
+    drilldown_data: {
+      pcs_count: pcs.length,
+      jc_count: jobCards.length,
+      actual_hours: round2(actualHours),
+      std_hours: round2(stdHours),
+      hours_delta: round2(hoursDelta),
+      avg_hourly_rate: round2(avgHourlyRate),
+      status: 'computed',
+    },
   };
 }
 
