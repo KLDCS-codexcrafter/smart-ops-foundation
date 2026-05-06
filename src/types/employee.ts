@@ -207,6 +207,15 @@ export interface Employee {
   // "parent-root" | company.id | subsidiary.id | branch.id
   // Reads as undefined on old records — treat as "parent-root".
   status: 'active' | 'inactive' | 'on_notice' | 'relieved';
+
+  // ── Production extension (Sprint T-Phase-1.3-3-PlantOps-pre-2 · Q23 + Q29=a · D-582) ──
+  is_production_operator: boolean;
+  certified_machine_ids: string[];
+  production_skills: string[];
+  hourly_rate_production: number;
+  current_machine_id: string | null;
+  production_team_id: string | null;
+
   created_at: string;
   updated_at: string;
 }
