@@ -19,4 +19,6 @@ export type ProductionModule =
   | 'rpt-wip'
   | 'rpt-daily-work-register'
   | 'rpt-capacity-planning'
-  | 'rpt-oee-dashboard';
+  | 'rpt-oee-dashboard'
+  | 'rpt-wastage-dashboard'
+  | 'rpt-scheduling-board';

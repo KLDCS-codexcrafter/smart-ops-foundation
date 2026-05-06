@@ -19,6 +19,8 @@ import { JobCardEntryPanel } from './transactions/JobCardEntry';
 import { DailyWorkRegisterReportPanel } from './reports/DailyWorkRegisterReport';
 import { CapacityPlanningDashboardPanel } from './reports/CapacityPlanningDashboard';
 import { OEEDashboardPanel } from './reports/OEEDashboard';
+import { WastageDashboardPanel } from './reports/WastageDashboard';
+import { SchedulingBoardPanel } from './reports/SchedulingBoard';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { ProductionPlanRegisterPanel } from './reports/ProductionPlanRegister';
 import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDashboard';
@@ -60,6 +62,8 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-daily-work-register': return <DailyWorkRegisterReportPanel />;
       case 'rpt-capacity-planning': return <CapacityPlanningDashboardPanel />;
       case 'rpt-oee-dashboard': return <OEEDashboardPanel />;
+      case 'rpt-wastage-dashboard': return <WastageDashboardPanel />;
+      case 'rpt-scheduling-board': return <SchedulingBoardPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-production-plan-register': return <ProductionPlanRegisterPanel />;
       case 'rpt-variance-dashboard': return <ProductionVarianceDashboardPanel />;

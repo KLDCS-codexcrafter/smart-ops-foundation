@@ -35,6 +35,8 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
       { id: 'rpt-daily-work-register', label: 'Daily Work Register' },
       { id: 'rpt-capacity-planning', label: 'Capacity Planning' },
       { id: 'rpt-oee-dashboard', label: 'OEE Dashboard' },
+      { id: 'rpt-wastage-dashboard', label: 'Wastage Dashboard' },
+      { id: 'rpt-scheduling-board', label: 'Scheduling Board' },
     ],
   },
 ];

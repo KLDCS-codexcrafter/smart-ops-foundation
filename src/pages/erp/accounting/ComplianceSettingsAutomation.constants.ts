@@ -332,6 +332,12 @@ export interface ProductionConfig {
   capacityCheckWarnThreshold: number;
   enforceCapacityCheckOnApproval: boolean;
   oeeWorldClassThreshold: number;
+
+  // Sprint 3-PlantOps-pre-3b · Block G · 4 NEW v6.5 Wastage + Scheduling flags
+  defaultWastageTaxonomy: '6_reason' | '12_category' | 'template_driven';
+  defaultSchedulingMode: 'view_only' | 'click_to_reschedule';
+  enableSchedulingConflictDetection: boolean;
+  schedulingDateRangeDefault: '7d' | '30d' | '90d';
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -410,4 +416,10 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   capacityCheckWarnThreshold: 75,
   enforceCapacityCheckOnApproval: true,
   oeeWorldClassThreshold: 85,
+
+  // Sprint 3-PlantOps-pre-3b · Block G · v6.5 Wastage + Scheduling
+  defaultWastageTaxonomy: '6_reason',
+  defaultSchedulingMode: 'view_only',
+  enableSchedulingConflictDetection: true,
+  schedulingDateRangeDefault: '30d',
 };
