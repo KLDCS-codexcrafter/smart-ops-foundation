@@ -9,7 +9,7 @@
 import { useMemo } from 'react';
 import { useCurrentUser } from './useCurrentUser';
 
-export type DeptCardArea = 'requestx' | 'procure360' | 'storehub';
+export type DeptCardArea = 'requestx' | 'procure360' | 'storehub' | 'production';
 
 export interface VisibilityResult {
   canViewAllDepartments: boolean;
