@@ -29,26 +29,7 @@ export interface ManufacturingTemplate {
   color_class: string;
 }
 
-const stub = (
-  id: string,
-  category: ManufacturingCategory,
-  name: string,
-  description: string,
-): ManufacturingTemplate => ({
-  id,
-  category,
-  name,
-  description,
-  default_costing_method: 'standard',
-  default_production_model: 'mts',
-  primary_kpis: ['oee'],
-  secondary_kpis: [],
-  enabled_modules: ['production-plan', 'job-card'],
-  qc_parameters: [],
-  compliance_standards: [],
-  icon: 'Factory',
-  color_class: 'bg-muted',
-});
+// 27 templates fully populated · pre-2 expansion completed all stubs.
 
 export const MANUFACTURING_TEMPLATES: ManufacturingTemplate[] = [
   // ── PRIMARY TYPE (6) ──
