@@ -218,7 +218,9 @@ export function generateDocNo(
     // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Stock Issue (Card #7 · matches 'GP'/'WB'/'QP'/'IR' precedent · audit-clean concession)
     | 'SI'
     // Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Stock Receipt Ack (Card #7 · matches lineage)
-    | 'SRA',
+    | 'SRA'
+    // Sprint T-Phase-1.3-3a-pre-1 · Production Order (Card 3a · 1 NEW concession · matches lineage)
+    | 'MO',
   entityCode: string,
 ): string {
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
