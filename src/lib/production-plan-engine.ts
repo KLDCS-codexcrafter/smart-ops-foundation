@@ -214,12 +214,73 @@ function transition(
   return updated;
 }
 
+export interface ApproveProductionPlanContext {
+  productionConfig: {
+    capacityThresholdMode: 'config_pct' | 'hard_absolute' | 'per_factory';
+    capacityCheckPassThreshold: number;
+    capacityCheckWarnThreshold: number;
+    enforceCapacityCheckOnApproval: boolean;
+  };
+  machines: import('@/types/machine').Machine[];
+  shifts: import('@/types/payroll-masters').Shift[];
+  pos: import('@/types/production-order').ProductionOrder[];
+  job_cards: import('@/types/job-card').JobCard[];
+  operators: import('@/types/employee').Employee[];
+  factories: import('@/types/factory').Factory[];
+}
+
+/**
+ * Q25=a · ACTIVATE capacity check on Plan APPROVAL (D-596)
+ * If context omitted · check skipped (back-compat).
+ */
 export function approveProductionPlan(
   plan: ProductionPlan,
   user: { id: string; name: string },
   note: string = '',
+  context?: ApproveProductionPlanContext,
 ): ProductionPlan {
-  return transition(plan, 'approved', user, note || 'Approved');
+  let capacity_check_status: CapacityCheckStatus = 'not_run';
+  let capacity_warnings: string[] = [];
+  let capacity_check_run_at: string | null = null;
+  let capacity_check_details: Record<string, unknown> = {};
+
+  if (context) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { runCapacityCheck } = require('@/lib/capacity-planning-engine') as typeof import('@/lib/capacity-planning-engine');
+    const result = runCapacityCheck(plan, {
+      machines: context.machines,
+      shifts: context.shifts,
+      pos: context.pos,
+      job_cards: context.job_cards,
+      operators: context.operators,
+      productionConfig: {
+        capacityThresholdMode: context.productionConfig.capacityThresholdMode,
+        capacityCheckPassThreshold: context.productionConfig.capacityCheckPassThreshold,
+        capacityCheckWarnThreshold: context.productionConfig.capacityCheckWarnThreshold,
+      },
+      factories: context.factories,
+    });
+
+    capacity_check_status = result.status;
+    capacity_warnings = result.warnings;
+    capacity_check_run_at = new Date().toISOString();
+    capacity_check_details = result.details as unknown as Record<string, unknown>;
+
+    if (result.status === 'fail' && context.productionConfig.enforceCapacityCheckOnApproval) {
+      throw new Error(`Capacity check FAILED · ${result.reason} · cannot approve plan`);
+    }
+  }
+
+  const transitioned = transition(plan, 'approved', user, note || 'Approved');
+  const updated: ProductionPlan = {
+    ...transitioned,
+    capacity_check_status,
+    capacity_warnings,
+    capacity_check_run_at,
+    capacity_check_details,
+  };
+  upsertPlan(plan.entity_id, updated);
+  return updated;
 }
 
 export function startProductionPlanExecution(
