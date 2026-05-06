@@ -123,4 +123,12 @@ describe('production-engine', () => {
     expect(resolveFGOutputGodown({ output_godown_id: 'g-fg', qc_required: true }, qcOn)).toBe('g-quarantine');
     expect(resolveFGOutputGodown({ output_godown_id: 'g-fg', qc_required: false }, qcOn)).toBe('g-fg');
   });
+
+  it('budget cost mirrors master cost when basis is master_standard (variance == 0)', () => {
+    const cfg = { ...DEFAULT_PRODUCTION_CONFIG, defaultCostingBasis: 'master_standard' as const };
+    const po = createProductionOrder(baseInput, mockBOM, mockItems, cfg, DEFAULT_QC_CONFIG, mockUser);
+    const released = releaseProductionOrder(po, mockBOM, mockItems, cfg, mockUser);
+    expect(released.cost_structure.budget.total).toBeCloseTo(released.cost_structure.master.total, 2);
+    expect(released.cost_structure.variance.master_vs_budget.threshold_breached).toBe(false);
+  });
 });
