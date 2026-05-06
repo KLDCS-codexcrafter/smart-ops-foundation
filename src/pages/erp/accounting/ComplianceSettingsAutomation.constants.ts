@@ -317,6 +317,14 @@ export interface ProductionConfig {
   enableITC04Export: boolean;
   mobileOfflineQueueEnabled: boolean;
   closureAutoFreezeCost: boolean;
+
+  // Sprint 3-PlantOps-pre-2 · Block K · 6 NEW Plant Operations flags
+  enableJobCard: boolean;
+  enableDailyWorkRegister: boolean;
+  enforceOperatorCertification: boolean;
+  enforceMachineCapabilityMatch: boolean;
+  enableMobileJobCardCapture: boolean;
+  enableShiftAggregation: boolean;
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -380,4 +388,12 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   enableITC04Export: true,
   mobileOfflineQueueEnabled: false,
   closureAutoFreezeCost: true,
+
+  // Sprint 3-PlantOps-pre-2 · Block K
+  enableJobCard: true,
+  enableDailyWorkRegister: true,
+  enforceOperatorCertification: false,
+  enforceMachineCapabilityMatch: false,
+  enableMobileJobCardCapture: true,
+  enableShiftAggregation: true,
 };
