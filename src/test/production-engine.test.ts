@@ -67,7 +67,12 @@ describe('production-engine', () => {
     expect(po.lines.length).toBe(2);
     expect(po.cost_structure.master.total).toBeGreaterThan(0);
 
-    const released = releaseProductionOrder(po, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    const released = releaseProductionOrder(po, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    // Block 4: real reservations persisted to localStorage
+    const resRaw = localStorage.getItem(`erp_stock_reservations_e1`);
+    expect(resRaw).not.toBeNull();
+    const reservations = JSON.parse(resRaw!) as Array<{ source_type: string; source_id: string }>;
+    expect(reservations.some(r => r.source_type === 'production_order' && r.source_id === po.id)).toBe(true);
     expect(released.status).toBe('released');
     expect(released.reservation_ids.length).toBe(po.lines.length);
     expect(released.cost_structure.budget_snapshot_at).not.toBeNull();
@@ -80,7 +85,7 @@ describe('production-engine', () => {
     expect(cancelled.status_history.length).toBe(2);
 
     const po2 = createProductionOrder(baseInput, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, DEFAULT_QC_CONFIG, mockUser);
-    const released = releaseProductionOrder(po2, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    const released = releaseProductionOrder(po2, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
     expect(() => cancelProductionOrder(released, mockUser, 'cant')).toThrow();
   });
 
@@ -117,5 +122,13 @@ describe('production-engine', () => {
     expect(resolveFGOutputGodown({ output_godown_id: 'g-fg', qc_required: false }, qcOff)).toBe('g-fg');
     expect(resolveFGOutputGodown({ output_godown_id: 'g-fg', qc_required: true }, qcOn)).toBe('g-quarantine');
     expect(resolveFGOutputGodown({ output_godown_id: 'g-fg', qc_required: false }, qcOn)).toBe('g-fg');
+  });
+
+  it('budget cost mirrors master cost when basis is standard_cost (variance == 0)', () => {
+    const cfg = { ...DEFAULT_PRODUCTION_CONFIG, defaultCostingBasis: 'standard_cost' as const };
+    const po = createProductionOrder(baseInput, mockBOM, mockItems, cfg, DEFAULT_QC_CONFIG, mockUser);
+    const released = releaseProductionOrder(po, mockBOM, mockItems, cfg, mockUser);
+    expect(released.cost_structure.budget.total).toBeCloseTo(released.cost_structure.master.total, 2);
+    expect(released.cost_structure.variance.master_vs_budget.threshold_breached).toBe(false);
   });
 });

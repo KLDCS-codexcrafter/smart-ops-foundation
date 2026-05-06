@@ -60,6 +60,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'finecore-gst-config', requiredCards: ['command-center'] },
       { id: 'finecore-compliance-settings', type: 'item', label: 'Compliance Settings & Automation',
         moduleId: 'finecore-compliance-settings', requiredCards: ['command-center'] },
+      { id: 'finecore-production-config', type: 'item', label: 'Production Configuration',
+        moduleId: 'finecore-production-config', requiredCards: ['command-center'] },
       { id: 'fc-divider-2', type: 'divider', label: '' },
       { id: 'finecore-currency', type: 'item', label: 'Currency Master',
         moduleId: 'finecore-currency', requiredCards: ['command-center'] },

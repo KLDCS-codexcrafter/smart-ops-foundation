@@ -23,7 +23,7 @@ export interface StockReservation {
   reserved_qty: number;
   level: ReservationLevel;
   status: ReservationStatus;
-  source_type: 'quotation' | 'sales_order' | 'supply_request_memo';
+  source_type: 'quotation' | 'sales_order' | 'supply_request_memo' | 'production_order';
   source_id: string;
   source_no: string;
   customer_name: string | null;
