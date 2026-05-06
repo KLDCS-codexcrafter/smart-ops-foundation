@@ -13,6 +13,7 @@ import {
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
   Receipt, FileSignature, DoorOpen,
+  Factory as FactoryIcon, Cog, Wrench,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
