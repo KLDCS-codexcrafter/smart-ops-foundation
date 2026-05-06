@@ -276,6 +276,18 @@ export function MaterialIssueEntryPanel(): JSX.Element {
           <Send className="h-4 w-4 mr-2" /> Save and Issue
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-material-issue-note"
+        voucherTypeName="Material Issue Note"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
