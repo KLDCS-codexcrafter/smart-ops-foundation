@@ -251,6 +251,10 @@ export function seedEntityDemoData(
   safeSetArray(productionOrdersKey(entityCode), getDemoProductionData(entityCode));
   // Card 3a Production Plans (Sprint T-Phase-1.3-3a-pre-2.5-fix-1 · Block 4 · D-555)
   safeSetArray(productionPlansKey(entityCode), getDemoProductionPlans(entityCode));
+  // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations seeds
+  safeSetArray(factoriesKey(entityCode), getDemoFactories(entityCode));
+  safeSetArray(workCentersKey(entityCode), getDemoWorkCenters(entityCode));
+  safeSetArray(machinesKey(entityCode), getDemoMachines(entityCode));
 
   // Card 3a-pre-2 production workflow demo seeds (Block M · MIN/PC/JWO/JWR)
   safeSetArray(materialIssueNotesKey(entityCode), getDemoMaterialIssues(entityCode));
