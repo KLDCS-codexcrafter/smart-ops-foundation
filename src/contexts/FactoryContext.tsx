@@ -7,7 +7,7 @@ import type { Factory, ManufacturingConfig } from '@/types/factory';
 import { useFactories } from '@/hooks/useFactories';
 import { getTemplateById, type ManufacturingTemplate } from '@/config/manufacturing-templates';
 
-interface FactoryContextValue {
+export interface FactoryContextValue {
   selectedFactoryId: string | null;
   selectedFactory: Factory | null;
   factoryConfig: ManufacturingConfig | null;
@@ -30,7 +30,7 @@ interface FactoryContextValue {
   getComplianceStandards: () => string[];
 }
 
-const FactoryContext = createContext<FactoryContextValue | undefined>(undefined);
+export const FactoryContext = createContext<FactoryContextValue | undefined>(undefined);
 const STORAGE_KEY = 'erp_selected_factory_id';
 
 export function FactoryProvider({ children }: { children: React.ReactNode }) {
@@ -100,12 +100,3 @@ export function FactoryProvider({ children }: { children: React.ReactNode }) {
   return <FactoryContext.Provider value={value}>{children}</FactoryContext.Provider>;
 }
 
-export function useFactoryContext(): FactoryContextValue {
-  const ctx = useContext(FactoryContext);
-  if (!ctx) throw new Error('useFactoryContext must be used within FactoryProvider');
-  return ctx;
-}
-
-export function useOptionalFactoryContext(): FactoryContextValue | null {
-  return useContext(FactoryContext) ?? null;
-}

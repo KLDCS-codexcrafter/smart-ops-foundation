@@ -5,7 +5,7 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Factory as FactoryIcon } from 'lucide-react';
-import { useOptionalFactoryContext } from '@/contexts/FactoryContext';
+import { useOptionalFactoryContext } from '@/hooks/useFactoryContext';
 
 export function FactoryPlantSelector(): JSX.Element | null {
   const ctx = useOptionalFactoryContext();
