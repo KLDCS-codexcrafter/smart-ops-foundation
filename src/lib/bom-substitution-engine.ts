@@ -192,8 +192,8 @@ export function revertSubstitution(
   const updatedLine: ProductionOrderLine = {
     ...line,
     item_id: line.original_bom_item_id,
-    item_code: original?.item_code ?? line.item_code,
-    item_name: original?.item_name ?? line.item_name,
+    item_code: original?.code ?? line.item_code,
+    item_name: original?.name ?? line.item_name,
     required_qty: line.original_bom_qty,
     is_substituted: false,
     substitute_reason: null,
