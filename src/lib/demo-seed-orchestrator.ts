@@ -51,6 +51,11 @@ import { getDemoProductionData } from '@/data/demo-production-data';
 import { productionOrdersKey } from '@/types/production-order';
 import { getDemoProductionPlans } from '@/data/demo-production-plan-data';
 import { productionPlansKey } from '@/types/production-plan';
+// Sprint T-Phase-1.3-3-PlantOps-pre-1
+import { getDemoFactories, getDemoWorkCenters, getDemoMachines } from '@/data/demo-factory-data';
+import { factoriesKey } from '@/types/factory';
+import { workCentersKey } from '@/types/work-center';
+import { machinesKey } from '@/types/machine';
 import {
   getDemoMaterialIssues,
   getDemoProductionConfirmations,
