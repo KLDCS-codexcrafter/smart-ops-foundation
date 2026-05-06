@@ -175,6 +175,8 @@ export interface ProductionOrder {
   qc_required: boolean;
   qc_scenario: QCScenario | null;
   linked_test_report_ids: string[];
+  // 🆕 D-615 · Card 3b 3b-pre-1 · Q47=c routing on FAIL (additive)
+  routed_to_quarantine: boolean;
   production_plan_id: string | null;
 
   shift_id: string | null;
