@@ -47,7 +47,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const { items } = useInventoryItems();
   const { projects } = useProjects(entityCode);
   const { orders } = useOrders(entityCode);
-  const shifts = useShifts();
+  const { shifts } = useShifts();
   const customers = DEMO_CUSTOMERS;
   const salesOrders = useMemo(
     () => orders.filter(o => o.base_voucher_type === 'Sales Order'),
