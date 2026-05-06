@@ -792,7 +792,7 @@ export function EmployeeMasterPanel() {
 
       {/* 8-Tab Form */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-8 w-full">
+        <TabsList className="grid grid-cols-9 w-full">
           <TabsTrigger value="identity" className="text-xs gap-1"><User className="h-3 w-3" /> Identity</TabsTrigger>
           <TabsTrigger value="employment" className="text-xs gap-1"><Briefcase className="h-3 w-3" /> Employment</TabsTrigger>
           <TabsTrigger value="contact" className="text-xs gap-1"><MapPin className="h-3 w-3" /> Contact</TabsTrigger>
@@ -801,6 +801,7 @@ export function EmployeeMasterPanel() {
           <TabsTrigger value="family" className="text-xs gap-1"><UsersIcon className="h-3 w-3" /> Family</TabsTrigger>
           <TabsTrigger value="documents" className="text-xs gap-1"><FileText className="h-3 w-3" /> Docs</TabsTrigger>
           <TabsTrigger value="additional" className="text-xs gap-1"><Settings2 className="h-3 w-3" /> Additional</TabsTrigger>
+          <TabsTrigger value="production" className="text-xs gap-1"><Factory className="h-3 w-3" /> Production</TabsTrigger>
         </TabsList>
 
         {/* TAB 1 — Identity */}
