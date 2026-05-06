@@ -95,11 +95,11 @@ describe('qa-inspection-production-bridge · 3b-pre-1', () => {
   });
 
   it('Test 2 · resolveQCParameters · Q46=c smart merge · template + plan + item override', () => {
-    const tpl: ManufacturingTemplate = {
+    const tpl = {
       id: 't1', name: 'T1', industry_segment: 'general', sub_segment: 'x',
       bom_unit: 'nos', tags: [],
       qc_parameters: [{ key: 'visual', label: 'Visual', type: 'pass_fail' }],
-    } as ManufacturingTemplate;
+    } as unknown as ManufacturingTemplate;
     const params: ItemQCParam[] = [{
       id: 'p1', item_id: 'i1', sl_no: 1, specification: 'Hardness',
       standard: '60 HRC', test_method: null, frequency: null,
