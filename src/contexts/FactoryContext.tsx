@@ -2,7 +2,7 @@
  * FactoryContext.tsx — Global Factory selection state (D-574)
  * Sprint T-Phase-1.3-3-PlantOps-pre-1 · adapted from craft-company-canvas
  */
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 import type { Factory, ManufacturingConfig } from '@/types/factory';
 import { useFactories } from '@/hooks/useFactories';
 import { getTemplateById, type ManufacturingTemplate } from '@/config/manufacturing-templates';
