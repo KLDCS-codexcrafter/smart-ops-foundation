@@ -70,19 +70,19 @@ export default function MobileJobWorkOutPage(): JSX.Element {
         raised_by_name: session?.display_name ?? 'Mobile User',
         lines: [{
           item_id: item.id,
-          item_code: item.item_code,
-          item_name: item.item_name,
-          uom: item.uom,
+          item_code: item.code,
+          item_name: item.name,
+          uom: item.primary_uom_symbol ?? '',
           sent_qty: qty,
           source_godown_id: sourceGodownId,
           source_godown_name: src?.name ?? '',
           job_work_godown_id: sourceGodownId,
           job_work_godown_name: src?.name ?? '',
           expected_output_item_id: item.id,
-          expected_output_item_code: item.item_code,
-          expected_output_item_name: item.item_name,
+          expected_output_item_code: item.code,
+          expected_output_item_name: item.name,
           expected_output_qty: qty,
-          expected_output_uom: item.uom,
+          expected_output_uom: item.primary_uom_symbol ?? '',
           job_work_rate: 0,
           remarks: 'Mobile entry',
         }],
@@ -109,7 +109,7 @@ export default function MobileJobWorkOutPage(): JSX.Element {
           <Select value={itemId} onValueChange={setItemId}>
             <SelectTrigger><SelectValue placeholder="Select item..." /></SelectTrigger>
             <SelectContent>
-              {itemOptions.map(i => <SelectItem key={i.id} value={i.id}>{i.item_code} · {i.item_name}</SelectItem>)}
+              {itemOptions.map(i => <SelectItem key={i.id} value={i.id}>{i.code} · {i.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
