@@ -18,7 +18,7 @@ import type {
   ProductionCostLayer,
   CostRateBasis,
 } from '@/types/production-cost';
-import type { Bom } from '@/types/bom';
+import type { Bom, BomComponentType } from '@/types/bom';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { QualiCheckConfig, ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { productionOrdersKey } from '@/types/production-order';
