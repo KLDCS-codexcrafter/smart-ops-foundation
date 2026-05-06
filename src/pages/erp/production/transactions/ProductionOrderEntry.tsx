@@ -132,6 +132,65 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     setLinkedPlanIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
+  // Block 1 (fix-1) · BOM Substitution UI · D-543
+  const { subs: itemSubstitutes } = useItemSubstitutes(entityCode);
+  const substitutionEnabled = config.enableBOMSubstitution !== false;
+  interface SubstitutionDraft {
+    bom_component_id: string;
+    reason: SubstituteReason;
+    notes: string;
+    approved?: ItemSubstitute;
+    freeForm?: { item_id: string; item_code: string; item_name: string; ratio: number };
+  }
+  const [substitutions, setSubstitutions] = useState<Record<string, SubstitutionDraft>>({});
+  const [openPopoverFor, setOpenPopoverFor] = useState<string | null>(null);
+  const [draftReason, setDraftReason] = useState<SubstituteReason>('stock_unavailable');
+  const [draftNotes, setDraftNotes] = useState<string>('');
+  const [draftFreeFormItemId, setDraftFreeFormItemId] = useState<string>('');
+  const [draftFreeFormRatio, setDraftFreeFormRatio] = useState<number>(1);
+
+  const applyApprovedDraft = (componentId: string, sub: ItemSubstitute): void => {
+    if (!draftNotes.trim()) { toast.error('Notes are required'); return; }
+    setSubstitutions(prev => ({
+      ...prev,
+      [componentId]: { bom_component_id: componentId, reason: draftReason, notes: draftNotes.trim(), approved: sub },
+    }));
+    setOpenPopoverFor(null);
+    setDraftNotes('');
+    toast.success(`Substitution staged: ${sub.substitute_item_name}`);
+  };
+
+  const applyFreeFormDraft = (componentId: string): void => {
+    if (!draftFreeFormItemId) { toast.error('Select a substitute item'); return; }
+    if (!draftNotes.trim()) { toast.error('Notes are required'); return; }
+    if (draftFreeFormRatio <= 0) { toast.error('Ratio must be positive'); return; }
+    const it = items.find(i => i.id === draftFreeFormItemId);
+    if (!it) return;
+    setSubstitutions(prev => ({
+      ...prev,
+      [componentId]: {
+        bom_component_id: componentId,
+        reason: draftReason,
+        notes: draftNotes.trim(),
+        freeForm: { item_id: it.id, item_code: it.code, item_name: it.name, ratio: draftFreeFormRatio },
+      },
+    }));
+    setOpenPopoverFor(null);
+    setDraftNotes('');
+    setDraftFreeFormItemId('');
+    setDraftFreeFormRatio(1);
+    toast.success(`Free-form substitution staged: ${it.name}`);
+  };
+
+  const revertDraft = (componentId: string): void => {
+    setSubstitutions(prev => {
+      const { [componentId]: _, ...rest } = prev;
+      void _;
+      return rest;
+    });
+    toast.success('Substitution removed');
+  };
+
   const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
   const addOutput = (): void => {
