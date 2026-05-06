@@ -1,6 +1,6 @@
 /**
  * @file     ProductionOrderEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-1
+ * @sprint   T-Phase-1.3-3a-pre-1-fix-1
  * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview.
  */
 import { useMemo, useState } from 'react';
@@ -13,11 +13,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronRight, Factory, Save } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { useProjects } from '@/hooks/useProjects';
+import { useOrders } from '@/hooks/useOrders';
+import { useShifts } from '@/hooks/usePayHubMasters3';
+import { DEMO_CUSTOMERS } from '@/data/demo-customers-vendors';
 import {
   comply360QCKey,
   DEFAULT_QC_CONFIG,
@@ -29,13 +34,27 @@ import {
   computeMasterCost,
 } from '@/lib/production-engine';
 import type { Bom } from '@/types/bom';
+import type { QCScenario, SalesOrderLineMapping } from '@/types/production-order';
+
+const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
+const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
+const REG_BODY_OPTIONS = ['FDA', 'CE', 'WHO-GMP', 'BIS', 'CDSCO', 'PMDA', 'NMPA', 'OTHER'];
 
 export function ProductionOrderEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const config = useProductionConfig();
   const { boms } = useBOM(entityCode);
   const { items } = useInventoryItems();
+  const { projects } = useProjects(entityCode);
+  const { orders } = useOrders(entityCode);
+  const shifts = useShifts();
+  const customers = DEMO_CUSTOMERS;
+  const salesOrders = useMemo(
+    () => orders.filter(o => o.base_voucher_type === 'Sales Order'),
+    [orders],
+  );
 
+  // Order details
   const [bomId, setBomId] = useState<string>('');
   const [plannedQty, setPlannedQty] = useState<number>(1);
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().slice(0, 10));
@@ -43,12 +62,39 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [departmentId, setDepartmentId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [advanced, setAdvanced] = useState<boolean>(false);
+
+  // Project linkage (4 hookpoints)
+  const [projectId, setProjectId] = useState<string>('');
+  const [projectMilestoneId, setProjectMilestoneId] = useState<string>('');
+  const [projectCentreId, setProjectCentreId] = useState<string>('');
+  const [referenceProjectId, setReferenceProjectId] = useState<string>('');
+
+  // Sales linkage + Multi-SO mapper
+  const [customerId, setCustomerId] = useState<string>('');
+  const [salesPlanId, setSalesPlanId] = useState<string>('');
+  const [soMappings, setSoMappings] = useState<SalesOrderLineMapping[]>([]);
+
+  // Compliance + Multi-Entity (3)
+  const [businessUnitId, setBusinessUnitId] = useState<string>('');
+  const [batchNo, setBatchNo] = useState<string>('');
   const [isExport, setIsExport] = useState<boolean>(false);
+
+  // Production Context (3)
+  const [productionSiteId, setProductionSiteId] = useState<string>('');
+  const [natureOfProcessing, setNatureOfProcessing] = useState<string>('');
+  const [isJobWorkIn, setIsJobWorkIn] = useState<boolean>(false);
+
+  // QC Scope (4)
+  const [qcRequired, setQcRequired] = useState<boolean>(false);
+  const [qcScenario, setQcScenario] = useState<QCScenario | ''>('');
+  const [productionPlanId, setProductionPlanId] = useState<string>('');
+
+  // Resources + Export
+  const [shiftId, setShiftId] = useState<string>('');
+  const [productionTeamId, setProductionTeamId] = useState<string>('');
   const [exportCountry, setExportCountry] = useState<string>('');
   const [exportRegBody, setExportRegBody] = useState<string>('');
-  const [qcRequired, setQcRequired] = useState<boolean>(false);
-  const [projectId, setProjectId] = useState<string>('');
-  const [customerId, setCustomerId] = useState<string>('');
+  const [linkedLcId, setLinkedLcId] = useState<string>('');
 
   const selectedBom = useMemo<Bom | undefined>(
     () => boms.find(b => b.id === bomId),
@@ -69,10 +115,36 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     }
   }, [entityCode]);
 
+  const effectiveQcScenario: QCScenario | '' = isExport ? 'export_oriented' : qcScenario;
+
+  const totalSoFulfilled = useMemo(
+    () => soMappings.reduce((s, m) => s + (Number(m.fulfilled_qty) || 0), 0),
+    [soMappings],
+  );
+
+  const addSoMapping = () => {
+    setSoMappings(s => [
+      ...s,
+      { sales_order_id: '', sales_order_no: '', sales_order_line_id: '', fulfilled_qty: 0, required_by_date: '' },
+    ]);
+  };
+
+  const updateSoMapping = (idx: number, patch: Partial<SalesOrderLineMapping>) => {
+    setSoMappings(s => s.map((m, i) => i === idx ? { ...m, ...patch } : m));
+  };
+
+  const removeSoMapping = (idx: number) => {
+    setSoMappings(s => s.filter((_, i) => i !== idx));
+  };
+
+  const showQuarantineAlert = qcRequired && qcConfig.enableOutgoingInspection;
+
   const handleSave = (release: boolean) => {
     if (!selectedBom) { toast.error('Select a BOM'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
     try {
+      const customer = customers.find(c => c.id === customerId);
+      const cleanMappings = soMappings.filter(m => m.sales_order_id && m.fulfilled_qty > 0);
       const po = createProductionOrder(
         {
           entity_id: entityCode,
@@ -83,11 +155,17 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           target_end_date: targetEnd,
           department_id: departmentId,
           project_id: projectId || undefined,
+          project_milestone_id: projectMilestoneId || undefined,
           customer_id: customerId || undefined,
+          sales_order_line_mappings: cleanMappings.length ? cleanMappings : undefined,
+          business_unit_id: businessUnitId || undefined,
+          batch_no: batchNo || undefined,
           is_export_project: isExport,
           export_destination_country: isExport ? exportCountry : undefined,
           export_regulatory_body: isExport ? exportRegBody : undefined,
           qc_required: qcRequired,
+          qc_scenario: effectiveQcScenario || undefined,
+          shift_id: shiftId || undefined,
           notes,
           created_by: 'current-user',
         },
@@ -97,6 +175,11 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         qcConfig,
         { id: 'current-user', name: 'Current User' },
       );
+      // hookpoint stubs (engine fields preserved) — TODO 3a-pre-2 wire deeper
+      void projectCentreId; void referenceProjectId; void salesPlanId;
+      void productionSiteId; void natureOfProcessing; void isJobWorkIn;
+      void productionTeamId; void productionPlanId; void linkedLcId;
+      if (customer) void customer;
       if (release) {
         releaseProductionOrder(po, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
         toast.success(`Production Order ${po.doc_no} released`);
@@ -185,6 +268,15 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         </Card>
       )}
 
+      {showQuarantineAlert && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            FG output will land in <span className="font-medium">Quarantine</span> until QC clearance (D-515 stock-hold).
+          </AlertDescription>
+        </Alert>
+      )}
+
       {masterCost && (
         <Card>
           <CardHeader><CardTitle className="text-base">Cost Preview · 3-Layer (Master live · Budget at release)</CardTitle></CardHeader>
@@ -210,34 +302,240 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           <ChevronRight className={`h-4 w-4 transition-transform ${advanced ? 'rotate-90' : ''}`} />
           Advanced (22 universal hookpoints)
         </CollapsibleTrigger>
-        <CollapsibleContent className="pt-3">
+        <CollapsibleContent className="pt-3 space-y-4">
+
+          {/* 5.1 Project Linkage */}
           <Card>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            <CardHeader><CardTitle className="text-base">Project Linkage</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Project ID (ETO)</Label>
-                <Input value={projectId} onChange={e => setProjectId(e.target.value)} placeholder="Optional" />
+                <Label>Project</Label>
+                <Select value={projectId} onValueChange={setProjectId}>
+                  <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
+                  <SelectContent>
+                    {projects.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.project_code} · {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
-                <Label>Customer ID (MTO / Contract Mfg)</Label>
-                <Input value={customerId} onChange={e => setCustomerId(e.target.value)} placeholder="Optional" />
+                <Label>Project Milestone ID</Label>
+                <Input value={projectMilestoneId} onChange={e => setProjectMilestoneId(e.target.value)} placeholder="e.g. M3-Fabrication" />
               </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={qcRequired} onCheckedChange={setQcRequired} />
-                <Label>QC Required</Label>
+              <div className="space-y-2">
+                <Label>Project Centre ID</Label>
+                <Input value={projectCentreId} onChange={e => setProjectCentreId(e.target.value)} placeholder="3a-pre-2 picker" />
+              </div>
+              <div className="space-y-2">
+                <Label>Reference Project ID</Label>
+                <Input value={referenceProjectId} onChange={e => setReferenceProjectId(e.target.value)} placeholder="EngineeringX hookpoint stub" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 5.2 Sales Linkage + Multi-SO Mapper */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Sales Linkage · Multi-SO Mapper (v5 MOAT)</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Customer</Label>
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger><SelectValue placeholder="Select customer..." /></SelectTrigger>
+                    <SelectContent>
+                      {customers.map(c => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.partyCode} · {c.partyName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Sales Plan ID</Label>
+                  <Input value={salesPlanId} onChange={e => setSalesPlanId(e.target.value)} placeholder="Card #6 stub" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>SO Line Mappings ({soMappings.length})</Label>
+                  <Button size="sm" variant="outline" onClick={addSoMapping}>
+                    <Plus className="h-3 w-3 mr-1" /> Add SO Line
+                  </Button>
+                </div>
+                {soMappings.map((m, idx) => (
+                  <div key={idx} className="grid grid-cols-12 gap-2 items-end border rounded-md p-2">
+                    <div className="col-span-4 space-y-1">
+                      <Label className="text-xs">Sales Order</Label>
+                      <Select
+                        value={m.sales_order_id}
+                        onValueChange={v => {
+                          const so = salesOrders.find(o => o.id === v);
+                          updateSoMapping(idx, { sales_order_id: v, sales_order_no: so?.order_no ?? '' });
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Select SO..." /></SelectTrigger>
+                        <SelectContent>
+                          {salesOrders.map(o => (
+                            <SelectItem key={o.id} value={o.id}>{o.order_no} · {o.party_name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="col-span-3 space-y-1">
+                      <Label className="text-xs">SO Line ID</Label>
+                      <Input value={m.sales_order_line_id} onChange={e => updateSoMapping(idx, { sales_order_line_id: e.target.value })} />
+                    </div>
+                    <div className="col-span-2 space-y-1">
+                      <Label className="text-xs">Fulfilled Qty</Label>
+                      <Input type="number" className="font-mono" value={m.fulfilled_qty} onChange={e => updateSoMapping(idx, { fulfilled_qty: Number(e.target.value) })} />
+                    </div>
+                    <div className="col-span-2 space-y-1">
+                      <Label className="text-xs">Required By</Label>
+                      <Input type="date" className="font-mono" value={m.required_by_date} onChange={e => updateSoMapping(idx, { required_by_date: e.target.value })} />
+                    </div>
+                    <div className="col-span-1">
+                      <Button size="sm" variant="ghost" onClick={() => removeSoMapping(idx)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                {soMappings.length > 0 && (
+                  <div className={`text-xs font-mono ${totalSoFulfilled !== plannedQty ? 'text-warning' : 'text-muted-foreground'}`}>
+                    Sum(fulfilled) = {totalSoFulfilled} / planned = {plannedQty}
+                    {totalSoFulfilled !== plannedQty && ' · mismatch'}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 5.3 Compliance + Multi-Entity */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Compliance & Multi-Entity</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Business Unit ID</Label>
+                {/* TODO useBusinessUnits when hook exists */}
+                <Input value={businessUnitId} onChange={e => setBusinessUnitId(e.target.value)} placeholder="BU code" />
+              </div>
+              <div className="space-y-2">
+                <Label>Batch No</Label>
+                <Input value={batchNo} onChange={e => setBatchNo(e.target.value)} placeholder="e.g. CHB-2526-001" className="font-mono" />
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={isExport} onCheckedChange={setIsExport} />
                 <Label>Export Project</Label>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* 5.4 Production Context */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Production Context</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Production Site ID</Label>
+                <Input value={productionSiteId} onChange={e => setProductionSiteId(e.target.value)} placeholder="Phase 2" />
+              </div>
+              <div className="space-y-2">
+                <Label>Nature of Processing</Label>
+                <Select value={natureOfProcessing} onValueChange={setNatureOfProcessing}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    {NATURE_OPTIONS.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={isJobWorkIn} onCheckedChange={setIsJobWorkIn} />
+                <Label>Job Work In</Label>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 5.5 QC Scope (v3 MOAT) */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">QC Scope (v3 MOAT)</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Switch checked={qcRequired} onCheckedChange={setQcRequired} />
+                <Label>QC Required</Label>
+              </div>
+              <div className="space-y-2">
+                <Label>QC Scenario</Label>
+                <Select
+                  value={effectiveQcScenario}
+                  onValueChange={(v) => setQcScenario(v as QCScenario)}
+                  disabled={isExport}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select QC scenario..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="internal_dept">Internal Department QC</SelectItem>
+                    <SelectItem value="customer_inspection">Customer Sending to QC</SelectItem>
+                    <SelectItem value="third_party_agency">3rd Party Agency QC</SelectItem>
+                    <SelectItem value="export_oriented">Export-Oriented QC (FDA · CE · WHO-GMP)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Production Plan ID</Label>
+                <Input value={productionPlanId} onChange={e => setProductionPlanId(e.target.value)} placeholder="3a-pre-3 active" />
+              </div>
+              <div className="space-y-2">
+                <Label>Test Reports</Label>
+                <div className="text-sm text-muted-foreground">Test Reports: 0 (Card 3b active)</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 5.6 Resources + Export */}
+          <Card>
+            <CardHeader><CardTitle className="text-base">Resources & Export</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Shift</Label>
+                <Select value={shiftId} onValueChange={setShiftId}>
+                  <SelectTrigger><SelectValue placeholder="Select shift..." /></SelectTrigger>
+                  <SelectContent>
+                    {shifts.map(s => (
+                      <SelectItem key={s.id} value={s.id}>{s.code} · {s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Production Team ID</Label>
+                <Input value={productionTeamId} onChange={e => setProductionTeamId(e.target.value)} placeholder="3a-pre-2 active" />
+              </div>
               {isExport && (
                 <>
                   <div className="space-y-2">
                     <Label>Destination Country</Label>
-                    <Input value={exportCountry} onChange={e => setExportCountry(e.target.value)} placeholder="US · EU · UK..." />
+                    <Select value={exportCountry} onValueChange={setExportCountry}>
+                      <SelectTrigger><SelectValue placeholder="Select country..." /></SelectTrigger>
+                      <SelectContent>
+                        {COUNTRY_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label>Regulatory Body</Label>
-                    <Input value={exportRegBody} onChange={e => setExportRegBody(e.target.value)} placeholder="FDA · CE · BIS..." />
+                    <Select value={exportRegBody} onValueChange={setExportRegBody}>
+                      <SelectTrigger><SelectValue placeholder="Select body..." /></SelectTrigger>
+                      <SelectContent>
+                        {REG_BODY_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Letter of Credit ID</Label>
+                    <Input value={linkedLcId} onChange={e => setLinkedLcId(e.target.value)} placeholder="Phase 2 picker" />
                   </div>
                 </>
               )}
