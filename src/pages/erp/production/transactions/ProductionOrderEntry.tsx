@@ -624,17 +624,183 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
       {selectedBom && (
         <Card>
-          <CardHeader><CardTitle className="text-base">BOM Components</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>BOM Components {substitutionEnabled && '· Editable with Substitution'}</span>
+              {Object.keys(substitutions).length > 0 && (
+                <Badge variant="outline" className="text-xs">
+                  {Object.keys(substitutions).length} substitution(s) staged
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground mb-2">{selectedBom.components.length} component(s)</div>
-            <div className="space-y-1 text-sm">
-              {selectedBom.components.map(c => (
-                <div key={c.id} className="flex justify-between border-b py-1">
-                  <span>{c.item_code} · {c.item_name}</span>
-                  <span className="font-mono">{(c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100)).toFixed(2)} {c.uom}</span>
-                </div>
-              ))}
+            <div className="grid grid-cols-12 gap-2 mb-1 text-xs font-semibold text-muted-foreground">
+              <div className="col-span-5">Item</div>
+              <div className="col-span-3 text-right">Required Qty</div>
+              <div className="col-span-3">Action</div>
+              <div className="col-span-1"></div>
             </div>
+            {selectedBom.components.map(c => {
+              const sub = substitutions[c.id];
+              const baseQty = c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100);
+              const effItemName = sub
+                ? (sub.approved?.substitute_item_name ?? sub.freeForm?.item_name ?? c.item_name)
+                : c.item_name;
+              const effRatio = sub?.approved?.ratio ?? sub?.freeForm?.ratio ?? 1;
+              const effQty = sub ? baseQty * effRatio : baseQty;
+              const alts = substitutionEnabled ? findApprovedSubstitutes(itemSubstitutes, c.item_id) : [];
+              const popKey = `${c.id}`;
+              return (
+                <div key={c.id} className="grid grid-cols-12 gap-2 items-center py-1.5 border-b text-sm">
+                  <div className="col-span-5">
+                    {sub ? (
+                      <div>
+                        <div className="line-through text-muted-foreground text-xs">
+                          {c.item_code} · {c.item_name}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>→ {effItemName}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {sub.approved ? 'Tier 1' : 'Tier 2'}
+                          </Badge>
+                        </div>
+                      </div>
+                    ) : (
+                      <span>{c.item_code} · {c.item_name}</span>
+                    )}
+                  </div>
+                  <div className="col-span-3 text-right font-mono">
+                    {effQty.toFixed(2)} {c.uom}
+                  </div>
+                  <div className="col-span-3">
+                    {substitutionEnabled && (
+                      <Popover
+                        open={openPopoverFor === popKey}
+                        onOpenChange={(o) => {
+                          setOpenPopoverFor(o ? popKey : null);
+                          if (o) {
+                            setDraftNotes('');
+                            setDraftReason('stock_unavailable');
+                            setDraftFreeFormItemId('');
+                            setDraftFreeFormRatio(1);
+                          }
+                        }}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" disabled={Boolean(sub)}>
+                            <Replace className="h-3 w-3 mr-1" />
+                            {alts.length > 0 ? `Substitute (${alts.length})` : 'Substitute'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96" align="start">
+                          <div className="space-y-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Reason (mandatory)</Label>
+                              <Select value={draftReason} onValueChange={(v) => setDraftReason(v as SubstituteReason)}>
+                                <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="stock_unavailable">Stock unavailable</SelectItem>
+                                  <SelectItem value="cost_optimization">Cost optimization</SelectItem>
+                                  <SelectItem value="quality_upgrade">Quality upgrade</SelectItem>
+                                  <SelectItem value="sourcing_constraint">Sourcing constraint</SelectItem>
+                                  <SelectItem value="customer_specification">Customer specification</SelectItem>
+                                  <SelectItem value="export_compliance">Export compliance</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Notes (mandatory · audit trail)</Label>
+                              <Input
+                                className="text-xs"
+                                value={draftNotes}
+                                onChange={(e) => setDraftNotes(e.target.value)}
+                                placeholder="Why is this substitution being made?"
+                              />
+                            </div>
+
+                            {alts.length > 0 && (
+                              <div>
+                                <div className="text-xs font-semibold mb-1">Tier 1 · Pre-approved (Substitute Master)</div>
+                                <div className="max-h-32 overflow-y-auto">
+                                  {alts.map(s => (
+                                    <button
+                                      key={s.id}
+                                      type="button"
+                                      onClick={() => applyApprovedDraft(c.id, s)}
+                                      className="w-full text-left p-2 hover:bg-muted rounded text-xs border-b last:border-0"
+                                    >
+                                      <div className="font-medium">{s.substitute_item_name}</div>
+                                      <div className="text-muted-foreground">
+                                        Ratio 1:{s.ratio} · {s.scenarios.join(', ') || 'general'}
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {alts.length === 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                No pre-approved alternates · use free-form below.
+                              </div>
+                            )}
+
+                            <div className="border-t pt-2 space-y-1">
+                              <div className="text-xs font-semibold">Tier 2 · Free-form</div>
+                              <Select value={draftFreeFormItemId} onValueChange={setDraftFreeFormItemId}>
+                                <SelectTrigger className="text-xs">
+                                  <SelectValue placeholder="Pick any inventory item..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {items
+                                    .filter(i => i.id !== c.item_id)
+                                    .slice(0, 50)
+                                    .map(i => (
+                                      <SelectItem key={i.id} value={i.id} className="text-xs">
+                                        {i.code} · {i.name}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min={0.01}
+                                className="text-xs font-mono"
+                                value={draftFreeFormRatio}
+                                onChange={(e) => setDraftFreeFormRatio(Number(e.target.value))}
+                                placeholder="Ratio (1 primary = ? substitute)"
+                              />
+                              <Button
+                                size="sm"
+                                className="w-full text-xs"
+                                onClick={() => applyFreeFormDraft(c.id)}
+                              >
+                                Apply free-form substitution
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </div>
+                  <div className="col-span-1">
+                    {sub && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => revertDraft(c.id)}
+                        title="Revert to original BOM"
+                      >
+                        <Undo2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}
