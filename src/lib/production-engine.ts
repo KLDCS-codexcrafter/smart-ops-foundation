@@ -320,7 +320,8 @@ const ALLOWED_TRANSITIONS: Record<ProductionOrderStatus, ProductionOrderStatus[]
   draft:       ['released', 'cancelled'],
   released:    ['in_progress', 'cancelled'],
   in_progress: ['completed', 'cancelled'],
-  completed:   [],
+  completed:   ['closed'],
+  closed:      [],
   cancelled:   [],
 };
 

@@ -197,6 +197,15 @@ export interface ProductionOrder {
   approval_history: ApprovalEvent[];
   status_history: ProductionOrderStatusEvent[];
 
+  // 🆕 Closure (Q19=b maker-checker · Sprint 3a-pre-3 · D-558)
+  closed_at: string | null;
+  closed_by_user_id: string | null;
+  closed_by_name: string | null;
+  closure_approval: ApprovalEvent | null;
+  closure_remarks: string;
+  closed_cost_snapshot: ProductionCostStructure | null;
+  closed_variance_id: string | null;
+
   notes: string;
   created_at: string;
   created_by: string;
