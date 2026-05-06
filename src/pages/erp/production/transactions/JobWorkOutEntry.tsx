@@ -70,6 +70,25 @@ export function JobWorkOutEntryPanel(): JSX.Element {
   const linkedPO = useMemo(() => orders.find(o => o.id === poId), [orders, poId]);
   const vendor = useMemo(() => vendors.find(v => v.partyCode === vendorId), [vendors, vendorId]);
 
+  const formStateForMount = useMemo(
+    () => ({ poId, vendorId, jwoDate, returnDate, lineCount: lines.length }),
+    [poId, vendorId, jwoDate, returnDate, lines.length],
+  );
+  const itemsForMount = useMemo(
+    () => lines.map(l => ({ item_name: l.item_name, qty: l.sent_qty })),
+    [lines],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'job-work-out-order-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-job-work-out-order',
+    userId: user?.id ?? undefined,
+    partyId: vendorId || undefined,
+  });
+
   const updateLine = (i: number, patch: Partial<LineDraft>) =>
     setLines(s => s.map((l, idx) => idx === i ? { ...l, ...patch } : l));
 
