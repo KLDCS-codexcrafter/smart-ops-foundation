@@ -148,6 +148,17 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'plant-ops-group', type: 'group', label: 'Plant Operations', icon: FactoryIcon,
+    children: [
+      { id: 'plant-ops-factory-master', type: 'item', label: 'Factory Master', icon: FactoryIcon,
+        moduleId: 'plant-ops-factory-master', requiredCards: ['command-center'] },
+      { id: 'plant-ops-work-center-master', type: 'item', label: 'Work Center Master', icon: Cog,
+        moduleId: 'plant-ops-work-center-master', requiredCards: ['command-center'] },
+      { id: 'plant-ops-machine-master', type: 'item', label: 'Machine Master', icon: Wrench,
+        moduleId: 'plant-ops-machine-master', requiredCards: ['command-center'] },
+    ],
+  },
+  {
     id: 'procurement-sourcing-group', type: 'group', label: 'Procurement & Sourcing', icon: ShoppingCart,
     children: [
       { id: 'requestx-voucher-types', type: 'item', label: 'RequestX Voucher Types', icon: FileText,
