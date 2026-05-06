@@ -298,6 +298,18 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
           Save and Confirm
         </Button>
       </div>
+
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-job-work-receipt"
+        voucherTypeName="Job Work Receipt"
+        defaultPartyType="vendor"
+        partyId={selectedJWO?.vendor_id ?? null}
+        partyName={selectedJWO?.vendor_name ?? null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
