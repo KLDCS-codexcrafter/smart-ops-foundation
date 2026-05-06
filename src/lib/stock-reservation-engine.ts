@@ -238,6 +238,28 @@ export function createProductionOrderReservations(
   return fresh;
 }
 
+/**
+ * Release production-order reservations · status 'active' → 'released'.
+ * Mirrors releaseQuoteReservations pattern · Sprint 3a-pre-2 D-186 lineage extension.
+ * Called by Material Issue when stock has been physically consumed.
+ */
+export function releaseProductionOrderReservations(
+  entityCode: string,
+  productionOrderId: string,
+  reservationIdsConsumed?: string[],
+): void {
+  const now = new Date().toISOString();
+  const list = loadReservations(entityCode).map(r => {
+    const matchesPO = r.source_type === 'production_order' && r.source_id === productionOrderId;
+    const matchesId = !reservationIdsConsumed || reservationIdsConsumed.includes(r.id);
+    return matchesPO && matchesId && r.status === 'active'
+      ? { ...r, status: 'released' as const, released_at: now, updated_at: now }
+      : r;
+  });
+  // [JWT] PATCH /api/inventory/reservations/release?source=production_order&id=:id
+  saveReservations(entityCode, list);
+}
+
 // ── 6. Sweep expired quote reservations ─────────────────────────────
 
 export function sweepExpiredReservations(entityCode: string): void {
