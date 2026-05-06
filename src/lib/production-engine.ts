@@ -256,6 +256,7 @@ export function createProductionOrder(
     qc_required: input.qc_required ?? qcConfig.enableQualiCheck,
     qc_scenario: input.qc_scenario || (input.is_export_project ? 'export_oriented' : null),
     linked_test_report_ids: [],
+    routed_to_quarantine: false,
     production_plan_id: input.production_plan_id || null,
     shift_id: input.shift_id || null,
     production_team_id: input.production_team_id || null,
