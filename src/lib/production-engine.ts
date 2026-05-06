@@ -8,6 +8,7 @@
 import type {
   ProductionOrder,
   ProductionOrderLine,
+  ProductionOrderOutput,
   ProductionOrderStatus,
   ProductionOrderStatusEvent,
   SalesOrderLineMapping,
@@ -61,6 +62,8 @@ export interface CreateProductionOrderInput {
   is_job_work_in?: boolean;
   production_team_id?: string;
   production_plan_id?: string;
+  linked_production_plan_ids?: string[];
+  outputs?: ProductionOrderOutput[];
   linked_letter_of_credit_id?: string;
   notes?: string;
   created_by: string;
@@ -260,6 +263,31 @@ export function createProductionOrder(
     linked_letter_of_credit_id: input.linked_letter_of_credit_id || null,
     cost_structure,
     lines,
+    outputs: input.outputs && input.outputs.length > 0 ? input.outputs : [{
+      id: `pout-${doc_no.replace(/\//g, '-')}-1`,
+      output_no: 1,
+      output_kind: 'main',
+      item_id: input.output_item_id,
+      item_code: bom.product_item_code || '',
+      item_name: bom.product_item_name || '',
+      planned_qty: input.planned_qty,
+      uom: bom.output_uom || 'nos',
+      bom_id: input.bom_id,
+      bom_version: bom.version_no || 1,
+      batch_no: input.batch_no || null,
+      qc_required: input.qc_required ?? qcConfig.enableQualiCheck,
+      qc_scenario: input.qc_scenario || (input.is_export_project ? 'export_oriented' : null),
+      linked_test_report_ids: [],
+      output_cost_master: cost_structure.master.total,
+      output_cost_budget: 0,
+      output_cost_actual: 0,
+      cost_allocation_basis: 'qty',
+      cost_allocation_pct: 100,
+      actual_qty: null,
+      yield_pct: null,
+      output_godown_id,
+    }],
+    linked_production_plan_ids: input.linked_production_plan_ids ?? (input.production_plan_id ? [input.production_plan_id] : []),
     approval_history: [],
     status_history: [makeInitialStatusEvent(user, now)],
     notes: input.notes || '',
