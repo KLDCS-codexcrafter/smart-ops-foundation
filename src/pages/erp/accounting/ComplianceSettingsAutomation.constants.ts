@@ -325,6 +325,13 @@ export interface ProductionConfig {
   enforceMachineCapabilityMatch: boolean;
   enableMobileJobCardCapture: boolean;
   enableShiftAggregation: boolean;
+
+  // Sprint 3-PlantOps-pre-3a · Block J · 5 NEW Plant Analytics flags · Q34/Q35/Q37 polymorphic
+  capacityThresholdMode: 'config_pct' | 'hard_absolute' | 'per_factory';
+  capacityCheckPassThreshold: number;
+  capacityCheckWarnThreshold: number;
+  enforceCapacityCheckOnApproval: boolean;
+  oeeWorldClassThreshold: number;
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -396,4 +403,11 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   enforceMachineCapabilityMatch: false,
   enableMobileJobCardCapture: true,
   enableShiftAggregation: true,
+
+  // Sprint 3-PlantOps-pre-3a · Block J
+  capacityThresholdMode: 'config_pct',
+  capacityCheckPassThreshold: 90,
+  capacityCheckWarnThreshold: 75,
+  enforceCapacityCheckOnApproval: true,
+  oeeWorldClassThreshold: 85,
 };

@@ -3,7 +3,7 @@
  * @sprint   T-Phase-1.3-3a-pre-1
  */
 import { useState } from 'react';
-import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList, CalendarRange } from 'lucide-react';
+import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList, CalendarRange, Activity, Gauge } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -29,6 +29,8 @@ const ICONS: Record<ProductionModule, React.ElementType> = {
   'rpt-itc04-export': FileText,
   'rpt-wip': Layers,
   'rpt-daily-work-register': CalendarRange,
+  'rpt-capacity-planning': Activity,
+  'rpt-oee-dashboard': Gauge,
 };
 
 interface Props {

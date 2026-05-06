@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Save, Factory, Sparkles } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
@@ -214,6 +215,87 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
               className="font-mono w-24"
               value={config.varianceThresholdPct}
               onChange={(e) => update('varianceThresholdPct', Number(e.target.value))}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Sprint 3-PlantOps-pre-2 · Plant Operations flags */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            v6.5 · Plant Operations Flags (pre-2)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          {sw('enableJobCard', 'Enable Job Card transaction')}
+          {sw('enableDailyWorkRegister', 'Enable Daily Work Register')}
+          {sw('enforceOperatorCertification', 'Enforce Operator Certification')}
+          {sw('enforceMachineCapabilityMatch', 'Enforce Machine Capability Match')}
+          {sw('enableMobileJobCardCapture', 'Enable Mobile Job Card Capture')}
+          {sw('enableShiftAggregation', 'Enable Real-time Shift Aggregation')}
+        </CardContent>
+      </Card>
+
+      {/* Sprint 3-PlantOps-pre-3a · Plant Analytics · Q25/Q34/Q35/Q37 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            v6.5 · Plant Analytics · Capacity + OEE
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-sm">Capacity Threshold Mode (Q37=ALL polymorphic)</Label>
+            <RadioGroup
+              className="mt-2"
+              value={config.capacityThresholdMode}
+              onValueChange={v => update('capacityThresholdMode', v as 'config_pct' | 'hard_absolute' | 'per_factory')}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="config_pct" id="ct-config" />
+                <Label htmlFor="ct-config" className="text-xs">% via Config (founder controls thresholds)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="hard_absolute" id="ct-hard" />
+                <Label htmlFor="ct-hard" className="text-xs">Hard Absolute (85% pass · 100% warn)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="per_factory" id="ct-pf" />
+                <Label htmlFor="ct-pf" className="text-xs">Per-Factory (each Factory has own thresholds)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Pass Threshold % (default 90)</Label>
+              <Input
+                type="number" min={0} max={100} className="font-mono"
+                value={config.capacityCheckPassThreshold}
+                onChange={e => update('capacityCheckPassThreshold', Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Warn Threshold % (default 75)</Label>
+              <Input
+                type="number" min={0} max={100} className="font-mono"
+                value={config.capacityCheckWarnThreshold}
+                onChange={e => update('capacityCheckWarnThreshold', Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          {sw('enforceCapacityCheckOnApproval', 'Enforce Capacity Check on Plan Approval (Q25=a)')}
+
+          <div>
+            <Label className="text-xs">OEE World-Class Threshold % (default 85)</Label>
+            <Input
+              type="number" min={0} max={100} className="font-mono w-32"
+              value={config.oeeWorldClassThreshold}
+              onChange={e => update('oeeWorldClassThreshold', Number(e.target.value))}
             />
           </div>
         </CardContent>

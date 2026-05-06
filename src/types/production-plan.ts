@@ -126,6 +126,9 @@ export interface ProductionPlan {
 
   capacity_check_status: CapacityCheckStatus;
   capacity_warnings: string[];
+  // 🆕 D-596 · Q25=a · 3-PlantOps-pre-3a · capacity check ACTIVATION
+  capacity_check_run_at: string | null;
+  capacity_check_details: Record<string, unknown>;
 
   notes: string;
 

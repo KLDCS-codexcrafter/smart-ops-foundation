@@ -33,6 +33,8 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
       { id: 'rpt-itc04-export', label: 'ITC-04 Export' },
       { id: 'rpt-wip', label: 'WIP Report' },
       { id: 'rpt-daily-work-register', label: 'Daily Work Register' },
+      { id: 'rpt-capacity-planning', label: 'Capacity Planning' },
+      { id: 'rpt-oee-dashboard', label: 'OEE Dashboard' },
     ],
   },
 ];
