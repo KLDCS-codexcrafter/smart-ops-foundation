@@ -275,6 +275,14 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const handleSave = (release: boolean) => {
     if (!selectedBom) { toast.error('Select a BOM'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
+    if (multiOutputMode) {
+      if (outputs.length === 0) { toast.error('Add at least one output'); return; }
+      if (mainOutputCount !== 1) { toast.error('Multi-output PO must have exactly one Main output'); return; }
+      if (!allocOk) { toast.error(`Cost allocation must total 100% (currently ${totalAllocPct.toFixed(2)}%)`); return; }
+      if (outputs.some(o => !o.item_id || o.planned_qty <= 0)) {
+        toast.error('Each output needs an item and positive planned qty'); return;
+      }
+    }
     try {
       const customer = customers.find(c => c.partyCode === customerId);
       const cleanMappings = soMappings.filter(m => m.sales_order_id && m.fulfilled_qty > 0);
