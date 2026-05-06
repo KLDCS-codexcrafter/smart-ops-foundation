@@ -3,7 +3,7 @@
  * @sprint   T-Phase-1.3-3a-pre-1
  */
 import { useState } from 'react';
-import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList, CalendarRange, Activity, Gauge } from 'lucide-react';
+import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList, CalendarRange, Activity, Gauge, Recycle, Calendar } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -31,6 +31,8 @@ const ICONS: Record<ProductionModule, React.ElementType> = {
   'rpt-daily-work-register': CalendarRange,
   'rpt-capacity-planning': Activity,
   'rpt-oee-dashboard': Gauge,
+  'rpt-wastage-dashboard': Recycle,
+  'rpt-scheduling-board': Calendar,
 };
 
 interface Props {
