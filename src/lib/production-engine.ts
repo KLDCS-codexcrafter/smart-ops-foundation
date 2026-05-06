@@ -53,6 +53,15 @@ export interface CreateProductionOrderInput {
   qc_required?: boolean;
   qc_scenario?: QCScenario;
   shift_id?: string;
+  project_centre_id?: string;
+  reference_project_id?: string;
+  sales_plan_id?: string;
+  production_site_id?: string;
+  nature_of_processing?: string;
+  is_job_work_in?: boolean;
+  production_team_id?: string;
+  production_plan_id?: string;
+  linked_letter_of_credit_id?: string;
   notes?: string;
   created_by: string;
 }
@@ -123,29 +132,29 @@ export function createProductionOrder(
     reservation_ids: [],
     project_id: input.project_id || null,
     project_milestone_id: input.project_milestone_id || null,
-    project_centre_id: null,
-    reference_project_id: null,
+    project_centre_id: input.project_centre_id || null,
+    reference_project_id: input.reference_project_id || null,
     sales_order_id: input.sales_order_line_mappings?.[0]?.sales_order_id || null,
     sales_order_line_mappings: input.sales_order_line_mappings || [],
-    sales_plan_id: null,
+    sales_plan_id: input.sales_plan_id || null,
     customer_id: input.customer_id || null,
     customer_name: null,
     business_unit_id: input.business_unit_id || null,
     batch_no: input.batch_no || null,
     is_export_project: input.is_export_project || false,
-    production_site_id: null,
-    nature_of_processing: null,
-    is_job_work_in: false,
+    production_site_id: input.production_site_id || null,
+    nature_of_processing: input.nature_of_processing || null,
+    is_job_work_in: input.is_job_work_in || false,
     linked_job_work_out_order_ids: [],
     qc_required: input.qc_required ?? qcConfig.enableQualiCheck,
     qc_scenario: input.qc_scenario || (input.is_export_project ? 'export_oriented' : null),
     linked_test_report_ids: [],
-    production_plan_id: null,
+    production_plan_id: input.production_plan_id || null,
     shift_id: input.shift_id || null,
-    production_team_id: null,
+    production_team_id: input.production_team_id || null,
     export_destination_country: input.export_destination_country || null,
     export_regulatory_body: input.export_regulatory_body || null,
-    linked_letter_of_credit_id: null,
+    linked_letter_of_credit_id: input.linked_letter_of_credit_id || null,
     cost_structure,
     lines,
     approval_history: [],

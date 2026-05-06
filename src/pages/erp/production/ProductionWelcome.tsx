@@ -4,6 +4,7 @@
  * @purpose  Welcome panel · 4 KPI tiles + 1 adaptive tile based on ProductionConfig flags.
  */
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Briefcase, Users, FlaskConical, ExternalLink, Factory, Layers, Clock, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
@@ -15,6 +16,7 @@ interface Props {
 
 export function ProductionWelcome(_props: Props): JSX.Element {
   void _props;
+  const navigate = useNavigate();
   const { orders } = useProductionOrders();
   const productionConfig = useProductionConfig();
 
@@ -61,10 +63,17 @@ export function ProductionWelcome(_props: Props): JSX.Element {
         </p>
       </div>
 
-      <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
-        ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
-        Edit there to keep all modules in sync.
-      </div>
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {tiles.map(t => {
