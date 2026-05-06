@@ -111,6 +111,10 @@ export function createMaterialIssue(
     created_by: input.issued_by_name,
     updated_at: now,
     updated_by: input.issued_by_name,
+    qc_required: false,
+    qc_scenario: null,
+    linked_test_report_ids: [],
+    routed_to_quarantine: false,
   };
 
   persistMIN(input.entity_id, min);
@@ -261,4 +265,41 @@ function updatePOIssuedQty(min: MaterialIssueNote): void {
   } catch {
     /* silent */
   }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 3b-pre-1 · Block E · D-619 · Q45=c QC auto-create on MI issue
+// ════════════════════════════════════════════════════════════════════
+import { createQaInspectionFromMI } from '@/lib/qa-inspection-production-bridge';
+import type { ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { ManufacturingTemplate } from '@/config/manufacturing-templates';
+import type { ItemQCParam } from '@/types/item-qc-param';
+import type { QaPlan } from '@/types/qa-plan';
+
+export interface IssueMIQCContext {
+  productionConfig: ProductionConfig;
+  template?: ManufacturingTemplate;
+  itemQCParams: ItemQCParam[];
+  qaPlans: QaPlan[];
+}
+
+export function issueMaterialIssueWithQC(
+  min: MaterialIssueNote,
+  user: { id: string; name: string },
+  qcContext?: IssueMIQCContext,
+): MaterialIssueNote {
+  const issued = issueMaterialIssue(min, user);
+  if (!qcContext || !issued.qc_required) return issued;
+  if (!qcContext.productionConfig.enableProductionQC) return issued;
+  const mode = qcContext.productionConfig.qcAutoCreateMode ?? 'config_per_scenario';
+  if (mode === 'manual') return issued;
+  try {
+    const insp = createQaInspectionFromMI({
+      mi: issued, inspector_user_id: user.id, inspection_location: 'Issue Counter',
+      template: qcContext.template, itemQCParams: qcContext.itemQCParams, qaPlans: qcContext.qaPlans,
+    });
+    const updated = { ...issued, linked_test_report_ids: [...issued.linked_test_report_ids, insp.id] };
+    persistMIN(issued.entity_id, updated);
+    return updated;
+  } catch (e) { console.error('[mi-engine] QC auto-create failed', e); return issued; }
 }

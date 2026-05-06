@@ -82,6 +82,12 @@ export interface JobCard {
   approval_history: ApprovalEvent[];
   status_history: JobCardStatusEvent[];
 
+  // 🆕 D-615 · Card 3b 3b-pre-1 · QC hookpoints (Q44=a + Q47=c · ADDITIVE)
+  qc_required: boolean;
+  qc_scenario: string | null;
+  linked_test_report_ids: string[];
+  routed_to_quarantine: boolean;
+
   created_at: string;
   created_by: string;
   updated_at: string;

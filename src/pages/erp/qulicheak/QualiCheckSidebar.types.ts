@@ -15,4 +15,6 @@ export type QualiCheckModule =
   | 'vendor-scorecard'
   | 'coa-register'
   | 'pending-alerts'
-  | 'bulk-plan-assignment';
+  | 'bulk-plan-assignment'
+  // Sprint 3b-pre-1 · D-624 · production-context QC pending list
+  | 'production-qc-pending';

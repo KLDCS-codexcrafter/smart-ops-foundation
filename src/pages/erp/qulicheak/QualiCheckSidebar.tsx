@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
-  ShieldCheck, Award, FileCheck, AlertTriangle, Layers,
+  ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory,
 } from 'lucide-react';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 
@@ -23,6 +23,7 @@ const GROUPS: Group[] = [
     label: 'Operations',
     items: [
       { id: 'pending-inspections', label: 'Pending Inspections', icon: ClipboardCheck },
+      { id: 'production-qc-pending', label: 'Production QC', icon: Factory },
       { id: 'pending-alerts', label: 'Pending Alerts', icon: AlertTriangle },
       { id: 'closure-log', label: 'Closure Log', icon: ShieldCheck },
     ],

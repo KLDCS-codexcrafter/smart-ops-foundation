@@ -20,6 +20,7 @@ function mkJC(over: Partial<JobCard>): JobCard {
     labour_cost: 0, machine_cost: 0, total_cost: 0,
     status: 'completed', remarks: '', breakdown_notes: '',
     approval_history: [], status_history: [],
+    qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false,
     created_at: '', created_by: '', updated_at: '', updated_by: '',
     ...over,
   };

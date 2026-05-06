@@ -79,6 +79,8 @@ export interface ProductionConfirmation {
   created_by: string;
   updated_at: string;
   updated_by: string;
+  // 🆕 D-615 · Card 3b 3b-pre-1 · Q44=a back-reference to QaInspection (additive)
+  linked_test_report_ids: string[];
 }
 
 // [JWT] GET/PUT /api/production/confirmations?entityCode=...

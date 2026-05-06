@@ -122,6 +122,7 @@ export function createProductionConfirmation(
     created_by: input.confirmed_by_name,
     updated_at: now,
     updated_by: input.confirmed_by_name,
+    linked_test_report_ids: [],
   };
 
   // Emit leak if yield variance > 10% (FR-44 · 3a-pre-3 will config-drive threshold)
@@ -266,4 +267,49 @@ function transitionPOToCompleted(
   } catch {
     /* silent */
   }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 3b-pre-1 · Block D · D-618 · Q45=c QC auto-create on PC confirm
+// ════════════════════════════════════════════════════════════════════
+import { createQaInspectionFromPC } from '@/lib/qa-inspection-production-bridge';
+import type { ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { ManufacturingTemplate } from '@/config/manufacturing-templates';
+import type { ItemQCParam } from '@/types/item-qc-param';
+import type { QaPlan } from '@/types/qa-plan';
+
+export interface ConfirmPCQCContext {
+  productionConfig: ProductionConfig;
+  parentPO: ProductionOrder;
+  template?: ManufacturingTemplate;
+  itemQCParams: ItemQCParam[];
+  qaPlans: QaPlan[];
+}
+
+export function confirmProductionConfirmationWithQC(
+  pc: ProductionConfirmation,
+  user: { id: string; name: string },
+  qcContext?: ConfirmPCQCContext,
+): ProductionConfirmation {
+  const confirmed = confirmProductionConfirmation(pc, user);
+  if (!qcContext || !qcContext.productionConfig.enableProductionQC) return confirmed;
+  const anyQC = confirmed.lines.some(l => l.qc_required);
+  if (!anyQC) return confirmed;
+  const mode = qcContext.productionConfig.qcAutoCreateMode ?? 'config_per_scenario';
+  let shouldCreate = mode === 'always';
+  if (mode === 'config_per_scenario') {
+    const scen = qcContext.parentPO.qc_scenario;
+    shouldCreate = scen === 'internal_dept' || scen === 'third_party_agency';
+  }
+  if (!shouldCreate) return confirmed;
+  try {
+    const insp = createQaInspectionFromPC({
+      pc: confirmed, po: qcContext.parentPO,
+      inspector_user_id: user.id, inspection_location: 'Production Floor',
+      template: qcContext.template, itemQCParams: qcContext.itemQCParams, qaPlans: qcContext.qaPlans,
+    });
+    const updated = { ...confirmed, linked_test_report_ids: [...confirmed.linked_test_report_ids, insp.id] };
+    persist(confirmed.entity_id, updated);
+    return updated;
+  } catch (e) { console.error('[pc-engine] QC auto-create failed', e); return confirmed; }
 }

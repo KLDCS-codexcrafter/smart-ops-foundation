@@ -34,7 +34,7 @@ function basePO(overrides: Partial<ProductionOrder> = {}): ProductionOrder {
     business_unit_id: null, batch_no: null, is_export_project: false,
     production_site_id: null, nature_of_processing: null, is_job_work_in: false,
     linked_job_work_out_order_ids: [],
-    qc_required: false, qc_scenario: null, linked_test_report_ids: [], production_plan_id: null,
+    qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false, production_plan_id: null,
     shift_id: null, production_team_id: null,
     export_destination_country: null, export_regulatory_body: null, linked_letter_of_credit_id: null,
     cost_structure: cs,
@@ -83,6 +83,7 @@ describe('production-variance-engine · 7-way · Q18=a', () => {
       total_qty: 10, total_value: 1200,
       approval_history: [], status_history: [],
       notes: '', created_at: '', created_by: '', updated_at: '', updated_by: '',
+      qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false,
     };
     const v = computeRateVariance(po, [min], 10);
     expect(v.amount).toBe(200);
@@ -115,6 +116,7 @@ describe('production-variance-engine · 7-way · Q18=a', () => {
       total_actual_qty: 90, total_planned_qty: 100, overall_yield_pct: 90,
       marks_po_complete: false, status_history: [],
       notes: '', created_at: '', created_by: '', updated_at: '', updated_by: '',
+      linked_test_report_ids: [],
     };
     const v = computeYieldVariance(po, [pc], 10);
     expect(v.amount).toBe(1000);

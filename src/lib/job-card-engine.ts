@@ -104,6 +104,12 @@ export function createJobCard(input: CreateJobCardInput): JobCard {
       note: 'Job Card planned',
     }],
 
+    // Card 3b 3b-pre-1 · QC hookpoints (additive)
+    qc_required: false,
+    qc_scenario: null,
+    linked_test_report_ids: [],
+    routed_to_quarantine: false,
+
     created_at: now,
     created_by: input.created_by,
     updated_at: now,
@@ -253,4 +259,49 @@ function mkEvent(from: JobCardStatus | null, to: JobCardStatus, user: { id: stri
     changed_at: new Date().toISOString(),
     note,
   };
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 3b-pre-1 · Block F · D-620 · Q45=c QC auto-create on JC complete
+// ════════════════════════════════════════════════════════════════════
+import { createQaInspectionFromJC } from '@/lib/qa-inspection-production-bridge';
+import type { ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { ManufacturingTemplate } from '@/config/manufacturing-templates';
+import type { ItemQCParam } from '@/types/item-qc-param';
+import type { QaPlan } from '@/types/qa-plan';
+
+export interface CompleteJCQCContext {
+  productionConfig: ProductionConfig;
+  parentPO: ProductionOrder;
+  template?: ManufacturingTemplate;
+  itemQCParams: ItemQCParam[];
+  qaPlans: QaPlan[];
+}
+
+export function completeJobCardWithQC(
+  jc: JobCard,
+  input: CompleteJobCardInput,
+  user: { id: string; name: string },
+  qcContext?: CompleteJCQCContext,
+): JobCard {
+  const completed = completeJobCard(jc, input, user);
+  if (!qcContext || !completed.qc_required) return completed;
+  if (!qcContext.productionConfig.enableProductionQC) return completed;
+  const mode = qcContext.productionConfig.qcAutoCreateMode ?? 'config_per_scenario';
+  let shouldCreate = mode === 'always';
+  if (mode === 'config_per_scenario') {
+    const scen = qcContext.parentPO.qc_scenario;
+    shouldCreate = scen === 'internal_dept' || scen === 'third_party_agency';
+  }
+  if (!shouldCreate) return completed;
+  try {
+    const insp = createQaInspectionFromJC({
+      jc: completed, po: qcContext.parentPO,
+      inspector_user_id: user.id, inspection_location: 'Shop Floor',
+      template: qcContext.template, itemQCParams: qcContext.itemQCParams, qaPlans: qcContext.qaPlans,
+    });
+    const updated = { ...completed, linked_test_report_ids: [...completed.linked_test_report_ids, insp.id] };
+    persistJobCard(completed.entity_id, updated);
+    return updated;
+  } catch (e) { console.error('[jc-engine] QC auto-create failed', e); return completed; }
 }

@@ -77,6 +77,11 @@ export interface MaterialIssueNote {
   created_by: string;
   updated_at: string;
   updated_by: string;
+  // 🆕 D-615 · Card 3b 3b-pre-1 · QC hookpoints (Q44=a + Q47=c · ADDITIVE)
+  qc_required: boolean;
+  qc_scenario: string | null;
+  linked_test_report_ids: string[];
+  routed_to_quarantine: boolean;
 }
 
 // [JWT] GET/PUT /api/production/material-issues?entityCode=...

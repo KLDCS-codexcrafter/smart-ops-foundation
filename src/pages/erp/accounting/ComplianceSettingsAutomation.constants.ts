@@ -338,6 +338,9 @@ export interface ProductionConfig {
   defaultSchedulingMode: 'view_only' | 'click_to_reschedule';
   enableSchedulingConflictDetection: boolean;
   schedulingDateRangeDefault: '7d' | '30d' | '90d';
+
+  // Sprint 3b-pre-1 · Q45=c · QC auto-create polymorphic mode (Card 3b QualiCheck Integration)
+  qcAutoCreateMode: 'always' | 'manual' | 'config_per_scenario';
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -422,4 +425,7 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   defaultSchedulingMode: 'view_only',
   enableSchedulingConflictDetection: true,
   schedulingDateRangeDefault: '30d',
+
+  // Sprint 3b-pre-1 · Q45=c
+  qcAutoCreateMode: 'config_per_scenario',
 };
