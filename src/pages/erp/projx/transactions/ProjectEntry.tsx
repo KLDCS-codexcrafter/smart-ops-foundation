@@ -13,6 +13,7 @@
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,7 +33,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle, Trash2,
+  Briefcase, Plus, Edit2, Search, FolderKanban, ArrowRightLeft, AlertTriangle, Trash2, Factory,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
@@ -100,6 +101,7 @@ const BLANK: FormState = {
 
 export function ProjectEntryPanel() {
   const t = useT();
+  const navigate = useNavigate();
   const entityCode = DEFAULT_ENTITY_SHORTCODE;
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
@@ -354,6 +356,18 @@ export function ProjectEntryPanel() {
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      title="Create Production Order from Project"
+                      onClick={() => {
+                        navigate(`/erp/production?m=tx-production-order-entry&project_id=${encodeURIComponent(p.id)}`);
+                        toast.info(`Opening Production Order Entry prefilled from ${p.project_no}`);
+                      }}
+                    >
+                      <Factory className="h-3.5 w-3.5 text-muted-foreground" />
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7" title="Edit" onClick={() => openEdit(p)}>
                       <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                     </Button>

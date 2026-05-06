@@ -15,7 +15,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Package, ChevronDown, ChevronRight, ExternalLink, Briefcase,
+  Package, ChevronDown, ChevronRight, ExternalLink, Briefcase, Factory,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
@@ -247,7 +247,15 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
                               <strong>Terms:</strong> {o.terms_conditions}
                             </div>
                           )}
-                          <div className="mt-3 flex justify-end">
+                          <div className="mt-3 flex justify-end gap-2">
+                            <Button size="sm" variant="outline" className="gap-1.5"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/erp/production?m=tx-production-order-entry&so_id=${encodeURIComponent(o.id)}`);
+                                toast.info(`Opening Production Order Entry prefilled from ${o.order_no}`);
+                              }}>
+                              <Factory className="h-3.5 w-3.5" /> Create Production Order
+                            </Button>
                             {o.project_id ? (
                               <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-700 border-indigo-500/30 gap-1">
                                 <Briefcase className="h-3 w-3" /> Linked: {o.project_no}

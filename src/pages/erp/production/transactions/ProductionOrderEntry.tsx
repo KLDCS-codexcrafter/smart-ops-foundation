@@ -3,8 +3,8 @@
  * @sprint   T-Phase-1.3-3a-pre-1-fix-1
  * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview.
  */
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,10 +44,7 @@ const REG_BODY_OPTIONS = ['FDA', 'CE', 'WHO-GMP', 'BIS', 'CDSCO', 'PMDA', 'NMPA'
 export function ProductionOrderEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  // Card #2.7 12-item carry-forward (UseLastVoucherButton · DraftRecovery · Sprint27d2/e mounts ·
-  // Pinned Templates · Smart Defaults · Keyboard nav · Decimal precision · Currency display ·
-  // Notify-on-Save · Print preview) deferred to Sprint 3a-pre-2 per Q7=a (read-only in 3a-pre-1) ·
-  // not a violation of FR-29 since transaction is foundation-only · 3a-pre-2 makes it production-grade.
+  const [searchParams] = useSearchParams();
   const config = useProductionConfig();
   const { boms } = useBOM(entityCode);
   const { items } = useInventoryItems();
@@ -120,6 +117,32 @@ export function ProductionOrderEntryPanel(): JSX.Element {
       return DEFAULT_QC_CONFIG;
     }
   }, [entityCode]);
+
+  // Block K · Deep-link prefill from Block I (SalesX SO) and Block J (ProjX Project)
+  useEffect(() => {
+    const soId = searchParams.get('so_id');
+    const projId = searchParams.get('project_id');
+    if (soId) {
+      const so = salesOrders.find(o => o.id === soId);
+      if (so) {
+        setCustomerId(so.party_id ?? '');
+        setSoMappings(curr => {
+          if (curr.some(m => m.sales_order_id === so.id)) return curr;
+          return [...curr, {
+            sales_order_id: so.id,
+            sales_order_no: so.order_no,
+            sales_order_line_id: so.lines[0]?.id ?? '',
+            fulfilled_qty: 0,
+            required_by_date: '',
+          }];
+        });
+      }
+    }
+    if (projId) {
+      setProjectId(projId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, salesOrders.length]);
 
   const effectiveQcScenario: QCScenario | '' = isExport ? 'export_oriented' : qcScenario;
 
