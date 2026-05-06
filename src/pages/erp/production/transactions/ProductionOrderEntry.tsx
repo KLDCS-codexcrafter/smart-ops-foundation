@@ -107,6 +107,69 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [exportRegBody, setExportRegBody] = useState<string>('');
   const [linkedLcId, setLinkedLcId] = useState<string>('');
 
+  // Block H · Multi-output (Q13=a)
+  const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
+  const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
+
+  const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
+  const addOutput = (): void => {
+    setOutputs(prev => [
+      ...prev,
+      {
+        id: newOutputId(),
+        output_no: prev.length + 1,
+        output_kind: prev.length === 0 ? 'main' : 'co_product',
+        item_id: '',
+        item_code: '',
+        item_name: '',
+        planned_qty: 0,
+        uom: 'nos',
+        bom_id: '',
+        bom_version: 1,
+        batch_no: null,
+        qc_required: false,
+        qc_scenario: null,
+        linked_test_report_ids: [],
+        output_cost_master: 0,
+        output_cost_budget: 0,
+        output_cost_actual: 0,
+        cost_allocation_basis: 'qty' as CostAllocationBasis,
+        cost_allocation_pct: 0,
+        actual_qty: null,
+        yield_pct: null,
+        output_godown_id: '',
+      },
+    ]);
+  };
+
+  const updateOutput = (idx: number, patch: Partial<ProductionOrderOutput>): void => {
+    setOutputs(prev => prev.map((o, i) => (i === idx ? { ...o, ...patch } : o)));
+  };
+
+  const removeOutput = (idx: number): void => {
+    setOutputs(prev => prev.filter((_, i) => i !== idx).map((o, i) => ({ ...o, output_no: i + 1 })));
+  };
+
+  const onPickOutputItem = (idx: number, itemId: string): void => {
+    const it = items.find(i => i.id === itemId);
+    if (!it) return;
+    updateOutput(idx, {
+      item_id: it.id,
+      item_code: it.code,
+      item_name: it.name,
+      uom: it.primary_uom_symbol ?? 'nos',
+    });
+  };
+
+  const totalAllocPct = useMemo(
+    () => outputs.reduce((s, o) => s + (Number(o.cost_allocation_pct) || 0), 0),
+    [outputs],
+  );
+  const allocOk = Math.abs(totalAllocPct - 100) < 0.01;
+  const mainOutputCount = useMemo(() => outputs.filter(o => o.output_kind === 'main').length, [outputs]);
+
+
   const selectedBom = useMemo<Bom | undefined>(
     () => boms.find(b => b.id === bomId),
     [boms, bomId],
