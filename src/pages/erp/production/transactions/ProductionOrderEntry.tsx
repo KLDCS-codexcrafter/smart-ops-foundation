@@ -23,13 +23,16 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle, ExternalLink } from 'lucide-react';
+import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle, ExternalLink, Replace, Undo2 } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
+import { useItemSubstitutes } from '@/hooks/useItemSubstitutes';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useProjects } from '@/hooks/useProjects';
 import { useOrders } from '@/hooks/useOrders';
 import { useShifts } from '@/hooks/usePayHubMasters3';
@@ -44,8 +47,13 @@ import {
   releaseProductionOrder,
   computeMasterCost,
 } from '@/lib/production-engine';
+import {
+  findApprovedSubstitutes,
+  applySubstitution,
+} from '@/lib/bom-substitution-engine';
 import type { Bom } from '@/types/bom';
-import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis } from '@/types/production-order';
+import type { ItemSubstitute } from '@/types/item-substitute';
+import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis, SubstituteReason } from '@/types/production-order';
 
 const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
 const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
