@@ -116,6 +116,7 @@ describe('production-variance-engine · 7-way · Q18=a', () => {
       total_actual_qty: 90, total_planned_qty: 100, overall_yield_pct: 90,
       marks_po_complete: false, status_history: [],
       notes: '', created_at: '', created_by: '', updated_at: '', updated_by: '',
+      linked_test_report_ids: [],
     };
     const v = computeYieldVariance(po, [pc], 10);
     expect(v.amount).toBe(1000);
