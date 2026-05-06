@@ -4,6 +4,7 @@
  * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
@@ -42,6 +43,11 @@ const REG_BODY_OPTIONS = ['FDA', 'CE', 'WHO-GMP', 'BIS', 'CDSCO', 'PMDA', 'NMPA'
 
 export function ProductionOrderEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  // Card #2.7 12-item carry-forward (UseLastVoucherButton · DraftRecovery · Sprint27d2/e mounts ·
+  // Pinned Templates · Smart Defaults · Keyboard nav · Decimal precision · Currency display ·
+  // Notify-on-Save · Print preview) deferred to Sprint 3a-pre-2 per Q7=a (read-only in 3a-pre-1) ·
+  // not a violation of FR-29 since transaction is foundation-only · 3a-pre-2 makes it production-grade.
   const config = useProductionConfig();
   const { boms } = useBOM(entityCode);
   const { items } = useInventoryItems();
@@ -166,6 +172,15 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           qc_required: qcRequired,
           qc_scenario: effectiveQcScenario || undefined,
           shift_id: shiftId || undefined,
+          project_centre_id: projectCentreId || undefined,
+          reference_project_id: referenceProjectId || undefined,
+          sales_plan_id: salesPlanId || undefined,
+          production_site_id: productionSiteId || undefined,
+          nature_of_processing: natureOfProcessing || undefined,
+          is_job_work_in: isJobWorkIn,
+          production_team_id: productionTeamId || undefined,
+          production_plan_id: productionPlanId || undefined,
+          linked_letter_of_credit_id: linkedLcId || undefined,
           notes,
           created_by: 'current-user',
         },
@@ -175,10 +190,6 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         qcConfig,
         { id: 'current-user', name: 'Current User' },
       );
-      // hookpoint stubs (engine fields preserved) — TODO 3a-pre-2 wire deeper
-      void projectCentreId; void referenceProjectId; void salesPlanId;
-      void productionSiteId; void natureOfProcessing; void isJobWorkIn;
-      void productionTeamId; void productionPlanId; void linkedLcId;
       if (customer) void customer;
       if (release) {
         releaseProductionOrder(po, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
@@ -203,10 +214,17 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         </div>
       </div>
 
-      <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
-        ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
-        Edit there to keep all modules in sync.
-      </div>
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
 
       <Card>
         <CardHeader><CardTitle className="text-base">Order Details</CardTitle></CardHeader>
