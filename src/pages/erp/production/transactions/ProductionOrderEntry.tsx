@@ -118,6 +118,32 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     }
   }, [entityCode]);
 
+  // Block K · Deep-link prefill from Block I (SalesX SO) and Block J (ProjX Project)
+  useEffect(() => {
+    const soId = searchParams.get('so_id');
+    const projId = searchParams.get('project_id');
+    if (soId) {
+      const so = salesOrders.find(o => o.id === soId);
+      if (so) {
+        setCustomerId(so.party_id ?? '');
+        setSoMappings(curr => {
+          if (curr.some(m => m.sales_order_id === so.id)) return curr;
+          return [...curr, {
+            sales_order_id: so.id,
+            sales_order_no: so.order_no,
+            sales_order_line_id: so.lines[0]?.id ?? '',
+            fulfilled_qty: 0,
+            required_by_date: so.lines[0]?.required_date ?? '',
+          }];
+        });
+      }
+    }
+    if (projId) {
+      setProjectId(projId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, salesOrders.length]);
+
   const effectiveQcScenario: QCScenario | '' = isExport ? 'export_oriented' : qcScenario;
 
   const totalSoFulfilled = useMemo(
