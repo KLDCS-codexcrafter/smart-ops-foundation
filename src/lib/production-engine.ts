@@ -158,6 +158,7 @@ export function createProductionOrder(
   config: ProductionConfig,
   qcConfig: QualiCheckConfig,
   user: { id: string; name: string },
+  allBoms?: Bom[],
 ): ProductionOrder {
   if (input.planned_qty <= 0) throw new Error('planned_qty must be positive');
   if (new Date(input.target_end_date) < new Date(input.start_date))
@@ -167,14 +168,17 @@ export function createProductionOrder(
 
   const doc_no = generateDocNo('MO', input.entity_id);
 
-  const lines: ProductionOrderLine[] = bom.components.map((c, i) => ({
+  // Block A · D-528 · multi-level explosion (flattens semi-finished sub-BOMs).
+  // For single-level BOMs (no sub_bom_id) result equals the legacy single-level mapping.
+  const exploded = explodeBOM(bom, input.planned_qty, allBoms ?? [bom]);
+  const lines: ProductionOrderLine[] = exploded.map((c, i) => ({
     id: `pol-${doc_no.replace(/\//g, '-')}-${i + 1}`,
     line_no: i + 1,
-    bom_component_id: c.id,
+    bom_component_id: c.bom_component_ids[0],
     item_id: c.item_id,
     item_code: c.item_code,
     item_name: c.item_name,
-    required_qty: c.qty * input.planned_qty * (1 + (c.wastage_percent || 0) / 100),
+    required_qty: c.required_qty,
     issued_qty: 0,
     uom: c.uom,
     reservation_id: null,
