@@ -42,6 +42,7 @@ export default function ProductionPage(): JSX.Element {
   const render = (): JSX.Element => {
     switch (active) {
       case 'welcome': return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
+      case 'tx-production-plan-entry': return <ProductionPlanEntryPanel />;
       case 'tx-production-order-entry': return <ProductionOrderEntryPanel />;
       case 'tx-material-issue': return <MaterialIssueEntryPanel />;
       case 'tx-production-confirmation': return <ProductionConfirmationEntryPanel />;
