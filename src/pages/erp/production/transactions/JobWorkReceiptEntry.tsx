@@ -72,6 +72,28 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
 
   const anyQuarantine = selectedJWO?.lines.some(l => qcConfig.enableIncomingInspection && (lineQc[l.id] ?? false));
 
+  const formStateForMount = useMemo(
+    () => ({ jwoId, receiptDate, lineCount: Object.keys(lineRecv).length }),
+    [jwoId, receiptDate, lineRecv],
+  );
+  const itemsForMount = useMemo(
+    () => (selectedJWO?.lines ?? []).map(l => ({
+      item_name: l.expected_output_item_name,
+      qty: lineRecv[l.id] ?? 0,
+    })),
+    [selectedJWO, lineRecv],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'job-work-receipt-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-job-work-receipt',
+    userId: user?.id ?? undefined,
+    partyId: selectedJWO?.vendor_id ?? undefined,
+  });
+
   const handleSave = (confirm: boolean) => {
     if (!selectedJWO) { toast.error('Select a Job Work Out Order'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
