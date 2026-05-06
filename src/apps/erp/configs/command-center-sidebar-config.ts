@@ -13,6 +13,7 @@ import {
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
   Receipt, FileSignature, DoorOpen,
+  Factory as FactoryIcon, Cog, Wrench,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -144,6 +145,17 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub launcher (route-based)
       { id: 'cc-store-hub-launcher', type: 'item', label: 'Store Hub', icon: Warehouse,
         route: '/erp/store-hub', requiredCards: ['command-center'] },
+    ],
+  },
+  {
+    id: 'plant-ops-group', type: 'group', label: 'Plant Operations', icon: FactoryIcon,
+    children: [
+      { id: 'plant-ops-factory-master', type: 'item', label: 'Factory Master', icon: FactoryIcon,
+        moduleId: 'plant-ops-factory-master', requiredCards: ['command-center'] },
+      { id: 'plant-ops-work-center-master', type: 'item', label: 'Work Center Master', icon: Cog,
+        moduleId: 'plant-ops-work-center-master', requiredCards: ['command-center'] },
+      { id: 'plant-ops-machine-master', type: 'item', label: 'Machine Master', icon: Wrench,
+        moduleId: 'plant-ops-machine-master', requiredCards: ['command-center'] },
     ],
   },
   {

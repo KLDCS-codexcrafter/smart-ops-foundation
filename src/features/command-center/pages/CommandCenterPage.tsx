@@ -117,6 +117,11 @@ import { RequestXVoucherTypesMasterPanel } from '@/pages/erp/requestx/masters/Re
 import { ApprovalMatrixTemplatesPanel } from '@/pages/erp/requestx/masters/ApprovalMatrixTemplates';
 import { PinnedTemplatesPanel } from '@/pages/erp/requestx/masters/PinnedTemplatesPanel';
 
+// Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations masters
+import { FactoryMasterPanel } from '@/pages/erp/masters/FactoryMaster';
+import { WorkCenterMasterPanel } from '@/pages/erp/masters/WorkCenterMaster';
+import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { getPrimaryEntity } from '@/data/mock-entities';
 
@@ -224,7 +229,11 @@ export type CommandCenterModule =
   // T-Phase-1.2.6f-pre-2 · Procurement & Sourcing group
   | 'requestx-voucher-types'
   | 'approval-matrix-templates'
-  | 'pinned-templates-master';
+  | 'pinned-templates-master'
+  // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations
+  | 'plant-ops-factory-master'
+  | 'plant-ops-work-center-master'
+  | 'plant-ops-machine-master';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -259,6 +268,7 @@ export default function CommandCenterPage() {
       'collection-hub', 'collection-exec', 'collection-incentive', 'collection-reminder', 'collection-config',
       'distributor-hub', 'distributor-hierarchy', 'distributor-price-list',
       'distributor-credit-refs', 'distributor-dispute-refs',
+      'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -377,6 +387,11 @@ export default function CommandCenterPage() {
       case 'approval-matrix-templates': return <ApprovalMatrixTemplatesPanel />;
       case 'pinned-templates-master': return <PinnedTemplatesPanel />;
 
+      // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations
+      case 'plant-ops-factory-master':     return <FactoryMasterPanel />;
+      case 'plant-ops-work-center-master': return <WorkCenterMasterPanel />;
+      case 'plant-ops-machine-master':     return <MachineMasterPanel />;
+
       // Stage 1 — CRM
       case 'crm-hub':       return <CRMMastersModule onNavigate={handleNavigate} />;
       case 'crm-customer':  return <CustomerMasterPanel />;
@@ -463,6 +478,7 @@ function getGroupLabel(m: CommandCenterModule): string {
   if (m.startsWith('sales-')) return 'Sales Masters';
   if (m.startsWith('collection-')) return 'Collection Masters';
   if (m.startsWith('distributor-')) return 'Distributor Masters';
+  if (m.startsWith('plant-ops-')) return 'Plant Operations';
   return GROUP_LABELS[m] ?? '';
 }
 
