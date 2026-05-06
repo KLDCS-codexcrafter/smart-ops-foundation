@@ -541,7 +541,17 @@ export function ProductionPlanEntryPanel(): JSX.Element {
         </Button>
       </div>
 
-      <Sprint27eMount entityCode={entityCode} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="vt-production-plan"
+        voucherTypeName="Production Plan"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
