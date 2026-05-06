@@ -208,6 +208,11 @@ const MobileReceiptAckPage = lazy(() => import('./pages/mobile/MobileReceiptAckP
 // Sprint T-Phase-1.2.6f-d-2-card8-8-pre-1 · Block E · D-407 · RequestX Mobile
 const MobileMaterialIndentPage = lazy(() => import('./pages/mobile/MobileMaterialIndentPage'));
 const MobileApprovalInboxPage = lazy(() => import('./pages/mobile/MobileApprovalInboxPage'));
+// Sprint T-Phase-1.3-3a-pre-3 · Block H · D-563 · Card 3a Mobile Suite (Q17=a)
+const MobileMaterialIssuePage = lazy(() => import('./pages/mobile/MobileMaterialIssuePage'));
+const MobileProductionConfirmationPage = lazy(() => import('./pages/mobile/MobileProductionConfirmationPage'));
+const MobileJobWorkOutPage = lazy(() => import('./pages/mobile/MobileJobWorkOutPage'));
+const MobileJobWorkReceiptPage = lazy(() => import('./pages/mobile/MobileJobWorkReceiptPage'));
 const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
@@ -319,6 +324,10 @@ const App = () => (
               <Route path="/operix-go/store-issue" element={<P><MobileStoreIssuePage /></P>} />
               <Route path="/operix-go/receipt-ack" element={<P><MobileReceiptAckPage /></P>} />
               <Route path="/operix-go/material-indent" element={<P><MobileMaterialIndentPage /></P>} />
+              <Route path="/operix-go/production/material-issue" element={<P><MobileMaterialIssuePage /></P>} />
+              <Route path="/operix-go/production/confirmation" element={<P><MobileProductionConfirmationPage /></P>} />
+              <Route path="/operix-go/production/job-work-out" element={<P><MobileJobWorkOutPage /></P>} />
+              <Route path="/operix-go/production/job-work-receipt" element={<P><MobileJobWorkReceiptPage /></P>} />
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
