@@ -316,6 +316,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           production_team_id: productionTeamId || undefined,
           production_plan_id: productionPlanId || undefined,
           linked_letter_of_credit_id: linkedLcId || undefined,
+          outputs: multiOutputMode ? outputs : undefined,
           notes,
           created_by: 'current-user',
         },
