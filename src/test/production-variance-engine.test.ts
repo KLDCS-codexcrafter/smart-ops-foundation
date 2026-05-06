@@ -89,10 +89,10 @@ describe('production-variance-engine · 7-way · Q18=a', () => {
     expect(v.is_unfavourable).toBe(true);
   });
 
-  it('Test 2 · Efficiency variance Phase-2 stub returns 0', () => {
+  it('Test 2 · Efficiency variance ACTIVATED · returns 0 with no_data when no JCs', () => {
     const v = computeEfficiencyVariance(basePO(), [], 10);
     expect(v.amount).toBe(0);
-    expect(v.drilldown_data.status).toBe('phase_2_pending');
+    expect(v.drilldown_data.status).toBe('no_data');
   });
 
   it('Test 3 · Yield variance from PC actual vs planned × std_unit_cost', () => {
