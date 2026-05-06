@@ -39,6 +39,13 @@ import type { ProductionOrder } from '@/types/production-order';
 
 export function ProductionConfirmationEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
+  const user = useCurrentUser();
+  const [helpOpen, setHelpOpen] = useState(false);
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
 
