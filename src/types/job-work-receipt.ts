@@ -77,6 +77,9 @@ export interface JobWorkReceipt {
   created_by: string;
   updated_at: string;
   updated_by: string;
+  // 🆕 D-615 · Card 3b 3b-pre-1 · Q44=a back-reference + Q47=c (additive)
+  linked_test_report_ids: string[];
+  qc_scenario: string | null;
 }
 
 // [JWT] GET/PUT /api/production/job-work-receipts?entityCode=...
