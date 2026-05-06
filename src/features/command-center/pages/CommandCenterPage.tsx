@@ -268,6 +268,7 @@ export default function CommandCenterPage() {
       'collection-hub', 'collection-exec', 'collection-incentive', 'collection-reminder', 'collection-config',
       'distributor-hub', 'distributor-hierarchy', 'distributor-price-list',
       'distributor-credit-refs', 'distributor-dispute-refs',
+      'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -477,6 +478,7 @@ function getGroupLabel(m: CommandCenterModule): string {
   if (m.startsWith('sales-')) return 'Sales Masters';
   if (m.startsWith('collection-')) return 'Collection Masters';
   if (m.startsWith('distributor-')) return 'Distributor Masters';
+  if (m.startsWith('plant-ops-')) return 'Plant Operations';
   return GROUP_LABELS[m] ?? '';
 }
 
