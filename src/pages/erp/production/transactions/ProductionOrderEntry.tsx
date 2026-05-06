@@ -143,7 +143,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
     if (!selectedBom) { toast.error('Select a BOM'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
     try {
-      const customer = customers.find(c => c.id === customerId);
+      const customer = customers.find(c => c.partyCode === customerId);
       const cleanMappings = soMappings.filter(m => m.sales_order_id && m.fulfilled_qty > 0);
       const po = createProductionOrder(
         {
@@ -315,7 +315,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
                   <SelectContent>
                     {projects.map(p => (
                       <SelectItem key={p.id} value={p.id}>
-                        {p.project_code} · {p.name}
+                        {p.project_code} · {p.project_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -347,7 +347,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
                     <SelectTrigger><SelectValue placeholder="Select customer..." /></SelectTrigger>
                     <SelectContent>
                       {customers.map(c => (
-                        <SelectItem key={c.id} value={c.id}>
+                        <SelectItem key={c.partyCode} value={c.partyCode}>
                           {c.partyCode} · {c.partyName}
                         </SelectItem>
                       ))}
