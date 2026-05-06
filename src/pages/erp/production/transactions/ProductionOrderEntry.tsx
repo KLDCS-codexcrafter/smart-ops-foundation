@@ -428,8 +428,118 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             <Label>Notes</Label>
             <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} />
           </div>
+          <div className="md:col-span-2 flex items-center gap-2 pt-1 border-t">
+            <Switch checked={multiOutputMode} onCheckedChange={setMultiOutputMode} />
+            <Label>Multi-output (co-products / by-products)</Label>
+            <span className="text-xs text-muted-foreground ml-2">
+              {multiOutputMode ? `${outputs.length} output(s)` : 'Single-output'}
+            </span>
+          </div>
         </CardContent>
       </Card>
+
+      {multiOutputMode && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Outputs · Multi-Item PO</CardTitle>
+            <Button size="sm" variant="outline" onClick={addOutput}>
+              <Plus className="h-4 w-4 mr-1" /> Add Output
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {outputs.length === 0 && (
+              <div className="text-xs text-muted-foreground">No outputs yet · click Add Output.</div>
+            )}
+            {outputs.map((out, idx) => (
+              <div key={out.id} className="rounded-lg border p-3 space-y-2 bg-card">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">Kind</Label>
+                    <Select
+                      value={out.output_kind}
+                      onValueChange={v => updateOutput(idx, { output_kind: v as ProductionOrderOutputKind })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="main">Main</SelectItem>
+                        <SelectItem value="co_product">Co-Product</SelectItem>
+                        <SelectItem value="by_product">By-Product</SelectItem>
+                        <SelectItem value="scrap">Scrap</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="md:col-span-3 space-y-1">
+                    <Label className="text-xs">Item</Label>
+                    <Select value={out.item_id} onValueChange={v => onPickOutputItem(idx, v)}>
+                      <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>
+                        {items.slice(0, 200).map(it => (
+                          <SelectItem key={it.id} value={it.id}>
+                            {it.code} · {it.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">Planned Qty</Label>
+                    <Input
+                      type="number"
+                      className="font-mono"
+                      value={out.planned_qty}
+                      onChange={e => updateOutput(idx, { planned_qty: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="md:col-span-1 space-y-1">
+                    <Label className="text-xs">UOM</Label>
+                    <Input value={out.uom} onChange={e => updateOutput(idx, { uom: e.target.value })} />
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">BOM ID</Label>
+                    <Input
+                      value={out.bom_id}
+                      onChange={e => updateOutput(idx, { bom_id: e.target.value })}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="md:col-span-1 space-y-1">
+                    <Label className="text-xs">Alloc %</Label>
+                    <Input
+                      type="number"
+                      className="font-mono"
+                      value={out.cost_allocation_pct}
+                      onChange={e => updateOutput(idx, { cost_allocation_pct: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="md:col-span-1 flex items-end">
+                    <Button size="sm" variant="ghost" onClick={() => removeOutput(idx)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {outputs.length > 0 && (
+              <div className="text-xs flex items-center gap-3 pt-1">
+                <span>Total Allocation:</span>
+                <span className={`font-mono font-medium ${allocOk ? 'text-success' : 'text-warning'}`}>
+                  {totalAllocPct.toFixed(2)}%
+                </span>
+                {!allocOk && (
+                  <span className="text-warning flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" /> Must equal 100%
+                  </span>
+                )}
+                {mainOutputCount !== 1 && (
+                  <span className="text-warning flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" /> Need exactly 1 Main output (have {mainOutputCount})
+                  </span>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {selectedBom && (
         <Card>
