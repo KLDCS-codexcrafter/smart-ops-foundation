@@ -50,6 +50,16 @@ import { materialIndentsKey } from '@/types/material-indent';
 import { getDemoProductionData } from '@/data/demo-production-data';
 import { productionOrdersKey } from '@/types/production-order';
 import {
+  getDemoMaterialIssues,
+  getDemoProductionConfirmations,
+  getDemoJobWorkOutOrders,
+  getDemoJobWorkReceipts,
+} from '@/data/demo-production-workflow-data';
+import { materialIssueNotesKey } from '@/types/material-issue-note';
+import { productionConfirmationsKey } from '@/types/production-confirmation';
+import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
+import { jobWorkReceiptsKey } from '@/types/job-work-receipt';
+import {
   DEMO_RECEIVX_CONFIG, DEMO_REMINDER_TEMPLATES,
   DEMO_COLLECTION_EXECS, DEMO_INCENTIVE_SCHEMES,
   DEMO_PTPS_TRADING, DEMO_PTPS_SERVICES, DEMO_PTPS_MFG,
@@ -232,6 +242,12 @@ export function seedEntityDemoData(
 
   // Card 3a Production demo seeds (Sprint T-Phase-1.3-3a-pre-1 · Block I · D-509)
   safeSetArray(productionOrdersKey(entityCode), getDemoProductionData(entityCode));
+
+  // Card 3a-pre-2 production workflow demo seeds (Block M · MIN/PC/JWO/JWR)
+  safeSetArray(materialIssueNotesKey(entityCode), getDemoMaterialIssues(entityCode));
+  safeSetArray(productionConfirmationsKey(entityCode), getDemoProductionConfirmations(entityCode));
+  safeSetArray(jobWorkOutOrdersKey(entityCode), getDemoJobWorkOutOrders(entityCode));
+  safeSetArray(jobWorkReceiptsKey(entityCode), getDemoJobWorkReceipts(entityCode));
 
   // Sales Orders (Sprint T-Phase-1.1.1o) — anchor rows for Handoff Tracker.
   // Aligned to DEMO_SUPPLY_REQUEST_MEMOS.sales_order_no.
