@@ -43,7 +43,7 @@ import {
   computeMasterCost,
 } from '@/lib/production-engine';
 import type { Bom } from '@/types/bom';
-import type { QCScenario, SalesOrderLineMapping } from '@/types/production-order';
+import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis } from '@/types/production-order';
 
 const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
 const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
@@ -106,6 +106,69 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [exportCountry, setExportCountry] = useState<string>('');
   const [exportRegBody, setExportRegBody] = useState<string>('');
   const [linkedLcId, setLinkedLcId] = useState<string>('');
+
+  // Block H · Multi-output (Q13=a)
+  const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
+  const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
+
+  const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
+  const addOutput = (): void => {
+    setOutputs(prev => [
+      ...prev,
+      {
+        id: newOutputId(),
+        output_no: prev.length + 1,
+        output_kind: prev.length === 0 ? 'main' : 'co_product',
+        item_id: '',
+        item_code: '',
+        item_name: '',
+        planned_qty: 0,
+        uom: 'nos',
+        bom_id: '',
+        bom_version: 1,
+        batch_no: null,
+        qc_required: false,
+        qc_scenario: null,
+        linked_test_report_ids: [],
+        output_cost_master: 0,
+        output_cost_budget: 0,
+        output_cost_actual: 0,
+        cost_allocation_basis: 'qty' as CostAllocationBasis,
+        cost_allocation_pct: 0,
+        actual_qty: null,
+        yield_pct: null,
+        output_godown_id: '',
+      },
+    ]);
+  };
+
+  const updateOutput = (idx: number, patch: Partial<ProductionOrderOutput>): void => {
+    setOutputs(prev => prev.map((o, i) => (i === idx ? { ...o, ...patch } : o)));
+  };
+
+  const removeOutput = (idx: number): void => {
+    setOutputs(prev => prev.filter((_, i) => i !== idx).map((o, i) => ({ ...o, output_no: i + 1 })));
+  };
+
+  const onPickOutputItem = (idx: number, itemId: string): void => {
+    const it = items.find(i => i.id === itemId);
+    if (!it) return;
+    updateOutput(idx, {
+      item_id: it.id,
+      item_code: it.code,
+      item_name: it.name,
+      uom: it.primary_uom_symbol ?? 'nos',
+    });
+  };
+
+  const totalAllocPct = useMemo(
+    () => outputs.reduce((s, o) => s + (Number(o.cost_allocation_pct) || 0), 0),
+    [outputs],
+  );
+  const allocOk = Math.abs(totalAllocPct - 100) < 0.01;
+  const mainOutputCount = useMemo(() => outputs.filter(o => o.output_kind === 'main').length, [outputs]);
+
 
   const selectedBom = useMemo<Bom | undefined>(
     () => boms.find(b => b.id === bomId),
@@ -212,6 +275,14 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const handleSave = (release: boolean) => {
     if (!selectedBom) { toast.error('Select a BOM'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
+    if (multiOutputMode) {
+      if (outputs.length === 0) { toast.error('Add at least one output'); return; }
+      if (mainOutputCount !== 1) { toast.error('Multi-output PO must have exactly one Main output'); return; }
+      if (!allocOk) { toast.error(`Cost allocation must total 100% (currently ${totalAllocPct.toFixed(2)}%)`); return; }
+      if (outputs.some(o => !o.item_id || o.planned_qty <= 0)) {
+        toast.error('Each output needs an item and positive planned qty'); return;
+      }
+    }
     try {
       const customer = customers.find(c => c.partyCode === customerId);
       const cleanMappings = soMappings.filter(m => m.sales_order_id && m.fulfilled_qty > 0);
@@ -245,6 +316,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           production_team_id: productionTeamId || undefined,
           production_plan_id: productionPlanId || undefined,
           linked_letter_of_credit_id: linkedLcId || undefined,
+          outputs: multiOutputMode ? outputs : undefined,
           notes,
           created_by: 'current-user',
         },
@@ -356,8 +428,118 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             <Label>Notes</Label>
             <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} />
           </div>
+          <div className="md:col-span-2 flex items-center gap-2 pt-1 border-t">
+            <Switch checked={multiOutputMode} onCheckedChange={setMultiOutputMode} />
+            <Label>Multi-output (co-products / by-products)</Label>
+            <span className="text-xs text-muted-foreground ml-2">
+              {multiOutputMode ? `${outputs.length} output(s)` : 'Single-output'}
+            </span>
+          </div>
         </CardContent>
       </Card>
+
+      {multiOutputMode && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Outputs · Multi-Item PO</CardTitle>
+            <Button size="sm" variant="outline" onClick={addOutput}>
+              <Plus className="h-4 w-4 mr-1" /> Add Output
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {outputs.length === 0 && (
+              <div className="text-xs text-muted-foreground">No outputs yet · click Add Output.</div>
+            )}
+            {outputs.map((out, idx) => (
+              <div key={out.id} className="rounded-lg border p-3 space-y-2 bg-card">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">Kind</Label>
+                    <Select
+                      value={out.output_kind}
+                      onValueChange={v => updateOutput(idx, { output_kind: v as ProductionOrderOutputKind })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="main">Main</SelectItem>
+                        <SelectItem value="co_product">Co-Product</SelectItem>
+                        <SelectItem value="by_product">By-Product</SelectItem>
+                        <SelectItem value="scrap">Scrap</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="md:col-span-3 space-y-1">
+                    <Label className="text-xs">Item</Label>
+                    <Select value={out.item_id} onValueChange={v => onPickOutputItem(idx, v)}>
+                      <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>
+                        {items.slice(0, 200).map(it => (
+                          <SelectItem key={it.id} value={it.id}>
+                            {it.code} · {it.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">Planned Qty</Label>
+                    <Input
+                      type="number"
+                      className="font-mono"
+                      value={out.planned_qty}
+                      onChange={e => updateOutput(idx, { planned_qty: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="md:col-span-1 space-y-1">
+                    <Label className="text-xs">UOM</Label>
+                    <Input value={out.uom} onChange={e => updateOutput(idx, { uom: e.target.value })} />
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-xs">BOM ID</Label>
+                    <Input
+                      value={out.bom_id}
+                      onChange={e => updateOutput(idx, { bom_id: e.target.value })}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="md:col-span-1 space-y-1">
+                    <Label className="text-xs">Alloc %</Label>
+                    <Input
+                      type="number"
+                      className="font-mono"
+                      value={out.cost_allocation_pct}
+                      onChange={e => updateOutput(idx, { cost_allocation_pct: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="md:col-span-1 flex items-end">
+                    <Button size="sm" variant="ghost" onClick={() => removeOutput(idx)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {outputs.length > 0 && (
+              <div className="text-xs flex items-center gap-3 pt-1">
+                <span>Total Allocation:</span>
+                <span className={`font-mono font-medium ${allocOk ? 'text-success' : 'text-warning'}`}>
+                  {totalAllocPct.toFixed(2)}%
+                </span>
+                {!allocOk && (
+                  <span className="text-warning flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" /> Must equal 100%
+                  </span>
+                )}
+                {mainOutputCount !== 1 && (
+                  <span className="text-warning flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" /> Need exactly 1 Main output (have {mainOutputCount})
+                  </span>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {selectedBom && (
         <Card>
