@@ -363,10 +363,10 @@ export function computeBudgetCost(
     const item = itemMasters.find(i => i.id === c.item_id);
     if (!item) continue;
     const stdRate = item.std_cost_rate ?? 0;
-    const lastRate = item.last_purchase_price ?? stdRate;
+    const lastRate = item.last_purchase_rate ?? stdRate;
     const rate =
       rateBasis === 'last_purchase'   ? lastRate :
-      rateBasis === 'standard_cost'   ? stdRate :
+      rateBasis === 'master_standard' ? stdRate :
       rateBasis === 'budget_rate'     ? stdRate :
       rateBasis === 'current_rate'    ? lastRate :
       stdRate;

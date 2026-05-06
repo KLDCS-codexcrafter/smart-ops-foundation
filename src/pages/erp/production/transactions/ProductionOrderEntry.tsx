@@ -98,7 +98,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         { id: 'current-user', name: 'Current User' },
       );
       if (release) {
-        releaseProductionOrder(po, items, config, { id: 'current-user', name: 'Current User' });
+        releaseProductionOrder(po, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
         toast.success(`Production Order ${po.doc_no} released`);
       } else {
         toast.success(`Production Order ${po.doc_no} saved as draft`);
