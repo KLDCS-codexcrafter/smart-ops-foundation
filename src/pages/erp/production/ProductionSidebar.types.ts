@@ -4,6 +4,7 @@
  */
 export type ProductionModule =
   | 'welcome'
+  | 'tx-production-plan-entry'
   | 'tx-production-order-entry'
   | 'tx-material-issue'
   | 'tx-production-confirmation'

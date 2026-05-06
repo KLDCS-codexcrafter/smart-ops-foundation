@@ -3,7 +3,7 @@
  * @sprint   T-Phase-1.3-3a-pre-1
  */
 import { useState } from 'react';
-import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus } from 'lucide-react';
+import { ChevronRight, Factory, ListChecks, FileText, Layers, PackageMinus, CheckCircle, Truck, PackagePlus, ClipboardList } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -15,6 +15,7 @@ import type { ProductionModule } from './ProductionSidebar.types';
 
 const ICONS: Record<ProductionModule, React.ElementType> = {
   'welcome': ListChecks,
+  'tx-production-plan-entry': ClipboardList,
   'tx-production-order-entry': Factory,
   'tx-material-issue': PackageMinus,
   'tx-production-confirmation': CheckCircle,

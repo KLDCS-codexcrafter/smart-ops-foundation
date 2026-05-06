@@ -14,6 +14,7 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
   {
     id: 'transactions', label: 'Transactions',
     modules: [
+      { id: 'tx-production-plan-entry', label: 'Production Plan' },
       { id: 'tx-production-order-entry', label: 'Production Order Entry' },
       { id: 'tx-material-issue', label: 'Material Issue Note' },
       { id: 'tx-production-confirmation', label: 'Production Confirmation' },
