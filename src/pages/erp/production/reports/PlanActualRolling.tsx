@@ -43,7 +43,7 @@ export function PlanActualRollingPanel(): JSX.Element {
     for (const p of recentPlans) {
       let key: string;
       if (groupBy === 'plan_type') key = p.plan_type;
-      else if (groupBy === 'department') key = p.originating_department_id || 'unassigned';
+      else if (groupBy === 'department') key = p.department_id || 'unassigned';
       else key = p.lines[0]?.item_code || 'mixed';
       const planned = p.lines.reduce((s, l) => s + l.planned_qty, 0);
       const existing = map.get(key) ?? { label: key, planned: 0, ordered: 0, produced: 0 };
