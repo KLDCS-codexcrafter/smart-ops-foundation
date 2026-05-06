@@ -63,7 +63,7 @@ describe('production-engine', () => {
   it('creates production order from BOM and releases with reservations (D-186 · Q4=a)', () => {
     const po = createProductionOrder(baseInput, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, DEFAULT_QC_CONFIG, mockUser);
     expect(po.status).toBe('draft');
-    expect(po.doc_no).toMatch(/^MO\/\d{4}\/\d{4}$/);
+    expect(po.doc_no).toMatch(/^MO\/\d{2}-\d{2}\/\d{4}$/);
     expect(po.lines.length).toBe(2);
     expect(po.cost_structure.master.total).toBeGreaterThan(0);
 
