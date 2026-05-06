@@ -408,11 +408,47 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         { id: 'current-user', name: 'Current User' },
       );
       if (customer) void customer;
+
+      // Block 1 (fix-1) · Apply staged BOM substitutions onto the freshly-saved PO
+      let workingPo = po;
+      const staged = Object.values(substitutions);
+      if (staged.length > 0) {
+        for (const draft of staged) {
+          const line = workingPo.lines.find(l => l.bom_component_id === draft.bom_component_id);
+          if (!line) continue;
+          try {
+            const result = applySubstitution(
+              workingPo,
+              {
+                line_id: line.id,
+                reason: draft.reason,
+                notes: draft.notes,
+                approved: draft.approved,
+                freeForm: draft.freeForm
+                  ? {
+                      substitute_item_id: draft.freeForm.item_id,
+                      substitute_item_code: draft.freeForm.item_code,
+                      substitute_item_name: draft.freeForm.item_name,
+                      ratio: draft.freeForm.ratio,
+                    }
+                  : undefined,
+              },
+              items,
+              { id: 'current-user', name: 'Current User' },
+            );
+            workingPo = result.order;
+          } catch (e) {
+            toast.warning(`Substitution skipped: ${(e as Error).message}`);
+          }
+        }
+        toast.success(`${staged.length} BOM substitution(s) applied`);
+      }
+
       if (release) {
-        releaseProductionOrder(po, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
-        toast.success(`Production Order ${po.doc_no} released`);
+        releaseProductionOrder(workingPo, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
+        toast.success(`Production Order ${workingPo.doc_no} released`);
       } else {
-        toast.success(`Production Order ${po.doc_no} saved as draft`);
+        toast.success(`Production Order ${workingPo.doc_no} saved as draft`);
       }
     } catch (e) {
       toast.error((e as Error).message);
