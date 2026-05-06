@@ -138,13 +138,51 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-primary" />
-          Production Confirmation
-        </h1>
-        <p className="text-sm text-muted-foreground">Confirm actual FG output · auto-quarantine when QC enabled</p>
+      <DraftRecoveryDialog
+        formKey="production-confirmation-entry"
+        entityCode={entityCode}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-primary" />
+            Production Confirmation
+          </h1>
+          <p className="text-sm text-muted-foreground">Confirm actual FG output · auto-quarantine when QC enabled</p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="production-confirmation"
+          partyValue={null}
+          onUse={() => toast.info('Last voucher loaded')}
+        />
       </div>
+
+      <button
+        type="button"
+        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
+      >
+        <span>
+          ⓘ Masters live in <span className="font-medium">Command Center → Compliance Settings → Production Configuration</span>.
+          Edit there to keep all modules in sync.
+        </span>
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+      </button>
+
+      <Sprint27d2Mount
+        formName="ProductionConfirmationEntry"
+        entityCode={entityCode}
+        items={itemsForMount as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={true}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Header</CardTitle></CardHeader>
