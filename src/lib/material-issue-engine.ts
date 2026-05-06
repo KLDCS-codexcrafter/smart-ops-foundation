@@ -111,6 +111,10 @@ export function createMaterialIssue(
     created_by: input.issued_by_name,
     updated_at: now,
     updated_by: input.issued_by_name,
+    qc_required: false,
+    qc_scenario: null,
+    linked_test_report_ids: [],
+    routed_to_quarantine: false,
   };
 
   persistMIN(input.entity_id, min);

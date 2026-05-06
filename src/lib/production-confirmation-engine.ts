@@ -122,6 +122,7 @@ export function createProductionConfirmation(
     created_by: input.confirmed_by_name,
     updated_at: now,
     updated_by: input.confirmed_by_name,
+    linked_test_report_ids: [],
   };
 
   // Emit leak if yield variance > 10% (FR-44 · 3a-pre-3 will config-drive threshold)

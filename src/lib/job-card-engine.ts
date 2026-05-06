@@ -104,6 +104,12 @@ export function createJobCard(input: CreateJobCardInput): JobCard {
       note: 'Job Card planned',
     }],
 
+    // Card 3b 3b-pre-1 · QC hookpoints (additive)
+    qc_required: false,
+    qc_scenario: null,
+    linked_test_report_ids: [],
+    routed_to_quarantine: false,
+
     created_at: now,
     created_by: input.created_by,
     updated_at: now,

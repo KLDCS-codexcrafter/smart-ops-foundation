@@ -138,6 +138,8 @@ export function createJobWorkReceipt(
     created_by: input.received_by_name,
     updated_at: now,
     updated_by: input.received_by_name,
+    linked_test_report_ids: [],
+    qc_scenario: null,
   };
 
   persist(input.entity_id, jwr);
