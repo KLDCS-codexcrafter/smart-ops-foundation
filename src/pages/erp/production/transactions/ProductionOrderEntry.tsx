@@ -133,7 +133,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             sales_order_no: so.order_no,
             sales_order_line_id: so.lines[0]?.id ?? '',
             fulfilled_qty: 0,
-            required_by_date: so.lines[0]?.required_date ?? '',
+            required_by_date: '',
           }];
         });
       }
