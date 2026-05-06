@@ -199,6 +199,45 @@ export function createOrderReservations(
   saveReservations(entityCode, [...remaining, ...fresh]);
 }
 
+// ── 5b. Production-order reservations (Sprint T-Phase-1.3-3a-pre-1-fix-1 · D-186 lineage) ──
+
+export function createProductionOrderReservations(
+  entityCode: string,
+  poId: string,
+  poNo: string,
+  items: Array<{ item_name: string; qty: number }>,
+): StockReservation[] {
+  const now = new Date().toISOString();
+  const existing = loadReservations(entityCode);
+  const remaining = existing.filter(
+    r => !(r.source_type === 'production_order' && r.source_id === poId && r.status === 'active'),
+  );
+  const fresh: StockReservation[] = items
+    .filter(it => it.item_name && it.item_name.trim() && it.qty > 0)
+    .map((it, idx) => ({
+      id: `res-mo-${poId}-${idx}-${Date.now()}`,
+      entity_id: entityCode,
+      item_name: it.item_name,
+      reserved_qty: it.qty,
+      level: 'order',
+      status: 'active',
+      source_type: 'production_order',
+      source_id: poId,
+      source_no: poNo,
+      customer_name: null,
+      salesman_name: null,
+      reserved_at: now,
+      expires_at: null,
+      released_at: null,
+      created_at: now,
+      updated_at: now,
+      project_centre_id: null,
+    }));
+  // [JWT] POST /api/inventory/reservations (production-order-level)
+  saveReservations(entityCode, [...remaining, ...fresh]);
+  return fresh;
+}
+
 // ── 6. Sweep expired quote reservations ─────────────────────────────
 
 export function sweepExpiredReservations(entityCode: string): void {
