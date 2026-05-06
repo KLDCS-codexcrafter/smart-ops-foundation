@@ -168,6 +168,7 @@ const VendorPortalProfile = lazy(() => import('./pages/vendor-portal/VendorPorta
 const VendorCommLog = lazy(() => import('./pages/vendor-portal/VendorCommLog'));
 const VendorOnboardingFirstQuote = lazy(() => import('./pages/vendor-portal/VendorOnboardingFirstQuote'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
+const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
 const SerialGrid = lazy(() => import('./pages/erp/inventory/SerialGrid'));
@@ -483,6 +484,8 @@ const App = () => (
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
+              <Route path="/erp/production" element={<P><ProductionPage /></P>} />
+              <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
               <Route path="/erp/inventory-hub/batch-grid" element={<P><BatchGrid /></P>} />
               <Route path="/erp/inventory-hub/serial-grid" element={<P><SerialGrid /></P>} />

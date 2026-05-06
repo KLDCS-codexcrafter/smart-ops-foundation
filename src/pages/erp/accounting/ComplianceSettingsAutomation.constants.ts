@@ -248,3 +248,106 @@ export const DEFAULT_QC_CONFIG: QualiCheckConfig = {
 export const comply360QCKey = (entityId: string | null | undefined): string =>
   `erp_comply360_qc_${entityId ?? 'default'}`;
 
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint T-Phase-1.3-3a-pre-1 · D-509.5 · ProductionConfig (CC SSOT · FR-54)
+// ════════════════════════════════════════════════════════════════════
+
+export const comply360ProductionKey = (entityId: string | null | undefined): string =>
+  `erp_comply360_production_${entityId ?? 'default'}`;
+
+export interface ProductionConfig {
+  enableProduction: boolean;
+  enableMakeToStock: boolean;
+  enableMakeToOrder: boolean;
+  enableEngineerToOrder: boolean;
+  enableProcessManufacturing: boolean;
+  enableContractManufacturingInward: boolean;
+  enableJobWorkOutSubContracting: boolean;
+  enableMultiLevelBOMExplosion: boolean;
+  defaultBOMVersion: number;
+  defaultCostingBasis: 'budget_rate' | 'last_purchase' | 'current_rate' | 'standard_cost';
+  enableMaterialCostVariance: boolean;
+  enableLabourCostAllocation: boolean;
+  enableMachineCostAllocation: boolean;
+  enableOverheadAllocation: boolean;
+  enableShiftLinkage: boolean;
+  enableOperatorAssignment: boolean;
+  enableContractWorkerAssignment: boolean;
+  enableMachineAssignment: boolean;
+  enableProductionQC: boolean;
+  qcFailureRoutingRule: 'block_dispatch' | 'allow_with_concession' | 'manual_review';
+  enableMRA: boolean;
+  defaultPlanningHorizonDays: number;
+  includePendingPurchaseOrders: boolean;
+  includeSalesPlan: boolean;
+  includeProductionPlan: boolean;
+  considerSafetyStock: boolean;
+  productionOrderPrefix: string;
+  productionOrderFormat: string;
+  defaultProjectCentreId: string | null;
+  enforceProjectIdForETO: boolean;
+  enforceCustomerIdForContractMfg: boolean;
+  enforceBusinessUnitForMultiBU: boolean;
+  enableExportProductionTracking: boolean;
+  productionDepartmentVisibility: 'department_scoped' | 'cross_department' | 'plant_wide';
+  hideCostsFromOperators: boolean;
+  requireApprovalForRelease: boolean;
+  approvalThreshold: number;
+  enableMobileCapture: boolean;
+  enableShiftBasedCapture: boolean;
+  enablePhotoCapture: boolean;
+  defaultPrintFormat: 'standard' | 'detailed' | 'compact';
+  printFooterText: string;
+  enableLeakEmissionOnVariance: boolean;
+  leakVarianceThresholdPct: number;
+  leakAgingThresholdDays: number;
+}
+
+export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
+  enableProduction: true,
+  enableMakeToStock: true,
+  enableMakeToOrder: true,
+  enableEngineerToOrder: false,
+  enableProcessManufacturing: false,
+  enableContractManufacturingInward: false,
+  enableJobWorkOutSubContracting: false,
+  enableMultiLevelBOMExplosion: false,
+  defaultBOMVersion: 1,
+  defaultCostingBasis: 'last_purchase',
+  enableMaterialCostVariance: true,
+  enableLabourCostAllocation: false,
+  enableMachineCostAllocation: false,
+  enableOverheadAllocation: false,
+  enableShiftLinkage: true,
+  enableOperatorAssignment: false,
+  enableContractWorkerAssignment: false,
+  enableMachineAssignment: false,
+  enableProductionQC: true,
+  qcFailureRoutingRule: 'block_dispatch',
+  enableMRA: false,
+  defaultPlanningHorizonDays: 60,
+  includePendingPurchaseOrders: true,
+  includeSalesPlan: true,
+  includeProductionPlan: true,
+  considerSafetyStock: true,
+  productionOrderPrefix: 'MO',
+  productionOrderFormat: 'MO/{FY}/{NNNN}',
+  defaultProjectCentreId: null,
+  enforceProjectIdForETO: false,
+  enforceCustomerIdForContractMfg: false,
+  enforceBusinessUnitForMultiBU: false,
+  enableExportProductionTracking: false,
+  productionDepartmentVisibility: 'department_scoped',
+  hideCostsFromOperators: true,
+  requireApprovalForRelease: false,
+  approvalThreshold: 100000,
+  enableMobileCapture: false,
+  enableShiftBasedCapture: false,
+  enablePhotoCapture: false,
+  defaultPrintFormat: 'standard',
+  printFooterText: '',
+  enableLeakEmissionOnVariance: true,
+  leakVarianceThresholdPct: 10,
+  leakAgingThresholdDays: 7,
+};
