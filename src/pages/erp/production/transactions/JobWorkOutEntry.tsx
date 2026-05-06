@@ -1,9 +1,11 @@
 /**
  * @file     JobWorkOutEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2 · Block G
+ * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
  * @purpose  Job Work Out Order — send RM/components to a sub-contractor.
+ *           Card #2.7 12-item carry-forward + clickable CC banner.
  */
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,11 +13,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, Save, Send, Plus, Trash2 } from 'lucide-react';
+import { Truck, Save, Send, Plus, Trash2, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { DEMO_VENDORS } from '@/data/demo-customers-vendors';
 import { createJobWorkOutOrder, sendJobWorkOutOrder } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrderLine } from '@/types/job-work-out-order';
