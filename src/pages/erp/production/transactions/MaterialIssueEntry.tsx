@@ -56,6 +56,25 @@ export function MaterialIssueEntryPanel(): JSX.Element {
   const wipGodownId = selectedPO?.wip_godown_id ?? selectedPO?.output_godown_id ?? '';
   const wipGodownName = godowns.find(g => g.id === wipGodownId)?.name ?? 'WIP';
 
+  const formStateForMount = useMemo(
+    () => ({ poId, issueDate, departmentId, lineCount: Object.keys(lineQtys).length }),
+    [poId, issueDate, departmentId, lineQtys],
+  );
+  const itemsForMount = useMemo(
+    () => (selectedPO?.lines ?? []).map(l => ({ item_name: l.item_name, qty: lineQtys[l.id] ?? 0 })),
+    [selectedPO, lineQtys],
+  );
+  const mount = useSprint27d1Mount({
+    formKey: 'material-issue-note-entry',
+    entityCode,
+    formState: formStateForMount,
+    items: itemsForMount,
+    view: 'new',
+    voucherType: 'vt-material-issue-note',
+    userId: user?.id ?? undefined,
+    partyId: undefined,
+  });
+
   const handleSave = (issue: boolean) => {
     if (!selectedPO) { toast.error('Select a Production Order'); return; }
     if (!departmentId) { toast.error('Department required'); return; }
