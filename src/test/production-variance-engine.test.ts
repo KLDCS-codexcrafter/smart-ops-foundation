@@ -83,6 +83,7 @@ describe('production-variance-engine · 7-way · Q18=a', () => {
       total_qty: 10, total_value: 1200,
       approval_history: [], status_history: [],
       notes: '', created_at: '', created_by: '', updated_at: '', updated_by: '',
+      qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false,
     };
     const v = computeRateVariance(po, [min], 10);
     expect(v.amount).toBe(200);
