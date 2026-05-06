@@ -17,6 +17,7 @@ import type {
 } from '@/types/production-plan';
 import { productionPlansKey } from '@/types/production-plan';
 import { generateDocNo } from '@/lib/finecore-engine';
+import { runCapacityCheck } from '@/lib/capacity-planning-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // Persistence helpers
@@ -245,8 +246,6 @@ export function approveProductionPlan(
   let capacity_check_details: Record<string, unknown> = {};
 
   if (context) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { runCapacityCheck } = require('@/lib/capacity-planning-engine') as typeof import('@/lib/capacity-planning-engine');
     const result = runCapacityCheck(plan, {
       machines: context.machines,
       shifts: context.shifts,
