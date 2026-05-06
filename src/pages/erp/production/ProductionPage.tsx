@@ -54,6 +54,9 @@ export default function ProductionPage(): JSX.Element {
       case 'tx-job-work-receipt': return <JobWorkReceiptEntryPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-production-plan-register': return <ProductionPlanRegisterPanel />;
+      case 'rpt-variance-dashboard': return <ProductionVarianceDashboardPanel />;
+      case 'rpt-plan-actual-rolling': return <PlanActualRollingPanel />;
+      case 'rpt-itc04-export': return <ITC04ExportPanel />;
       case 'rpt-wip': return <WIPReportPanel />;
       default: return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
