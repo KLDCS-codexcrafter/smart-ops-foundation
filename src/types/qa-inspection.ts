@@ -76,6 +76,16 @@ export interface QaInspectionRecord {
   external_lab_sample_sent_date?: string | null;
   external_lab_report_received_date?: string | null;
   external_lab_report_url?: string | null;
+  // 🆕 D-615 · Card 3b 3b-pre-1 · Production transaction linkage (Q44=a · ADDITIVE)
+  source_context?: 'incoming_vendor' | 'incoming_internal' | 'in_process' | 'outgoing' | null;
+  production_order_id?: string | null;
+  production_order_no?: string | null;
+  production_confirmation_id?: string | null;
+  material_issue_id?: string | null;
+  job_card_id?: string | null;
+  factory_id?: string | null;
+  machine_id?: string | null;
+  work_center_id?: string | null;
 }
 
 export const qaInspectionKey = (entityCode: string): string =>
