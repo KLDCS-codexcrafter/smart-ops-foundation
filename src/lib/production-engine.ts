@@ -636,7 +636,7 @@ export function closeProductionOrder(input: CloseProductionOrderInput): Producti
   }
   const today = new Date().toISOString().slice(0, 10);
   if (isPeriodLocked(today, po.entity_id)) {
-    throw new Error(periodLockMessage(today, po.entity_id));
+    throw new Error(periodLockMessage(today, po.entity_id) ?? 'Period locked');
   }
   // Q19=b · Maker-checker
   if (closer.id === po.created_by || closer.name === po.created_by) {
