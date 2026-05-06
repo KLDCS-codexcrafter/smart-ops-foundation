@@ -34,7 +34,7 @@ function basePO(overrides: Partial<ProductionOrder> = {}): ProductionOrder {
     business_unit_id: null, batch_no: null, is_export_project: false,
     production_site_id: null, nature_of_processing: null, is_job_work_in: false,
     linked_job_work_out_order_ids: [],
-    qc_required: false, qc_scenario: null, linked_test_report_ids: [], production_plan_id: null,
+    qc_required: false, qc_scenario: null, linked_test_report_ids: [], routed_to_quarantine: false, production_plan_id: null,
     shift_id: null, production_team_id: null,
     export_destination_country: null, export_regulatory_body: null, linked_letter_of_credit_id: null,
     cost_structure: cs,
