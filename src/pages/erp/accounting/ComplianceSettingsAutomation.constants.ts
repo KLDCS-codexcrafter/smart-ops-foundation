@@ -302,6 +302,14 @@ export interface ProductionConfig {
   enableLeakEmissionOnVariance: boolean;
   leakVarianceThresholdPct: number;
   leakAgingThresholdDays: number;
+
+  // Sprint 3a-pre-2.5 · Block K · 6 feature flags
+  enableProductionPlan: boolean;
+  enableMultiOutputPO: boolean;
+  enableBOMSubstitution: boolean;
+  requireSubstitutionApproval: boolean;
+  enableCapacityCheck: boolean;
+  enableExportLineFlag: boolean;
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -350,4 +358,12 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   enableLeakEmissionOnVariance: true,
   leakVarianceThresholdPct: 10,
   leakAgingThresholdDays: 7,
+
+  // Sprint 3a-pre-2.5 · Block K
+  enableProductionPlan: true,
+  enableMultiOutputPO: false,
+  enableBOMSubstitution: true,
+  requireSubstitutionApproval: true,
+  enableCapacityCheck: true,
+  enableExportLineFlag: false,
 };

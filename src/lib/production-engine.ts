@@ -27,6 +27,7 @@ import { emptyCostStructure } from '@/types/production-cost';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
+import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // 1. CRUD · CREATE
@@ -300,6 +301,13 @@ export function createProductionOrder(
   const all = readPOs(input.entity_id);
   all.push(po);
   writePOs(input.entity_id, all);
+
+  // Block J · D-551 · Q14=a — back-link plan(s) → PO (M:N)
+  const planIds = po.linked_production_plan_ids ?? [];
+  for (const pid of planIds) {
+    const plan = getProductionPlanById(input.entity_id, pid);
+    if (plan) linkProductionOrder(plan, po.id, user);
+  }
 
   return po;
 }
