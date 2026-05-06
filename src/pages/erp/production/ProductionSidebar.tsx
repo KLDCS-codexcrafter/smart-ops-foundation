@@ -22,6 +22,7 @@ const ICONS: Record<ProductionModule, React.ElementType> = {
   'tx-job-work-out': Truck,
   'tx-job-work-receipt': PackagePlus,
   'rpt-production-order-register': FileText,
+  'rpt-production-plan-register': ClipboardList,
   'rpt-wip': Layers,
 };
 

@@ -23,13 +23,16 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle, ExternalLink } from 'lucide-react';
+import { ChevronRight, Factory, Save, Plus, Trash2, AlertTriangle, ExternalLink, Replace, Undo2 } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
+import { useItemSubstitutes } from '@/hooks/useItemSubstitutes';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useProjects } from '@/hooks/useProjects';
 import { useOrders } from '@/hooks/useOrders';
 import { useShifts } from '@/hooks/usePayHubMasters3';
@@ -44,8 +47,13 @@ import {
   releaseProductionOrder,
   computeMasterCost,
 } from '@/lib/production-engine';
+import {
+  findApprovedSubstitutes,
+  applySubstitution,
+} from '@/lib/bom-substitution-engine';
 import type { Bom } from '@/types/bom';
-import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis } from '@/types/production-order';
+import type { ItemSubstitute } from '@/types/item-substitute';
+import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis, SubstituteReason } from '@/types/production-order';
 
 const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
 const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
@@ -122,6 +130,65 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [linkedPlanIds, setLinkedPlanIds] = useState<string[]>([]);
   const togglePlanLink = (id: string): void => {
     setLinkedPlanIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  // Block 1 (fix-1) · BOM Substitution UI · D-543
+  const { subs: itemSubstitutes } = useItemSubstitutes(entityCode);
+  const substitutionEnabled = config.enableBOMSubstitution !== false;
+  interface SubstitutionDraft {
+    bom_component_id: string;
+    reason: SubstituteReason;
+    notes: string;
+    approved?: ItemSubstitute;
+    freeForm?: { item_id: string; item_code: string; item_name: string; ratio: number };
+  }
+  const [substitutions, setSubstitutions] = useState<Record<string, SubstitutionDraft>>({});
+  const [openPopoverFor, setOpenPopoverFor] = useState<string | null>(null);
+  const [draftReason, setDraftReason] = useState<SubstituteReason>('stock_unavailable');
+  const [draftNotes, setDraftNotes] = useState<string>('');
+  const [draftFreeFormItemId, setDraftFreeFormItemId] = useState<string>('');
+  const [draftFreeFormRatio, setDraftFreeFormRatio] = useState<number>(1);
+
+  const applyApprovedDraft = (componentId: string, sub: ItemSubstitute): void => {
+    if (!draftNotes.trim()) { toast.error('Notes are required'); return; }
+    setSubstitutions(prev => ({
+      ...prev,
+      [componentId]: { bom_component_id: componentId, reason: draftReason, notes: draftNotes.trim(), approved: sub },
+    }));
+    setOpenPopoverFor(null);
+    setDraftNotes('');
+    toast.success(`Substitution staged: ${sub.substitute_item_name}`);
+  };
+
+  const applyFreeFormDraft = (componentId: string): void => {
+    if (!draftFreeFormItemId) { toast.error('Select a substitute item'); return; }
+    if (!draftNotes.trim()) { toast.error('Notes are required'); return; }
+    if (draftFreeFormRatio <= 0) { toast.error('Ratio must be positive'); return; }
+    const it = items.find(i => i.id === draftFreeFormItemId);
+    if (!it) return;
+    setSubstitutions(prev => ({
+      ...prev,
+      [componentId]: {
+        bom_component_id: componentId,
+        reason: draftReason,
+        notes: draftNotes.trim(),
+        freeForm: { item_id: it.id, item_code: it.code, item_name: it.name, ratio: draftFreeFormRatio },
+      },
+    }));
+    setOpenPopoverFor(null);
+    setDraftNotes('');
+    setDraftFreeFormItemId('');
+    setDraftFreeFormRatio(1);
+    toast.success(`Free-form substitution staged: ${it.name}`);
+  };
+
+  const revertDraft = (componentId: string): void => {
+    setSubstitutions(prev => {
+      const { [componentId]: _, ...rest } = prev;
+      void _;
+      return rest;
+    });
+    toast.success('Substitution removed');
   };
 
   const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
@@ -341,11 +408,47 @@ export function ProductionOrderEntryPanel(): JSX.Element {
         { id: 'current-user', name: 'Current User' },
       );
       if (customer) void customer;
+
+      // Block 1 (fix-1) · Apply staged BOM substitutions onto the freshly-saved PO
+      let workingPo = po;
+      const staged = Object.values(substitutions);
+      if (staged.length > 0) {
+        for (const draft of staged) {
+          const line = workingPo.lines.find(l => l.bom_component_id === draft.bom_component_id);
+          if (!line) continue;
+          try {
+            const result = applySubstitution(
+              workingPo,
+              {
+                line_id: line.id,
+                reason: draft.reason,
+                notes: draft.notes,
+                approved: draft.approved,
+                freeForm: draft.freeForm
+                  ? {
+                      substitute_item_id: draft.freeForm.item_id,
+                      substitute_item_code: draft.freeForm.item_code,
+                      substitute_item_name: draft.freeForm.item_name,
+                      ratio: draft.freeForm.ratio,
+                    }
+                  : undefined,
+              },
+              items,
+              { id: 'current-user', name: 'Current User' },
+            );
+            workingPo = result.order;
+          } catch (e) {
+            toast.warning(`Substitution skipped: ${(e as Error).message}`);
+          }
+        }
+        toast.success(`${staged.length} BOM substitution(s) applied`);
+      }
+
       if (release) {
-        releaseProductionOrder(po, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
-        toast.success(`Production Order ${po.doc_no} released`);
+        releaseProductionOrder(workingPo, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
+        toast.success(`Production Order ${workingPo.doc_no} released`);
       } else {
-        toast.success(`Production Order ${po.doc_no} saved as draft`);
+        toast.success(`Production Order ${workingPo.doc_no} saved as draft`);
       }
     } catch (e) {
       toast.error((e as Error).message);
@@ -557,17 +660,183 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
       {selectedBom && (
         <Card>
-          <CardHeader><CardTitle className="text-base">BOM Components</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>BOM Components {substitutionEnabled && '· Editable with Substitution'}</span>
+              {Object.keys(substitutions).length > 0 && (
+                <Badge variant="outline" className="text-xs">
+                  {Object.keys(substitutions).length} substitution(s) staged
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground mb-2">{selectedBom.components.length} component(s)</div>
-            <div className="space-y-1 text-sm">
-              {selectedBom.components.map(c => (
-                <div key={c.id} className="flex justify-between border-b py-1">
-                  <span>{c.item_code} · {c.item_name}</span>
-                  <span className="font-mono">{(c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100)).toFixed(2)} {c.uom}</span>
-                </div>
-              ))}
+            <div className="grid grid-cols-12 gap-2 mb-1 text-xs font-semibold text-muted-foreground">
+              <div className="col-span-5">Item</div>
+              <div className="col-span-3 text-right">Required Qty</div>
+              <div className="col-span-3">Action</div>
+              <div className="col-span-1"></div>
             </div>
+            {selectedBom.components.map(c => {
+              const sub = substitutions[c.id];
+              const baseQty = c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100);
+              const effItemName = sub
+                ? (sub.approved?.substitute_item_name ?? sub.freeForm?.item_name ?? c.item_name)
+                : c.item_name;
+              const effRatio = sub?.approved?.ratio ?? sub?.freeForm?.ratio ?? 1;
+              const effQty = sub ? baseQty * effRatio : baseQty;
+              const alts = substitutionEnabled ? findApprovedSubstitutes(itemSubstitutes, c.item_id) : [];
+              const popKey = `${c.id}`;
+              return (
+                <div key={c.id} className="grid grid-cols-12 gap-2 items-center py-1.5 border-b text-sm">
+                  <div className="col-span-5">
+                    {sub ? (
+                      <div>
+                        <div className="line-through text-muted-foreground text-xs">
+                          {c.item_code} · {c.item_name}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>→ {effItemName}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {sub.approved ? 'Tier 1' : 'Tier 2'}
+                          </Badge>
+                        </div>
+                      </div>
+                    ) : (
+                      <span>{c.item_code} · {c.item_name}</span>
+                    )}
+                  </div>
+                  <div className="col-span-3 text-right font-mono">
+                    {effQty.toFixed(2)} {c.uom}
+                  </div>
+                  <div className="col-span-3">
+                    {substitutionEnabled && (
+                      <Popover
+                        open={openPopoverFor === popKey}
+                        onOpenChange={(o) => {
+                          setOpenPopoverFor(o ? popKey : null);
+                          if (o) {
+                            setDraftNotes('');
+                            setDraftReason('stock_unavailable');
+                            setDraftFreeFormItemId('');
+                            setDraftFreeFormRatio(1);
+                          }
+                        }}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" disabled={Boolean(sub)}>
+                            <Replace className="h-3 w-3 mr-1" />
+                            {alts.length > 0 ? `Substitute (${alts.length})` : 'Substitute'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96" align="start">
+                          <div className="space-y-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Reason (mandatory)</Label>
+                              <Select value={draftReason} onValueChange={(v) => setDraftReason(v as SubstituteReason)}>
+                                <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="stock_unavailable">Stock unavailable</SelectItem>
+                                  <SelectItem value="cost_optimization">Cost optimization</SelectItem>
+                                  <SelectItem value="quality_upgrade">Quality upgrade</SelectItem>
+                                  <SelectItem value="sourcing_constraint">Sourcing constraint</SelectItem>
+                                  <SelectItem value="customer_specification">Customer specification</SelectItem>
+                                  <SelectItem value="export_compliance">Export compliance</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Notes (mandatory · audit trail)</Label>
+                              <Input
+                                className="text-xs"
+                                value={draftNotes}
+                                onChange={(e) => setDraftNotes(e.target.value)}
+                                placeholder="Why is this substitution being made?"
+                              />
+                            </div>
+
+                            {alts.length > 0 && (
+                              <div>
+                                <div className="text-xs font-semibold mb-1">Tier 1 · Pre-approved (Substitute Master)</div>
+                                <div className="max-h-32 overflow-y-auto">
+                                  {alts.map(s => (
+                                    <button
+                                      key={s.id}
+                                      type="button"
+                                      onClick={() => applyApprovedDraft(c.id, s)}
+                                      className="w-full text-left p-2 hover:bg-muted rounded text-xs border-b last:border-0"
+                                    >
+                                      <div className="font-medium">{s.substitute_item_name}</div>
+                                      <div className="text-muted-foreground">
+                                        Ratio 1:{s.ratio} · {s.scenarios.join(', ') || 'general'}
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {alts.length === 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                No pre-approved alternates · use free-form below.
+                              </div>
+                            )}
+
+                            <div className="border-t pt-2 space-y-1">
+                              <div className="text-xs font-semibold">Tier 2 · Free-form</div>
+                              <Select value={draftFreeFormItemId} onValueChange={setDraftFreeFormItemId}>
+                                <SelectTrigger className="text-xs">
+                                  <SelectValue placeholder="Pick any inventory item..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {items
+                                    .filter(i => i.id !== c.item_id)
+                                    .slice(0, 50)
+                                    .map(i => (
+                                      <SelectItem key={i.id} value={i.id} className="text-xs">
+                                        {i.code} · {i.name}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min={0.01}
+                                className="text-xs font-mono"
+                                value={draftFreeFormRatio}
+                                onChange={(e) => setDraftFreeFormRatio(Number(e.target.value))}
+                                placeholder="Ratio (1 primary = ? substitute)"
+                              />
+                              <Button
+                                size="sm"
+                                className="w-full text-xs"
+                                onClick={() => applyFreeFormDraft(c.id)}
+                              >
+                                Apply free-form substitution
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </div>
+                  <div className="col-span-1">
+                    {sub && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => revertDraft(c.id)}
+                        title="Revert to original BOM"
+                      >
+                        <Undo2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}

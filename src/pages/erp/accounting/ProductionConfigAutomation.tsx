@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, Factory } from 'lucide-react';
+import { Save, Factory, Sparkles } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   comply360ProductionKey,
@@ -175,6 +175,23 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
               className="font-mono"
             />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            v6 Extensions · Plan + Multi-Output + Substitution
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          {sw('enableProductionPlan', 'Production Planning (8 plan_types)')}
+          {sw('enableMultiOutputPO', 'Multi-Output PO (co/by-products · scrap)')}
+          {sw('enableBOMSubstitution', 'BOM Substitution (two-tier)')}
+          {sw('requireSubstitutionApproval', 'Substitution requires approval')}
+          {sw('enableCapacityCheck', 'Capacity Check on Plan approve')}
+          {sw('enableExportLineFlag', 'Export-line flag default on Plan lines')}
         </CardContent>
       </Card>
 

@@ -26,6 +26,7 @@ export const PRODUCTION_GROUPS: ProductionGroup[] = [
     id: 'reports', label: 'Reports',
     modules: [
       { id: 'rpt-production-order-register', label: 'Production Order Register' },
+      { id: 'rpt-production-plan-register', label: 'Production Plan Register' },
       { id: 'rpt-wip', label: 'WIP Report' },
     ],
   },

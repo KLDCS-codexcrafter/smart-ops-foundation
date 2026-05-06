@@ -11,4 +11,5 @@ export type ProductionModule =
   | 'tx-job-work-out'
   | 'tx-job-work-receipt'
   | 'rpt-production-order-register'
+  | 'rpt-production-plan-register'
   | 'rpt-wip';
