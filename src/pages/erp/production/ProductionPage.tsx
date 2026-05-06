@@ -9,6 +9,10 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ProductionSidebar } from './ProductionSidebar';
 import { ProductionWelcome } from './ProductionWelcome';
 import { ProductionOrderEntryPanel } from './transactions/ProductionOrderEntry';
+import { MaterialIssueEntryPanel } from './transactions/MaterialIssueEntry';
+import { ProductionConfirmationEntryPanel } from './transactions/ProductionConfirmationEntry';
+import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
+import { JobWorkReceiptEntryPanel } from './transactions/JobWorkReceiptEntry';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { WIPReportPanel } from './reports/WIPReport';
 import type { ProductionModule } from './ProductionSidebar.types';
@@ -20,6 +24,10 @@ export default function ProductionPage(): JSX.Element {
     switch (active) {
       case 'welcome': return <ProductionWelcome onNavigate={(m) => setActive(m as ProductionModule)} />;
       case 'tx-production-order-entry': return <ProductionOrderEntryPanel />;
+      case 'tx-material-issue': return <MaterialIssueEntryPanel />;
+      case 'tx-production-confirmation': return <ProductionConfirmationEntryPanel />;
+      case 'tx-job-work-out': return <JobWorkOutEntryPanel />;
+      case 'tx-job-work-receipt': return <JobWorkReceiptEntryPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-wip': return <WIPReportPanel />;
       default: return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
