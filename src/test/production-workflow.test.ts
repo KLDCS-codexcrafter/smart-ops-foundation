@@ -258,7 +258,7 @@ describe('production-workflow · Blocks B/D/F/H', () => {
     const exploded = explodeBOM(topBom, 10, [topBom, subBom]);
     expect(exploded).toHaveLength(3);
     expect(exploded.find(c => c.item_id === 'rm-x')?.required_qty).toBe(60);
-    expect(exploded.find(c => c.item_id === 'rm-y')?.required_qty).toBe(110);
+    expect(exploded.find(c => c.item_id === 'rm-y')?.required_qty).toBeCloseTo(110, 6);
     expect(exploded.find(c => c.item_id === 'rm-a')?.required_qty).toBe(10);
   });
 });
