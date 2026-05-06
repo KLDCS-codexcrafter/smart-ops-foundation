@@ -1,6 +1,6 @@
 /**
  * @file     ProductionSidebar.types.ts
- * @sprint   T-Phase-1.3-3a-pre-2
+ * @sprint   T-Phase-1.3-3-PlantOps-pre-2
  */
 export type ProductionModule =
   | 'welcome'
@@ -10,9 +10,11 @@ export type ProductionModule =
   | 'tx-production-confirmation'
   | 'tx-job-work-out'
   | 'tx-job-work-receipt'
+  | 'tx-job-card-entry'
   | 'rpt-production-order-register'
   | 'rpt-production-plan-register'
   | 'rpt-variance-dashboard'
   | 'rpt-plan-actual-rolling'
   | 'rpt-itc04-export'
-  | 'rpt-wip';
+  | 'rpt-wip'
+  | 'rpt-daily-work-register';
