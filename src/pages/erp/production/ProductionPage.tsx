@@ -54,6 +54,8 @@ export default function ProductionPage(): JSX.Element {
       case 'tx-production-confirmation': return <ProductionConfirmationEntryPanel />;
       case 'tx-job-work-out': return <JobWorkOutEntryPanel />;
       case 'tx-job-work-receipt': return <JobWorkReceiptEntryPanel />;
+      case 'tx-job-card-entry': return <JobCardEntryPanel />;
+      case 'rpt-daily-work-register': return <DailyWorkRegisterReportPanel />;
       case 'rpt-production-order-register': return <ProductionOrderRegisterPanel />;
       case 'rpt-production-plan-register': return <ProductionPlanRegisterPanel />;
       case 'rpt-variance-dashboard': return <ProductionVarianceDashboardPanel />;
