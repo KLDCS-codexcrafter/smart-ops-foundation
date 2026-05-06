@@ -25,6 +25,7 @@ import { productionOrdersKey } from '@/types/production-order';
 import { emptyCostStructure } from '@/types/production-cost';
 import { generateDocNo } from '@/lib/finecore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
+import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // 1. CRUD · CREATE
@@ -211,21 +212,28 @@ export function transitionState(
 
 export function releaseProductionOrder(
   po: ProductionOrder,
+  bom: Bom,
   itemMasters: InventoryItem[],
   config: ProductionConfig,
   user: { id: string; name: string },
 ): ProductionOrder {
   if (po.status !== 'draft') throw new Error('Only DRAFT orders can be released');
 
-  const reservation_ids: string[] = [];
-  const updated_lines = po.lines.map((line, idx) => {
-    const reservationId = `res-mo-${po.id}-${idx}-${Date.now()}`;
-    reservation_ids.push(reservationId);
-    return { ...line, reservation_id: reservationId };
-  });
+  const reservations = createProductionOrderReservations(
+    po.entity_id,
+    po.id,
+    po.doc_no,
+    po.lines.map(l => ({ item_name: l.item_name, qty: l.required_qty })),
+  );
+  const reservationIdByItem = new Map(reservations.map(r => [r.item_name, r.id]));
+  const reservation_ids = reservations.map(r => r.id);
+  const updated_lines = po.lines.map(line => ({
+    ...line,
+    reservation_id: reservationIdByItem.get(line.item_name) ?? null,
+  }));
 
   const budget = computeBudgetCost(
-    po.bom_id,
+    bom,
     po.planned_qty,
     itemMasters,
     config.defaultCostingBasis as CostRateBasis,
@@ -343,17 +351,30 @@ export function computeMasterCost(
 }
 
 export function computeBudgetCost(
-  _bomId: string,
+  bom: Bom,
   outputQty: number,
-  _itemMasters: InventoryItem[],
-  _rateBasis: CostRateBasis,
-  _config: ProductionConfig,
+  itemMasters: InventoryItem[],
+  rateBasis: CostRateBasis,
+  config: ProductionConfig,
 ): ProductionCostLayer {
-  // 3a-pre-1 placeholder · proper budget computation in 3a-pre-2
-  void _bomId; void _itemMasters; void _rateBasis; void _config;
-  const total = 0;
+  void config; // reserved for 3a-pre-2 (allocation overrides)
+  let direct_material = 0;
+  for (const c of bom.components) {
+    const item = itemMasters.find(i => i.id === c.item_id);
+    if (!item) continue;
+    const stdRate = item.std_cost_rate ?? 0;
+    const lastRate = item.last_purchase_price ?? stdRate;
+    const rate =
+      rateBasis === 'last_purchase'   ? lastRate :
+      rateBasis === 'standard_cost'   ? stdRate :
+      rateBasis === 'budget_rate'     ? stdRate :
+      rateBasis === 'current_rate'    ? lastRate :
+      stdRate;
+    direct_material += c.qty * outputQty * (1 + (c.wastage_percent || 0) / 100) * rate;
+  }
+  const total = direct_material;
   return {
-    direct_material: 0,
+    direct_material,
     direct_labour: 0,
     direct_expense: 0,
     manufacturing_overhead: 0,
