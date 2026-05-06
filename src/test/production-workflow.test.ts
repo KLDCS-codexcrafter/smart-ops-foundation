@@ -5,7 +5,7 @@
  *           Job Work Out · Job Work Receipt engines (Blocks B/D/F/H).
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createProductionOrder, releaseProductionOrder } from '@/lib/production-engine';
+import { createProductionOrder, releaseProductionOrder, explodeBOM } from '@/lib/production-engine';
 import {
   createMaterialIssue, issueMaterialIssue, listMaterialIssues,
 } from '@/lib/material-issue-engine';
