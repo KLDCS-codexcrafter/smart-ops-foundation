@@ -16,6 +16,7 @@ import {
   PendingAlertsPanel, BulkPlanAssignmentPanel,
 } from './operational-panels';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
+import { ProductionQCPendingPanel } from './ProductionQCPendingPanel';
 
 export default function QualiCheckPage(): JSX.Element {
   const [active, setActive] = useState<QualiCheckModule>('welcome');
@@ -32,6 +33,7 @@ export default function QualiCheckPage(): JSX.Element {
       case 'coa-register':         return <CoARegisterPanel />;
       case 'pending-alerts':       return <PendingAlertsPanel />;
       case 'bulk-plan-assignment': return <BulkPlanAssignmentPanel />;
+      case 'production-qc-pending': return <ProductionQCPendingPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
