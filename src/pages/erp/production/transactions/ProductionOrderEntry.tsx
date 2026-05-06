@@ -28,6 +28,8 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { useProductionPlans } from '@/hooks/useProductionPlans';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useProjects } from '@/hooks/useProjects';
 import { useOrders } from '@/hooks/useOrders';
 import { useShifts } from '@/hooks/usePayHubMasters3';
@@ -110,6 +112,17 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   // Block H · Multi-output (Q13=a)
   const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
   const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
+
+  // Block I · Plan Linkage Picker (M:N · Q14=a · D-551)
+  const { plans } = useProductionPlans();
+  const approvedPlans = useMemo(
+    () => plans.filter(p => p.status === 'approved' || p.status === 'in_execution'),
+    [plans],
+  );
+  const [linkedPlanIds, setLinkedPlanIds] = useState<string[]>([]);
+  const togglePlanLink = (id: string): void => {
+    setLinkedPlanIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
 
   const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
@@ -317,6 +330,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           production_plan_id: productionPlanId || undefined,
           linked_letter_of_credit_id: linkedLcId || undefined,
           outputs: multiOutputMode ? outputs : undefined,
+          linked_production_plan_ids: linkedPlanIds.length ? linkedPlanIds : undefined,
           notes,
           created_by: 'current-user',
         },
@@ -829,6 +843,51 @@ export function ProductionOrderEntryPanel(): JSX.Element {
                   </div>
                 </>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Block I · Plan Linkage Picker (M:N · Q14=a · D-551) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Linked Production Plans</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {approvedPlans.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  No approved or in-execution plans available. Create a Production Plan first to enable linkage.
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-64 overflow-y-auto rounded-md border p-2">
+                  {approvedPlans.map(p => {
+                    const checked = linkedPlanIds.includes(p.id);
+                    return (
+                      <label
+                        key={p.id}
+                        className="flex items-start gap-2 text-sm cursor-pointer hover:bg-muted/40 rounded px-2 py-1"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => togglePlanLink(p.id)}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1">
+                          <div className="font-mono text-xs">{p.doc_no}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {p.plan_type} · {p.lines.length} lines · {p.status}
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {linkedPlanIds.length === 0
+                  ? 'No plan linkage (standalone PO)'
+                  : linkedPlanIds.length === 1
+                    ? '1 plan linked'
+                    : `${linkedPlanIds.length} plans linked (consolidation)`}
+              </p>
             </CardContent>
           </Card>
         </CollapsibleContent>
