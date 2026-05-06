@@ -1463,6 +1463,98 @@ export function EmployeeMasterPanel() {
             ))}
           </div>
         </TabsContent>
+
+        {/* TAB 9 — Production · 3-PlantOps-pre-2 · Q23 + Q29=a */}
+        <TabsContent value="production" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2"><Factory className="h-4 w-4" /> Production Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 flex items-center gap-2 p-3 border rounded-lg">
+                  <Switch
+                    checked={form.is_production_operator ?? false}
+                    onCheckedChange={v => uf('is_production_operator', v)}
+                  />
+                  <Label className="text-sm">Production Operator</Label>
+                  <span className="text-xs text-muted-foreground">Mark this employee as a production operator</span>
+                </div>
+
+                <div>
+                  <Label className="text-xs">Hourly Production Rate (₹/hr)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.hourly_rate_production ?? 0}
+                    onChange={e => uf('hourly_rate_production', parseFloat(e.target.value) || 0)}
+                    disabled={!form.is_production_operator}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1">Used for Job Card labour cost compute</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs">Production Team (Department)</Label>
+                  <Select
+                    value={form.production_team_id ?? '__none__'}
+                    onValueChange={v => uf('production_team_id', v === '__none__' ? null : v)}
+                    disabled={!form.is_production_operator}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
+                      {departments.map(d => (
+                        <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="col-span-2">
+                  <Label className="text-xs">Production Skills</Label>
+                  <p className="text-[10px] text-muted-foreground mb-1">Comma-separated · matched against Machine.capabilities</p>
+                  <Input
+                    value={(form.production_skills ?? []).join(', ')}
+                    onChange={e => uf('production_skills', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder="e.g. CNC milling, welding, assembly"
+                    disabled={!form.is_production_operator}
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Label className="text-xs">Certified Machines</Label>
+                  <p className="text-[10px] text-muted-foreground mb-1">Drives Job Card validation warnings</p>
+                  <div className="border rounded-lg p-2 max-h-32 overflow-y-auto">
+                    {machines.length === 0 ? (
+                      <span className="text-xs text-muted-foreground">No machines · create in Machine Master first</span>
+                    ) : machines.map(m => (
+                      <div key={m.id} className="flex items-center gap-2 py-1">
+                        <Checkbox
+                          checked={(form.certified_machine_ids ?? []).includes(m.id)}
+                          onCheckedChange={(checked) => {
+                            const current = form.certified_machine_ids ?? [];
+                            const updated = checked
+                              ? [...current, m.id]
+                              : current.filter((id: string) => id !== m.id);
+                            uf('certified_machine_ids', updated);
+                          }}
+                          disabled={!form.is_production_operator}
+                        />
+                        <span className="text-xs">{m.code} · {m.name}</span>
+                        {m.capabilities.length > 0 && (
+                          <Badge variant="outline" className="text-[10px]">
+                            {m.capabilities.join(', ')}
+                          </Badge>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
