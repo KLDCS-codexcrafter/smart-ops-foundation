@@ -358,4 +358,12 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   enableLeakEmissionOnVariance: true,
   leakVarianceThresholdPct: 10,
   leakAgingThresholdDays: 7,
+
+  // Sprint 3a-pre-2.5 · Block K
+  enableProductionPlan: true,
+  enableMultiOutputPO: false,
+  enableBOMSubstitution: true,
+  requireSubstitutionApproval: true,
+  enableCapacityCheck: true,
+  enableExportLineFlag: false,
 };
