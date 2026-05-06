@@ -2,7 +2,8 @@
  * @file     ProductionPage.tsx
  * @sprint   T-Phase-1.3-3a-pre-1
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -18,7 +19,24 @@ import { WIPReportPanel } from './reports/WIPReport';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
-  const [active, setActive] = useState<ProductionModule>('welcome');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initial = (searchParams.get('m') as ProductionModule | null) ?? 'welcome';
+  const [active, setActive] = useState<ProductionModule>(initial);
+
+  useEffect(() => {
+    const m = searchParams.get('m') as ProductionModule | null;
+    if (m && m !== active) setActive(m);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const navigate = (m: ProductionModule) => {
+    setActive(m);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('m', m);
+      return next;
+    }, { replace: true });
+  };
 
   const render = (): JSX.Element => {
     switch (active) {
