@@ -49,6 +49,8 @@ import { DEMO_REQUESTX_MOBILE_INDENTS } from '@/data/demo-requestx-mobile-data';
 import { materialIndentsKey } from '@/types/material-indent';
 import { getDemoProductionData } from '@/data/demo-production-data';
 import { productionOrdersKey } from '@/types/production-order';
+import { getDemoProductionPlans } from '@/data/demo-production-plan-data';
+import { productionPlansKey } from '@/types/production-plan';
 import {
   getDemoMaterialIssues,
   getDemoProductionConfirmations,
@@ -242,6 +244,8 @@ export function seedEntityDemoData(
 
   // Card 3a Production demo seeds (Sprint T-Phase-1.3-3a-pre-1 · Block I · D-509)
   safeSetArray(productionOrdersKey(entityCode), getDemoProductionData(entityCode));
+  // Card 3a Production Plans (Sprint T-Phase-1.3-3a-pre-2.5-fix-1 · Block 4 · D-555)
+  safeSetArray(productionPlansKey(entityCode), getDemoProductionPlans(entityCode));
 
   // Card 3a-pre-2 production workflow demo seeds (Block M · MIN/PC/JWO/JWR)
   safeSetArray(materialIssueNotesKey(entityCode), getDemoMaterialIssues(entityCode));
