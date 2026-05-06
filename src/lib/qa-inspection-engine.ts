@@ -322,3 +322,68 @@ export async function triggerInspectionClosure(
   };
 }
 
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 3b-pre-1 · Block G · D-621 · Q47=c polymorphic fail routing
+// FIRST consumer of qcFailureRoutingRule. CORE 9 fns above BYTE-IDENTICAL preserved.
+// ════════════════════════════════════════════════════════════════════
+import type { ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import type { ProductionOrder } from '@/types/production-order';
+
+export function persistQaInspectionRecord(record: QaInspectionRecord, entityCode: string): void {
+  const list = read(entityCode);
+  const idx = list.findIndex(r => r.id === record.id);
+  if (idx >= 0) list[idx] = record; else list.push(record);
+  write(entityCode, list);
+}
+
+export interface FailRoutingResult {
+  affected_id: string | null;
+  routing_action: 'none' | 'quarantine' | 'concession' | 'manual_review';
+  warnings: string[];
+}
+
+export function applyFailRouting(
+  inspection: QaInspectionRecord,
+  productionConfig: ProductionConfig,
+  user: { id: string; name: string },
+): FailRoutingResult {
+  const result: FailRoutingResult = { affected_id: null, routing_action: 'none', warnings: [] };
+  const anyFailed = inspection.lines.some(l => l.qty_failed > 0);
+  if (!anyFailed) return result;
+  if (!inspection.production_order_id) return result;
+
+  const rule = productionConfig.qcFailureRoutingRule ?? 'block_dispatch';
+  const key = `erp_production_orders_${inspection.entity_id}`;
+  let all: ProductionOrder[] = [];
+  try { all = JSON.parse(localStorage.getItem(key) || '[]') as ProductionOrder[]; } catch { /* silent */ }
+  const idx = all.findIndex(p => p.id === inspection.production_order_id);
+  if (idx < 0) return result;
+  const po = all[idx];
+  result.affected_id = po.id;
+
+  if (rule === 'block_dispatch') {
+    all[idx] = { ...po, routed_to_quarantine: true };
+    localStorage.setItem(key, JSON.stringify(all));
+    result.routing_action = 'quarantine';
+    result.warnings.push(`PO ${po.doc_no} routed to quarantine`);
+  } else if (rule === 'allow_with_concession') {
+    const ev = {
+      id: `pose-conc-${Date.now()}`,
+      from_status: po.status,
+      to_status: po.status,
+      changed_by_id: user.id,
+      changed_by_name: user.name,
+      changed_at: new Date().toISOString(),
+      note: `QC concession allowed · QaInspection ${inspection.qa_no} failed · proceeding`,
+    };
+    all[idx] = { ...po, status_history: [...po.status_history, ev] };
+    localStorage.setItem(key, JSON.stringify(all));
+    result.routing_action = 'concession';
+    result.warnings.push(`PO ${po.doc_no} flagged with concession`);
+  } else {
+    result.routing_action = 'manual_review';
+    result.warnings.push(`PO ${po.doc_no} requires manual review · QC failed`);
+  }
+  return result;
+}

@@ -715,3 +715,46 @@ export function closeProductionOrder(input: CloseProductionOrderInput): Producti
   }
   return updated;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 3b-pre-1 · Block C · D-617 · Q45=c · QC auto-create on PO completion
+// Backward-compat additive · existing transitionState() preserved
+// ════════════════════════════════════════════════════════════════════
+import { createQaInspectionFromPO } from '@/lib/qa-inspection-production-bridge';
+import type { ManufacturingTemplate } from '@/config/manufacturing-templates';
+import type { ItemQCParam } from '@/types/item-qc-param';
+import type { QaPlan } from '@/types/qa-plan';
+
+export interface CompletePOQCContext {
+  productionConfig: ProductionConfig;
+  template?: ManufacturingTemplate;
+  itemQCParams: ItemQCParam[];
+  qaPlans: QaPlan[];
+}
+
+export function completeProductionOrder(
+  po: ProductionOrder,
+  user: { id: string; name: string },
+  qcContext?: CompletePOQCContext,
+): ProductionOrder {
+  const transitioned = transitionState(po, 'completed', user, 'Completed');
+  if (!qcContext || !transitioned.qc_required) return transitioned;
+  if (!qcContext.productionConfig.enableProductionQC) return transitioned;
+  const mode = qcContext.productionConfig.qcAutoCreateMode ?? 'config_per_scenario';
+  let shouldCreate = false;
+  if (mode === 'always') shouldCreate = true;
+  else if (mode === 'config_per_scenario')
+    shouldCreate = transitioned.qc_scenario === 'internal_dept' || transitioned.qc_scenario === 'third_party_agency';
+  if (!shouldCreate) return transitioned;
+  try {
+    const insp = createQaInspectionFromPO({
+      po: transitioned,
+      inspector_user_id: user.id,
+      inspection_location: 'Production Floor',
+      template: qcContext.template,
+      itemQCParams: qcContext.itemQCParams,
+      qaPlans: qcContext.qaPlans,
+    });
+    return { ...transitioned, linked_test_report_ids: [...transitioned.linked_test_report_ids, insp.id] };
+  } catch (e) { console.error('[production-engine] QC auto-create failed', e); return transitioned; }
+}
