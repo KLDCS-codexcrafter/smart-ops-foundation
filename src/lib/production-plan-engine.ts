@@ -178,6 +178,8 @@ export function createProductionPlan(
     status_history: [makeStatusEvent(null, 'draft', user, 'Plan created')],
     capacity_check_status: 'not_run',
     capacity_warnings: [],
+    capacity_check_run_at: null,
+    capacity_check_details: {},
     notes: input.notes ?? '',
     created_at: now,
     created_by: user.name,
