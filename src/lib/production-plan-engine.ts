@@ -17,7 +17,7 @@ import type {
 } from '@/types/production-plan';
 import { productionPlansKey } from '@/types/production-plan';
 import { generateDocNo } from '@/lib/finecore-engine';
-import { runCapacityCheck } from '@/lib/capacity-planning-engine';
+import { runCapacityCheck as runCapacityCheckPlanOps } from '@/lib/capacity-planning-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // Persistence helpers
@@ -246,7 +246,7 @@ export function approveProductionPlan(
   let capacity_check_details: Record<string, unknown> = {};
 
   if (context) {
-    const result = runCapacityCheck(plan, {
+    const result = runCapacityCheckPlanOps(plan, {
       machines: context.machines,
       shifts: context.shifts,
       pos: context.pos,
@@ -260,7 +260,7 @@ export function approveProductionPlan(
       factories: context.factories,
     });
 
-    capacity_check_status = result.status;
+    capacity_check_status = result.status === 'pass' ? 'pass' : result.status === 'warn' ? 'warn' : 'fail';
     capacity_warnings = result.warnings;
     capacity_check_run_at = new Date().toISOString();
     capacity_check_details = result.details as unknown as Record<string, unknown>;
