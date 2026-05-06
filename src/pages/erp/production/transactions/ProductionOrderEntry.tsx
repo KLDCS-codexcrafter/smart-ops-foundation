@@ -113,6 +113,17 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
   const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
 
+  // Block I · Plan Linkage Picker (M:N · Q14=a · D-551)
+  const { plans } = useProductionPlans();
+  const approvedPlans = useMemo(
+    () => plans.filter(p => p.status === 'approved' || p.status === 'in_execution'),
+    [plans],
+  );
+  const [linkedPlanIds, setLinkedPlanIds] = useState<string[]>([]);
+  const togglePlanLink = (id: string): void => {
+    setLinkedPlanIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
   const newOutputId = (): string => `pout-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
   const addOutput = (): void => {
