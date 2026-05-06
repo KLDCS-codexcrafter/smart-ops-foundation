@@ -67,7 +67,12 @@ describe('production-engine', () => {
     expect(po.lines.length).toBe(2);
     expect(po.cost_structure.master.total).toBeGreaterThan(0);
 
-    const released = releaseProductionOrder(po, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    const released = releaseProductionOrder(po, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    // Block 4: real reservations persisted to localStorage
+    const resRaw = localStorage.getItem(`erp_stock_reservations_e1`);
+    expect(resRaw).not.toBeNull();
+    const reservations = JSON.parse(resRaw!) as Array<{ source_type: string; source_id: string }>;
+    expect(reservations.some(r => r.source_type === 'production_order' && r.source_id === po.id)).toBe(true);
     expect(released.status).toBe('released');
     expect(released.reservation_ids.length).toBe(po.lines.length);
     expect(released.cost_structure.budget_snapshot_at).not.toBeNull();
@@ -80,7 +85,7 @@ describe('production-engine', () => {
     expect(cancelled.status_history.length).toBe(2);
 
     const po2 = createProductionOrder(baseInput, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, DEFAULT_QC_CONFIG, mockUser);
-    const released = releaseProductionOrder(po2, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
+    const released = releaseProductionOrder(po2, mockBOM, mockItems, DEFAULT_PRODUCTION_CONFIG, mockUser);
     expect(() => cancelProductionOrder(released, mockUser, 'cant')).toThrow();
   });
 
