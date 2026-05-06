@@ -10,6 +10,7 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ProductionSidebar } from './ProductionSidebar';
 import { ProductionWelcome } from './ProductionWelcome';
 import { ProductionOrderEntryPanel } from './transactions/ProductionOrderEntry';
+import { ProductionPlanEntryPanel } from './transactions/ProductionPlanEntry';
 import { MaterialIssueEntryPanel } from './transactions/MaterialIssueEntry';
 import { ProductionConfirmationEntryPanel } from './transactions/ProductionConfirmationEntry';
 import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
