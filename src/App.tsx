@@ -214,6 +214,8 @@ const MobileMaterialIssuePage = lazy(() => import('./pages/mobile/MobileMaterial
 const MobileProductionConfirmationPage = lazy(() => import('./pages/mobile/MobileProductionConfirmationPage'));
 const MobileJobWorkOutPage = lazy(() => import('./pages/mobile/MobileJobWorkOutPage'));
 const MobileJobWorkReceiptPage = lazy(() => import('./pages/mobile/MobileJobWorkReceiptPage'));
+// Sprint T-Phase-1.3-3-PlantOps-pre-2 · Block J · Mobile Job Card capture
+const MobileJobCardPage = lazy(() => import('./pages/mobile/MobileJobCardPage'));
 const VetanNidhiMobile = lazy(() => import('./pages/mobile/VetanNidhiMobile'));
 const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
@@ -330,6 +332,7 @@ const App = () => (
               <Route path="/operix-go/production/confirmation" element={<P><MobileProductionConfirmationPage /></P>} />
               <Route path="/operix-go/production/job-work-out" element={<P><MobileJobWorkOutPage /></P>} />
               <Route path="/operix-go/production/job-work-receipt" element={<P><MobileJobWorkReceiptPage /></P>} />
+              <Route path="/operix-go/production/job-card" element={<P><MobileJobCardPage /></P>} />
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
