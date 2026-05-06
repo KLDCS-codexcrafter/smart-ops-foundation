@@ -15,6 +15,8 @@ import { MaterialIssueEntryPanel } from './transactions/MaterialIssueEntry';
 import { ProductionConfirmationEntryPanel } from './transactions/ProductionConfirmationEntry';
 import { JobWorkOutEntryPanel } from './transactions/JobWorkOutEntry';
 import { JobWorkReceiptEntryPanel } from './transactions/JobWorkReceiptEntry';
+import { JobCardEntryPanel } from './transactions/JobCardEntry';
+import { DailyWorkRegisterReportPanel } from './reports/DailyWorkRegisterReport';
 import { ProductionOrderRegisterPanel } from './reports/ProductionOrderRegister';
 import { ProductionPlanRegisterPanel } from './reports/ProductionPlanRegister';
 import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDashboard';
