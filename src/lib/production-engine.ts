@@ -185,6 +185,20 @@ export function createProductionOrder(
     batch_no: null,
     serial_nos: [],
     heat_no: null,
+    // Substitution defaults (D-543 · 3a-pre-2.5)
+    original_bom_item_id: c.item_id,
+    original_bom_qty: c.required_qty,
+    is_substituted: false,
+    substitute_reason: null,
+    substitute_item_substitute_id: null,
+    substitute_notes: '',
+    substituted_by: null,
+    substituted_at: null,
+    original_unit_rate: 0,
+    substituted_unit_rate: 0,
+    cost_variance_amount: 0,
+    cost_variance_pct: 0,
+    yield_impact_pct: 0,
   }));
 
   const output_godown_id = resolveFGOutputGodown(
