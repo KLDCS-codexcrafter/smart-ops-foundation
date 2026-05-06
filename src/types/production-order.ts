@@ -8,13 +8,14 @@
 import type { ProductionCostStructure } from './production-cost';
 import type { ApprovalEvent } from './material-indent';
 
-export type ProductionOrderStatus = 'draft' | 'released' | 'in_progress' | 'completed' | 'cancelled';
+export type ProductionOrderStatus = 'draft' | 'released' | 'in_progress' | 'completed' | 'closed' | 'cancelled';
 
 export const PRODUCTION_ORDER_STATUS_LABELS: Record<ProductionOrderStatus, string> = {
   draft:       'Draft',
   released:    'Released',
   in_progress: 'In Progress',
   completed:   'Completed',
+  closed:      'Closed',
   cancelled:   'Cancelled',
 };
 
@@ -23,6 +24,7 @@ export const PRODUCTION_ORDER_STATUS_COLORS: Record<ProductionOrderStatus, strin
   released:    'bg-primary/10 text-primary border-primary/30',
   in_progress: 'bg-warning/10 text-warning border-warning/30',
   completed:   'bg-success/10 text-success border-success/30',
+  closed:      'bg-secondary text-secondary-foreground border-border',
   cancelled:   'bg-destructive/10 text-destructive border-destructive/30',
 };
 
