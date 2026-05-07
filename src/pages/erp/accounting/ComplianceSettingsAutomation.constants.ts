@@ -433,4 +433,8 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
 
   // Sprint 3b-pre-1 · Q45=c
   qcAutoCreateMode: 'config_per_scenario',
+
+  // Sprint 3b-pre-3 · Block J · D-648
+  enableCoAAutoGeneration: false,
+  qcParetoDefaultGrouping: 'per_parameter',
 };
