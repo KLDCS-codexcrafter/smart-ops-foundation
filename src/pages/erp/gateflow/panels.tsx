@@ -460,6 +460,7 @@ function CreateDialogContent({ direction, entityCode, userId, onCreated }: Creat
         purpose,
         linked_voucher_type: linked,
         linked_voucher_no: linked ? linkedNo : undefined,
+        branch_id: null,                    // FR-51 · UI selector wired in Phase 1.4 with CC BusinessUnit
       };
       const fn = direction === 'inward' ? createInwardEntry : createOutwardEntry;
       const gp = await fn(input, entityCode, userId);
