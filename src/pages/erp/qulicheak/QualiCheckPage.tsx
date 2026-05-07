@@ -18,6 +18,7 @@ import {
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 import { ProductionQCPendingPanel } from './ProductionQCPendingPanel';
 import { QCEntryPage } from './QCEntryPage';
+import { QualiCheckDashboard } from './QualiCheckDashboard';
 
 export default function QualiCheckPage(): JSX.Element {
   const [active, setActive] = useState<QualiCheckModule>('welcome');
