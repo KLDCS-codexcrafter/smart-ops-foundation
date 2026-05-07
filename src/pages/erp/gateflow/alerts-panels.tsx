@@ -13,7 +13,7 @@
  * Urgency RED: < 7 days expiry · OR > 4h dwell (240 min)
  * Urgency AMBER: < 30 days expiry · OR > 2h dwell (120 min)
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,8 +47,8 @@ export function VehicleExpiryAlertsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<VehicleExpiryAlert[]>([]);
-  const refresh = () => setList(getExpiringVehicleDocs(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS));
-  useEffect(() => { refresh(); }, [ENTITY]);
+  const refresh = useCallback(() => setList(getExpiringVehicleDocs(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS)), [ENTITY]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   return (
     <div className="p-6 space-y-4">
@@ -94,8 +94,8 @@ export function DriverExpiryAlertsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<DriverExpiryAlert[]>([]);
-  const refresh = () => setList(getExpiringDriverLicenses(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS));
-  useEffect(() => { refresh(); }, [ENTITY]);
+  const refresh = useCallback(() => setList(getExpiringDriverLicenses(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS)), [ENTITY]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   return (
     <div className="p-6 space-y-4">
@@ -141,12 +141,12 @@ export function GateDwellAlertsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<GateDwellAlert[]>([]);
-  const refresh = () => setList(getDwellingGatePasses(ENTITY, DEFAULT_DWELL_THRESHOLD_MIN));
+  const refresh = useCallback(() => setList(getDwellingGatePasses(ENTITY, DEFAULT_DWELL_THRESHOLD_MIN)), [ENTITY]);
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 30000);
     return () => clearInterval(i);
-  }, [ENTITY]);
+  }, [refresh]);
 
   return (
     <div className="p-6 space-y-4">
