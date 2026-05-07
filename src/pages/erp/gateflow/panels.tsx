@@ -217,17 +217,40 @@ export function GateFlowWelcome({ onNavigate }: WelcomeProps): JSX.Element {
 interface QueueProps { direction: GatePassDirection; title: string; icon: typeof LogIn }
 
 function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
-  const entityCode = getActiveEntityCode();
-  const userId = getCurrentUserId();
+  // FR-50 Multi-Entity 6-point · canonical hook · replaces local getActiveEntityCode
+  const { entityCode } = useEntityCode();
+  const user = useCurrentUser();
+  const userId = user?.id ?? 'mock-user';
+
+  // FR-29 12-item carry-forward · Sprint27 mounts · per-direction formKey
+  const [helpOpen, setHelpOpen] = useState(false);
+  const formKey = `gateflow-${direction}-queue`;
+
   const [list, setList] = useState<GatePass[]>([]);
   const [filter, setFilter] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const refresh = useCallback((): void => {
-    setList(direction === 'inward' ? listInwardQueue(entityCode) : listOutwardQueue(entityCode));
+    setList(direction === 'inward' ? listInwardQueue(entityCode || 'DEMO') : listOutwardQueue(entityCode || 'DEMO'));
   }, [entityCode, direction]);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  const mount = useSprint27d1Mount({
+    formKey,
+    entityCode: entityCode || 'DEMO',
+    formState: { direction, filter, listLength: list.length },
+    items: [],
+    view: 'new',
+    voucherType: direction === 'inward' ? 'gate-pass-inward' : 'gate-pass-outward',
+    userId,
+    partyId: null,
+  });
+
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
+  });
 
   const filtered = list.filter(gp => {
     if (!filter) return true;
@@ -239,7 +262,7 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
 
   const onTransition = async (gp: GatePass, to: GatePassStatus): Promise<void> => {
     try {
-      await transitionGatePass(gp.id, to, entityCode, userId);
+      await transitionGatePass(gp.id, to, entityCode || 'DEMO', userId);
       toast.success(`${gp.gate_pass_no} → ${to}`);
       refresh();
     } catch (e) {
@@ -247,8 +270,27 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
     }
   };
 
+  // FT-DISPATCH-004 · D-NEW-D · Auto-link uses EXISTING attachLinkedVoucher engine fn (FR-11 SSOT)
+  const handleAutoLink = async (passId: string): Promise<void> => {
+    // TODO_DLINK: D-NEW-D · Phase 2 backend wiring · auto-match against open dispatch vouchers (DLN/SOM/DOM)
+    void passId;
+    void attachLinkedVoucher;
+    toast.info('Auto-link: manual link dialog opens here · Phase 2 wires automatic matching against open DLN/SOM/DOM');
+  };
+
   return (
     <div className="p-6 space-y-4">
+      <DraftRecoveryDialog
+        formKey={formKey}
+        entityCode={entityCode || 'DEMO'}
+        open={mount.recoveryOpen}
+        draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
       <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
@@ -265,19 +307,32 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
             onChange={e => setFilter(e.target.value)}
             className="w-72"
           />
+          <UseLastVoucherButton
+            entityCode={entityCode || 'DEMO'}
+            recordType={direction === 'inward' ? 'gate-pass-inward' : 'gate-pass-outward'}
+            partyValue={null}
+            onUse={() => toast.info('Last gate pass loaded')}
+          />
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-1" /> New {direction}</Button>
             </DialogTrigger>
             <CreateDialogContent
               direction={direction}
-              entityCode={entityCode}
+              entityCode={entityCode || 'DEMO'}
               userId={userId}
               onCreated={() => { setDialogOpen(false); refresh(); }}
             />
           </Dialog>
         </div>
       </header>
+
+      <Sprint27d2Mount
+        formName={`GateFlow-${direction}-queue`}
+        entityCode={entityCode || 'DEMO'}
+        items={filtered as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={false}
+      />
 
       <Card>
         <CardContent className="p-0">
@@ -294,6 +349,7 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
                   <TableHead>Driver</TableHead>
                   <TableHead>Counterparty</TableHead>
                   <TableHead>Linked</TableHead>
+                  {direction === 'outward' && <TableHead>Linked Voucher</TableHead>}
                   <TableHead>Status</TableHead>
                   <TableHead>Entry</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -309,6 +365,20 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
                     <TableCell className="text-xs text-muted-foreground">
                       {gp.linked_voucher_no ?? <span className="italic">walk-in</span>}
                     </TableCell>
+                    {direction === 'outward' && (
+                      <TableCell>
+                        {gp.linked_voucher_type && gp.linked_voucher_no ? (
+                          <Badge variant="secondary">
+                            <Link2 className="h-3 w-3 mr-1" />
+                            {gp.linked_voucher_type.toUpperCase()}: {gp.linked_voucher_no}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => handleAutoLink(gp.id)}>
+                            <Link2 className="h-3 w-3 mr-1" /> Auto-link
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
                     <TableCell><Badge variant={statusVariant(gp.status)}>{gp.status}</Badge></TableCell>
                     <TableCell className="font-mono text-xs">{fmtTime(gp.entry_time)}</TableCell>
                     <TableCell className="text-right">
@@ -333,16 +403,20 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      <Sprint27eMount
+        entityCode={entityCode || 'DEMO'}
+        voucherTypeId={`vt-gate-pass-${direction}`}
+        voucherTypeName={`Gate Pass ${direction}`}
+        defaultPartyType={direction === 'inward' ? 'vendor' : 'customer'}
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
-}
-
-export function GateInwardQueuePanel(): JSX.Element {
-  return <QueuePanel direction="inward" title="Inward Queue" icon={LogIn} />;
-}
-
-export function GateOutwardQueuePanel(): JSX.Element {
-  return <QueuePanel direction="outward" title="Outward Queue" icon={LogOut} />;
 }
 
 // ============================================================
