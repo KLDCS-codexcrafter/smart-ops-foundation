@@ -241,6 +241,15 @@ export async function completeInspection(
     }
   } catch { /* cascade non-fatal */ }
 
+  // 🆕 Sprint 3b-pre-2 · Block K · Q47=c routing on FAIL · second consumer of applyFailRouting.
+  if (context && finalStatus === 'failed') {
+    try {
+      applyFailRouting(updated, context.productionConfig, { id: byUserId, name: byUserId });
+    } catch (e) {
+      console.error('[completeInspection] applyFailRouting failed', e);
+    }
+  }
+
   return updated;
 }
 
