@@ -141,12 +141,12 @@ export function GateDwellAlertsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<GateDwellAlert[]>([]);
-  const refresh = () => setList(getDwellingGatePasses(ENTITY, DEFAULT_DWELL_THRESHOLD_MIN));
+  const refresh = useCallback(() => setList(getDwellingGatePasses(ENTITY, DEFAULT_DWELL_THRESHOLD_MIN)), [ENTITY]);
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 30000);
     return () => clearInterval(i);
-  }, [ENTITY]);
+  }, [refresh]);
 
   return (
     <div className="p-6 space-y-4">
