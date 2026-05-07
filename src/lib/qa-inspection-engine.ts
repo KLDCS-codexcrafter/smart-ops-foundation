@@ -419,3 +419,28 @@ export function applyFailRouting(
   }
   return result;
 }
+
+// 🆕 Sprint 3b-pre-2 · Block I · D-634 · Q56=b refined
+// Find the QC Hold Store godown for routing on FAIL.
+// Reuses the existing system godown auto-created by entity-setup-service ({shortCode}-QC-GD).
+// No schema change · no NEW master · no migration. entityCode is accepted for API symmetry
+// with future per-entity stores; current useGodowns lives in a single 'erp_godowns' bucket.
+import type { Godown } from '@/types/godown';
+
+export function findQuarantineGodown(
+  _entityCode: string,
+  _factoryId?: string | null,
+): Godown | null {
+  try {
+    // [JWT] GET /api/inventory/godowns?department_code=qc&is_system_godown=true
+    const raw = localStorage.getItem('erp_godowns');
+    if (!raw) return null;
+    const all = JSON.parse(raw) as Godown[];
+    const matches = all.filter(g =>
+      g.department_code === 'qc' && g.is_system_godown === true && g.status === 'active',
+    );
+    return matches[0] ?? null;
+  } catch {
+    return null;
+  }
+}
