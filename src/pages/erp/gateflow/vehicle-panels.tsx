@@ -1,13 +1,17 @@
 /**
- * vehicle-panels.tsx · Sprint T-Phase-1.2.6f-d-2-card4-4-pre-2 · Block G
- * 5 panels per Q9=A:
- *   - VehicleInwardPanel · VehicleOutwardPanel
- *   - VehicleMasterPanel · DriverMasterPanel
- *   - WeighbridgeTicketRegisterPanel
- *
- * Pattern: [list, setList] + refresh() — NO tick + useMemo anti-pattern.
- * Uses 4-pre-1 gateflow-engine (ZERO TOUCH) + 4-pre-2 NEW engines.
- * [JWT] GET /api/weighbridge/tickets · GET /api/vehicle-master · GET /api/driver-master
+ * @file        vehicle-panels.tsx
+ * @purpose     GateFlow vehicle panels · Vehicle Inward/Outward · Vehicle/Driver Master · Weighbridge Register
+ * @who         Security guards · Gatekeepers · Drivers · Operators
+ * @when        Phase 1.A.1.a · GateFlow Patterns + Features sprint
+ * @sprint      T-Phase-1.A.1.a-GateFlow-Patterns-Features (was T-Phase-1.2.6f-d-2-card4-4-pre-2)
+ * @iso         Maintainability · Usability · Reliability
+ * @decisions   D-307 (master FKs) · D-310 (ANPR) · D-NEW-C (12-item carry-forward) ·
+ *              D-NEW-E (Driver Safety OOB) · D-NEW-F (Multi-Branch FR-51 additive)
+ * @reuses      useSprint27d1Mount · Sprint27d2Mount · Sprint27eMount · UseLastVoucherButton ·
+ *              DraftRecoveryDialog · KeyboardShortcutOverlay · useEntityCode · useCurrentUser ·
+ *              useFormKeyboardShortcuts · gateflow-engine · weighbridge-engine ·
+ *              vehicle-master-engine · driver-master-engine
+ * @[JWT]       GET /api/weighbridge/tickets · GET /api/vehicle-master · GET /api/driver-master
  */
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +53,17 @@ import type {
 } from '@/types/weighbridge-ticket';
 import type { VehicleMaster, VehicleType, FuelType } from '@/types/vehicle-master';
 import type { DriverMaster, LicenseClass } from '@/types/driver-master';
+
+// Sprint T-Phase-1.A.1.a · 12-item carry-forward (FR-29) + Multi-Entity (FR-50) imports
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 
 // ============================================================
 // HELPERS
@@ -208,12 +223,29 @@ export function VehicleOutwardPanel(): JSX.Element {
 
 // Shared queue panel implementation
 function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): JSX.Element {
-  const entity = getActiveEntityCode();
-  const user = getCurrentUserId();
+  // FR-50 Multi-Entity 6-point · canonical hook
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || getActiveEntityCode();
+  const cu = useCurrentUser();
+  const user = cu?.id ?? getCurrentUserId();
   const [list, setList] = useState<GatePass[]>([]);
   const [tickets, setTickets] = useState<WeighbridgeTicket[]>([]);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const formKey = `gateflow-vehicle-${direction}`;
   const [weighDialog, setWeighDialog] = useState<{ open: boolean; mode: 'in' | 'out'; ticketId: string }>({
     open: false, mode: 'in', ticketId: '',
+  });
+
+  const mount = useSprint27d1Mount({
+    formKey, entityCode: entity,
+    formState: { direction, listLength: 0 },
+    items: [], view: 'new',
+    voucherType: `vehicle-${direction}`,
+    userId: user, partyId: null,
+  });
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
   });
 
   const refresh = useCallback((): void => {
@@ -259,15 +291,39 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
 
   return (
     <div className="p-6 space-y-4">
+      <DraftRecoveryDialog
+        formKey={formKey} entityCode={entity}
+        open={mount.recoveryOpen} draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2"><Truck className="h-6 w-6" />{title}</h1>
           <p className="text-sm text-muted-foreground">Weighbridge-aware queue · two-weigh discipline</p>
         </div>
-        <Button variant="outline" onClick={onCapturePlate}>
-          <Camera className="h-4 w-4 mr-2" /> Capture Plate (ANPR)
-        </Button>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entity}
+            recordType={`vehicle-${direction}`}
+            partyValue={null}
+            onUse={() => toast.info('Last vehicle entry loaded')}
+          />
+          <Button variant="outline" onClick={onCapturePlate}>
+            <Camera className="h-4 w-4 mr-2" /> Capture Plate (ANPR)
+          </Button>
+        </div>
       </div>
+
+      <Sprint27d2Mount
+        formName={`GateFlow-vehicle-${direction}`}
+        entityCode={entity}
+        items={list as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={false}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Active Vehicles</CardTitle></CardHeader>
@@ -339,6 +395,16 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
         mode={weighDialog.mode}
         ticketId={weighDialog.ticketId}
         onDone={refresh}
+      />
+
+      <Sprint27eMount
+        entityCode={entity}
+        voucherTypeId={`vt-vehicle-${direction}`}
+        voucherTypeName={`Vehicle ${direction}`}
+        defaultPartyType={direction === 'inward' ? 'vendor' : 'customer'}
+        partyId={null} partyName={null} lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
       />
     </div>
   );
@@ -574,6 +640,7 @@ export function DriverMasterPanel(): JSX.Element {
                   <TableHead>License Class</TableHead>
                   <TableHead>License Expiry</TableHead>
                   <TableHead>Aadhaar (last-4)</TableHead>
+                  <TableHead>Safety</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -586,6 +653,18 @@ export function DriverMasterPanel(): JSX.Element {
                     <TableCell>{d.license_class ?? '—'}</TableCell>
                     <TableCell><Badge variant={expiryVariant(d.license_expiry)}>{fmtDate(d.license_expiry)}</Badge></TableCell>
                     <TableCell className="font-mono">{d.aadhaar_last_4 ? `XXXX-${d.aadhaar_last_4}` : '—'}</TableCell>
+                    <TableCell>
+                      {(d.safety_incident_count ?? 0) > 0 ? (
+                        <Badge variant="destructive">
+                          {d.safety_incident_count} incident{(d.safety_incident_count ?? 0) > 1 ? 's' : ''}
+                          {d.last_incident_date && (
+                            <span className="ml-1 text-xs">(last: {fmtDate(d.last_incident_date)})</span>
+                          )}
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="opacity-60">Clean record</Badge>
+                      )}
+                    </TableCell>
                     <TableCell><Badge variant={d.status === 'active' ? 'default' : 'outline'}>{d.status}</Badge></TableCell>
                   </TableRow>
                 ))}

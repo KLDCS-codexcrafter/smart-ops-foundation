@@ -1,6 +1,6 @@
 /**
  * @file        gateflow-engine.ts
- * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block B · per D-302 · D-305
+ * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 (Block B) · T-Phase-1.A.1.a (FR-51 branch_id additive)
  * @purpose     Gate Pass CRUD + state machine + linking · single source of truth for GateFlow.
  *              No modifications to Card #3 audited engines (sibling discipline · D-285+D-286+D-287 lesson).
  *              Doc number generation via finecore-engine.generateDocNo (Q5=A · 'GP' prefix added in Block C).
@@ -37,6 +37,7 @@ export interface CreateInwardEntryInput {
   counterparty_id?: string;
   purpose: string;
   remarks?: string;
+  branch_id?: string | null;            // Sprint T-Phase-1.A.1.a · FR-51 additive
 }
 
 export type CreateOutwardEntryInput = CreateInwardEntryInput;
@@ -98,6 +99,7 @@ async function createPass(
     direction,
     entity_id: entityCode,
     entity_code: entityCode,
+    branch_id: input.branch_id ?? null,    // Sprint T-Phase-1.A.1.a · FR-51 additive · default null
     status: 'pending',
     vehicle_no: input.vehicle_no.trim().toUpperCase(),
     vehicle_type: input.vehicle_type,
