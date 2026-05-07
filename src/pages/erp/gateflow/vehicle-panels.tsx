@@ -223,12 +223,29 @@ export function VehicleOutwardPanel(): JSX.Element {
 
 // Shared queue panel implementation
 function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): JSX.Element {
-  const entity = getActiveEntityCode();
-  const user = getCurrentUserId();
+  // FR-50 Multi-Entity 6-point · canonical hook
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || getActiveEntityCode();
+  const cu = useCurrentUser();
+  const user = cu?.id ?? getCurrentUserId();
   const [list, setList] = useState<GatePass[]>([]);
   const [tickets, setTickets] = useState<WeighbridgeTicket[]>([]);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const formKey = `gateflow-vehicle-${direction}`;
   const [weighDialog, setWeighDialog] = useState<{ open: boolean; mode: 'in' | 'out'; ticketId: string }>({
     open: false, mode: 'in', ticketId: '',
+  });
+
+  const mount = useSprint27d1Mount({
+    formKey, entityCode: entity,
+    formState: { direction, listLength: 0 },
+    items: [], view: 'new',
+    voucherType: `vehicle-${direction}`,
+    userId: user, partyId: null,
+  });
+  useFormKeyboardShortcuts({
+    onHelp: () => setHelpOpen(true),
+    onCancelOrClose: () => setHelpOpen(false),
   });
 
   const refresh = useCallback((): void => {
@@ -274,15 +291,39 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
 
   return (
     <div className="p-6 space-y-4">
+      <DraftRecoveryDialog
+        formKey={formKey} entityCode={entity}
+        open={mount.recoveryOpen} draftAge={mount.draftAge}
+        onRecover={() => mount.setRecoveryOpen(false)}
+        onDiscard={() => { mount.clearDraft(); mount.setRecoveryOpen(false); }}
+        onClose={() => mount.setRecoveryOpen(false)}
+      />
+      <KeyboardShortcutOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2"><Truck className="h-6 w-6" />{title}</h1>
           <p className="text-sm text-muted-foreground">Weighbridge-aware queue · two-weigh discipline</p>
         </div>
-        <Button variant="outline" onClick={onCapturePlate}>
-          <Camera className="h-4 w-4 mr-2" /> Capture Plate (ANPR)
-        </Button>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entity}
+            recordType={`vehicle-${direction}`}
+            partyValue={null}
+            onUse={() => toast.info('Last vehicle entry loaded')}
+          />
+          <Button variant="outline" onClick={onCapturePlate}>
+            <Camera className="h-4 w-4 mr-2" /> Capture Plate (ANPR)
+          </Button>
+        </div>
       </div>
+
+      <Sprint27d2Mount
+        formName={`GateFlow-vehicle-${direction}`}
+        entityCode={entity}
+        items={list as unknown as Array<Record<string, unknown>>}
+        isLineItemForm={false}
+      />
 
       <Card>
         <CardHeader><CardTitle className="text-base">Active Vehicles</CardTitle></CardHeader>
