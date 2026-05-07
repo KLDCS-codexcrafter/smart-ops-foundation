@@ -42,6 +42,7 @@ export default function QualiCheckPage(): JSX.Element {
       case 'bulk-plan-assignment': return <BulkPlanAssignmentPanel />;
       case 'production-qc-pending':
         return <ProductionQCPendingPanel onOpenInspection={setActiveInspectionId} />;
+      case 'qc-dashboard':         return <QualiCheckDashboard />;
       case 'qc-entry':
         return <div className="p-6 text-sm text-muted-foreground">Open a pending inspection to enter QC.</div>;
       default:
