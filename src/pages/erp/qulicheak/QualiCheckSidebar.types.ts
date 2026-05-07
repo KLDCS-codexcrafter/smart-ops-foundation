@@ -17,4 +17,6 @@ export type QualiCheckModule =
   | 'pending-alerts'
   | 'bulk-plan-assignment'
   // Sprint 3b-pre-1 · D-624 · production-context QC pending list
-  | 'production-qc-pending';
+  | 'production-qc-pending'
+  // Sprint 3b-pre-2 · D-638 · QC Entry route (accessed via setActiveInspectionId)
+  | 'qc-entry';
