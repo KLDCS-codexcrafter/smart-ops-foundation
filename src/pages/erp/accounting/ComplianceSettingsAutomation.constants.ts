@@ -341,6 +341,11 @@ export interface ProductionConfig {
 
   // Sprint 3b-pre-1 · Q45=c · QC auto-create polymorphic mode (Card 3b QualiCheck Integration)
   qcAutoCreateMode: 'always' | 'manual' | 'config_per_scenario';
+
+  // Sprint 3b-pre-3 · Block J · D-648 · Q59=c master CoA auto-generation toggle
+  enableCoAAutoGeneration: boolean;
+  // Sprint 3b-pre-3 · Block J · D-648 · Q60=c default Pareto grouping (UI persistence overrides)
+  qcParetoDefaultGrouping: 'per_parameter' | 'per_item' | 'per_machine' | 'per_inspector';
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
