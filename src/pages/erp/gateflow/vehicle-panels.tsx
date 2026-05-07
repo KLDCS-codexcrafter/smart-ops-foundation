@@ -396,6 +396,16 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
         ticketId={weighDialog.ticketId}
         onDone={refresh}
       />
+
+      <Sprint27eMount
+        entityCode={entity}
+        voucherTypeId={`vt-vehicle-${direction}`}
+        voucherTypeName={`Vehicle ${direction}`}
+        defaultPartyType={direction === 'inward' ? 'vendor' : 'customer'}
+        partyId={null} partyName={null} lineItems={[]}
+        onPartyCreated={() => { /* no-op */ }}
+        onCloneTemplate={() => { /* no-op */ }}
+      />
     </div>
   );
 }
@@ -630,6 +640,7 @@ export function DriverMasterPanel(): JSX.Element {
                   <TableHead>License Class</TableHead>
                   <TableHead>License Expiry</TableHead>
                   <TableHead>Aadhaar (last-4)</TableHead>
+                  <TableHead>Safety</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -642,6 +653,18 @@ export function DriverMasterPanel(): JSX.Element {
                     <TableCell>{d.license_class ?? '—'}</TableCell>
                     <TableCell><Badge variant={expiryVariant(d.license_expiry)}>{fmtDate(d.license_expiry)}</Badge></TableCell>
                     <TableCell className="font-mono">{d.aadhaar_last_4 ? `XXXX-${d.aadhaar_last_4}` : '—'}</TableCell>
+                    <TableCell>
+                      {(d.safety_incident_count ?? 0) > 0 ? (
+                        <Badge variant="destructive">
+                          {d.safety_incident_count} incident{(d.safety_incident_count ?? 0) > 1 ? 's' : ''}
+                          {d.last_incident_date && (
+                            <span className="ml-1 text-xs">(last: {fmtDate(d.last_incident_date)})</span>
+                          )}
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="opacity-60">Clean record</Badge>
+                      )}
+                    </TableCell>
                     <TableCell><Badge variant={d.status === 'active' ? 'default' : 'outline'}>{d.status}</Badge></TableCell>
                   </TableRow>
                 ))}
