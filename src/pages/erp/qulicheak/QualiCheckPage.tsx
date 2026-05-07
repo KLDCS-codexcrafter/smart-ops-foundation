@@ -17,11 +17,17 @@ import {
 } from './operational-panels';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 import { ProductionQCPendingPanel } from './ProductionQCPendingPanel';
+import { QCEntryPage } from './QCEntryPage';
 
 export default function QualiCheckPage(): JSX.Element {
   const [active, setActive] = useState<QualiCheckModule>('welcome');
+  // 🆕 Sprint 3b-pre-2 · Block J · D-635 · QC entry overlay (priority over module switch).
+  const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
 
   const render = (): JSX.Element => {
+    if (activeInspectionId) {
+      return <QCEntryPage inspectionId={activeInspectionId} onBack={() => setActiveInspectionId(null)} />;
+    }
     switch (active) {
       case 'welcome':              return <QualiCheckWelcome onNavigate={setActive} />;
       case 'pending-inspections':  return <PendingInspectionsPanel />;
@@ -33,7 +39,10 @@ export default function QualiCheckPage(): JSX.Element {
       case 'coa-register':         return <CoARegisterPanel />;
       case 'pending-alerts':       return <PendingAlertsPanel />;
       case 'bulk-plan-assignment': return <BulkPlanAssignmentPanel />;
-      case 'production-qc-pending': return <ProductionQCPendingPanel />;
+      case 'production-qc-pending':
+        return <ProductionQCPendingPanel onOpenInspection={setActiveInspectionId} />;
+      case 'qc-entry':
+        return <div className="p-6 text-sm text-muted-foreground">Open a pending inspection to enter QC.</div>;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
