@@ -1,6 +1,6 @@
 /**
  * @file        gate-pass.ts
- * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block A · per D-302 · D-305
+ * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 (Block A) · T-Phase-1.A.1.a (FR-51 branch_id additive)
  * @purpose     Gate Pass type · single type with direction discriminator (Q2=A) · 5-state workflow (Q4=A)
  *              · optional FK linking (Q3=A) · matches FineCore voucher pattern.
  *              [JWT] erp_gate_passes_<entityCode>
@@ -35,6 +35,8 @@ export interface GatePass {
   direction: GatePassDirection;
   entity_id: string;
   entity_code: string;
+  // Sprint T-Phase-1.A.1.a · D-NEW-F · FR-51 Multi-Branch additive
+  branch_id?: string | null;          // FK to BusinessUnit · UI capture in Phase 1.4 with CC selector
   status: GatePassStatus;
 
   // Vehicle + Driver
