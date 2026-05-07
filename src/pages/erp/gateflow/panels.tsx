@@ -56,14 +56,8 @@ function getActiveEntityCode(): string {
   } catch { return 'DEMO'; }
 }
 
-function getCurrentUserId(): string {
-  try {
-    const raw = localStorage.getItem('4ds_login_credential');
-    if (!raw) return 'mock-user';
-    const parsed = JSON.parse(raw);
-    return parsed.value ?? 'mock-user';
-  } catch { return 'mock-user'; }
-}
+// getCurrentUserId removed — Sprint T-Phase-1.A.1.a · QueuePanel uses useCurrentUser hook (FR-50)
+
 
 function fmtTime(iso?: string): string {
   if (!iso) return '—';
@@ -417,6 +411,14 @@ function QueuePanel({ direction, title, icon: Icon }: QueueProps): JSX.Element {
       />
     </div>
   );
+}
+
+export function GateInwardQueuePanel(): JSX.Element {
+  return <QueuePanel direction="inward" title="Inward Queue" icon={LogIn} />;
+}
+
+export function GateOutwardQueuePanel(): JSX.Element {
+  return <QueuePanel direction="outward" title="Outward Queue" icon={LogOut} />;
 }
 
 // ============================================================
