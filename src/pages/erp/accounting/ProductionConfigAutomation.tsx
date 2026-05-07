@@ -402,6 +402,51 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      {/* Sprint 3b-pre-3 · Block J · v6.5 · Card 3b QC Dashboard + CoA auto */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4" /> v6.5 · Card 3b QC Dashboard + CoA Auto
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="enableCoAAutoGeneration" className="text-xs">
+              Auto-generate CoA (Q59=c · export_oriented + third_party_agency only)
+            </Label>
+            <Switch
+              id="enableCoAAutoGeneration"
+              checked={config.enableCoAAutoGeneration}
+              onCheckedChange={v => update('enableCoAAutoGeneration', v)}
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Pareto Default Grouping (Q60=c)</Label>
+            <RadioGroup
+              value={config.qcParetoDefaultGrouping}
+              onValueChange={v => update('qcParetoDefaultGrouping', v as ProductionConfig['qcParetoDefaultGrouping'])}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="per_parameter" id="pdg-param" />
+                <Label htmlFor="pdg-param" className="text-xs">Per Parameter (most granular)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="per_item" id="pdg-item" />
+                <Label htmlFor="pdg-item" className="text-xs">Per Item</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="per_machine" id="pdg-mach" />
+                <Label htmlFor="pdg-mach" className="text-xs">Per Machine</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="per_inspector" id="pdg-insp" />
+                <Label htmlFor="pdg-insp" className="text-xs">Per Inspector</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
         ⓘ Resources · Mobile · Printing · Approval · Multi-BU · Visibility flags TODO 3a-pre-2 expand to all 52 flags.
       </div>
