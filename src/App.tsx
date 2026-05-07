@@ -98,6 +98,9 @@ const CancellationAuditRegister = lazy(() => import('./pages/erp/finecore/regist
 const PinnedTemplatesView = lazy(() => import('./pages/erp/finecore/PinnedTemplatesView'));
 const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
 const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
+// Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 + #12 NEW · stub pages
+const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/EngineeringXPage'));
+const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
