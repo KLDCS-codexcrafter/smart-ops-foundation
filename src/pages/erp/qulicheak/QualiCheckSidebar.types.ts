@@ -19,4 +19,6 @@ export type QualiCheckModule =
   // Sprint 3b-pre-1 · D-624 · production-context QC pending list
   | 'production-qc-pending'
   // Sprint 3b-pre-2 · D-638 · QC Entry route (accessed via setActiveInspectionId)
-  | 'qc-entry';
+  | 'qc-entry'
+  // Sprint 3b-pre-3 · D-649 · Q58=c QC Dashboard (Trend + Pareto)
+  | 'qc-dashboard';
