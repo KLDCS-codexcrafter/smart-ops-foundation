@@ -1,9 +1,19 @@
 /**
- * panels.tsx (GateFlow) — Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block D · per Q1=A · Q8=A
- * 4 panels: GateFlowWelcome · GateInwardQueuePanel · GateOutwardQueuePanel · GatePassRegisterPanel
- *
- * Pattern: [list, setList] + refresh() — NO tick + useMemo anti-pattern.
- * [JWT] GET /api/gateflow/passes
+ * @file        panels.tsx
+ * @purpose     GateFlow panels · Welcome · Gate Inward/Outward Queue · Gate Pass Register
+ * @who         Security guards · Gatekeepers · Dispatch supervisors
+ * @when        Phase 1.A.1.a · GateFlow Patterns + Features sprint
+ * @sprint      T-Phase-1.A.1.a-GateFlow-Patterns-Features (was T-Phase-1.2.6f-d-2-card4-4-pre-1)
+ * @iso         Maintainability · Usability · Reliability
+ * @decisions   D-301 (4-panel base) · D-302 (gate-pass type) · D-305 (storage key) ·
+ *              D-NEW-C (12-item carry-forward) · D-NEW-D (FT-DISPATCH-004 UI · uses existing
+ *              linked_voucher_* fields · NO new field per FR-11 SSOT) · D-NEW-F (Multi-Branch
+ *              FR-51 · branch_id additive)
+ * @reuses      useSprint27d1Mount · Sprint27d2Mount · Sprint27eMount ·
+ *              UseLastVoucherButton · DraftRecoveryDialog · KeyboardShortcutOverlay ·
+ *              useEntityCode · useCurrentUser · useFormKeyboardShortcuts · gateflow-engine
+ * @[JWT]       GET /api/gateflow/passes · POST /api/gateflow/passes ·
+ *              PATCH /api/gateflow/passes/:id · GET /api/gateflow/passes/:id/links
  */
 import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,14 +26,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import {
-  LogIn, LogOut, Clock, ShieldCheck, Truck, Activity, AlertCircle, Plus, FileText,
+  LogIn, LogOut, Clock, ShieldCheck, Truck, Activity, AlertCircle, Plus, FileText, Link2,
 } from 'lucide-react';
 import {
-  createInwardEntry, createOutwardEntry, transitionGatePass,
+  createInwardEntry, createOutwardEntry, transitionGatePass, attachLinkedVoucher,
   listGatePasses, listInwardQueue, listOutwardQueue, ALLOWED_TRANSITIONS,
 } from '@/lib/gateflow-engine';
 import type { GatePass, GatePassStatus, GatePassDirection, LinkedVoucherType } from '@/types/gate-pass';
 import type { GateFlowModule } from './GateFlowSidebar.types';
+
+// Sprint T-Phase-1.A.1.a · 12-item carry-forward (FR-29) + Multi-Entity (FR-50) imports
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 
 // ============================================================
 // HELPERS
