@@ -13,7 +13,7 @@
  * Urgency RED: < 7 days expiry · OR > 4h dwell (240 min)
  * Urgency AMBER: < 30 days expiry · OR > 2h dwell (120 min)
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
