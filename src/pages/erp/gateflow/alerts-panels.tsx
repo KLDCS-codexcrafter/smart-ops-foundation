@@ -30,8 +30,6 @@ import {
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useEntityCode } from '@/hooks/useEntityCode';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function expiryBadge(days: number): { label: string; cls: string } {
   if (days < 7) return { label: `${days}d`, cls: 'bg-destructive/15 text-destructive border-destructive/30' };
   if (days < 30) return { label: `${days}d`, cls: 'bg-amber-500/15 text-amber-600 border-amber-500/30' };
@@ -46,9 +44,11 @@ function dwellBadge(min: number): { label: string; cls: string } {
 }
 
 export function VehicleExpiryAlertsPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<VehicleExpiryAlert[]>([]);
   const refresh = () => setList(getExpiringVehicleDocs(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS));
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { refresh(); }, [ENTITY]);
 
   return (
     <div className="p-6 space-y-4">
@@ -91,9 +91,11 @@ export function VehicleExpiryAlertsPanel(): JSX.Element {
 }
 
 export function DriverExpiryAlertsPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<DriverExpiryAlert[]>([]);
   const refresh = () => setList(getExpiringDriverLicenses(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS));
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { refresh(); }, [ENTITY]);
 
   return (
     <div className="p-6 space-y-4">
@@ -136,13 +138,15 @@ export function DriverExpiryAlertsPanel(): JSX.Element {
 }
 
 export function GateDwellAlertsPanel(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<GateDwellAlert[]>([]);
   const refresh = () => setList(getDwellingGatePasses(ENTITY, DEFAULT_DWELL_THRESHOLD_MIN));
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 30000);
     return () => clearInterval(i);
-  }, []);
+  }, [ENTITY]);
 
   return (
     <div className="p-6 space-y-4">
