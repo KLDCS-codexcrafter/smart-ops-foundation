@@ -168,20 +168,43 @@ function aggregateStatus(lines: QaInspectionLine[]): QaInspectionStatus {
   return 'partial_pass';
 }
 
+// 🆕 Sprint 3b-pre-2 · Block K · D-636 · backward-compat optional context arg
+export interface CompleteInspectionContext {
+  passFailMode: import('@/types/qc-entry-mode').PassFailMode;
+  productionConfig: import('@/pages/erp/accounting/ComplianceSettingsAutomation.constants').ProductionConfig;
+  itemQCParams: import('@/types/item-qc-param').ItemQCParam[];
+}
+
 export async function completeInspection(
   qaId: string,
   entityCode: string,
   byUserId: string,
+  context?: CompleteInspectionContext,
 ): Promise<QaInspectionRecord | null> {
   const list = read(entityCode);
   const idx = list.findIndex((q) => q.id === qaId);
   if (idx < 0) return null;
   const cur = list[idx];
-  const finalStatus = aggregateStatus(cur.lines);
+
+  // 🆕 Q54=a · polymorphic eval when context supplied · existing aggregateStatus fallback otherwise.
+  let finalStatus: QaInspectionStatus;
+  let evalReasons: string[] = [];
+  if (context) {
+    // Lazy-import to avoid a circular dependency with qa-passfail-evaluator (which imports types only).
+    const { evaluatePassFail } = await import('./qa-passfail-evaluator');
+    const r = evaluatePassFail(cur, context.passFailMode, context.itemQCParams);
+    finalStatus = r.overall === 'pass' ? 'passed' : 'failed';
+    evalReasons = r.reasons;
+  } else {
+    finalStatus = aggregateStatus(cur.lines);
+  }
 
   const updated: QaInspectionRecord = {
     ...cur,
     status: finalStatus,
+    notes: context
+      ? `${cur.notes}\n\nFinalized via ${context.passFailMode}: ${evalReasons.join('; ')}`.trim()
+      : cur.notes,
     updated_at: new Date().toISOString(),
   };
   list[idx] = updated;
