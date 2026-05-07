@@ -13,7 +13,19 @@ export type CardId =
   | 'servicedesk'
   | 'dispatch-hub'
   | 'dispatch-ops'
-  | 'projx';                  // Sprint T-Phase-1.1.2-a · ProjX Foundation
+  | 'projx'                   // Sprint T-Phase-1.1.2-a · ProjX Foundation
+  // ── Sprint T-Phase-1.3-DashboardLanes-Fix · 11 NEW IDs (close type-drift gap) ──
+  | 'engineeringx'            // Tier 1 #5 NEW (Master Plan §51.2)
+  | 'sitex'                   // Tier 1 #12 NEW (Master Plan §51.2)
+  | 'store-hub'               // Department Stores · adjacent to Inventory Hub
+  | 'bill-passing'            // 3-way match · 1,550 LOC built · added in DashboardAudit-Fix
+  | 'supplyx'                 // T1 #11 (existing card · was missing from type union)
+  | 'eximx'                   // T1 #14 · International Trade (existing card · was missing)
+  | 'docvault'                // T1 #4 · prereq for EngineeringX (existing card · was missing)
+  | 'taskflow'                // Tier 3 stub (existing card · was missing)
+  | 'unicomm'                 // Tier 3 stub (existing card · was missing)
+  | 'webstorex'               // Tier 3 stub · MOAT #11 (existing card · was missing)
+  | 'comply360';              // Tier 4 deferred · Phase 1.4+ (existing card · was missing)
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'trial';
 

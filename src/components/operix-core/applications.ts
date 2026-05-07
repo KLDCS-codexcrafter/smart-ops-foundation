@@ -171,7 +171,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'engineeringx',
     name: 'EngineeringX',
-    description: 'Engineering design control · drawing register, version control, BOM-from-drawing, Reference Project Library, AI similarity/change-impact prediction. Sinha-anchor card · drawings ARE the product.',
+    description: 'Engineering design control · drawing register, version control, BOM-from-drawing, Reference Project Library, AI similarity/change-impact prediction. (Critical for ETO/Fabrication clients.)',
     category: 'Ops Hub',
     route: '/erp/engineeringx',
     icon: 'FileText',
@@ -190,7 +190,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'supplyx',
     name: 'SupplyX',
-    description: 'Internal supply requisition · stock check before requisition, auto-PR trigger to Procure360.',
+    description: 'Internal supply requisition · stock check before requisition, auto-PR trigger to Procure360. Lightweight requisition flow (early scaffold).',
     category: 'Ops Hub',
     route: '/erp/supplyx',
     icon: 'Truck',
@@ -237,11 +237,11 @@ export const applications: AppDefinition[] = [
   {
     id: 'projx',
     name: 'ProjX',
-    description: 'Project Management Hub (orchestrator) · multi-line long-running orders with milestones, resource allocation, time entries, project P&L, project-level invoicing. Every other card tags transactions with project_centre_id (D-218). Tier 1 #1.',
+    description: 'Project Management Hub (orchestrator) · multi-line long-running orders with milestones, resource allocation, time entries, project P&L, project-level invoicing. Every other card tags transactions with project_centre_id (D-218).',
     category: 'Sales Hub',
     route: '/erp/projx',
     icon: 'ClipboardList',
-    status: 'wip',
+    status: 'active',  // Sprint T-Phase-1.3-DashboardLanes-Fix · Q3=a · ALL 5 sub-sprints shipped (1.1.2-pre/a/b/b2/c/d verified in code) · D-219-D-223 retroactively logged
   },
   {
     id: 'webstorex',
@@ -302,7 +302,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'bill-passing',
     name: 'Bill Passing',
-    description: '3-way match invoice processing (PO + GRN + Vendor Invoice). For Procure360 + RequestX + Job Work Out. Feeds PayOut for payment scheduling. Sprints T-Phase-1.2.6f-c-2/c-3 shipped.',
+    description: '3-way match invoice processing (PO + GRN + Vendor Invoice). For Procure360 + RequestX + Job Work Out. Feeds PayOut for payment scheduling.',
     category: 'Fin Hub',
     route: '/erp/bill-passing',
     icon: 'FileText',
@@ -331,11 +331,11 @@ export const applications: AppDefinition[] = [
   {
     id: 'dispatch-hub',
     name: 'Logistics',
-    description: 'Transporter panel · LR tracking, POD, transporter & courier management, freight reconciliation, transporter scorecard, courier dispatch, dispute queue. External-party coordination. NOT operational dispatch (see Dispatch Hub).',
+    description: 'Transporter panel · LR tracking, POD, courier management, freight reconciliation, transporter scorecard, dispute queue. External-party coordination. (Distinct from Dispatch Hub which handles inward/outward stock operations.)',
     category: 'Ops Hub',
     route: '/erp/logistics',
     icon: 'Truck',
-    status: 'wip',
+    status: 'active',  // Sprint T-Phase-1.3-DashboardLanes-Fix · Q1-Status · 1,360 unique LOC + 8,127 shared LOC · /erp/logistics functional since T-Phase-1.1.1p-v2
   },
   // dispatch-ops · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
   {

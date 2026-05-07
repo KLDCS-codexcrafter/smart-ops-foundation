@@ -55,7 +55,21 @@ const LANES: Array<{
     label: 'Operations',
     borderColor: 'border-l-cyan-500',
     labelColor: 'text-cyan-600 dark:text-cyan-400',
-    ids: ['procure360', 'inventory-hub', 'gateflow', 'production', 'maintainpro', 'qulicheak', 'requestx', 'supplyx', 'dispatch-hub'],
+    // Sprint T-Phase-1.3-DashboardLanes-Fix · 3 NEW added (store-hub · engineeringx · sitex) per Master Plan §51.2 lane order
+    ids: [
+      'procure360',
+      'inventory-hub',
+      'store-hub',         // NEW · Department Stores · adjacent to inventory-hub (parent backbone)
+      'gateflow',
+      'production',
+      'engineeringx',      // NEW · Tier 1 #5 · drawings + BOM feeds production
+      'maintainpro',
+      'qulicheak',
+      'requestx',
+      'supplyx',
+      'sitex',             // NEW · Tier 1 #12 · site execution · post-production
+      'dispatch-hub',
+    ],
   },
   {
     id: 'dispatch',
@@ -69,7 +83,14 @@ const LANES: Array<{
     label: 'Finance',
     borderColor: 'border-l-indigo-500',
     labelColor: 'text-indigo-600 dark:text-indigo-400',
-    ids: ['finecore', 'comply360', 'payout', 'receivx'],
+    // Sprint T-Phase-1.3-DashboardLanes-Fix · 1 NEW added (bill-passing) · 3-way match feeds payout in P2P chain
+    ids: [
+      'finecore',
+      'bill-passing',      // NEW · 3-way match · 1,550 LOC built · adjacent to finecore in P2P chain
+      'comply360',
+      'payout',
+      'receivx',
+    ],
   },
   {
     id: 'international-trade',

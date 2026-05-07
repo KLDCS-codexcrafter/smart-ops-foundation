@@ -60,6 +60,18 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'dispatch-hub':    '/erp/logistics',
   'dispatch-ops':    '/erp/dispatch',
   'projx':           '/erp/projx',
+  // ── Sprint T-Phase-1.3-DashboardLanes-Fix · 11 NEW IDs ──
+  'engineeringx':    '/erp/engineeringx',
+  'sitex':           '/erp/sitex',
+  'store-hub':       '/erp/store-hub',
+  'bill-passing':    '/erp/bill-passing',
+  'supplyx':         '/erp/supplyx',
+  'eximx':           '/erp/eximx',
+  'docvault':        '/erp/docvault',
+  'taskflow':        '/erp/taskflow',
+  'unicomm':         '/erp/unicomm',
+  'webstorex':       '/erp/webstorex',
+  'comply360':       '/erp/comply360',
 };
 
 /**
