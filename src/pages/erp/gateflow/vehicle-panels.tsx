@@ -1,13 +1,17 @@
 /**
- * vehicle-panels.tsx · Sprint T-Phase-1.2.6f-d-2-card4-4-pre-2 · Block G
- * 5 panels per Q9=A:
- *   - VehicleInwardPanel · VehicleOutwardPanel
- *   - VehicleMasterPanel · DriverMasterPanel
- *   - WeighbridgeTicketRegisterPanel
- *
- * Pattern: [list, setList] + refresh() — NO tick + useMemo anti-pattern.
- * Uses 4-pre-1 gateflow-engine (ZERO TOUCH) + 4-pre-2 NEW engines.
- * [JWT] GET /api/weighbridge/tickets · GET /api/vehicle-master · GET /api/driver-master
+ * @file        vehicle-panels.tsx
+ * @purpose     GateFlow vehicle panels · Vehicle Inward/Outward · Vehicle/Driver Master · Weighbridge Register
+ * @who         Security guards · Gatekeepers · Drivers · Operators
+ * @when        Phase 1.A.1.a · GateFlow Patterns + Features sprint
+ * @sprint      T-Phase-1.A.1.a-GateFlow-Patterns-Features (was T-Phase-1.2.6f-d-2-card4-4-pre-2)
+ * @iso         Maintainability · Usability · Reliability
+ * @decisions   D-307 (master FKs) · D-310 (ANPR) · D-NEW-C (12-item carry-forward) ·
+ *              D-NEW-E (Driver Safety OOB) · D-NEW-F (Multi-Branch FR-51 additive)
+ * @reuses      useSprint27d1Mount · Sprint27d2Mount · Sprint27eMount · UseLastVoucherButton ·
+ *              DraftRecoveryDialog · KeyboardShortcutOverlay · useEntityCode · useCurrentUser ·
+ *              useFormKeyboardShortcuts · gateflow-engine · weighbridge-engine ·
+ *              vehicle-master-engine · driver-master-engine
+ * @[JWT]       GET /api/weighbridge/tickets · GET /api/vehicle-master · GET /api/driver-master
  */
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +53,17 @@ import type {
 } from '@/types/weighbridge-ticket';
 import type { VehicleMaster, VehicleType, FuelType } from '@/types/vehicle-master';
 import type { DriverMaster, LicenseClass } from '@/types/driver-master';
+
+// Sprint T-Phase-1.A.1.a · 12-item carry-forward (FR-29) + Multi-Entity (FR-50) imports
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
+import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
+import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
+import { Sprint27eMount } from '@/components/uth/Sprint27eMount';
+import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
+import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
+import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 
 // ============================================================
 // HELPERS
