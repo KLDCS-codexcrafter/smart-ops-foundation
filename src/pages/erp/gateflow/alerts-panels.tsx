@@ -47,8 +47,8 @@ export function VehicleExpiryAlertsPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const ENTITY = entityCode || DEFAULT_ENTITY_SHORTCODE;
   const [list, setList] = useState<VehicleExpiryAlert[]>([]);
-  const refresh = () => setList(getExpiringVehicleDocs(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS));
-  useEffect(() => { refresh(); }, [ENTITY]);
+  const refresh = useCallback(() => setList(getExpiringVehicleDocs(ENTITY, DEFAULT_EXPIRY_WINDOW_DAYS)), [ENTITY]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   return (
     <div className="p-6 space-y-4">
