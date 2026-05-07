@@ -98,6 +98,9 @@ const CancellationAuditRegister = lazy(() => import('./pages/erp/finecore/regist
 const PinnedTemplatesView = lazy(() => import('./pages/erp/finecore/PinnedTemplatesView'));
 const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
 const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
+// Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 + #12 NEW · stub pages
+const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/EngineeringXPage'));
+const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
@@ -423,6 +426,10 @@ const App = () => (
               <Route path="/erp/finecore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
+              {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 NEW · EngineeringX placeholder */}
+              <Route path="/erp/engineeringx" element={<P><EngineeringXPage /></P>} />
+              {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #12 NEW · SiteX placeholder */}
+              <Route path="/erp/sitex" element={<P><SiteXPage /></P>} />
               <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/finecore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/finecore/payment-print" element={<P><PaymentPrint /></P>} />
