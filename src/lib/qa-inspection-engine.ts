@@ -250,6 +250,20 @@ export async function completeInspection(
     }
   }
 
+  // 🆕 Sprint 3b-pre-3 · Block I · D-647 · Q59=c per-scenario CoA auto-generation hook.
+  // Additive · runs only when context provided + status PASS · existing logic byte-identical above.
+  if (context && updated.status === 'passed') {
+    try {
+      const { triggerCoAIfApplicable } = await import('./qa-coa-trigger');
+      const coaResult = triggerCoAIfApplicable(updated, context.productionConfig, entityCode);
+      if (coaResult.triggered) {
+        console.log('[completeInspection] Q59=c CoA auto-generated', coaResult);
+      }
+    } catch (e) {
+      console.error('[completeInspection] CoA auto-trigger failed', e);
+    }
+  }
+
   return updated;
 }
 

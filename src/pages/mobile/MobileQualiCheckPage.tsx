@@ -1,19 +1,21 @@
 /**
  * MobileQualiCheckPage.tsx — Sprint 5-pre-3 · Block E · D-346
- * OperixGo QualiCheck landing page · today's stats + "New Inspection" CTA.
- *
- * Pattern note: NO [tick, setTick] + useMemo · uses [list, setList] + refresh() pattern.
- * Mirrors MobileGateGuardPage 4-pre-3 D-312 EXACTLY.
+ * EXTENDED Sprint 3b-pre-3 · Block H · D-646 · Q57=a · 2-tab structure
+ * (Vendor / Production · existing 107 LOC PRESERVED inside Vendor tab).
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ArrowLeft, FlaskConical, Plus, ClipboardCheck, AlertTriangle, Activity } from 'lucide-react';
 import MobileQualiCheckCapture from '@/components/mobile/MobileQualiCheckCapture';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listPendingQa, listQaInspections } from '@/lib/qa-inspection-engine';
 import { getPendingInspectionAlerts } from '@/lib/oob/qa-pending-inspection-alerts';
+import type { QaInspectionRecord } from '@/types/qa-inspection';
+import MobileQCEntryPage from './MobileQCEntryPage';
 
 function getActiveEntityCode(): string {
   try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
@@ -23,18 +25,26 @@ function getActiveEntityCode(): string {
 export default function MobileQualiCheckPage(): JSX.Element {
   const navigate = useNavigate();
   const ENTITY = getActiveEntityCode();
+  const [activeTab, setActiveTab] = useState<'vendor' | 'production'>('vendor');
+  const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
   const [showCapture, setShowCapture] = useState(false);
   const [pending, setPending] = useState<number>(0);
   const [critical, setCritical] = useState<number>(0);
   const [today, setToday] = useState<number>(0);
+  const [productionPending, setProductionPending] = useState<QaInspectionRecord[]>([]);
 
   const refresh = (): void => {
     setPending(listPendingQa(ENTITY).length);
     const alerts = getPendingInspectionAlerts(ENTITY);
     setCritical(alerts.filter(a => a.severity === 'critical' || a.severity === 'escalated').length);
     const todayStr = new Date().toISOString().slice(0, 10);
-    setToday(
-      listQaInspections(ENTITY).filter(q => (q.inspection_date ?? '').slice(0, 10) === todayStr).length,
+    const all = listQaInspections(ENTITY);
+    setToday(all.filter(q => (q.inspection_date ?? '').slice(0, 10) === todayStr).length);
+    setProductionPending(
+      all.filter(r =>
+        r.source_context && r.source_context !== 'incoming_vendor' &&
+        (r.status === 'pending' || r.status === 'in_progress'),
+      ),
     );
   };
 
@@ -44,6 +54,18 @@ export default function MobileQualiCheckPage(): JSX.Element {
     return () => clearInterval(i);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Q57=a · Block G QC entry overlay (production-context inspections)
+  if (activeInspectionId) {
+    return (
+      <MobileQCEntryPage
+        inspectionId={activeInspectionId}
+        onBack={() => { setActiveInspectionId(null); refresh(); }}
+        entityCode={ENTITY}
+        userId="mobile-user"
+      />
+    );
+  }
 
   if (showCapture) {
     return (
@@ -77,31 +99,66 @@ export default function MobileQualiCheckPage(): JSX.Element {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="p-3 text-center">
-          <ClipboardCheck className="h-4 w-4 mx-auto text-primary mb-1" />
-          <div className="font-mono text-2xl font-semibold">{pending}</div>
-          <div className="text-xs text-muted-foreground">Pending</div>
-        </Card>
-        <Card className="p-3 text-center">
-          <AlertTriangle className="h-4 w-4 mx-auto text-destructive mb-1" />
-          <div className="font-mono text-2xl font-semibold">{critical}</div>
-          <div className="text-xs text-muted-foreground">Critical</div>
-        </Card>
-        <Card className="p-3 text-center">
-          <Activity className="h-4 w-4 mx-auto text-emerald-600 mb-1" />
-          <div className="font-mono text-2xl font-semibold">{today}</div>
-          <div className="text-xs text-muted-foreground">Today</div>
-        </Card>
-      </div>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'vendor' | 'production')}>
+        <TabsList className="grid grid-cols-2 w-full">
+          <TabsTrigger value="vendor">Vendor QC</TabsTrigger>
+          <TabsTrigger value="production">Production QC ({productionPending.length})</TabsTrigger>
+        </TabsList>
 
-      <Button onClick={() => setShowCapture(true)} className="w-full h-14 text-base">
-        <Plus className="h-5 w-5 mr-2" />New Inspection
-      </Button>
+        <TabsContent value="vendor" className="space-y-4 mt-4">
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-3 text-center">
+              <ClipboardCheck className="h-4 w-4 mx-auto text-primary mb-1" />
+              <div className="font-mono text-2xl font-semibold">{pending}</div>
+              <div className="text-xs text-muted-foreground">Pending</div>
+            </Card>
+            <Card className="p-3 text-center">
+              <AlertTriangle className="h-4 w-4 mx-auto text-destructive mb-1" />
+              <div className="font-mono text-2xl font-semibold">{critical}</div>
+              <div className="text-xs text-muted-foreground">Critical</div>
+            </Card>
+            <Card className="p-3 text-center">
+              <Activity className="h-4 w-4 mx-auto text-success mb-1" />
+              <div className="font-mono text-2xl font-semibold">{today}</div>
+              <div className="text-xs text-muted-foreground">Today</div>
+            </Card>
+          </div>
 
-      <p className="text-xs text-muted-foreground text-center">
-        Routes inspection to closure resolver on submit · 3 Stock Journals (Approved/Sample/Rejection) auto-posted.
-      </p>
+          <Button onClick={() => setShowCapture(true)} className="w-full h-14 text-base">
+            <Plus className="h-5 w-5 mr-2" />New Inspection
+          </Button>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Routes inspection to closure resolver on submit · 3 Stock Journals (Approved/Sample/Rejection) auto-posted.
+          </p>
+        </TabsContent>
+
+        <TabsContent value="production" className="space-y-3 mt-4">
+          {productionPending.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                No production QC pending.
+              </CardContent>
+            </Card>
+          ) : (
+            productionPending.map(r => (
+              <Card
+                key={r.id}
+                className="cursor-pointer hover:border-primary"
+                onClick={() => setActiveInspectionId(r.id)}
+              >
+                <CardContent className="p-3">
+                  <div className="font-mono text-sm">{r.qa_no}</div>
+                  {r.production_order_no && (
+                    <div className="text-xs text-muted-foreground">PO: {r.production_order_no}</div>
+                  )}
+                  <Badge variant="outline" className="mt-1">{r.source_context}</Badge>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

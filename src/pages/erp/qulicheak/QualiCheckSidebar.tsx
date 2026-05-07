@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
-  ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory,
+  ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
 } from 'lucide-react';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
 
@@ -39,6 +39,7 @@ const GROUPS: Group[] = [
   {
     label: 'Reports',
     items: [
+      { id: 'qc-dashboard', label: 'QC Dashboard', icon: BarChart3 },
       { id: 'inspection-register', label: 'Inspection Register', icon: ListChecks },
       { id: 'vendor-scorecard', label: 'Vendor Scorecard', icon: Award },
       { id: 'coa-register', label: 'CoA Register', icon: FileCheck },
