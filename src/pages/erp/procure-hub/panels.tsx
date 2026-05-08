@@ -1345,11 +1345,19 @@ export function VendorPerfReportPanel(): JSX.Element {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow><TableCell colSpan={headers.length} className="text-center text-sm text-muted-foreground py-8">No vendor activity yet.</TableCell></TableRow>
-              ) : rows.map((r, i) => (
-                <TableRow key={`${r[0]}-${i}`}>{r.map((c, j) => (
-                  <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
-                ))}</TableRow>
-              ))}
+              ) : rows.map((r, i) => {
+                const vendorId = sorted[i]?.vendor_id ?? null;
+                return (
+                  <TableRow
+                    key={`${r[0]}-${i}`}
+                    className="cursor-pointer"
+                    data-state={focusVendorId === vendorId ? 'selected' : undefined}
+                    onClick={() => setFocusVendorId((prev) => (prev === vendorId ? null : vendorId))}
+                  >{r.map((c, j) => (
+                    <TableCell key={j} className={j >= 1 ? 'font-mono' : ''}>{c}</TableCell>
+                  ))}</TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
