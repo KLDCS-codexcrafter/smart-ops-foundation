@@ -1298,12 +1298,15 @@ export function AwardHistoryReportPanel(): JSX.Element {
 export function VendorPerfReportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [sortKey, setSortKey] = useState<'spend' | 'response' | 'awards'>('spend');
+  // Block H · α-d · Supplier Focus drill-down
+  const [focusVendorId, setFocusVendorId] = useState<string | null>(null);
   const all = computeVendorPerformance(entityCode);
   const sorted = [...all].sort((a, b) => {
     if (sortKey === 'spend') return b.total_spend - a.total_spend;
     if (sortKey === 'response') return b.response_rate - a.response_rate;
     return b.awarded_count - a.awarded_count;
   });
+  const focused = focusVendorId ? sorted.find((r) => r.vendor_id === focusVendorId) ?? null : null;
   const headers = ['Vendor', 'RFQs', 'Quoted', 'Awarded', 'Spend', 'Response %'];
   const rows = sorted.map((r) => [
     r.vendor_name, String(r.rfq_count), String(r.quoted_count),
@@ -1315,6 +1318,20 @@ export function VendorPerfReportPanel(): JSX.Element {
         <h1 className="text-2xl font-bold">Vendor Performance</h1>
         <Button size="sm" variant="outline" onClick={() => downloadCsv('vendor-performance.csv', headers, rows)}>Export CSV</Button>
       </div>
+      {focused && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Supplier Focus · {focused.vendor_name}</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+            <div><p className="text-xs text-muted-foreground">RFQs</p><p className="font-mono text-lg">{focused.rfq_count}</p></div>
+            <div><p className="text-xs text-muted-foreground">Quoted</p><p className="font-mono text-lg">{focused.quoted_count}</p></div>
+            <div><p className="text-xs text-muted-foreground">Awarded</p><p className="font-mono text-lg">{focused.awarded_count}</p></div>
+            <div><p className="text-xs text-muted-foreground">Total Spend</p><p className="font-mono text-lg">{inr(focused.total_spend)}</p></div>
+            <div><p className="text-xs text-muted-foreground">Response %</p><p className="font-mono text-lg">{focused.response_rate}%</p></div>
+          </CardContent>
+        </Card>
+      )}
       <Card>
         <CardContent className="pt-6 space-y-3">
           <div className="flex gap-2 items-center">
