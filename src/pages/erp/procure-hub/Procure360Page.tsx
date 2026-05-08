@@ -2,11 +2,11 @@
  * @file        Procure360Page.tsx
  * @purpose     Procure360 hub page · canonical Shell pattern (4th card after CC + GateFlow + Production)
  * @who         Procurement department
- * @when        Phase 1.A.3.a · Procure360 Shell Migration sprint
- * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration
+ * @when        Phase 1.A.3.b · Procure360 Bill Passing Integration sprint
+ * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (8 modules · Outstandings group · 5 reports · D-NEW-AG · D-NEW-AK)
  * @iso         Maintainability · Usability (ISO 25010)
- * @decisions   D-250 · D-NEW-AC · D-NEW-AD · D-NEW-AF
- * @reuses      @/shell Shell · procure360-shell-config · useCardEntitlement · logAudit · recordActivity · rememberModule · GuidedTourOverlay · journalKey · 22 panel exports
+ * @decisions   D-250 · D-NEW-AC · D-NEW-AD · D-NEW-AF · D-NEW-AG · D-NEW-AK
+ * @reuses      @/shell Shell · procure360-shell-config · useCardEntitlement · logAudit · recordActivity · rememberModule · GuidedTourOverlay · journalKey · 22+8 panel exports
  * @[JWT]       activeModule (state) · entityCode + userId via useCardEntitlement (localStorage [JWT])
  */
 
