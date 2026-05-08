@@ -4,6 +4,7 @@
  * @purpose  7-way variance drill-down dashboard (Q18=a financial priority).
  */
 import { useMemo, useState } from 'react';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -86,9 +87,9 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
     return variances;
   }, [variances, statusFilter]);
 
-  const totalVariance = filtered.reduce((s, v) => s + v.total_variance_amount, 0);
+  const totalVariance = round2(dSum(filtered, v => v.total_variance_amount));
   const totalBreaches = filtered.reduce((s, v) => s + v.threshold_breach_count, 0);
-  const avgPct = filtered.length ? filtered.reduce((s, v) => s + v.total_variance_pct, 0) / filtered.length : 0;
+  const avgPct = filtered.length ? round2(dSum(filtered, v => v.total_variance_pct) / filtered.length) : 0;
 
   const drillVariance = drillIndex !== null ? filtered[drillIndex] : null;
 

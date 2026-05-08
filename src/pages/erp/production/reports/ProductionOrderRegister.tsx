@@ -12,10 +12,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { closeProductionOrder } from '@/lib/production-engine';
+import { listProductionConfirmations } from '@/lib/production-confirmation-engine';
 import {
   PRODUCTION_ORDER_STATUS_LABELS,
   PRODUCTION_ORDER_STATUS_COLORS,
@@ -27,6 +30,8 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
   const { orders, reload } = useProductionOrders();
   const config = useProductionConfig();
   const user = useCurrentUser();
+  const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<'all' | ProductionOrderStatus>('all');
   const [closeTarget, setCloseTarget] = useState<ProductionOrder | null>(null);
   const [closureRemarks, setClosureRemarks] = useState('');
@@ -36,6 +41,19 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
     () => (tab === 'all' ? orders : orders.filter(o => o.status === tab)),
     [orders, tab],
   );
+
+  // D-NEW-L · QC inspection count by PO id
+  const qcCountByPo = useMemo(() => {
+    const map = new Map<string, number>();
+    try {
+      const pcs = listProductionConfirmations(entityCode);
+      for (const pc of pcs) {
+        const n = pc.linked_test_report_ids?.length ?? 0;
+        if (n > 0) map.set(pc.production_order_id, (map.get(pc.production_order_id) ?? 0) + n);
+      }
+    } catch { /* noop */ }
+    return map;
+  }, [entityCode]);
 
   const handleClose = (): void => {
     if (!closeTarget || !user) return;
@@ -85,6 +103,7 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
                     <th className="p-2">Output Item</th>
                     <th className="p-2 text-right">Planned Qty</th>
                     <th className="p-2">Status</th>
+                    <th className="p-2">QC Status</th>
                     <th className="p-2">Customer/Project</th>
                     <th className="p-2 text-right">Master Cost</th>
                     <th className="p-2 text-right">Action</th>
@@ -92,8 +111,10 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
                 </thead>
                 <tbody>
                   {filtered.length === 0 ? (
-                    <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">No production orders</td></tr>
-                  ) : filtered.map(po => (
+                    <tr><td colSpan={8} className="p-6 text-center text-muted-foreground">No production orders</td></tr>
+                  ) : filtered.map(po => {
+                    const qcN = qcCountByPo.get(po.id) ?? 0;
+                    return (
                     <tr key={po.id} className="border-t">
                       <td className="p-2 font-mono">{po.doc_no}</td>
                       <td className="p-2">{po.output_item_name}</td>
@@ -102,6 +123,14 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
                         <Badge variant="outline" className={PRODUCTION_ORDER_STATUS_COLORS[po.status]}>
                           {PRODUCTION_ORDER_STATUS_LABELS[po.status]}
                         </Badge>
+                      </td>
+                      <td className="p-2 text-xs">
+                        {qcN > 0 ? (
+                          <button type="button" className="underline text-primary"
+                            onClick={() => navigate(`/erp/qulicheak?m=inspection-list&po=${po.id}`)}>
+                            Inspected ({qcN})
+                          </button>
+                        ) : '—'}
                       </td>
                       <td className="p-2 text-xs">{po.customer_name || po.project_id || '—'}</td>
                       <td className="p-2 text-right font-mono">₹{po.cost_structure.master.total.toFixed(2)}</td>
@@ -113,7 +142,8 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
                         )}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </CardContent>

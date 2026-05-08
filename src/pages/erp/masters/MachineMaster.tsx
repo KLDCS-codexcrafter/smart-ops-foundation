@@ -17,6 +17,7 @@ import { useMachines } from '@/hooks/useMachines';
 import { useWorkCenters } from '@/hooks/useWorkCenters';
 import { useFactories } from '@/hooks/useFactories';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { faUnitsKey, type AssetUnitRecord } from '@/types/fixed-asset';
 import type { Machine, MachineStatus } from '@/types/machine';
 
 const STATUSES: MachineStatus[] = ['running', 'idle', 'breakdown', 'maintenance', 'decommissioned'];
@@ -28,6 +29,7 @@ const empty = (entityCode: string): Omit<Machine, 'id' | 'created_at' | 'updated
   code: '',
   name: '',
   asset_tag: '',
+  fixed_asset_id: null,
   manufacturer: '',
   model: '',
   serial_number: '',
@@ -73,6 +75,15 @@ export function MachineMasterPanel() {
     () => allWorkCenters.filter(w => !form.factory_id || w.factory_id === form.factory_id),
     [allWorkCenters, form.factory_id],
   );
+
+  // D-NEW-M · Plant & Machinery fixed assets for dropdown
+  const machineryAssets = useMemo<AssetUnitRecord[]>(() => {
+    try {
+      const raw = localStorage.getItem(faUnitsKey(entityCode));
+      const all: AssetUnitRecord[] = raw ? JSON.parse(raw) : [];
+      return all.filter(a => a.it_act_block === 'Plant & Machinery' && a.status === 'active');
+    } catch { return []; }
+  }, [entityCode]);
 
   const openNew = () => { setEditing(null); setForm(empty(entityCode)); setCapInput(''); setDialogOpen(true); };
   const openEdit = (m: Machine) => {
@@ -181,6 +192,21 @@ export function MachineMasterPanel() {
               </Select>
             </div>
             <div><Label>Asset Tag</Label><Input value={form.asset_tag} onChange={e => setForm({ ...form, asset_tag: e.target.value })} /></div>
+            <div>
+              <Label>Linked Fixed Asset</Label>
+              <Select
+                value={form.fixed_asset_id ?? '__none__'}
+                onValueChange={v => setForm({ ...form, fixed_asset_id: v === '__none__' ? null : v })}
+              >
+                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {machineryAssets.map(a => (
+                    <SelectItem key={a.id} value={a.id}>{a.asset_id} · {a.item_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label>Status</Label>
               <Select value={form.current_status} onValueChange={v => setForm({ ...form, current_status: v as MachineStatus })}>

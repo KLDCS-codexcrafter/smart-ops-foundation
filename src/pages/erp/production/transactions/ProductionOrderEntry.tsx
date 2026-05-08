@@ -1,11 +1,16 @@
 /**
  * @file     ProductionOrderEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit · Q16=a active)
- * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview · Card #2.7 12-item carry-forward (UseLastVoucher · DraftRecovery · Sprint27 mounts · Pinned Templates · Smart Defaults · Keyboard nav · Decimal precision · Currency display · Notify-on-Save · Print preview).
+ * @sprint   T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3a-pre-2-fix-1)
+ * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview · 12-item carry-forward.
+ * @iso      Maintainability · Reliability
+ * @decisions D-NEW-K (decimal-helpers adoption · cost rollups paise-precise)
+ * @reuses   decimal-helpers · useSprint27d1Mount · useFormKeyboardShortcuts
+ * @[JWT]    via production-engine
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { dMul, dPct, dSum, round2 } from '@/lib/decimal-helpers';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -243,7 +248,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   };
 
   const totalAllocPct = useMemo(
-    () => outputs.reduce((s, o) => s + (Number(o.cost_allocation_pct) || 0), 0),
+    () => round2(dSum(outputs, o => Number(o.cost_allocation_pct) || 0)),
     [outputs],
   );
   const allocOk = Math.abs(totalAllocPct - 100) < 0.01;
@@ -331,7 +336,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const effectiveQcScenario: QCScenario | '' = isExport ? 'export_oriented' : qcScenario;
 
   const totalSoFulfilled = useMemo(
-    () => soMappings.reduce((s, m) => s + (Number(m.fulfilled_qty) || 0), 0),
+    () => round2(dSum(soMappings, m => Number(m.fulfilled_qty) || 0)),
     [soMappings],
   );
 
@@ -680,7 +685,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             </div>
             {selectedBom.components.map(c => {
               const sub = substitutions[c.id];
-              const baseQty = c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100);
+              const baseQty = dMul(dMul(c.qty, plannedQty), 1) + dPct(dMul(c.qty, plannedQty), c.wastage_percent || 0);
               const effItemName = sub
                 ? (sub.approved?.substitute_item_name ?? sub.freeForm?.item_name ?? c.item_name)
                 : c.item_name;
@@ -994,7 +999,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Unit ID</Label>
-                {/* TODO useBusinessUnits when hook exists */}
+                {/* TODO_BU_HOOK · D-NEW-O · useBusinessUnits hook from CC BusinessUnit master · Phase 1.4 */}
                 <Input value={businessUnitId} onChange={e => setBusinessUnitId(e.target.value)} placeholder="BU code" />
               </div>
               <div className="space-y-2">

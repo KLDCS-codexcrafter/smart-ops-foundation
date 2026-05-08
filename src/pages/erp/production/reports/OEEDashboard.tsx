@@ -4,6 +4,7 @@
  * @purpose  Polymorphic OEE Dashboard · classic A×P×Q · simplified A×Q · template-weighted
  */
 import { useState, useMemo } from 'react';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -66,7 +67,7 @@ export function OEEDashboardPanel(): JSX.Element {
   }, [factoryMachines, factoryId, date, allJobCards, dwrEntries, formulaMode, template]);
 
   const avgOEE = oeeRows.length > 0
-    ? oeeRows.reduce((s, r) => s + r.result.oee_pct, 0) / oeeRows.length
+    ? round2(dSum(oeeRows, r => r.result.oee_pct) / oeeRows.length)
     : 0;
   const worldClassCount = oeeRows.filter(r => r.result.classification === 'world_class').length;
   const poorCount = oeeRows.filter(r => r.result.classification === 'poor').length;

@@ -1,6 +1,11 @@
 /**
- * @file     ProductionSidebar.types.ts
- * @sprint   T-Phase-1.3-3-PlantOps-pre-2
+ * @file        ProductionSidebar.types.ts
+ * @purpose     ProductionModule type union · used by ProductionPage renderModule switch
+ * @sprint      T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3-PlantOps-pre-2)
+ * @iso         Maintainability
+ * @decisions   D-NEW-J (sidebar component DELETED · types kept for renderModule discriminator)
+ * @reuses      Used by ProductionPage.tsx
+ * @[JWT]       N/A (types only)
  */
 export type ProductionModule =
   | 'welcome'

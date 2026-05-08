@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,6 +79,16 @@ export function JobWorkOutEntryPanel(): JSX.Element {
     () => lines.map(l => ({ item_name: l.item_name, qty: l.sent_qty })),
     [lines],
   );
+  // D-NEW-K · decimal-safe rollups: total sent qty + total JW value
+  const totalSentQty = useMemo(
+    () => round2(dSum(lines, l => Number(l.sent_qty) || 0)),
+    [lines],
+  );
+  const totalJwValue = useMemo(
+    () => round2(dSum(lines, l => dMul(l.sent_qty, l.job_work_rate))),
+    [lines],
+  );
+  void totalSentQty; void totalJwValue;
   const mount = useSprint27d1Mount({
     formKey: 'job-work-out-order-entry',
     entityCode,

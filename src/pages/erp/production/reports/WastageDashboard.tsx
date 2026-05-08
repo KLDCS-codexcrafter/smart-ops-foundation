@@ -3,6 +3,7 @@
  * Pareto chart + KPI cards + per-category table · 3 view modes via ViewModeSelector.
  */
 import { useState, useMemo } from 'react';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -59,8 +60,8 @@ export function WastageDashboardPanel(): JSX.Element {
     cumulative_pct: row.cumulative_pct,
   }));
 
-  const totalQty = aggregated.reduce((s, r) => s + r.total_qty, 0);
-  const totalValue = aggregated.reduce((s, r) => s + r.total_value, 0);
+  const totalQty = round2(dSum(aggregated, r => r.total_qty));
+  const totalValue = round2(dSum(aggregated, r => r.total_value));
   const jcCount = new Set(sourceRows.map(r => r.source_jc_id)).size;
   const topCategory = aggregated[0]?.group_label ?? 'No data';
 

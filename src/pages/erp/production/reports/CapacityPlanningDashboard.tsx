@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Calendar, Clock, BarChart3, Activity } from 'lucide-react';
+import { Calendar, Clock, BarChart3, Activity, Wrench } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, Cell,
 } from 'recharts';
@@ -125,6 +125,22 @@ export function CapacityPlanningDashboardPanel(): JSX.Element {
           ]}
         />
       </div>
+
+      {/* D-NEW-N · MaintainPro integration prep */}
+      <Card className="border-dashed border-muted-foreground/30 mb-4">
+        <CardContent className="py-3 px-4 flex items-start gap-3">
+          <Wrench className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+          <div className="flex-1 text-xs">
+            <div className="font-medium text-muted-foreground">MaintainPro Integration · Pending</div>
+            <div className="text-muted-foreground/70 mt-1 leading-relaxed">
+              Machine breakdown impact on capacity will be visible here when MaintainPro card ships in
+              Phase 1.A.14. Pending breakdowns reduce available hours · Preventive Maintenance schedules
+              block reservation slots · MTBF/MTTR surfaces as machine-row badges.
+            </div>
+          </div>
+          <Badge variant="outline" className="text-[10px] shrink-0">Phase 1.A.14</Badge>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader><CardTitle className="text-sm">Filters</CardTitle></CardHeader>
