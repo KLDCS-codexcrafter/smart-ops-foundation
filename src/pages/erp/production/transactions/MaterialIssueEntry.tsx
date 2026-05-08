@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,12 @@ export function MaterialIssueEntryPanel(): JSX.Element {
     () => (selectedPO?.lines ?? []).map(l => ({ item_name: l.item_name, qty: lineQtys[l.id] ?? 0 })),
     [selectedPO, lineQtys],
   );
+  // D-NEW-K · decimal-safe issue qty rollup
+  const totalIssuedQty = useMemo(
+    () => round2(dSum(Object.values(lineQtys), q => Number(q) || 0)),
+    [lineQtys],
+  );
+  void totalIssuedQty;
   const mount = useSprint27d1Mount({
     formKey: 'material-issue-note-entry',
     entityCode,
