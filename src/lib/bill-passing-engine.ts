@@ -1,12 +1,13 @@
 /**
  * @file        bill-passing-engine.ts
- * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 + D-286
+ * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 + D-286 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (4-way qc_variance + tax derivation + QA bridge · D-NEW-AH/AI/AJ)
  * @purpose     Bill Passing engine · 3-way/4-way Match · variance computation · approval workflow.
  *              Reads PO + GIT + vendor invoice · computes line-level match · emits variance flags.
  *              On approval · triggers FinCore PI auto-draft via finance-pi-bridge (Block C).
- * @decisions   D-285 · D-286 (hybrid match · item flag) · D-287 (FCPI auto-draft) · D-194 localStorage
+ * @decisions   D-285 · D-286 (hybrid match · item flag) · D-287 (FCPI auto-draft) · D-194 localStorage · D-NEW-AH (qc_variance) · D-NEW-AI (auto tax derivation) · D-NEW-AJ (QA cross-card bridge)
  * @reuses      po-management-engine · git-engine · audit-trail-hash-chain · decimal-helpers
  *              · leak-register-engine · finecore-engine.generateDocNo · freight-match-engine pattern
+ *              · bill-passing-tax-derivation · bill-passing-qa-bridge
  * @[JWT]       POST /api/bill-passing
  */
 
