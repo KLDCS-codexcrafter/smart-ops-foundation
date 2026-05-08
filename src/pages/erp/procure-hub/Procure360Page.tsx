@@ -291,6 +291,14 @@ export default function Procure360Page(): JSX.Element {
       case 'variance-audit-report':           return <VarianceAuditPanel />;
       case 'tds-deduction-report':            return <TdsDeductionReportPanel />;
       case 'rcm-liability-report':            return <RcmLiabilityReportPanel />;
+      // ─── NEW · A.3.c ───
+      case 'multi-source-recommendations':    return <MultiSourceRecommendationsPanel />;
+      case 'pre-close-pending':               return <PreClosePendingPanel />;
+      case 'po-aging-cross-dept':             return <PoAgingCrossDeptPanel />;
+      case 'vendor-reliability':              return <VendorReliabilityPanel />;
+      case 'peq-followup-register':           return <PeqFollowupRegisterPanel />;
+      case 'peq-followup':                    return <PeqFollowupPanel />;
+      case 'purchase-enquiry-form-report':    return <PurchaseEnquiryFormReportPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
