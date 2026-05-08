@@ -345,11 +345,21 @@ export async function runMatch(
   });
 
   const totals = computeBillPassingTotals(recomputed);
-  const hasVariance = recomputed.some((l) => l.match_status !== 'clean');
+  const hasQcVariance = recomputed.some((l) => l.match_status === 'qc_variance');
+  const hasOtherVariance = recomputed.some(
+    (l) => l.match_status !== 'clean' && l.match_status !== 'qc_variance',
+  );
 
   let status: BillPassingStatus = cur.status;
-  if (cur.status === 'pending_match' || cur.status === 'matched_clean' || cur.status === 'matched_with_variance') {
-    status = hasVariance ? 'matched_with_variance' : 'matched_clean';
+  const transitionable =
+    cur.status === 'pending_match' ||
+    cur.status === 'matched_clean' ||
+    cur.status === 'matched_with_variance' ||
+    cur.status === 'awaiting_qa';
+  if (transitionable) {
+    if (hasQcVariance) status = 'qa_failed';
+    else if (hasOtherVariance) status = 'matched_with_variance';
+    else status = 'matched_clean';
   }
 
   const updated: BillPassingRecord = {
