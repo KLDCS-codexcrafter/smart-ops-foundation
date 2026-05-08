@@ -46,6 +46,18 @@ import {
   BillPassingPiStatusPanel,
 } from './panels';
 
+// NEW · A.3.b · 8 reports from /reports/ folder
+import {
+  PiPendingPanel,
+  ThreeWayMatchStatusPanel,
+  VarianceAuditPanel,
+  TdsDeductionReportPanel,
+  RcmLiabilityReportPanel,
+  GoodsInwardDayBookPanel,
+  SupplierWiseOutstandingPanel,
+  GroupWiseOutstandingPanel,
+} from './reports';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
