@@ -1,7 +1,7 @@
 /**
  * @file        ProductionPage.tsx
  * @purpose     Production Hub card page using canonical Shell pattern
- * @sprint      T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3a-pre-1)
+ * @sprint      T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.A.2.a-Production-Structural · A.2.b/c added 4 + 7 case statements)
  * @iso         Maintainability · Usability
  * @decisions   D-250 · D-NEW-I · D-NEW-J
  * @reuses      @/shell Shell · production-shell-config · useCardEntitlement

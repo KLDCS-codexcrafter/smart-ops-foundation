@@ -3,7 +3,7 @@
  * @purpose     Sidebar data config for Production Hub · 19 modules in 4 sections
  * @who         Production planners · Shop floor · QC · Job-work coordinators
  * @when        Phase 1.A.2.a · Production Structural sprint
- * @sprint      T-Phase-1.A.2.b-Production-Reports (was T-Phase-1.A.2.a-Production-Structural)
+ * @sprint      T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.A.2.b-Production-Reports · A.2.c added Job Work group)
  * @iso         Maintainability · Usability
  * @decisions   D-250 · D-NEW-I · D-NEW-J (ProductionSidebar.tsx + groups.ts DELETED · data here)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
