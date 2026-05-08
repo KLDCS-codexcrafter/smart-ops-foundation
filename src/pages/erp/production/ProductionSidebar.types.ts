@@ -29,4 +29,11 @@ export type ProductionModule =
   | 'rpt-scheduling-board'
   | 'rpt-shiftwise-production'
   | 'rpt-manpower-production'
-  | 'rpt-production-trace';
+  | 'rpt-production-trace'
+  | 'rpt-jw-out-register'
+  | 'rpt-jw-stock-with-worker'
+  | 'rpt-jw-variance'
+  | 'rpt-jw-ageing'
+  | 'rpt-jw-in-register'
+  | 'rpt-jw-components-summary'
+  | 'rpt-jw-material-movement';
