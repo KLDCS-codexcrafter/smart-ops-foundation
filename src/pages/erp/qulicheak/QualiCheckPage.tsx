@@ -10,7 +10,7 @@
  * @reuses      @/shell Shell · qulicheak-shell-config · panels · operational-panels
  * @[JWT]       Multiple via panels (see panel files for endpoints)
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Shell } from '@/shell';
 import { qulicheakShellConfig } from '@/apps/erp/configs/qulicheak-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -26,12 +26,21 @@ import {
 import { ProductionQCPendingPanel } from './ProductionQCPendingPanel';
 import { QCEntryPage } from './QCEntryPage';
 import { QualiCheckDashboard } from './QualiCheckDashboard';
+import { NcrCapture } from './NcrCapture';
+import { NcrRegister } from './reports/NcrRegister';
+import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
   // Sprint 3b-pre-2 · Block J · D-635 · QC entry overlay (priority over module switch).
   const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
   const { entitlements, profile } = useCardEntitlement();
+
+  // α-a-bis · D-NEW-AW · mount Procure360 → Qulicheak QA handoff listener
+  useEffect(() => {
+    const unmount = mountQulicheakBridges();
+    return () => { unmount(); };
+  }, []);
 
   function renderModule(): JSX.Element {
     if (activeInspectionId) {
@@ -53,6 +62,10 @@ export default function QualiCheckPage(): JSX.Element {
       case 'qc-dashboard':         return <QualiCheckDashboard />;
       case 'qc-entry':
         return <div className="p-6 text-sm text-muted-foreground">Open a pending inspection to enter QC.</div>;
+      case 'ncr-capture':
+        return <NcrCapture onSaved={() => setActiveModule('ncr-register')} onCancel={() => setActiveModule('welcome')} />;
+      case 'ncr-register':
+        return <NcrRegister />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
