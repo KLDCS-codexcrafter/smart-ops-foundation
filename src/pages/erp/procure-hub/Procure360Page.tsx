@@ -68,6 +68,10 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'po-list', 'po-followup-register',
   'git-in-transit', 'git-received', 'aged-git-procure',
   'bill-passing-pi-status',
+  // ─── NEW · A.3.b ───
+  'supplier-wise-outstanding', 'group-wise-outstanding', 'goods-inward-day-book',
+  'pi-pending-report', 'three-way-match-status', 'variance-audit-report',
+  'tds-deduction-report', 'rcm-liability-report',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -86,9 +90,21 @@ const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
 };
 
 function getGroupLabel(m: Procure360Module): string {
-  if (m.endsWith('-report') || m === 'cross-dept-procurement-handoff' || m === 'vendor-scoring-dashboard') {
-    return 'Reports';
-  }
+  // Outstandings group · A.3.b
+  if (
+    m === 'supplier-wise-outstanding' ||
+    m === 'group-wise-outstanding' ||
+    m === 'goods-inward-day-book'
+  ) return 'Outstandings';
+
+  // Reports group (existing rule + 5 NEW reports)
+  if (
+    m.endsWith('-report') ||
+    m === 'cross-dept-procurement-handoff' ||
+    m === 'vendor-scoring-dashboard' ||
+    m === 'three-way-match-status'
+  ) return 'Reports';
+
   return GROUP_LABELS[m] ?? '';
 }
 
@@ -116,6 +132,15 @@ function getModuleLabel(m: Procure360Module): string {
     'git-received': 'GIT Received at Gate',
     'aged-git-procure': 'Aged GIT (Procure View)',
     'bill-passing-pi-status': 'Bill Passing & PI Status',
+    // ─── NEW · A.3.b ───
+    'supplier-wise-outstanding': 'Supplier-Wise Outstanding',
+    'group-wise-outstanding': 'Group-Wise Outstanding',
+    'goods-inward-day-book': 'Goods Inward Day Book',
+    'pi-pending-report': 'PI Pending',
+    'three-way-match-status': '3-Way Match Status',
+    'variance-audit-report': 'Variance Audit',
+    'tds-deduction-report': 'TDS Deduction',
+    'rcm-liability-report': 'RCM Liability',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
