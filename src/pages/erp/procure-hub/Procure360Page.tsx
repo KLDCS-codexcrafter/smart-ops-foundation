@@ -247,6 +247,16 @@ export default function Procure360Page(): JSX.Element {
       case 'git-received':                   return <GitReceivedPanel />;
       case 'aged-git-procure':               return <AgedGitProcurePanel />;
       case 'bill-passing-pi-status':         return <BillPassingPiStatusPanel />;
+      // ─── NEW · A.3.b · Outstandings group ───
+      case 'supplier-wise-outstanding':       return <SupplierWiseOutstandingPanel />;
+      case 'group-wise-outstanding':          return <GroupWiseOutstandingPanel />;
+      case 'goods-inward-day-book':           return <GoodsInwardDayBookPanel />;
+      // ─── NEW · A.3.b · Reports additions ───
+      case 'pi-pending-report':               return <PiPendingPanel />;
+      case 'three-way-match-status':          return <ThreeWayMatchStatusPanel />;
+      case 'variance-audit-report':           return <VarianceAuditPanel />;
+      case 'tds-deduction-report':            return <TdsDeductionReportPanel />;
+      case 'rcm-liability-report':            return <RcmLiabilityReportPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
