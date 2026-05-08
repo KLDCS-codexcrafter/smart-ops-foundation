@@ -1,7 +1,7 @@
 /**
  * @file        ProductionSidebar.types.ts
  * @purpose     ProductionModule type union · used by ProductionPage renderModule switch
- * @sprint      T-Phase-1.A.2.b-Production-Reports (was T-Phase-1.A.2.a-Production-Structural)
+ * @sprint      T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.A.2.b-Production-Reports)
  * @iso         Maintainability
  * @decisions   D-NEW-J (sidebar component DELETED · types kept for renderModule discriminator)
  * @reuses      Used by ProductionPage.tsx
