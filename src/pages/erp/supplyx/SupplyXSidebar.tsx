@@ -1,6 +1,6 @@
 /**
  * SupplyXSidebar.tsx — Sprint T-Phase-1.2.6f-b-2-fix-2 · Block O · D-282
- * Mirrors Procure360Sidebar pattern · read-only navigation.
+ * Hand-rolled sidebar (pre-Shell) · Procure360 has migrated to canonical Shell in A.3.a · read-only navigation · SupplyX scheduled for Shell migration in a later sprint.
  */
 import {
   Sidebar,

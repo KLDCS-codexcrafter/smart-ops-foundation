@@ -1,6 +1,6 @@
 /**
  * BillPassingSidebar.tsx — Sprint T-Phase-1.2.6f-c-2 · Block B
- * Mirrors Procure360Sidebar pattern.
+ * Hand-rolled sidebar (pre-Shell) · Procure360 has migrated to canonical Shell pattern in A.3.a (procure360-sidebar-config.ts) · this card scheduled for Shell migration in a future sprint.
  */
 import {
   Sidebar,
