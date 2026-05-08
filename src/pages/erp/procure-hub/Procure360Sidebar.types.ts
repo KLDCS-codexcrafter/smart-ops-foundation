@@ -35,4 +35,12 @@ export type Procure360Module =
   | 'three-way-match-status'
   | 'variance-audit-report'
   | 'tds-deduction-report'
-  | 'rcm-liability-report';
+  | 'rcm-liability-report'
+  // ─── NEW · A.3.c ───
+  | 'multi-source-recommendations'
+  | 'pre-close-pending'
+  | 'po-aging-cross-dept'
+  | 'vendor-reliability'
+  | 'peq-followup-register'
+  | 'peq-followup'
+  | 'purchase-enquiry-form-report';
