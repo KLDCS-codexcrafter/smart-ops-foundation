@@ -947,6 +947,7 @@ export function RfqListPanel(): JSX.Element {
                 <TableHead>Vendor</TableHead>
                 <TableHead>Channel</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Pre-Close</TableHead>
                 <TableHead>Sent</TableHead>
                 <TableHead>Timeout</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -955,7 +956,7 @@ export function RfqListPanel(): JSX.Element {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">
                     No RFQs match the current filter.
                   </TableCell>
                 </TableRow>
@@ -983,6 +984,26 @@ export function RfqListPanel(): JSX.Element {
                       )}
                     </TableCell>
                     <TableCell>{statusBadge(r.status)}</TableCell>
+                    <TableCell>
+                      {preCloseCandidates.has(r.id) ? (
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning/10 text-warning text-xs font-medium hover:bg-warning/20"
+                          title={preCloseCandidates.get(r.id)!.reason_text}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rec = preCloseCandidates.get(r.id)!;
+                            toast.warning(
+                              `Pre-Close: ${rec.reason_text} · invited ${rec.vendors_invited} · quoted ${rec.vendors_quoted} · ${rec.pct_elapsed.toFixed(1)}% elapsed`,
+                            );
+                          }}
+                        >
+                          Pre-Close
+                        </button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-xs">{fmtDate(r.sent_at)}</TableCell>
                     <TableCell className="text-xs">{fmtDate(r.timeout_at)}</TableCell>
                     <TableCell className="text-right space-x-1">
