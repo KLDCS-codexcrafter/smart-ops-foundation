@@ -66,7 +66,7 @@ export function ProductionWelcome({ onNavigate }: Props): JSX.Element {
 
       <button
         type="button"
-        onClick={() => handleNav('welcome')}
+        onClick={() => { window.location.href = '/erp/command-center?module=finecore-production-config'; }}
         className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
       >
         <span>
