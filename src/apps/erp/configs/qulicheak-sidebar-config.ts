@@ -17,6 +17,7 @@
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
+  AlertOctagon, FileWarning,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
