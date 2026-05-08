@@ -999,7 +999,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Unit ID</Label>
-                {/* TODO useBusinessUnits when hook exists */}
+                {/* TODO_BU_HOOK · D-NEW-O · useBusinessUnits hook from CC BusinessUnit master · Phase 1.4 */}
                 <Input value={businessUnitId} onChange={e => setBusinessUnitId(e.target.value)} placeholder="BU code" />
               </div>
               <div className="space-y-2">
