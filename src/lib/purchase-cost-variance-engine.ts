@@ -90,8 +90,8 @@ function resolveReferenceRate(
   // Priority 1: active rate contract (only if vendor specified · contract is vendor-scoped)
   if (vendorId) {
     const contractMatch = findActiveRate(entityCode, vendorId, itemId);
-    if (contractMatch && contractMatch.line.rate > 0) {
-      return { rate: contractMatch.line.rate, source: 'contract' };
+    if (contractMatch && contractMatch.line.agreed_rate > 0) {
+      return { rate: contractMatch.line.agreed_rate, source: 'contract' };
     }
   }
 
