@@ -408,9 +408,9 @@ export async function runMatch(
 
 // ---------- Status transitions ----------
 const VALID_TRANSITIONS: Record<BillPassingStatus, BillPassingStatus[]> = {
-  pending_match: ['matched_clean', 'matched_with_variance', 'awaiting_qa', 'cancelled'],
-  matched_clean: ['approved_for_fcpi', 'cancelled'],
-  matched_with_variance: ['approved_for_fcpi', 'rejected', 'cancelled'],
+  pending_match: ['matched_clean', 'matched_with_variance', 'awaiting_qa', 'qa_failed', 'cancelled'],
+  matched_clean: ['approved_for_fcpi', 'qa_failed', 'cancelled'],
+  matched_with_variance: ['approved_for_fcpi', 'qa_failed', 'rejected', 'cancelled'],
   awaiting_qa: ['qa_failed', 'matched_clean', 'matched_with_variance', 'cancelled'],
   qa_failed: ['matched_with_variance', 'cancelled'],
   approved_for_fcpi: ['fcpi_drafted', 'cancelled'],
