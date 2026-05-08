@@ -1,8 +1,8 @@
 /**
  * @file     JobWorkOutEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit)
+ * @sprint   T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.3-3a-pre-2-fix-1)
  * @purpose  Job Work Out Order — send RM/components to a sub-contractor.
- *           Card #2.7 12-item carry-forward + clickable CC banner.
+ *           A.2.c · Process Details + Dispatch Logistics + Pre-Close UI (D-NEW-Z).
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +14,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, Save, Send, Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Truck, Save, Send, Plus, Trash2, ExternalLink, ChevronDown, Lock } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
+import { useJobWorkOutOrders } from '@/hooks/useJobWorkOutOrders';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -28,8 +31,8 @@ import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { DEMO_VENDORS } from '@/data/demo-customers-vendors';
-import { createJobWorkOutOrder, sendJobWorkOutOrder } from '@/lib/job-work-out-engine';
-import type { JobWorkOutOrderLine } from '@/types/job-work-out-order';
+import { createJobWorkOutOrder, sendJobWorkOutOrder, preCloseJobWorkOutOrder } from '@/lib/job-work-out-engine';
+import type { JobWorkOutOrder, JobWorkOutOrderLine } from '@/types/job-work-out-order';
 
 type LineDraft = Omit<JobWorkOutOrderLine, 'id' | 'line_no' | 'received_qty' | 'job_work_value'>;
 
