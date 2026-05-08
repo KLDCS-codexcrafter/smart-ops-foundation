@@ -72,6 +72,7 @@ function lineStatusBadge(s: LineMatchStatus): { variant: 'default' | 'secondary'
     case 'rate_variance': return { variant: 'secondary', label: 'Rate Δ' };
     case 'tax_variance': return { variant: 'destructive', label: 'Tax Δ' };
     case 'total_variance': return { variant: 'destructive', label: 'Total Δ' };
+    case 'qc_variance': return { variant: 'destructive', label: 'QC Δ' };
     case 'unmatched': return { variant: 'destructive', label: 'Unmatched' };
   }
 }
