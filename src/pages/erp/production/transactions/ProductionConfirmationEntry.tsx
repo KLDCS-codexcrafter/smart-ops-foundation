@@ -122,7 +122,25 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
       }, qcConfig);
       if (confirm) {
         confirmProductionConfirmation(pc, { id: 'current-user', name: 'Current User' });
-        toast.success(`Confirmation ${pc.doc_no} confirmed`);
+        const newInspections = pc.linked_test_report_ids ?? [];
+        if (newInspections.length > 0) {
+          const newInspectionId = newInspections[newInspections.length - 1];
+          toast.success(
+            <div className="flex flex-col gap-1">
+              <span>Production Confirmation {pc.doc_no} confirmed</span>
+              <span className="text-xs text-muted-foreground">
+                QC Inspection auto-created ·{' '}
+                <button type="button" className="underline text-primary"
+                  onClick={() => navigate(`/erp/qulicheak?m=inspection-detail&id=${newInspectionId}`)}>
+                  Open in Qulicheak →
+                </button>
+              </span>
+            </div>,
+            { duration: 7000 },
+          );
+        } else {
+          toast.success(`Confirmation ${pc.doc_no} confirmed`);
+        }
       } else {
         toast.success(`Confirmation ${pc.doc_no} saved as draft`);
       }
