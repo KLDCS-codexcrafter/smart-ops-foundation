@@ -21,3 +21,12 @@ export { VendorReliabilityPanel } from './VendorReliabilityPanel';
 export { PeqFollowupRegisterPanel } from './PeqFollowupRegisterPanel';
 export { PeqFollowupPanel } from './PeqFollowupPanel';
 export { PurchaseEnquiryFormReportPanel } from './PurchaseEnquiryFormReportPanel';
+// ─── α-d additions ───
+export { PurchaseCostVarianceItemPanel } from './PurchaseCostVarianceItemPanel';
+export { PurchaseCostVarianceGroupPanel } from './PurchaseCostVarianceGroupPanel';
+export { PurchaseCostVarianceCategoryPanel } from './PurchaseCostVarianceCategoryPanel';
+export { RateVarianceGraphPanel } from './RateVarianceGraphPanel';
+export { PoItemWisePanel } from './PoItemWisePanel';
+export { PoStatusByEnquiryPanel } from './PoStatusByEnquiryPanel';
+export { EnquiryDetailsReportPanel } from './EnquiryDetailsReportPanel';
+export { MaterialRfqPrintPanel } from './MaterialRfqPrintPanel';
