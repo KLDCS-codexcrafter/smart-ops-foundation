@@ -136,7 +136,15 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'po-aging-cross-dept' ||
     m === 'vendor-reliability' ||
     m === 'peq-followup-register' ||
-    m === 'peq-followup'
+    m === 'peq-followup' ||
+    // ─── α-d additions ───
+    m === 'purchase-cost-variance-item' ||
+    m === 'purchase-cost-variance-group' ||
+    m === 'purchase-cost-variance-category' ||
+    m === 'rate-variance-graph' ||
+    m === 'po-itemwise' ||
+    m === 'po-status-by-enquiry' ||
+    m === 'material-rfq-print'
   ) return 'Reports';
 
   return GROUP_LABELS[m] ?? '';
