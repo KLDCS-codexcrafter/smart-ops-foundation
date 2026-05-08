@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -93,7 +94,7 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
   });
 
   const yieldPct = selectedPO && selectedPO.planned_qty > 0
-    ? (actualQty / selectedPO.planned_qty) * 100
+    ? round2(dMul(actualQty / selectedPO.planned_qty, 100))
     : 0;
 
   const handleSave = (confirm: boolean) => {
