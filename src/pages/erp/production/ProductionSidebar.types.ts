@@ -1,7 +1,7 @@
 /**
  * @file        ProductionSidebar.types.ts
  * @purpose     ProductionModule type union · used by ProductionPage renderModule switch
- * @sprint      T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3-PlantOps-pre-2)
+ * @sprint      T-Phase-1.A.2.b-Production-Reports (was T-Phase-1.A.2.a-Production-Structural)
  * @iso         Maintainability
  * @decisions   D-NEW-J (sidebar component DELETED · types kept for renderModule discriminator)
  * @reuses      Used by ProductionPage.tsx
@@ -26,4 +26,7 @@ export type ProductionModule =
   | 'rpt-capacity-planning'
   | 'rpt-oee-dashboard'
   | 'rpt-wastage-dashboard'
-  | 'rpt-scheduling-board';
+  | 'rpt-scheduling-board'
+  | 'rpt-shiftwise-production'
+  | 'rpt-manpower-production'
+  | 'rpt-production-trace';

@@ -3,7 +3,7 @@
  * @purpose     Sidebar data config for Production Hub · 19 modules in 4 sections
  * @who         Production planners · Shop floor · QC · Job-work coordinators
  * @when        Phase 1.A.2.a · Production Structural sprint
- * @sprint      T-Phase-1.A.2.a-Production-Structural
+ * @sprint      T-Phase-1.A.2.b-Production-Reports (was T-Phase-1.A.2.a-Production-Structural)
  * @iso         Maintainability · Usability
  * @decisions   D-250 · D-NEW-I · D-NEW-J (ProductionSidebar.tsx + groups.ts DELETED · data here)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
@@ -17,7 +17,7 @@ import {
   Home, Calendar, ClipboardList, PackageMinus, CheckCircle,
   Truck, PackagePlus, IdCard,
   List, TrendingUp, BarChart3, Download, Activity, CalendarDays,
-  Gauge, AlertTriangle,
+  Gauge, AlertTriangle, Clock, Users, Workflow,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -62,6 +62,12 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: Activity, moduleId: 'rpt-wip', requiredCards: ['production'] },
       { id: 'rpt-daily-work-register', type: 'item', label: 'Daily Work Register',
         icon: CalendarDays, moduleId: 'rpt-daily-work-register', requiredCards: ['production'] },
+      { id: 'rpt-shiftwise-production', type: 'item', label: 'Shift-wise Production',
+        icon: Clock, moduleId: 'rpt-shiftwise-production', requiredCards: ['production'] },
+      { id: 'rpt-manpower-production', type: 'item', label: 'Manpower Performance',
+        icon: Users, moduleId: 'rpt-manpower-production', requiredCards: ['production'] },
+      { id: 'rpt-production-trace', type: 'item', label: 'Production Trace Register',
+        icon: Workflow, moduleId: 'rpt-production-trace', requiredCards: ['production'] },
     ],
   },
   {

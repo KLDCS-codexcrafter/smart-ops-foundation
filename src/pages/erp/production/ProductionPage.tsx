@@ -32,6 +32,9 @@ import { ProductionVarianceDashboardPanel } from './reports/ProductionVarianceDa
 import { PlanActualRollingPanel } from './reports/PlanActualRolling';
 import { ITC04ExportPanel } from './reports/ITC04Export';
 import { WIPReportPanel } from './reports/WIPReport';
+import { ShiftwiseProductionReportPanel } from './reports/ShiftwiseProductionReport';
+import { ManpowerProductionReportPanel } from './reports/ManpowerProductionReport';
+import { ProductionTraceRegisterPanel } from './reports/ProductionTraceRegister';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -76,6 +79,9 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-plan-actual-rolling': return <PlanActualRollingPanel />;
       case 'rpt-itc04-export': return <ITC04ExportPanel />;
       case 'rpt-wip': return <WIPReportPanel />;
+      case 'rpt-shiftwise-production': return <ShiftwiseProductionReportPanel />;
+      case 'rpt-manpower-production': return <ManpowerProductionReportPanel />;
+      case 'rpt-production-trace': return <ProductionTraceRegisterPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }
