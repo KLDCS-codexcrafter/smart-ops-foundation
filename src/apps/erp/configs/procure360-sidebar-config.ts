@@ -1,11 +1,11 @@
 /**
  * @file        procure360-sidebar-config.ts
- * @purpose     Procure360 sidebar items · 4-section regroup · 23 entries · entitlement-filtered
+ * @purpose     Procure360 sidebar items · 5-section regroup · 31 entries (1 route + 30 module) · entitlement-filtered
  * @who         Procurement department
- * @when        Phase 1.A.3.a · Procure360 Shell Migration sprint
- * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration
+ * @when        Phase 1.A.3.b · Procure360 Bill Passing Integration sprint
+ * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (Outstandings group + 5 Reports entries · D-NEW-AG)
  * @iso         Usability · Maintainability (ISO 25010)
- * @decisions   D-NEW-AD (Procure360 sidebar 4-section regroup · 23 items · entitlement-filtered)
+ * @decisions   D-NEW-AD (Procure360 sidebar 4-section regroup · 23 items) · D-NEW-AG (Outstandings group + 5 Reports · 31 items)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
  * @[JWT]       N/A (config only)
  */
@@ -13,6 +13,7 @@
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt,
+  Wallet, AlertTriangle,   // NEW · A.3.b
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
