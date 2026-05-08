@@ -16,11 +16,8 @@
  * @[JWT]       n/a · pure compute (reads localStorage via consumed engines)
  */
 
-import {
-  listPurchaseOrders,
-  type PurchaseOrderRecord,
-  type PurchaseOrderLine,
-} from './po-management-engine';
+import { listPurchaseOrders } from './po-management-engine';
+import type { PurchaseOrderRecord, PurchaseOrderLine } from '@/types/po';
 import { findActiveRate } from './rate-contract-engine';
 import type { ItemRateHistory } from '@/types/item-rate-history';
 import { dSub, dMul, round2 } from './decimal-helpers';
