@@ -43,4 +43,13 @@ export type Procure360Module =
   | 'vendor-reliability'
   | 'peq-followup-register'
   | 'peq-followup'
-  | 'purchase-enquiry-form-report';
+  | 'purchase-enquiry-form-report'
+  // ─── NEW · A.3.d (Variance Trident Polish) ───
+  | 'purchase-cost-variance-item'
+  | 'purchase-cost-variance-group'
+  | 'purchase-cost-variance-category'
+  | 'rate-variance-graph'
+  | 'po-itemwise'
+  | 'po-status-by-enquiry'
+  | 'enquiry-details-report'
+  | 'material-rfq-print';
