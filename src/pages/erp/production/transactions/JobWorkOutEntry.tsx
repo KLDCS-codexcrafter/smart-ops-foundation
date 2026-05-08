@@ -259,6 +259,149 @@ export function JobWorkOutEntryPanel(): JSX.Element {
         </CardContent>
       </Card>
 
+      {/* A.2.c · D-NEW-V Process Details */}
+      <Card>
+        <CardHeader><CardTitle className="text-sm">Process Details</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Nature of Processing</Label>
+            <Input
+              value={natureOfProcessing}
+              onChange={e => setNatureOfProcessing(e.target.value)}
+              placeholder="e.g. powder coating + polishing"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Duration (days)</Label>
+            <Input
+              type="number" min="0" className="font-mono"
+              value={durationDays}
+              onChange={e => setDurationDays(e.target.value)}
+              placeholder="14"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* A.2.c · D-NEW-V Dispatch Logistics (collapsible) */}
+      <Collapsible>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="flex flex-row items-center justify-between cursor-pointer hover:bg-muted/30">
+              <CardTitle className="text-sm flex items-center gap-2">Dispatch Logistics</CardTitle>
+              <ChevronDown className="h-4 w-4" />
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Dispatched Through</Label>
+                <Input value={dispatchedThrough} onChange={e => setDispatchedThrough(e.target.value)} placeholder="truck · courier · tempo" />
+              </div>
+              <div className="space-y-2">
+                <Label>Carrier Name</Label>
+                <Input value={carrierName} onChange={e => setCarrierName(e.target.value)} placeholder="VRL Logistics" />
+              </div>
+              <div className="space-y-2">
+                <Label>Bill of Lading / LR-RR No</Label>
+                <Input value={billOfLadingNo} onChange={e => setBillOfLadingNo(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Motor Vehicle No</Label>
+                <Input value={motorVehicleNo} onChange={e => setMotorVehicleNo(e.target.value)} placeholder="MH 12 AB 1234" />
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label>Mode of Payment</Label>
+                <Select value={modeOfPayment} onValueChange={setModeOfPayment}>
+                  <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">—</SelectItem>
+                    <SelectItem value="cheque">Cheque</SelectItem>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="neft">NEFT</SelectItem>
+                    <SelectItem value="rtgs">RTGS</SelectItem>
+                    <SelectItem value="upi">UPI</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* A.2.c · D-NEW-W Pre-Close JWO list (partially_received) */}
+      {partiallyReceivedJwos.length > 0 && (
+        <Card className="border-amber-500/30">
+          <CardHeader><CardTitle className="text-sm">Partially Received JWOs · Pre-Close</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            {partiallyReceivedJwos.map(j => {
+              const pending = j.total_sent_qty - j.total_received_qty;
+              return (
+                <div key={j.id} className="flex items-center justify-between border rounded-md p-2">
+                  <div className="text-xs">
+                    <div className="font-medium font-mono">{j.doc_no} · {j.vendor_name}</div>
+                    <div className="text-muted-foreground">
+                      Sent {j.total_sent_qty} · Received {j.total_received_qty} · Pending {pending}
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setPreCloseTargetId(j.id);
+                    setPreCloseDialogOpen(true);
+                  }}>
+                    <Lock className="h-3 w-3 mr-1" /> Pre-Close JWO
+                  </Button>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={preCloseDialogOpen} onOpenChange={setPreCloseDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pre-Close Job Work Order?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Marks the JWO as closed even though some quantity is pending. Cannot be reversed.
+              Reason captured in audit trail.
+            </p>
+            <Textarea
+              placeholder="Reason for pre-closing (required)..."
+              value={preCloseReason}
+              onChange={e => setPreCloseReason(e.target.value)}
+              rows={3}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setPreCloseDialogOpen(false);
+              setPreCloseReason('');
+            }}>Cancel</Button>
+            <Button
+              disabled={!preCloseReason.trim() || !preCloseTargetId}
+              onClick={() => {
+                try {
+                  preCloseJobWorkOutOrder(entityCode, preCloseTargetId, preCloseReason, {
+                    id: 'current-user',
+                    name: 'Current User',
+                  });
+                  toast.success('JWO pre-closed');
+                  setPreCloseDialogOpen(false);
+                  setPreCloseReason('');
+                  setPreCloseTargetId('');
+                  reloadJwos();
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : 'Pre-close failed');
+                }
+              }}
+            >Confirm Pre-Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
