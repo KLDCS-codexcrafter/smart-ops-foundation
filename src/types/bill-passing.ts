@@ -25,6 +25,7 @@ export type LineMatchStatus =
   | 'rate_variance'
   | 'tax_variance'
   | 'total_variance'
+  | 'qc_variance'      // 4-way · QC inspection failed (D-NEW-AH · A.3.b)
   | 'unmatched';
 
 export interface BillPassingLine {
