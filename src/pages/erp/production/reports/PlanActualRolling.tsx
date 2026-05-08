@@ -108,13 +108,6 @@ export function PlanActualRollingPanel(): JSX.Element {
       const plannedToday = orders
         .filter(o => o.created_at.slice(0, 10) === date)
         .reduce((s, o) => s + o.planned_qty, 0);
-      const producedToday = orders
-        .filter(o => o.created_at.slice(0, 10) <= date)
-        .flatMap(o => o.outputs)
-        .reduce((s, out) => {
-          // Note: ProductionOrderOutput has no confirmed_at; approximate produced delta on day = actual_qty when available
-          return s + 0;
-        }, 0);
       // Best-effort cumulative produced — sum of all actual_qty across orders created up to this date
       const cumProduced = orders
         .filter(o => o.created_at.slice(0, 10) <= date)
