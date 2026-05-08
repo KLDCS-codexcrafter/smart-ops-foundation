@@ -330,6 +330,15 @@ export default function Procure360Page(): JSX.Element {
       case 'peq-followup-register':           return <PeqFollowupRegisterPanel />;
       case 'peq-followup':                    return <PeqFollowupPanel />;
       case 'purchase-enquiry-form-report':    return <PurchaseEnquiryFormReportPanel />;
+      // ─── NEW · A.3.d ───
+      case 'purchase-cost-variance-item':     return <PurchaseCostVarianceItemPanel />;
+      case 'purchase-cost-variance-group':    return <PurchaseCostVarianceGroupPanel />;
+      case 'purchase-cost-variance-category': return <PurchaseCostVarianceCategoryPanel />;
+      case 'rate-variance-graph':             return <RateVarianceGraphPanel />;
+      case 'po-itemwise':                     return <PoItemWisePanel />;
+      case 'po-status-by-enquiry':            return <PoStatusByEnquiryPanel />;
+      case 'enquiry-details-report':          return <EnquiryDetailsReportPanel />;
+      case 'material-rfq-print':              return <MaterialRfqPrintPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
