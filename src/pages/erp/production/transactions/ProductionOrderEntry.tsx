@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { dMul, dPct, dSum, round2 } from '@/lib/decimal-helpers';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -243,7 +244,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   };
 
   const totalAllocPct = useMemo(
-    () => outputs.reduce((s, o) => s + (Number(o.cost_allocation_pct) || 0), 0),
+    () => round2(dSum(outputs, o => Number(o.cost_allocation_pct) || 0)),
     [outputs],
   );
   const allocOk = Math.abs(totalAllocPct - 100) < 0.01;
@@ -331,7 +332,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const effectiveQcScenario: QCScenario | '' = isExport ? 'export_oriented' : qcScenario;
 
   const totalSoFulfilled = useMemo(
-    () => soMappings.reduce((s, m) => s + (Number(m.fulfilled_qty) || 0), 0),
+    () => round2(dSum(soMappings, m => Number(m.fulfilled_qty) || 0)),
     [soMappings],
   );
 
@@ -680,7 +681,7 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             </div>
             {selectedBom.components.map(c => {
               const sub = substitutions[c.id];
-              const baseQty = c.qty * plannedQty * (1 + (c.wastage_percent || 0) / 100);
+              const baseQty = dMul(dMul(c.qty, plannedQty), 1) + dPct(dMul(c.qty, plannedQty), c.wastage_percent || 0);
               const effItemName = sub
                 ? (sub.approved?.substitute_item_name ?? sub.freeForm?.item_name ?? c.item_name)
                 : c.item_name;
