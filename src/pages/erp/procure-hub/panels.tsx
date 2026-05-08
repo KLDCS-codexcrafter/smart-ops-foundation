@@ -2069,6 +2069,7 @@ export function PoFollowupRegisterPanel(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+      )}
 
       {selected && (
         <Card><CardHeader><CardTitle>{selected.po_no} · Log Followup</CardTitle></CardHeader><CardContent>
