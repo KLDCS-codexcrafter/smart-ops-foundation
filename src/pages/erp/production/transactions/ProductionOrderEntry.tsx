@@ -6,6 +6,7 @@
  * @decisions D-NEW-K (decimal-helpers adoption · cost rollups paise-precise)
  * @reuses   decimal-helpers · useSprint27d1Mount · useFormKeyboardShortcuts
  * @[JWT]    via production-engine
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
