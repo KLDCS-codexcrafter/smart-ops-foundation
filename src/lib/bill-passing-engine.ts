@@ -143,6 +143,14 @@ export function computeLineMatch(
     reason = `Total variance ₹${total_variance.toFixed(2)} (${totalPct.toFixed(2)}%)`;
   }
 
+  // 4-way QC dimension · D-NEW-AH (A.3.b)
+  // If line was inspection-required and QC failed, override clean status to qc_variance.
+  // Does NOT downgrade existing variance reasons (qty/rate/tax/total take precedence).
+  if (status === 'clean' && invLine.requires_inspection && invLine.qa_passed === false) {
+    status = 'qc_variance';
+    reason = 'QC inspection failed';
+  }
+
   return {
     ...invLine,
     qty_variance,
