@@ -1,8 +1,11 @@
 /**
  * @file     ProductionOrderEntry.tsx
- * @sprint   T-Phase-1.3-3a-pre-2-fix-1 (Card #2.7 12-item retrofit · Q16=a active)
- * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview · Card #2.7 12-item carry-forward (UseLastVoucher · DraftRecovery · Sprint27 mounts · Pinned Templates · Smart Defaults · Keyboard nav · Decimal precision · Currency display · Notify-on-Save · Print preview).
- */
+ * @sprint   T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3a-pre-2-fix-1)
+ * @purpose  Production Order entry form · BOM-driven · 22 universal hookpoints (collapsible Advanced) · cost preview · 12-item carry-forward.
+ * @iso      Maintainability · Reliability
+ * @decisions D-NEW-K (decimal-helpers adoption · cost rollups paise-precise)
+ * @reuses   decimal-helpers · useSprint27d1Mount · useFormKeyboardShortcuts
+ * @[JWT]    via production-engine
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
