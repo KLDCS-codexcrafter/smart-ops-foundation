@@ -1,6 +1,7 @@
 /**
  * Procure360Sidebar.types.ts
- * Sprint T-Phase-1.2.6f-a
+ * @sprint   T-Phase-1.A.3.a-Procure360-Shell-Migration (was Shell Day 1 · types union now consumed by config-driven Shell)
+ * @decisions D-250 · D-NEW-AC · D-NEW-AD
  */
 export type Procure360Module =
   | 'welcome'
@@ -14,11 +15,9 @@ export type Procure360Module =
   | 'rfq-followup-register-report'
   | 'cross-dept-procurement-handoff'
   | 'vendor-scoring-dashboard'
-  // Sprint T-Phase-1.2.6f-c-1 · Block G · 5 NEW
   | 'po-list'
   | 'po-followup-register'
   | 'git-in-transit'
   | 'git-received'
   | 'aged-git-procure'
-  // Sprint T-Phase-1.2.6f-c-2 · Block E
   | 'bill-passing-pi-status';
