@@ -62,6 +62,7 @@ export function MachineMasterPanel() {
   const [editing, setEditing] = useState<Machine | null>(null);
   const [form, setForm] = useState(() => empty(entityCode));
   const [capInput, setCapInput] = useState('');
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();

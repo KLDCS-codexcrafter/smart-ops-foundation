@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function ProductionWelcome({ onNavigate }: Props): JSX.Element {
-  const handleNav = (m: string): void => { if (onNavigate) onNavigate(m); };
+  const { orders } = useProductionOrders();
   const { orders } = useProductionOrders();
   const productionConfig = useProductionConfig();
 
