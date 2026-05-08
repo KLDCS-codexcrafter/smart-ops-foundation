@@ -1714,12 +1714,46 @@ export function PoListPanel(): JSX.Element {
     }
   };
 
+  // Block H · α-d · Monthly Summary aggregation
+  const monthlySummary = useMemo(() => {
+    const map = new Map<string, { count: number; total: number }>();
+    for (const p of pos) {
+      const ym = (p.po_date || '').slice(0, 7);
+      if (!ym) continue;
+      const cur = map.get(ym) ?? { count: 0, total: 0 };
+      cur.count += 1;
+      cur.total += p.total_after_tax || 0;
+      map.set(ym, cur);
+    }
+    return [...map.entries()]
+      .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+      .slice(0, 6)
+      .map(([ym, v]) => ({ ym, ...v }));
+  }, [pos]);
+
   return (
     <div className="p-6 space-y-4">
       <div>
         <h1 className="text-2xl font-bold">Purchase Orders</h1>
         <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FineCore PurchaseOrder voucher (D-283)</p>
       </div>
+
+      {monthlySummary.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Monthly Summary</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-sm">
+              {monthlySummary.map((m) => (
+                <div key={m.ym} className="border rounded-lg p-2">
+                  <p className="text-xs text-muted-foreground font-mono">{m.ym}</p>
+                  <p className="font-mono text-base">{m.count} POs</p>
+                  <p className="text-xs font-mono">{inr(m.total)}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {PO_STATUS_TABS.map((t) => (
