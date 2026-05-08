@@ -65,6 +65,15 @@ import {
   PeqFollowupRegisterPanel,
   PeqFollowupPanel,
   PurchaseEnquiryFormReportPanel,
+  // ─── α-d additions ───
+  PurchaseCostVarianceItemPanel,
+  PurchaseCostVarianceGroupPanel,
+  PurchaseCostVarianceCategoryPanel,
+  RateVarianceGraphPanel,
+  PoItemWisePanel,
+  PoStatusByEnquiryPanel,
+  EnquiryDetailsReportPanel,
+  MaterialRfqPrintPanel,
 } from './reports';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
@@ -85,6 +94,11 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'multi-source-recommendations', 'pre-close-pending', 'po-aging-cross-dept',
   'vendor-reliability', 'peq-followup-register', 'peq-followup',
   'purchase-enquiry-form-report',
+  // ─── NEW · A.3.d ───
+  'purchase-cost-variance-item', 'purchase-cost-variance-group',
+  'purchase-cost-variance-category', 'rate-variance-graph',
+  'po-itemwise', 'po-status-by-enquiry', 'enquiry-details-report',
+  'material-rfq-print',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -122,7 +136,15 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'po-aging-cross-dept' ||
     m === 'vendor-reliability' ||
     m === 'peq-followup-register' ||
-    m === 'peq-followup'
+    m === 'peq-followup' ||
+    // ─── α-d additions ───
+    m === 'purchase-cost-variance-item' ||
+    m === 'purchase-cost-variance-group' ||
+    m === 'purchase-cost-variance-category' ||
+    m === 'rate-variance-graph' ||
+    m === 'po-itemwise' ||
+    m === 'po-status-by-enquiry' ||
+    m === 'material-rfq-print'
   ) return 'Reports';
 
   return GROUP_LABELS[m] ?? '';
@@ -169,6 +191,15 @@ function getModuleLabel(m: Procure360Module): string {
     'peq-followup-register': 'PEQ Followup Register',
     'peq-followup': 'PEQ Followup (Action)',
     'purchase-enquiry-form-report': 'Purchase Enquiry Form Report',
+    // ─── α-d additions ───
+    'purchase-cost-variance-item': 'Cost Variance · Item',
+    'purchase-cost-variance-group': 'Cost Variance · Group',
+    'purchase-cost-variance-category': 'Cost Variance · Category',
+    'rate-variance-graph': 'Rate Variance Graph',
+    'po-itemwise': 'PO Item-Wise',
+    'po-status-by-enquiry': 'PO Status by Enquiry',
+    'enquiry-details-report': 'Enquiry Details',
+    'material-rfq-print': 'Material RFQ Print',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -299,6 +330,15 @@ export default function Procure360Page(): JSX.Element {
       case 'peq-followup-register':           return <PeqFollowupRegisterPanel />;
       case 'peq-followup':                    return <PeqFollowupPanel />;
       case 'purchase-enquiry-form-report':    return <PurchaseEnquiryFormReportPanel />;
+      // ─── NEW · A.3.d ───
+      case 'purchase-cost-variance-item':     return <PurchaseCostVarianceItemPanel />;
+      case 'purchase-cost-variance-group':    return <PurchaseCostVarianceGroupPanel />;
+      case 'purchase-cost-variance-category': return <PurchaseCostVarianceCategoryPanel />;
+      case 'rate-variance-graph':             return <RateVarianceGraphPanel />;
+      case 'po-itemwise':                     return <PoItemWisePanel />;
+      case 'po-status-by-enquiry':            return <PoStatusByEnquiryPanel />;
+      case 'enquiry-details-report':          return <EnquiryDetailsReportPanel />;
+      case 'material-rfq-print':              return <MaterialRfqPrintPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
