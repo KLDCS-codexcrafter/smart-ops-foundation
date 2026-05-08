@@ -1,10 +1,12 @@
 /**
  * @file     ProductionWelcome.tsx
- * @sprint   T-Phase-1.3-3a-pre-1
+ * @sprint   T-Phase-1.A.2.a-Production-Structural (was T-Phase-1.3-3a-pre-1)
  * @purpose  Welcome panel · 4 KPI tiles + 1 adaptive tile based on ProductionConfig flags.
+ * @iso      Usability · Maintainability
+ * @reuses   useProductionOrders · useProductionConfig
+ * @[JWT]    via useProductionOrders
  */
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Briefcase, Users, FlaskConical, ExternalLink, Factory, Layers, Clock, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
@@ -14,9 +16,8 @@ interface Props {
   onNavigate?: (m: string) => void;
 }
 
-export function ProductionWelcome(_props: Props): JSX.Element {
-  void _props;
-  const navigate = useNavigate();
+export function ProductionWelcome({ onNavigate }: Props): JSX.Element {
+  const handleNav = (m: string): void => { if (onNavigate) onNavigate(m); };
   const { orders } = useProductionOrders();
   const productionConfig = useProductionConfig();
 
@@ -65,7 +66,7 @@ export function ProductionWelcome(_props: Props): JSX.Element {
 
       <button
         type="button"
-        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        onClick={() => handleNav('welcome')}
         className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
       >
         <span>
