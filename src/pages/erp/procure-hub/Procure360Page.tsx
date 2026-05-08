@@ -94,6 +94,11 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'multi-source-recommendations', 'pre-close-pending', 'po-aging-cross-dept',
   'vendor-reliability', 'peq-followup-register', 'peq-followup',
   'purchase-enquiry-form-report',
+  // ─── NEW · A.3.d ───
+  'purchase-cost-variance-item', 'purchase-cost-variance-group',
+  'purchase-cost-variance-category', 'rate-variance-graph',
+  'po-itemwise', 'po-status-by-enquiry', 'enquiry-details-report',
+  'material-rfq-print',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
