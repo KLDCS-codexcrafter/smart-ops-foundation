@@ -23,6 +23,8 @@ import { appendAuditEntry } from './audit-trail-hash-chain';
 import { dSub, dSum, dMul, dAdd, round2 } from './decimal-helpers';
 import { emitLeakEvent } from './leak-register-engine';
 import { generateDocNo } from './finecore-engine';
+import { deriveAllTaxes } from './bill-passing-tax-derivation';
+import { notifyQaHandoff } from './bill-passing-qa-bridge';
 
 // ---------- Tolerance defaults (per-tenant override candidate · 3-c-3 may wire master) ----------
 const DEFAULT_TOLERANCE_PCT = 2;
@@ -184,6 +186,8 @@ export interface CreateBillPassingInput {
   terms_of_delivery_id?: string | null;
   narration?: string;
   terms_conditions?: string;
+  vendor_gstin?: string;
+  entity_gstin?: string;
 }
 
 export async function createBillPassing(
@@ -247,6 +251,19 @@ export async function createBillPassing(
   else status = 'matched_clean';
 
   const now = new Date().toISOString();
+
+  // D-NEW-AI · auto-derive cached tax breakdown when GSTINs available · backward-compat fallback to null
+  const vGstin = input.vendor_gstin ?? '';
+  const eGstin = input.entity_gstin ?? '';
+  let gstSnap: ReturnType<typeof deriveAllTaxes>['gst'] | null = null;
+  let tdsSnap: ReturnType<typeof deriveAllTaxes>['tds'] | null = null;
+  let rcmSnap: ReturnType<typeof deriveAllTaxes>['rcm'] | null = null;
+  if (vGstin && eGstin) {
+    const tempBill = { vendor_gstin: vGstin } as BillPassingRecord;
+    const d = deriveAllTaxes(lines, vGstin, eGstin, tempBill);
+    gstSnap = d.gst; tdsSnap = d.tds; rcmSnap = d.rcm;
+  }
+
   const bill: BillPassingRecord = {
     id: newId('bp'),
     bill_no: generateDocNo('PO', entityCode).replace(/^PO\//, 'BILL/'),
@@ -284,6 +301,11 @@ export async function createBillPassing(
     notes: input.notes ?? '',
     created_at: now,
     updated_at: now,
+    vendor_gstin: vGstin || undefined,
+    entity_gstin: eGstin || undefined,
+    gst_breakdown: gstSnap,
+    tds_breakdown: tdsSnap,
+    rcm_breakdown: rcmSnap,
   };
 
   const list = read(entityCode);
