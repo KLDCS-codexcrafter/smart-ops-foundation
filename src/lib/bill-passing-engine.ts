@@ -342,6 +342,11 @@ export async function createBillPassing(
     });
   }
 
+  // D-NEW-AJ (revised) · outbound QA handoff on initial awaiting_qa / qa_failed status
+  if (bill.status === 'awaiting_qa' || bill.status === 'qa_failed') {
+    notifyQaHandoff(bill, entityCode, byUserId, bill.status);
+  }
+
   return bill;
 }
 
