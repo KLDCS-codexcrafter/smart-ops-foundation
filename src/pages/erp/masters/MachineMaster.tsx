@@ -202,7 +202,7 @@ export function MachineMasterPanel() {
                 <SelectContent>
                   <SelectItem value="__none__">None</SelectItem>
                   {machineryAssets.map(a => (
-                    <SelectItem key={a.id} value={a.id}>{a.asset_code} · {a.asset_name}</SelectItem>
+                    <SelectItem key={a.id} value={a.id}>{a.asset_id} · {a.item_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
