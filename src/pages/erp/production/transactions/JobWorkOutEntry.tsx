@@ -71,6 +71,25 @@ export function JobWorkOutEntryPanel(): JSX.Element {
   const [notes, setNotes] = useState<string>('');
   const [lines, setLines] = useState<LineDraft[]>([emptyLine()]);
 
+  // A.2.c · D-NEW-V Process Details + Dispatch Logistics
+  const [natureOfProcessing, setNatureOfProcessing] = useState<string>('');
+  const [durationDays, setDurationDays] = useState<string>('');
+  const [dispatchedThrough, setDispatchedThrough] = useState<string>('');
+  const [carrierName, setCarrierName] = useState<string>('');
+  const [billOfLadingNo, setBillOfLadingNo] = useState<string>('');
+  const [motorVehicleNo, setMotorVehicleNo] = useState<string>('');
+  const [modeOfPayment, setModeOfPayment] = useState<string>('__none__');
+
+  // A.2.c · D-NEW-W Pre-Close dialog state
+  const { jwos, reload: reloadJwos } = useJobWorkOutOrders(entityCode);
+  const [preCloseTargetId, setPreCloseTargetId] = useState<string>('');
+  const [preCloseDialogOpen, setPreCloseDialogOpen] = useState(false);
+  const [preCloseReason, setPreCloseReason] = useState('');
+  const partiallyReceivedJwos = useMemo(
+    () => jwos.filter(j => j.status === 'partially_received'),
+    [jwos],
+  );
+
   const linkedPO = useMemo(() => orders.find(o => o.id === poId), [orders, poId]);
   const vendor = useMemo(() => vendors.find(v => v.partyCode === vendorId), [vendors, vendorId]);
 
