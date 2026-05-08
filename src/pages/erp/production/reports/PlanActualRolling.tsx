@@ -115,7 +115,7 @@ export function PlanActualRollingPanel(): JSX.Element {
         .reduce((s, out) => s + (out.actual_qty ?? 0), 0);
       plannedSum += plannedToday;
       producedSum = cumProduced;
-      void producedToday;
+      
       const achievement_pct = plannedSum > 0 ? round2((producedSum / plannedSum) * 100) : 0;
       points.push({ date, planned_to_date: plannedSum, produced_to_date: producedSum, achievement_pct, target_pct: 100 });
     }
