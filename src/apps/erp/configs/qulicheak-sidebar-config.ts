@@ -17,6 +17,7 @@
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
+  AlertOctagon, FileWarning,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -68,6 +69,15 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         icon: ShieldCheck,
         moduleId: 'closure-log',
         requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'ncr-capture',
+        type: 'item',
+        label: 'Raise NCR',
+        icon: AlertOctagon,
+        moduleId: 'ncr-capture',
+        requiredCards: ['qulicheak'],
+        keyboard: 'q n',
       },
     ],
   },
@@ -139,6 +149,14 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         label: 'CoA Register',
         icon: FileCheck,
         moduleId: 'coa-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'ncr-register',
+        type: 'item',
+        label: 'NCR Register',
+        icon: FileWarning,
+        moduleId: 'ncr-register',
         requiredCards: ['qulicheak'],
       },
     ],
