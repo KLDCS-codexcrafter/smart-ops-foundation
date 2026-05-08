@@ -35,6 +35,13 @@ import { WIPReportPanel } from './reports/WIPReport';
 import { ShiftwiseProductionReportPanel } from './reports/ShiftwiseProductionReport';
 import { ManpowerProductionReportPanel } from './reports/ManpowerProductionReport';
 import { ProductionTraceRegisterPanel } from './reports/ProductionTraceRegister';
+import { JobWorkOutRegisterPanel } from './reports/JobWorkOutRegister';
+import { StockWithJobWorkerPanel } from './reports/StockWithJobWorker';
+import { JobWorkVarianceAnalysisPanel } from './reports/JobWorkVarianceAnalysis';
+import { JobWorkAgeingAnalysisPanel } from './reports/JobWorkAgeingAnalysis';
+import { JobWorkInRegisterPanel } from './reports/JobWorkInRegister';
+import { JobWorkComponentsOrderSummaryPanel } from './reports/JobWorkComponentsOrderSummary';
+import { JobWorkMaterialMovementRegisterPanel } from './reports/JobWorkMaterialMovementRegister';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {

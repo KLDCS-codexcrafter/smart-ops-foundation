@@ -72,6 +72,25 @@ export const productionSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'job-work-group', type: 'group', label: 'Job Work', icon: Wrench,
+    children: [
+      { id: 'rpt-jw-out-register', type: 'item', label: 'JW Out Register',
+        icon: Truck, moduleId: 'rpt-jw-out-register', requiredCards: ['production'] },
+      { id: 'rpt-jw-stock-with-worker', type: 'item', label: 'Stock with Job Worker',
+        icon: Package, moduleId: 'rpt-jw-stock-with-worker', requiredCards: ['production'] },
+      { id: 'rpt-jw-variance', type: 'item', label: 'JW Variance Analysis',
+        icon: Scale, moduleId: 'rpt-jw-variance', requiredCards: ['production'] },
+      { id: 'rpt-jw-ageing', type: 'item', label: 'JW Ageing Analysis',
+        icon: Hourglass, moduleId: 'rpt-jw-ageing', requiredCards: ['production'] },
+      { id: 'rpt-jw-in-register', type: 'item', label: 'JW IN Register',
+        icon: ArrowDownToLine, moduleId: 'rpt-jw-in-register', requiredCards: ['production'] },
+      { id: 'rpt-jw-components-summary', type: 'item', label: 'Components Order Summary',
+        icon: Layers, moduleId: 'rpt-jw-components-summary', requiredCards: ['production'] },
+      { id: 'rpt-jw-material-movement', type: 'item', label: 'Material Movement Register',
+        icon: FileText, moduleId: 'rpt-jw-material-movement', requiredCards: ['production'] },
+    ],
+  },
+  {
     id: 'dashboards-group', type: 'group', label: 'Dashboards', icon: BarChart3,
     children: [
       { id: 'rpt-capacity-planning', type: 'item', label: 'Capacity Planning',
