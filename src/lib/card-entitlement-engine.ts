@@ -78,8 +78,8 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('inventory-hub', 'add_on_available'),
     one('customer-hub', 'locked'),
     one('qulicheak', 'locked'),
-    one('gateflow', 'locked'),
-    one('production', 'locked'),
+    one('gateflow'),     // active per Phase 1.A.1 (3 sub-sprints closed)
+    one('production'),   // active per A.2.b D-NEW-T
     one('maintainpro', 'locked'),
     one('requestx', 'locked'),
     one('frontdesk', 'locked'),
