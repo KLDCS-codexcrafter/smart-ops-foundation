@@ -1,13 +1,13 @@
 /**
  * @file        bill-passing-engine.ts
- * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 + D-286 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (4-way qc_variance + tax derivation + QA bridge · D-NEW-AH/AI/AJ)
+ * @sprint      T-Phase-1.2.6f-c-2 · T-Phase-1.A.3.b · T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring (derivation + QA handoff wired · D-NEW-AL)
  * @purpose     Bill Passing engine · 3-way/4-way Match · variance computation · approval workflow.
  *              Reads PO + GIT + vendor invoice · computes line-level match · emits variance flags.
  *              On approval · triggers FinCore PI auto-draft via finance-pi-bridge (Block C).
- * @decisions   D-285 · D-286 (hybrid match · item flag) · D-287 (FCPI auto-draft) · D-194 localStorage · D-NEW-AH (qc_variance) · D-NEW-AI (auto tax derivation) · D-NEW-AJ (QA cross-card bridge)
+ * @decisions   D-285 · D-286 · D-287 · D-194 · D-NEW-AH · D-NEW-AI (wired) · D-NEW-AJ (bidirectional · outbound wired) · D-NEW-AL (T-fix)
  * @reuses      po-management-engine · git-engine · audit-trail-hash-chain · decimal-helpers
- *              · leak-register-engine · finecore-engine.generateDocNo · freight-match-engine pattern
- *              · bill-passing-tax-derivation · bill-passing-qa-bridge
+ *              · leak-register-engine · finecore-engine.generateDocNo
+ *              · bill-passing-tax-derivation (deriveAllTaxes) · bill-passing-qa-bridge (notifyQaHandoff)
  * @[JWT]       POST /api/bill-passing
  */
 
@@ -389,6 +389,18 @@ export async function runMatch(
     else status = 'matched_clean';
   }
 
+  // D-NEW-AI · re-derive cached tax breakdown when GSTINs available
+  const vGstin2 = cur.vendor_gstin ?? '';
+  const eGstin2 = cur.entity_gstin ?? '';
+  let gstSnap2: BillPassingRecord['gst_breakdown'] = cur.gst_breakdown ?? null;
+  let tdsSnap2: BillPassingRecord['tds_breakdown'] = cur.tds_breakdown ?? null;
+  let rcmSnap2: BillPassingRecord['rcm_breakdown'] = cur.rcm_breakdown ?? null;
+  if (vGstin2 && eGstin2) {
+    const tempBill = { vendor_gstin: vGstin2 } as BillPassingRecord;
+    const d = deriveAllTaxes(recomputed, vGstin2, eGstin2, tempBill);
+    gstSnap2 = d.gst; tdsSnap2 = d.tds; rcmSnap2 = d.rcm;
+  }
+
   const updated: BillPassingRecord = {
     ...cur,
     lines: recomputed,
@@ -399,10 +411,18 @@ export async function runMatch(
     variance_pct: totals.variance_pct,
     status,
     updated_at: new Date().toISOString(),
+    gst_breakdown: gstSnap2,
+    tds_breakdown: tdsSnap2,
+    rcm_breakdown: rcmSnap2,
   };
 
   list[idx] = updated;
   write(entityCode, list);
+
+  // D-NEW-AJ (revised) · outbound QA handoff only on status flip TO awaiting_qa / qa_failed
+  if (status !== cur.status && (status === 'awaiting_qa' || status === 'qa_failed')) {
+    notifyQaHandoff(updated, entityCode, byUserId, status);
+  }
 
   await appendAuditEntry({
     entityCode,
