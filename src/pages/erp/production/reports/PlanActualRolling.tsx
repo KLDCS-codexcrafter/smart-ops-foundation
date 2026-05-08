@@ -1,7 +1,7 @@
 /**
  * @file     PlanActualRolling.tsx
- * @sprint   T-Phase-1.3-3a-pre-3 · Block F · D-561
- * @purpose  Plan vs Actual rolling 30-day dashboard.
+ * @sprint   T-Phase-1.A.2.b-Production-Reports (was T-Phase-1.3-3a-pre-3 · Block F · D-561)
+ * @purpose  Plan vs Actual rolling 30-day dashboard · adds groupBy=plan + cumulative trend chart.
  */
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,13 +14,23 @@ import {
 import { BarChart3 } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,
+  LineChart, Line,
 } from 'recharts';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import type { ProductionPlan } from '@/types/production-plan';
+import { round2 } from '@/lib/decimal-helpers';
 
 type Window = '7d' | '30d' | '90d';
-type GroupBy = 'plan_type' | 'department' | 'item';
+type GroupBy = 'plan_type' | 'department' | 'item' | 'plan';
+
+interface TrendPoint {
+  date: string;
+  planned_to_date: number;
+  produced_to_date: number;
+  achievement_pct: number;
+  target_pct: number;
+}
 
 function withinWindow(iso: string, days: number): boolean {
   const t = new Date(iso).getTime();
@@ -40,6 +50,30 @@ export function PlanActualRollingPanel(): JSX.Element {
   const groups = useMemo(() => {
     const map = new Map<string, { label: string; planned: number; ordered: number; produced: number }>();
     const recentPlans = plans.filter((p: ProductionPlan) => withinWindow(p.created_at, days));
+    const recentPOs = orders.filter(o => withinWindow(o.created_at, days));
+
+    if (groupBy === 'plan') {
+      for (const p of recentPlans) {
+        const key = p.id;
+        const planned = p.lines.reduce((s, l) => s + l.planned_qty, 0);
+        const existing = map.get(key) ?? { label: p.doc_no || `Plan-${p.id.slice(-6)}`, planned: 0, ordered: 0, produced: 0 };
+        existing.planned += planned;
+        map.set(key, existing);
+      }
+      for (const po of recentPOs) {
+        if (!po.production_plan_id) continue;
+        const key = po.production_plan_id;
+        const ordered = po.planned_qty;
+        const produced = po.outputs.reduce((s, o) => s + (o.actual_qty ?? 0), 0);
+        const existing = map.get(key);
+        if (existing) {
+          existing.ordered += ordered;
+          existing.produced += produced;
+        }
+      }
+      return Array.from(map.values());
+    }
+
     for (const p of recentPlans) {
       let key: string;
       if (groupBy === 'plan_type') key = p.plan_type;
@@ -50,7 +84,6 @@ export function PlanActualRollingPanel(): JSX.Element {
       existing.planned += planned;
       map.set(key, existing);
     }
-    const recentPOs = orders.filter(o => withinWindow(o.created_at, days));
     for (const po of recentPOs) {
       let key: string;
       if (groupBy === 'plan_type') key = 'standalone';
@@ -65,6 +98,36 @@ export function PlanActualRollingPanel(): JSX.Element {
     }
     return Array.from(map.values());
   }, [plans, orders, days, groupBy]);
+
+  const trendData = useMemo<TrendPoint[]>(() => {
+    const points: TrendPoint[] = [];
+    let plannedSum = 0;
+    let producedSum = 0;
+    for (let d = days - 1; d >= 0; d--) {
+      const date = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
+      const plannedToday = orders
+        .filter(o => o.created_at.slice(0, 10) === date)
+        .reduce((s, o) => s + o.planned_qty, 0);
+      const producedToday = orders
+        .filter(o => o.created_at.slice(0, 10) <= date)
+        .flatMap(o => o.outputs)
+        .reduce((s, out) => {
+          // Note: ProductionOrderOutput has no confirmed_at; approximate produced delta on day = actual_qty when available
+          return s + 0;
+        }, 0);
+      // Best-effort cumulative produced — sum of all actual_qty across orders created up to this date
+      const cumProduced = orders
+        .filter(o => o.created_at.slice(0, 10) <= date)
+        .flatMap(o => o.outputs)
+        .reduce((s, out) => s + (out.actual_qty ?? 0), 0);
+      plannedSum += plannedToday;
+      producedSum = cumProduced;
+      void producedToday;
+      const achievement_pct = plannedSum > 0 ? round2((producedSum / plannedSum) * 100) : 0;
+      points.push({ date, planned_to_date: plannedSum, produced_to_date: producedSum, achievement_pct, target_pct: 100 });
+    }
+    return points;
+  }, [orders, days]);
 
   return (
     <div className="p-6 space-y-4">
@@ -90,6 +153,7 @@ export function PlanActualRollingPanel(): JSX.Element {
             <SelectItem value="plan_type">Group by Plan Type</SelectItem>
             <SelectItem value="department">Group by Department</SelectItem>
             <SelectItem value="item">Group by Item</SelectItem>
+            <SelectItem value="plan">By Plan ID</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -113,6 +177,28 @@ export function PlanActualRollingPanel(): JSX.Element {
               </BarChart>
             </ResponsiveContainer>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Achievement Trend · Last {days} Days</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={trendData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+              />
+              <YAxis domain={[0, 110]} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="achievement_pct" stroke="hsl(var(--primary))" strokeWidth={2} name="Cumulative Achievement %" dot={false} />
+              <Line type="monotone" dataKey="target_pct" stroke="hsl(var(--muted-foreground))" strokeDasharray="5 5" name="Target (100%)" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
