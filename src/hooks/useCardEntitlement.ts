@@ -52,6 +52,22 @@ export function useCardEntitlement() {
       profileRaw = pr ? JSON.parse(pr) : null;
     } catch { /* ignore */ }
 
+    // T-Phase-1.A.2.b-T1 · Migrate stale 'locked' status for gateflow/production
+    // (Both flipped to active per Phase 1.A milestones. New installs get fresh seed.)
+    let migrated = false;
+    for (const ent of entitlementsRaw) {
+      if ((ent.card_id === 'gateflow' || ent.card_id === 'production') && ent.status === 'locked') {
+        ent.status = 'active';
+        ent.updated_at = new Date().toISOString();
+        migrated = true;
+      }
+    }
+    if (migrated) {
+      try {
+        localStorage.setItem(cardEntitlementsKey(entityCode), JSON.stringify(entitlementsRaw));
+      } catch { /* ignore */ }
+    }
+
     if (entitlementsRaw.length === 0) {
       entitlementsRaw = seedDemoEntitlements(entityCode);
       try {
