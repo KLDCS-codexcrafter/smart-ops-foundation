@@ -74,7 +74,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('distributor-hub'), one('receivx'), one('peoplepay'),
     one('insightx'),
     one('payout', 'trial'),
-    one('procure360', 'add_on_available'),
+    one('procure360'),     // active per Phase 1.A.3.a Shell migration · D-NEW-AM (T-fix)
     one('inventory-hub', 'add_on_available'),
     one('customer-hub', 'locked'),
     one('qulicheak', 'locked'),
