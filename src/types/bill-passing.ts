@@ -1,6 +1,6 @@
 /**
  * @file        bill-passing.ts
- * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (qc_variance · cached tax fields · D-NEW-AH/AI)
+ * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (qc_variance · cached tax fields · D-NEW-AH/AI) · T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring (cached tax fields wired · D-NEW-AL)
  * @purpose     Bill Passing types · 3-way/4-way Match record · variance metadata
  * @decisions   D-285 (NEW page) · D-286 (hybrid 3-way/4-way) · D-287 (FCPI auto-draft on approval) · D-NEW-AH (qc_variance) · D-NEW-AI (cached tax derivation)
  * @disciplines FR-22 Type Discipline · FR-50 Multi-entity 6-point
@@ -118,6 +118,14 @@ export interface BillPassingRecord {
   notes: string;
   created_at: string;
   updated_at: string;
+
+  // T-Phase-1.A.3.b-T1 · D-NEW-AI · auto-derived at createBillPassing/runMatch
+  // when GSTINs are available. All optional · backward-compatible.
+  gst_breakdown?: import('@/lib/finance-pi-bridge').GstBreakdown | null;
+  tds_breakdown?: import('@/lib/finance-pi-bridge').TdsBreakdown | null;
+  rcm_breakdown?: import('@/lib/finance-pi-bridge').RcmBreakdown | null;
+  vendor_gstin?: string;
+  entity_gstin?: string;
 }
 
 export const billPassingKey = (entityCode: string): string =>
