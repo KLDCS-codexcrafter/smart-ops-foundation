@@ -1,11 +1,11 @@
 /**
  * @file        procure360-sidebar-config.ts
- * @purpose     Procure360 sidebar items · 4-section regroup · 23 entries · entitlement-filtered
+ * @purpose     Procure360 sidebar items · 5-section regroup · 31 entries (1 route + 30 module) · entitlement-filtered
  * @who         Procurement department
- * @when        Phase 1.A.3.a · Procure360 Shell Migration sprint
- * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration
+ * @when        Phase 1.A.3.b · Procure360 Bill Passing Integration sprint
+ * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (Outstandings group + 5 Reports entries · D-NEW-AG)
  * @iso         Usability · Maintainability (ISO 25010)
- * @decisions   D-NEW-AD (Procure360 sidebar 4-section regroup · 23 items · entitlement-filtered)
+ * @decisions   D-NEW-AD (Procure360 sidebar 4-section regroup · 23 items) · D-NEW-AG (Outstandings group + 5 Reports · 31 items)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
  * @[JWT]       N/A (config only)
  */
@@ -13,6 +13,7 @@
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt,
+  Wallet, AlertTriangle,   // NEW · A.3.b
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -54,6 +55,20 @@ export const procure360SidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'outstandings-group', type: 'group', label: 'Outstandings', icon: Wallet,
+    children: [
+      // Route-based deep-link · Shell handles route navigation (no moduleId)
+      { id: 'outstandings-payables', type: 'item', label: 'Payables (Bill Passing)',
+        icon: Receipt, route: '/erp/bill-passing', requiredCards: ['procure360'] },
+      { id: 'supplier-wise-outstanding', type: 'item', label: 'Supplier-Wise Outstanding',
+        icon: Users, moduleId: 'supplier-wise-outstanding', requiredCards: ['procure360'] },
+      { id: 'group-wise-outstanding', type: 'item', label: 'Group-Wise Outstanding',
+        icon: BarChart3, moduleId: 'group-wise-outstanding', requiredCards: ['procure360'] },
+      { id: 'goods-inward-day-book', type: 'item', label: 'Goods Inward Day Book',
+        icon: PackageCheck, moduleId: 'goods-inward-day-book', requiredCards: ['procure360'] },
+    ],
+  },
+  {
     id: 'reports-group', type: 'group', label: 'Reports', icon: BarChart3,
     children: [
       { id: 'rfq-register-report', type: 'item', label: 'RFQ Register',
@@ -76,6 +91,16 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: Users, moduleId: 'cross-dept-procurement-handoff', requiredCards: ['procure360'] },
       { id: 'vendor-scoring-dashboard', type: 'item', label: 'Scoring Dashboard',
         icon: TrendingUp, moduleId: 'vendor-scoring-dashboard', requiredCards: ['procure360'] },
+      { id: 'pi-pending-report', type: 'item', label: 'PI Pending',
+        icon: Clock, moduleId: 'pi-pending-report', requiredCards: ['procure360'] },
+      { id: 'three-way-match-status', type: 'item', label: '3-Way Match Status',
+        icon: ListChecks, moduleId: 'three-way-match-status', requiredCards: ['procure360'] },
+      { id: 'variance-audit-report', type: 'item', label: 'Variance Audit',
+        icon: AlertTriangle, moduleId: 'variance-audit-report', requiredCards: ['procure360'] },
+      { id: 'tds-deduction-report', type: 'item', label: 'TDS Deduction',
+        icon: FileText, moduleId: 'tds-deduction-report', requiredCards: ['procure360'] },
+      { id: 'rcm-liability-report', type: 'item', label: 'RCM Liability',
+        icon: FileText, moduleId: 'rcm-liability-report', requiredCards: ['procure360'] },
     ],
   },
 ];

@@ -2,11 +2,11 @@
  * @file        Procure360Page.tsx
  * @purpose     Procure360 hub page · canonical Shell pattern (4th card after CC + GateFlow + Production)
  * @who         Procurement department
- * @when        Phase 1.A.3.a · Procure360 Shell Migration sprint
- * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration
+ * @when        Phase 1.A.3.b · Procure360 Bill Passing Integration sprint
+ * @sprint      T-Phase-1.A.3.a-Procure360-Shell-Migration · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (8 modules · Outstandings group · 5 reports · D-NEW-AG · D-NEW-AK)
  * @iso         Maintainability · Usability (ISO 25010)
- * @decisions   D-250 · D-NEW-AC · D-NEW-AD · D-NEW-AF
- * @reuses      @/shell Shell · procure360-shell-config · useCardEntitlement · logAudit · recordActivity · rememberModule · GuidedTourOverlay · journalKey · 22 panel exports
+ * @decisions   D-250 · D-NEW-AC · D-NEW-AD · D-NEW-AF · D-NEW-AG · D-NEW-AK
+ * @reuses      @/shell Shell · procure360-shell-config · useCardEntitlement · logAudit · recordActivity · rememberModule · GuidedTourOverlay · journalKey · 22+8 panel exports
  * @[JWT]       activeModule (state) · entityCode + userId via useCardEntitlement (localStorage [JWT])
  */
 
@@ -46,6 +46,18 @@ import {
   BillPassingPiStatusPanel,
 } from './panels';
 
+// NEW · A.3.b · 8 reports from /reports/ folder
+import {
+  PiPendingPanel,
+  ThreeWayMatchStatusPanel,
+  VarianceAuditPanel,
+  TdsDeductionReportPanel,
+  RcmLiabilityReportPanel,
+  GoodsInwardDayBookPanel,
+  SupplierWiseOutstandingPanel,
+  GroupWiseOutstandingPanel,
+} from './reports';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
@@ -56,6 +68,10 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'po-list', 'po-followup-register',
   'git-in-transit', 'git-received', 'aged-git-procure',
   'bill-passing-pi-status',
+  // ─── NEW · A.3.b ───
+  'supplier-wise-outstanding', 'group-wise-outstanding', 'goods-inward-day-book',
+  'pi-pending-report', 'three-way-match-status', 'variance-audit-report',
+  'tds-deduction-report', 'rcm-liability-report',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -74,9 +90,21 @@ const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
 };
 
 function getGroupLabel(m: Procure360Module): string {
-  if (m.endsWith('-report') || m === 'cross-dept-procurement-handoff' || m === 'vendor-scoring-dashboard') {
-    return 'Reports';
-  }
+  // Outstandings group · A.3.b
+  if (
+    m === 'supplier-wise-outstanding' ||
+    m === 'group-wise-outstanding' ||
+    m === 'goods-inward-day-book'
+  ) return 'Outstandings';
+
+  // Reports group (existing rule + 5 NEW reports)
+  if (
+    m.endsWith('-report') ||
+    m === 'cross-dept-procurement-handoff' ||
+    m === 'vendor-scoring-dashboard' ||
+    m === 'three-way-match-status'
+  ) return 'Reports';
+
   return GROUP_LABELS[m] ?? '';
 }
 
@@ -104,6 +132,15 @@ function getModuleLabel(m: Procure360Module): string {
     'git-received': 'GIT Received at Gate',
     'aged-git-procure': 'Aged GIT (Procure View)',
     'bill-passing-pi-status': 'Bill Passing & PI Status',
+    // ─── NEW · A.3.b ───
+    'supplier-wise-outstanding': 'Supplier-Wise Outstanding',
+    'group-wise-outstanding': 'Group-Wise Outstanding',
+    'goods-inward-day-book': 'Goods Inward Day Book',
+    'pi-pending-report': 'PI Pending',
+    'three-way-match-status': '3-Way Match Status',
+    'variance-audit-report': 'Variance Audit',
+    'tds-deduction-report': 'TDS Deduction',
+    'rcm-liability-report': 'RCM Liability',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -210,6 +247,16 @@ export default function Procure360Page(): JSX.Element {
       case 'git-received':                   return <GitReceivedPanel />;
       case 'aged-git-procure':               return <AgedGitProcurePanel />;
       case 'bill-passing-pi-status':         return <BillPassingPiStatusPanel />;
+      // ─── NEW · A.3.b · Outstandings group ───
+      case 'supplier-wise-outstanding':       return <SupplierWiseOutstandingPanel />;
+      case 'group-wise-outstanding':          return <GroupWiseOutstandingPanel />;
+      case 'goods-inward-day-book':           return <GoodsInwardDayBookPanel />;
+      // ─── NEW · A.3.b · Reports additions ───
+      case 'pi-pending-report':               return <PiPendingPanel />;
+      case 'three-way-match-status':          return <ThreeWayMatchStatusPanel />;
+      case 'variance-audit-report':           return <VarianceAuditPanel />;
+      case 'tds-deduction-report':            return <TdsDeductionReportPanel />;
+      case 'rcm-liability-report':            return <RcmLiabilityReportPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

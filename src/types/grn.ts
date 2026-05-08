@@ -93,6 +93,16 @@ export interface GRN {
   /** Stage 2: physical receipt confirmation timestamp */
   physical_received_at?: string | null;
 
+  // ─── Sprint T-Phase-1.A.3.b · Block A · Tally Material Receipt parity gap-fill (all optional · backward-compat) ───
+  /** Vendor delivery challan number */
+  vendor_dc_no?: string | null;
+  /** Vendor delivery challan date · YYYY-MM-DD */
+  vendor_dc_date?: string | null;
+  /** Transport mode for inbound shipment */
+  transport_mode?: 'road' | 'rail' | 'air' | 'sea' | 'self_pickup' | null;
+  /** Freight responsibility */
+  freight_paid_by?: 'consignor' | 'consignee' | null;
+
   // Audit
   /** D-226 UTS · accounting effective date; falls back to primary date when null. */
   effective_date?: string | null;

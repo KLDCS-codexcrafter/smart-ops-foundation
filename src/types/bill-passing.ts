@@ -1,8 +1,8 @@
 /**
  * @file        bill-passing.ts
- * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285
+ * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (qc_variance · cached tax fields · D-NEW-AH/AI)
  * @purpose     Bill Passing types · 3-way/4-way Match record · variance metadata
- * @decisions   D-285 (NEW page) · D-286 (hybrid 3-way/4-way) · D-287 (FCPI auto-draft on approval)
+ * @decisions   D-285 (NEW page) · D-286 (hybrid 3-way/4-way) · D-287 (FCPI auto-draft on approval) · D-NEW-AH (qc_variance) · D-NEW-AI (cached tax derivation)
  * @disciplines FR-22 Type Discipline · FR-50 Multi-entity 6-point
  */
 
@@ -25,6 +25,7 @@ export type LineMatchStatus =
   | 'rate_variance'
   | 'tax_variance'
   | 'total_variance'
+  | 'qc_variance'      // 4-way · QC inspection failed (D-NEW-AH · A.3.b)
   | 'unmatched';
 
 export interface BillPassingLine {

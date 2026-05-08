@@ -1,12 +1,13 @@
 /**
  * @file        bill-passing-engine.ts
- * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 + D-286
+ * @sprint      T-Phase-1.2.6f-c-2 · Block A · per D-285 + D-286 · T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (4-way qc_variance + tax derivation + QA bridge · D-NEW-AH/AI/AJ)
  * @purpose     Bill Passing engine · 3-way/4-way Match · variance computation · approval workflow.
  *              Reads PO + GIT + vendor invoice · computes line-level match · emits variance flags.
  *              On approval · triggers FinCore PI auto-draft via finance-pi-bridge (Block C).
- * @decisions   D-285 · D-286 (hybrid match · item flag) · D-287 (FCPI auto-draft) · D-194 localStorage
+ * @decisions   D-285 · D-286 (hybrid match · item flag) · D-287 (FCPI auto-draft) · D-194 localStorage · D-NEW-AH (qc_variance) · D-NEW-AI (auto tax derivation) · D-NEW-AJ (QA cross-card bridge)
  * @reuses      po-management-engine · git-engine · audit-trail-hash-chain · decimal-helpers
  *              · leak-register-engine · finecore-engine.generateDocNo · freight-match-engine pattern
+ *              · bill-passing-tax-derivation · bill-passing-qa-bridge
  * @[JWT]       POST /api/bill-passing
  */
 
@@ -140,6 +141,14 @@ export function computeLineMatch(
   } else if (totalPct > tolerancePct && Math.abs(total_variance) > toleranceAmount) {
     status = 'total_variance';
     reason = `Total variance ₹${total_variance.toFixed(2)} (${totalPct.toFixed(2)}%)`;
+  }
+
+  // 4-way QC dimension · D-NEW-AH (A.3.b)
+  // If line was inspection-required and QC failed, override clean status to qc_variance.
+  // Does NOT downgrade existing variance reasons (qty/rate/tax/total take precedence).
+  if (status === 'clean' && invLine.requires_inspection && invLine.qa_passed === false) {
+    status = 'qc_variance';
+    reason = 'QC inspection failed';
   }
 
   return {
@@ -336,11 +345,21 @@ export async function runMatch(
   });
 
   const totals = computeBillPassingTotals(recomputed);
-  const hasVariance = recomputed.some((l) => l.match_status !== 'clean');
+  const hasQcVariance = recomputed.some((l) => l.match_status === 'qc_variance');
+  const hasOtherVariance = recomputed.some(
+    (l) => l.match_status !== 'clean' && l.match_status !== 'qc_variance',
+  );
 
   let status: BillPassingStatus = cur.status;
-  if (cur.status === 'pending_match' || cur.status === 'matched_clean' || cur.status === 'matched_with_variance') {
-    status = hasVariance ? 'matched_with_variance' : 'matched_clean';
+  const transitionable =
+    cur.status === 'pending_match' ||
+    cur.status === 'matched_clean' ||
+    cur.status === 'matched_with_variance' ||
+    cur.status === 'awaiting_qa';
+  if (transitionable) {
+    if (hasQcVariance) status = 'qa_failed';
+    else if (hasOtherVariance) status = 'matched_with_variance';
+    else status = 'matched_clean';
   }
 
   const updated: BillPassingRecord = {
@@ -389,9 +408,9 @@ export async function runMatch(
 
 // ---------- Status transitions ----------
 const VALID_TRANSITIONS: Record<BillPassingStatus, BillPassingStatus[]> = {
-  pending_match: ['matched_clean', 'matched_with_variance', 'awaiting_qa', 'cancelled'],
-  matched_clean: ['approved_for_fcpi', 'cancelled'],
-  matched_with_variance: ['approved_for_fcpi', 'rejected', 'cancelled'],
+  pending_match: ['matched_clean', 'matched_with_variance', 'awaiting_qa', 'qa_failed', 'cancelled'],
+  matched_clean: ['approved_for_fcpi', 'qa_failed', 'cancelled'],
+  matched_with_variance: ['approved_for_fcpi', 'qa_failed', 'rejected', 'cancelled'],
   awaiting_qa: ['qa_failed', 'matched_clean', 'matched_with_variance', 'cancelled'],
   qa_failed: ['matched_with_variance', 'cancelled'],
   approved_for_fcpi: ['fcpi_drafted', 'cancelled'],
