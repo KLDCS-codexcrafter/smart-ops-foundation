@@ -1,9 +1,11 @@
 /**
- * @file    GateFlowSidebar.types.ts
- * @sprint  T-Phase-1.A.1.a-GateFlow-Patterns-Features (was 4-pre-1 · 4-pre-2 · 4-pre-3)
- * @purpose GateFlowModule union · 12 modules · referenced by gateflow-sidebar-config.ts and GateFlowPage.renderModule()
- * Sprint 4-pre-1 · Block D · per D-301 (Q1=A 4-panel)
- * EXTENDED Sprint 4-pre-2 · Block H · 5 NEW modules (Vehicle/Master/Weighbridge)
+ * @file        GateFlowSidebar.types.ts
+ * @purpose     GateFlowModule union · 12 modules · referenced by gateflow-sidebar-config.ts and GateFlowPage.renderModule()
+ * @sprint      T-Phase-1.A.1.b-GateFlow-T1-Fix (was T-Phase-1.A.1.a · was 4-pre-1 · 4-pre-2 · 4-pre-3)
+ * @iso         Maintainability
+ * @decisions   D-301 (Q1=A 4-panel base) · D-NEW (Sprint 1 Shell migration · type preserved) · D-NEW-H (Sprint 1.A.1.b T1 cosmetic header refresh)
+ * @reuses      None (type-only file)
+ * @[JWT]       N/A (type definitions only)
  */
 export type GateFlowModule =
   | 'welcome'

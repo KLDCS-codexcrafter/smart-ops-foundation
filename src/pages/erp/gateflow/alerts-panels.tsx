@@ -3,10 +3,10 @@
  * @purpose     GateFlow alert panels · Vehicle Expiry · Driver Expiry · Gate Dwell (color-coded urgency)
  * @who         Security supervisors · Compliance officers · Dispatch supervisors
  * @when        Phase 1.A.1.a · GateFlow Patterns + Features sprint
- * @sprint      T-Phase-1.A.1.a-GateFlow-Patterns-Features (was T-Phase-1.2.6f-d-2-card4-4-pre-3)
+ * @sprint      T-Phase-1.A.1.b-GateFlow-T1-Fix (was T-Phase-1.A.1.a · was 4-pre-3)
  * @iso         Maintainability · Reliability
- * @decisions   D-314 (3 alerts) · D-NEW · canonical useEntityCode
- * @reuses      useEntityCode · gateflow-engine (read-only)
+ * @decisions   D-314 (3 alerts) · D-NEW · canonical useEntityCode · D-NEW-G (useCallback wrap)
+ * @reuses      useEntityCode · useCallback · gateflow-engine (read-only)
  * @[JWT]       GET /api/gateflow/alerts/vehicle-expiry · GET /api/gateflow/alerts/driver-expiry · GET /api/gateflow/alerts/gate-dwell
  *
  * Pattern: NO [tick, setTick] + useMemo anti-pattern. Uses [list, setList] + refresh().
