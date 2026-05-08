@@ -1,12 +1,20 @@
 /**
- * QualiCheckPage.tsx — Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block E · D-326
- * NEW /erp/qulicheak page · 5-module Foundation. Mirrors GateFlowPage (4-pre-1).
+ * @file        QualiCheckPage.tsx
+ * @purpose     Qulicheak card page using canonical Shell pattern (FR-58 · GateFlow precedent)
+ * @who         Quality Inspector · QA Manager · Vendor Manager
+ * @when        Phase 1.A.5.a · Shell Migration sprint
+ * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration
+ * @iso         Maintainability · Usability
+ * @decisions   D-250 (Shell pattern lock) · D-NEW-AY (Outcome C split) ·
+ *              D-NEW-AZ (QualiCheckSidebar.tsx DELETED · sidebar data in config)
+ * @reuses      @/shell Shell · qulicheak-shell-config · panels · operational-panels
+ * @[JWT]       Multiple via panels (see panel files for endpoints)
  */
 import { useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ERPHeader } from '@/components/layout/ERPHeader';
-import { QualiCheckSidebar } from './QualiCheckSidebar';
+import { Shell } from '@/shell';
+import { qulicheakShellConfig } from '@/apps/erp/configs/qulicheak-shell-config';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import type { QualiCheckModule } from './QualiCheckSidebar.types';
 import {
   QualiCheckWelcome, PendingInspectionsPanel, QualityPlansPanel,
   QualitySpecsPanel, InspectionRegisterPanel,
@@ -15,22 +23,22 @@ import {
   ClosureLogPanel, VendorScorecardPanel, CoARegisterPanel,
   PendingAlertsPanel, BulkPlanAssignmentPanel,
 } from './operational-panels';
-import type { QualiCheckModule } from './QualiCheckSidebar.types';
 import { ProductionQCPendingPanel } from './ProductionQCPendingPanel';
 import { QCEntryPage } from './QCEntryPage';
 import { QualiCheckDashboard } from './QualiCheckDashboard';
 
 export default function QualiCheckPage(): JSX.Element {
-  const [active, setActive] = useState<QualiCheckModule>('welcome');
-  // 🆕 Sprint 3b-pre-2 · Block J · D-635 · QC entry overlay (priority over module switch).
+  const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
+  // Sprint 3b-pre-2 · Block J · D-635 · QC entry overlay (priority over module switch).
   const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
+  const { entitlements, profile } = useCardEntitlement();
 
-  const render = (): JSX.Element => {
+  function renderModule(): JSX.Element {
     if (activeInspectionId) {
       return <QCEntryPage inspectionId={activeInspectionId} onBack={() => setActiveInspectionId(null)} />;
     }
-    switch (active) {
-      case 'welcome':              return <QualiCheckWelcome onNavigate={setActive} />;
+    switch (activeModule) {
+      case 'welcome':              return <QualiCheckWelcome onNavigate={setActiveModule} />;
       case 'pending-inspections':  return <PendingInspectionsPanel />;
       case 'quality-plans':        return <QualityPlansPanel />;
       case 'quality-specs':        return <QualitySpecsPanel />;
@@ -46,21 +54,21 @@ export default function QualiCheckPage(): JSX.Element {
       case 'qc-entry':
         return <div className="p-6 text-sm text-muted-foreground">Open a pending inspection to enter QC.</div>;
       default:
-        return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
+        return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
-  };
+  }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex flex-col w-full bg-background">
-        <ERPHeader />
-        <div className="flex-1 flex w-full overflow-hidden">
-          <QualiCheckSidebar active={active} onNavigate={setActive} />
-          <main className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full">{render()}</ScrollArea>
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <Shell
+      config={qulicheakShellConfig}
+      userProfile={profile}
+      tenantEntitlements={entitlements}
+      contextFlags={{ accounting_mode: 'standalone' }}
+      onSidebarItemClick={(item) => {
+        if (item.moduleId) setActiveModule(item.moduleId as QualiCheckModule);
+      }}
+    >
+      {renderModule()}
+    </Shell>
   );
 }
