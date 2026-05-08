@@ -180,6 +180,53 @@ export function cancelJobWorkOutOrder(
   return updated;
 }
 
+/**
+ * preCloseJobWorkOutOrder — A.2.c · D-NEW-W · Tally pre-close parity
+ *
+ * @[JWT] PUT /api/job-work-out/:id/pre-close
+ */
+export function preCloseJobWorkOutOrder(
+  entityCode: string,
+  jwoId: string,
+  reason: string,
+  user: { id: string; name: string },
+): JobWorkOutOrder {
+  if (!reason.trim()) throw new Error('Pre-close reason is required');
+  const list = listJobWorkOutOrders(entityCode);
+  const idx = list.findIndex(j => j.id === jwoId);
+  if (idx < 0) throw new Error('JWO not found');
+  const jwo = list[idx];
+  if (jwo.status !== 'partially_received') {
+    throw new Error(`Cannot pre-close JWO with status '${jwo.status}' · only 'partially_received' allowed`);
+  }
+  const now = new Date().toISOString();
+  const updated: JobWorkOutOrder = {
+    ...jwo,
+    status: 'pre_closed',
+    pre_close_reason: reason.trim(),
+    pre_closed_at: now,
+    pre_closed_by: user.id,
+    status_history: [
+      ...jwo.status_history,
+      {
+        id: `evt-${Date.now()}`,
+        from_status: jwo.status,
+        to_status: 'pre_closed',
+        changed_by_id: user.id,
+        changed_by_name: user.name,
+        changed_at: now,
+        note: reason.trim(),
+      },
+    ],
+    updated_at: now,
+    updated_by: user.id,
+  };
+  list[idx] = updated;
+  // [JWT] PUT /api/job-work-out/:id/pre-close
+  localStorage.setItem(jobWorkOutOrdersKey(entityCode), JSON.stringify(list));
+  return updated;
+}
+
 export function listJobWorkOutOrders(entityCode: string): JobWorkOutOrder[] {
   try {
     // [JWT] GET /api/production/job-work-out-orders?entityCode=...
