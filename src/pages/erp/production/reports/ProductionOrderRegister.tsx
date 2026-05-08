@@ -12,10 +12,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { closeProductionOrder } from '@/lib/production-engine';
+import { listProductionConfirmations } from '@/lib/production-confirmation-engine';
 import {
   PRODUCTION_ORDER_STATUS_LABELS,
   PRODUCTION_ORDER_STATUS_COLORS,
@@ -27,6 +30,8 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
   const { orders, reload } = useProductionOrders();
   const config = useProductionConfig();
   const user = useCurrentUser();
+  const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<'all' | ProductionOrderStatus>('all');
   const [closeTarget, setCloseTarget] = useState<ProductionOrder | null>(null);
   const [closureRemarks, setClosureRemarks] = useState('');
@@ -36,6 +41,19 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
     () => (tab === 'all' ? orders : orders.filter(o => o.status === tab)),
     [orders, tab],
   );
+
+  // D-NEW-L · QC inspection count by PO id
+  const qcCountByPo = useMemo(() => {
+    const map = new Map<string, number>();
+    try {
+      const pcs = listProductionConfirmations(entityCode);
+      for (const pc of pcs) {
+        const n = pc.linked_test_report_ids?.length ?? 0;
+        if (n > 0) map.set(pc.production_order_id, (map.get(pc.production_order_id) ?? 0) + n);
+      }
+    } catch { /* noop */ }
+    return map;
+  }, [entityCode]);
 
   const handleClose = (): void => {
     if (!closeTarget || !user) return;
