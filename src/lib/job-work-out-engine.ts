@@ -1,6 +1,6 @@
 /**
  * @file     job-work-out-engine.ts
- * @sprint   T-Phase-1.3-3a-pre-2 · Block F · D-533
+ * @sprint   T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.3-3a-pre-2 · Block F · D-533)
  * @purpose  Job Work Out Order lifecycle: create / send / cancel.
  *           On send: appends JWO id to linked PO's linked_job_work_out_order_ids[].
  *           Stock physical movement (RM godown → job_work godown) modeled in Phase 2.
@@ -36,6 +36,15 @@ export interface CreateJobWorkOutOrderInput {
   lines: Array<Omit<JobWorkOutOrderLine, 'id' | 'line_no' | 'received_qty' | 'job_work_value'>>;
 
   notes: string;
+
+  // A.2.c · D-NEW-V (optional · all additive)
+  nature_of_processing?: string;
+  duration_of_process_days?: number;
+  dispatched_through?: string;
+  carrier_name?: string;
+  bill_of_lading_no?: string;
+  motor_vehicle_no?: string;
+  mode_of_payment?: JobWorkOutOrder['mode_of_payment'];
 }
 
 export function createJobWorkOutOrder(
@@ -101,6 +110,13 @@ export function createJobWorkOutOrder(
       },
     ],
     notes: input.notes,
+    nature_of_processing: input.nature_of_processing,
+    duration_of_process_days: input.duration_of_process_days,
+    dispatched_through: input.dispatched_through,
+    carrier_name: input.carrier_name,
+    bill_of_lading_no: input.bill_of_lading_no,
+    motor_vehicle_no: input.motor_vehicle_no,
+    mode_of_payment: input.mode_of_payment,
     created_at: now,
     created_by: input.raised_by_name,
     updated_at: now,
@@ -177,6 +193,53 @@ export function cancelJobWorkOutOrder(
     updated_by: user.name,
   };
   persist(jwo.entity_id, updated);
+  return updated;
+}
+
+/**
+ * preCloseJobWorkOutOrder — A.2.c · D-NEW-W · Tally pre-close parity
+ *
+ * @[JWT] PUT /api/job-work-out/:id/pre-close
+ */
+export function preCloseJobWorkOutOrder(
+  entityCode: string,
+  jwoId: string,
+  reason: string,
+  user: { id: string; name: string },
+): JobWorkOutOrder {
+  if (!reason.trim()) throw new Error('Pre-close reason is required');
+  const list = listJobWorkOutOrders(entityCode);
+  const idx = list.findIndex(j => j.id === jwoId);
+  if (idx < 0) throw new Error('JWO not found');
+  const jwo = list[idx];
+  if (jwo.status !== 'partially_received') {
+    throw new Error(`Cannot pre-close JWO with status '${jwo.status}' · only 'partially_received' allowed`);
+  }
+  const now = new Date().toISOString();
+  const updated: JobWorkOutOrder = {
+    ...jwo,
+    status: 'pre_closed',
+    pre_close_reason: reason.trim(),
+    pre_closed_at: now,
+    pre_closed_by: user.id,
+    status_history: [
+      ...jwo.status_history,
+      {
+        id: `evt-${Date.now()}`,
+        from_status: jwo.status,
+        to_status: 'pre_closed',
+        changed_by_id: user.id,
+        changed_by_name: user.name,
+        changed_at: now,
+        note: reason.trim(),
+      },
+    ],
+    updated_at: now,
+    updated_by: user.id,
+  };
+  list[idx] = updated;
+  // [JWT] PUT /api/job-work-out/:id/pre-close
+  localStorage.setItem(jobWorkOutOrdersKey(entityCode), JSON.stringify(list));
   return updated;
 }
 

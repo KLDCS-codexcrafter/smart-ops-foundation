@@ -18,6 +18,7 @@ import {
   Truck, PackagePlus, IdCard,
   List, TrendingUp, BarChart3, Download, Activity, CalendarDays,
   Gauge, AlertTriangle, Clock, Users, Workflow,
+  Wrench, Package, Scale, Hourglass, ArrowDownToLine, Layers, FileText,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
