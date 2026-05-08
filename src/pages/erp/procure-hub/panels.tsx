@@ -111,6 +111,10 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
 
   const kpis = useMemo(() => computeWelcomeKpis(entityCode), [entityCode]);
   const expiring = useMemo(() => getExpiringContracts(entityCode, 30), [entityCode]);
+  const multiSourceRecs = useMemo<SourcingRecommendation[]>(
+    () => computeSourcingRecommendations(entityCode).slice(0, 5),
+    [entityCode],
+  );
 
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
@@ -156,6 +160,56 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
           </CardContent>
         </Card>
       </div>
+      {multiSourceRecs.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Multi-Sourcing Recommendations</span>
+              <Button variant="ghost" size="sm" onClick={() => onNavigate?.('multi-source-recommendations')}>
+                View all →
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-left p-2">Item</th>
+                  <th className="text-left p-2">Strategy</th>
+                  <th className="text-left p-2">Primary Vendor</th>
+                  <th className="text-right p-2">Primary %</th>
+                  <th className="text-left p-2">Alternates</th>
+                  <th className="text-left p-2">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {multiSourceRecs.slice(0, 3).map((r) => (
+                  <tr key={`${r.context_id}-${r.item_id}`} className="border-t">
+                    <td className="p-2 font-medium">{r.item_name}</td>
+                    <td className="p-2">
+                      <Badge variant={
+                        r.recommended_strategy === 'force_alternate' ? 'destructive' :
+                        r.recommended_strategy === 'split_3+' ? 'default' :
+                        r.recommended_strategy === 'split_2' ? 'secondary' : 'outline'
+                      }>
+                        {r.recommended_strategy.replace(/_/g, ' ')}
+                      </Badge>
+                    </td>
+                    <td className="p-2">{r.primary_vendor_name}</td>
+                    <td className="p-2 text-right font-mono">{r.primary_share_pct}%</td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {r.alternate_vendor_names.join(', ') || '—'}
+                    </td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {r.rationale[0] ?? ''}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
       {expiring.length > 0 && (
         <Card>
           <CardHeader><CardTitle>Contract Expiry Alerts</CardTitle></CardHeader>
