@@ -65,6 +65,15 @@ import {
   PeqFollowupRegisterPanel,
   PeqFollowupPanel,
   PurchaseEnquiryFormReportPanel,
+  // ─── α-d additions ───
+  PurchaseCostVarianceItemPanel,
+  PurchaseCostVarianceGroupPanel,
+  PurchaseCostVarianceCategoryPanel,
+  RateVarianceGraphPanel,
+  PoItemWisePanel,
+  PoStatusByEnquiryPanel,
+  EnquiryDetailsReportPanel,
+  MaterialRfqPrintPanel,
 } from './reports';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
