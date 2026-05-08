@@ -191,6 +191,15 @@ function getModuleLabel(m: Procure360Module): string {
     'peq-followup-register': 'PEQ Followup Register',
     'peq-followup': 'PEQ Followup (Action)',
     'purchase-enquiry-form-report': 'Purchase Enquiry Form Report',
+    // ─── α-d additions ───
+    'purchase-cost-variance-item': 'Cost Variance · Item',
+    'purchase-cost-variance-group': 'Cost Variance · Group',
+    'purchase-cost-variance-category': 'Cost Variance · Category',
+    'rate-variance-graph': 'Rate Variance Graph',
+    'po-itemwise': 'PO Item-Wise',
+    'po-status-by-enquiry': 'PO Status by Enquiry',
+    'enquiry-details-report': 'Enquiry Details',
+    'material-rfq-print': 'Material RFQ Print',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
