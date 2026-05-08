@@ -35,7 +35,10 @@ import {
   transitionEnquiryStatus,
 } from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
-import { listRfqs, computePreCloseRecommendation } from '@/lib/rfq-engine';
+import { listRfqs, computePreCloseRecommendation, type PreCloseRecommendation } from '@/lib/rfq-engine';
+import { listPreCloseCandidates } from '@/lib/pre-close-batch';
+import { computeSourcingRecommendations, type SourcingRecommendation } from '@/lib/sourcing-recommendation-engine';
+import { aggregatePoByParty, type PoPartyStatusRow } from '@/lib/po-cross-dept-followup';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
   computeVendorPerformance, computeBestPriceAnalysis, computeSpendByVendor,
