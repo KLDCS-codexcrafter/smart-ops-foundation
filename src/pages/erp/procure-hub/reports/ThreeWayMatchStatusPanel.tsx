@@ -37,7 +37,7 @@ const STATUS_TONE: Record<string, string> = {
 
 export function ThreeWayMatchStatusPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const [tick, setTick] = useState(0);
 
   const bills = useMemo(() => {
