@@ -36,6 +36,15 @@ export interface CreateJobWorkOutOrderInput {
   lines: Array<Omit<JobWorkOutOrderLine, 'id' | 'line_no' | 'received_qty' | 'job_work_value'>>;
 
   notes: string;
+
+  // A.2.c · D-NEW-V (optional · all additive)
+  nature_of_processing?: string;
+  duration_of_process_days?: number;
+  dispatched_through?: string;
+  carrier_name?: string;
+  bill_of_lading_no?: string;
+  motor_vehicle_no?: string;
+  mode_of_payment?: JobWorkOutOrder['mode_of_payment'];
 }
 
 export function createJobWorkOutOrder(
