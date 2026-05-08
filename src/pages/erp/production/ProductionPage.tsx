@@ -35,6 +35,13 @@ import { WIPReportPanel } from './reports/WIPReport';
 import { ShiftwiseProductionReportPanel } from './reports/ShiftwiseProductionReport';
 import { ManpowerProductionReportPanel } from './reports/ManpowerProductionReport';
 import { ProductionTraceRegisterPanel } from './reports/ProductionTraceRegister';
+import { JobWorkOutRegisterPanel } from './reports/JobWorkOutRegister';
+import { StockWithJobWorkerPanel } from './reports/StockWithJobWorker';
+import { JobWorkVarianceAnalysisPanel } from './reports/JobWorkVarianceAnalysis';
+import { JobWorkAgeingAnalysisPanel } from './reports/JobWorkAgeingAnalysis';
+import { JobWorkInRegisterPanel } from './reports/JobWorkInRegister';
+import { JobWorkComponentsOrderSummaryPanel } from './reports/JobWorkComponentsOrderSummary';
+import { JobWorkMaterialMovementRegisterPanel } from './reports/JobWorkMaterialMovementRegister';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -82,6 +89,13 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-shiftwise-production': return <ShiftwiseProductionReportPanel />;
       case 'rpt-manpower-production': return <ManpowerProductionReportPanel />;
       case 'rpt-production-trace': return <ProductionTraceRegisterPanel />;
+      case 'rpt-jw-out-register': return <JobWorkOutRegisterPanel />;
+      case 'rpt-jw-stock-with-worker': return <StockWithJobWorkerPanel />;
+      case 'rpt-jw-variance': return <JobWorkVarianceAnalysisPanel />;
+      case 'rpt-jw-ageing': return <JobWorkAgeingAnalysisPanel />;
+      case 'rpt-jw-in-register': return <JobWorkInRegisterPanel />;
+      case 'rpt-jw-components-summary': return <JobWorkComponentsOrderSummaryPanel />;
+      case 'rpt-jw-material-movement': return <JobWorkMaterialMovementRegisterPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }
