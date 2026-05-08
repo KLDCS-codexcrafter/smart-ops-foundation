@@ -1990,6 +1990,51 @@ export function PoFollowupRegisterPanel(): JSX.Element {
         <p className="text-sm text-muted-foreground">Overdue purchase orders · log followup activity</p>
       </div>
 
+      <div className="flex items-center gap-2 border-b">
+        <button
+          type="button"
+          onClick={() => setPofuTab('by_po')}
+          className={pofuTab === 'by_po' ? 'px-3 py-2 text-sm font-medium border-b-2 border-primary text-primary' : 'px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground'}
+        >By PO</button>
+        <button
+          type="button"
+          onClick={() => setPofuTab('by_party')}
+          className={pofuTab === 'by_party' ? 'px-3 py-2 text-sm font-medium border-b-2 border-primary text-primary' : 'px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground'}
+        >By Party</button>
+      </div>
+
+      {pofuTab === 'by_party' && (
+        <Card><CardContent className="p-0">
+          <table className="w-full text-sm">
+            <thead className="bg-muted">
+              <tr>
+                <th className="text-left p-2">Vendor</th>
+                <th className="text-left p-2">Group</th>
+                <th className="text-right p-2">Open POs</th>
+                <th className="text-right p-2">Overdue</th>
+                <th className="text-right p-2">Total Outstanding</th>
+                <th className="text-right p-2">Oldest Open (d)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {partyRows.length === 0 ? (
+                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No open POs.</td></tr>
+              ) : partyRows.map((r) => (
+                <tr key={r.vendor_id} className="border-t">
+                  <td className="p-2 font-medium">{r.vendor_name}</td>
+                  <td className="p-2 text-xs text-muted-foreground">{r.vendor_group ?? '—'}</td>
+                  <td className="p-2 text-right font-mono">{r.open_pos}</td>
+                  <td className="p-2 text-right font-mono">{r.overdue_pos > 0 ? <span className="text-warning">{r.overdue_pos}</span> : 0}</td>
+                  <td className="p-2 text-right font-mono">₹{r.total_outstanding.toLocaleString('en-IN')}</td>
+                  <td className="p-2 text-right font-mono">{r.oldest_open_days}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent></Card>
+      )}
+
+      {pofuTab === 'by_po' && (
       <Card><CardContent className="pt-6">
         {overdue.length === 0 ? (
           <p className="text-sm text-muted-foreground">No overdue purchase orders.</p>
