@@ -767,6 +767,14 @@ export function RfqListPanel(): JSX.Element {
       .filter((rec): rec is NonNullable<typeof rec> => rec !== null && rec.should_pre_close);
   }, [rfqs, entityCode, version]);
 
+  // Block D · α-c · Pre-Close badge per row (consumes pre-close-batch wrapper)
+  const preCloseCandidates = useMemo<Map<string, PreCloseRecommendation>>(() => {
+    void version;
+    const map = new Map<string, PreCloseRecommendation>();
+    for (const rec of listPreCloseCandidates(entityCode)) map.set(rec.rfq_id, rec);
+    return map;
+  }, [entityCode, version]);
+
   const filtered = useMemo(() => rfqs.filter((r) => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
     if (search) {
@@ -1901,12 +1909,18 @@ export function PoListPanel(): JSX.Element {
 
 export function PoFollowupRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const [pofuTab, setPofuTab] = useState<'by_po' | 'by_party'>('by_po');
   const [overdue, setOverdue] = useState<PurchaseOrderRecord[]>(() => listOverduePos(entityCode));
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
   const [channel, setChannel] = useState<PoFollowup['channel']>('call');
   const [outcome, setOutcome] = useState<PoFollowup['outcome']>('no_response');
   const [notes, setNotes] = useState('');
   const [nextAction, setNextAction] = useState('');
+
+  const partyRows = useMemo<PoPartyStatusRow[]>(
+    () => pofuTab === 'by_party' ? aggregatePoByParty(entityCode) : [],
+    [entityCode, pofuTab],
+  );
 
   const refresh = useCallback(() => setOverdue(listOverduePos(entityCode)), [entityCode]);
 
