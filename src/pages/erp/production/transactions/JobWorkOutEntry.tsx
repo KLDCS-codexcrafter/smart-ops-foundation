@@ -146,6 +146,13 @@ export function JobWorkOutEntryPanel(): JSX.Element {
         raised_by_name: 'Current User',
         lines: cleanLines,
         notes,
+        nature_of_processing: natureOfProcessing || undefined,
+        duration_of_process_days: durationDays ? Number(durationDays) : undefined,
+        dispatched_through: dispatchedThrough || undefined,
+        carrier_name: carrierName || undefined,
+        bill_of_lading_no: billOfLadingNo || undefined,
+        motor_vehicle_no: motorVehicleNo || undefined,
+        mode_of_payment: modeOfPayment === '__none__' ? undefined : (modeOfPayment as JobWorkOutOrder['mode_of_payment']),
       });
       if (send) {
         sendJobWorkOutOrder(jwo, { id: 'current-user', name: 'Current User' });
