@@ -1,6 +1,6 @@
 /**
  * @file     job-work-out-engine.ts
- * @sprint   T-Phase-1.3-3a-pre-2 · Block F · D-533
+ * @sprint   T-Phase-1.A.2.c-Job-Work-Tally-Parity (was T-Phase-1.3-3a-pre-2 · Block F · D-533)
  * @purpose  Job Work Out Order lifecycle: create / send / cancel.
  *           On send: appends JWO id to linked PO's linked_job_work_out_order_ids[].
  *           Stock physical movement (RM godown → job_work godown) modeled in Phase 2.
