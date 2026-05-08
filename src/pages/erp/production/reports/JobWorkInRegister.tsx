@@ -32,11 +32,11 @@ export function JobWorkInRegisterPanel(): JSX.Element {
               ) : jwIn.map(o => (
                 <TableRow key={o.id}>
                   <TableCell className="font-mono">{o.doc_no}</TableCell>
-                  <TableCell className="font-mono">{o.order_date}</TableCell>
+                  <TableCell className="font-mono">{o.start_date}</TableCell>
                   <TableCell>{o.customer_name ?? '—'}</TableCell>
                   <TableCell>{o.output_item_name}</TableCell>
                   <TableCell className="text-right font-mono">{o.planned_qty}</TableCell>
-                  <TableCell className="text-right font-mono">{o.produced_qty}</TableCell>
+                  <TableCell className="text-right font-mono">{o.actual_qty ?? 0}</TableCell>
                   <TableCell><Badge variant="secondary">{o.status}</Badge></TableCell>
                 </TableRow>
               ))}
