@@ -16,8 +16,7 @@ interface Props {
   onNavigate?: (m: string) => void;
 }
 
-export function ProductionWelcome({ onNavigate }: Props): JSX.Element {
-  const handleNav = (m: string): void => { if (onNavigate) onNavigate(m); };
+export function ProductionWelcome({ onNavigate: _onNavigate }: Props): JSX.Element {
   const { orders } = useProductionOrders();
   const productionConfig = useProductionConfig();
 
@@ -66,7 +65,7 @@ export function ProductionWelcome({ onNavigate }: Props): JSX.Element {
 
       <button
         type="button"
-        onClick={() => handleNav('welcome')}
+        onClick={() => { window.location.href = '/erp/command-center?module=finecore-production-config'; }}
         className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
       >
         <span>

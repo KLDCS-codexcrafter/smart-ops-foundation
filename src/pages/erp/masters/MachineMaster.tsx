@@ -4,6 +4,7 @@
  */
 import { useState, useMemo } from 'react';
 import { Plus, Search, Pencil, Trash2, Wrench } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,7 @@ export function MachineMasterPanel() {
   const [editing, setEditing] = useState<Machine | null>(null);
   const [form, setForm] = useState(() => empty(entityCode));
   const [capInput, setCapInput] = useState('');
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
@@ -206,6 +208,17 @@ export function MachineMasterPanel() {
                   ))}
                 </SelectContent>
               </Select>
+              {form.fixed_asset_id && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => navigate(`/erp/finecore?m=fixed-asset-register&id=${form.fixed_asset_id}`)}
+                >
+                  📋 View in Fixed Asset Register →
+                </Button>
+              )}
             </div>
             <div>
               <Label>Status</Label>
