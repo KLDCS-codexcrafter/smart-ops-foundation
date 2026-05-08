@@ -53,10 +53,17 @@ export function useCardEntitlement() {
     } catch { /* ignore */ }
 
     // T-Phase-1.A.2.b-T1 · Migrate stale 'locked' status for gateflow/production
-    // (Both flipped to active per Phase 1.A milestones. New installs get fresh seed.)
+    // T-Phase-1.A.3.b-T1 · Migrate stale 'add_on_available' or 'locked' status for procure360
+    // (All three flipped to active per Phase 1.A milestones. New installs get fresh seed.)
     let migrated = false;
     for (const ent of entitlementsRaw) {
-      if ((ent.card_id === 'gateflow' || ent.card_id === 'production') && ent.status === 'locked') {
+      const gfProd =
+        (ent.card_id === 'gateflow' || ent.card_id === 'production') &&
+        ent.status === 'locked';
+      const procure360 =
+        ent.card_id === 'procure360' &&
+        (ent.status === 'add_on_available' || ent.status === 'locked');
+      if (gfProd || procure360) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
         migrated = true;
