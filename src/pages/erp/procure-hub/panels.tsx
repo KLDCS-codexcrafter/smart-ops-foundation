@@ -2401,18 +2401,29 @@ export function BillPassingPiStatusPanel(): JSX.Element {
   const pos = useMemo(() => listPurchaseOrders(entityCode), [entityCode]);
   const fcpiDrafts = useMemo(() => listFcpiDrafts(entityCode), [entityCode]);
 
-  const rows = pos.map((p) => {
+  const rows = useMemo(() => pos.map((p) => {
     const bills = getBillsForPo(p.id, entityCode);
     const drafts = fcpiDrafts.filter((d) => d.source_po_id === p.id);
     const lastBill = bills[bills.length - 1];
+    const qcPending = bills.some(
+      (b) => b.status === 'awaiting_qa' || b.status === 'qa_failed',
+    );
     return {
       po: p,
       billCount: bills.length,
       draftCount: drafts.length,
       lastStatus: lastBill?.status ?? '—',
       lastUpdate: lastBill?.updated_at ?? '',
+      lastBillId: lastBill?.id ?? '',
+      qcPending,
+      hasVariance: lastBill?.status === 'matched_with_variance',
+      isPending: lastBill ? (lastBill.status === 'pending_match' || lastBill.status === 'matched_with_variance') : false,
     };
-  });
+  }), [pos, fcpiDrafts, entityCode]);
+
+  const kpiPendingBills = rows.filter((r) => r.isPending).length;
+  const kpiAwaitingQa = rows.filter((r) => r.qcPending).length;
+  const kpiVarianceBills = rows.filter((r) => r.hasVariance).length;
 
   return (
     <div className="p-6 space-y-4">
@@ -2422,6 +2433,28 @@ export function BillPassingPiStatusPanel(): JSX.Element {
           Read-only status · drill-down to Bill Passing FCPI inbox.
         </p>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Pending Bills</div>
+            <div className="text-2xl font-mono font-bold mt-1">{kpiPendingBills}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Awaiting QA</div>
+            <div className="text-2xl font-mono font-bold mt-1 text-warning">{kpiAwaitingQa}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Variance Bills</div>
+            <div className="text-2xl font-mono font-bold mt-1 text-destructive">{kpiVarianceBills}</div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardContent className="p-0">
           {rows.length === 0 ? (
@@ -2436,6 +2469,7 @@ export function BillPassingPiStatusPanel(): JSX.Element {
                   <th className="text-right p-2">Bills</th>
                   <th className="text-right p-2">FCPI Drafts</th>
                   <th className="text-left p-2">Last Status</th>
+                  <th className="text-left p-2">QC</th>
                   <th className="text-left p-2">Last Update</th>
                 </tr>
               </thead>
@@ -2454,6 +2488,22 @@ export function BillPassingPiStatusPanel(): JSX.Element {
                     <td className="p-2 text-right font-mono">{r.billCount}</td>
                     <td className="p-2 text-right font-mono">{r.draftCount}</td>
                     <td className="p-2">{r.lastStatus}</td>
+                    <td className="p-2">
+                      {r.qcPending ? (
+                        <button
+                          type="button"
+                          className="text-xs px-2 py-0.5 rounded-lg bg-warning/15 text-warning hover:bg-warning/25"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/erp/qulicheak#qc-entry?bill_id=${r.lastBillId}`;
+                          }}
+                        >
+                          QC Pending
+                        </button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </td>
                     <td className="p-2 text-xs text-muted-foreground">
                       {r.lastUpdate ? new Date(r.lastUpdate).toLocaleString('en-IN') : '—'}
                     </td>

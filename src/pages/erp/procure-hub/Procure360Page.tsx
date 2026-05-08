@@ -17,6 +17,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
+import { mountQaBridge } from '@/lib/bill-passing-qa-bridge';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { journalKey } from '@/lib/finecore-engine';
 import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
@@ -218,6 +219,12 @@ export default function Procure360Page(): JSX.Element {
     const hash = activeModule === 'welcome' ? '' : `#${activeModule}`;
     window.history.replaceState(null, '', window.location.pathname + hash);
   }, [activeModule]);
+
+  // T-Phase-1.A.3.b-T1 · D-NEW-AJ · mount inbound QA bridge listener
+  useEffect(() => {
+    const unsub = mountQaBridge();
+    return unsub;
+  }, []);
 
   function handleNavigate(module: Procure360Module) {
     setActiveModule(module);

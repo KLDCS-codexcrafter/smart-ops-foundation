@@ -1,19 +1,71 @@
 /**
  * @file        bill-passing-qa-bridge.ts
- * @purpose     Cross-card QA bridge · listens for QA inspection outcomes (qa-card)
- *              and updates 4-way Bill Passing line `qa_passed` flag · re-runs match.
- * @who         Bill Passing · QA Card integration
- * @when        Sprint T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration · Block F
- * @sprint      T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration
+ * @purpose     Bidirectional Bill Passing ↔ Qulicheak QA bridge.
+ *              Outbound: notifyQaHandoff fires toast + recordActivity + deep-link
+ *                        when a bill enters awaiting_qa or qa_failed.
+ *              Inbound:  applyQaOutcome listens for QA finalization events and
+ *                        patches qa_passed on the matching line + re-runs match.
+ * @who         Procurement · Bill Passing · Qulicheak
+ * @when        Sprint T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring · Block D
+ * @sprint      T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring
  * @iso         25010 · Functional Suitability · Interoperability
- * @decisions   D-NEW-AJ (QA cross-card bridge · CustomEvent decoupled · reuses runMatch)
- * @reuses      bill-passing-engine.runMatch · @/types/bill-passing · localStorage canonical
- * @[JWT]       Subscribes to in-process CustomEvent('qa:inspection-finalized') · server bus replaces in production
+ * @decisions   D-NEW-AJ (revised · bidirectional QA bridge · outbound + inbound) ·
+ *              D-NEW-AL (T-fix · outbound handoff added · mount wired in Procure360Page)
+ * @reuses      bill-passing-engine.runMatch · cross-card-activity-engine.recordActivity ·
+ *              sonner.toast · localStorage canonical
+ * @[JWT]       Outbound: client-only notification.
+ *              Inbound:  CustomEvent('qa:inspection-finalized') · server bus replaces in production.
  */
 
 import type { BillPassingRecord } from '@/types/bill-passing';
 import { billPassingKey } from '@/types/bill-passing';
 import { runMatch } from './bill-passing-engine';
+import { recordActivity } from './cross-card-activity-engine';
+import { toast } from 'sonner';
+
+// ============================================================================
+// Outbound · Bill Passing → Qulicheak (notify QC)
+// ============================================================================
+
+/**
+ * Fire a cross-card handoff when a bill needs QC inspection or has failed QC.
+ * Surfaces a sonner toast with deep-link and records cross-card activity.
+ */
+export function notifyQaHandoff(
+  bill: BillPassingRecord,
+  entityCode: string,
+  userId: string,
+  reason: 'awaiting_qa' | 'qa_failed',
+): void {
+  const verb = reason === 'awaiting_qa'
+    ? 'awaiting QC inspection'
+    : 'QC inspection FAILED';
+  const deepLink = `/erp/qulicheak#qc-entry?bill_id=${bill.id}`;
+
+  // [JWT] POST /api/notifications · client-side toast in Phase 1
+  toast.info(`Bill ${bill.bill_no} ${verb}`, {
+    description: `Vendor: ${bill.vendor_name} · open in Qulicheak`,
+    action: {
+      label: 'Open Qulicheak',
+      onClick: () => {
+        window.location.href = deepLink;
+      },
+    },
+  });
+
+  recordActivity(entityCode, userId, {
+    card_id: 'qulicheak',
+    kind: 'voucher',
+    ref_id: bill.id,
+    title: `QC needed: ${bill.bill_no}`,
+    subtitle: `Vendor: ${bill.vendor_name} · ${reason}`,
+    deep_link: deepLink,
+  });
+}
+
+// ============================================================================
+// Inbound · Qulicheak → Bill Passing (QA outcome applied)
+// ============================================================================
 
 export interface QaInspectionFinalizedDetail {
   entityCode: string;
