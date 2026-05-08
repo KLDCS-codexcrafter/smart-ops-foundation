@@ -116,8 +116,6 @@ export function NcrRegister(): JSX.Element {
       (n.related_party_name ?? '').toLowerCase().includes(q) ||
       (n.item_name ?? '').toLowerCase().includes(q),
     );
-    // version forces re-read
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, statusF, sevF, srcF, search, version]);
 
   const toggle = <T,>(set: Set<T>, val: T, setter: (s: Set<T>) => void): void => {
