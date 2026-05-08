@@ -57,6 +57,14 @@ import {
   GoodsInwardDayBookPanel,
   SupplierWiseOutstandingPanel,
   GroupWiseOutstandingPanel,
+  // ─── α-c additions ───
+  MultiSourceRecommendationsPanel,
+  PreClosePendingPanel,
+  PoAgingCrossDeptPanel,
+  VendorReliabilityPanel,
+  PeqFollowupRegisterPanel,
+  PeqFollowupPanel,
+  PurchaseEnquiryFormReportPanel,
 } from './reports';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
@@ -73,6 +81,10 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'supplier-wise-outstanding', 'group-wise-outstanding', 'goods-inward-day-book',
   'pi-pending-report', 'three-way-match-status', 'variance-audit-report',
   'tds-deduction-report', 'rcm-liability-report',
+  // ─── NEW · A.3.c ───
+  'multi-source-recommendations', 'pre-close-pending', 'po-aging-cross-dept',
+  'vendor-reliability', 'peq-followup-register', 'peq-followup',
+  'purchase-enquiry-form-report',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -103,7 +115,14 @@ function getGroupLabel(m: Procure360Module): string {
     m.endsWith('-report') ||
     m === 'cross-dept-procurement-handoff' ||
     m === 'vendor-scoring-dashboard' ||
-    m === 'three-way-match-status'
+    m === 'three-way-match-status' ||
+    // ─── α-c additions ───
+    m === 'multi-source-recommendations' ||
+    m === 'pre-close-pending' ||
+    m === 'po-aging-cross-dept' ||
+    m === 'vendor-reliability' ||
+    m === 'peq-followup-register' ||
+    m === 'peq-followup'
   ) return 'Reports';
 
   return GROUP_LABELS[m] ?? '';
@@ -142,6 +161,14 @@ function getModuleLabel(m: Procure360Module): string {
     'variance-audit-report': 'Variance Audit',
     'tds-deduction-report': 'TDS Deduction',
     'rcm-liability-report': 'RCM Liability',
+    // ─── α-c additions ───
+    'multi-source-recommendations': 'Multi-Source Recommendations',
+    'pre-close-pending': 'Pre-Close Pending',
+    'po-aging-cross-dept': 'PO Aging Cross-Dept',
+    'vendor-reliability': 'Vendor Reliability',
+    'peq-followup-register': 'PEQ Followup Register',
+    'peq-followup': 'PEQ Followup (Action)',
+    'purchase-enquiry-form-report': 'Purchase Enquiry Form Report',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }

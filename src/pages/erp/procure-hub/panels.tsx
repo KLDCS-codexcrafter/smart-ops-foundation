@@ -35,7 +35,10 @@ import {
   transitionEnquiryStatus,
 } from '@/lib/procurement-enquiry-engine';
 import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/procurement-pr-receiver';
-import { listRfqs, computePreCloseRecommendation } from '@/lib/rfq-engine';
+import { listRfqs, computePreCloseRecommendation, type PreCloseRecommendation } from '@/lib/rfq-engine';
+import { listPreCloseCandidates } from '@/lib/pre-close-batch';
+import { computeSourcingRecommendations, type SourcingRecommendation } from '@/lib/sourcing-recommendation-engine';
+import { aggregatePoByParty, type PoPartyStatusRow } from '@/lib/po-cross-dept-followup';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
   computeVendorPerformance, computeBestPriceAnalysis, computeSpendByVendor,
@@ -108,6 +111,10 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
 
   const kpis = useMemo(() => computeWelcomeKpis(entityCode), [entityCode]);
   const expiring = useMemo(() => getExpiringContracts(entityCode, 30), [entityCode]);
+  const multiSourceRecs = useMemo<SourcingRecommendation[]>(
+    () => computeSourcingRecommendations(entityCode).slice(0, 5),
+    [entityCode],
+  );
 
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
@@ -153,6 +160,56 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
           </CardContent>
         </Card>
       </div>
+      {multiSourceRecs.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Multi-Sourcing Recommendations</span>
+              <Button variant="ghost" size="sm" onClick={() => onNavigate?.('multi-source-recommendations')}>
+                View all →
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-left p-2">Item</th>
+                  <th className="text-left p-2">Strategy</th>
+                  <th className="text-left p-2">Primary Vendor</th>
+                  <th className="text-right p-2">Primary %</th>
+                  <th className="text-left p-2">Alternates</th>
+                  <th className="text-left p-2">Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                {multiSourceRecs.slice(0, 3).map((r) => (
+                  <tr key={`${r.context_id}-${r.item_id}`} className="border-t">
+                    <td className="p-2 font-medium">{r.item_name}</td>
+                    <td className="p-2">
+                      <Badge variant={
+                        r.recommended_strategy === 'force_alternate' ? 'destructive' :
+                        r.recommended_strategy === 'split_3+' ? 'default' :
+                        r.recommended_strategy === 'split_2' ? 'secondary' : 'outline'
+                      }>
+                        {r.recommended_strategy.replace(/_/g, ' ')}
+                      </Badge>
+                    </td>
+                    <td className="p-2">{r.primary_vendor_name}</td>
+                    <td className="p-2 text-right font-mono">{r.primary_share_pct}%</td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {r.alternate_vendor_names.join(', ') || '—'}
+                    </td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {r.rationale[0] ?? ''}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
       {expiring.length > 0 && (
         <Card>
           <CardHeader><CardTitle>Contract Expiry Alerts</CardTitle></CardHeader>
@@ -710,6 +767,14 @@ export function RfqListPanel(): JSX.Element {
       .filter((rec): rec is NonNullable<typeof rec> => rec !== null && rec.should_pre_close);
   }, [rfqs, entityCode, version]);
 
+  // Block D · α-c · Pre-Close badge per row (consumes pre-close-batch wrapper)
+  const preCloseCandidates = useMemo<Map<string, PreCloseRecommendation>>(() => {
+    void version;
+    const map = new Map<string, PreCloseRecommendation>();
+    for (const rec of listPreCloseCandidates(entityCode)) map.set(rec.rfq_id, rec);
+    return map;
+  }, [entityCode, version]);
+
   const filtered = useMemo(() => rfqs.filter((r) => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
     if (search) {
@@ -882,6 +947,7 @@ export function RfqListPanel(): JSX.Element {
                 <TableHead>Vendor</TableHead>
                 <TableHead>Channel</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Pre-Close</TableHead>
                 <TableHead>Sent</TableHead>
                 <TableHead>Timeout</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -890,7 +956,7 @@ export function RfqListPanel(): JSX.Element {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">
                     No RFQs match the current filter.
                   </TableCell>
                 </TableRow>
@@ -918,6 +984,26 @@ export function RfqListPanel(): JSX.Element {
                       )}
                     </TableCell>
                     <TableCell>{statusBadge(r.status)}</TableCell>
+                    <TableCell>
+                      {preCloseCandidates.has(r.id) ? (
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning/10 text-warning text-xs font-medium hover:bg-warning/20"
+                          title={preCloseCandidates.get(r.id)!.reason_text}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const rec = preCloseCandidates.get(r.id)!;
+                            toast.warning(
+                              `Pre-Close: ${rec.reason_text} · invited ${rec.vendors_invited} · quoted ${rec.vendors_quoted} · ${rec.pct_elapsed.toFixed(1)}% elapsed`,
+                            );
+                          }}
+                        >
+                          Pre-Close
+                        </button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-xs">{fmtDate(r.sent_at)}</TableCell>
                     <TableCell className="text-xs">{fmtDate(r.timeout_at)}</TableCell>
                     <TableCell className="text-right space-x-1">
@@ -1844,12 +1930,18 @@ export function PoListPanel(): JSX.Element {
 
 export function PoFollowupRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const [pofuTab, setPofuTab] = useState<'by_po' | 'by_party'>('by_po');
   const [overdue, setOverdue] = useState<PurchaseOrderRecord[]>(() => listOverduePos(entityCode));
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
   const [channel, setChannel] = useState<PoFollowup['channel']>('call');
   const [outcome, setOutcome] = useState<PoFollowup['outcome']>('no_response');
   const [notes, setNotes] = useState('');
   const [nextAction, setNextAction] = useState('');
+
+  const partyRows = useMemo<PoPartyStatusRow[]>(
+    () => pofuTab === 'by_party' ? aggregatePoByParty(entityCode) : [],
+    [entityCode, pofuTab],
+  );
 
   const refresh = useCallback(() => setOverdue(listOverduePos(entityCode)), [entityCode]);
 
@@ -1898,6 +1990,51 @@ export function PoFollowupRegisterPanel(): JSX.Element {
         <p className="text-sm text-muted-foreground">Overdue purchase orders · log followup activity</p>
       </div>
 
+      <div className="flex items-center gap-2 border-b">
+        <button
+          type="button"
+          onClick={() => setPofuTab('by_po')}
+          className={pofuTab === 'by_po' ? 'px-3 py-2 text-sm font-medium border-b-2 border-primary text-primary' : 'px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground'}
+        >By PO</button>
+        <button
+          type="button"
+          onClick={() => setPofuTab('by_party')}
+          className={pofuTab === 'by_party' ? 'px-3 py-2 text-sm font-medium border-b-2 border-primary text-primary' : 'px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground'}
+        >By Party</button>
+      </div>
+
+      {pofuTab === 'by_party' && (
+        <Card><CardContent className="p-0">
+          <table className="w-full text-sm">
+            <thead className="bg-muted">
+              <tr>
+                <th className="text-left p-2">Vendor</th>
+                <th className="text-left p-2">Group</th>
+                <th className="text-right p-2">Open POs</th>
+                <th className="text-right p-2">Overdue</th>
+                <th className="text-right p-2">Total Outstanding</th>
+                <th className="text-right p-2">Oldest Open (d)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {partyRows.length === 0 ? (
+                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No open POs.</td></tr>
+              ) : partyRows.map((r) => (
+                <tr key={r.vendor_id} className="border-t">
+                  <td className="p-2 font-medium">{r.vendor_name}</td>
+                  <td className="p-2 text-xs text-muted-foreground">{r.vendor_group ?? '—'}</td>
+                  <td className="p-2 text-right font-mono">{r.open_pos}</td>
+                  <td className="p-2 text-right font-mono">{r.overdue_pos > 0 ? <span className="text-warning">{r.overdue_pos}</span> : 0}</td>
+                  <td className="p-2 text-right font-mono">₹{r.total_outstanding.toLocaleString('en-IN')}</td>
+                  <td className="p-2 text-right font-mono">{r.oldest_open_days}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent></Card>
+      )}
+
+      {pofuTab === 'by_po' && (
       <Card><CardContent className="pt-6">
         {overdue.length === 0 ? (
           <p className="text-sm text-muted-foreground">No overdue purchase orders.</p>
@@ -1932,6 +2069,7 @@ export function PoFollowupRegisterPanel(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+      )}
 
       {selected && (
         <Card><CardHeader><CardTitle>{selected.po_no} · Log Followup</CardTitle></CardHeader><CardContent>
