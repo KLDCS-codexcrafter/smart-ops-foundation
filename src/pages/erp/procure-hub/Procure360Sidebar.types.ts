@@ -3,9 +3,9 @@
  * @purpose     Procure360Module union · type-safe moduleId set consumed by Procure360Page.tsx renderModule switch + HASH_ALLOWLIST + sidebar config
  * @who         Lovable
  * @when        2026-05-08
- * @sprint      T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (mop-up from A.3.a · types union now consumed by config-driven Shell)
+ * @sprint      T-Phase-1.A.3.b-Procure360-Bill-Passing-Integration (8 NEW union members · D-NEW-AG · D-NEW-AH)
  * @iso         25010 · Maintainability (single source of truth for module identity · type-safe across 4 surfaces)
- * @decisions   D-250 · D-NEW-AC · D-NEW-AD
+ * @decisions   D-250 · D-NEW-AC · D-NEW-AD · D-NEW-AG · D-NEW-AH
  * @reuses      n/a (foundational type)
  * @[JWT]       n/a (type only)
  */
@@ -26,4 +26,13 @@ export type Procure360Module =
   | 'git-in-transit'
   | 'git-received'
   | 'aged-git-procure'
-  | 'bill-passing-pi-status';
+  | 'bill-passing-pi-status'
+  // ─── NEW · A.3.b ───
+  | 'supplier-wise-outstanding'
+  | 'group-wise-outstanding'
+  | 'goods-inward-day-book'
+  | 'pi-pending-report'
+  | 'three-way-match-status'
+  | 'variance-audit-report'
+  | 'tds-deduction-report'
+  | 'rcm-liability-report';
