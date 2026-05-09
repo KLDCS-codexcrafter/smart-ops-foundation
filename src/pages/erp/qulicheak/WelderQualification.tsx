@@ -6,7 +6,7 @@
  * @disciplines FR-50 · FR-51 · FR-30
  * @[JWT] writes via welder-engine
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
@@ -17,13 +17,43 @@ import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
-  createWelder, listWelders, createWps, listWps,
-  createPqr, listPqr, createWpq, listWpq,
+  createWelder, listWelders, createWps, listWps, approveWps,
+  createPqr, listPqr, createWpq, listWpq, recomputeWpqStatus,
 } from '@/lib/welder-engine';
 import {
   WELDING_STANDARD_LABELS, WELDING_PROCESS_LABELS, QUAL_STATUS_LABELS,
-  type WeldingStandard, type WpsId, type WelderId,
+  type WeldingStandard, type WeldingProcess, type WeldingPosition,
+  type WpsId, type WelderId,
 } from '@/types/welder';
+
+const PROCESS_OPTIONS: WeldingProcess[] = ['smaw', 'gmaw', 'gtaw', 'fcaw'];
+const POSITION_OPTIONS: WeldingPosition[] = ['1G', '2G', '3G', '4G', '5G', '6G'];
+
+interface ChipMultiProps<T extends string> {
+  options: readonly T[];
+  value: T[];
+  onChange: (next: T[]) => void;
+  labelOf?: (v: T) => string;
+}
+function ChipMulti<T extends string>({ options, value, onChange, labelOf }: ChipMultiProps<T>): JSX.Element {
+  const toggle = (opt: T): void => {
+    onChange(value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt]);
+  };
+  return (
+    <div className="flex flex-wrap gap-1">
+      {options.map((o) => (
+        <Badge
+          key={o}
+          variant={value.includes(o) ? 'default' : 'outline'}
+          className="cursor-pointer text-xs"
+          onClick={() => toggle(o)}
+        >
+          {labelOf ? labelOf(o) : o}
+        </Badge>
+      ))}
+    </div>
+  );
+}
 
 export function WelderQualification(): JSX.Element {
   const { entityCode, entityId } = useEntityCode();
@@ -36,15 +66,32 @@ export function WelderQualification(): JSX.Element {
   const [wForm, setWForm] = useState({ name: '', party: '', emp: '' });
   // WPS form
   const [wpsForm, setWpsForm] = useState({ no: '', standard: 'asme_ix' as WeldingStandard, base: '', filler: '' });
+  const [wpsProcesses, setWpsProcesses] = useState<WeldingProcess[]>(['smaw']);
+  const [wpsPositions, setWpsPositions] = useState<WeldingPosition[]>(['1G']);
   // PQR form
   const [pqrForm, setPqrForm] = useState({ no: '', wpsId: '', tensile: '' });
   // WPQ form
-  const [wpqForm, setWpqForm] = useState({ no: '', welderId: '', wpsId: '', through: '' });
+  const [wpqForm, setWpqForm] = useState({ no: '', welderId: '', wpsId: '', through: '', standard: 'asme_ix' as WeldingStandard });
+  const [wpqProcesses, setWpqProcesses] = useState<WeldingProcess[]>(['smaw']);
+  const [wpqPositions, setWpqPositions] = useState<WeldingPosition[]>(['1G']);
 
   const welders = listWelders(entityCode);
   const wpss = listWps(entityCode);
   const pqrs = listPqr(entityCode);
   const wpqs = listWpq(entityCode);
+
+  // F-4 · auto-recompute WPQ status on tab open · ASME IX QW-322
+  useEffect(() => {
+    if (tab !== 'wpq') return;
+    let any = false;
+    for (const w of listWpq(entityCode)) {
+      if (w.status !== 'qualified') continue;
+      const before = w.status;
+      const next = recomputeWpqStatus(entityCode, w.id);
+      if (next && next.status !== before) any = true;
+    }
+    if (any) bump();
+  }, [tab, entityCode]);
 
   const onAddWelder = useCallback((): void => {
     if (!user || !wForm.name.trim() || !wForm.party.trim()) {
@@ -66,21 +113,35 @@ export function WelderQualification(): JSX.Element {
 
   const onAddWps = useCallback((): void => {
     if (!user || !wpsForm.no.trim()) { toast.error('WPS No required'); return; }
+    if (wpsProcesses.length === 0 || wpsPositions.length === 0) {
+      toast.error('Select ≥1 process and ≥1 position');
+      return;
+    }
     createWps(entityCode, user.id, {
       entity_id: entityId,
       wps_no: wpsForm.no.trim(),
       standard: wpsForm.standard,
-      processes: ['smaw'],
-      positions: ['1G'],
+      processes: wpsProcesses,
+      positions: wpsPositions,
       base_metal_spec: wpsForm.base.trim() || 'A36',
       filler_metal_spec: wpsForm.filler.trim() || 'E7018',
       prepared_by: user.id,
       prepared_at: new Date().toISOString(),
     });
     setWpsForm({ no: '', standard: 'asme_ix', base: '', filler: '' });
+    setWpsProcesses(['smaw']);
+    setWpsPositions(['1G']);
     toast.success('WPS added');
     bump();
-  }, [user, wpsForm, entityCode, entityId]);
+  }, [user, wpsForm, wpsProcesses, wpsPositions, entityCode, entityId]);
+
+  const onApproveWps = useCallback((id: WpsId): void => {
+    if (!user) return;
+    const result = approveWps(entityCode, user.id, id);
+    if (!result) { toast.error('WPS not found'); return; }
+    toast.success(`WPS ${result.wps_no} approved`);
+    bump();
+  }, [user, entityCode]);
 
   const onAddPqr = useCallback((): void => {
     if (!user || !pqrForm.no.trim() || !pqrForm.wpsId) {
@@ -107,24 +168,30 @@ export function WelderQualification(): JSX.Element {
       toast.error('All WPQ fields required');
       return;
     }
+    if (wpqProcesses.length === 0 || wpqPositions.length === 0) {
+      toast.error('Select ≥1 process and ≥1 position');
+      return;
+    }
     const created = createWpq(entityCode, user.id, {
       entity_id: entityId,
       wpq_no: wpqForm.no.trim(),
       related_welder_id: wpqForm.welderId as WelderId,
       related_wps_id: wpqForm.wpsId as WpsId,
-      standard: 'asme_ix',
-      processes: ['smaw'],
-      positions: ['1G'],
+      standard: wpqForm.standard,
+      processes: wpqProcesses,
+      positions: wpqPositions,
       qualified_at: new Date().toISOString(),
       qualified_through: new Date(wpqForm.through).toISOString(),
       qualified_by: user.id,
       status: 'qualified',
     });
     if (!created) { toast.error('Welder or WPS not found'); return; }
-    setWpqForm({ no: '', welderId: '', wpsId: '', through: '' });
+    setWpqForm({ no: '', welderId: '', wpsId: '', through: '', standard: 'asme_ix' });
+    setWpqProcesses(['smaw']);
+    setWpqPositions(['1G']);
     toast.success('WPQ added');
     bump();
-  }, [user, wpqForm, entityCode, entityId]);
+  }, [user, wpqForm, wpqProcesses, wpqPositions, entityCode, entityId]);
 
   return (
     <div key={refresh} className="p-6 space-y-4 max-w-6xl">
@@ -184,15 +251,35 @@ export function WelderQualification(): JSX.Element {
               <div><Label>Base Metal</Label><Input value={wpsForm.base} onChange={(e) => setWpsForm({ ...wpsForm, base: e.target.value })} /></div>
               <div><Label>Filler Metal</Label><Input value={wpsForm.filler} onChange={(e) => setWpsForm({ ...wpsForm, filler: e.target.value })} /></div>
               <div className="flex items-end"><Button onClick={onAddWps}>Add</Button></div>
+              <div className="md:col-span-3 space-y-1">
+                <Label className="text-xs">Processes</Label>
+                <ChipMulti<WeldingProcess>
+                  options={PROCESS_OPTIONS} value={wpsProcesses}
+                  onChange={setWpsProcesses}
+                  labelOf={(p) => WELDING_PROCESS_LABELS[p]}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <Label className="text-xs">Positions</Label>
+                <ChipMulti<WeldingPosition>
+                  options={POSITION_OPTIONS} value={wpsPositions}
+                  onChange={setWpsPositions}
+                />
+              </div>
             </CardContent>
           </Card>
           <div className="mt-4 border rounded-lg divide-y">
             {wpss.map((w) => (
-              <div key={w.id} className="p-3 grid grid-cols-4 text-sm">
+              <div key={w.id} className="p-3 grid grid-cols-5 text-sm items-center">
                 <span className="font-mono">{w.id}</span>
                 <span>{w.wps_no}</span>
                 <Badge variant="outline">{WELDING_STANDARD_LABELS[w.standard]}</Badge>
-                <span>{w.approved_at ? 'Approved' : 'Draft'}</span>
+                <span>{w.approved_at ? <Badge>Approved</Badge> : <Badge variant="outline">Draft</Badge>}</span>
+                <span className="text-right">
+                  {!w.approved_at && (
+                    <Button size="sm" variant="outline" onClick={() => onApproveWps(w.id)}>Approve</Button>
+                  )}
+                </span>
               </div>
             ))}
           </div>
@@ -251,7 +338,31 @@ export function WelderQualification(): JSX.Element {
                   {wpss.map((w) => <option key={w.id} value={w.id}>{w.wps_no}</option>)}
                 </select>
               </div>
+              <div>
+                <Label>Standard</Label>
+                <select className="w-full border rounded h-9 px-2 bg-background"
+                  value={wpqForm.standard}
+                  onChange={(e) => setWpqForm({ ...wpqForm, standard: e.target.value as WeldingStandard })}>
+                  <option value="asme_ix">ASME IX</option>
+                  <option value="aws_d1_1">AWS D1.1</option>
+                </select>
+              </div>
               <div><Label>Qualified Through</Label><Input type="date" value={wpqForm.through} onChange={(e) => setWpqForm({ ...wpqForm, through: e.target.value })} /></div>
+              <div className="md:col-span-3 space-y-1">
+                <Label className="text-xs">Processes</Label>
+                <ChipMulti<WeldingProcess>
+                  options={PROCESS_OPTIONS} value={wpqProcesses}
+                  onChange={setWpqProcesses}
+                  labelOf={(p) => WELDING_PROCESS_LABELS[p]}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <Label className="text-xs">Positions</Label>
+                <ChipMulti<WeldingPosition>
+                  options={POSITION_OPTIONS} value={wpqPositions}
+                  onChange={setWpqPositions}
+                />
+              </div>
               <div className="flex items-end"><Button onClick={onAddWpq}>Add</Button></div>
             </CardContent>
           </Card>

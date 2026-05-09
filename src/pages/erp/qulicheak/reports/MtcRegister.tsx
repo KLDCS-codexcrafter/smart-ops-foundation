@@ -18,7 +18,7 @@ import { Download, Search } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterMtcs } from '@/lib/mtc-engine';
-import { findPcMatchesForHeat } from '@/lib/qulicheak-bridges';
+import { findPcMatchesForHeat, type PcMatch } from '@/lib/qulicheak-bridges';
 import {
   MTC_STATUS_LABELS, MTC_OVERALL_LABELS,
   type MaterialTestCertificate, type MtcStatus, type MtcOverall,
@@ -96,6 +96,18 @@ export function MtcRegister(): JSX.Element {
       search: search.trim() || undefined,
     });
   }, [entityCode, statusF, overallF, search, version]);
+
+  // F-3 · O(1) per-row PC match lookup · iterate PC ledger ONCE per (entityCode, version, rows)
+  const pcMatchByHeat = useMemo<Map<string, PcMatch[]>>(() => {
+    const map = new Map<string, PcMatch[]>();
+    const heats = new Set<string>();
+    for (const m of rows) if (m.heat_no) heats.add(m.heat_no);
+    for (const h of heats) {
+      const matches = findPcMatchesForHeat(entityCode, h);
+      if (matches.length > 0) map.set(h, matches);
+    }
+    return map;
+  }, [entityCode, rows]);
 
   const toggle = <T,>(set: Set<T>, val: T, setter: (s: Set<T>) => void): void => {
     const next = new Set(set);
@@ -204,7 +216,7 @@ export function MtcRegister(): JSX.Element {
                     <TableCell className="text-right text-xs">{m.parameters.length}</TableCell>
                     <TableCell className="text-xs">
                       {(() => {
-                        const matches = findPcMatchesForHeat(entityCode, m.heat_no);
+                        const matches = m.heat_no ? (pcMatchByHeat.get(m.heat_no) ?? []) : [];
                         if (matches.length === 0) return <span className="text-muted-foreground">—</span>;
                         return (
                           <Badge variant="outline" className="font-mono" title={matches.map((p) => p.doc_no).join(' · ')}>

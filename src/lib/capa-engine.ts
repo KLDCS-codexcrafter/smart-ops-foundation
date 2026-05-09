@@ -154,7 +154,8 @@ export function raiseCapaFromNcr(
     related_party_id: ncr.related_party_id ?? null,
     related_party_name: ncr.related_party_name ?? null,
   });
-  emit('capa:linked-to-ncr', { capa_id: capa.id, ncr_id: ncrId });
+  // D-NEW-BV adapt #6 · entity_code + vendor_id (when known) carried on capa lifecycle events
+  emit('capa:linked-to-ncr', { capa_id: capa.id, ncr_id: ncrId, entity_code: entityCode, vendor_id: ncr.related_party_id ?? undefined });
   return capa;
 }
 
@@ -275,12 +276,18 @@ export function closeCapa(
   upsert(entityCode, updated);
 
   if (capa.related_ncr_id) {
+    // D-NEW-BV adapt #6 · entity_code + vendor_id propagated for FR-50 receivers
+    const eventBase = {
+      capa_id: capaId,
+      ncr_id: capa.related_ncr_id,
+      entity_code: entityCode,
+      vendor_id: capa.related_party_id ?? undefined,
+    };
     if (outcome === 'effective') {
-      // NCR stays in capa_pending until human acks closure (Q-LOCK-4 b)
-      emit('capa:effective:applied', { capa_id: capaId, ncr_id: capa.related_ncr_id });
+      emit('capa:effective:applied', eventBase);
     } else if (outcome === 'ineffective_re_open_ncr') {
       transitionNcr(entityCode, userId, capa.related_ncr_id, 'investigating', 'CAPA ineffective · re-investigating');
-      emit('capa:ineffective:reopened', { capa_id: capaId, ncr_id: capa.related_ncr_id });
+      emit('capa:ineffective:reopened', eventBase);
     }
   }
 

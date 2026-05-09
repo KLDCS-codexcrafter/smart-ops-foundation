@@ -30,6 +30,20 @@ function writeAll(entityCode: string, list: Iso9001AuditDocument[]): void {
   }
 }
 
+/**
+ * D-NEW-BU · positive http(s) allowlist replacing data: blacklist.
+ * Rejects javascript:/vbscript:/file:/chrome:/data: and malformed URLs (FR-21 · ISO 27001 CIA).
+ */
+export function isSafeHttpUrl(u: string): boolean {
+  if (!u || typeof u !== 'string') return false;
+  try {
+    const parsed = new URL(u);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export function listIso9001Docs(entityCode: string): Iso9001AuditDocument[] {
   return readAll(entityCode);
 }
@@ -43,8 +57,8 @@ export function createIso9001Doc(
   userId: string,
   draft: Omit<Iso9001AuditDocument, 'id' | 'created_at' | 'created_by'>,
 ): Iso9001AuditDocument | null {
-  // URL-only · reject base64 / data: per α-b D-NEW-BF Q-LOCK-6(a) precedent
-  if (!draft.document_url || draft.document_url.startsWith('data:')) return null;
+  // D-NEW-BU · positive http(s) allowlist (FR-21 · ISO 27001 CIA)
+  if (!isSafeHttpUrl(draft.document_url)) return null;
   const id = `ISO-${Date.now().toString(36).toUpperCase()}`;
   const now = new Date().toISOString();
   const doc: Iso9001AuditDocument = {

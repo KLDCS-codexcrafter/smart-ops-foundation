@@ -7,8 +7,10 @@
  * @disciplines FR-19 (sibling · QCEntryPage zero-touch) · FR-58 (Shell pattern)
  */
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { QCEntryPage } from '@/pages/erp/qulicheak/QCEntryPage';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type IqcVariant = 'standard' | 'sample' | 'pre_dispatch';
 
@@ -18,6 +20,10 @@ const VARIANT_OPTIONS = [
   { id: 'pre_dispatch' as const, label: 'Pre-Dispatch QC', tooltip: 'Outbound finished-goods QC before shipment' },
 ];
 
+const VARIANT_LABEL: Record<IqcVariant, string> = {
+  standard: 'Standard', sample: 'Sample', pre_dispatch: 'Pre-Dispatch',
+};
+
 const VARIANT_DESCRIPTIONS: Record<IqcVariant, string> = {
   standard: 'Standard incoming quality check · entire lot inspected per spec.',
   sample: 'Sample inspection · pull n units per AQL · accept/reject the lot.',
@@ -25,20 +31,24 @@ const VARIANT_DESCRIPTIONS: Record<IqcVariant, string> = {
 };
 
 export function IqcEntryPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [variant, setVariant] = useState<IqcVariant>('standard');
 
   return (
     <div className="space-y-2">
       <div className="px-6 pt-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">IQC Entry</h1>
-          <p className="text-sm text-muted-foreground mt-1">{VARIANT_DESCRIPTIONS[variant]}</p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">IQC Entry</h1>
+            <p className="text-sm text-muted-foreground mt-1">{VARIANT_DESCRIPTIONS[variant]}</p>
+          </div>
+          <Badge variant="secondary" className="font-mono">Variant: {VARIANT_LABEL[variant]}</Badge>
         </div>
         <ViewModeSelector<IqcVariant>
           value={variant}
           onChange={setVariant}
           options={VARIANT_OPTIONS}
-          storageKey="qulicheak.iqc.variant"
+          storageKey={`qulicheak.iqc.variant.${entityCode}`}
           label="Mode"
         />
       </div>
