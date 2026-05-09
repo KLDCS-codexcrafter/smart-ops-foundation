@@ -109,7 +109,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/procure-hub',
     icon: 'ShoppingCart',
-    status: 'wip',
+    status: 'active',  // T-Phase-1.A.8.α-a-T1 · Q-LOCK-T1-NEW · Master Plan §51.2 rows 3+4 (Sprint 1.A.3 + 1.A.4 CLOSED) · D-NEW-BB pattern
   },
   // Inventory Hub · heavy 22k+ LOC platform inventory backbone
   // NOT to be confused with store-hub (Department Stores · lightweight console)
@@ -138,7 +138,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/gateflow',
     icon: 'DoorOpen',
-    status: 'wip',
+    status: 'active',  // T-Phase-1.A.8.α-a-T1 · Q-LOCK-T1-NEW · Master Plan §51.2 row 1 (Sprint 1.A.1 CLOSED) · D-NEW-BB pattern
   },
   {
     id: 'production',
@@ -147,7 +147,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/production',
     icon: 'Factory',
-    status: 'wip',
+    status: 'active',  // T-Phase-1.A.8.α-a-T1 · Q-LOCK-T1-NEW · Master Plan §51.2 row 2 (Sprint 1.A.2 CLOSED) · D-NEW-BB pattern
   },
   {
     id: 'maintainpro',
