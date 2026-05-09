@@ -185,7 +185,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/store-hub',
     icon: 'Warehouse',
-    status: 'wip',
+    status: 'active',  // T-Phase-1.A.6.α-b · Q-LOCK-13a · D-NEW-BB pattern (parallel to qulicheak A.5)
   },
   {
     id: 'supplyx',
