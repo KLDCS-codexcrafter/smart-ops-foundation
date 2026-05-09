@@ -53,9 +53,9 @@ const newRow = (): DimRow => ({
 export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('FaiCapture', _fr29);
   void _fr29;
@@ -75,6 +75,10 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   const [notes, setNotes] = useState('');
   const [rows, setRows] = useState<DimRow[]>(() => [newRow()]);
   const [saving, setSaving] = useState(false);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'fai-capture-new', entityCode, formState: { partNo, partyId, supplier }, items: [], view: 'new', voucherType: 'FAI',
+  });
+  void _sprint27d1;
 
   const updateRow = (key: string, patch: Partial<DimRow>): void => {
     setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
