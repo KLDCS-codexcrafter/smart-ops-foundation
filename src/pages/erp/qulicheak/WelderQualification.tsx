@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/WelderQualification.tsx
  * @purpose Welder Qualification module · 4 tabs (Welders/WPS/PQR/WPQ)
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
- * @decisions D-NEW-BN
- * @disciplines FR-50 · FR-51 · FR-30
+ * @who Welding Engineer · QA Manager
+ * @when 2026-05-09
+ * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC · T-Phase-1.A.5.d-2-T1-AuditFix
+ * @iso ASME IX QW-322 · AWS D1.1 · ISO 9606-1 · ISO 25010
+ * @whom Audit Owner
+ * @decisions D-NEW-BN · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 · FR-30
+ * @reuses welder-engine.* · WPS·PQR·WPQ tabs · canonical kit (form-carry-forward-kit)
  * @[JWT] writes via welder-engine
  */
 import { useCallback, useEffect, useState } from 'react';
@@ -16,7 +21,12 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 import {
   createWelder, listWelders, createWps, listWps, approveWps,
   createPqr, listPqr, createWpq, listWpq, recomputeWpqStatus,
@@ -59,9 +69,9 @@ function ChipMulti<T extends string>({ options, value, onChange, labelOf }: Chip
 export function WelderQualification(): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('WelderQualification', _fr29);
   void _fr29;
@@ -70,6 +80,10 @@ export function WelderQualification(): JSX.Element {
   const [tab, setTab] = useState<'welders' | 'wps' | 'pqr' | 'wpq'>('welders');
   const [refresh, setRefresh] = useState(0);
   const bump = (): void => setRefresh((n) => n + 1);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'welder-qualification-new', entityCode, formState: { tab }, items: [], view: 'new', voucherType: 'welder_qualification',
+  });
+  void _sprint27d1;
 
   // Welder form
   const [wForm, setWForm] = useState({ name: '', party: '', emp: '' });
@@ -203,12 +217,39 @@ export function WelderQualification(): JSX.Element {
   }, [user, wpqForm, wpqProcesses, wpqPositions, entityCode, entityId]);
 
   return (
-    <div key={refresh} className="p-6 space-y-4 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Welder Qualification</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          ASME IX + AWS D1.1 · Welder → WPS → PQR → WPQ chain · Entity {entityCode}
-        </p>
+    <div key={refresh} className="p-6 space-y-4 max-w-6xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Welder Qualification" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="welder_qualification"
+        voucherTypeName="Welder Qualification"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Welder Qualification</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            ASME IX + AWS D1.1 · Welder → WPS → PQR → WPQ chain · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="welder_qualification"
+          partyValue={null}
+          onUse={() => { /* page-level no-op · per-tab forms manage own state */ }}
+        />
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>

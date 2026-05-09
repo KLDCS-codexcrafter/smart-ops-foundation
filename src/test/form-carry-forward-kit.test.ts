@@ -14,10 +14,12 @@
 import { describe, it, expect } from 'vitest';
 import {
   UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
   useSprint27d1Mount, dMul, round2,
   FORM_CARRY_FORWARD_ROSTER, useFormCarryForwardChecklist,
   type FormCarryForwardConfig,
-} from '@/components/canonical/form-carry-forward-kit';
+} from '@/lib/form-carry-forward-kit';
 
 describe('FormCarryForwardKit · D-NEW-CE canonical', () => {
   it('re-exports all 6 canonical mount components/hooks', () => {

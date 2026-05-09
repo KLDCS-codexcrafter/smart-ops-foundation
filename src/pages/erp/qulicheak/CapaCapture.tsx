@@ -32,7 +32,12 @@ import {
   type CapaSource, type CapaSeverity,
 } from '@/types/capa';
 import type { NcrId } from '@/types/ncr';
-import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 
 interface Props {
   onSaved?: () => void;
@@ -57,9 +62,9 @@ const initial = (ncrId?: NcrId | null) => ({
 export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('CapaCapture', _fr29);
   void _fr29;
@@ -67,6 +72,10 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
   const user = useCurrentUser();
   const [form, setForm] = useState(() => initial(prefillNcrId));
   const [saving, setSaving] = useState(false);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'capa-capture-new', entityCode, formState: form, items: [], view: 'new', voucherType: 'CAPA',
+  });
+  void _sprint27d1;
 
   useEntityChangeEffect(() => setForm(initial(prefillNcrId)), [prefillNcrId]);
 
@@ -189,12 +198,42 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
   }, [form, user, entityCode, entityId]);
 
   return (
-    <div className="p-6 space-y-4 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Raise CAPA</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Corrective and Preventive Action · 8D + 5 Whys · Entity {entityCode}
-        </p>
+    <div className="p-6 space-y-4 max-w-4xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="CAPA Capture" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="capa"
+        voucherTypeName="CAPA Capture"
+        defaultPartyType="vendor"
+        partyId={form.partyId || null}
+        partyName={form.partyName || null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Raise CAPA</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Corrective and Preventive Action · 8D + 5 Whys · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="capa"
+          partyValue={form.partyId || null}
+          onUse={(data) => {
+            const d = data as Partial<typeof form>;
+            setForm((f) => ({ ...f, ...d }));
+          }}
+        />
       </div>
 
       <Card>

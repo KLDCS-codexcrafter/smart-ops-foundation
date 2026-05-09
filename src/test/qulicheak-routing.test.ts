@@ -80,4 +80,23 @@ describe('Qulicheak sidebar config · D-NEW-CC canonical (T1 Block C)', () => {
     const q = apps?.find((a) => a.id === 'qulicheak');
     expect(q?.status).toBe('active');
   });
+
+  it('Reports group cleanly purged of the 8 α-d-1 moduleIds (they live in Trident sub-group only)', () => {
+    const flat = flatten(qulicheakSidebarItems);
+    const reportsGroup = flat.find((i) => i.id === 'reports-group');
+    expect(reportsGroup).toBeDefined();
+    const directChildIds = new Set(
+      (reportsGroup?.children ?? [])
+        .filter((c) => c.id !== 'trident-qc-reports-group')
+        .map((c) => c.moduleId)
+        .filter((m): m is string => Boolean(m)),
+    );
+    const movedIds = [
+      'stk-iqc-st-remarks', 'qc-transfer-reg', 'qc-godown-summary', 'qc-stk-trnsfer',
+      'rinsp-report-page', 'qc-rejection-analysis', 'fg-receiving-inspection', 'reprocess-report',
+    ];
+    for (const id of movedIds) {
+      expect(directChildIds.has(id)).toBe(false);
+    }
+  });
 });

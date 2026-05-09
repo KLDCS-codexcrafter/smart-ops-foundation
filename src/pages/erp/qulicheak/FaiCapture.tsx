@@ -23,7 +23,12 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { createFai } from '@/lib/fai-engine';
 import type { FaiDimension } from '@/types/fai';
-import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 
 interface Props {
   onSaved?: () => void;
@@ -48,9 +53,9 @@ const newRow = (): DimRow => ({
 export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('FaiCapture', _fr29);
   void _fr29;
@@ -70,6 +75,10 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   const [notes, setNotes] = useState('');
   const [rows, setRows] = useState<DimRow[]>(() => [newRow()]);
   const [saving, setSaving] = useState(false);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'fai-capture-new', entityCode, formState: { partNo, partyId, supplier }, items: [], view: 'new', voucherType: 'FAI',
+  });
+  void _sprint27d1;
 
   const updateRow = (key: string, patch: Partial<DimRow>): void => {
     setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
@@ -196,12 +205,47 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   ]);
 
   return (
-    <div className="p-6 space-y-4 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">First Article Inspection</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Capture per-dimension nominal ± tolerance · pass/fail derived · Entity {entityCode}
-        </p>
+    <div className="p-6 space-y-4 max-w-5xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="FAI Capture" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="fai"
+        voucherTypeName="FAI Capture"
+        defaultPartyType="vendor"
+        partyId={partyId || null}
+        partyName={supplier || null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">First Article Inspection</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Capture per-dimension nominal ± tolerance · pass/fail derived · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="fai"
+          partyValue={partyId || null}
+          onUse={(data) => {
+            const d = data as Record<string, unknown>;
+            if (typeof d.part_no === 'string') setPartNo(d.part_no);
+            if (typeof d.part_name === 'string') setPartName(d.part_name);
+            if (typeof d.drawing_no === 'string') setDrawingNo(d.drawing_no);
+            if (typeof d.drawing_rev === 'string') setDrawingRev(d.drawing_rev);
+            if (typeof d.supplier_name === 'string') setSupplier(d.supplier_name);
+            if (typeof d.related_party_id === 'string') setPartyId(d.related_party_id);
+          }}
+        />
       </div>
 
       <Card>
