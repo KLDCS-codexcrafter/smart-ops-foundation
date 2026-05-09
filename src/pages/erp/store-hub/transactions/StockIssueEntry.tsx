@@ -67,12 +67,31 @@ interface Props {
 
 export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  const user = useCurrentUser();
   const [department, setDepartment] = useState('');
   const [recipient, setRecipient] = useState('');
   const [purpose, setPurpose] = useState('');
   const [narration, setNarration] = useState('');
   const [lines, setLines] = useState<LineDraft[]>([emptyLine()]);
   const [busy, setBusy] = useState(false);
+  // After save · enables AuditHistoryButton + approval buttons (Block C/D)
+  const [currentVoucherId, setCurrentVoucherId] = useState<string | null>(null);
+
+  // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('StockIssueEntry', _fr29);
+  void _fr29;
+
+  const _form = { department, recipient, purpose, narration, lines };
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-issue-entry-new', entityCode, formState: _form, items: lines.map(l => ({ item_name: l.item_name, qty: l.qty })),
+    view: 'new', voucherType: 'stock_issue',
+  });
+  void _sprint27d1;
 
   const updateLine = (idx: number, patch: Partial<LineDraft>) => {
     setLines(prev => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
@@ -81,6 +100,40 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const removeLine = (idx: number) => setLines(prev => prev.filter((_, i) => i !== idx));
 
   const total = lines.reduce((s, l) => s + l.qty * l.rate, 0);
+
+  const validate = (): string | null => {
+    if (!department.trim()) return 'Department is required';
+    if (!recipient.trim()) return 'Recipient is required';
+    if (!lines.length) return 'At least one line is required';
+    for (const l of lines) {
+      if (!l.item_name.trim()) return 'All lines need an item name';
+      if (l.qty <= 0) return 'Line qty must be greater than zero';
+    }
+    return null;
+  };
+
+  const onSubmitForApproval = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const result = submitStockIssueForApproval(entityCode, user.id, user.name ?? 'unknown', currentVoucherId);
+    if (!result.ok) { toast.error(result.reason ?? 'Submit failed'); return; }
+    toast.success('Submitted for approval');
+  }, [user, currentVoucherId, entityCode]);
+
+  const onApprove = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const result = approveStockIssue(entityCode, user.id, user.name ?? 'unknown', currentVoucherId);
+    if (!result.ok) { toast.error(result.reason ?? 'Approve failed'); return; }
+    toast.success('Approved');
+  }, [user, currentVoucherId, entityCode]);
+
+  const onReject = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const reason = window.prompt('Rejection reason?') ?? '';
+    if (!reason.trim()) return;
+    const result = rejectStockIssue(entityCode, user.id, user.name ?? 'unknown', currentVoucherId, reason);
+    if (!result.ok) { toast.error(result.reason ?? 'Reject failed'); return; }
+    toast.success('Rejected');
+  }, [user, currentVoucherId, entityCode]);
 
   const validate = (): string | null => {
     if (!department.trim()) return 'Department is required';
