@@ -101,12 +101,35 @@ export function NcrRegister(): JSX.Element {
   // FR-50 6-point · refresh on entity switch
   useEntityChangeEffect(() => setVersion((v) => v + 1), []);
 
-  // Refresh on focus (cheap reactivity)
+  // Refresh on focus + CAPA lifecycle events (Block C wiring)
   useEffect(() => {
     const onFocus = (): void => setVersion((v) => v + 1);
+    const onCapa = (): void => setVersion((v) => v + 1);
     window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
+    window.addEventListener('capa:linked-to-ncr', onCapa);
+    window.addEventListener('capa:effective:applied', onCapa);
+    window.addEventListener('capa:ineffective:reopened', onCapa);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('capa:linked-to-ncr', onCapa);
+      window.removeEventListener('capa:effective:applied', onCapa);
+      window.removeEventListener('capa:ineffective:reopened', onCapa);
+    };
   }, []);
+
+  // ncrId → linked CAPA (most recent · for Register column)
+  const capaByNcr = useMemo(() => {
+    void version;
+    const map = new Map<string, CorrectiveAndPreventiveAction>();
+    for (const c of listCapas(entityCode)) {
+      if (!c.related_ncr_id) continue;
+      const existing = map.get(c.related_ncr_id);
+      if (!existing || c.raised_at > existing.raised_at) map.set(c.related_ncr_id, c);
+    }
+    return map;
+  }, [entityCode, version]);
+
+  const [creatingCapaFor, setCreatingCapaFor] = useState<NonConformanceReport | null>(null);
 
   const rows = useMemo(() => {
     void version; // T2 · D-NEW-BC · refresh tick (focus/entity-change invalidates localStorage-backed filterNcrs)
