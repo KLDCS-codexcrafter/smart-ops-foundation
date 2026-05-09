@@ -20,15 +20,21 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Download, Search, ShieldClose } from 'lucide-react';
+import { Download, Search, ShieldClose, FilePlus2 } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterNcrs } from '@/lib/ncr-engine';
+import { listCapas } from '@/lib/capa-engine';
+import { CAPA_STATUS_LABELS, type CorrectiveAndPreventiveAction } from '@/types/capa';
 import {
   NCR_STATUS_LABELS, NCR_SEVERITY_LABELS, NCR_SOURCE_LABELS,
   type NonConformanceReport, type NcrStatus, type NcrSeverity, type NcrSource,
 } from '@/types/ncr';
 import { NcrCloseDialog } from '../NcrCloseDialog';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
+import { CapaCapture } from '../CapaCapture';
 
 const STATUS_OPTIONS: NcrStatus[] = ['open', 'investigating', 'capa_pending', 'closed', 'cancelled'];
 const SEV_OPTIONS: NcrSeverity[] = ['minor', 'major', 'critical'];
