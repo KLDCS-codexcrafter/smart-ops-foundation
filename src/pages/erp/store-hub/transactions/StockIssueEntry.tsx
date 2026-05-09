@@ -8,7 +8,9 @@
  * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
  *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
- *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings)
+ *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings) ·
+ *              Q-LOCK-3a Path A revised (stock-journal-print-engine reuse · navigates to existing
+ *              /erp/finecore/stock-journal-print page · NO new print engine · α-b Block A)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 (sibling consumption) · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
