@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/QCGodownSummary.tsx
  * @purpose Trident C15 · per-location pass/fail/conditional/pending counts.
+ * @who Stores Manager · QA Manager (per-godown QC view)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block C
+ * @iso ISO 9001:2015 Clause 8.7 · ISO 25010 Auditability
+ * @whom Audit Owner
  * @decisions D-NEW-BW · D-NEW-CD
  * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · godown counts (D-NEW-BW)
  * @[JWT] reads erp_qa_inspections_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
