@@ -186,6 +186,18 @@ export function StockReceiptAckPanel(): JSX.Element {
               currentRecord={{ awaiting: awaiting.length, history: history.length }}
             />
           ) : null}
+          {postedVoucherId ? (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => navigate(
+                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+              )}
+            >
+              <Printer className="h-3.5 w-3.5 mr-1" /> Print
+            </Button>
+          ) : null}
         </div>
       </div>
 
