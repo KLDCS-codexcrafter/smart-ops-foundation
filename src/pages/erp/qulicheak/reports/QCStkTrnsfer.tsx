@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/QCStkTrnsfer.tsx
  * @purpose Trident C16 · QC-passed-to-stock transfer list (passed inspections).
+ * @who Stores Manager · QA Manager (QC-to-stock movement)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block C
+ * @iso ISO 9001:2015 Clause 8.7 · ISO 25010 Auditability
+ * @whom Audit Owner
  * @decisions D-NEW-BW · D-NEW-CD
  * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · godown source/dest lookup (D-NEW-BW)
  * @[JWT] reads erp_qa_inspections_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
