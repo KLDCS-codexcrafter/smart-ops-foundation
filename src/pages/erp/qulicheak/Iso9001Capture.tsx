@@ -1,7 +1,15 @@
 /**
- * @file src/pages/erp/qulicheak/Iso9001Capture.tsx
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
- * @decisions D-NEW-BP
+ * @file        src/pages/erp/qulicheak/Iso9001Capture.tsx
+ * @purpose     Capture form for ISO 9001 audit documents · 7-clause taxonomy · URL-only · linked-records
+ * @who         QA Manager · Internal Auditor
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.A.5.c-T2-AuditFix
+ * @iso         ISO 9001:2015 · ISO 25010 Usability + Security
+ * @whom        Audit Owner
+ * @decisions   D-NEW-BP · D-NEW-BU (URL allowlist) · D-NEW-BJ (linked_records UI)
+ * @disciplines FR-21 (input validation) · FR-22 (kind='document') · FR-30 · FR-50
+ * @reuses      iso9001-engine.createIso9001Doc · isSafeHttpUrl · linkRecordToIso9001Doc
+ * @[JWT]       writes via createIso9001Doc · localStorage erp_iso9001_${entityCode}
  */
 import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
