@@ -6,7 +6,7 @@
  * @disciplines FR-50 · FR-51 · FR-30
  * @[JWT] writes via welder-engine
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
@@ -17,13 +17,43 @@ import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
-  createWelder, listWelders, createWps, listWps,
-  createPqr, listPqr, createWpq, listWpq,
+  createWelder, listWelders, createWps, listWps, approveWps,
+  createPqr, listPqr, createWpq, listWpq, recomputeWpqStatus,
 } from '@/lib/welder-engine';
 import {
   WELDING_STANDARD_LABELS, WELDING_PROCESS_LABELS, QUAL_STATUS_LABELS,
-  type WeldingStandard, type WpsId, type WelderId,
+  type WeldingStandard, type WeldingProcess, type WeldingPosition,
+  type WpsId, type WelderId,
 } from '@/types/welder';
+
+const PROCESS_OPTIONS: WeldingProcess[] = ['smaw', 'gmaw', 'gtaw', 'fcaw'];
+const POSITION_OPTIONS: WeldingPosition[] = ['1G', '2G', '3G', '4G', '5G', '6G'];
+
+interface ChipMultiProps<T extends string> {
+  options: readonly T[];
+  value: T[];
+  onChange: (next: T[]) => void;
+  labelOf?: (v: T) => string;
+}
+function ChipMulti<T extends string>({ options, value, onChange, labelOf }: ChipMultiProps<T>): JSX.Element {
+  const toggle = (opt: T): void => {
+    onChange(value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt]);
+  };
+  return (
+    <div className="flex flex-wrap gap-1">
+      {options.map((o) => (
+        <Badge
+          key={o}
+          variant={value.includes(o) ? 'default' : 'outline'}
+          className="cursor-pointer text-xs"
+          onClick={() => toggle(o)}
+        >
+          {labelOf ? labelOf(o) : o}
+        </Badge>
+      ))}
+    </div>
+  );
+}
 
 export function WelderQualification(): JSX.Element {
   const { entityCode, entityId } = useEntityCode();
