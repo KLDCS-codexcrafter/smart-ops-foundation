@@ -1,9 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/reports/EffectivenessVerificationDuePanel.tsx
  * @purpose List of CAPA effectiveness verifications (30/60/90-day) due within window
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · Block F.2
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · Block F.2 · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom QA Manager
  * @decisions D-NEW-BH (verification 30/60/90 milestones)
- * @disciplines FR-21 · FR-50 · FR-30
+ * @disciplines FR-21 · FR-50 · FR-30 · FR-29 (FormCarryForwardKit N/A here · read-only panel)
+ * @reuses capa-engine.listVerificationsDueWithin · recordVerification · useEntityCode ·
+ *         useEntityChangeEffect · useCurrentUser
  * @[JWT] reads via capa-engine.listVerificationsDueWithin · GET /api/qulicheak/capas/verifications/due
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -82,14 +88,19 @@ export function EffectivenessVerificationDuePanel(): JSX.Element {
             {rows.length} verification{rows.length === 1 ? '' : 's'} pending · Entity {entityCode}
           </p>
         </div>
-        <Select value={String(windowDays)} onValueChange={(v) => setWindowDays(Number(v))}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {WINDOWS.map((w) => (
-              <SelectItem key={w.v} value={String(w.v)}>{w.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setVersion((v) => v + 1)}>
+            Refresh
+          </Button>
+          <Select value={String(windowDays)} onValueChange={(v) => setWindowDays(Number(v))}>
+            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {WINDOWS.map((w) => (
+                <SelectItem key={w.v} value={String(w.v)}>{w.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card>

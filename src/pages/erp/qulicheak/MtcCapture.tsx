@@ -1,10 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/MtcCapture.tsx
  * @purpose Material Test Certificate entry · header + dynamic parameter rows
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
- * @decisions D-NEW-BF · D-NEW-BJ
- * @disciplines FR-50 · FR-51 · FR-21 · FR-30
- * @[JWT] writes via mtc-engine.createMtc
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom Quality Inspector
+ * @decisions D-NEW-BF · D-NEW-BJ · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 · FR-21 · FR-30
+ * @reuses mtc-engine.createMtc · useEntityCode · useCurrentUser
+ * @[JWT] writes via mtc-engine.createMtc · localStorage erp_mtc_${entityCode}
  */
 import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -140,6 +145,51 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
   }, [
     user, certNo, issueDate, supplier, partyId, grnId, itemId, itemName,
     lotNo, heatNo, branchId, notes, entityCode, entityId, toParameters, onSaved,
+  ]);
+
+  const handleSaveAndNew = useCallback((): void => {
+    if (!user) { toast.error('User session not found'); return; }
+    if (!certNo.trim()) { toast.error('Certificate number is required'); return; }
+    if (!issueDate.trim()) { toast.error('Issue date is required'); return; }
+    if (!supplier.trim()) { toast.error('Supplier name is required'); return; }
+    const parameters = toParameters();
+    if (parameters.length === 0) { toast.error('Add at least one test parameter'); return; }
+
+    setSaving(true);
+    try {
+      const mtc = createMtc(entityCode, user.id, {
+        entity_id: entityId,
+        branch_id: branchId.trim() || null,
+        certificate_no: certNo.trim(),
+        issue_date: issueDate,
+        supplier_name: supplier.trim(),
+        related_party_id: partyId.trim() || null,
+        related_grn_id: grnId.trim() || null,
+        item_id: itemId.trim() || null,
+        item_name: itemName.trim() || null,
+        lot_no: lotNo.trim() || null,
+        heat_no: heatNo.trim() || null,
+        parameters,
+        notes: notes.trim() || null,
+      });
+      toast.success(`MTC ${mtc.id} saved · ${mtc.overall}`);
+      const carriedSupplier = supplier;
+      const carriedPartyId = partyId;
+      const carriedBranchId = branchId;
+      const carriedItemId = itemId;
+      const carriedItemName = itemName;
+      setCertNo(''); setIssueDate(''); setGrnId(''); setLotNo(''); setHeatNo('');
+      setRows([newRow()]); setNotes('');
+      setSupplier(carriedSupplier); setPartyId(carriedPartyId);
+      setBranchId(carriedBranchId); setItemId(carriedItemId); setItemName(carriedItemName);
+    } catch {
+      toast.error('Failed to save MTC');
+    } finally {
+      setSaving(false);
+    }
+  }, [
+    user, certNo, issueDate, supplier, partyId, grnId, itemId, itemName,
+    lotNo, heatNo, branchId, notes, entityCode, entityId, toParameters,
   ]);
 
   return (
@@ -287,6 +337,9 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
         {onCancel && (
           <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         )}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Saving…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save MTC'}
         </Button>

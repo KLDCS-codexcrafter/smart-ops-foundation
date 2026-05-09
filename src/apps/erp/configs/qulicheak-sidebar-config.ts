@@ -1,13 +1,17 @@
 /**
  * @file        qulicheak-sidebar-config.ts
- * @purpose     Sidebar data config for Qulicheak (QualiCheck) · 12 modules in 4 sections
+ * @purpose     Sidebar data config for Qulicheak (QualiCheck) · 30+ modules in 5 sections +
+ *              Trident QC Reports sub-group (Q-LOCK-6b)
  * @who         Quality Inspector · QA Manager · Vendor Manager
  * @when        Phase 1.A.5.a · Qulicheak Shell Migration sprint
- * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration · T-Phase-1.A.5.c-T3-AuditFix · F-8 keyboard duplicate resolved (welder-qualification 'q w' → 'q l')
+ * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration · T-Phase-1.A.5.c-T3-AuditFix ·
+ *              F-8 keyboard duplicate resolved (welder-qualification 'q w' → 'q l') ·
+ *              T-Phase-1.A.5.d-2-AuditFix
  * @iso         Maintainability · Usability
  * @decisions   D-250 (Shell pattern · FR-58) · D-NEW-AY (Outcome C · split α-a into
  *              Shell migration + α-a-bis NCR Foundation) ·
- *              D-NEW-AZ (QualiCheckSidebar.tsx DELETED · sidebar data extracted to config)
+ *              D-NEW-AZ (QualiCheckSidebar.tsx DELETED · sidebar data extracted to config) ·
+ *              Q-LOCK-6b (Trident QC Reports sub-group · α-d-2)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
  * @[JWT]       N/A (config only)
  *
@@ -270,78 +274,86 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         moduleId: 'iso9001-register',
         requiredCards: ['qulicheak'],
       },
-      // α-d-1 · Trident QC Reports (no reorg yet — appended within Reports group)
+      // α-d-2 · Q-LOCK-6b · Trident QC Reports sub-group
       {
-        id: 'rinsp-report-page',
-        type: 'item',
-        label: 'Receiving Inspection Report',
-        icon: ClipboardCheck,
-        moduleId: 'rinsp-report-page',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q r',
-      },
-      {
-        id: 'qc-godown-summary',
-        type: 'item',
-        label: 'QC Godown Summary',
+        id: 'trident-qc-reports-group',
+        type: 'group',
+        label: 'Trident QC Reports',
         icon: Layers,
-        moduleId: 'qc-godown-summary',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q g',
-      },
-      {
-        id: 'qc-transfer-reg',
-        type: 'item',
-        label: 'QC Transfer Register',
-        icon: ListChecks,
-        moduleId: 'qc-transfer-reg',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q t',
-      },
-      {
-        id: 'qc-stk-trnsfer',
-        type: 'item',
-        label: 'QC Stock Transfer',
-        icon: Layers,
-        moduleId: 'qc-stk-trnsfer',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q d',
-      },
-      {
-        id: 'stk-iqc-st-remarks',
-        type: 'item',
-        label: 'QC Stock Remarks',
-        icon: FileText,
-        moduleId: 'stk-iqc-st-remarks',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q b',
-      },
-      {
-        id: 'qc-rejection-analysis',
-        type: 'item',
-        label: 'Rejection Analysis',
-        icon: AlertOctagon,
-        moduleId: 'qc-rejection-analysis',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q a',
-      },
-      {
-        id: 'fg-receiving-inspection',
-        type: 'item',
-        label: 'FG Receiving Inspection',
-        icon: ShieldCheck,
-        moduleId: 'fg-receiving-inspection',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q o',
-      },
-      {
-        id: 'reprocess-report',
-        type: 'item',
-        label: 'Reprocess Report',
-        icon: Wrench,
-        moduleId: 'reprocess-report',
-        requiredCards: ['qulicheak'],
-        keyboard: 'q e',
+        children: [
+          {
+            id: 'rinsp-report-page',
+            type: 'item',
+            label: 'Receiving Inspection Report',
+            icon: ClipboardCheck,
+            moduleId: 'rinsp-report-page',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q r',
+          },
+          {
+            id: 'qc-godown-summary',
+            type: 'item',
+            label: 'QC Godown Summary',
+            icon: Layers,
+            moduleId: 'qc-godown-summary',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q g',
+          },
+          {
+            id: 'qc-transfer-reg',
+            type: 'item',
+            label: 'QC Transfer Register',
+            icon: ListChecks,
+            moduleId: 'qc-transfer-reg',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q t',
+          },
+          {
+            id: 'qc-stk-trnsfer',
+            type: 'item',
+            label: 'QC Stock Transfer',
+            icon: Layers,
+            moduleId: 'qc-stk-trnsfer',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q d',
+          },
+          {
+            id: 'stk-iqc-st-remarks',
+            type: 'item',
+            label: 'QC Stock Remarks',
+            icon: FileText,
+            moduleId: 'stk-iqc-st-remarks',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q b',
+          },
+          {
+            id: 'qc-rejection-analysis',
+            type: 'item',
+            label: 'Rejection Analysis',
+            icon: AlertOctagon,
+            moduleId: 'qc-rejection-analysis',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q a',
+          },
+          {
+            id: 'fg-receiving-inspection',
+            type: 'item',
+            label: 'FG Receiving Inspection',
+            icon: ShieldCheck,
+            moduleId: 'fg-receiving-inspection',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q o',
+          },
+          {
+            id: 'reprocess-report',
+            type: 'item',
+            label: 'Reprocess Report',
+            icon: Wrench,
+            moduleId: 'reprocess-report',
+            requiredCards: ['qulicheak'],
+            keyboard: 'q e',
+          },
+        ],
       },
     ],
   },

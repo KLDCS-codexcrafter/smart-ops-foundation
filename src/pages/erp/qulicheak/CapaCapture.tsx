@@ -1,10 +1,17 @@
 /**
  * @file src/pages/erp/qulicheak/CapaCapture.tsx
  * @purpose Manual CAPA entry · source / severity / title / description / NCR or party link
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
- * @decisions D-NEW-BD · D-NEW-BE · D-NEW-BJ
- * @disciplines FR-50 · FR-51 · FR-19 (consume NCR via getNcrById/listNcrs) · FR-21 · FR-30
- * @[JWT] writes via capa-engine.raiseCapa / raiseCapaFromNcr
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom Quality Inspector
+ * @decisions D-NEW-BD · D-NEW-BE · D-NEW-BJ · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 ·
+ *              FR-19 (consume NCR via getNcrById/listNcrs) · FR-21 · FR-30
+ * @reuses capa-engine.raiseCapa / raiseCapaFromNcr · useEntityCode · useEntityChangeEffect ·
+ *         useCurrentUser
+ * @[JWT] writes via capa-engine.raiseCapa / raiseCapaFromNcr · localStorage erp_capa_${entityCode}
  */
 import { useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -114,6 +121,63 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
       setSaving(false);
     }
   }, [form, user, entityCode, entityId, prefillNcrId, onSaved]);
+
+  const handleSaveAndNew = useCallback((): void => {
+    if (!form.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+    if (!user) {
+      toast.error('User session not found');
+      return;
+    }
+    if (form.source === 'ncr' && !form.ncrId.trim()) {
+      toast.error('Select a related NCR');
+      return;
+    }
+    setSaving(true);
+    try {
+      if (form.source === 'ncr') {
+        const capa = raiseCapaFromNcr(entityCode, user.id, form.ncrId.trim() as NcrId, {
+          entity_id: entityId,
+          branch_id: form.branchId.trim() || null,
+          severity: form.severity,
+          title: form.title.trim(),
+          description: form.description.trim() || null,
+        });
+        if (!capa) {
+          toast.error('Linked NCR not found');
+          return;
+        }
+        toast.success(`CAPA ${capa.id} raised · NCR moved to capa_pending`);
+      } else {
+        const capa = raiseCapa(entityCode, user.id, {
+          entity_id: entityId,
+          branch_id: form.branchId.trim() || null,
+          source: form.source,
+          severity: form.severity,
+          title: form.title.trim(),
+          description: form.description.trim() || null,
+          related_party_id: form.partyId.trim() || null,
+          related_party_name: form.partyName.trim() || null,
+        });
+        toast.success(`CAPA ${capa.id} raised`);
+      }
+      const carried = {
+        source: form.source,
+        severity: form.severity,
+        branchId: form.branchId,
+        partyId: form.source !== 'ncr' ? form.partyId : '',
+        partyName: form.source !== 'ncr' ? form.partyName : '',
+        ncrId: '',
+      };
+      setForm({ ...initial(), ...carried });
+    } catch {
+      toast.error('Failed to raise CAPA');
+    } finally {
+      setSaving(false);
+    }
+  }, [form, user, entityCode, entityId]);
 
   return (
     <div className="p-6 space-y-4 max-w-4xl">
@@ -239,6 +303,9 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
         {onCancel && (
           <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         )}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Raising…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Raising…' : 'Raise CAPA'}
         </Button>
