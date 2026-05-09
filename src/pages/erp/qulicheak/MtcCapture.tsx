@@ -211,12 +211,45 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
   ]);
 
   return (
-    <div className="p-6 space-y-4 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Material Test Certificate</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Capture supplier-issued certificate · per-parameter pass/fail derived from spec · Entity {entityCode}
-        </p>
+    <div className="p-6 space-y-4 max-w-5xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="MTC Capture" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="mtc"
+        voucherTypeName="MTC Capture"
+        defaultPartyType="vendor"
+        partyId={partyId || null}
+        partyName={supplier || null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Material Test Certificate</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Capture supplier-issued certificate · per-parameter pass/fail derived from spec · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="mtc"
+          partyValue={partyId || null}
+          onUse={(data) => {
+            const d = data as Record<string, unknown>;
+            if (typeof d.supplier_name === 'string') setSupplier(d.supplier_name);
+            if (typeof d.related_party_id === 'string') setPartyId(d.related_party_id);
+            if (typeof d.item_id === 'string') setItemId(d.item_id);
+            if (typeof d.item_name === 'string') setItemName(d.item_name);
+          }}
+        />
       </div>
 
       <Card>
