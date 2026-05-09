@@ -60,7 +60,7 @@ export function QcRejectionAnalysis(): JSX.Element {
       const r = upsert(n.related_party_name ?? '—', n.item_name ?? '—');
       r.ncrCount += 1; r.total += 1;
     }
-    const ncrById = new Map(ncrs.map((n) => [n.id, n]));
+    const ncrById = new Map(ncrs.map((n) => [n.id as string, n]));
     for (const c of capas) {
       const linked = c.source === 'ncr' && 'related_ncr_id' in c
         ? ncrById.get((c as { related_ncr_id?: string }).related_ncr_id ?? '') : null;
@@ -75,8 +75,8 @@ export function QcRejectionAnalysis(): JSX.Element {
       }
     }
     for (const f of fais) {
-      if (f.overall_status === 'rejected' || f.overall_status === 'conditional_accept') {
-        const r = upsert(f.supplier_name ?? '—', f.item_name ?? '—');
+      if (f.overall === 'fail' || f.overall === 'conditional') {
+        const r = upsert(f.supplier_name ?? '—', f.part_name ?? '—');
         r.faiCount += 1; r.total += 1;
       }
     }
