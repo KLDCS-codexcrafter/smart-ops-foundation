@@ -1,22 +1,40 @@
 /**
  * StockIssueEntry.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Stock Issue entry form: Department + Recipient + Lines table.
  * Save Draft + Submit & Post (createStockIssue → postStockIssue → Stock Journal).
- * Matches Card #6 InwardReceiptEntry pattern.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
+ *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings)
+ * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 (sibling consumption) · FR-30
+ * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
+ *              @/lib/stock-issue-engine submitStockIssueForApproval/approveStockIssue/rejectStockIssue
  */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Send, Save, Package } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { createStockIssue, postStockIssue } from '@/lib/stock-issue-engine';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import {
+  createStockIssue, postStockIssue,
+  submitStockIssueForApproval, approveStockIssue, rejectStockIssue,
+} from '@/lib/stock-issue-engine';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import type { StoreHubModule } from '../StoreHubSidebar';
 
 interface LineDraft {
