@@ -1,6 +1,6 @@
 /**
  * @file src/components/canonical/form-carry-forward-kit.tsx
- * @purpose UI half of the canonical FR-29 12-item carry-forward kit · re-exports the React
+ * @purpose UI half of the canonical FR-29 12-item carry-forward kit · re-exports only React
  *          mount components. Companion to src/lib/form-carry-forward-kit.ts (types · hooks · helpers).
  * @who All form authors (every Sprint·card)
  * @when 2026-05-09
@@ -13,17 +13,8 @@
  * @[JWT] N/A (composition module · no storage · no API)
  */
 
-// ─── React mount component re-exports (JSX) ───
+// ─── React mount component re-exports (JSX only · non-component exports live in @/lib/form-carry-forward-kit) ───
 export { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 export { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
-export { Sprint27eMount, type Sprint27eMountHandle } from '@/components/uth/Sprint27eMount';
+export { Sprint27eMount } from '@/components/uth/Sprint27eMount';
 export { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
-
-// ─── Convenience re-export of the lib half (forms can keep single import path) ───
-export {
-  useSprint27d1Mount,
-  dAdd, dSub, dMul, dPct, round2, dEq, dSum,
-  useFormCarryForwardChecklist,
-  FORM_CARRY_FORWARD_ROSTER,
-  type FormCarryForwardConfig,
-} from '@/lib/form-carry-forward-kit';
