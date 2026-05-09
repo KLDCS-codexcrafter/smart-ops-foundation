@@ -200,7 +200,9 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
       }, entityCode, 'u-store-1');
       const posted = await postStockIssue(si.id, entityCode, 'u-store-1');
       toast.success(`Issued · ${posted?.issue_no} · Stock Journal posted`);
-      onModuleChange('sh-t-stock-issue-register');
+      setCurrentVoucherId(si.id);
+      // α-b Block A · Q-LOCK-3a · expose voucher_id for Print button (reuses stock-journal-print-engine)
+      if (posted?.voucher_id) setPostedVoucherId(posted.voucher_id);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to post stock issue');
     } finally { setBusy(false); }
