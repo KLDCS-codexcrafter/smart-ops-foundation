@@ -39,4 +39,13 @@ export type QualiCheckModule =
   | 'wpq-expiry-dashboard'
   | 'iso9001-capture'
   | 'iso9001-register'
-  | 'iqc-entry-page';
+  | 'iqc-entry-page'
+  // α-d-1 · Trident QC Reports + Reprocess
+  | 'stk-iqc-st-remarks'
+  | 'qc-transfer-reg'
+  | 'qc-godown-summary'
+  | 'qc-stk-trnsfer'
+  | 'rinsp-report-page'
+  | 'qc-rejection-analysis'
+  | 'fg-receiving-inspection'
+  | 'reprocess-report';
