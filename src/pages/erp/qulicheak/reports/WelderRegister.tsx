@@ -9,7 +9,7 @@
  * @decisions   D-NEW-BN · T3 header hygiene
  * @disciplines FR-30 (canonical header) · FR-50 (entity-scoped reads)
  * @reuses      welder-engine.filterWelders · listWpq · QUAL_STATUS_LABELS
- * @[JWT]       reads via filterWelders/listWpq · localStorage erp_welders_${entityCode} · erp_wpq_${entityCode}
+ * @[JWT]       reads via filterWelders/listWpq · localStorage erp_welder_${entityCode} · erp_wpq_${entityCode}
  */
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
