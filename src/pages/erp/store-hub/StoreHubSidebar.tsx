@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Home, Warehouse, BarChart3, ChevronRight, ArrowLeft,
-  Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
+  Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown, Activity, Flame,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
