@@ -1,24 +1,14 @@
-npm warn exec The following package was not found and will be installed: tsx@4.21.0
-npm notice operation is not supported.
-npm notice operation is not supported.
-
-node:internal/modules/run_main:123
-    triggerUncaughtException(
-    ^
-Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/tmp/src/lib/card-entitlement-engine.ts' imported from /tmp/verify-entitlement.mjs
-Did you mean to import "../dev-server/src/lib/card-entitlement-engine.ts"?
-    at finalizeResolution (node:internal/modules/esm/resolve:274:11)
-    at moduleResolve (node:internal/modules/esm/resolve:859:10)
-    at defaultResolve (node:internal/modules/esm/resolve:983:11)
-    at nextResolve (node:internal/modules/esm/hooks:748:28)
-    at resolveBase (file:///root/.npm/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1778286417419:2:3744)
-    at async resolveDirectory (file:///root/.npm/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1778286417419:2:4237)
-    at async resolve (file:///root/.npm/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1778286417419:2:5355)
-    at async nextResolve (node:internal/modules/esm/hooks:748:22)
-    at async Hooks.resolve (node:internal/modules/esm/hooks:240:24)
-    at async handleMessage (node:internal/modules/esm/worker:199:18) {
-  code: 'ERR_MODULE_NOT_FOUND',
-  url: 'file:///tmp/src/lib/card-entitlement-engine.ts'
+qulicheak seed: {
+  tenant_id: 'SMRT',
+  card_id: 'qulicheak',
+  status: 'active',
+  plan_tier: 'growth',
+  effective_from: '2026-05-09T00:27:04.772Z',
+  effective_until: null,
+  trial_days_remaining: null,
+  feature_flags: [],
+  notes: '',
+  created_at: '2026-05-09T00:27:04.772Z',
+  updated_at: '2026-05-09T00:27:04.772Z'
 }
-
-Node.js v22.22.0
+canAccessCard(qulicheak): {"allowed":true,"reason":null}
