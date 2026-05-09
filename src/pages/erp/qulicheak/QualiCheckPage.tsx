@@ -30,6 +30,8 @@ import { NcrCapture } from './NcrCapture';
 import { NcrRegister } from './reports/NcrRegister';
 import { CapaCapture } from './CapaCapture';
 import { CapaRegister } from './reports/CapaRegister';
+import { CapaDetail } from './CapaDetail';
+import type { CapaId } from '@/types/capa';
 import { MtcCapture } from './MtcCapture';
 import { MtcRegister } from './reports/MtcRegister';
 import { FaiCapture } from './FaiCapture';
@@ -47,6 +49,8 @@ export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
   // Sprint 3b-pre-2 · Block J · D-635 · QC entry overlay (priority over module switch).
   const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
+  // α-c · Block F · D-NEW-BR · CAPA detail overlay (priority over capa-register module).
+  const [activeCapaId, setActiveCapaId] = useState<CapaId | null>(null);
   const { entitlements, profile } = useCardEntitlement();
 
   // α-a-bis · D-NEW-AW · mount Procure360 → Qulicheak QA handoff listener
@@ -59,6 +63,9 @@ export default function QualiCheckPage(): JSX.Element {
   function renderModule(): JSX.Element {
     if (activeInspectionId) {
       return <QCEntryPage inspectionId={activeInspectionId} onBack={() => setActiveInspectionId(null)} />;
+    }
+    if (activeCapaId) {
+      return <CapaDetail capaId={activeCapaId} onBack={() => setActiveCapaId(null)} />;
     }
     switch (activeModule) {
       case 'welcome':              return <QualiCheckWelcome onNavigate={setActiveModule} />;
@@ -83,7 +90,7 @@ export default function QualiCheckPage(): JSX.Element {
       case 'capa-capture':
         return <CapaCapture onSaved={() => setActiveModule('capa-register')} onCancel={() => setActiveModule('welcome')} />;
       case 'capa-register':
-        return <CapaRegister />;
+        return <CapaRegister onOpen={(id) => setActiveCapaId(id)} />;
       case 'mtc-capture':
         return <MtcCapture onSaved={() => setActiveModule('mtc-register')} onCancel={() => setActiveModule('welcome')} />;
       case 'mtc-register':
