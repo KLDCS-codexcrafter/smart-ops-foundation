@@ -1,0 +1,14 @@
+qulicheak seed: {
+  tenant_id: 'SMRT',
+  card_id: 'qulicheak',
+  status: 'active',
+  plan_tier: 'growth',
+  effective_from: '2026-05-09T00:27:04.772Z',
+  effective_until: null,
+  trial_days_remaining: null,
+  feature_flags: [],
+  notes: '',
+  created_at: '2026-05-09T00:27:04.772Z',
+  updated_at: '2026-05-09T00:27:04.772Z'
+}
+canAccessCard(qulicheak): {"allowed":true,"reason":null}

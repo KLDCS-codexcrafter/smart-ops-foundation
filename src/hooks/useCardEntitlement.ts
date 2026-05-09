@@ -63,7 +63,11 @@ export function useCardEntitlement() {
       const procure360 =
         ent.card_id === 'procure360' &&
         (ent.status === 'add_on_available' || ent.status === 'locked');
-      if (gfProd || procure360) {
+      // T-Phase-1.A.5.a-bis-T2 · D-NEW-BB · Migrate stale 'locked' for qulicheak
+      const qulicheak =
+        ent.card_id === 'qulicheak' &&
+        (ent.status === 'add_on_available' || ent.status === 'locked');
+      if (gfProd || procure360 || qulicheak) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
         migrated = true;
