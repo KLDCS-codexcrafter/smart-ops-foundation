@@ -198,12 +198,42 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
   }, [form, user, entityCode, entityId]);
 
   return (
-    <div className="p-6 space-y-4 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Raise CAPA</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Corrective and Preventive Action · 8D + 5 Whys · Entity {entityCode}
-        </p>
+    <div className="p-6 space-y-4 max-w-4xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="CAPA Capture" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="capa"
+        voucherTypeName="CAPA Capture"
+        defaultPartyType="vendor"
+        partyId={form.partyId || null}
+        partyName={form.partyName || null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Raise CAPA</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Corrective and Preventive Action · 8D + 5 Whys · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="capa"
+          partyValue={form.partyId || null}
+          onUse={(data) => {
+            const d = data as Partial<typeof form>;
+            setForm((f) => ({ ...f, ...d }));
+          }}
+        />
       </div>
 
       <Card>
