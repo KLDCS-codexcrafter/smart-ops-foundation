@@ -28,6 +28,10 @@ import { QCEntryPage } from './QCEntryPage';
 import { QualiCheckDashboard } from './QualiCheckDashboard';
 import { NcrCapture } from './NcrCapture';
 import { NcrRegister } from './reports/NcrRegister';
+import { CapaCapture } from './CapaCapture';
+import { CapaRegister } from './reports/CapaRegister';
+import { MtcCapture } from './MtcCapture';
+import { MtcRegister } from './reports/MtcRegister';
 import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
