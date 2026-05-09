@@ -52,7 +52,7 @@ function fmtDate(iso: string | null | undefined): string {
 
 export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { userId } = useCurrentUser();
+  const userId = useCurrentUser()?.id ?? 'demo-user';
   const [capa, setCapa] = useState<CorrectiveAndPreventiveAction | null>(
     () => getCapaById(entityCode, capaId),
   );
