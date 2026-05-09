@@ -164,6 +164,7 @@ const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
 // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck Foundation
 const QualiCheckPage = lazy(() => import('./pages/erp/qulicheak/QualiCheckPage'));
 const SupplyXPage = lazy(() => import('./pages/erp/supplyx/SupplyXPage'));
+const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorPortalLogin = lazy(() => import('./pages/vendor-portal/VendorPortalLogin'));
@@ -504,6 +505,7 @@ const App = () => (
               <Route path="/erp/qulicheak" element={<P><QualiCheckPage /></P>} />
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
+              <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />

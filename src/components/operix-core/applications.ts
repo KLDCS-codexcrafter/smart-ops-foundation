@@ -381,7 +381,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/docvault',
     icon: 'FileText',
-    status: 'coming_soon',
+    status: 'wip',  // T-Phase-1.A.8.α-a · Q-LOCK-10a · coming_soon→wip (A.9 Closeout completes wip→active)
   },
   // ─── INSIGHTX ARCHITECTURAL RULE — LOCKED BEFORE BUILD ──────────────────────
   // InsightX is a read-only analytics layer for top management.
