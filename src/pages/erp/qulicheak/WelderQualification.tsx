@@ -251,15 +251,35 @@ export function WelderQualification(): JSX.Element {
               <div><Label>Base Metal</Label><Input value={wpsForm.base} onChange={(e) => setWpsForm({ ...wpsForm, base: e.target.value })} /></div>
               <div><Label>Filler Metal</Label><Input value={wpsForm.filler} onChange={(e) => setWpsForm({ ...wpsForm, filler: e.target.value })} /></div>
               <div className="flex items-end"><Button onClick={onAddWps}>Add</Button></div>
+              <div className="md:col-span-3 space-y-1">
+                <Label className="text-xs">Processes</Label>
+                <ChipMulti<WeldingProcess>
+                  options={PROCESS_OPTIONS} value={wpsProcesses}
+                  onChange={setWpsProcesses}
+                  labelOf={(p) => WELDING_PROCESS_LABELS[p]}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <Label className="text-xs">Positions</Label>
+                <ChipMulti<WeldingPosition>
+                  options={POSITION_OPTIONS} value={wpsPositions}
+                  onChange={setWpsPositions}
+                />
+              </div>
             </CardContent>
           </Card>
           <div className="mt-4 border rounded-lg divide-y">
             {wpss.map((w) => (
-              <div key={w.id} className="p-3 grid grid-cols-4 text-sm">
+              <div key={w.id} className="p-3 grid grid-cols-5 text-sm items-center">
                 <span className="font-mono">{w.id}</span>
                 <span>{w.wps_no}</span>
                 <Badge variant="outline">{WELDING_STANDARD_LABELS[w.standard]}</Badge>
-                <span>{w.approved_at ? 'Approved' : 'Draft'}</span>
+                <span>{w.approved_at ? <Badge>Approved</Badge> : <Badge variant="outline">Draft</Badge>}</span>
+                <span className="text-right">
+                  {!w.approved_at && (
+                    <Button size="sm" variant="outline" onClick={() => onApproveWps(w.id)}>Approve</Button>
+                  )}
+                </span>
               </div>
             ))}
           </div>
