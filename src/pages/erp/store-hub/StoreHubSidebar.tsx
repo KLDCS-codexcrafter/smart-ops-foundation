@@ -54,10 +54,12 @@ interface MenuItem {
 }
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Stock Check',         module: 'sh-r-stock-check',         icon: Boxes },
-  { label: 'Reorder Suggestions', module: 'sh-r-reorder-suggestions', icon: Layers },
-  { label: 'Demand Forecast',     module: 'sh-r-demand-forecast',     icon: TrendingUp },
-  { label: 'Cycle Count Status',  module: 'sh-r-cycle-count-status',  icon: ClipboardCheck },
+  { label: 'Stock Check',                    module: 'sh-r-stock-check',                    icon: Boxes },
+  { label: 'Reorder Suggestions',            module: 'sh-r-reorder-suggestions',            icon: Layers },
+  { label: 'Demand Forecast',                module: 'sh-r-demand-forecast',                icon: TrendingUp },
+  { label: 'Cycle Count Status',             module: 'sh-r-cycle-count-status',             icon: ClipboardCheck },
+  { label: 'Stock Movement Register',        module: 'sh-r-stock-movement-register',        icon: Activity },
+  { label: 'Department Consumption Summary', module: 'sh-r-department-consumption-summary', icon: Flame },
 ];
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
