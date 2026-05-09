@@ -19,6 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -29,9 +31,12 @@ import {
   type NonConformanceReport,
   type NcrOutcome,
 } from '@/types/ncr';
+import type { CorrectiveAndPreventiveAction } from '@/types/capa';
+import { CAPA_STATUS_LABELS } from '@/types/capa';
 
 interface Props {
   ncr: NonConformanceReport;
+  linkedCapa?: CorrectiveAndPreventiveAction | null;
   onClose: () => void;
 }
 
