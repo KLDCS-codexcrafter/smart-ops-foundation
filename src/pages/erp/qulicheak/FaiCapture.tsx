@@ -333,6 +333,9 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
         {onCancel && (
           <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         )}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Saving…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save FAI'}
         </Button>
