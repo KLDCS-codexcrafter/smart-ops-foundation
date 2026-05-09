@@ -34,6 +34,9 @@ export type StoreHubModule =
   | 'sh-r-reorder-suggestions'
   | 'sh-r-demand-forecast'
   | 'sh-r-cycle-count-status'
+  // α-b Block C · 2 NEW thin wrappers (D-387)
+  | 'sh-r-stock-movement-register'
+  | 'sh-r-department-consumption-summary'
   // Transactions (NEW · Card #7 · D-381 + D-382)
   | 'sh-t-stock-issue-entry'
   | 'sh-t-stock-issue-register'
