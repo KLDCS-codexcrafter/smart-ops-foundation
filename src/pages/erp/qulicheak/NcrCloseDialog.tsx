@@ -127,8 +127,9 @@ export function NcrCloseDialog({ ncr, linkedCapa, onClose }: Props): JSX.Element
               </AlertDescription>
             </Alert>
           )}
-        <div className="space-y-4 py-2">
+
           <div>
+
             <Label className="mb-2 block">Outcome</Label>
             <RadioGroup
               value={outcome}
