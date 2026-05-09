@@ -281,6 +281,32 @@ export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
                     <Label className="text-xs">Why 2 (optional)</Label>
                     <Input value={why2} onChange={(e) => setWhy2(e.target.value)} placeholder="Why?" />
                   </div>
+                  {!showDeepWhys && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowDeepWhys(true)}
+                    >
+                      + Add Why 3 / 4 / 5
+                    </Button>
+                  )}
+                  {showDeepWhys && (
+                    <>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Why 3</Label>
+                        <Input value={why3} onChange={(e) => setWhy3(e.target.value)} placeholder="Why?" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Why 4</Label>
+                        <Input value={why4} onChange={(e) => setWhy4(e.target.value)} placeholder="Why?" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Why 5</Label>
+                        <Input value={why5} onChange={(e) => setWhy5(e.target.value)} placeholder="Why?" />
+                      </div>
+                    </>
+                  )}
                   <div className="space-y-1">
                     <Label className="text-xs">Root Cause Summary</Label>
                     <Textarea
