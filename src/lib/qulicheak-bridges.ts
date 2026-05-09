@@ -25,6 +25,10 @@ import type { NcrSeverity, NcrOutcome } from '@/types/ncr';
 
 const CH_HANDOFF = 'qa.handoff.received';
 const CH_OUTCOME = 'qa.outcome.applied';
+// α-b · Block C · CAPA lifecycle channels (in-card observability · no Procure360 touch)
+const CH_CAPA_LINKED = 'capa:linked-to-ncr';
+const CH_CAPA_EFFECTIVE = 'capa:effective:applied';
+const CH_CAPA_INEFFECTIVE = 'capa:ineffective:reopened';
 
 export interface QaHandoffPayload {
   source_card: 'procure360' | 'production' | 'inventory_hub';
