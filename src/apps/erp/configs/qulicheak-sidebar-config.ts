@@ -97,6 +97,15 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         requiredCards: ['qulicheak'],
         keyboard: 'q m',
       },
+      {
+        id: 'fai-capture',
+        type: 'item',
+        label: 'Capture FAI',
+        icon: Ruler,
+        moduleId: 'fai-capture',
+        requiredCards: ['qulicheak'],
+        keyboard: 'q f',
+      },
     ],
   },
   {
