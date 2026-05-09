@@ -22,9 +22,21 @@ import {
 } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadDocuments } from '@/lib/docvault-engine';
+// F-3b · D-NEW-CE FormCarryForwardKit canonical (FR-29 register-shape 5/12 honest)
+import {
+  useFormCarryForwardChecklist, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 
 export function DocumentRegister(): JSX.Element {
   const { entityCode } = useEntityCode();
+  // FR-29 register-shape honest 5/12 baseline · D-NEW-CE canonical (matches StockIssueRegister A.6)
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: false, sprint27d2: false, sprint27e: false,
+    keyboardOverlay: false, draftRecovery: false, decimalHelpers: false, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: false,
+  };
+  useFormCarryForwardChecklist('DocumentRegister', _fr29);
+  void _fr29;
   const docs = loadDocuments(entityCode);
 
   const [search, setSearch] = useState('');
