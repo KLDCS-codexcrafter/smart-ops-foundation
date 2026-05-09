@@ -110,6 +110,26 @@ export const storeHubSidebarItems: SidebarItem[] = [
         requiredCards: ['store-hub'],
         keyboard: 's y',
       },
+      // α-b Block C · Q-LOCK-9c revised · 2 NEW thin wrappers (D-387 thin-pass-through)
+      {
+        id: 'sh-r-stock-movement-register',
+        type: 'item',
+        label: 'Stock Movement Register',
+        icon: Activity,
+        moduleId: 'sh-r-stock-movement-register',
+        requiredCards: ['store-hub'],
+        keyboard: 's m',
+      },
+      {
+        id: 'sh-r-department-consumption-summary',
+        type: 'item',
+        label: 'Department Consumption Summary',
+        icon: Flame,
+        moduleId: 'sh-r-department-consumption-summary',
+        requiredCards: ['store-hub'],
+        keyboard: 's u',
+      },
     ],
   },
 ];
+
