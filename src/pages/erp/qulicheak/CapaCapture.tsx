@@ -122,6 +122,63 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
     }
   }, [form, user, entityCode, entityId, prefillNcrId, onSaved]);
 
+  const handleSaveAndNew = useCallback((): void => {
+    if (!form.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+    if (!user) {
+      toast.error('User session not found');
+      return;
+    }
+    if (form.source === 'ncr' && !form.ncrId.trim()) {
+      toast.error('Select a related NCR');
+      return;
+    }
+    setSaving(true);
+    try {
+      if (form.source === 'ncr') {
+        const capa = raiseCapaFromNcr(entityCode, user.id, form.ncrId.trim() as NcrId, {
+          entity_id: entityId,
+          branch_id: form.branchId.trim() || null,
+          severity: form.severity,
+          title: form.title.trim(),
+          description: form.description.trim() || null,
+        });
+        if (!capa) {
+          toast.error('Linked NCR not found');
+          return;
+        }
+        toast.success(`CAPA ${capa.id} raised · NCR moved to capa_pending`);
+      } else {
+        const capa = raiseCapa(entityCode, user.id, {
+          entity_id: entityId,
+          branch_id: form.branchId.trim() || null,
+          source: form.source,
+          severity: form.severity,
+          title: form.title.trim(),
+          description: form.description.trim() || null,
+          related_party_id: form.partyId.trim() || null,
+          related_party_name: form.partyName.trim() || null,
+        });
+        toast.success(`CAPA ${capa.id} raised`);
+      }
+      const carried = {
+        source: form.source,
+        severity: form.severity,
+        branchId: form.branchId,
+        partyId: form.source !== 'ncr' ? form.partyId : '',
+        partyName: form.source !== 'ncr' ? form.partyName : '',
+        ncrId: '',
+      };
+      setForm({ ...initial(), ...carried });
+    } catch {
+      toast.error('Failed to raise CAPA');
+    } finally {
+      setSaving(false);
+    }
+  }, [form, user, entityCode, entityId]);
+
   return (
     <div className="p-6 space-y-4 max-w-4xl">
       <div>
