@@ -17,7 +17,7 @@
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
-  AlertOctagon, FileWarning, Wrench, FileBadge,
+  AlertOctagon, FileWarning, Wrench, FileBadge, Ruler, Clock,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -96,6 +96,15 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         moduleId: 'mtc-capture',
         requiredCards: ['qulicheak'],
         keyboard: 'q m',
+      },
+      {
+        id: 'fai-capture',
+        type: 'item',
+        label: 'Capture FAI',
+        icon: Ruler,
+        moduleId: 'fai-capture',
+        requiredCards: ['qulicheak'],
+        keyboard: 'q f',
       },
     ],
   },
@@ -191,6 +200,22 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         label: 'MTC Register',
         icon: FileBadge,
         moduleId: 'mtc-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'fai-register',
+        type: 'item',
+        label: 'FAI Register',
+        icon: Ruler,
+        moduleId: 'fai-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'effectiveness-verification-due',
+        type: 'item',
+        label: 'Effectiveness Due',
+        icon: Clock,
+        moduleId: 'effectiveness-verification-due',
         requiredCards: ['qulicheak'],
       },
     ],

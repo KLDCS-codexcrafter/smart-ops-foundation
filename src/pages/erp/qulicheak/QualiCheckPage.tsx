@@ -32,6 +32,8 @@ import { CapaCapture } from './CapaCapture';
 import { CapaRegister } from './reports/CapaRegister';
 import { MtcCapture } from './MtcCapture';
 import { MtcRegister } from './reports/MtcRegister';
+import { FaiCapture } from './FaiCapture';
+import { FaiRegister } from './reports/FaiRegister';
 import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
@@ -78,6 +80,12 @@ export default function QualiCheckPage(): JSX.Element {
         return <MtcCapture onSaved={() => setActiveModule('mtc-register')} onCancel={() => setActiveModule('welcome')} />;
       case 'mtc-register':
         return <MtcRegister />;
+      case 'fai-capture':
+        return <FaiCapture onSaved={() => setActiveModule('fai-register')} onCancel={() => setActiveModule('welcome')} />;
+      case 'fai-register':
+        return <FaiRegister />;
+      case 'effectiveness-verification-due':
+        return <div className="p-6 text-sm text-muted-foreground">Effectiveness Verification panel · ships in Block F.</div>;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
