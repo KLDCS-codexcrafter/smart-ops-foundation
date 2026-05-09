@@ -7,7 +7,7 @@
  * @iso 25010 Maintainability + Reliability · ISO 9001:2015 Clause 8.5.1.1
  * @whom Quality Inspector · QA Manager · Production Lead
  * @decisions D-NEW-BG (FAI engine NEW) · D-NEW-BJ (3-arg userId-2nd signature)
- * @disciplines FR-21 · FR-22 (ActivityItemKind 'voucher')
+ * @disciplines FR-21 · FR-22 (ActivityItemKind 'voucher') · FR-30 (header)
  * @reuses cross-card-activity-engine.recordActivity
  * @[JWT] GET/POST /api/qulicheak/fais · localStorage key: erp_fai_${entityCode}
  */
