@@ -65,6 +65,23 @@ export function DocumentEntry(): JSX.Element {
   const [workOrderId, setWorkOrderId] = useState('');
   const [fileName, setFileName] = useState('');
   const [fileSize, setFileSize] = useState(0);
+  const [savedDocId, setSavedDocId] = useState<string | null>(null);
+
+  // F-3a · FR-29 11/12 honest baseline · D-NEW-CE canonical (matches StockIssueEntry A.6 pattern)
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, // honest: documents have form-specific defaults · not generic
+    pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('DocumentEntry', _fr29);
+  void _fr29;
+  const _form = { title, description, docType, department, versionNo, projectId, customerId, vendorId };
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: `docvault-document-entry-${entityCode}`,
+    entityCode, formState: _form, items: [], view: 'new', voucherType: 'document',
+  });
+  void _sprint27d1;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const f = e.target.files?.[0];
