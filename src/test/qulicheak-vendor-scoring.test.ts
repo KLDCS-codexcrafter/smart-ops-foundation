@@ -19,15 +19,15 @@ describe('vendor scoring subscription · D-NEW-BO', () => {
     const unmount = subscribeQaForVendorScoring();
     emitQaOutcomeForVendor({
       vendor_id: 'V-1', ncr_id: 'NCR-1', severity: 'critical',
-      outcome: 'rejected_returned', entity_code: ENTITY,
+      outcome: 'reject', entity_code: ENTITY,
     });
     emitQaOutcomeForVendor({
       vendor_id: 'V-1', ncr_id: 'NCR-2', severity: 'major',
-      outcome: 'rejected_returned', entity_code: ENTITY,
+      outcome: 'reject', entity_code: ENTITY,
     });
     emitQaOutcomeForVendor({
       vendor_id: 'V-1', ncr_id: 'NCR-3', severity: 'minor',
-      outcome: 'rejected_returned', entity_code: ENTITY,
+      outcome: 'reject', entity_code: ENTITY,
     });
     const ledger = readVendorQaDimLedger(ENTITY);
     expect(ledger.length).toBe(3);
