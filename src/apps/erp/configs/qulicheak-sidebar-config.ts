@@ -202,6 +202,22 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         moduleId: 'mtc-register',
         requiredCards: ['qulicheak'],
       },
+      {
+        id: 'fai-register',
+        type: 'item',
+        label: 'FAI Register',
+        icon: Ruler,
+        moduleId: 'fai-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'effectiveness-verification-due',
+        type: 'item',
+        label: 'Effectiveness Due',
+        icon: Clock,
+        moduleId: 'effectiveness-verification-due',
+        requiredCards: ['qulicheak'],
+      },
     ],
   },
 ];
