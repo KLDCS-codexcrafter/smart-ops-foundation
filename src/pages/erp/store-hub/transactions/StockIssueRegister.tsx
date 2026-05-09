@@ -1,8 +1,12 @@
 /**
  * StockIssueRegister.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Lists Stock Issues with status badges + Post action for drafts + empty-state CTA.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 register-shape honest 5/12 baseline)
+ * @disciplines FR-29 (register form · most carry-forward items don't apply to read-only list) · FR-30
+ * @reuses      @/lib/form-carry-forward-kit · @/components/canonical/form-carry-forward-kit
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +20,12 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listStockIssues, postStockIssue } from '@/lib/stock-issue-engine';
 import type { StockIssue } from '@/types/stock-issue';
 import { STOCK_ISSUE_STATUS_LABELS, STOCK_ISSUE_STATUS_COLORS } from '@/types/stock-issue';
+import {
+  Sprint27d2Mount, UseLastVoucherButton,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 import type { StoreHubModule } from './../StoreHubSidebar';
 
 interface Props {
