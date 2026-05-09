@@ -30,6 +30,20 @@ function writeAll(entityCode: string, list: Iso9001AuditDocument[]): void {
   }
 }
 
+/**
+ * D-NEW-BU · positive http(s) allowlist replacing data: blacklist.
+ * Rejects javascript:/vbscript:/file:/chrome:/data: and malformed URLs (FR-21 · ISO 27001 CIA).
+ */
+export function isSafeHttpUrl(u: string): boolean {
+  if (!u || typeof u !== 'string') return false;
+  try {
+    const parsed = new URL(u);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export function listIso9001Docs(entityCode: string): Iso9001AuditDocument[] {
   return readAll(entityCode);
 }
