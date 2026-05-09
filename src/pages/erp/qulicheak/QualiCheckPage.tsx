@@ -70,6 +70,14 @@ export default function QualiCheckPage(): JSX.Element {
         return <NcrCapture onSaved={() => setActiveModule('ncr-register')} onCancel={() => setActiveModule('welcome')} />;
       case 'ncr-register':
         return <NcrRegister />;
+      case 'capa-capture':
+        return <CapaCapture onSaved={() => setActiveModule('capa-register')} onCancel={() => setActiveModule('welcome')} />;
+      case 'capa-register':
+        return <CapaRegister />;
+      case 'mtc-capture':
+        return <MtcCapture onSaved={() => setActiveModule('mtc-register')} onCancel={() => setActiveModule('welcome')} />;
+      case 'mtc-register':
+        return <MtcRegister />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
