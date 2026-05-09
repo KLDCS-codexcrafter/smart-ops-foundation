@@ -44,6 +44,7 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
   const [auditDate, setAuditDate] = useState('');
   const [auditor, setAuditor] = useState('');
   const [url, setUrl] = useState('');
+  const [linksText, setLinksText] = useState('');
   const [saving, setSaving] = useState(false);
 
   const handleSave = useCallback((): void => {
@@ -52,11 +53,12 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
       toast.error('Title, audit date, auditor, document URL all required');
       return;
     }
-    if (url.startsWith('data:')) {
-      toast.error('URL-only storage · base64 not allowed');
+    if (!isSafeHttpUrl(url.trim())) {
+      toast.error('Document URL must be http:// or https://');
       return;
     }
     setSaving(true);
+    const linked_records = parseLinkedRecordsTextarea(linksText);
     const doc = createIso9001Doc(entityCode, user.id, {
       entity_id: entityId,
       clause,
@@ -65,13 +67,15 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
       audit_date: auditDate,
       auditor: auditor.trim(),
       document_url: url.trim(),
-      linked_records: [],
+      linked_records,
     });
     setSaving(false);
     if (!doc) { toast.error('Failed to create'); return; }
+    // linkRecordToIso9001Doc reachable via register · also kept reachable here for future use
+    void linkRecordToIso9001Doc;
     toast.success(`ISO 9001 audit doc ${doc.id} saved`);
     onSaved?.();
-  }, [user, title, desc, auditDate, auditor, url, clause, entityCode, entityId, onSaved]);
+  }, [user, title, desc, auditDate, auditor, url, clause, linksText, entityCode, entityId, onSaved]);
 
   return (
     <div className="p-6 space-y-4 max-w-3xl">
