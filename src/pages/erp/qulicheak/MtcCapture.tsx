@@ -1,10 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/MtcCapture.tsx
  * @purpose Material Test Certificate entry · header + dynamic parameter rows
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
- * @decisions D-NEW-BF · D-NEW-BJ
- * @disciplines FR-50 · FR-51 · FR-21 · FR-30
- * @[JWT] writes via mtc-engine.createMtc
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom Quality Inspector
+ * @decisions D-NEW-BF · D-NEW-BJ · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 · FR-21 · FR-30
+ * @reuses mtc-engine.createMtc · useEntityCode · useCurrentUser
+ * @[JWT] writes via mtc-engine.createMtc · localStorage erp_mtc_${entityCode}
  */
 import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
