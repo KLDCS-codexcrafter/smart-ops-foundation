@@ -118,7 +118,15 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
           <div>
             <Label>Document URL <span className="text-destructive">*</span></Label>
             <Input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." />
-            <p className="text-xs text-muted-foreground mt-1">URL-only · base64 / data: rejected</p>
+            <p className="text-xs text-muted-foreground mt-1">URL must be http:// or https:// · javascript:/data:/file: rejected</p>
+          </div>
+          <div>
+            <Label>Linked records (optional)</Label>
+            <Textarea rows={2} value={linksText} onChange={(e) => setLinksText(e.target.value)}
+              placeholder="ncr:NCR-001, capa:CAPA-002, mtc:MTC-003" />
+            <p className="text-xs text-muted-foreground mt-1">
+              Comma-separated · valid types: {VALID_LINK_TYPES.join(' / ')}
+            </p>
           </div>
         </CardContent>
       </Card>
