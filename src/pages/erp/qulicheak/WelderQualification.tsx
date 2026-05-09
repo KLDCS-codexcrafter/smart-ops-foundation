@@ -69,9 +69,9 @@ function ChipMulti<T extends string>({ options, value, onChange, labelOf }: Chip
 export function WelderQualification(): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('WelderQualification', _fr29);
   void _fr29;
@@ -80,6 +80,10 @@ export function WelderQualification(): JSX.Element {
   const [tab, setTab] = useState<'welders' | 'wps' | 'pqr' | 'wpq'>('welders');
   const [refresh, setRefresh] = useState(0);
   const bump = (): void => setRefresh((n) => n + 1);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'welder-qualification-new', entityCode, formState: { tab }, items: [], view: 'new', voucherType: 'welder_qualification',
+  });
+  void _sprint27d1;
 
   // Welder form
   const [wForm, setWForm] = useState({ name: '', party: '', emp: '' });
