@@ -1,0 +1,43 @@
+=== T1-2 PER-ENGINE ZERO-TOUCH ===
+
+--- 14 voucher form .tsx ---
+  src/pages/erp/finecore/PurchaseOrder.tsx                     0
+  src/pages/erp/finecore/SalesOrder.tsx                        0
+  src/pages/erp/finecore/Receipt.tsx                           0
+  src/pages/erp/finecore/Payment.tsx                           0
+  src/pages/erp/finecore/SalesInvoice.tsx                      0
+  src/pages/erp/finecore/PurchaseInvoice.tsx                   0
+  src/pages/erp/finecore/ContraEntry.tsx                       0
+  src/pages/erp/finecore/JournalEntry.tsx                      0
+  src/pages/erp/finecore/CreditNote.tsx                        0
+  src/pages/erp/finecore/DebitNote.tsx                         0
+  src/pages/erp/finecore/StockAdjustment.tsx                   0
+  src/pages/erp/finecore/StockTransferDispatch.tsx             0
+  src/pages/erp/finecore/ReceiptNote.tsx                       0
+  src/pages/erp/finecore/DeliveryNote.tsx                      0
+
+--- voucher-type.ts ---
+0
+--- VendorMaster.tsx ---
+0
+--- SD-21 qa engines ---
+  qa-plan-engine.ts              0
+  qa-spec-engine.ts              0
+  qa-coa-print-engine.ts         0
+--- voucher-allocations.ts ---
+0
+--- QCEntryPage.tsx ---
+0
+--- 12 Procure360 engines ---
+  vendor-scoring-engine.ts                           0
+  alternate-suggest-engine.ts                        0
+  sourcing-recommendation-engine.ts                  0
+  rfq-engine.ts                                      0
+  purchase-cost-variance-engine.ts                   0
+  bill-passing-tax-derivation.ts                     0
+  po-print-engine.ts                                 0
+  rfq-print-engine.ts                                0
+  pre-close-batch.ts                                 0
+  po-cross-dept-followup.ts                          0
+  finance-pi-bridge.ts                               0
+  cross-card-activity-engine.ts                      0

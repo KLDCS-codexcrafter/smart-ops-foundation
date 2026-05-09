@@ -1,0 +1,48 @@
+=== T1-4b 10-DIM DIAGNOSTIC ===
+--- D1 ShellHeader/ShellSidebar imports ---
+CC:
+Quli:
+src/pages/erp/qulicheak/QualiCheckPage.tsx:14:import { Shell } from '@/shell';
+
+--- D2 sidebar-config entries ---
+CC: 97
+Quli: 14
+
+--- D3 shell-config files ---
+src/apps/erp/configs/command-center-shell-config.ts
+src/apps/erp/configs/gateflow-shell-config.ts
+src/apps/erp/configs/procure360-shell-config.ts
+src/apps/erp/configs/production-shell-config.ts
+src/apps/erp/configs/qulicheak-shell-config.ts
+
+--- D4 card-entitlement-engine qulicheak ---
+73:    one('command-center'), one('finecore'), one('salesx'),
+80:    one('qulicheak', 'locked'),
+
+--- D5 applications.ts status ---
+
+--- D6 seedDemoEntitlements / stale-status migration ---
+src/lib/card-entitlement-engine.ts:80:    one('qulicheak', 'locked'),
+
+--- D8 LANES coverage ---
+
+--- D9 CardId type union ---
+src/types/card-entitlement.ts:8:export type CardId =
+qulicheak in CardId types/:
+src/types/card-entitlement.ts:11:  | 'procure360' | 'inventory-hub' | 'qulicheak' | 'gateflow'
+src/types/card-entitlement.ts:55:  operations: ['procure360', 'inventory-hub', 'production', 'qulicheak', 'gateflow',
+
+--- D10 QualiCheckPage uses Shell ---
+3: * @purpose     Qulicheak card page using canonical Shell pattern (FR-58 · GateFlow precedent)
+5: * @when        Phase 1.A.5.a · Shell Migration sprint
+6: * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration
+8: * @decisions   D-250 (Shell pattern lock) · D-NEW-AY (Outcome C split) ·
+10: * @reuses      @/shell Shell · qulicheak-shell-config · panels · operational-panels
+14:import { Shell } from '@/shell';
+15:import { qulicheakShellConfig } from '@/apps/erp/configs/qulicheak-shell-config';
+75:    <Shell
+76:      config={qulicheakShellConfig}
+85:    </Shell>
+
+--- QualiCheckSidebar.tsx (legacy, supposedly DELETED) ---
+DELETED ✓

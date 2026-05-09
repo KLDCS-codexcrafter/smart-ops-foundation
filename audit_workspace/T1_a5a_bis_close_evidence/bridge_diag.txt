@@ -1,0 +1,19 @@
+=== T1-4 BRIDGE DIAGNOSTIC ===
+--- subscribeToCrossCardEvent exports ---
+--- emitCrossCardEvent exports ---
+--- cross-card-activity-engine.ts exports ---
+12:export function recordActivity(
+35:export function readActivity(entityCode: string, userId: string): CrossCardActivityItem[] {
+44:export function readActivityForCard(
+53:export function clearActivity(entityCode: string, userId: string): void {
+--- applyQaOutcome refs ---
+src/lib/bill-passing-qa-bridge.ts:6: *              Inbound:  applyQaOutcome listens for QA finalization events and
+src/lib/bill-passing-qa-bridge.ts:82:export async function applyQaOutcome(
+src/lib/bill-passing-qa-bridge.ts:120:    void applyQaOutcome(ce.detail);
+src/lib/ncr-engine.ts:10: * @decisions D-NEW-AV (NCR engine NEW) · D-NEW-AX (close emits applyQaOutcome)
+src/lib/qulicheak-bridges.ts:12: *            D-NEW-AX (close emits applyQaOutcome with severity-based delta)
+src/lib/qulicheak-bridges.ts:27:const CH_OUTCOME = 'qa.outcome.applied';
+src/lib/qulicheak-bridges.ts:92: * Procure360's vendor-scoring engine subscribes to `qa.outcome.applied` ·
+--- bill-passing-qa-bridge.ts ---
+src/lib/bill-passing-qa-bridge.ts
+EXISTS

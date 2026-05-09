@@ -1,0 +1,22 @@
+=== git diff a4b9921b..HEAD --name-only ===
+audit_workspace/T1_a5a_bis_close_evidence/head.txt
+src/apps/erp/configs/qulicheak-shell-config.ts
+src/apps/erp/configs/qulicheak-sidebar-config.ts
+src/lib/ncr-engine.ts
+src/lib/qulicheak-bridges.ts
+src/pages/erp/qulicheak/NcrCapture.tsx
+src/pages/erp/qulicheak/NcrCloseDialog.tsx
+src/pages/erp/qulicheak/QualiCheckPage.tsx
+src/pages/erp/qulicheak/QualiCheckSidebar.tsx
+src/pages/erp/qulicheak/QualiCheckSidebar.types.ts
+src/pages/erp/qulicheak/reports/NcrRegister.tsx
+src/test/ncr-engine.test.ts
+src/types/ncr.ts
+
+=== TSC ===
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 11.14.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.14.1
+npm notice To update run: npm install -g npm@11.14.1
+npm notice
+TSC exit: 0
