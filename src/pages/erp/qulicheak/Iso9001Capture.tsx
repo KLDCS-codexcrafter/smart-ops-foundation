@@ -65,8 +65,6 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
     });
     setSaving(false);
     if (!doc) { toast.error('Failed to create'); return; }
-    // linkRecordToIso9001Doc reachable via register · also kept reachable here for future use
-    void linkRecordToIso9001Doc;
     toast.success(`ISO 9001 audit doc ${doc.id} saved`);
     onSaved?.();
   }, [user, title, desc, auditDate, auditor, url, clause, linksText, entityCode, entityId, onSaved]);
