@@ -35,7 +35,13 @@ import { MtcRegister } from './reports/MtcRegister';
 import { FaiCapture } from './FaiCapture';
 import { FaiRegister } from './reports/FaiRegister';
 import { EffectivenessVerificationDuePanel } from './reports/EffectivenessVerificationDuePanel';
-import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
+import { WelderQualification } from './WelderQualification';
+import { WelderRegister } from './reports/WelderRegister';
+import { WpqExpiryDashboard } from './reports/WpqExpiryDashboard';
+import { Iso9001Capture } from './Iso9001Capture';
+import { Iso9001Register } from './reports/Iso9001Register';
+import { IqcEntryPage } from './IqcEntryPage';
+import { mountQulicheakBridges, subscribeQaForVendorScoring } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -46,7 +52,8 @@ export default function QualiCheckPage(): JSX.Element {
   // α-a-bis · D-NEW-AW · mount Procure360 → Qulicheak QA handoff listener
   useEffect(() => {
     const unmount = mountQulicheakBridges();
-    return () => { unmount(); };
+    const unsub = subscribeQaForVendorScoring();
+    return () => { unmount(); unsub(); };
   }, []);
 
   function renderModule(): JSX.Element {
@@ -87,6 +94,18 @@ export default function QualiCheckPage(): JSX.Element {
         return <FaiRegister />;
       case 'effectiveness-verification-due':
         return <EffectivenessVerificationDuePanel />;
+      case 'welder-qualification':
+        return <WelderQualification />;
+      case 'welder-register':
+        return <WelderRegister />;
+      case 'wpq-expiry-dashboard':
+        return <WpqExpiryDashboard />;
+      case 'iso9001-capture':
+        return <Iso9001Capture onSaved={() => setActiveModule('iso9001-register')} onCancel={() => setActiveModule('welcome')} />;
+      case 'iso9001-register':
+        return <Iso9001Register />;
+      case 'iqc-entry-page':
+        return <IqcEntryPage />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }

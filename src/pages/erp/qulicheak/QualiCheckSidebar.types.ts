@@ -32,4 +32,11 @@ export type QualiCheckModule =
   | 'mtc-register'
   | 'fai-capture'
   | 'fai-register'
-  | 'effectiveness-verification-due';
+  | 'effectiveness-verification-due'
+  // α-c · D-NEW-BN/BP/BQ · Welder + ISO 9001 + IQC
+  | 'welder-qualification'
+  | 'welder-register'
+  | 'wpq-expiry-dashboard'
+  | 'iso9001-capture'
+  | 'iso9001-register'
+  | 'iqc-entry-page';
