@@ -32,6 +32,7 @@ export function FGRInspReport(): JSX.Element {
 
   // D-NEW-BW · build PC lookup once
   const pcMap = useMemo<Map<string, string>>(() => {
+    void version;
     const map = new Map<string, string>();
     if (typeof window === 'undefined') return map;
     try {
