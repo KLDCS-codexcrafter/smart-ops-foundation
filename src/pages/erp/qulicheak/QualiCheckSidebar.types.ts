@@ -24,4 +24,9 @@ export type QualiCheckModule =
   | 'qc-dashboard'
   // α-a-bis · D-NEW-AV · NCR Foundation
   | 'ncr-capture'
-  | 'ncr-register';
+  | 'ncr-register'
+  // α-b · D-NEW-BD · CAPA + D-NEW-BF · MTC
+  | 'capa-capture'
+  | 'capa-register'
+  | 'mtc-capture'
+  | 'mtc-register';

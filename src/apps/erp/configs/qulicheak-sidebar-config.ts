@@ -17,7 +17,7 @@
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
-  AlertOctagon, FileWarning,
+  AlertOctagon, FileWarning, Wrench, FileBadge,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -78,6 +78,24 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         moduleId: 'ncr-capture',
         requiredCards: ['qulicheak'],
         keyboard: 'q n',
+      },
+      {
+        id: 'capa-capture',
+        type: 'item',
+        label: 'Raise CAPA',
+        icon: Wrench,
+        moduleId: 'capa-capture',
+        requiredCards: ['qulicheak'],
+        keyboard: 'q c',
+      },
+      {
+        id: 'mtc-capture',
+        type: 'item',
+        label: 'Capture MTC',
+        icon: FileBadge,
+        moduleId: 'mtc-capture',
+        requiredCards: ['qulicheak'],
+        keyboard: 'q m',
       },
     ],
   },
@@ -157,6 +175,22 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         label: 'NCR Register',
         icon: FileWarning,
         moduleId: 'ncr-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'capa-register',
+        type: 'item',
+        label: 'CAPA Register',
+        icon: Wrench,
+        moduleId: 'capa-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'mtc-register',
+        type: 'item',
+        label: 'MTC Register',
+        icon: FileBadge,
+        moduleId: 'mtc-register',
         requiredCards: ['qulicheak'],
       },
     ],
