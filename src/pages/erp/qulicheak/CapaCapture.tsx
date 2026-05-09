@@ -303,6 +303,9 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
         {onCancel && (
           <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
         )}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Raising…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Raising…' : 'Raise CAPA'}
         </Button>
