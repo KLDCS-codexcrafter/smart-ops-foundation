@@ -1,9 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/reports/EffectivenessVerificationDuePanel.tsx
  * @purpose List of CAPA effectiveness verifications (30/60/90-day) due within window
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · Block F.2
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · Block F.2 · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom QA Manager
  * @decisions D-NEW-BH (verification 30/60/90 milestones)
- * @disciplines FR-21 · FR-50 · FR-30
+ * @disciplines FR-21 · FR-50 · FR-30 · FR-29 (FormCarryForwardKit N/A here · read-only panel)
+ * @reuses capa-engine.listVerificationsDueWithin · recordVerification · useEntityCode ·
+ *         useEntityChangeEffect · useCurrentUser
  * @[JWT] reads via capa-engine.listVerificationsDueWithin · GET /api/qulicheak/capas/verifications/due
  */
 import { useEffect, useMemo, useState } from 'react';
