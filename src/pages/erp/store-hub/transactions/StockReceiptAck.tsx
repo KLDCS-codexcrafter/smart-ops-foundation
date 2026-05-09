@@ -1,15 +1,17 @@
 /**
- * StockReceiptAck.tsx — Card #7 Block G · D-382
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
- *
- * Two tabs: Awaiting (Card #6 IRs status='released' not yet acked) + History.
- * Quick Ack dialog with per-line qty_acknowledged + variance display.
- *
+ * @file        src/pages/erp/store-hub/transactions/StockReceiptAck.tsx
+ * @purpose     Stock Receipt Acknowledgment form · 11/12 honest baseline
+ * @who         Store Keeper · Department Head · Storekeeper Supervisor
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
+ * @iso         ISO 9001:2015 Clause 8.1 · ISO 25010 Usability + Operability
+ * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
  *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
+ * @[JWT]       writes via stock-receipt-ack-engine.createReceiptAck + postReceiptAck
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
