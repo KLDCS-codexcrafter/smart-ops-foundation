@@ -154,7 +154,8 @@ export function raiseCapaFromNcr(
     related_party_id: ncr.related_party_id ?? null,
     related_party_name: ncr.related_party_name ?? null,
   });
-  emit('capa:linked-to-ncr', { capa_id: capa.id, ncr_id: ncrId });
+  // D-NEW-BV adapt #6 · entity_code + vendor_id (when known) carried on capa lifecycle events
+  emit('capa:linked-to-ncr', { capa_id: capa.id, ncr_id: ncrId, entity_code: entityCode, vendor_id: ncr.related_party_id ?? undefined });
   return capa;
 }
 
