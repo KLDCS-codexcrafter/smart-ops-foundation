@@ -1,7 +1,15 @@
 /**
- * @file src/pages/erp/qulicheak/reports/WelderRegister.tsx
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
- * @decisions D-NEW-BN
+ * @file        src/pages/erp/qulicheak/reports/WelderRegister.tsx
+ * @purpose     Welder register · search · WPQ count per welder · qualification status badges
+ * @who         QA Manager · Welding Engineer
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC · T-Phase-1.A.5.c-T3-AuditFix · header backfill
+ * @iso         ASME IX · AWS D1.1 · ISO 9001:2015 · ISO 25010 Maintainability
+ * @whom        Audit Owner
+ * @decisions   D-NEW-BN · T3 header hygiene
+ * @disciplines FR-30 (canonical header) · FR-50 (entity-scoped reads)
+ * @reuses      welder-engine.filterWelders · listWpq · QUAL_STATUS_LABELS
+ * @[JWT]       reads via filterWelders/listWpq · localStorage erp_welders_${entityCode} · erp_wpq_${entityCode}
  */
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
