@@ -21,7 +21,7 @@
  *   Multi-Entity 6-point (entity_id) · Multi-Branch (branch_id).
  *   See Sprint A.5.b Step 1 alignment for polish-pass scope when α-b is planned.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
