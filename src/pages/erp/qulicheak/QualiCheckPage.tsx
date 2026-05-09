@@ -34,6 +34,7 @@ import { MtcCapture } from './MtcCapture';
 import { MtcRegister } from './reports/MtcRegister';
 import { FaiCapture } from './FaiCapture';
 import { FaiRegister } from './reports/FaiRegister';
+import { EffectivenessVerificationDuePanel } from './reports/EffectivenessVerificationDuePanel';
 import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
@@ -85,7 +86,7 @@ export default function QualiCheckPage(): JSX.Element {
       case 'fai-register':
         return <FaiRegister />;
       case 'effectiveness-verification-due':
-        return <div className="p-6 text-sm text-muted-foreground">Effectiveness Verification panel · ships in Block F.</div>;
+        return <EffectivenessVerificationDuePanel />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }

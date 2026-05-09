@@ -21,7 +21,7 @@
  *   Multi-Entity 6-point (entity_id) · Multi-Branch (branch_id).
  *   See Sprint A.5.b Step 1 alignment for polish-pass scope when α-b is planned.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -131,6 +131,18 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
       setSaving(false);
     }
   }, [form, user, entityCode, entityId, onSaved]);
+
+  // α-b Block F polish · Cmd/Ctrl+Enter to save (FR-29 keyboard shortcut alignment)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!saving) handleSave();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [handleSave, saving]);
 
   return (
     <div className="p-6 space-y-4 max-w-4xl">
