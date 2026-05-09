@@ -31,7 +31,7 @@ describe('vendor scoring subscription · D-NEW-BO', () => {
     });
     const ledger = readVendorQaDimLedger(ENTITY);
     expect(ledger.length).toBe(3);
-    const deltas = ledger.map((e) => e.delta).sort();
+    const deltas = ledger.map((e) => e.delta).sort((a,b)=>a-b);
     expect(deltas).toEqual([-10, -5, -2]);
     unmount();
   });
