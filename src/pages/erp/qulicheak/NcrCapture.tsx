@@ -132,6 +132,18 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
     }
   }, [form, user, entityCode, entityId, onSaved]);
 
+  // α-b Block F polish · Cmd/Ctrl+Enter to save (FR-29 keyboard shortcut alignment)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!saving) handleSave();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [handleSave, saving]);
+
   return (
     <div className="p-6 space-y-4 max-w-4xl">
       <div>
