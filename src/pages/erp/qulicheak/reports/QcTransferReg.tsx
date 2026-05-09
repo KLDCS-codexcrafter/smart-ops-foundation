@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/QcTransferReg.tsx
  * @purpose Trident C9 · QC Transfer Register · qa-inspection × godown movement.
+ * @who QA Manager · Stores Manager (QC stock movement audit)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block C
+ * @iso ISO 9001:2015 Clause 8.7 · ISO 25010 Auditability
+ * @whom Audit Owner
  * @decisions D-NEW-BW · D-NEW-CD
  * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · godown lookup map (D-NEW-BW)
  * @[JWT] reads erp_qa_inspections_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
