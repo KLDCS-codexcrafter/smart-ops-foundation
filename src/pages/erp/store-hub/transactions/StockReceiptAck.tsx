@@ -138,14 +138,46 @@ export function StockReceiptAckPanel(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <ClipboardCheck className="h-5 w-5 text-indigo-600" /> Stock Receipt Acknowledgment
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Confirm received Inward Receipts into Stores · posts Stock Journal (Receiving → Stores)
-        </p>
+    <div className="space-y-4" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Stock Receipt Ack" entityCode={entityCode} items={[]} isLineItemForm={true} showBulkPasteButton={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="stock_receipt_ack"
+        voucherTypeName="Stock Receipt Ack"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5 text-indigo-600" /> Stock Receipt Acknowledgment
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Confirm received Inward Receipts into Stores · posts Stock Journal (Receiving → Stores)
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton entityCode={entityCode} recordType="stock_receipt_ack" partyValue={null} onUse={() => { /* deferred */ }} />
+          {currentAckId ? (
+            <AuditHistoryButton
+              entityCode={entityCode}
+              entityType="voucher"
+              recordId={currentAckId}
+              currentRecord={{ awaiting: awaiting.length, history: history.length }}
+            />
+          ) : null}
+        </div>
       </div>
 
       <Tabs defaultValue="awaiting">
