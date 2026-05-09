@@ -37,3 +37,49 @@ describe('iso9001 · URL safety + linked-records parser (Block I)', () => {
     expect(parseLinkedRecordsTextarea('   ,  ,  ')).toEqual([]);
   });
 });
+
+const ENTITY = 'TEST_ISO_T3';
+const USER = 'iso_user';
+
+beforeEach(() => { localStorage.clear(); });
+
+describe('iso9001-engine · register coverage (T3 Block D)', () => {
+  it('linkRecordToIso9001Doc is idempotent (linking same {type,id} twice keeps one)', () => {
+    const doc = createIso9001Doc(ENTITY, USER, {
+      entity_id: ENTITY, clause: '8_operation', title: 'Idem',
+      description: null, audit_date: '2026-05-09', auditor: 'A',
+      document_url: 'https://x.test/a.pdf', linked_records: [],
+    })!;
+    linkRecordToIso9001Doc(ENTITY, doc.id, { type: 'ncr', id: 'NCR-1' });
+    const after = linkRecordToIso9001Doc(ENTITY, doc.id, { type: 'ncr', id: 'NCR-1' });
+    expect(after?.linked_records.length).toBe(1);
+  });
+
+  it('filterIso9001Docs honors clause filter, date range, linkedType, and search', () => {
+    createIso9001Doc(ENTITY, USER, {
+      entity_id: ENTITY, clause: '8_operation', title: 'Process Audit',
+      description: 'ops', audit_date: '2026-03-15', auditor: 'Asha',
+      document_url: 'https://x.test/op.pdf',
+      linked_records: [{ type: 'ncr', id: 'NCR-A' }],
+    });
+    createIso9001Doc(ENTITY, USER, {
+      entity_id: ENTITY, clause: '9_performance', title: 'KPI Review',
+      description: null, audit_date: '2026-04-20', auditor: 'Bina',
+      document_url: 'https://x.test/kpi.pdf', linked_records: [],
+    });
+    createIso9001Doc(ENTITY, USER, {
+      entity_id: ENTITY, clause: '10_improvement', title: 'CAPA Effectiveness',
+      description: null, audit_date: '2026-05-01', auditor: 'Chetan',
+      document_url: 'https://x.test/capa.pdf',
+      linked_records: [{ type: 'capa', id: 'CAPA-Z' }],
+    });
+    expect(filterIso9001Docs(ENTITY, { clause: ['8_operation'] }).length).toBe(1);
+    expect(filterIso9001Docs(ENTITY, { fromDate: '2026-04-01', toDate: '2026-04-30' }).length).toBe(1);
+    expect(filterIso9001Docs(ENTITY, { linkedType: 'capa' }).length).toBe(1);
+    expect(filterIso9001Docs(ENTITY, { search: 'kpi' }).length).toBe(1);
+  });
+
+  it('getIso9001DocById returns null for non-existent id', () => {
+    expect(getIso9001DocById(ENTITY, 'ISO-NONE')).toBeNull();
+  });
+});
