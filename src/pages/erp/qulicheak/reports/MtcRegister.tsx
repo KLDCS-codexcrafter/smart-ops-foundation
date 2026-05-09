@@ -97,6 +97,18 @@ export function MtcRegister(): JSX.Element {
     });
   }, [entityCode, statusF, overallF, search, version]);
 
+  // F-3 · O(1) per-row PC match lookup · iterate PC ledger ONCE per (entityCode, version, rows)
+  const pcMatchByHeat = useMemo<Map<string, PcMatch[]>>(() => {
+    const map = new Map<string, PcMatch[]>();
+    const heats = new Set<string>();
+    for (const m of rows) if (m.heat_no) heats.add(m.heat_no);
+    for (const h of heats) {
+      const matches = findPcMatchesForHeat(entityCode, h);
+      if (matches.length > 0) map.set(h, matches);
+    }
+    return map;
+  }, [entityCode, rows]);
+
   const toggle = <T,>(set: Set<T>, val: T, setter: (s: Set<T>) => void): void => {
     const next = new Set(set);
     if (next.has(val)) next.delete(val); else next.add(val);
