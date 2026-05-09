@@ -20,26 +20,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { createIso9001Doc, isSafeHttpUrl, linkRecordToIso9001Doc } from '@/lib/iso9001-engine';
+import { createIso9001Doc, isSafeHttpUrl } from '@/lib/iso9001-engine';
+import { parseLinkedRecordsTextarea, VALID_LINK_TYPES } from '@/lib/iso9001-link-parser';
 import {
-  ISO9001_CLAUSE_LABELS, ISO9001_LINKED_TYPE_LABELS,
-  type Iso9001ClauseId, type Iso9001LinkedRecord, type Iso9001LinkedRecordType,
+  ISO9001_CLAUSE_LABELS,
+  type Iso9001ClauseId,
 } from '@/types/iso9001';
-
-const VALID_LINK_TYPES: Iso9001LinkedRecordType[] = Object.keys(ISO9001_LINKED_TYPE_LABELS) as Iso9001LinkedRecordType[];
-
-/** Parse "ncr:NCR-001, capa:CAPA-002" → Iso9001LinkedRecord[] · drops invalid entries silently. */
-export function parseLinkedRecordsTextarea(s: string): Iso9001LinkedRecord[] {
-  return s.split(',')
-    .map((t) => t.trim()).filter(Boolean)
-    .map((t) => {
-      const [typeRaw, idRaw] = t.split(':').map((p) => p?.trim() ?? '');
-      const type = typeRaw.toLowerCase() as Iso9001LinkedRecordType;
-      if (!VALID_LINK_TYPES.includes(type) || !idRaw) return null;
-      return { type, id: idRaw };
-    })
-    .filter((r): r is Iso9001LinkedRecord => r !== null);
-}
 
 interface Props { onSaved?: () => void; onCancel?: () => void; }
 
