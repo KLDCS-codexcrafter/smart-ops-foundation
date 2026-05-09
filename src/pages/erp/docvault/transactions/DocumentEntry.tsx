@@ -124,10 +124,16 @@ export function DocumentEntry(): JSX.Element {
       'current-user',
     );
     toast.success(`Document ${doc.id} saved as draft`);
+    setSavedDocId(doc.id);
     setTitle('');
     setDescription('');
     setFileName('');
     setFileSize(0);
+  };
+
+  const _formSnapshot: Record<string, unknown> = {
+    title, description, docType, department, versionNo,
+    projectId, customerId, vendorId, equipmentId, ncId, workOrderId,
   };
 
   const showProject = docType === 'drawing' || docType === 'mom' || docType === 'other';
