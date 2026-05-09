@@ -144,12 +144,25 @@ function appendVendorQaDim(entry: VendorQaDimEntry): void {
   }
 }
 
+/**
+ * α-c-T2 · D-NEW-BV · CAPA event payloads MUST include entity_code; receivers
+ * drop the row when entity_code missing (no silent sentinel writes · FR-50).
+ * vendor_id is OPTIONAL on capa events (only set when CAPA's related_party_id known).
+ * Receiver records ledger row only when BOTH entity_code AND vendor_id present.
+ */
+export interface CapaQaEventPayload {
+  capa_id: string;
+  ncr_id: string;
+  entity_code: string;
+  vendor_id?: string;
+}
+
 export function subscribeQaForVendorScoring(): () => void {
   if (typeof window === 'undefined') return () => { /* noop */ };
 
   const onQaOutcomeApplied = (e: Event): void => {
     const detail = (e as CustomEvent<QaOutcomePayload>).detail;
-    if (!detail?.vendor_id) return;
+    if (!detail?.vendor_id || !detail.entity_code) return;
     appendVendorQaDim({
       vendor_id: detail.vendor_id,
       ncr_id: detail.ncr_id,
@@ -161,34 +174,25 @@ export function subscribeQaForVendorScoring(): () => void {
     });
   };
 
-  const onCapaEffective = (e: Event): void => {
-    const detail = (e as CustomEvent<{ capa_id: string; ncr_id: string }>).detail;
+  const recordCapaOutcome = (detail: CapaQaEventPayload | undefined, effective: boolean): void => {
     if (!detail?.ncr_id) return;
-    // CAPA effective · neutralize prior NCR-induced QA penalty for that NCR
+    if (!detail.entity_code) return;          // D-NEW-BV · drop missing-entity events
+    if (!detail.vendor_id) return;            // D-NEW-BV · no sentinel rows · vendor unknown ⇒ skip
     appendVendorQaDim({
-      vendor_id: 'unknown',
+      vendor_id: detail.vendor_id,
       ncr_id: detail.ncr_id,
       severity: 'minor',
       delta: 0,
       applied_at: new Date().toISOString(),
-      capa_effective: true,
-      entity_code: '',
+      capa_effective: effective,
+      entity_code: detail.entity_code,
     });
   };
 
-  const onCapaIneffective = (e: Event): void => {
-    const detail = (e as CustomEvent<{ capa_id: string; ncr_id: string }>).detail;
-    if (!detail?.ncr_id) return;
-    appendVendorQaDim({
-      vendor_id: 'unknown',
-      ncr_id: detail.ncr_id,
-      severity: 'minor',
-      delta: 0,
-      applied_at: new Date().toISOString(),
-      capa_effective: false,
-      entity_code: '',
-    });
-  };
+  const onCapaEffective = (e: Event): void =>
+    recordCapaOutcome((e as CustomEvent<CapaQaEventPayload>).detail, true);
+  const onCapaIneffective = (e: Event): void =>
+    recordCapaOutcome((e as CustomEvent<CapaQaEventPayload>).detail, false);
 
   window.addEventListener('qa.outcome.applied', onQaOutcomeApplied);
   window.addEventListener('capa:effective:applied', onCapaEffective);
