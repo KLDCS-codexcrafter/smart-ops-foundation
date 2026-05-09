@@ -1,6 +1,17 @@
 /**
  * @file        src/pages/erp/docvault/approvals/ApprovalsPendingPanel.tsx
- * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block D.2
+ * @purpose     Approvals pending list · consumes loadDocumentsByStatus('submitted') from docvault-engine
+ * @who         Document Controller · approvers · originating department leads
+ * @when        2026-05-09 (T1 backfill)
+ * @sprint      T-Phase-1.A.8.α-a-T1-Audit-Fix · Block C · F-4 backfill
+ * @iso         ISO 9001:2015 §7.5 · ISO 25010 Usability
+ * @whom        Audit Owner
+ * @decisions   D-NEW-CJ-docvault-file-metadata-schema (CANONICAL · A.8 Foundation) ·
+ *              D-NEW-BV Phase 1 mock pattern ·
+ *              FR-30 11/11 header standard (T1 backfill per A.6.α-a-T1 institutional pattern)
+ * @disciplines FR-30 · FR-67
+ * @reuses      docvault-engine.loadDocumentsByStatus · @/components/ui/* · useEntityCode
+ * @[JWT]       reads via docvault-engine · GET /api/docvault/documents?status=submitted (Phase 2)
  */
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
