@@ -1,3 +1,10 @@
+/**
+ * @file        src/test/welder-engine.test.ts
+ * @purpose     Welder/WPS/PQR/WPQ engine coverage · positive paths + negative-path coverage
+ * @sprint      T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC · T-Phase-1.A.5.c-T3-AuditFix · Block C/D
+ * @decisions   D-NEW-BN · T3 header hygiene · adds negative-path coverage
+ * @disciplines FR-30 (canonical header) · FR-32 (test coverage)
+ */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   createWelder, createWps, createPqr, createWpq,
