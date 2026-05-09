@@ -1,0 +1,9 @@
+ ✓ src/test/projx-dispatch-uts.test.ts (6 tests) 7ms
+ ✓ src/test/inventory-drill-context.test.ts (6 tests) 7ms
+
+ Test Files  69 passed (69)
+      Tests  462 passed (462)
+   Start at  03:30:28
+   Duration  31.43s (transform 6.39s, setup 46.59s, collect 24.42s, tests 6.39s, environment 273.41s, prepare 39.55s)
+
+vitest exit:0

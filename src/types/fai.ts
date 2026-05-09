@@ -8,7 +8,7 @@
  * @whom Quality Inspector · QA Manager · Production Lead
  * @decisions D-NEW-BG (FAI engine NEW · per-dimension model · fail-dominant) ·
  *            D-NEW-BJ (3-arg userId-2nd signature)
- * @disciplines FR-22 · FR-50 · FR-51 · FR-23
+ * @disciplines FR-22 · FR-30 (header who/when/sprint/decisions) · FR-50 · FR-51 · FR-23
  * @reuses types/party (consume only)
  * @[JWT] localStorage key pattern: erp_fai_${entityCode}
  */
