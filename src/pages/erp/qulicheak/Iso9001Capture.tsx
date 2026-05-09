@@ -7,13 +7,10 @@
  *              T-Phase-1.A.5.d-2-AuditFix
  * @iso         ISO 9001:2015 · ISO 25010 Usability + Security
  * @whom        Audit Owner
- * @decisions   D-NEW-BP · D-NEW-BU (URL allowlist) · D-NEW-BJ (linked_records UI) ·
- *              D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
- * @disciplines FR-21 (input validation) · FR-22 (kind='document') · FR-29 (FormCarryForwardKit) ·
- *              FR-30 · FR-50
+ * @decisions   D-NEW-BP · D-NEW-BU (URL allowlist) · D-NEW-BJ (linked_records UI)
+ * @disciplines FR-21 (input validation) · FR-22 (kind='document') · FR-30 · FR-50
  * @reuses      iso9001-engine.createIso9001Doc · isSafeHttpUrl
  * @[JWT]       writes via createIso9001Doc · localStorage erp_iso9001_${entityCode}
- * @deferrals   None (12/12 canonical)
  */
 import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
