@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { createIso9001Doc } from '@/lib/iso9001-engine';
+import { createIso9001Doc, isSafeHttpUrl, linkRecordToIso9001Doc } from '@/lib/iso9001-engine';
 import { ISO9001_CLAUSE_LABELS, type Iso9001ClauseId } from '@/types/iso9001';
 
 interface Props { onSaved?: () => void; onCancel?: () => void; }
