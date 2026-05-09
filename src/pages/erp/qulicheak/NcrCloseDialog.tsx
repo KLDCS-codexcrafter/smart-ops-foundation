@@ -165,8 +165,8 @@ export function NcrCloseDialog({ ncr, linkedCapa, onClose }: Props): JSX.Element
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={saving}>
-            {saving ? 'Closing…' : 'Confirm Close'}
+          <Button onClick={handleConfirm} disabled={saving || blocked}>
+            {saving ? 'Closing…' : blocked ? 'CAPA Open · Blocked' : 'Confirm Close'}
           </Button>
         </DialogFooter>
       </DialogContent>
