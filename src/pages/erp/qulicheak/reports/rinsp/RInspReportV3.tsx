@@ -1,7 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/reports/rinsp/RInspReportV3.tsx
- * @purpose Trident C13c · grouped-by-vendor variant.
+ * @purpose Trident RInspReport v3 layout · grouped-by-vendor variant (per RInspReport2.txt).
+ * @who Receiving Inspector · QA Manager
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block D
+ * @iso ISO 9001:2015 · Trident TDL RInspReport2.txt
+ * @whom Audit Owner
+ * @decisions Q-LOCK-7a (ViewModeSelector pattern) · D-NEW-BW (memoization)
+ * @disciplines FR-30 · FR-50
+ * @reuses useReceivingInspections hook (consumes parent prop)
+ * @[JWT] reads inspection rows via parent hook · localStorage erp_qa_inspections_${entityCode}
  */
 import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';

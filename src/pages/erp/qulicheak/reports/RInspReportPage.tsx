@@ -1,9 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/reports/RInspReportPage.tsx
  * @purpose Trident C13 · Receiving Inspection · 3-variant wrapper.
+ * @who Receiving Inspector · QA Manager (3-variant IQC report)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block D
+ * @iso ISO 9001:2015 Clause 8.4 · Trident TDL RInspReport variants
+ * @whom Audit Owner
  * @decisions D-NEW-BY (entity-scoped UI prefs) · D-NEW-CB · Q-LOCK-7a
  * @disciplines FR-30 · FR-50
+ * @reuses useReceivingInspections hook · 3 variant components (RInspReportV1/V2/V3)
+ * @[JWT] reads via useReceivingInspections · localStorage erp_qa_inspections_${entityCode} · qulicheak.rinspreport.variant.${entityCode}
  */
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';

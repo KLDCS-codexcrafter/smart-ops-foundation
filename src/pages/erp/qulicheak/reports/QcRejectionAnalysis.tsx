@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/QcRejectionAnalysis.tsx
  * @purpose Trident C14 · Generic Rejection Analysis joining NCR + CAPA + MTC + FAI.
+ * @who QA Manager · Internal Auditor (rejection-cause analysis)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block E
+ * @iso ISO 9001:2015 Clause 9.1.3 (analysis and evaluation) · Trident TDL CEDIQCRejAnal.txt
+ * @whom Audit Owner
  * @decisions D-NEW-BW (memoized lookup Maps) · Q-LOCK-8a
  * @disciplines FR-30 · FR-50
+ * @reuses listNcrs · listCapas · listMtcs · listFais · D-NEW-BW lookup maps
  * @[JWT] reads erp_ncr_${e} · erp_capa_${e} · erp_mtc_${e} · erp_fai_${e}
  */
 import { useEffect, useMemo, useState } from 'react';

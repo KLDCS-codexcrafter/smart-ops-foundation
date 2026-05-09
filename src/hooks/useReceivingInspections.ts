@@ -1,9 +1,15 @@
 /**
  * @file src/hooks/useReceivingInspections.ts
  * @purpose Shared data hook for IQC receiving-inspection variants V1/V2/V3.
+ * @who QA Manager · Receiving Inspector
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block D
+ * @iso ISO 9001:2015 Clause 8.4 (control of externally provided processes)
+ * @whom Audit Owner
  * @decisions D-NEW-BW · D-NEW-CB (hook extracted from component file)
- * @[JWT] reads erp_qa_inspections_${entityCode}
+ * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · useEntityCode · useEntityChangeEffect
+ * @[JWT] reads via listQaInspections · localStorage erp_qa_inspections_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';

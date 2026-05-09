@@ -3,7 +3,11 @@
  * @purpose Sibling listener · subscribes to `qa.outcome.applied` and writes a
  *          Procure360-scoped vendor QA inbox ledger that vendor-scoring engines
  *          can later consume. Zero touches to Procure360 engines (FR-19 sibling).
+ * @who Vendor Manager · QA Manager (consumes vendor scoring delta)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge
+ * @iso ISO 9001:2015 supplier evaluation · ISO 25010 Maintainability
+ * @whom Audit Owner
  * @decisions D-NEW-AJ-revised CLOSED · D-NEW-BV (entity_code+vendor_id required)
  * @disciplines FR-19 · FR-30 · FR-50
  * @reuses qulicheak-bridges QaOutcomePayload channel

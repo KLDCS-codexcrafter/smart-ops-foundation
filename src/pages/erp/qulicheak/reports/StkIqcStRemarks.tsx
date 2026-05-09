@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/StkIqcStRemarks.tsx
  * @purpose Trident C8 · QC Stock Remarks register · inspections with non-empty notes.
+ * @who QA Manager · Quality Inspector (remarks audit)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block C
+ * @iso ISO 9001:2015 Clause 8.7 · ISO 25010 Auditability
+ * @whom Audit Owner
  * @decisions D-NEW-BW (memoization) · D-NEW-CD (no external links)
  * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · useEntityCode · useEntityChangeEffect
  * @[JWT] reads erp_qa_inspections_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';

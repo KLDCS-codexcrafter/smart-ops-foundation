@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/FGRInspReport.tsx
  * @purpose Trident C17 · Finished-Goods Receiving Inspection Report.
- * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block F
+ * @who Production Manager · QA Manager (FG outgoing inspection audit)
+ * @when 2026-05-09
+ * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block F · T1-AuditFix Block A (useMemo dep fix)
+ * @iso ISO 9001:2015 Clause 8.6 (release of products) · Trident TDL FGRInspReport.txt
+ * @whom Audit Owner
  * @decisions D-NEW-BW · D-NEW-CD
  * @disciplines FR-30 · FR-50
+ * @reuses listQaInspections · PC lookup map (D-NEW-BW)
  * @[JWT] reads erp_qa_inspections_${entityCode} · erp_production_confirmations_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -32,6 +37,7 @@ export function FGRInspReport(): JSX.Element {
 
   // D-NEW-BW · build PC lookup once
   const pcMap = useMemo<Map<string, string>>(() => {
+    void version;
     const map = new Map<string, string>();
     if (typeof window === 'undefined') return map;
     try {

@@ -1,9 +1,15 @@
 /**
  * @file src/pages/erp/qulicheak/QcVoucherDetailPanel.tsx
  * @purpose Trident QCVVoucher field panel · rendered above QCEntryPage when variant=standard.
+ * @who QA Manager · Receiving Inspector (Trident voucher entry)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block E
+ * @iso ISO 9001:2015 · Trident TDL QCVVoucher.txt parity
+ * @whom Audit Owner
  * @decisions D-NEW-BQ wrapper precedent · Q-LOCK-3b
  * @disciplines FR-19 (QCEntryPage zero-touch) · FR-30
+ * @reuses (none · pure presentational)
+ * @[JWT] N/A (presentational only)
  */
 import { Card, CardContent } from '@/components/ui/card';
 
