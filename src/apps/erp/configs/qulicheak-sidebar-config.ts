@@ -17,7 +17,7 @@
 import {
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
-  AlertOctagon, FileWarning, Wrench, FileBadge,
+  AlertOctagon, FileWarning, Wrench, FileBadge, Ruler, Clock,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
