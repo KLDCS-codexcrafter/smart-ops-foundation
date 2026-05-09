@@ -74,6 +74,7 @@ interface Props {
 export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
+  const navigate = useNavigate();
   const [department, setDepartment] = useState('');
   const [recipient, setRecipient] = useState('');
   const [purpose, setPurpose] = useState('');
@@ -82,6 +83,8 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const [busy, setBusy] = useState(false);
   // After save · enables AuditHistoryButton + approval buttons (Block C/D)
   const [currentVoucherId, setCurrentVoucherId] = useState<string | null>(null);
+  // After post · enables Print (α-b Block A · Q-LOCK-3a Path A)
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
