@@ -114,7 +114,7 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         icon: HardHat,
         moduleId: 'welder-qualification',
         requiredCards: ['qulicheak'],
-        keyboard: 'q w',
+        keyboard: 'q l',
       },
       {
         id: 'iqc-entry-page',
