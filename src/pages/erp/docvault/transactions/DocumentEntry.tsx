@@ -144,8 +144,37 @@ export function DocumentEntry(): JSX.Element {
   const showWorkOrder = docType === 'other';
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">New Document</h1>
+
+      {/* F-3a · FR-29 mounts (UseLastVoucher · Sprint27d2 · Sprint27e · DraftRecovery) */}
+      <div className="flex flex-wrap items-center gap-2">
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="document"
+          partyValue={null}
+          onUse={() => { /* prefill hook · documents have form-specific defaults */ }}
+        />
+        <Sprint27d2Mount formName="DocumentEntry" entityCode={entityCode} items={[]} isLineItemForm={false} showBulkPasteButton={false} />
+        <Sprint27eMount formName="DocumentEntry" entityCode={entityCode} />
+        <DraftRecoveryDialog
+          open={false}
+          draftAge={0}
+          onRecover={() => { /* recovery handled by Sprint27d1 mount */ }}
+          onDiscard={() => { /* discard handled by Sprint27d1 mount */ }}
+          onClose={() => { /* close handled by Sprint27d1 mount */ }}
+        />
+        <div className="ml-auto">
+          {/* F-2 · D-NEW-CG canonical AuditHistoryButton */}
+          <AuditHistoryButton
+            recordId={savedDocId ?? 'pending'}
+            entityType={'document' as unknown as AuditEntityType}
+            entityCode={entityCode}
+            currentRecord={_formSnapshot}
+          />
+        </div>
+      </div>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Basic Info</CardTitle></CardHeader>
