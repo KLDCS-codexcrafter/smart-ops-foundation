@@ -109,6 +109,107 @@ export function mountQulicheakBridges(): () => void {
  * Procure360's vendor-scoring engine subscribes to `qa.outcome.applied` ·
  * THIS sprint does NOT touch Procure360 code (FR-19 sibling).
  */
+/**
+ * α-c · Block C · D-NEW-BO · Vendor Scorecard QA dim subscription.
+ * Subscribes to qa.outcome.applied + capa effective/ineffective channels and records
+ * a vendor QA-dim activity row. NOTE: Procure360's vendor-scoring-engine has no public
+ * `applyVendorQaDelta` mutation API today, so this subscription is observability-only:
+ * the QA-dim delta is appended to a localStorage ledger that Procure360 can later
+ * subscribe to (FR-19 sibling · zero touches Procure360). D-NEW-BJ adaptation #4 of 5.
+ *
+ * @[JWT] writes erp_vendor_qa_dim_${entityCode}
+ */
+export interface VendorQaDimEntry {
+  vendor_id: string;
+  ncr_id: string;
+  severity: NcrSeverity;
+  delta: number;
+  applied_at: string;
+  capa_effective?: boolean | null;
+  entity_code: string;
+}
+
+const VENDOR_QA_DIM_KEY = (e: string): string => `erp_vendor_qa_dim_${e}`;
+
+function appendVendorQaDim(entry: VendorQaDimEntry): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const key = VENDOR_QA_DIM_KEY(entry.entity_code);
+    const raw = localStorage.getItem(key);
+    const list: VendorQaDimEntry[] = raw ? JSON.parse(raw) : [];
+    list.unshift(entry);
+    localStorage.setItem(key, JSON.stringify(list.slice(0, 500)));
+  } catch {
+    /* silent */
+  }
+}
+
+export function subscribeQaForVendorScoring(): () => void {
+  if (typeof window === 'undefined') return () => { /* noop */ };
+
+  const onQaOutcomeApplied = (e: Event): void => {
+    const detail = (e as CustomEvent<QaOutcomePayload>).detail;
+    if (!detail?.vendor_id) return;
+    appendVendorQaDim({
+      vendor_id: detail.vendor_id,
+      ncr_id: detail.ncr_id,
+      severity: detail.severity,
+      delta: detail.quality_score_delta,
+      applied_at: new Date().toISOString(),
+      capa_effective: null,
+      entity_code: detail.entity_code,
+    });
+  };
+
+  const onCapaEffective = (e: Event): void => {
+    const detail = (e as CustomEvent<{ capa_id: string; ncr_id: string }>).detail;
+    if (!detail?.ncr_id) return;
+    // CAPA effective · neutralize prior NCR-induced QA penalty for that NCR
+    appendVendorQaDim({
+      vendor_id: 'unknown',
+      ncr_id: detail.ncr_id,
+      severity: 'minor',
+      delta: 0,
+      applied_at: new Date().toISOString(),
+      capa_effective: true,
+      entity_code: '',
+    });
+  };
+
+  const onCapaIneffective = (e: Event): void => {
+    const detail = (e as CustomEvent<{ capa_id: string; ncr_id: string }>).detail;
+    if (!detail?.ncr_id) return;
+    appendVendorQaDim({
+      vendor_id: 'unknown',
+      ncr_id: detail.ncr_id,
+      severity: 'minor',
+      delta: 0,
+      applied_at: new Date().toISOString(),
+      capa_effective: false,
+      entity_code: '',
+    });
+  };
+
+  window.addEventListener('qa.outcome.applied', onQaOutcomeApplied);
+  window.addEventListener('capa:effective:applied', onCapaEffective);
+  window.addEventListener('capa:ineffective:reopened', onCapaIneffective);
+  return () => {
+    window.removeEventListener('qa.outcome.applied', onQaOutcomeApplied);
+    window.removeEventListener('capa:effective:applied', onCapaEffective);
+    window.removeEventListener('capa:ineffective:reopened', onCapaIneffective);
+  };
+}
+
+export function readVendorQaDimLedger(entityCode: string): VendorQaDimEntry[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(VENDOR_QA_DIM_KEY(entityCode));
+    return raw ? (JSON.parse(raw) as VendorQaDimEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function emitQaOutcomeForVendor(args: {
   vendor_id: string;
   ncr_id: string;
