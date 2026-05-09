@@ -20,15 +20,21 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Download, Search, ShieldClose } from 'lucide-react';
+import { Download, Search, ShieldClose, FilePlus2 } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterNcrs } from '@/lib/ncr-engine';
+import { listCapas } from '@/lib/capa-engine';
+import { CAPA_STATUS_LABELS, type CorrectiveAndPreventiveAction } from '@/types/capa';
 import {
   NCR_STATUS_LABELS, NCR_SEVERITY_LABELS, NCR_SOURCE_LABELS,
   type NonConformanceReport, type NcrStatus, type NcrSeverity, type NcrSource,
 } from '@/types/ncr';
 import { NcrCloseDialog } from '../NcrCloseDialog';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
+import { CapaCapture } from '../CapaCapture';
 
 const STATUS_OPTIONS: NcrStatus[] = ['open', 'investigating', 'capa_pending', 'closed', 'cancelled'];
 const SEV_OPTIONS: NcrSeverity[] = ['minor', 'major', 'critical'];
@@ -95,12 +101,35 @@ export function NcrRegister(): JSX.Element {
   // FR-50 6-point · refresh on entity switch
   useEntityChangeEffect(() => setVersion((v) => v + 1), []);
 
-  // Refresh on focus (cheap reactivity)
+  // Refresh on focus + CAPA lifecycle events (Block C wiring)
   useEffect(() => {
     const onFocus = (): void => setVersion((v) => v + 1);
+    const onCapa = (): void => setVersion((v) => v + 1);
     window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
+    window.addEventListener('capa:linked-to-ncr', onCapa);
+    window.addEventListener('capa:effective:applied', onCapa);
+    window.addEventListener('capa:ineffective:reopened', onCapa);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('capa:linked-to-ncr', onCapa);
+      window.removeEventListener('capa:effective:applied', onCapa);
+      window.removeEventListener('capa:ineffective:reopened', onCapa);
+    };
   }, []);
+
+  // ncrId → linked CAPA (most recent · for Register column)
+  const capaByNcr = useMemo(() => {
+    void version;
+    const map = new Map<string, CorrectiveAndPreventiveAction>();
+    for (const c of listCapas(entityCode)) {
+      if (!c.related_ncr_id) continue;
+      const existing = map.get(c.related_ncr_id);
+      if (!existing || c.raised_at > existing.raised_at) map.set(c.related_ncr_id, c);
+    }
+    return map;
+  }, [entityCode, version]);
+
+  const [creatingCapaFor, setCreatingCapaFor] = useState<NonConformanceReport | null>(null);
 
   const rows = useMemo(() => {
     void version; // T2 · D-NEW-BC · refresh tick (focus/entity-change invalidates localStorage-backed filterNcrs)
@@ -215,11 +244,15 @@ export function NcrRegister(): JSX.Element {
                   <TableHead>Raised</TableHead>
                   <TableHead>Party</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>CAPA</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((n) => (
+                {rows.map((n) => {
+                  const linkedCapa = capaByNcr.get(n.id);
+                  const isTerminal = n.status === 'closed' || n.status === 'cancelled';
+                  return (
                   <TableRow key={n.id}>
                     <TableCell className="font-mono text-xs">{n.id}</TableCell>
                     <TableCell>
@@ -236,8 +269,29 @@ export function NcrRegister(): JSX.Element {
                     <TableCell className="font-mono text-xs">{fmtDate(n.raised_at)}</TableCell>
                     <TableCell className="text-xs">{n.related_party_name ?? '—'}</TableCell>
                     <TableCell className="max-w-md truncate text-sm">{n.description}</TableCell>
+                    <TableCell className="text-xs">
+                      {linkedCapa ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-mono">{linkedCapa.id}</span>
+                          <Badge variant="outline" className="w-fit text-[10px]">
+                            {CAPA_STATUS_LABELS[linkedCapa.status]}
+                          </Badge>
+                        </div>
+                      ) : isTerminal ? (
+                        <span className="text-muted-foreground">—</span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setCreatingCapaFor(n)}
+                        >
+                          <FilePlus2 className="h-3.5 w-3.5 mr-1" />
+                          Create CAPA
+                        </Button>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
-                      {n.status !== 'closed' && n.status !== 'cancelled' && (
+                      {!isTerminal && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -249,7 +303,8 @@ export function NcrRegister(): JSX.Element {
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}
@@ -259,12 +314,34 @@ export function NcrRegister(): JSX.Element {
       {closing && (
         <NcrCloseDialog
           ncr={closing}
+          linkedCapa={capaByNcr.get(closing.id) ?? null}
           onClose={() => {
             setClosing(null);
             setVersion((v) => v + 1);
           }}
         />
       )}
+
+      <Dialog
+        open={!!creatingCapaFor}
+        onOpenChange={(o) => !o && setCreatingCapaFor(null)}
+      >
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Create CAPA for {creatingCapaFor?.id}</DialogTitle>
+          </DialogHeader>
+          {creatingCapaFor && (
+            <CapaCapture
+              prefillNcrId={creatingCapaFor.id}
+              onSaved={() => {
+                setCreatingCapaFor(null);
+                setVersion((v) => v + 1);
+              }}
+              onCancel={() => setCreatingCapaFor(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

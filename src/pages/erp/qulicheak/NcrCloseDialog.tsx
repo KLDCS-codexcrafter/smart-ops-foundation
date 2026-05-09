@@ -19,6 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -29,29 +31,48 @@ import {
   type NonConformanceReport,
   type NcrOutcome,
 } from '@/types/ncr';
+import type { CorrectiveAndPreventiveAction } from '@/types/capa';
+import { CAPA_STATUS_LABELS } from '@/types/capa';
 
 interface Props {
   ncr: NonConformanceReport;
+  linkedCapa?: CorrectiveAndPreventiveAction | null;
   onClose: () => void;
 }
 
 const OUTCOMES: NcrOutcome[] = ['rework', 'reject', 'concession_use', 'return_to_vendor'];
 
-export function NcrCloseDialog({ ncr, onClose }: Props): JSX.Element {
+export function NcrCloseDialog({ ncr, linkedCapa, onClose }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
   const [outcome, setOutcome] = useState<NcrOutcome>('rework');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [overrideOpenCapa, setOverrideOpenCapa] = useState(false);
+
+  // Q-LOCK-4(b) gate · CAPA must reach a terminal state before NCR can close
+  const capaIsOpen = !!linkedCapa &&
+    linkedCapa.status !== 'effective' &&
+    linkedCapa.status !== 'ineffective' &&
+    linkedCapa.status !== 'closed' &&
+    linkedCapa.status !== 'cancelled';
+  const blocked = capaIsOpen && !overrideOpenCapa;
 
   const handleConfirm = (): void => {
     if (!user) {
       toast.error('User session not found');
       return;
     }
+    if (blocked) {
+      toast.error('Linked CAPA is still open · resolve CAPA first or override');
+      return;
+    }
     setSaving(true);
     try {
-      const updated = closeNcr(entityCode, user.id, ncr.id, outcome, note.trim() || undefined);
+      const finalNote = capaIsOpen && overrideOpenCapa
+        ? `[CAPA-OPEN-OVERRIDE ${linkedCapa?.id}] ${note.trim()}`.trim()
+        : note.trim() || undefined;
+      const updated = closeNcr(entityCode, user.id, ncr.id, outcome, finalNote);
       if (!updated) {
         toast.error('NCR cannot be closed (already terminal)');
         return;
@@ -86,7 +107,29 @@ export function NcrCloseDialog({ ncr, onClose }: Props): JSX.Element {
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+          {linkedCapa && (
+            <Alert variant={capaIsOpen ? 'destructive' : 'default'}>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between gap-3">
+                <span>
+                  Linked CAPA <span className="font-mono">{linkedCapa.id}</span> ·{' '}
+                  {CAPA_STATUS_LABELS[linkedCapa.status]}
+                </span>
+                {capaIsOpen && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setOverrideOpenCapa((v) => !v)}
+                  >
+                    {overrideOpenCapa ? 'Revert override' : 'Override gate'}
+                  </Button>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div>
+
             <Label className="mb-2 block">Outcome</Label>
             <RadioGroup
               value={outcome}
@@ -122,8 +165,8 @@ export function NcrCloseDialog({ ncr, onClose }: Props): JSX.Element {
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={saving}>
-            {saving ? 'Closing…' : 'Confirm Close'}
+          <Button onClick={handleConfirm} disabled={saving || blocked}>
+            {saving ? 'Closing…' : blocked ? 'CAPA Open · Blocked' : 'Confirm Close'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -25,6 +25,10 @@ import type { NcrSeverity, NcrOutcome } from '@/types/ncr';
 
 const CH_HANDOFF = 'qa.handoff.received';
 const CH_OUTCOME = 'qa.outcome.applied';
+// α-b · Block C · CAPA lifecycle channels (in-card observability · no Procure360 touch)
+const CH_CAPA_LINKED = 'capa:linked-to-ncr';
+const CH_CAPA_EFFECTIVE = 'capa:effective:applied';
+const CH_CAPA_INEFFECTIVE = 'capa:ineffective:reopened';
 
 export interface QaHandoffPayload {
   source_card: 'procure360' | 'production' | 'inventory_hub';
@@ -83,8 +87,21 @@ export function mountQulicheakBridges(): () => void {
     });
   };
 
+  // α-b Block C · in-card CAPA observability listeners · no-op pass-throughs
+  // (capa-engine already records cross-card activity on closeCapa). These exist so
+  // future siblings (e.g. Procure360 vendor-scoring) can subscribe without touching capa-engine.
+  const capaNoop = (_e: Event): void => { /* observability hook · intentional no-op */ };
+
   window.addEventListener(CH_HANDOFF, handler as EventListener);
-  return () => window.removeEventListener(CH_HANDOFF, handler as EventListener);
+  window.addEventListener(CH_CAPA_LINKED, capaNoop as EventListener);
+  window.addEventListener(CH_CAPA_EFFECTIVE, capaNoop as EventListener);
+  window.addEventListener(CH_CAPA_INEFFECTIVE, capaNoop as EventListener);
+  return () => {
+    window.removeEventListener(CH_HANDOFF, handler as EventListener);
+    window.removeEventListener(CH_CAPA_LINKED, capaNoop as EventListener);
+    window.removeEventListener(CH_CAPA_EFFECTIVE, capaNoop as EventListener);
+    window.removeEventListener(CH_CAPA_INEFFECTIVE, capaNoop as EventListener);
+  };
 }
 
 /**
