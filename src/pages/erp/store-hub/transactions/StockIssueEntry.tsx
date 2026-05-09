@@ -198,15 +198,59 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Package className="h-5 w-5 text-indigo-600" /> Stock Issue Entry
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Release stock from Stores to a department · posts a Stock Journal voucher
-        </p>
+    <div className="space-y-4" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Stock Issue Entry" entityCode={entityCode} items={lines.map(l => ({ item_name: l.item_name, qty: l.qty }))} isLineItemForm={true} showBulkPasteButton={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="stock_issue"
+        voucherTypeName="Stock Issue"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Package className="h-5 w-5 text-indigo-600" /> Stock Issue Entry
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Release stock from Stores to a department · posts a Stock Journal voucher
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="stock_issue"
+            partyValue={null}
+            onUse={(data) => {
+              const d = data as Partial<{ department: string; recipient: string; purpose: string; narration: string }>;
+              if (d.department) setDepartment(d.department);
+              if (d.recipient) setRecipient(d.recipient);
+              if (d.purpose) setPurpose(d.purpose);
+              if (d.narration) setNarration(d.narration);
+            }}
+          />
+          {currentVoucherId ? (
+            <AuditHistoryButton
+              entityCode={entityCode}
+              entityType="voucher"
+              recordId={currentVoucherId}
+              currentRecord={{ department, recipient, purpose, narration, lines }}
+            />
+          ) : null}
+        </div>
       </div>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Recipient</CardTitle></CardHeader>
