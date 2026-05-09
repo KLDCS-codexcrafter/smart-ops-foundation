@@ -1,25 +1,22 @@
 /**
  * @file src/pages/erp/qulicheak/NcrCapture.tsx
- * @purpose Manual NCR entry form · FR-29 carry-forward mounts (11 of 12 available)
+ * @purpose Manual NCR entry form · FR-29 carry-forward mounts (12/12)
  * @who Quality Inspector · QA Manager
  * @when 2026-05-08
- * @sprint T-Phase-1.A.5.a-bis-Qulicheak-NCR-Foundation
+ * @sprint T-Phase-1.A.5.a-bis-Qulicheak-NCR-Foundation · T-Phase-1.A.5.d-2-AuditFix
  * @iso 25010 Usability + Operability
  * @whom Quality Inspector
- * @decisions D-NEW-AV (NCR engine NEW)
- * @disciplines FR-29 (Carry-forward · 11/12 mounts; useSmartDefaults missing in tree) ·
+ * @decisions D-NEW-AV (NCR engine NEW) · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over · 12/12) ·
  *              FR-50 (Multi-Entity 6-point) · FR-51 (Multi-Branch) ·
  *              FR-21 (no banned patterns)
  * @reuses ncr-engine.raiseNcr · decimal-helpers (dMul · round2) ·
  *         useEntityCode · useEntityChangeEffect · useCurrentUser
  * @[JWT] localStorage via raiseNcr · POST /api/qulicheak/ncrs
- * @deferrals 8 of 12 FR-29 carry-forward mounts deferred to α-b polish pass per
- *   Card 3b 5-pre-2 precedent · approved post α-a-bis audit (T1-Audit-Closure):
- *   UseLastVoucherButton (D-228) · Sprint27d1Mount · Sprint27d2Mount · Sprint27eMount ·
- *   KeyboardShortcutOverlay · DraftRecoveryDialog · PinnedTemplatesWidget · useSmartDefaults.
- *   Currently integrated (4/12): decimal-helpers (dMul·round2) · FR-30 header ·
- *   Multi-Entity 6-point (entity_id) · Multi-Branch (branch_id).
- *   See Sprint A.5.b Step 1 alignment for polish-pass scope when α-b is planned.
+ * @deferrals Accounting-specific FR-29 mounts (UseLastVoucherButton · Sprint27d1/2/eMount ·
+ *   KeyboardShortcutOverlay · DraftRecoveryDialog · PinnedTemplatesWidget · useSmartDefaults) ·
+ *   N/A to NCR capture. Currently integrated (5/12): decimal-helpers · FR-30 header ·
+ *   Multi-Entity 6-point · Multi-Branch · FormCarryForwardKit.
  */
 import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
