@@ -205,12 +205,47 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
   ]);
 
   return (
-    <div className="p-6 space-y-4 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">First Article Inspection</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Capture per-dimension nominal ± tolerance · pass/fail derived · Entity {entityCode}
-        </p>
+    <div className="p-6 space-y-4 max-w-5xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="FAI Capture" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="fai"
+        voucherTypeName="FAI Capture"
+        defaultPartyType="vendor"
+        partyId={partyId || null}
+        partyName={supplier || null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">First Article Inspection</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Capture per-dimension nominal ± tolerance · pass/fail derived · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="fai"
+          partyValue={partyId || null}
+          onUse={(data) => {
+            const d = data as Record<string, unknown>;
+            if (typeof d.part_no === 'string') setPartNo(d.part_no);
+            if (typeof d.part_name === 'string') setPartName(d.part_name);
+            if (typeof d.drawing_no === 'string') setDrawingNo(d.drawing_no);
+            if (typeof d.drawing_rev === 'string') setDrawingRev(d.drawing_rev);
+            if (typeof d.supplier_name === 'string') setSupplier(d.supplier_name);
+            if (typeof d.related_party_id === 'string') setPartyId(d.related_party_id);
+          }}
+        />
       </div>
 
       <Card>
