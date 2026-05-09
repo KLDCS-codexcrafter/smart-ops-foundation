@@ -129,17 +129,70 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
     }
   }, [form, user, entityCode, entityId, onSaved]);
 
+  const handleSaveAndNew = useCallback((): void => {
+    if (!form.description.trim()) {
+      toast.error('Description is required');
+      return;
+    }
+    if (!user) {
+      toast.error('User session not found');
+      return;
+    }
+    setSaving(true);
+    try {
+      const qty = form.qtyAffected.trim()
+        ? round2(Number(form.qtyAffected) || 0)
+        : null;
+
+      const ncr = raiseNcr(entityCode, user.id, {
+        entity_id: entityId,
+        branch_id: form.branchId.trim() || null,
+        source: form.source,
+        severity: form.severity,
+        related_party_id: form.partyId.trim() || null,
+        related_party_name: form.partyName.trim() || null,
+        related_voucher_kind: form.voucherKind === 'none' ? null : form.voucherKind,
+        related_voucher_id: form.voucherId.trim() || null,
+        item_id: form.itemId.trim() || null,
+        item_name: form.itemName.trim() || null,
+        qty_affected: qty,
+        description: form.description.trim(),
+        immediate_action: form.immediateAction.trim() || null,
+      });
+      toast.success(`NCR ${ncr.id} raised`);
+      const carried = {
+        source: form.source,
+        severity: form.severity,
+        branchId: form.branchId,
+        partyId: form.partyId,
+        partyName: form.partyName,
+        voucherKind: form.voucherKind,
+        itemId: form.itemId,
+        itemName: form.itemName,
+      };
+      setForm({ ...initial(), ...carried });
+    } catch {
+      toast.error('Failed to raise NCR');
+    } finally {
+      setSaving(false);
+    }
+  }, [form, user, entityCode, entityId]);
+
   // α-b Block F polish · Cmd/Ctrl+Enter to save (FR-29 keyboard shortcut alignment)
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
-        if (!saving) handleSave();
+        if (e.shiftKey) {
+          if (!saving) handleSaveAndNew();
+        } else {
+          if (!saving) handleSave();
+        }
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handleSave, saving]);
+  }, [handleSave, handleSaveAndNew, saving]);
 
   return (
     <div className="p-6 space-y-4 max-w-4xl">

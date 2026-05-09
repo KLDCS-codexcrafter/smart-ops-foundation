@@ -73,6 +73,37 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
     onSaved?.();
   }, [user, title, desc, auditDate, auditor, url, clause, linksText, entityCode, entityId, onSaved]);
 
+  const handleSaveAndNew = useCallback((): void => {
+    if (!user) { toast.error('No user'); return; }
+    if (!title.trim() || !auditDate || !auditor.trim() || !url.trim()) {
+      toast.error('Title, audit date, auditor, document URL all required');
+      return;
+    }
+    if (!isSafeHttpUrl(url.trim())) {
+      toast.error('Document URL must be http:// or https://');
+      return;
+    }
+    setSaving(true);
+    const linked_records = parseLinkedRecordsTextarea(linksText);
+    const doc = createIso9001Doc(entityCode, user.id, {
+      entity_id: entityId,
+      clause,
+      title: title.trim(),
+      description: desc.trim() || null,
+      audit_date: auditDate,
+      auditor: auditor.trim(),
+      document_url: url.trim(),
+      linked_records,
+    });
+    setSaving(false);
+    if (!doc) { toast.error('Failed to create'); return; }
+    toast.success(`ISO 9001 audit doc ${doc.id} saved`);
+    const carriedClause = clause;
+    const carriedAuditor = auditor;
+    setTitle(''); setDesc(''); setAuditDate(''); setUrl(''); setLinksText('');
+    setClause(carriedClause); setAuditor(carriedAuditor);
+  }, [user, title, desc, auditDate, auditor, url, clause, linksText, entityCode, entityId]);
+
   return (
     <div className="p-6 space-y-4 max-w-3xl">
       <div>
