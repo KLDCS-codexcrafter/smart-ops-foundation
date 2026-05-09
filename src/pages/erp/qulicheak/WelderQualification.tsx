@@ -338,7 +338,31 @@ export function WelderQualification(): JSX.Element {
                   {wpss.map((w) => <option key={w.id} value={w.id}>{w.wps_no}</option>)}
                 </select>
               </div>
+              <div>
+                <Label>Standard</Label>
+                <select className="w-full border rounded h-9 px-2 bg-background"
+                  value={wpqForm.standard}
+                  onChange={(e) => setWpqForm({ ...wpqForm, standard: e.target.value as WeldingStandard })}>
+                  <option value="asme_ix">ASME IX</option>
+                  <option value="aws_d1_1">AWS D1.1</option>
+                </select>
+              </div>
               <div><Label>Qualified Through</Label><Input type="date" value={wpqForm.through} onChange={(e) => setWpqForm({ ...wpqForm, through: e.target.value })} /></div>
+              <div className="md:col-span-3 space-y-1">
+                <Label className="text-xs">Processes</Label>
+                <ChipMulti<WeldingProcess>
+                  options={PROCESS_OPTIONS} value={wpqProcesses}
+                  onChange={setWpqProcesses}
+                  labelOf={(p) => WELDING_PROCESS_LABELS[p]}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <Label className="text-xs">Positions</Label>
+                <ChipMulti<WeldingPosition>
+                  options={POSITION_OPTIONS} value={wpqPositions}
+                  onChange={setWpqPositions}
+                />
+              </div>
               <div className="flex items-end"><Button onClick={onAddWpq}>Add</Button></div>
             </CardContent>
           </Card>
