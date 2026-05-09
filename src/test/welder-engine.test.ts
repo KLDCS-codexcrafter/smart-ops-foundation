@@ -116,3 +116,63 @@ describe('welder-engine', () => {
     expect(soon30[0].wpq_no).toBe('soon');
   });
 });
+
+describe('welder-engine · negative paths (T3 Block D)', () => {
+  it('createPqr returns null when related_wps_id does not exist', () => {
+    const pqr = createPqr(ENTITY, USER, {
+      entity_id: ENTITY, pqr_no: 'PQR-X',
+      related_wps_id: 'WPS-NOPE' as never,
+      test_date: new Date().toISOString(), tensile_strength_mpa: 480,
+      bend_test_result: 'pass', certified_by: USER,
+    });
+    expect(pqr).toBeNull();
+  });
+
+  it('createWpq returns null when welder or WPS missing', () => {
+    const wps = createWps(ENTITY, USER, {
+      entity_id: ENTITY, wps_no: 'WPS-NEG', standard: 'asme_ix',
+      processes: ['smaw'], positions: ['1G'],
+      base_metal_spec: 'A36', filler_metal_spec: 'E7018',
+      prepared_by: USER, prepared_at: new Date().toISOString(),
+    });
+    // case 1: welder missing
+    const a = createWpq(ENTITY, USER, {
+      entity_id: ENTITY, wpq_no: 'WPQ-NW',
+      related_welder_id: 'WLD-NONE' as never, related_wps_id: wps.id,
+      standard: 'asme_ix', processes: ['smaw'], positions: ['1G'],
+      qualified_at: new Date().toISOString(),
+      qualified_through: new Date(Date.now() + 1e9).toISOString(),
+      qualified_by: USER, status: 'qualified',
+    });
+    expect(a).toBeNull();
+    // case 2: WPS missing
+    const w = createWelder(ENTITY, USER, {
+      entity_id: ENTITY, party_id: 'PNEG', full_name: 'Neg',
+      joined_at: new Date().toISOString(), active: true,
+    });
+    const b = createWpq(ENTITY, USER, {
+      entity_id: ENTITY, wpq_no: 'WPQ-NS',
+      related_welder_id: w.id, related_wps_id: 'WPS-NONE' as never,
+      standard: 'asme_ix', processes: ['smaw'], positions: ['1G'],
+      qualified_at: new Date().toISOString(),
+      qualified_through: new Date(Date.now() + 1e9).toISOString(),
+      qualified_by: USER, status: 'qualified',
+    });
+    expect(b).toBeNull();
+  });
+
+  it('approveWps returns null for non-existent id and re-approval is idempotent', () => {
+    expect(approveWps(ENTITY, USER, 'WPS-NONE' as never)).toBeNull();
+    const wps = createWps(ENTITY, USER, {
+      entity_id: ENTITY, wps_no: 'WPS-IDM', standard: 'asme_ix',
+      processes: ['smaw'], positions: ['1G'],
+      base_metal_spec: 'A36', filler_metal_spec: 'E7018',
+      prepared_by: USER, prepared_at: new Date().toISOString(),
+    });
+    const first = approveWps(ENTITY, USER, wps.id);
+    expect(first?.approved_by).toBe(USER);
+    const second = approveWps(ENTITY, USER, wps.id);
+    expect(second?.approved_by).toBe(USER);
+    expect(second?.id).toBe(wps.id);
+  });
+});
