@@ -1,10 +1,17 @@
 /**
  * @file src/pages/erp/qulicheak/CapaCapture.tsx
  * @purpose Manual CAPA entry · source / severity / title / description / NCR or party link
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
- * @decisions D-NEW-BD · D-NEW-BE · D-NEW-BJ
- * @disciplines FR-50 · FR-51 · FR-19 (consume NCR via getNcrById/listNcrs) · FR-21 · FR-30
- * @[JWT] writes via capa-engine.raiseCapa / raiseCapaFromNcr
+ * @who Quality Inspector · QA Manager
+ * @when 2026-05-08
+ * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI · T-Phase-1.A.5.d-2-AuditFix
+ * @iso ISO 25010 Usability + Operability
+ * @whom Quality Inspector
+ * @decisions D-NEW-BD · D-NEW-BE · D-NEW-BJ · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 ·
+ *              FR-19 (consume NCR via getNcrById/listNcrs) · FR-21 · FR-30
+ * @reuses capa-engine.raiseCapa / raiseCapaFromNcr · useEntityCode · useEntityChangeEffect ·
+ *         useCurrentUser
+ * @[JWT] writes via capa-engine.raiseCapa / raiseCapaFromNcr · localStorage erp_capa_${entityCode}
  */
 import { useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
