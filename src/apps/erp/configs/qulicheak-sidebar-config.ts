@@ -177,6 +177,22 @@ export const qulicheakSidebarItems: SidebarItem[] = [
         moduleId: 'ncr-register',
         requiredCards: ['qulicheak'],
       },
+      {
+        id: 'capa-register',
+        type: 'item',
+        label: 'CAPA Register',
+        icon: Wrench,
+        moduleId: 'capa-register',
+        requiredCards: ['qulicheak'],
+      },
+      {
+        id: 'mtc-register',
+        type: 'item',
+        label: 'MTC Register',
+        icon: FileBadge,
+        moduleId: 'mtc-register',
+        requiredCards: ['qulicheak'],
+      },
     ],
   },
 ];
