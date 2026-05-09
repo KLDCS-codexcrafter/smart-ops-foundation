@@ -84,9 +84,9 @@ const initial = (): {
 export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('NcrCapture', _fr29);
   void _fr29;
@@ -94,6 +94,11 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
   const user = useCurrentUser();
   const [form, setForm] = useState(initial);
   const [saving, setSaving] = useState(false);
+  // FR-29 mounts (D-NEW-CE · audit-trail + draft-recovery + keyboard + quick-add)
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'ncr-capture-new', entityCode, formState: form, items: [], view: 'new', voucherType: 'NCR',
+  });
+  void _sprint27d1;
 
   // FR-50 6-point · reset on entity switch
   useEntityChangeEffect(() => setForm(initial()), []);
