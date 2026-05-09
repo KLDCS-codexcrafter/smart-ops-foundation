@@ -1,14 +1,16 @@
 /**
  * @file        src/pages/erp/docvault/transactions/DocumentRegister.tsx
- * @purpose     DocVault register · cross-card filter UI (Q-LOCK-15a)
+ * @purpose     DocVault register · cross-card filter UI (Q-LOCK-15a) · register-shape FR-29 5/12 honest
  * @who         Document Controller · all departments
  * @when        2026-05-09
- * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block D.1
+ * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block D.1 ·
+ *              T-Phase-1.A.8.α-a-T1-Audit-Fix · Block A · F-3b
  * @iso         ISO 25010 Usability
  * @whom        Audit Owner
- * @decisions   D-NEW-CJ canonical · Q-LOCK-15a cross-card filter UI
+ * @decisions   D-NEW-CJ canonical · Q-LOCK-15a cross-card filter UI ·
+ *              D-NEW-CE canonical (FormCarryForwardKit register-shape 5/12 honest)
  * @disciplines FR-29 · FR-30
- * @reuses      docvault-engine.loadDocuments
+ * @reuses      docvault-engine.loadDocuments · @/lib/form-carry-forward-kit
  * @[JWT]       GET /api/docvault/documents · query filters Phase 2
  */
 import { useMemo, useState } from 'react';
