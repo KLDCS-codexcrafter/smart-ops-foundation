@@ -64,6 +64,9 @@ export interface JobCard {
   produced_qty: number;
   rejected_qty: number;
   rework_qty: number;
+  // D-NEW-CF · ISO 9001:2015 Clause 8.7 traceability · NCR that originated this rework JobCard.
+  // Nullable additive · zero data migration · existing JobCards default to null on read.
+  source_ncr_id?: string | null;
   uom: string;
 
   wastage_qty: number;
