@@ -18,7 +18,7 @@ import { Download, Search } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterMtcs } from '@/lib/mtc-engine';
-import { findPcMatchesForHeat } from '@/lib/qulicheak-bridges';
+import { findPcMatchesForHeat, type PcMatch } from '@/lib/qulicheak-bridges';
 import {
   MTC_STATUS_LABELS, MTC_OVERALL_LABELS,
   type MaterialTestCertificate, type MtcStatus, type MtcOverall,
