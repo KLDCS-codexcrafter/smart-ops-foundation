@@ -133,6 +133,59 @@ export function FaiCapture({ onSaved, onCancel }: Props): JSX.Element {
     sampleQty, inspectionDate, branchId, notes, entityCode, entityId, toDimensions, onSaved,
   ]);
 
+  const handleSaveAndNew = useCallback((): void => {
+    if (!user) { toast.error('User session not found'); return; }
+    if (!partNo.trim()) { toast.error('Part number is required'); return; }
+    if (!partName.trim()) { toast.error('Part name is required'); return; }
+    if (!inspectionDate.trim()) { toast.error('Inspection date is required'); return; }
+    const dimensions = toDimensions();
+    if (dimensions.length === 0) { toast.error('Add at least one dimension'); return; }
+
+    const sampleQtyN = sampleQty.trim() === '' ? null : Number(sampleQty);
+
+    setSaving(true);
+    try {
+      const fai = createFai(entityCode, user.id, {
+        entity_id: entityId,
+        branch_id: branchId.trim() || null,
+        part_no: partNo.trim(),
+        part_name: partName.trim(),
+        drawing_no: drawingNo.trim() || null,
+        drawing_rev: drawingRev.trim() || null,
+        related_party_id: partyId.trim() || null,
+        supplier_name: supplier.trim() || null,
+        related_po_id: poId.trim() || null,
+        related_production_order_id: poId2.trim() || null,
+        sample_qty: sampleQtyN !== null && Number.isFinite(sampleQtyN) ? sampleQtyN : null,
+        inspection_date: inspectionDate,
+        dimensions,
+        notes: notes.trim() || null,
+      });
+      toast.success(`FAI ${fai.id} saved · ${fai.overall}`);
+      const carriedDrawingNo = drawingNo;
+      const carriedDrawingRev = drawingRev;
+      const carriedSupplier = supplier;
+      const carriedPartyId = partyId;
+      const carriedPoId = poId;
+      const carriedPoId2 = poId2;
+      const carriedSampleQty = sampleQty;
+      const carriedBranchId = branchId;
+      setPartNo(''); setPartName(''); setInspectionDate('');
+      setRows([newRow()]); setNotes('');
+      setDrawingNo(carriedDrawingNo); setDrawingRev(carriedDrawingRev);
+      setSupplier(carriedSupplier); setPartyId(carriedPartyId);
+      setPoId(carriedPoId); setProdOrderId(carriedPoId2);
+      setSampleQty(carriedSampleQty); setBranchId(carriedBranchId);
+    } catch {
+      toast.error('Failed to save FAI');
+    } finally {
+      setSaving(false);
+    }
+  }, [
+    user, partNo, partName, drawingNo, drawingRev, supplier, partyId, poId, poId2,
+    sampleQty, inspectionDate, branchId, notes, entityCode, entityId, toDimensions,
+  ]);
+
   return (
     <div className="p-6 space-y-4 max-w-5xl">
       <div>

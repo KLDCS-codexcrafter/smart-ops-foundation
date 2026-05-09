@@ -147,6 +147,51 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
     lotNo, heatNo, branchId, notes, entityCode, entityId, toParameters, onSaved,
   ]);
 
+  const handleSaveAndNew = useCallback((): void => {
+    if (!user) { toast.error('User session not found'); return; }
+    if (!certNo.trim()) { toast.error('Certificate number is required'); return; }
+    if (!issueDate.trim()) { toast.error('Issue date is required'); return; }
+    if (!supplier.trim()) { toast.error('Supplier name is required'); return; }
+    const parameters = toParameters();
+    if (parameters.length === 0) { toast.error('Add at least one test parameter'); return; }
+
+    setSaving(true);
+    try {
+      const mtc = createMtc(entityCode, user.id, {
+        entity_id: entityId,
+        branch_id: branchId.trim() || null,
+        certificate_no: certNo.trim(),
+        issue_date: issueDate,
+        supplier_name: supplier.trim(),
+        related_party_id: partyId.trim() || null,
+        related_grn_id: grnId.trim() || null,
+        item_id: itemId.trim() || null,
+        item_name: itemName.trim() || null,
+        lot_no: lotNo.trim() || null,
+        heat_no: heatNo.trim() || null,
+        parameters,
+        notes: notes.trim() || null,
+      });
+      toast.success(`MTC ${mtc.id} saved · ${mtc.overall}`);
+      const carriedSupplier = supplier;
+      const carriedPartyId = partyId;
+      const carriedBranchId = branchId;
+      const carriedItemId = itemId;
+      const carriedItemName = itemName;
+      setCertNo(''); setIssueDate(''); setGrnId(''); setLotNo(''); setHeatNo('');
+      setRows([newRow()]); setNotes('');
+      setSupplier(carriedSupplier); setPartyId(carriedPartyId);
+      setBranchId(carriedBranchId); setItemId(carriedItemId); setItemName(carriedItemName);
+    } catch {
+      toast.error('Failed to save MTC');
+    } finally {
+      setSaving(false);
+    }
+  }, [
+    user, certNo, issueDate, supplier, partyId, grnId, itemId, itemName,
+    lotNo, heatNo, branchId, notes, entityCode, entityId, toParameters,
+  ]);
+
   return (
     <div className="p-6 space-y-4 max-w-5xl">
       <div>
