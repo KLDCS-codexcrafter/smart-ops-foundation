@@ -21,6 +21,8 @@ import { StockIssueEntryPanel } from './transactions/StockIssueEntry';
 import { StockIssueRegisterPanel } from './transactions/StockIssueRegister';
 import { StockReceiptAckPanel } from './transactions/StockReceiptAck';
 import { CycleCountStatusPanel } from './reports/CycleCountStatus';
+import { StockMovementRegisterPanel } from './reports/StockMovementRegister';
+import { DepartmentConsumptionSummaryPanel } from './reports/DepartmentConsumptionSummary';
 import { StoreHubWelcomePanel } from './StoreHubWelcome';
 
 function WelcomePanel(): JSX.Element {
@@ -56,6 +58,8 @@ function renderModule(
     case 'sh-r-reorder-suggestions':    return <ReorderSuggestionsPanel />;
     case 'sh-r-demand-forecast':        return <DemandForecastPanel />;
     case 'sh-r-cycle-count-status':     return <CycleCountStatusPanel />;
+    case 'sh-r-stock-movement-register':         return <StockMovementRegisterPanel />;
+    case 'sh-r-department-consumption-summary':  return <DepartmentConsumptionSummaryPanel />;
     case 'sh-t-stock-issue-entry':      return <StockIssueEntryPanel onModuleChange={onModuleChange} />;
     case 'sh-t-stock-issue-register':   return <StockIssueRegisterPanel onModuleChange={onModuleChange} />;
     case 'sh-t-receipt-ack':            return <StockReceiptAckPanel />;

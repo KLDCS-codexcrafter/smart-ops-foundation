@@ -7,13 +7,15 @@
  * @iso         ISO 9001:2015 Clause 8.1 · ISO 25010 Usability + Operability
  * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
- *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer)
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
+ *              Q-LOCK-3a Path A revised (stock-journal-print-engine reuse · α-b Block A)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
  * @[JWT]       writes via stock-receipt-ack-engine.createReceiptAck + postReceiptAck
  */
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +26,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import { ClipboardCheck, CheckCircle2 } from 'lucide-react';
+import { ClipboardCheck, CheckCircle2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
@@ -58,6 +60,7 @@ const STORES_GODOWN = { id: 'gd-stores', name: 'Main Stores' };
 
 export function StockReceiptAckPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [awaiting, setAwaiting] = useState<InwardReceipt[]>([]);
   const [history, setHistory] = useState<StockReceiptAck[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +68,8 @@ export function StockReceiptAckPanel(): JSX.Element {
   const [draftLines, setDraftLines] = useState<AckDraftLine[]>([]);
   const [busy, setBusy] = useState(false);
   const [currentAckId, setCurrentAckId] = useState<string | null>(null);
+  // After post · expose voucher_id for Print button (α-b Block A · Q-LOCK-3a Path A)
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
@@ -132,6 +137,8 @@ export function StockReceiptAckPanel(): JSX.Element {
       const posted = await postReceiptAck(ack.id, entityCode, 'u-store-1');
       toast.success(`Ack posted · ${posted?.ack_no}`);
       setCurrentAckId(ack.id);
+      // α-b Block A · expose voucher_id for Print button
+      if (posted?.voucher_id) setPostedVoucherId(posted.voucher_id);
       setDialogIr(null);
       refresh();
     } catch (e) {
@@ -178,6 +185,18 @@ export function StockReceiptAckPanel(): JSX.Element {
               recordId={currentAckId}
               currentRecord={{ awaiting: awaiting.length, history: history.length }}
             />
+          ) : null}
+          {postedVoucherId ? (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => navigate(
+                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+              )}
+            >
+              <Printer className="h-3.5 w-3.5 mr-1" /> Print
+            </Button>
           ) : null}
         </div>
       </div>

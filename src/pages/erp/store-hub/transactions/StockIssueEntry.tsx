@@ -8,7 +8,9 @@
  * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
  *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
- *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings)
+ *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings) ·
+ *              Q-LOCK-3a Path A revised (stock-journal-print-engine reuse · navigates to existing
+ *              /erp/finecore/stock-journal-print page · NO new print engine · α-b Block A)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 (sibling consumption) · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
@@ -17,13 +19,14 @@
  *              reads via approval-workflow-engine · localStorage erp_stock_issues_${entityCode}
  */
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -71,6 +74,7 @@ interface Props {
 export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
+  const navigate = useNavigate();
   const [department, setDepartment] = useState('');
   const [recipient, setRecipient] = useState('');
   const [purpose, setPurpose] = useState('');
@@ -79,6 +83,8 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const [busy, setBusy] = useState(false);
   // After save · enables AuditHistoryButton + approval buttons (Block C/D)
   const [currentVoucherId, setCurrentVoucherId] = useState<string | null>(null);
+  // After post · enables Print (α-b Block A · Q-LOCK-3a Path A)
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
@@ -194,7 +200,9 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
       }, entityCode, 'u-store-1');
       const posted = await postStockIssue(si.id, entityCode, 'u-store-1');
       toast.success(`Issued · ${posted?.issue_no} · Stock Journal posted`);
-      onModuleChange('sh-t-stock-issue-register');
+      setCurrentVoucherId(si.id);
+      // α-b Block A · Q-LOCK-3a · expose voucher_id for Print button (reuses stock-journal-print-engine)
+      if (posted?.voucher_id) setPostedVoucherId(posted.voucher_id);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to post stock issue');
     } finally { setBusy(false); }
@@ -355,6 +363,22 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
             </Button>
             <Button variant="outline" disabled={busy} onClick={onReject}>
               <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
+            </Button>
+          </>
+        ) : null}
+        {postedVoucherId ? (
+          <>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => navigate(
+                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+              )}
+            >
+              <Printer className="h-3.5 w-3.5 mr-1" /> Print
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={() => onModuleChange('sh-t-stock-issue-register')}>
+              View Register
             </Button>
           </>
         ) : null}

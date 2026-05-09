@@ -3,11 +3,12 @@
  * @purpose     Sidebar data config for Department Stores (store-hub) · canonical pattern · D-NEW-CC compliance
  * @who         Store Keeper · Department Head · Storekeeper Supervisor
  * @when        2026-05-09
- * @sprint      T-Phase-1.A.6.α-a-Department-Stores-Foundation · Q-LOCK-8a
+ * @sprint      T-Phase-1.A.6.α-a-Department-Stores-Foundation · Q-LOCK-8a ·
+ *              T-Phase-1.A.6.α-b-Department-Stores-Closeout · Block C (2 NEW report module IDs)
  * @iso         ISO 25010 Maintainability · Usability
  * @whom        Audit Owner
  * @decisions   D-NEW-CC canonical (sidebar keyboard uniqueness) · D-380 (StoreHubSidebar source) ·
- *              Q-LOCK-8a (NEW canonical sidebar config)
+ *              Q-LOCK-8a · Q-LOCK-9c revised (port 2 of 3 reports · skip Reorder Alerts redundant)
  * @disciplines FR-30 · FR-67 broad-stem grep verified at α-a Block 0
  * @reuses      @/shell/types SidebarItem · lucide-react icons · existing StoreHubModule type from
  *              src/pages/erp/store-hub/StoreHubSidebar.tsx (preserved verbatim)
@@ -18,7 +19,7 @@
  */
 import {
   Home, Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
-  Warehouse, BarChart3,
+  Warehouse, BarChart3, Activity, Flame,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -109,6 +110,26 @@ export const storeHubSidebarItems: SidebarItem[] = [
         requiredCards: ['store-hub'],
         keyboard: 's y',
       },
+      // α-b Block C · Q-LOCK-9c revised · 2 NEW thin wrappers (D-387 thin-pass-through)
+      {
+        id: 'sh-r-stock-movement-register',
+        type: 'item',
+        label: 'Stock Movement Register',
+        icon: Activity,
+        moduleId: 'sh-r-stock-movement-register',
+        requiredCards: ['store-hub'],
+        keyboard: 's m',
+      },
+      {
+        id: 'sh-r-department-consumption-summary',
+        type: 'item',
+        label: 'Department Consumption Summary',
+        icon: Flame,
+        moduleId: 'sh-r-department-consumption-summary',
+        requiredCards: ['store-hub'],
+        keyboard: 's u',
+      },
     ],
   },
 ];
+

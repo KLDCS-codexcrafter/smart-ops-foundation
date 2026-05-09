@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Home, Warehouse, BarChart3, ChevronRight, ArrowLeft,
-  Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
+  Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown, Activity, Flame,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -34,6 +34,9 @@ export type StoreHubModule =
   | 'sh-r-reorder-suggestions'
   | 'sh-r-demand-forecast'
   | 'sh-r-cycle-count-status'
+  // α-b Block C · 2 NEW thin wrappers (D-387)
+  | 'sh-r-stock-movement-register'
+  | 'sh-r-department-consumption-summary'
   // Transactions (NEW · Card #7 · D-381 + D-382)
   | 'sh-t-stock-issue-entry'
   | 'sh-t-stock-issue-register'
@@ -51,10 +54,12 @@ interface MenuItem {
 }
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Stock Check',         module: 'sh-r-stock-check',         icon: Boxes },
-  { label: 'Reorder Suggestions', module: 'sh-r-reorder-suggestions', icon: Layers },
-  { label: 'Demand Forecast',     module: 'sh-r-demand-forecast',     icon: TrendingUp },
-  { label: 'Cycle Count Status',  module: 'sh-r-cycle-count-status',  icon: ClipboardCheck },
+  { label: 'Stock Check',                    module: 'sh-r-stock-check',                    icon: Boxes },
+  { label: 'Reorder Suggestions',            module: 'sh-r-reorder-suggestions',            icon: Layers },
+  { label: 'Demand Forecast',                module: 'sh-r-demand-forecast',                icon: TrendingUp },
+  { label: 'Cycle Count Status',             module: 'sh-r-cycle-count-status',             icon: ClipboardCheck },
+  { label: 'Stock Movement Register',        module: 'sh-r-stock-movement-register',        icon: Activity },
+  { label: 'Department Consumption Summary', module: 'sh-r-department-consumption-summary', icon: Flame },
 ];
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
