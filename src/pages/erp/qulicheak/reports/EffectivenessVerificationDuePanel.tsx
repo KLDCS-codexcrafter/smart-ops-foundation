@@ -16,7 +16,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
-import { listVerificationsDueWithin, applyEffectivenessOutcome } from '@/lib/capa-engine';
+import { listVerificationsDueWithin, recordVerification } from '@/lib/capa-engine';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { toast } from 'sonner';
 import type { VerificationMilestone } from '@/types/capa';
