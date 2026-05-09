@@ -32,6 +32,7 @@ import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { round2 } from '@/lib/decimal-helpers';
 import { raiseNcr } from '@/lib/ncr-engine';
+import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
 import {
   NCR_SOURCE_LABELS,
   NCR_SEVERITY_LABELS,
@@ -76,6 +77,14 @@ const initial = (): {
 });
 
 export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
+  // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
+    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('NcrCapture', _fr29);
+  void _fr29;
   const { entityCode, entityId } = useEntityCode();
   const user = useCurrentUser();
   const [form, setForm] = useState(initial);

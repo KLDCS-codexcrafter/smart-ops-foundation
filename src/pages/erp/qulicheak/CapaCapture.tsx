@@ -32,6 +32,7 @@ import {
   type CapaSource, type CapaSeverity,
 } from '@/types/capa';
 import type { NcrId } from '@/types/ncr';
+import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
 
 interface Props {
   onSaved?: () => void;
@@ -54,6 +55,14 @@ const initial = (ncrId?: NcrId | null) => ({
 });
 
 export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Element {
+  // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
+    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('CapaCapture', _fr29);
+  void _fr29;
   const { entityCode, entityId } = useEntityCode();
   const user = useCurrentUser();
   const [form, setForm] = useState(() => initial(prefillNcrId));

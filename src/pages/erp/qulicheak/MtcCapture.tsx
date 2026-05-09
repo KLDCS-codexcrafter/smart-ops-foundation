@@ -23,6 +23,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { createMtc } from '@/lib/mtc-engine';
 import type { MtcParameter } from '@/types/mtc';
+import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
 
 interface Props {
   onSaved?: () => void;
@@ -65,6 +66,14 @@ const TRIDENT_PRESET: ReadonlyArray<Omit<ParamRow, 'key' | 'observed'>> = [
 ];
 
 export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
+  // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
+    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('MtcCapture', _fr29);
+  void _fr29;
   const { entityCode, entityId } = useEntityCode();
   const user = useCurrentUser();
   const [certNo, setCertNo] = useState('');
