@@ -67,7 +67,7 @@ export function EffectivenessVerificationDuePanel(): JSX.Element {
 
   const verify = (capaId: string, milestone: VerificationMilestone, effective: boolean): void => {
     if (!user) { toast.error('User session not found'); return; }
-    const updated = applyEffectivenessOutcome(entityCode, user.id, capaId, milestone, effective);
+    const updated = recordVerification(entityCode, user.id, capaId as never, milestone, effective);
     if (!updated) { toast.error('Failed to record verification'); return; }
     toast.success(`${milestone}-day verification · ${effective ? 'effective' : 'ineffective'}`);
     setVersion((v) => v + 1);
