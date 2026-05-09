@@ -18,6 +18,7 @@ import { Download, Search } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterMtcs } from '@/lib/mtc-engine';
+import { findPcMatchesForHeat } from '@/lib/qulicheak-bridges';
 import {
   MTC_STATUS_LABELS, MTC_OVERALL_LABELS,
   type MaterialTestCertificate, type MtcStatus, type MtcOverall,
@@ -180,6 +181,7 @@ export function MtcRegister(): JSX.Element {
                   <TableHead>Lot/Heat</TableHead>
                   <TableHead>Uploaded</TableHead>
                   <TableHead className="text-right">Params</TableHead>
+                  <TableHead>PC Link</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -200,6 +202,17 @@ export function MtcRegister(): JSX.Element {
                     </TableCell>
                     <TableCell className="font-mono text-xs">{fmtDate(m.uploaded_at)}</TableCell>
                     <TableCell className="text-right text-xs">{m.parameters.length}</TableCell>
+                    <TableCell className="text-xs">
+                      {(() => {
+                        const matches = findPcMatchesForHeat(entityCode, m.heat_no);
+                        if (matches.length === 0) return <span className="text-muted-foreground">—</span>;
+                        return (
+                          <Badge variant="outline" className="font-mono" title={matches.map((p) => p.doc_no).join(' · ')}>
+                            {matches.length} PC
+                          </Badge>
+                        );
+                      })()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
