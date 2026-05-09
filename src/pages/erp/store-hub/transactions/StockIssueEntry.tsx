@@ -160,7 +160,8 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
         })),
       }, entityCode, 'u-store-1');
       toast.success(`Draft saved · ${si.issue_no}`);
-      onModuleChange('sh-t-stock-issue-register');
+      setCurrentVoucherId(si.id);
+      // Stay on form so approval/audit buttons become available · operator can navigate manually.
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to save draft');
     } finally { setBusy(false); }
