@@ -216,7 +216,7 @@ export function MtcRegister(): JSX.Element {
                     <TableCell className="text-right text-xs">{m.parameters.length}</TableCell>
                     <TableCell className="text-xs">
                       {(() => {
-                        const matches = findPcMatchesForHeat(entityCode, m.heat_no);
+                        const matches = m.heat_no ? (pcMatchByHeat.get(m.heat_no) ?? []) : [];
                         if (matches.length === 0) return <span className="text-muted-foreground">—</span>;
                         return (
                           <Badge variant="outline" className="font-mono" title={matches.map((p) => p.doc_no).join(' · ')}>
