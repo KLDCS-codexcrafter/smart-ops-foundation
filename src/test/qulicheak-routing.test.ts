@@ -59,4 +59,25 @@ describe('Qulicheak sidebar config · D-NEW-CC canonical (T1 Block C)', () => {
     ];
     expect(candidates.length).toBe(8);
   });
+
+  it('NEW Trident QC Reports group present and contains all 8 α-d-1 module IDs', () => {
+    const flat = flatten(qulicheakSidebarItems);
+    const trident = flat.find((i) => i.id === 'trident-qc-reports-group');
+    expect(trident).toBeDefined();
+    expect(trident?.type).toBe('group');
+    const childIds = new Set((trident?.children ?? []).map((c) => c.moduleId).filter((m): m is string => Boolean(m)));
+    const expected = [
+      'stk-iqc-st-remarks', 'qc-transfer-reg', 'qc-godown-summary', 'qc-stk-trnsfer',
+      'rinsp-report-page', 'qc-rejection-analysis', 'fg-receiving-inspection', 'reprocess-report',
+    ];
+    for (const e of expected) expect(childIds.has(e)).toBe(true);
+  });
+
+  it('Q-LOCK-9a · qulicheak status flipped to active at α-d-2 close', async () => {
+    const mod = await import('@/components/operix-core/applications');
+    const apps = (mod as { applications?: ReadonlyArray<{ id: string; status: string }> }).applications;
+    expect(apps).toBeDefined();
+    const q = apps?.find((a) => a.id === 'qulicheak');
+    expect(q?.status).toBe('active');
+  });
 });
