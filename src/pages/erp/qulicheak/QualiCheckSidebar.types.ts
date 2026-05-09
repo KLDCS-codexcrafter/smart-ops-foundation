@@ -25,8 +25,11 @@ export type QualiCheckModule =
   // α-a-bis · D-NEW-AV · NCR Foundation
   | 'ncr-capture'
   | 'ncr-register'
-  // α-b · D-NEW-BD · CAPA + D-NEW-BF · MTC
+  // α-b · D-NEW-BD · CAPA + D-NEW-BF · MTC + D-NEW-BG · FAI
   | 'capa-capture'
   | 'capa-register'
   | 'mtc-capture'
-  | 'mtc-register';
+  | 'mtc-register'
+  | 'fai-capture'
+  | 'fai-register'
+  | 'effectiveness-verification-due';
