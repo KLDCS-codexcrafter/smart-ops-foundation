@@ -3,7 +3,11 @@
  * @purpose Sibling listener that observes `qa.outcome.applied` (rework outcomes)
  *          and stamps the originating NCR id into a pending-context ledger so
  *          Production-side rework JobCard creation can pre-fill source_ncr_id.
+ * @who Production controller · QA Manager (consumed via Production engine pre-fill helper)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge
+ * @iso ISO 9001:2015 Clause 8.7 (control of nonconforming output)
+ * @whom Audit Owner
  * @decisions D-NEW-CF (NCR↔Rework traceability) · D-NEW-BV (entity_code required)
  * @disciplines FR-19 (sibling · zero Production engine touch) · FR-30 · FR-50
  * @reuses qulicheak-bridges.QaOutcomePayload channel
