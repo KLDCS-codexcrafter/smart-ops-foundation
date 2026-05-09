@@ -1,13 +1,17 @@
 /**
  * @file        qulicheak-sidebar-config.ts
- * @purpose     Sidebar data config for Qulicheak (QualiCheck) · 12 modules in 4 sections
+ * @purpose     Sidebar data config for Qulicheak (QualiCheck) · 30+ modules in 5 sections +
+ *              Trident QC Reports sub-group (Q-LOCK-6b)
  * @who         Quality Inspector · QA Manager · Vendor Manager
  * @when        Phase 1.A.5.a · Qulicheak Shell Migration sprint
- * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration · T-Phase-1.A.5.c-T3-AuditFix · F-8 keyboard duplicate resolved (welder-qualification 'q w' → 'q l')
+ * @sprint      T-Phase-1.A.5.a-Qulicheak-Shell-Migration · T-Phase-1.A.5.c-T3-AuditFix ·
+ *              F-8 keyboard duplicate resolved (welder-qualification 'q w' → 'q l') ·
+ *              T-Phase-1.A.5.d-2-AuditFix
  * @iso         Maintainability · Usability
  * @decisions   D-250 (Shell pattern · FR-58) · D-NEW-AY (Outcome C · split α-a into
  *              Shell migration + α-a-bis NCR Foundation) ·
- *              D-NEW-AZ (QualiCheckSidebar.tsx DELETED · sidebar data extracted to config)
+ *              D-NEW-AZ (QualiCheckSidebar.tsx DELETED · sidebar data extracted to config) ·
+ *              Q-LOCK-6b (Trident QC Reports sub-group · α-d-2)
  * @reuses      @/shell/types SidebarItem · lucide-react icons
  * @[JWT]       N/A (config only)
  *
