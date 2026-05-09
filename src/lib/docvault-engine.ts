@@ -3,21 +3,30 @@
  * @purpose     DocVault SSOT engine · CRUD + version state machine + cross-card filtered queries
  * @who         All departments via DocVault page · per-card sub-modules consume via findDocumentsByForeignKey
  * @when        2026-05-09
- * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Q-LOCK-3a + Q-LOCK-7a + Block A.2
+ * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Q-LOCK-3a + Q-LOCK-7a + Block A.2 ·
+ *              T-Phase-1.A.8.α-a-T1-Audit-Fix · Block B · F-1 FR-19 sibling wire-in (active)
  * @iso         ISO 9001:2015 §7.5 · ISO/IEC 27001 · ISO 25010
  * @whom        Audit Owner · Document Controller · CIO
  * @decisions   D-NEW-CJ-docvault-file-metadata-schema CANONICAL ·
- *              D-NEW-BV Phase 1 mock · D-NEW-BJ-adapt#10 (FR-19 sibling pattern) ·
+ *              D-NEW-BV Phase 1 mock · D-NEW-BJ-adapt#10 (FR-19 sibling pattern · ACTIVE consumption) ·
  *              FR-11 SSOT · FR-13 Cards Render Replicas · FR-19 sibling · FR-50 · FR-25
  * @disciplines FR-19 (siblings only · approval-workflow + audit-trail engines NEVER modified) ·
  *              FR-23 D-194 Phase 1/2 boundary
- * @reuses      audit-trail-engine (Phase 2 wiring · [JWT] markers below)
+ * @reuses      audit-trail-engine.logAudit · approval-workflow-engine.submit/approve/reject (FR-19 siblings · ACTIVE)
  * @[JWT]       POST /api/docvault/documents · GET /api/docvault/documents/:id ·
  *              POST /api/docvault/documents/:id/versions ·
  *              POST /api/docvault/documents/:id/versions/:vno/(submit|approve|reject) ·
  *              GET  /api/docvault/documents/by-foreign-key?key={k}&id={id}
  */
 import type { Document, DocumentVersion, DocumentVersionStatus } from '@/types/docvault';
+import type { AuditEntityType } from '@/types/audit-trail';
+// F-1 fix · FR-19 sibling consumers (engines NEVER modified · Phase 1 functional · per Q-LOCK-7a + AC#1)
+import { logAudit } from './audit-trail-engine';
+import { submit, approve, reject } from './approval-workflow-engine';
+
+// AuditEntityType union does not yet include 'document' (a3094d0b protected) — Phase 1 cast
+// preserves zero-touch on @/types/audit-trail while still exercising the FR-19 sibling engine.
+const DOCUMENT_AUDIT_TYPE = 'document' as unknown as AuditEntityType;
 
 const DOCUMENTS_KEY = (entityCode: string): string => `erp_documents_${entityCode}`;
 
@@ -80,7 +89,17 @@ export function createDocument(
   const all = loadAll(entityCode);
   all.push(newDoc);
   saveAll(entityCode, all);
-  // [JWT] FR-19 sibling: Phase 2 audit-trail-engine.logAudit(create)
+  // FR-19 sibling: audit-trail-engine.logAudit (ACTIVE · Phase 1)
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: DOCUMENT_AUDIT_TYPE,
+    recordId: id,
+    recordLabel: newDoc.title,
+    beforeState: null,
+    afterState: { ...newDoc },
+    sourceModule: 'docvault',
+  });
   return newDoc;
 }
 
@@ -93,14 +112,25 @@ export function addVersion(
   const all = loadAll(entityCode);
   const doc = all.find((d) => d.id === documentId);
   if (!doc) return null;
+  const before = { ...doc };
   doc.versions.push({ ...version, version_status: 'draft' });
   doc.current_version = version.version_no;
   saveAll(entityCode, all);
-  // [JWT] FR-19 sibling: audit-trail-engine.logAudit(add-version)
+  // FR-19 sibling: audit-trail-engine.logAudit (ACTIVE · Phase 1)
+  logAudit({
+    entityCode,
+    action: 'update',
+    entityType: DOCUMENT_AUDIT_TYPE,
+    recordId: documentId,
+    recordLabel: `${doc.title} · v${version.version_no}`,
+    beforeState: before,
+    afterState: { ...doc },
+    sourceModule: 'docvault',
+  });
   return doc;
 }
 
-/** State machine: draft → submitted (FR-19 sibling pattern) */
+/** State machine: draft → submitted (FR-19 sibling pattern · ACTIVE) */
 export function submitVersion(
   entityCode: string, documentId: string, versionNo: string, submittedBy: string,
 ): { ok: boolean; document?: Document } {
@@ -110,11 +140,23 @@ export function submitVersion(
   if (!doc) return { ok: false };
   const ver = doc.versions.find((v) => v.version_no === versionNo);
   if (!ver || ver.version_status !== 'draft') return { ok: false };
+  // FR-19 sibling: approval-workflow-engine.submit (ACTIVE · Phase 1 ·
+  // engine validates state-machine transition + writes its own audit entry)
+  const r = submit(
+    { id: `${doc.id}-${versionNo}`, status: 'draft' },
+    { id: submittedBy, name: submittedBy },
+    {
+      entityCode,
+      auditEntityType: DOCUMENT_AUDIT_TYPE,
+      sourceModule: 'docvault',
+      recordLabel: () => `${doc.title} · v${versionNo} · submit`,
+    },
+  );
+  if (!r.ok) return { ok: false };
   ver.version_status = 'submitted';
   ver.submitted_at = new Date().toISOString();
   ver.submitted_by = submittedBy;
   saveAll(entityCode, all);
-  // [JWT] FR-19 sibling: approval-workflow-engine.submit + audit-trail-engine.logAudit
   return { ok: true, document: doc };
 }
 
@@ -128,6 +170,18 @@ export function approveVersion(
   if (!doc) return { ok: false };
   const ver = doc.versions.find((v) => v.version_no === versionNo);
   if (!ver || ver.version_status !== 'submitted') return { ok: false };
+  // FR-19 sibling: approval-workflow-engine.approve (ACTIVE · Phase 1)
+  const r = approve(
+    { id: `${doc.id}-${versionNo}`, status: 'submitted' },
+    { id: approvedBy, name: approvedBy },
+    {
+      entityCode,
+      auditEntityType: DOCUMENT_AUDIT_TYPE,
+      sourceModule: 'docvault',
+      recordLabel: () => `${doc.title} · v${versionNo} · approve`,
+    },
+  );
+  if (!r.ok) return { ok: false };
   for (const v of doc.versions) {
     if (v.version_status === 'approved' && v.version_no !== versionNo) {
       v.version_status = 'superseded';
@@ -138,7 +192,6 @@ export function approveVersion(
   ver.approved_by = approvedBy;
   doc.current_version = versionNo;
   saveAll(entityCode, all);
-  // [JWT] FR-19 sibling: approval-workflow-engine.approve + audit-trail-engine.logAudit
   return { ok: true, document: doc };
 }
 
@@ -152,12 +205,24 @@ export function rejectVersion(
   if (!doc) return { ok: false };
   const ver = doc.versions.find((v) => v.version_no === versionNo);
   if (!ver || ver.version_status !== 'submitted') return { ok: false };
+  // FR-19 sibling: approval-workflow-engine.reject (ACTIVE · Phase 1)
+  const r = reject(
+    { id: `${doc.id}-${versionNo}`, status: 'submitted' },
+    { id: rejectedBy, name: rejectedBy },
+    reason,
+    {
+      entityCode,
+      auditEntityType: DOCUMENT_AUDIT_TYPE,
+      sourceModule: 'docvault',
+      recordLabel: () => `${doc.title} · v${versionNo} · reject`,
+    },
+  );
+  if (!r.ok) return { ok: false };
   ver.version_status = 'rejected';
   ver.rejected_at = new Date().toISOString();
   ver.rejected_by = rejectedBy;
   ver.rejection_reason = reason;
   saveAll(entityCode, all);
-  // [JWT] FR-19 sibling: approval-workflow-engine.reject + audit-trail-engine.logAudit
   return { ok: true };
 }
 

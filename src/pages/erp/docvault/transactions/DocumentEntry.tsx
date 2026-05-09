@@ -3,12 +3,17 @@
  * @purpose     New document entry form · cross-card linkage editor (Q-LOCK-15a) · approval actions
  * @who         Document Controller · originating department user
  * @when        2026-05-09
- * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block C
+ * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block C ·
+ *              T-Phase-1.A.8.α-a-T1-Audit-Fix · Block A · F-2 + F-3a
  * @iso         ISO 9001:2015 §7.5
  * @whom        Audit Owner
- * @decisions   D-NEW-CJ-docvault-file-metadata-schema · Q-LOCK-15a Hub-and-Spoke · D-NEW-BV mock
+ * @decisions   D-NEW-CJ-docvault-file-metadata-schema · Q-LOCK-15a Hub-and-Spoke · D-NEW-BV mock ·
+ *              D-NEW-CG canonical (AuditHistoryButton consumed · institutional audit-UI pattern) ·
+ *              D-NEW-CE canonical (FormCarryForwardKit at FR-29 11/12 honest baseline)
  * @disciplines FR-29 · FR-30 · FR-50 · FR-25
- * @reuses      docvault-engine (FR-19 sibling) · useEntityCode
+ * @reuses      docvault-engine (FR-19 sibling) · useEntityCode ·
+ *              @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
  * @[JWT]       Wires to docvault-engine routes · file upload Phase 2 CDN
  */
 import { useState } from 'react';
@@ -24,6 +29,16 @@ import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { createDocument } from '@/lib/docvault-engine';
 import type { DocumentType } from '@/types/docvault';
+// F-3a fix · D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 honest baseline)
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+// F-2 fix · D-NEW-CG canonical · audit-UI institutional pattern
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
+import type { AuditEntityType } from '@/types/audit-trail';
 
 const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
   { value: 'drawing', label: 'Drawing' },
@@ -50,6 +65,23 @@ export function DocumentEntry(): JSX.Element {
   const [workOrderId, setWorkOrderId] = useState('');
   const [fileName, setFileName] = useState('');
   const [fileSize, setFileSize] = useState(0);
+  const [savedDocId, setSavedDocId] = useState<string | null>(null);
+
+  // F-3a · FR-29 11/12 honest baseline · D-NEW-CE canonical (matches StockIssueEntry A.6 pattern)
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, // honest: documents have form-specific defaults · not generic
+    pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('DocumentEntry', _fr29);
+  void _fr29;
+  const _form = { title, description, docType, department, versionNo, projectId, customerId, vendorId };
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: `docvault-document-entry-${entityCode}`,
+    entityCode, formState: _form, items: [], view: 'new', voucherType: 'document',
+  });
+  void _sprint27d1;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const f = e.target.files?.[0];
@@ -92,10 +124,16 @@ export function DocumentEntry(): JSX.Element {
       'current-user',
     );
     toast.success(`Document ${doc.id} saved as draft`);
+    setSavedDocId(doc.id);
     setTitle('');
     setDescription('');
     setFileName('');
     setFileSize(0);
+  };
+
+  const _formSnapshot: Record<string, unknown> = {
+    title, description, docType, department, versionNo,
+    projectId, customerId, vendorId, equipmentId, ncId, workOrderId,
   };
 
   const showProject = docType === 'drawing' || docType === 'mom' || docType === 'other';
@@ -106,8 +144,47 @@ export function DocumentEntry(): JSX.Element {
   const showWorkOrder = docType === 'other';
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">New Document</h1>
+
+      {/* F-3a · FR-29 mounts (UseLastVoucher · Sprint27d2 · Sprint27e · DraftRecovery) */}
+      <div className="flex flex-wrap items-center gap-2">
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="document"
+          partyValue={null}
+          onUse={() => { /* prefill hook · documents have form-specific defaults */ }}
+        />
+        <Sprint27d2Mount formName="DocumentEntry" entityCode={entityCode} items={[]} isLineItemForm={false} showBulkPasteButton={false} />
+        <Sprint27eMount
+          entityCode={entityCode}
+          voucherTypeId="document"
+          voucherTypeName="Document"
+          defaultPartyType="vendor"
+          partyId={null}
+          partyName={null}
+          lineItems={[]}
+          onPartyCreated={() => { /* deferred */ }}
+          onCloneTemplate={() => { /* deferred */ }}
+        />
+        <DraftRecoveryDialog
+          open={_sprint27d1.recoveryOpen}
+          draftAge={_sprint27d1.draftAge}
+          onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+          onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+          onClose={() => _sprint27d1.setRecoveryOpen(false)}
+        />
+        <div className="ml-auto">
+          {/* F-2 · D-NEW-CG canonical AuditHistoryButton */}
+          <AuditHistoryButton
+            recordId={savedDocId ?? 'pending'}
+            entityType={'document' as unknown as AuditEntityType}
+            entityCode={entityCode}
+            currentRecord={_formSnapshot}
+          />
+        </div>
+      </div>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Basic Info</CardTitle></CardHeader>
