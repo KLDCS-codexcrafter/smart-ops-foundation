@@ -78,7 +78,7 @@ export function StockReceiptAckPanel(): JSX.Element {
     items: draftLines.map(l => ({ item_name: l.item_name, qty: l.qty_acknowledged })),
     view: 'new', voucherType: 'stock_receipt_ack',
   });
-  void _sprint27d1;
+  void { _fr29, _sprint27d1 };
 
   const refresh = useCallback(() => {
     setAwaiting(listReleasedReceiptsAwaitingStock(entityCode));
