@@ -21,6 +21,8 @@ import { StockIssueEntryPanel } from './transactions/StockIssueEntry';
 import { StockIssueRegisterPanel } from './transactions/StockIssueRegister';
 import { StockReceiptAckPanel } from './transactions/StockReceiptAck';
 import { CycleCountStatusPanel } from './reports/CycleCountStatus';
+import { StockMovementRegisterPanel } from './reports/StockMovementRegister';
+import { DepartmentConsumptionSummaryPanel } from './reports/DepartmentConsumptionSummary';
 import { StoreHubWelcomePanel } from './StoreHubWelcome';
 
 function WelcomePanel(): JSX.Element {
