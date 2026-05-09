@@ -217,12 +217,39 @@ export function WelderQualification(): JSX.Element {
   }, [user, wpqForm, wpqProcesses, wpqPositions, entityCode, entityId]);
 
   return (
-    <div key={refresh} className="p-6 space-y-4 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Welder Qualification</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          ASME IX + AWS D1.1 · Welder → WPS → PQR → WPQ chain · Entity {entityCode}
-        </p>
+    <div key={refresh} className="p-6 space-y-4 max-w-6xl" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Welder Qualification" entityCode={entityCode} items={[]} isLineItemForm={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="welder_qualification"
+        voucherTypeName="Welder Qualification"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Welder Qualification</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            ASME IX + AWS D1.1 · Welder → WPS → PQR → WPQ chain · Entity {entityCode}
+          </p>
+        </div>
+        <UseLastVoucherButton
+          entityCode={entityCode}
+          recordType="welder_qualification"
+          partyValue={null}
+          onUse={() => { /* page-level no-op · per-tab forms manage own state */ }}
+        />
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
