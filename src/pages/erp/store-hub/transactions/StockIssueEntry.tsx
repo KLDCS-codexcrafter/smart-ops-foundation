@@ -135,16 +135,7 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
     toast.success('Rejected');
   }, [user, currentVoucherId, entityCode]);
 
-  const validate = (): string | null => {
-    if (!department.trim()) return 'Department is required';
-    if (!recipient.trim()) return 'Recipient is required';
-    if (!lines.length) return 'At least one line is required';
-    for (const l of lines) {
-      if (!l.item_name.trim()) return 'All lines need an item name';
-      if (l.qty <= 0) return 'Line qty must be greater than zero';
-    }
-    return null;
-  };
+  // (validate defined above · second declaration removed at α-a Block B)
 
   async function handleSaveDraft() {
     const err = validate();
