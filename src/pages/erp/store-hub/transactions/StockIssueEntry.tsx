@@ -1,10 +1,11 @@
 /**
- * StockIssueEntry.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
- *
- * Stock Issue entry form: Department + Recipient + Lines table.
- * Save Draft + Submit & Post (createStockIssue → postStockIssue → Stock Journal).
- *
+ * @file        src/pages/erp/store-hub/transactions/StockIssueEntry.tsx
+ * @purpose     Stock Issue entry form for Department Stores · 4-step capture · approval lifecycle
+ * @who         Store Keeper · Department Head · Storekeeper Supervisor
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
+ * @iso         ISO 9001:2015 Clause 8.1 · ISO 25010 Usability + Operability
+ * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
  *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
  *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings)
@@ -12,6 +13,8 @@
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
  *              @/lib/stock-issue-engine submitStockIssueForApproval/approveStockIssue/rejectStockIssue
+ * @[JWT]       writes via stock-issue-engine.createStockIssue / postStockIssue ·
+ *              reads via approval-workflow-engine · localStorage erp_stock_issues_${entityCode}
  */
 import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

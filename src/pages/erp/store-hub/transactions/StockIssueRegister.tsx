@@ -1,12 +1,15 @@
 /**
- * StockIssueRegister.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
- *
- * Lists Stock Issues with status badges + Post action for drafts + empty-state CTA.
- *
+ * @file        src/pages/erp/store-hub/transactions/StockIssueRegister.tsx
+ * @purpose     Stock Issue register · read-only list · honest 5/12 FR-29 baseline (register-shape)
+ * @who         Store Keeper · Department Head · Storekeeper Supervisor
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
+ * @iso         ISO 9001:2015 Clause 8.1 · ISO 25010 Usability + Operability
+ * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 register-shape honest 5/12 baseline)
  * @disciplines FR-29 (register form · most carry-forward items don't apply to read-only list) · FR-30
  * @reuses      @/lib/form-carry-forward-kit · @/components/canonical/form-carry-forward-kit
+ * @[JWT]       reads-only via listStockIssues + readAuditTrail
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

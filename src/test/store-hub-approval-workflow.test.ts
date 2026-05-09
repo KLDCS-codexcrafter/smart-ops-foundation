@@ -1,11 +1,15 @@
 /**
- * @file src/test/store-hub-approval-workflow.test.ts
- * @purpose Q-LOCK-4b revised coverage · stock-issue approval workflow integration
- * @sprint T-Phase-1.A.6.α-a-Department-Stores-Foundation · Block D test
- * @decisions Q-LOCK-4b revised · approval-workflow-engine consumption · D-NEW-BJ adapt #8
+ * @file        src/test/store-hub-approval-workflow.test.ts
+ * @purpose     Q-LOCK-4b revised coverage · stock-issue approval workflow integration
+ * @who         Store Keeper · Department Head · Audit Owner
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.A.6.α-a-Department-Stores-Foundation · Block D test
+ * @iso         ISO 25010 Testability · MCA Rule 3(1) audit trail
+ * @whom        Audit Owner
+ * @decisions   Q-LOCK-4b revised · approval-workflow-engine consumption · D-NEW-BJ adapt #8
  * @disciplines FR-19 (sibling extension) · FR-21 · FR-30
- * @reuses approval-workflow-engine · stock-issue-engine
- * @[JWT] writes to audit-trail via approval-workflow-engine
+ * @reuses      approval-workflow-engine · stock-issue-engine
+ * @[JWT]       writes to audit-trail via approval-workflow-engine
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
