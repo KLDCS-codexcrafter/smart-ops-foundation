@@ -87,8 +87,21 @@ export function mountQulicheakBridges(): () => void {
     });
   };
 
+  // α-b Block C · in-card CAPA observability listeners · no-op pass-throughs
+  // (capa-engine already records cross-card activity on closeCapa). These exist so
+  // future siblings (e.g. Procure360 vendor-scoring) can subscribe without touching capa-engine.
+  const capaNoop = (_e: Event): void => { /* observability hook · intentional no-op */ };
+
   window.addEventListener(CH_HANDOFF, handler as EventListener);
-  return () => window.removeEventListener(CH_HANDOFF, handler as EventListener);
+  window.addEventListener(CH_CAPA_LINKED, capaNoop as EventListener);
+  window.addEventListener(CH_CAPA_EFFECTIVE, capaNoop as EventListener);
+  window.addEventListener(CH_CAPA_INEFFECTIVE, capaNoop as EventListener);
+  return () => {
+    window.removeEventListener(CH_HANDOFF, handler as EventListener);
+    window.removeEventListener(CH_CAPA_LINKED, capaNoop as EventListener);
+    window.removeEventListener(CH_CAPA_EFFECTIVE, capaNoop as EventListener);
+    window.removeEventListener(CH_CAPA_INEFFECTIVE, capaNoop as EventListener);
+  };
 }
 
 /**
