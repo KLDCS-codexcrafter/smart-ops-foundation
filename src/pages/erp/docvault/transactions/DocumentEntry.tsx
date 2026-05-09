@@ -156,13 +156,23 @@ export function DocumentEntry(): JSX.Element {
           onUse={() => { /* prefill hook · documents have form-specific defaults */ }}
         />
         <Sprint27d2Mount formName="DocumentEntry" entityCode={entityCode} items={[]} isLineItemForm={false} showBulkPasteButton={false} />
-        <Sprint27eMount formName="DocumentEntry" entityCode={entityCode} />
+        <Sprint27eMount
+          entityCode={entityCode}
+          voucherTypeId="document"
+          voucherTypeName="Document"
+          defaultPartyType="vendor"
+          partyId={null}
+          partyName={null}
+          lineItems={[]}
+          onPartyCreated={() => { /* deferred */ }}
+          onCloneTemplate={() => { /* deferred */ }}
+        />
         <DraftRecoveryDialog
-          open={false}
-          draftAge={0}
-          onRecover={() => { /* recovery handled by Sprint27d1 mount */ }}
-          onDiscard={() => { /* discard handled by Sprint27d1 mount */ }}
-          onClose={() => { /* close handled by Sprint27d1 mount */ }}
+          open={_sprint27d1.recoveryOpen}
+          draftAge={_sprint27d1.draftAge}
+          onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+          onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+          onClose={() => _sprint27d1.setRecoveryOpen(false)}
         />
         <div className="ml-auto">
           {/* F-2 · D-NEW-CG canonical AuditHistoryButton */}
