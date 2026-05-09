@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
 import {
   createWelder, listWelders, createWps, listWps, approveWps,
   createPqr, listPqr, createWpq, listWpq, recomputeWpqStatus,
@@ -56,6 +57,14 @@ function ChipMulti<T extends string>({ options, value, onChange, labelOf }: Chip
 }
 
 export function WelderQualification(): JSX.Element {
+  // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
+    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('WelderQualification', _fr29);
+  void _fr29;
   const { entityCode, entityId } = useEntityCode();
   const user = useCurrentUser();
   const [tab, setTab] = useState<'welders' | 'wps' | 'pqr' | 'wpq'>('welders');

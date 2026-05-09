@@ -129,7 +129,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/qulicheak',
     icon: 'CheckSquare',
-    status: 'wip',
+    status: 'active',
   },
   {
     id: 'gateflow',
