@@ -13,6 +13,13 @@
  * @reuses ncr-engine.raiseNcr · decimal-helpers (dMul · round2) ·
  *         useEntityCode · useEntityChangeEffect · useCurrentUser
  * @[JWT] localStorage via raiseNcr · POST /api/qulicheak/ncrs
+ * @deferrals 8 of 12 FR-29 carry-forward mounts deferred to α-b polish pass per
+ *   Card 3b 5-pre-2 precedent · approved post α-a-bis audit (T1-Audit-Closure):
+ *   UseLastVoucherButton (D-228) · Sprint27d1Mount · Sprint27d2Mount · Sprint27eMount ·
+ *   KeyboardShortcutOverlay · DraftRecoveryDialog · PinnedTemplatesWidget · useSmartDefaults.
+ *   Currently integrated (4/12): decimal-helpers (dMul·round2) · FR-30 header ·
+ *   Multi-Entity 6-point (entity_id) · Multi-Branch (branch_id).
+ *   See Sprint A.5.b Step 1 alignment for polish-pass scope when α-b is planned.
  */
 import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
