@@ -42,7 +42,7 @@ export function IqcEntryPage(): JSX.Element {
           label="Mode"
         />
       </div>
-      <QCEntryPage inspectionId="" />
+      <QCEntryPage inspectionId="" onBack={() => { /* IQC wrap · no parent stack */ }} />
     </div>
   );
 }
