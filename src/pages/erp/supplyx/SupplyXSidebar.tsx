@@ -1,6 +1,9 @@
 /**
- * SupplyXSidebar.tsx — Sprint T-Phase-1.2.6f-b-2-fix-2 · Block O · D-282
- * Hand-rolled sidebar (pre-Shell) · Procure360 has migrated to canonical Shell in A.3.a · read-only navigation · SupplyX scheduled for Shell migration in a later sprint.
+ * SupplyXSidebar.tsx — Sprint T-Phase-1.A.7.α-a · Block A · D-282
+ * Canonical sidebar consumer (post-Shell) · migrated in Sprint T-Phase-1.A.7.α-a ·
+ * consumes `supplyXSidebarItems` from `@/apps/erp/configs/supplyx-sidebar-config` ·
+ * Architectural note: SupplyX is internal procurement read-only mirror (D-282) ·
+ * Vendor Portal is a SEPARATE card with its own scaffold engines (vendor-portal-* in src/lib).
  */
 import {
   Sidebar,
@@ -12,58 +15,68 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, Send, FileText, Award } from 'lucide-react';
+import { supplyXSidebarItems } from '@/apps/erp/configs/supplyx-sidebar-config';
+import type { SidebarItem } from '@/shell/types';
 import type { SupplyXModule } from './SupplyXSidebar.types';
-
-interface Group {
-  label: string;
-  items: { id: SupplyXModule; label: string; icon: typeof Home }[];
-}
-
-const GROUPS: Group[] = [
-  {
-    label: 'Overview',
-    items: [{ id: 'welcome', label: 'Welcome', icon: Home }],
-  },
-  {
-    label: 'Internal Procurement',
-    items: [
-      { id: 'open-rfqs', label: 'Open RFQs', icon: Send },
-      { id: 'pending-quotations', label: 'Pending Quotations', icon: FileText },
-      { id: 'pending-awards', label: 'Pending Awards', icon: Award },
-    ],
-  },
-];
 
 interface Props {
   active: SupplyXModule;
   onNavigate: (m: SupplyXModule) => void;
 }
 
+function renderItem(
+  item: SidebarItem,
+  active: SupplyXModule,
+  onNavigate: (m: SupplyXModule) => void,
+): JSX.Element | null {
+  if (item.type !== 'item' || !item.moduleId) return null;
+  const Icon = item.icon;
+  const moduleId = item.moduleId as SupplyXModule;
+  return (
+    <SidebarMenuItem key={item.id}>
+      <SidebarMenuButton
+        isActive={active === moduleId}
+        onClick={() => onNavigate(moduleId)}
+      >
+        {Icon ? <Icon className="h-4 w-4" /> : null}
+        <span>{item.label}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
 export function SupplyXSidebar({ active, onNavigate }: Props): JSX.Element {
   return (
     <Sidebar>
       <SidebarContent>
-        {GROUPS.map((g) => (
-          <SidebarGroup key={g.label}>
-            <SidebarGroupLabel>{g.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {g.items.map((it) => (
-                  <SidebarMenuItem key={it.id}>
-                    <SidebarMenuButton
-                      isActive={active === it.id}
-                      onClick={() => onNavigate(it.id)}
-                    >
-                      <it.icon className="h-4 w-4" />
-                      <span>{it.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {supplyXSidebarItems.map((node) => {
+          if (node.type === 'item') {
+            return (
+              <SidebarGroup key={node.id}>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {renderItem(node, active, onNavigate)}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            );
+          }
+          if (node.type === 'group') {
+            return (
+              <SidebarGroup key={node.id}>
+                <SidebarGroupLabel>{node.label}</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {(node.children ?? []).map((child) =>
+                      renderItem(child, active, onNavigate),
+                    )}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            );
+          }
+          return null;
+        })}
       </SidebarContent>
     </Sidebar>
   );

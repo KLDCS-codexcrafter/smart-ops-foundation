@@ -194,7 +194,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/supplyx',
     icon: 'Truck',
-    status: 'wip',
+    status: 'active',  // T-Phase-1.A.7.α-a · Q-LOCK-13a · D-NEW-BB pattern (parallel to qulicheak A.5 + store-hub A.6)
   },
   // 🆕 NEW Tier 1 #12 (Master Plan §51.2 April 30, 2026 LOCK)
   {
