@@ -71,6 +71,10 @@ export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
   const [stepStatus, setStepStatus] = useState<EightDStepStatus>('pending');
   const [why1, setWhy1] = useState<string>('');
   const [why2, setWhy2] = useState<string>('');
+  const [why3, setWhy3] = useState<string>('');
+  const [why4, setWhy4] = useState<string>('');
+  const [why5, setWhy5] = useState<string>('');
+  const [showDeepWhys, setShowDeepWhys] = useState<boolean>(false);
   const [rootCause, setRootCause] = useState<string>('');
 
   useEffect(() => {
@@ -79,6 +83,12 @@ export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
     setStepStatus(currentStep.status);
     setWhy1(currentStep.five_whys?.why_1?.answer ?? '');
     setWhy2(currentStep.five_whys?.why_2?.answer ?? '');
+    setWhy3(currentStep.five_whys?.why_3?.answer ?? '');
+    setWhy4(currentStep.five_whys?.why_4?.answer ?? '');
+    setWhy5(currentStep.five_whys?.why_5?.answer ?? '');
+    setShowDeepWhys(Boolean(
+      currentStep.five_whys?.why_3 ?? currentStep.five_whys?.why_4 ?? currentStep.five_whys?.why_5,
+    ));
     setRootCause(currentStep.five_whys?.root_cause_summary ?? '');
   }, [currentStep]);
 
@@ -88,7 +98,10 @@ export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
     const fiveWhys: FiveWhys | null = isStep4
       ? {
           why_1: { question: 'Why did this happen?', answer: why1 },
-          why_2: why2 ? { question: 'Why?', answer: why2 } : undefined,
+          ...(why2 ? { why_2: { question: 'Why?', answer: why2 } } : {}),
+          ...(why3 ? { why_3: { question: 'Why?', answer: why3 } } : {}),
+          ...(why4 ? { why_4: { question: 'Why?', answer: why4 } } : {}),
+          ...(why5 ? { why_5: { question: 'Why?', answer: why5 } } : {}),
           root_cause_summary: rootCause,
         }
       : (currentStep?.five_whys ?? null);
@@ -103,7 +116,7 @@ export function CapaDetail({ capaId, onBack }: Props): JSX.Element {
     }, `D${activeStep} → ${stepStatus}`);
     toast.success(`Step D${activeStep} saved`);
     refresh();
-  }, [capa, activeStep, stepStatus, stepNotes, why1, why2, rootCause, currentStep, entityCode, userId, refresh]);
+  }, [capa, activeStep, stepStatus, stepNotes, why1, why2, why3, why4, why5, rootCause, currentStep, entityCode, userId, refresh]);
 
   // FR-29 · Cmd/Ctrl+Enter quick-save
   useEffect(() => {
