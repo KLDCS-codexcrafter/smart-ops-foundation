@@ -34,9 +34,21 @@ interface Props {
 
 export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  // FR-29 register-shape honest 5/12 baseline · D-NEW-CE FormCarryForwardKit canonical
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: false,
+    keyboardOverlay: true, draftRecovery: false, decimalHelpers: false, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: false,
+  };
+  useFormCarryForwardChecklist('StockIssueRegister', _fr29);
+  void _fr29;
   const [items, setItems] = useState<StockIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [postingId, setPostingId] = useState<string | null>(null);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-issue-register', entityCode, formState: { count: items.length }, items: [], view: 'view', voucherType: 'stock_issue',
+  });
+  void _sprint27d1;
 
   const refresh = useCallback(() => {
     setItems(listStockIssues(entityCode));
