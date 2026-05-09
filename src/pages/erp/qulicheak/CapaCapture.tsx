@@ -62,9 +62,9 @@ const initial = (ncrId?: NcrId | null) => ({
 export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Element {
   // FR-29 12/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
-    useLastVoucher: false, sprint27d1: false, sprint27d2: false, sprint27e: false,
-    keyboardOverlay: false, draftRecovery: false, decimalHelpers: true, fr30Header: true,
-    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: true,
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
   };
   useFormCarryForwardChecklist('CapaCapture', _fr29);
   void _fr29;
@@ -72,6 +72,10 @@ export function CapaCapture({ onSaved, onCancel, prefillNcrId }: Props): JSX.Ele
   const user = useCurrentUser();
   const [form, setForm] = useState(() => initial(prefillNcrId));
   const [saving, setSaving] = useState(false);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'capa-capture-new', entityCode, formState: form, items: [], view: 'new', voucherType: 'CAPA',
+  });
+  void _sprint27d1;
 
   useEntityChangeEffect(() => setForm(initial(prefillNcrId)), [prefillNcrId]);
 
