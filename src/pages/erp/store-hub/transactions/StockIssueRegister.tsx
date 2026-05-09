@@ -69,7 +69,11 @@ export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
+      <Sprint27d2Mount formName="Stock Issue Register" entityCode={entityCode} items={[]} isLineItemForm={false} showBulkPasteButton={false} />
+      <div className="hidden">
+        <UseLastVoucherButton entityCode={entityCode} recordType="stock_issue" partyValue={null} onUse={() => { /* register · view-only consumer */ }} />
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
