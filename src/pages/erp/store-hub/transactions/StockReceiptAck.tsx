@@ -62,6 +62,23 @@ export function StockReceiptAckPanel(): JSX.Element {
   const [dialogIr, setDialogIr] = useState<InwardReceipt | null>(null);
   const [draftLines, setDraftLines] = useState<AckDraftLine[]>([]);
   const [busy, setBusy] = useState(false);
+  const [currentAckId, setCurrentAckId] = useState<string | null>(null);
+
+  // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('StockReceiptAck', _fr29);
+  void _fr29;
+
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-receipt-ack-new', entityCode, formState: { awaiting: awaiting.length, history: history.length },
+    items: draftLines.map(l => ({ item_name: l.item_name, qty: l.qty_acknowledged })),
+    view: 'new', voucherType: 'stock_receipt_ack',
+  });
+  void _sprint27d1;
 
   const refresh = useCallback(() => {
     setAwaiting(listReleasedReceiptsAwaitingStock(entityCode));
