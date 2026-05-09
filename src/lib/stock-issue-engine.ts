@@ -308,3 +308,90 @@ export async function cancelStockIssue(
 }
 
 export type { StockIssueStatus };
+
+// ============================================================
+// FR-19 SIBLING EXTENSIONS · approval-workflow-engine integration
+// Sprint T-Phase-1.A.6.α-a-Department-Stores-Foundation · Block D · Q-LOCK-4b revised
+// D-NEW-BJ adapt #8 · existing createStockIssue/postStockIssue ZERO-TOUCH (SD-28 protected)
+// ============================================================
+import {
+  submit as approvalSubmit,
+  approve as approvalApprove,
+  reject as approvalReject,
+  type ApprovalContext,
+} from '@/lib/approval-workflow-engine';
+
+const APPROVAL_CONTEXT = (entityCode: string): ApprovalContext => ({
+  entityCode,
+  auditEntityType: 'voucher',
+  sourceModule: 'store-hub',
+});
+
+function findIssueIndex(entityCode: string, voucherId: string): { list: StockIssue[]; idx: number } {
+  const list = read(entityCode);
+  const idx = list.findIndex((s) => s.id === voucherId);
+  return { list, idx };
+}
+
+export function submitStockIssueForApproval(
+  entityCode: string,
+  userId: string,
+  userName: string,
+  voucherId: string,
+): { ok: boolean; reason?: string } {
+  const { list, idx } = findIssueIndex(entityCode, voucherId);
+  if (idx < 0) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  // The stock issue uses 'draft' status (matches approval-workflow-engine 'draft' precondition).
+  const result = approvalSubmit(
+    cur as unknown as Record<string, unknown> & { id: string },
+    { id: userId, name: userName },
+    APPROVAL_CONTEXT(entityCode),
+  );
+  if (!result.ok || !result.next) return { ok: false, reason: result.reason };
+  list[idx] = result.next as unknown as StockIssue;
+  write(entityCode, list);
+  return { ok: true };
+}
+
+export function approveStockIssue(
+  entityCode: string,
+  approverId: string,
+  approverName: string,
+  voucherId: string,
+): { ok: boolean; reason?: string } {
+  const { list, idx } = findIssueIndex(entityCode, voucherId);
+  if (idx < 0) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  const result = approvalApprove(
+    cur as unknown as Record<string, unknown> & { id: string },
+    { id: approverId, name: approverName },
+    APPROVAL_CONTEXT(entityCode),
+  );
+  if (!result.ok || !result.next) return { ok: false, reason: result.reason };
+  list[idx] = result.next as unknown as StockIssue;
+  write(entityCode, list);
+  return { ok: true };
+}
+
+export function rejectStockIssue(
+  entityCode: string,
+  approverId: string,
+  approverName: string,
+  voucherId: string,
+  reason: string,
+): { ok: boolean; reason?: string } {
+  const { list, idx } = findIssueIndex(entityCode, voucherId);
+  if (idx < 0) return { ok: false, reason: 'not-found' };
+  const cur = list[idx];
+  const result = approvalReject(
+    cur as unknown as Record<string, unknown> & { id: string },
+    { id: approverId, name: approverName },
+    reason,
+    APPROVAL_CONTEXT(entityCode),
+  );
+  if (!result.ok || !result.next) return { ok: false, reason: result.reason };
+  list[idx] = result.next as unknown as StockIssue;
+  write(entityCode, list);
+  return { ok: true };
+}

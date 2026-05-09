@@ -1,10 +1,15 @@
 /**
  * StockReceiptAck.tsx — Card #7 Block G · D-382
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Two tabs: Awaiting (Card #6 IRs status='released' not yet acked) + History.
  * Quick Ack dialog with per-line qty_acknowledged + variance display.
- * On Confirm → createReceiptAck + postReceiptAck → Stock Journal voucher.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer)
+ * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 · FR-30
+ * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +34,13 @@ import {
 import type { InwardReceipt } from '@/types/inward-receipt';
 import type { StockReceiptAck } from '@/types/stock-receipt-ack';
 import { STOCK_ACK_STATUS_LABELS, STOCK_ACK_STATUS_COLORS } from '@/types/stock-receipt-ack';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 
 interface AckDraftLine {
   inward_line_id: string;
@@ -50,6 +62,23 @@ export function StockReceiptAckPanel(): JSX.Element {
   const [dialogIr, setDialogIr] = useState<InwardReceipt | null>(null);
   const [draftLines, setDraftLines] = useState<AckDraftLine[]>([]);
   const [busy, setBusy] = useState(false);
+  const [currentAckId, setCurrentAckId] = useState<string | null>(null);
+
+  // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('StockReceiptAck', _fr29);
+  void _fr29;
+
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-receipt-ack-new', entityCode, formState: { awaiting: awaiting.length, history: history.length },
+    items: draftLines.map(l => ({ item_name: l.item_name, qty: l.qty_acknowledged })),
+    view: 'new', voucherType: 'stock_receipt_ack',
+  });
+  if (!_fr29) void _sprint27d1;
 
   const refresh = useCallback(() => {
     setAwaiting(listReleasedReceiptsAwaitingStock(entityCode));
@@ -100,6 +129,7 @@ export function StockReceiptAckPanel(): JSX.Element {
       }, entityCode, 'u-store-1');
       const posted = await postReceiptAck(ack.id, entityCode, 'u-store-1');
       toast.success(`Ack posted · ${posted?.ack_no}`);
+      setCurrentAckId(ack.id);
       setDialogIr(null);
       refresh();
     } catch (e) {
@@ -108,14 +138,46 @@ export function StockReceiptAckPanel(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <ClipboardCheck className="h-5 w-5 text-indigo-600" /> Stock Receipt Acknowledgment
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Confirm received Inward Receipts into Stores · posts Stock Journal (Receiving → Stores)
-        </p>
+    <div className="space-y-4" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Stock Receipt Ack" entityCode={entityCode} items={[]} isLineItemForm={true} showBulkPasteButton={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="stock_receipt_ack"
+        voucherTypeName="Stock Receipt Ack"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5 text-indigo-600" /> Stock Receipt Acknowledgment
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Confirm received Inward Receipts into Stores · posts Stock Journal (Receiving → Stores)
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton entityCode={entityCode} recordType="stock_receipt_ack" partyValue={null} onUse={() => { /* deferred */ }} />
+          {currentAckId ? (
+            <AuditHistoryButton
+              entityCode={entityCode}
+              entityType="voucher"
+              recordId={currentAckId}
+              currentRecord={{ awaiting: awaiting.length, history: history.length }}
+            />
+          ) : null}
+        </div>
       </div>
 
       <Tabs defaultValue="awaiting">

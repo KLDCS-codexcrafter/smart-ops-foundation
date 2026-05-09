@@ -1,22 +1,40 @@
 /**
  * StockIssueEntry.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Stock Issue entry form: Department + Recipient + Lines table.
  * Save Draft + Submit & Post (createStockIssue → postStockIssue → Stock Journal).
- * Matches Card #6 InwardReceiptEntry pattern.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
+ *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings)
+ * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 (sibling consumption) · FR-30
+ * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
+ *              @/lib/stock-issue-engine submitStockIssueForApproval/approveStockIssue/rejectStockIssue
  */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Send, Save, Package } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { createStockIssue, postStockIssue } from '@/lib/stock-issue-engine';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import {
+  createStockIssue, postStockIssue,
+  submitStockIssueForApproval, approveStockIssue, rejectStockIssue,
+} from '@/lib/stock-issue-engine';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 import type { StoreHubModule } from '../StoreHubSidebar';
 
 interface LineDraft {
@@ -49,12 +67,31 @@ interface Props {
 
 export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  const user = useCurrentUser();
   const [department, setDepartment] = useState('');
   const [recipient, setRecipient] = useState('');
   const [purpose, setPurpose] = useState('');
   const [narration, setNarration] = useState('');
   const [lines, setLines] = useState<LineDraft[]>([emptyLine()]);
   const [busy, setBusy] = useState(false);
+  // After save · enables AuditHistoryButton + approval buttons (Block C/D)
+  const [currentVoucherId, setCurrentVoucherId] = useState<string | null>(null);
+
+  // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: true,
+    keyboardOverlay: true, draftRecovery: true, decimalHelpers: true, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: true, ctrlSSave: true, saveAndNewCarryover: true,
+  };
+  useFormCarryForwardChecklist('StockIssueEntry', _fr29);
+  void _fr29;
+
+  const _form = { department, recipient, purpose, narration, lines };
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-issue-entry-new', entityCode, formState: _form, items: lines.map(l => ({ item_name: l.item_name, qty: l.qty })),
+    view: 'new', voucherType: 'stock_issue',
+  });
+  void _sprint27d1;
 
   const updateLine = (idx: number, patch: Partial<LineDraft>) => {
     setLines(prev => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
@@ -74,6 +111,31 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
     }
     return null;
   };
+
+  const onSubmitForApproval = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const result = submitStockIssueForApproval(entityCode, user.id, user.name ?? 'unknown', currentVoucherId);
+    if (!result.ok) { toast.error(result.reason ?? 'Submit failed'); return; }
+    toast.success('Submitted for approval');
+  }, [user, currentVoucherId, entityCode]);
+
+  const onApprove = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const result = approveStockIssue(entityCode, user.id, user.name ?? 'unknown', currentVoucherId);
+    if (!result.ok) { toast.error(result.reason ?? 'Approve failed'); return; }
+    toast.success('Approved');
+  }, [user, currentVoucherId, entityCode]);
+
+  const onReject = useCallback(() => {
+    if (!user || !currentVoucherId) return;
+    const reason = window.prompt('Rejection reason?') ?? '';
+    if (!reason.trim()) return;
+    const result = rejectStockIssue(entityCode, user.id, user.name ?? 'unknown', currentVoucherId, reason);
+    if (!result.ok) { toast.error(result.reason ?? 'Reject failed'); return; }
+    toast.success('Rejected');
+  }, [user, currentVoucherId, entityCode]);
+
+  // (validate defined above · second declaration removed at α-a Block B)
 
   async function handleSaveDraft() {
     const err = validate();
@@ -98,7 +160,8 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
         })),
       }, entityCode, 'u-store-1');
       toast.success(`Draft saved · ${si.issue_no}`);
-      onModuleChange('sh-t-stock-issue-register');
+      setCurrentVoucherId(si.id);
+      // Stay on form so approval/audit buttons become available · operator can navigate manually.
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to save draft');
     } finally { setBusy(false); }
@@ -135,15 +198,59 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Package className="h-5 w-5 text-indigo-600" /> Stock Issue Entry
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Release stock from Stores to a department · posts a Stock Journal voucher
-        </p>
+    <div className="space-y-4" data-keyboard-form>
+      <DraftRecoveryDialog
+        open={_sprint27d1.recoveryOpen}
+        draftAge={_sprint27d1.draftAge}
+        onRecover={() => _sprint27d1.setRecoveryOpen(false)}
+        onDiscard={() => { _sprint27d1.clearDraft(); _sprint27d1.setRecoveryOpen(false); }}
+        onClose={() => _sprint27d1.setRecoveryOpen(false)}
+      />
+      <Sprint27d2Mount formName="Stock Issue Entry" entityCode={entityCode} items={lines.map(l => ({ item_name: l.item_name, qty: l.qty }))} isLineItemForm={true} showBulkPasteButton={false} />
+      <Sprint27eMount
+        entityCode={entityCode}
+        voucherTypeId="stock_issue"
+        voucherTypeName="Stock Issue"
+        defaultPartyType="vendor"
+        partyId={null}
+        partyName={null}
+        lineItems={[]}
+        onPartyCreated={() => { /* deferred */ }}
+        onCloneTemplate={() => { /* deferred */ }}
+      />
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Package className="h-5 w-5 text-indigo-600" /> Stock Issue Entry
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Release stock from Stores to a department · posts a Stock Journal voucher
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <UseLastVoucherButton
+            entityCode={entityCode}
+            recordType="stock_issue"
+            partyValue={null}
+            onUse={(data) => {
+              const d = data as Partial<{ department: string; recipient: string; purpose: string; narration: string }>;
+              if (d.department) setDepartment(d.department);
+              if (d.recipient) setRecipient(d.recipient);
+              if (d.purpose) setPurpose(d.purpose);
+              if (d.narration) setNarration(d.narration);
+            }}
+          />
+          {currentVoucherId ? (
+            <AuditHistoryButton
+              entityCode={entityCode}
+              entityType="voucher"
+              recordId={currentVoucherId}
+              currentRecord={{ department, recipient, purpose, narration, lines }}
+            />
+          ) : null}
+        </div>
       </div>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Recipient</CardTitle></CardHeader>
@@ -234,7 +341,20 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
+        {currentVoucherId ? (
+          <>
+            <Button variant="outline" disabled={busy} onClick={onSubmitForApproval}>
+              <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Submit for Approval
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={onApprove}>
+              <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Approve
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={onReject}>
+              <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
+            </Button>
+          </>
+        ) : null}
         <Button variant="outline" disabled={busy} onClick={handleSaveDraft}>
           <Save className="h-3.5 w-3.5 mr-1" /> Save Draft
         </Button>

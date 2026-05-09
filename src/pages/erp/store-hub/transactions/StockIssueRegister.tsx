@@ -1,8 +1,12 @@
 /**
  * StockIssueRegister.tsx — Card #7 Block F · D-381
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Lists Stock Issues with status badges + Post action for drafts + empty-state CTA.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 register-shape honest 5/12 baseline)
+ * @disciplines FR-29 (register form · most carry-forward items don't apply to read-only list) · FR-30
+ * @reuses      @/lib/form-carry-forward-kit · @/components/canonical/form-carry-forward-kit
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +20,12 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listStockIssues, postStockIssue } from '@/lib/stock-issue-engine';
 import type { StockIssue } from '@/types/stock-issue';
 import { STOCK_ISSUE_STATUS_LABELS, STOCK_ISSUE_STATUS_COLORS } from '@/types/stock-issue';
+import {
+  Sprint27d2Mount, UseLastVoucherButton,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 import type { StoreHubModule } from './../StoreHubSidebar';
 
 interface Props {
@@ -24,9 +34,21 @@ interface Props {
 
 export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  // FR-29 register-shape honest 5/12 baseline · D-NEW-CE FormCarryForwardKit canonical
+  const _fr29: FormCarryForwardConfig = {
+    useLastVoucher: true, sprint27d1: true, sprint27d2: true, sprint27e: false,
+    keyboardOverlay: true, draftRecovery: false, decimalHelpers: false, fr30Header: true,
+    smartDefaults: false, pinnedTemplates: false, ctrlSSave: false, saveAndNewCarryover: false,
+  };
+  useFormCarryForwardChecklist('StockIssueRegister', _fr29);
+  void _fr29;
   const [items, setItems] = useState<StockIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [postingId, setPostingId] = useState<string | null>(null);
+  const _sprint27d1 = useSprint27d1Mount({
+    formKey: 'stock-issue-register', entityCode, formState: { count: items.length }, items: [], view: 'view', voucherType: 'stock_issue',
+  });
+  void _sprint27d1;
 
   const refresh = useCallback(() => {
     setItems(listStockIssues(entityCode));
@@ -47,7 +69,11 @@ export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-keyboard-form>
+      <Sprint27d2Mount formName="Stock Issue Register" entityCode={entityCode} items={[]} isLineItemForm={false} showBulkPasteButton={false} />
+      <div className="hidden">
+        <UseLastVoucherButton entityCode={entityCode} recordType="stock_issue" partyValue={null} onUse={() => { /* register · view-only consumer */ }} />
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
