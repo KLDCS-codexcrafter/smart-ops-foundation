@@ -341,7 +341,20 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
+        {currentVoucherId ? (
+          <>
+            <Button variant="outline" disabled={busy} onClick={onSubmitForApproval}>
+              <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Submit for Approval
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={onApprove}>
+              <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Approve
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={onReject}>
+              <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
+            </Button>
+          </>
+        ) : null}
         <Button variant="outline" disabled={busy} onClick={handleSaveDraft}>
           <Save className="h-3.5 w-3.5 mr-1" /> Save Draft
         </Button>
