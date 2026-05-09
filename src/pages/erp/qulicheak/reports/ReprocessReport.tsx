@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/reports/ReprocessReport.tsx
  * @purpose Trident C20 · NCR↔Rework JobCard cross-card traceability (ISO 9001:2015 Clause 8.7).
+ * @who QA Manager · Production Controller (NCR↔Rework cross-card traceability)
+ * @when 2026-05-09
  * @sprint T-Phase-1.A.5.d-1-Trident-Reports-Reprocess-Bridge · Block F
+ * @iso ISO 9001:2015 Clause 8.7 (control of nonconforming output) · Trident TDL ReprocessRep.txt
+ * @whom Audit Owner
  * @decisions Q-LOCK-4 Path B · D-NEW-CF · D-NEW-BW
  * @disciplines FR-30 · FR-50 · FR-19
+ * @reuses listNcrs · findReworkJobCardsForNcr (qulicheak-bridges · Q-LOCK-4 Path B)
  * @[JWT] reads erp_ncr_${entityCode} · erp_job_cards_${entityCode}
  */
 import { useEffect, useMemo, useState } from 'react';
