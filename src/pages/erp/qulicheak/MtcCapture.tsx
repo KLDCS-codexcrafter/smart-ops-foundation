@@ -207,9 +207,18 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
         <CardHeader>
           <CardTitle className="text-base flex items-center justify-between">
             <span>Test Parameters</span>
-            <Button size="sm" variant="outline" onClick={addRow}>
-              <Plus className="h-3.5 w-3.5 mr-1" /> Add Row
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setRows(TRIDENT_PRESET.map((p) => ({ ...p, key: rowKey(), observed: '' })))}
+              >
+                Use Trident Template
+              </Button>
+              <Button size="sm" variant="outline" onClick={addRow}>
+                <Plus className="h-3.5 w-3.5 mr-1" /> Add Row
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
