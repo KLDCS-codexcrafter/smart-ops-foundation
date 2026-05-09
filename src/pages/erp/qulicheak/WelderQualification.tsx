@@ -1,9 +1,14 @@
 /**
  * @file src/pages/erp/qulicheak/WelderQualification.tsx
  * @purpose Welder Qualification module · 4 tabs (Welders/WPS/PQR/WPQ)
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
- * @decisions D-NEW-BN
- * @disciplines FR-50 · FR-51 · FR-30
+ * @who Welding Engineer · QA Manager
+ * @when 2026-05-09
+ * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC · T-Phase-1.A.5.d-2-T1-AuditFix
+ * @iso ASME IX QW-322 · AWS D1.1 · ISO 9606-1 · ISO 25010
+ * @whom Audit Owner
+ * @decisions D-NEW-BN · D-NEW-CE (FR-29 12/12 FormCarryForwardKit)
+ * @disciplines FR-29 (FormCarryForwardKit · Save & New carry-over) · FR-50 · FR-51 · FR-30
+ * @reuses welder-engine.* · WPS·PQR·WPQ tabs · canonical kit (form-carry-forward-kit)
  * @[JWT] writes via welder-engine
  */
 import { useCallback, useEffect, useState } from 'react';
@@ -16,7 +21,12 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { useFormCarryForwardChecklist, type FormCarryForwardConfig } from '@/components/canonical/form-carry-forward-kit';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
 import {
   createWelder, listWelders, createWps, listWps, approveWps,
   createPqr, listPqr, createWpq, listWpq, recomputeWpqStatus,
