@@ -366,6 +366,22 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
             </Button>
           </>
         ) : null}
+        {postedVoucherId ? (
+          <>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => navigate(
+                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+              )}
+            >
+              <Printer className="h-3.5 w-3.5 mr-1" /> Print
+            </Button>
+            <Button variant="outline" disabled={busy} onClick={() => onModuleChange('sh-t-stock-issue-register')}>
+              View Register
+            </Button>
+          </>
+        ) : null}
         <Button variant="outline" disabled={busy} onClick={handleSaveDraft}>
           <Save className="h-3.5 w-3.5 mr-1" /> Save Draft
         </Button>
