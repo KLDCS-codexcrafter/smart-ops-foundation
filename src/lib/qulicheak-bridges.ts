@@ -229,3 +229,51 @@ export function emitQaOutcomeForVendor(args: {
   };
   window.dispatchEvent(new CustomEvent<QaOutcomePayload>(CH_OUTCOME, { detail: payload }));
 }
+
+/**
+ * α-c · Block G · D-NEW-BS · MTC ↔ Production Confirmation observability bridge.
+ *
+ * Read-only consumer of the canonical PC localStorage ledger
+ * (productionConfirmationsKey · `erp_production_confirmations_${entityCode}`).
+ * Returns PC docs whose lines reference a given heat_no — used by MtcRegister to
+ * surface "this material was consumed in PC-x" linkage. ZERO touches to
+ * production-confirmation-engine (FR-19 sibling) · pure read.
+ *
+ * @[JWT] reads erp_production_confirmations_${entityCode}
+ */
+export interface PcMatch {
+  pc_id: string;
+  doc_no: string;
+  confirmation_date: string;
+  status: string;
+  heat_no: string;
+}
+
+export function findPcMatchesForHeat(entityCode: string, heatNo: string | null | undefined): PcMatch[] {
+  if (!heatNo || typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(`erp_production_confirmations_${entityCode}`);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as Array<{
+      id: string; doc_no: string; status: string; confirmation_date: string;
+      lines?: Array<{ heat_no?: string | null }>;
+    }>;
+    const matches: PcMatch[] = [];
+    for (const pc of list) {
+      const lineHeats = (pc.lines ?? []).map((l) => l.heat_no).filter(Boolean) as string[];
+      if (lineHeats.includes(heatNo)) {
+        matches.push({
+          pc_id: pc.id,
+          doc_no: pc.doc_no,
+          confirmation_date: pc.confirmation_date,
+          status: pc.status,
+          heat_no: heatNo,
+        });
+      }
+    }
+    return matches;
+  } catch {
+    return [];
+  }
+}
+
