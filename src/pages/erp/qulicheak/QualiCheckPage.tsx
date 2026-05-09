@@ -32,6 +32,8 @@ import { CapaCapture } from './CapaCapture';
 import { CapaRegister } from './reports/CapaRegister';
 import { MtcCapture } from './MtcCapture';
 import { MtcRegister } from './reports/MtcRegister';
+import { FaiCapture } from './FaiCapture';
+import { FaiRegister } from './reports/FaiRegister';
 import { mountQulicheakBridges } from '@/lib/qulicheak-bridges';
 
 export default function QualiCheckPage(): JSX.Element {
