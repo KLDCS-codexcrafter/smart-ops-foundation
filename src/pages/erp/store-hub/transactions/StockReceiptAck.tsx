@@ -7,7 +7,8 @@
  * @iso         ISO 9001:2015 Clause 8.1 · ISO 25010 Usability + Operability
  * @whom        Audit Owner
  * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
- *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer)
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
+ *              Q-LOCK-3a Path A revised (stock-journal-print-engine reuse · α-b Block A)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
