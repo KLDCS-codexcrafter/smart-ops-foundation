@@ -19,13 +19,14 @@
  *              reads via approval-workflow-engine · localStorage erp_stock_issues_${entityCode}
  */
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, Send, Save, Package, CheckCircle2, XCircle, ShieldCheck, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
