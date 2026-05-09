@@ -281,3 +281,50 @@ export function findPcMatchesForHeat(entityCode: string, heatNo: string | null |
   }
 }
 
+/**
+ * α-d-1 · Q-LOCK-4 Path B · D-NEW-CF · Read-only consumer that surfaces JobCards
+ * created in response to a given NCR (rework_qty>0 AND source_ncr_id===ncrId).
+ * Zero touches to job-card-engine (FR-19 sibling).
+ *
+ * @[JWT] reads erp_job_cards_${entityCode}
+ */
+export interface ReworkJobCardMatch {
+  id: string;
+  job_card_no: string;
+  rework_qty: number;
+  started_at: string | null;
+  status: string;
+  source_ncr_id: string;
+}
+
+export function findReworkJobCardsForNcr(
+  entityCode: string,
+  ncrId: string | null | undefined,
+): ReworkJobCardMatch[] {
+  if (!ncrId || typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(`erp_job_cards_${entityCode}`);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as Array<{
+      id: string; doc_no: string; rework_qty?: number;
+      source_ncr_id?: string | null; actual_start?: string | null; status: string;
+    }>;
+    const out: ReworkJobCardMatch[] = [];
+    for (const jc of list) {
+      if ((jc.rework_qty ?? 0) > 0 && jc.source_ncr_id === ncrId) {
+        out.push({
+          id: jc.id,
+          job_card_no: jc.doc_no,
+          rework_qty: jc.rework_qty ?? 0,
+          started_at: jc.actual_start ?? null,
+          status: jc.status,
+          source_ncr_id: ncrId,
+        });
+      }
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
