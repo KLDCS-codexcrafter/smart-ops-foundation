@@ -244,11 +244,15 @@ export function NcrRegister(): JSX.Element {
                   <TableHead>Raised</TableHead>
                   <TableHead>Party</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>CAPA</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((n) => (
+                {rows.map((n) => {
+                  const linkedCapa = capaByNcr.get(n.id);
+                  const isTerminal = n.status === 'closed' || n.status === 'cancelled';
+                  return (
                   <TableRow key={n.id}>
                     <TableCell className="font-mono text-xs">{n.id}</TableCell>
                     <TableCell>
@@ -265,8 +269,29 @@ export function NcrRegister(): JSX.Element {
                     <TableCell className="font-mono text-xs">{fmtDate(n.raised_at)}</TableCell>
                     <TableCell className="text-xs">{n.related_party_name ?? '—'}</TableCell>
                     <TableCell className="max-w-md truncate text-sm">{n.description}</TableCell>
+                    <TableCell className="text-xs">
+                      {linkedCapa ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-mono">{linkedCapa.id}</span>
+                          <Badge variant="outline" className="w-fit text-[10px]">
+                            {CAPA_STATUS_LABELS[linkedCapa.status]}
+                          </Badge>
+                        </div>
+                      ) : isTerminal ? (
+                        <span className="text-muted-foreground">—</span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setCreatingCapaFor(n)}
+                        >
+                          <FilePlus2 className="h-3.5 w-3.5 mr-1" />
+                          Create CAPA
+                        </Button>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
-                      {n.status !== 'closed' && n.status !== 'cancelled' && (
+                      {!isTerminal && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -278,7 +303,8 @@ export function NcrRegister(): JSX.Element {
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}
@@ -288,12 +314,34 @@ export function NcrRegister(): JSX.Element {
       {closing && (
         <NcrCloseDialog
           ncr={closing}
+          linkedCapa={capaByNcr.get(closing.id) ?? null}
           onClose={() => {
             setClosing(null);
             setVersion((v) => v + 1);
           }}
         />
       )}
+
+      <Dialog
+        open={!!creatingCapaFor}
+        onOpenChange={(o) => !o && setCreatingCapaFor(null)}
+      >
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Create CAPA for {creatingCapaFor?.id}</DialogTitle>
+          </DialogHeader>
+          {creatingCapaFor && (
+            <CapaCapture
+              prefillNcrId={creatingCapaFor.id}
+              onSaved={() => {
+                setCreatingCapaFor(null);
+                setVersion((v) => v + 1);
+              }}
+              onCancel={() => setCreatingCapaFor(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
