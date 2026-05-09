@@ -159,6 +159,9 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
       </Card>
       <div className="flex gap-2 justify-end">
         {onCancel && <Button variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Saving…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
       </div>
     </div>

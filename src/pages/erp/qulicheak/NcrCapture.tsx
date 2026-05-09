@@ -357,6 +357,9 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
             Cancel
           </Button>
         )}
+        <Button variant="secondary" onClick={handleSaveAndNew} disabled={saving}>
+          {saving ? 'Raising…' : 'Save & New'}
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Raising…' : 'Raise NCR'}
         </Button>
