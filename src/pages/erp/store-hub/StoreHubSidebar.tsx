@@ -21,6 +21,10 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+// Q-LOCK-8a · canonical sidebar config (α-a Block A · D-NEW-CC compliance)
+// Existing JSX layout preserved at α-a · canonical config registers institutional pattern.
+import { storeHubSidebarItems } from '@/apps/erp/configs/store-hub-sidebar-config';
+void storeHubSidebarItems;
 
 export type StoreHubModule =
   | 'sh-welcome'
