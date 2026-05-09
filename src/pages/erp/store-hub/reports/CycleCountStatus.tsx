@@ -1,9 +1,18 @@
 /**
- * @file        CycleCountStatus.tsx
- * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-2 · Block C · D-387 (Q4=a)
+ * @file        src/pages/erp/store-hub/reports/CycleCountStatus.tsx
  * @purpose     Thin read-only Store Hub panel surfacing SD-9 Inventory Hub Cycle Count data.
  *              ZERO duplication of SD-9 panels · ZERO modifications to SD-9 (institutional).
- * @decisions   D-387 · SD-9 (rich Inventory Hub ZERO TOUCH preserved) · D-298 Store Hub thin card
+ * @who         Store Keeper · Department Head · Audit Owner
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-2 · Block C · D-387 (Q4=a) ·
+ *              T-Phase-1.A.6.α-b-Department-Stores-Closeout (header backfill 4/11 → 11/11 · Q-LOCK-6a revised)
+ * @iso         ISO 9001:2015 Clause 8.5.2 traceability · ISO 25010 Maintainability
+ * @whom        Audit Owner
+ * @decisions   D-387 · SD-9 (rich Inventory Hub ZERO TOUCH preserved) · D-298 Store Hub thin card ·
+ *              Q-LOCK-6a revised (header-only · no UI expansion · respects D-387 SD-9 ZERO TOUCH)
+ * @disciplines FR-19 (thin-pass-through pattern) · FR-30 (canonical 11/11)
+ * @reuses      @/hooks/useCycleCounts · @/types/cycle-count
+ * @[JWT]       reads via useCycleCounts · localStorage entity-scoped erp_cycle_counts_${entityCode}
  */
 
 import { useNavigate } from 'react-router-dom';
