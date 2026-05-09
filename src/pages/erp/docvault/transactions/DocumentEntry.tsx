@@ -3,12 +3,17 @@
  * @purpose     New document entry form · cross-card linkage editor (Q-LOCK-15a) · approval actions
  * @who         Document Controller · originating department user
  * @when        2026-05-09
- * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block C
+ * @sprint      T-Phase-1.A.8.α-a-DocVault-Foundation · Block C ·
+ *              T-Phase-1.A.8.α-a-T1-Audit-Fix · Block A · F-2 + F-3a
  * @iso         ISO 9001:2015 §7.5
  * @whom        Audit Owner
- * @decisions   D-NEW-CJ-docvault-file-metadata-schema · Q-LOCK-15a Hub-and-Spoke · D-NEW-BV mock
+ * @decisions   D-NEW-CJ-docvault-file-metadata-schema · Q-LOCK-15a Hub-and-Spoke · D-NEW-BV mock ·
+ *              D-NEW-CG canonical (AuditHistoryButton consumed · institutional audit-UI pattern) ·
+ *              D-NEW-CE canonical (FormCarryForwardKit at FR-29 11/12 honest baseline)
  * @disciplines FR-29 · FR-30 · FR-50 · FR-25
- * @reuses      docvault-engine (FR-19 sibling) · useEntityCode
+ * @reuses      docvault-engine (FR-19 sibling) · useEntityCode ·
+ *              @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
  * @[JWT]       Wires to docvault-engine routes · file upload Phase 2 CDN
  */
 import { useState } from 'react';
@@ -24,6 +29,16 @@ import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { createDocument } from '@/lib/docvault-engine';
 import type { DocumentType } from '@/types/docvault';
+// F-3a fix · D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 honest baseline)
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+// F-2 fix · D-NEW-CG canonical · audit-UI institutional pattern
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
+import type { AuditEntityType } from '@/types/audit-trail';
 
 const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
   { value: 'drawing', label: 'Drawing' },
