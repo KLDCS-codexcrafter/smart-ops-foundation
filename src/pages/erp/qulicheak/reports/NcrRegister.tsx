@@ -103,6 +103,7 @@ export function NcrRegister(): JSX.Element {
   }, []);
 
   const rows = useMemo(() => {
+    void version; // T2 · D-NEW-BC · refresh tick (focus/entity-change invalidates localStorage-backed filterNcrs)
     const all = filterNcrs(entityCode, {
       status: statusF.size ? Array.from(statusF) : undefined,
       severity: sevF.size ? Array.from(sevF) : undefined,

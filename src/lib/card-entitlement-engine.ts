@@ -77,7 +77,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('procure360'),     // active per Phase 1.A.3.a Shell migration · D-NEW-AM (T-fix)
     one('inventory-hub', 'add_on_available'),
     one('customer-hub', 'locked'),
-    one('qulicheak', 'locked'),
+    one('qulicheak'),     // active per Phase 1.A.5.a Shell migration · D-NEW-BB (T2-fix)
     one('gateflow'),     // active per Phase 1.A.1 (3 sub-sprints closed)
     one('production'),   // active per A.2.b D-NEW-T
     one('maintainpro', 'locked'),
