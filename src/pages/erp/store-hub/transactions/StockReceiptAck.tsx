@@ -60,6 +60,7 @@ const STORES_GODOWN = { id: 'gd-stores', name: 'Main Stores' };
 
 export function StockReceiptAckPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [awaiting, setAwaiting] = useState<InwardReceipt[]>([]);
   const [history, setHistory] = useState<StockReceiptAck[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,8 @@ export function StockReceiptAckPanel(): JSX.Element {
   const [draftLines, setDraftLines] = useState<AckDraftLine[]>([]);
   const [busy, setBusy] = useState(false);
   const [currentAckId, setCurrentAckId] = useState<string | null>(null);
+  // After post · expose voucher_id for Print button (α-b Block A · Q-LOCK-3a Path A)
+  const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
   // FR-29 11/12 · D-NEW-CE FormCarryForwardKit canonical declaration
   const _fr29: FormCarryForwardConfig = {
