@@ -137,6 +137,8 @@ export function StockReceiptAckPanel(): JSX.Element {
       const posted = await postReceiptAck(ack.id, entityCode, 'u-store-1');
       toast.success(`Ack posted · ${posted?.ack_no}`);
       setCurrentAckId(ack.id);
+      // α-b Block A · expose voucher_id for Print button
+      if (posted?.voucher_id) setPostedVoucherId(posted.voucher_id);
       setDialogIr(null);
       refresh();
     } catch (e) {
