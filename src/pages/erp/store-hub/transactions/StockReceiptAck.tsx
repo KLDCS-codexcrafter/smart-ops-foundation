@@ -1,10 +1,15 @@
 /**
  * StockReceiptAck.tsx — Card #7 Block G · D-382
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
+ * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · T-Phase-1.A.6.α-a-Department-Stores-Foundation
  *
  * Two tabs: Awaiting (Card #6 IRs status='released' not yet acked) + History.
  * Quick Ack dialog with per-line qty_acknowledged + variance display.
- * On Confirm → createReceiptAck + postReceiptAck → Stock Journal voucher.
+ *
+ * @decisions   D-NEW-CE FormCarryForwardKit canonical (FR-29 11/12 · smartDefaults: false honest) ·
+ *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer)
+ * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 · FR-30
+ * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
+ *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical)
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +34,13 @@ import {
 import type { InwardReceipt } from '@/types/inward-receipt';
 import type { StockReceiptAck } from '@/types/stock-receipt-ack';
 import { STOCK_ACK_STATUS_LABELS, STOCK_ACK_STATUS_COLORS } from '@/types/stock-receipt-ack';
+import {
+  UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
+} from '@/components/canonical/form-carry-forward-kit';
+import {
+  useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
+} from '@/lib/form-carry-forward-kit';
+import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
 
 interface AckDraftLine {
   inward_line_id: string;
