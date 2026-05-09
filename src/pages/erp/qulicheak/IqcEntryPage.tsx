@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { QCEntryPage } from '@/pages/erp/qulicheak/QCEntryPage';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { QcVoucherDetailPanel } from './QcVoucherDetailPanel';
 
 type IqcVariant = 'standard' | 'sample' | 'pre_dispatch';
 
@@ -52,6 +53,7 @@ export function IqcEntryPage(): JSX.Element {
           label="Mode"
         />
       </div>
+      {variant === 'standard' && <QcVoucherDetailPanel />}
       <QCEntryPage inspectionId="" onBack={() => { /* IQC wrap · no parent stack */ }} />
     </div>
   );

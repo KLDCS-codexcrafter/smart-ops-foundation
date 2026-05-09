@@ -43,7 +43,17 @@ import { WpqExpiryDashboard } from './reports/WpqExpiryDashboard';
 import { Iso9001Capture } from './Iso9001Capture';
 import { Iso9001Register } from './reports/Iso9001Register';
 import { IqcEntryPage } from './IqcEntryPage';
+import { StkIqcStRemarks } from './reports/StkIqcStRemarks';
+import { QcTransferReg } from './reports/QcTransferReg';
+import { QCGodownSummary } from './reports/QCGodownSummary';
+import { QCStkTrnsfer } from './reports/QCStkTrnsfer';
+import { RInspReportPage } from './reports/RInspReportPage';
+import { QcRejectionAnalysis } from './reports/QcRejectionAnalysis';
+import { FGRInspReport } from './reports/FGRInspReport';
+import { ReprocessReport } from './reports/ReprocessReport';
 import { mountQulicheakBridges, subscribeQaForVendorScoring } from '@/lib/qulicheak-bridges';
+import { mountProcure360VendorScoringListener } from '@/lib/procure360-vendor-scoring-listener';
+import { mountProductionReworkListener } from '@/lib/production-rework-listener';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -57,7 +67,9 @@ export default function QualiCheckPage(): JSX.Element {
   useEffect(() => {
     const unmount = mountQulicheakBridges();
     const unsub = subscribeQaForVendorScoring();
-    return () => { unmount(); unsub(); };
+    const unsubProc360 = mountProcure360VendorScoringListener();
+    const unsubProdRework = mountProductionReworkListener();
+    return () => { unmount(); unsub(); unsubProc360(); unsubProdRework(); };
   }, []);
 
   function renderModule(): JSX.Element {
@@ -113,6 +125,14 @@ export default function QualiCheckPage(): JSX.Element {
         return <Iso9001Register />;
       case 'iqc-entry-page':
         return <IqcEntryPage />;
+      case 'stk-iqc-st-remarks':       return <StkIqcStRemarks />;
+      case 'qc-transfer-reg':          return <QcTransferReg />;
+      case 'qc-godown-summary':        return <QCGodownSummary />;
+      case 'qc-stk-trnsfer':           return <QCStkTrnsfer />;
+      case 'rinsp-report-page':        return <RInspReportPage />;
+      case 'qc-rejection-analysis':    return <QcRejectionAnalysis />;
+      case 'fg-receiving-inspection':  return <FGRInspReport />;
+      case 'reprocess-report':         return <ReprocessReport />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
