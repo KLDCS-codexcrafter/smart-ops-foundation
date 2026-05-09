@@ -33,10 +33,31 @@ interface ParamRow {
   observed: string;
 }
 
+const rowKey = (): string =>
+  `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
 const newRow = (): ParamRow => ({
-  key: `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+  key: rowKey(),
   name: '', unit: '', specMin: '', specMax: '', observed: '',
 });
+
+// D-NEW-BK · Trident standard MTC preset · 8 chemical + 6 mechanical (14 rows)
+const TRIDENT_PRESET: ReadonlyArray<Omit<ParamRow, 'key' | 'observed'>> = [
+  { name: 'Carbon (C)',     unit: '%',   specMin: '0.14', specMax: '0.22' },
+  { name: 'Manganese (Mn)', unit: '%',   specMin: '0.60', specMax: '0.90' },
+  { name: 'Silicon (Si)',   unit: '%',   specMin: '0.15', specMax: '0.35' },
+  { name: 'Sulphur (S)',    unit: '%',   specMin: '',     specMax: '0.040' },
+  { name: 'Phosphorus (P)', unit: '%',   specMin: '',     specMax: '0.040' },
+  { name: 'Alloy 1 (Cr)',   unit: '%',   specMin: '',     specMax: '0.30' },
+  { name: 'Alloy 2 (Ni)',   unit: '%',   specMin: '',     specMax: '0.30' },
+  { name: 'Alloy 3 (Mo)',   unit: '%',   specMin: '',     specMax: '0.10' },
+  { name: 'Tensile Strength', unit: 'MPa', specMin: '410', specMax: '550' },
+  { name: 'Yield Strength',   unit: 'MPa', specMin: '250', specMax: '400' },
+  { name: 'Elongation',       unit: '%',   specMin: '23',  specMax: '' },
+  { name: 'Hardness',         unit: 'HB',  specMin: '120', specMax: '180' },
+  { name: 'Impact (Charpy)',  unit: 'J',   specMin: '27',  specMax: '' },
+  { name: 'Grain Size',       unit: 'ASTM', specMin: '5',  specMax: '8' },
+];
 
 export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
   const { entityCode, entityId } = useEntityCode();
