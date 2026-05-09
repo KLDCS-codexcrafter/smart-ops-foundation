@@ -1,0 +1,2 @@
+vitest: 474/474 passed (73 files) · +2 NEW CapaDetail integration tests vs α-c 472 baseline
+duration: 21.84s
