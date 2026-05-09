@@ -88,14 +88,19 @@ export function EffectivenessVerificationDuePanel(): JSX.Element {
             {rows.length} verification{rows.length === 1 ? '' : 's'} pending · Entity {entityCode}
           </p>
         </div>
-        <Select value={String(windowDays)} onValueChange={(v) => setWindowDays(Number(v))}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {WINDOWS.map((w) => (
-              <SelectItem key={w.v} value={String(w.v)}>{w.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setVersion((v) => v + 1)}>
+            Refresh
+          </Button>
+          <Select value={String(windowDays)} onValueChange={(v) => setWindowDays(Number(v))}>
+            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {WINDOWS.map((w) => (
+                <SelectItem key={w.v} value={String(w.v)}>{w.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card>
