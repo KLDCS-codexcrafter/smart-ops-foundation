@@ -52,4 +52,17 @@ describe('Store Hub sidebar config · D-NEW-CC canonical (α-a Block A)', () => 
       expect(kb.startsWith('s ')).toBe(true);
     }
   });
+  it('NEW α-b reports added: stock-movement-register + department-consumption-summary', () => {
+    const flat = flatten(storeHubSidebarItems);
+    const ids = new Set(flat.map((i) => i.moduleId).filter((m): m is string => Boolean(m)));
+    expect(ids.has('sh-r-stock-movement-register')).toBe(true);
+    expect(ids.has('sh-r-department-consumption-summary')).toBe(true);
+  });
+  it('Q-LOCK-13a · store-hub status flipped to active at α-b close', async () => {
+    const mod = await import('@/components/operix-core/applications');
+    const apps = (mod as { applications?: ReadonlyArray<{ id: string; status: string }> }).applications;
+    expect(apps).toBeDefined();
+    const sh = apps?.find((a) => a.id === 'store-hub');
+    expect(sh?.status).toBe('active');
+  });
 });
