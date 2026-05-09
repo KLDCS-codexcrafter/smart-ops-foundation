@@ -29,7 +29,8 @@ export interface CreateJobCardInput {
   uom: string;
   remarks: string;
   created_by: string;
-}
+  // D-NEW-CF · optional NCR that originated this rework JobCard (ISO 9001:2015 Clause 8.7)
+  source_ncr_id?: string | null;
 
 export function createJobCard(input: CreateJobCardInput): JobCard {
   if (input.planned_qty <= 0) throw new Error('planned_qty must be > 0');
@@ -79,6 +80,7 @@ export function createJobCard(input: CreateJobCardInput): JobCard {
     produced_qty: 0,
     rejected_qty: 0,
     rework_qty: 0,
+    source_ncr_id: input.source_ncr_id ?? null,
     uom: input.uom,
 
     wastage_qty: 0,
