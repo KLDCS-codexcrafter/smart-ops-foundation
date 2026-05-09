@@ -1,13 +1,25 @@
 /**
  * @file        MobileStoreIssueCapture.tsx
- * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-3 · Block A · D-394
  * @purpose     OperixGo Stock Issue 4-step capture flow for Stores team.
  *              Pattern: MIRRORS MobileInwardReceiptCapture (D-369) trimmed to 4 steps
  *              (no vendor · no gate-link since Stock Issue is internal).
- *              NO [tick, setTick] + useMemo anti-pattern.
- * @decisions   D-394 · D-369 (5-step parent · trimmed to 4) · D-128 (postVoucher API only)
- * @reuses      stock-issue-engine.createStockIssue + postStockIssue (7-pre-1 · NO MODIFICATIONS)
+ *              FR-29 12-item carry-forward kit DEFERRED per D-NEW-CH-mobile-deferred ·
+ *              desktop-only Sprint27d2Mount/Sprint27eMount/DraftRecoveryDialog incompatible
+ *              with mobile 4-step wizard pattern · Phase 2 ships mobile-specific mount
+ *              components built atop Capacitor primitives.
+ * @who         Storekeeper · Mobile Operator
+ * @when        2026-05-09
+ * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-3 · Block A · D-394 ·
+ *              T-Phase-1.A.6.α-b-Department-Stores-Closeout (D-NEW-CH-mobile-deferred header cite)
+ * @iso         ISO 25010 Operability + Mobile Usability · ISO 9001:2015 Clause 8.5.2 traceability
+ * @whom        Audit Owner
+ * @decisions   D-394 · D-369 (5-step parent · trimmed to 4) · D-128 (postVoucher API only) ·
+ *              D-NEW-CH-mobile-deferred (FR-29 retrofit deferred · α-b lock)
+ * @disciplines FR-29 (deferred · D-NEW-CH-mobile-deferred) · FR-30
+ * @reuses      stock-issue-engine.createStockIssue + postStockIssue (7-pre-1 · NO MODIFICATIONS) ·
  *              camera-bridge.capturePhoto · offline-queue-engine.enqueueWrite · OfflineIndicator
+ * @[JWT]       writes via stock-issue-engine to localStorage erp_stock_issues_${entityCode}
+ *              + offline queue · uploads queued via enqueueWrite
  */
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
