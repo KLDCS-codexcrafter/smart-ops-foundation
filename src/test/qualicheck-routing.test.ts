@@ -13,6 +13,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { qualicheckSidebarItems } from '@/apps/erp/configs/qualicheck-sidebar-config';
 import type { SidebarItem } from '@/shell/types';
 import type { QualiCheckModule } from '@/pages/erp/qualicheck/QualiCheckSidebar.types';
@@ -150,5 +151,27 @@ describe('T-Phase-1.H.2 · QualiCheck Reverse Naming Migration', () => {
     expect(content).toMatch(/D-NEW-CN-qualicheck-naming-canonical/);
     expect(content).toMatch(/'Fin Core' \(with space\) intentional/);
     expect(content).toMatch(/'QualiCheck'.*PascalCase.*canonical/);
+  });
+});
+
+describe('T-Phase-1.H.3 · Inventory Hub naming convention lock-preservation', () => {
+  it('Q-LOCK-4a + Q-LOCK-5a · applications.ts has strengthened Inventory Hub locked comments (D-NEW-CM precedent)', () => {
+    const content = readFileSync('src/components/operix-core/applications.ts', 'utf-8');
+
+    // Header NAMING CONVENTIONS section has strengthened Inventory Hub entry
+    expect(content).toMatch(/'Inventory Hub' \(with space\) intentional · do not rename/);
+    expect(content).toMatch(/D-NEW-CM-fincore-naming-canonical pattern.*display preservation/);
+
+    // Inline comment near card definition has ⚠️ marker (parallel to Fin Core)
+    expect(content).toMatch(/⚠️ Display name 'Inventory Hub' \(with space\) intentional · keep as-is/);
+
+    // Both Fin Core (existing) and Inventory Hub (newly strengthened) lock comments coexist
+    expect(content).toMatch(/⚠️ Display name 'Fin Core' \(with space\) intentional · keep as-is/);
+
+    // ~39 Inventory Hub instances preserved (sample check via grep · canonical preservation)
+    const count = parseInt(
+      execSync(`grep -rE "Inventory Hub" src/ --include='*.ts' --include='*.tsx' | wc -l`).toString().trim()
+    );
+    expect(count).toBeGreaterThanOrEqual(35);
   });
 });
