@@ -218,6 +218,23 @@ export const qualicheckSidebarItems: SidebarItem[] = [
         moduleId: 'ncr-register',
         requiredCards: ['qualicheck'],
       },
+      // ─── NEW · SM.QualiCheck-NCR-Evidence · D-NEW-CJ 4th CONSUMER · INSTITUTIONAL FR PROMOTION THRESHOLD MET ───
+      {
+        id: 'ncr-evidence-register',
+        type: 'item',
+        label: 'NCR Evidence',
+        icon: FileText,
+        moduleId: 'ncr-evidence-register',
+        requiredCards: ['qualicheck'],
+      },
+      {
+        id: 'ncr-evidence-entry',
+        type: 'item',
+        label: 'New NCR Evidence',
+        icon: FileText,
+        moduleId: 'ncr-evidence-entry',
+        requiredCards: ['qualicheck'],
+      },
       {
         id: 'capa-register',
         type: 'item',
