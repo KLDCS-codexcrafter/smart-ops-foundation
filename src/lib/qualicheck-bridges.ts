@@ -9,7 +9,8 @@
  * @iso 25010 Reliability + Functional Suitability
  * @whom Quality Inspector
  * @decisions D-NEW-AW (NCR auto-create from Procure360 listener) ·
- *            D-NEW-AX (close emits applyQaOutcome with severity-based delta)
+ *            D-NEW-AX (close emits applyQaOutcome with severity-based delta) ·
+ *            D-NEW-CN-qualicheck-naming-canonical (CANONICAL · 13th at v16 · canonical correction · was 'qulicheak')
  * @disciplines FR-19 (Sibling · zero touches Procure360) ·
  *              FR-53 (Cross-card handoff via browser CustomEvent · matches Pay Hub pattern)
  * @reuses ncr-engine.raiseNcr · browser CustomEvent (no new lib)
