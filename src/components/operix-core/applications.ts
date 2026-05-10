@@ -327,9 +327,9 @@ export const applications: AppDefinition[] = [
     status: 'active',
   },
   // dispatch-hub · 'Logistics' · transporter panel (NOT operational dispatch · see arch note 1)
-  // ⚠️ id='dispatch-hub' kept for backward-compat · scope is Logistics
+  // ⚠️ id='logistics' kept for backward-compat · scope is Logistics
   {
-    id: 'dispatch-hub',
+    id: 'logistics',
     name: 'Logistics',
     description: 'Transporter panel · LR tracking, POD, courier management, freight reconciliation, transporter scorecard, dispute queue. External-party coordination. (Distinct from Dispatch Hub which handles inward/outward stock operations.)',
     category: 'Ops Hub',
@@ -339,7 +339,7 @@ export const applications: AppDefinition[] = [
   },
   // dispatch-ops · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
   {
-    id: 'dispatch-ops',
+    id: 'dispatch-hub',
     name: 'Dispatch Hub',
     description: 'Internal department · inward & outward logistic operations · Delivery Memo, Packing Slip, GRN inward receipts, Sample/Demo outward issue, Outward Movement Report, Dispatch Exceptions. Works WITH stock. NOT transporter panel (see Logistics).',
     category: 'Dispatch Hub',

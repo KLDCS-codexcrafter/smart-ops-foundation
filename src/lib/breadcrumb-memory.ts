@@ -57,8 +57,8 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'requestx':        '/erp/requestx',
   'frontdesk':       '/erp/frontdesk',
   'servicedesk':     '/erp/servicedesk',
-  'dispatch-hub':    '/erp/logistics',
-  'dispatch-ops':    '/erp/dispatch',
+  'logistics':    '/erp/logistics',
+  'dispatch-hub':    '/erp/dispatch',
   'projx':           '/erp/projx',
   // ── Sprint T-Phase-1.3-DashboardLanes-Fix · 11 NEW IDs ──
   'engineeringx':    '/erp/engineeringx',

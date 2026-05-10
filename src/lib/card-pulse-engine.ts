@@ -139,7 +139,7 @@ export function computeCardPulse(cardId: CardId, entityCode: string): CardPulse 
         status_note: 'source of truth',
       };
     }
-    case 'dispatch-ops': {
+    case 'dispatch-hub': {
       // [JWT] GET /api/dispatch/ops-pulse?entityCode=:entityCode
       const soms = readList<{ issued_by_dispatch?: boolean; status?: string }>(
         `erp_sample_outward_memos_${entityCode}`)

@@ -158,7 +158,7 @@ export function DisputeQueuePanel() {
     writeDisputes(next);
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub', moduleId: 'dh-t-dispute-queue',
+      cardId: 'logistics', moduleId: 'dh-t-dispute-queue',
       action: 'master_save', refType: 'dispute', refId: activeDispute.id,
       refLabel: `Dispute → ${transitionTo}`,
     });

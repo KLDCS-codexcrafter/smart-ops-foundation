@@ -79,7 +79,7 @@ export function LRUpdatePanel(_: Props) {
     setVouchers(final);
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub' as never, moduleId: 'dh-t-lr-update',
+      cardId: 'logistics' as never, moduleId: 'dh-t-lr-update',
       action: 'master_save', refId: selected.id,
     });
     toast.success(`LR ${lrNo} saved on ${selected.voucher_no}` + (copied ? ` · copied to ${copied} SI` : ''));
