@@ -11,6 +11,8 @@ export type ProjXModule =
   | 't-resource-allocation'
   | 't-time-entry'
   | 't-invoice-scheduling'
+  | 't-documents'
+  | 't-document-entry'
   | 'm-project-centres'
   | 'r-project-pnl'
   | 'r-resource-utilization'

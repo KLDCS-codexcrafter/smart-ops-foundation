@@ -14,6 +14,8 @@ import { MilestoneTrackerPanel } from './transactions/MilestoneTracker';
 import { ResourceAllocationPanel } from './transactions/ResourceAllocation';
 import { TimeEntryCapturePanel } from './transactions/TimeEntryCapture';
 import { InvoiceSchedulingPanel } from './transactions/InvoiceScheduling';
+import { ProjxDocumentsRegisterPanel } from './transactions/ProjxDocumentsRegister';
+import { ProjxDocumentEntryPanel } from './transactions/ProjxDocumentEntry';
 import { ProjectCentreMasterPanel } from './masters/ProjectCentreMaster';
 import { ProjectPnLReportPanel } from './reports/ProjectPnLReport';
 import { ResourceUtilizationReportPanel } from './reports/ResourceUtilizationReport';
@@ -60,6 +62,8 @@ export default function ProjXPage() {
       case 't-resource-allocation':   return <ResourceAllocationPanel />;
       case 't-time-entry':            return <TimeEntryCapturePanel />;
       case 't-invoice-scheduling':    return <InvoiceSchedulingPanel />;
+      case 't-documents':             return <ProjxDocumentsRegisterPanel onNavigate={setActiveModule} />;
+      case 't-document-entry':        return <ProjxDocumentEntryPanel onNavigate={setActiveModule} />;
       case 'm-project-centres':       return <ProjectCentreMasterPanel />;
       case 'r-project-pnl':           return <ProjectPnLReportPanel />;
       case 'r-resource-utilization':  return <ResourceUtilizationReportPanel />;

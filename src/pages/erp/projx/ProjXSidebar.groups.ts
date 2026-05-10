@@ -11,6 +11,8 @@ export const PROJX_MODULE_GROUP: Record<ProjXModule, 'transactions' | 'masters' 
   't-resource-allocation': 'transactions',
   't-time-entry': 'transactions',
   't-invoice-scheduling': 'transactions',
+  't-documents': 'transactions',
+  't-document-entry': 'transactions',
   'm-project-centres': 'masters',
   'r-project-pnl': 'reports',
   'r-resource-utilization': 'reports',
