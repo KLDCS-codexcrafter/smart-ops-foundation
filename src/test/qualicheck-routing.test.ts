@@ -124,7 +124,7 @@ describe('T-Phase-1.H.2 · QualiCheck Reverse Naming Migration', () => {
   });
 
   it('Q-LOCK-1a + Q-LOCK-2a · zero Qulicheak/qulicheak in source (excluding App.tsx + tests + intentional migration docs)', () => {
-    const { execSync } = require('child_process');
+    // execSync imported at top (FR-21 · no require())
     // Allow ≤5 intentional references in migration documentation comments + idempotent migration check
     // (applications.ts NAMING CONVENTIONS · useCardEntitlement.ts D-NEW-BB block · qualicheck-bridges.ts canonical citation)
     const wrongPascal = parseInt(
