@@ -54,6 +54,9 @@ import { ReprocessReport } from './reports/ReprocessReport';
 import { mountQualiCheckBridges, subscribeQaForVendorScoring } from '@/lib/qualicheck-bridges';
 import { mountProcure360VendorScoringListener } from '@/lib/procure360-vendor-scoring-listener';
 import { mountProductionReworkListener } from '@/lib/production-rework-listener';
+// ─── NEW · SM.QualiCheck-NCR-Evidence · D-NEW-CJ 4th CONSUMER · INSTITUTIONAL FR PROMOTION THRESHOLD MET ───
+import { QualiCheckNcrEvidenceRegisterPanel } from './transactions/QualiCheckNcrEvidenceRegister';
+import { QualiCheckNcrEvidenceEntryPanel } from './transactions/QualiCheckNcrEvidenceEntry';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -133,6 +136,10 @@ export default function QualiCheckPage(): JSX.Element {
       case 'qc-rejection-analysis':    return <QcRejectionAnalysis />;
       case 'fg-receiving-inspection':  return <FGRInspReport />;
       case 'reprocess-report':         return <ReprocessReport />;
+      case 'ncr-evidence-register':
+        return <QualiCheckNcrEvidenceRegisterPanel onNavigate={setActiveModule} />;
+      case 'ncr-evidence-entry':
+        return <QualiCheckNcrEvidenceEntryPanel onNavigate={setActiveModule} />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
