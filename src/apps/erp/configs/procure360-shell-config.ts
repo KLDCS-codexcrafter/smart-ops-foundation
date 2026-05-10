@@ -16,7 +16,7 @@ import { procure360SidebarItems } from './procure360-sidebar-config';
 export const procure360ShellConfig: ShellConfig = {
   product: {
     id: 'erp',
-    name: 'Operix ERP — Procure 360',
+    name: 'Operix ERP — Procure360',  // T-Phase-1.H.3 · Q-LOCK-2a · canonical brand form (was 'Procure 360' with space)
     code: 'P360',
     version: '1.0.0',
   },

@@ -92,7 +92,7 @@ const panelCards = [
     title: "Modules",
     icon: Boxes,
     route: "/modules",
-    description: "Standalone modules that work independently or bolt-on to any vertical. Current: GateFlow (gate management) · Vetan Nidhi (standalone payroll + Tally integration). Planned: Document Management, Service Desk, AMC Management.",
+    description: "Standalone modules that work independently or bolt-on to any vertical. Current: GateFlow (gate management) · Vetan Nidhi (standalone payroll + Tally integration). Planned: Document Management, ServiceDesk, AMC Management.",  // T-Phase-1.H.3 · Q-LOCK-3a · canonical brand form
     badge: "wip",
   },
   {
