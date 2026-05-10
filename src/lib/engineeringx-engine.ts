@@ -1,65 +1,83 @@
 /**
  * @file        src/lib/engineeringx-engine.ts
- * @purpose     Canonical EngineeringX engine · drawing CRUD + version workflow · localStorage Phase 1 mock
- * @who         Engineering Lead · Document Controller · Production · Procurement
+ * @purpose     Drawing-scoped DocVault queries · thin wrapper · FR-73 Hub-and-Spoke 5th CONSUMER
+ * @who         Engineering Lead · Document Controller · Production · Procurement · QualiCheck
  * @when        2026-05-10
- * @sprint      T-Phase-1.A.10 EngineeringX Foundation · Q-LOCK-3a · Block B
- * @iso         ISO 9001:2015 §7.5 · ISO 25010 Maintainability + Reliability + Auditability
+ * @sprint      T-Phase-1.A.11 EngineeringX Drawing Register + Version Control · Q-LOCK-1a + Q-LOCK-2a + Q-LOCK-4a + Q-LOCK-5a · Block B · 5th FR-73 consumer registration
+ * @iso         ISO 9001:2015 §7.5 · ISO 25010 Maintainability + Compatibility
  * @whom        Audit Owner · Engineering Lead
- * @decisions   D-NEW-BV Phase 1 mock pattern · FR-11 · FR-13 · FR-23 · FR-25 · FR-50
+ * @decisions   FR-73 Hub-and-Spoke (5th CONSUMER at v22 · institutional FR pattern at-scale) ·
+ *              D-NEW-CO drawing version supersession workflow (delegated to DocVault canonical approveVersion · 13th) ·
+ *              D-NEW-BV Phase 1 mock · FR-11 SSOT · FR-13 Cards Render Replicas
  * @disciplines FR-21 · FR-29 · FR-30 · FR-33
- * @reuses      types/engineering-drawing.ts (canonical · ZERO TOUCH after A.10)
- * @[JWT]       /api/engineeringx/drawings (Phase 2 backend)
+ * @reuses      docvault-engine.ts canonical (ABSOLUTE zero touch · FR-73 Hub) ·
+ *              types/docvault.ts canonical (ABSOLUTE zero touch) ·
+ *              types/engineering-drawing.ts (refactored to type alias)
+ * @[JWT]       N/A (thin wrapper · uses docvault [JWT] markers)
  */
+import {
+  findDocumentsByForeignKey,
+  createDocument,
+  loadDocuments,
+  getDocument,
+  loadDocumentsByStatus,
+  submitVersion,
+  approveVersion,
+  rejectVersion,
+  getCurrentApprovedVersion,
+  loadVersions,
+} from '@/lib/docvault-engine';
 import type {
-  EngineeringDrawing,
-  DrawingId,
-  DrawingType,
-  DrawingVersion,
-  DrawingAuditEntry,
-} from '@/types/engineering-drawing';
-import { drawingsKey } from '@/types/engineering-drawing';
+  Document,
+  DocumentVersion,
+  DocumentVersionStatus,
+  DocumentTag,
+} from '@/types/docvault';
+import type { DrawingType } from '@/types/engineering-drawing';
+import { buildDrawingCustomTags } from '@/types/engineering-drawing';
 
-export function loadDrawings(entityCode: string): EngineeringDrawing[] {
-  try {
-    // [JWT] GET /api/engineeringx/drawings?entity={entityCode}
-    const raw = localStorage.getItem(drawingsKey(entityCode));
-    if (!raw) return [];
-    return JSON.parse(raw) as EngineeringDrawing[];
-  } catch {
-    return [];
-  }
+/** List all drawings in entity (filter to document_type === 'drawing'). FR-73.2 spoke · 5th consumer. */
+export function listDrawings(entityCode: string): Document[] {
+  return loadDocuments(entityCode).filter((d) => d.document_type === 'drawing');
 }
 
-function saveDrawings(entityCode: string, drawings: EngineeringDrawing[]): void {
-  // [JWT] PUT /api/engineeringx/drawings (bulk persist · Phase 2)
-  localStorage.setItem(drawingsKey(entityCode), JSON.stringify(drawings));
+/** List drawings linked to a specific project. */
+export function listDrawingsByProject(entityCode: string, projectId: string): Document[] {
+  return findDocumentsByForeignKey(entityCode, 'project_id', projectId)
+    .filter((d) => d.document_type === 'drawing');
 }
 
-export function getDrawing(entityCode: string, id: string): EngineeringDrawing | null {
-  return loadDrawings(entityCode).find((d) => d.id === id) ?? null;
+/** List drawings linked to a specific equipment (raw string FK · MaintainPro master pending). */
+export function listDrawingsByEquipment(entityCode: string, equipmentId: string): Document[] {
+  return findDocumentsByForeignKey(entityCode, 'equipment_id', equipmentId)
+    .filter((d) => d.document_type === 'drawing');
 }
 
-export function findDrawingsByProject(entityCode: string, projectId: string): EngineeringDrawing[] {
-  return loadDrawings(entityCode).filter((d) => d.related_project_id === projectId);
+/** List drawings linked to a specific work order (raw string FK · PlantOps WO master pending). */
+export function listDrawingsByWorkOrder(entityCode: string, workOrderId: string): Document[] {
+  return findDocumentsByForeignKey(entityCode, 'work_order_id', workOrderId)
+    .filter((d) => d.document_type === 'drawing');
 }
 
-export function findDrawingsByEquipment(entityCode: string, equipmentId: string): EngineeringDrawing[] {
-  return loadDrawings(entityCode).filter((d) => d.related_equipment_id === equipmentId);
+/** Get a single drawing by Document ID. */
+export function getDrawing(entityCode: string, id: string): Document | null {
+  const doc = getDocument(entityCode, id);
+  if (!doc || doc.document_type !== 'drawing') return null;
+  return doc;
 }
 
-export function findDrawingsByWorkOrder(entityCode: string, workOrderId: string): EngineeringDrawing[] {
-  return loadDrawings(entityCode).filter((d) => d.related_work_order_id === workOrderId);
-}
-
-export function loadDrawingsByStatus(
+/** List all drawings whose versions include the given status. */
+export function listDrawingsByStatus(
   entityCode: string,
-  status: 'draft' | 'submitted' | 'approved' | 'rejected',
-): EngineeringDrawing[] {
-  return loadDrawings(entityCode).filter((d) => {
-    const current = d.versions.find((v) => v.version_no === d.current_version);
-    return current?.version_status === status;
-  });
+  status: DocumentVersionStatus,
+): Document[] {
+  return loadDocumentsByStatus(entityCode, status)
+    .filter((d) => d.document_type === 'drawing');
+}
+
+/** Load all version rows for a drawing (delegated to DocVault canonical). */
+export function listDrawingVersions(entityCode: string, drawingId: string): DocumentVersion[] {
+  return loadVersions(entityCode, drawingId);
 }
 
 export interface CreateDrawingInput {
@@ -70,148 +88,96 @@ export interface CreateDrawingInput {
   related_project_id?: string | null;
   related_equipment_id?: string | null;
   related_work_order_id?: string | null;
-  related_party_id?: string | null;
+  initial_version: {
+    version_no: string;
+    file_url: string;
+    file_size_bytes: number;
+    uploaded_at: string;
+    uploaded_by: string;
+  };
   originating_department_id: string;
-  initial_version: Omit<DrawingVersion, 'version_status'>;
-  tags?: Record<string, string>;
+  iso_clause?: string;
+  iec_clause?: string;
 }
 
+/**
+ * Create a drawing as a DocVault Document (document_type: 'drawing').
+ * Engineering metadata in DocumentTag.custom_tags · FR-73 5th consumer pattern.
+ */
 export function createDrawing(
   entityCode: string,
   input: CreateDrawingInput,
   createdBy: string,
-): EngineeringDrawing {
-  const id = `DRW-${Date.now()}-${Math.floor(Math.random() * 1000)}` as DrawingId;
-  const now = new Date().toISOString();
-
-  const initialVersion: DrawingVersion = {
-    ...input.initial_version,
-    version_status: 'draft',
+): Document {
+  const tags: DocumentTag = {
+    iso_clause: input.iso_clause,
+    iec_clause: input.iec_clause,
+    custom_tags: buildDrawingCustomTags({
+      drawing_no: input.drawing_no,
+      drawing_subtype: input.drawing_type,
+    }),
   };
 
-  const auditEntry: DrawingAuditEntry = {
-    at: now,
-    by: createdBy,
-    action: 'create',
-  };
-
-  const drawing: EngineeringDrawing = {
-    id,
-    entity_id: entityCode,
-    drawing_no: input.drawing_no,
-    title: input.title,
-    description: input.description,
-    drawing_type: input.drawing_type,
-    related_project_id: input.related_project_id ?? null,
-    related_equipment_id: input.related_equipment_id ?? null,
-    related_work_order_id: input.related_work_order_id ?? null,
-    related_party_id: (input.related_party_id ?? null) as EngineeringDrawing['related_party_id'],
-    originating_department_id: input.originating_department_id,
-    current_version: initialVersion.version_no,
-    versions: [initialVersion],
-    tags: input.tags ?? {},
-    created_at: now,
-    created_by: createdBy,
-    audit_log: [auditEntry],
-  };
-
-  const drawings = loadDrawings(entityCode);
-  drawings.push(drawing);
-  saveDrawings(entityCode, drawings);
-  return drawing;
+  return createDocument(
+    entityCode,
+    {
+      entity_id: entityCode,
+      title: input.title,
+      description: input.description,
+      document_type: 'drawing',
+      tags,
+      originating_department_id: input.originating_department_id,
+      project_id: input.related_project_id ?? null,
+      customer_id: null,
+      vendor_id: null,
+      equipment_id: input.related_equipment_id ?? null,
+      nc_id: null,
+      work_order_id: input.related_work_order_id ?? null,
+    },
+    input.initial_version,
+    createdBy,
+  );
 }
 
-export function addDrawingVersion(
-  entityCode: string,
-  id: string,
-  newVersion: Omit<DrawingVersion, 'version_status'>,
-  changeNotes: string | undefined,
-  addedBy: string,
-): EngineeringDrawing | null {
-  const drawings = loadDrawings(entityCode);
-  const idx = drawings.findIndex((d) => d.id === id);
-  if (idx < 0) return null;
-
-  const drawing = drawings[idx];
-  const versionToAdd: DrawingVersion = {
-    ...newVersion,
-    version_status: 'draft',
-    change_notes: changeNotes,
-  };
-
-  drawing.versions.push(versionToAdd);
-  drawing.current_version = versionToAdd.version_no;
-  drawing.audit_log.push({
-    at: new Date().toISOString(),
-    by: addedBy,
-    action: 'add_version',
-    note: changeNotes,
-  });
-
-  drawings[idx] = drawing;
-  saveDrawings(entityCode, drawings);
-  return drawing;
-}
-
+/** Submit a drawing version for approval (DocVault canonical workflow · zero-touch). */
 export function submitDrawingVersion(
   entityCode: string,
-  id: string,
+  drawingId: string,
   versionNo: string,
   submittedBy: string,
-): EngineeringDrawing | null {
-  return updateVersionStatus(entityCode, id, versionNo, 'submitted', submittedBy, 'submit');
+): Document | null {
+  const r = submitVersion(entityCode, drawingId, versionNo, submittedBy);
+  return r.ok && r.document ? r.document : null;
 }
 
+/**
+ * Approve a drawing version. D-NEW-CO drawing version supersession: prior approved
+ * versions auto-superseded by DocVault canonical approveVersion (13th canonical).
+ */
 export function approveDrawingVersion(
   entityCode: string,
-  id: string,
+  drawingId: string,
   versionNo: string,
   approvedBy: string,
-): EngineeringDrawing | null {
-  return updateVersionStatus(entityCode, id, versionNo, 'approved', approvedBy, 'approve');
+): Document | null {
+  const r = approveVersion(entityCode, drawingId, versionNo, approvedBy);
+  return r.ok && r.document ? r.document : null;
 }
 
+/** Reject a drawing version (DocVault canonical workflow · zero-touch). */
 export function rejectDrawingVersion(
   entityCode: string,
-  id: string,
+  drawingId: string,
   versionNo: string,
   reason: string,
   rejectedBy: string,
-): EngineeringDrawing | null {
-  return updateVersionStatus(entityCode, id, versionNo, 'rejected', rejectedBy, 'reject', reason);
+): Document | null {
+  const r = rejectVersion(entityCode, drawingId, versionNo, rejectedBy, reason);
+  if (!r.ok) return null;
+  return getDrawing(entityCode, drawingId);
 }
 
-function updateVersionStatus(
-  entityCode: string,
-  id: string,
-  versionNo: string,
-  newStatus: 'submitted' | 'approved' | 'rejected',
-  actor: string,
-  action: 'submit' | 'approve' | 'reject',
-  reason?: string,
-): EngineeringDrawing | null {
-  const drawings = loadDrawings(entityCode);
-  const idx = drawings.findIndex((d) => d.id === id);
-  if (idx < 0) return null;
-
-  const drawing = drawings[idx];
-  const vIdx = drawing.versions.findIndex((v) => v.version_no === versionNo);
-  if (vIdx < 0) return null;
-
-  const now = new Date().toISOString();
-  drawing.versions[vIdx] = {
-    ...drawing.versions[vIdx],
-    version_status: newStatus,
-    ...(newStatus === 'approved' ? { approved_at: now, approved_by: actor } : {}),
-    ...(newStatus === 'rejected' ? { rejection_reason: reason } : {}),
-  };
-
-  drawing.audit_log.push({ at: now, by: actor, action, note: reason });
-  drawings[idx] = drawing;
-  saveDrawings(entityCode, drawings);
-  return drawing;
-}
-
-export function getCurrentApprovedVersion(drawing: EngineeringDrawing): DrawingVersion | null {
-  return drawing.versions.find((v) => v.version_status === 'approved') ?? null;
+/** Get the current approved version of a drawing (DocVault canonical · zero-touch). */
+export function getCurrentApprovedDrawingVersion(drawing: Document): DocumentVersion | null {
+  return getCurrentApprovedVersion(drawing);
 }

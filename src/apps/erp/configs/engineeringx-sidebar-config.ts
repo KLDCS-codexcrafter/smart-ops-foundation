@@ -1,18 +1,19 @@
 /**
  * @file        src/apps/erp/configs/engineeringx-sidebar-config.ts
- * @purpose     EngineeringX canonical sidebar · 'e *' keyboard namespace · D-NEW-CC compliance · 5th consumer
+ * @purpose     EngineeringX canonical sidebar · 'e *' keyboard namespace · D-NEW-CC compliance · 5 consumers
  * @who         Engineering · Document Controller · Production · Procurement · QualiCheck
  * @when        2026-05-10
- * @sprint      T-Phase-1.A.10 EngineeringX Foundation · Q-LOCK-6a + Q-LOCK-10a · Block D.3
+ * @sprint      T-Phase-1.A.11 EngineeringX Drawing Register + Version Control · Q-LOCK-6a + Q-LOCK-10a · Block G.2
  * @iso         ISO 25010 Usability · Maintainability
  * @whom        Audit Owner
- * @decisions   D-NEW-CC keyboard uniqueness · 5th consumer ('e *' namespace · was 4 at v20)
+ * @decisions   D-NEW-CC keyboard uniqueness · 'e *' namespace extension within consumer · FR-73 5th consumer
  * @disciplines FR-30 · FR-67
  * @reuses      @/shell/types SidebarItem · lucide-react icons
  * @[JWT]       N/A (config only)
  */
 import {
   Home, FileText, FilePlus, BookMarked, ListTree, Sparkles, BarChart3,
+  CheckSquare, History,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -33,22 +34,40 @@ export const engineeringxSidebarItems: SidebarItem[] = [
     icon: FileText,
     children: [
       {
-        id: 'drawing-register-placeholder',
+        id: 'drawing-register',
         type: 'item',
         label: 'Drawing Register',
         icon: FileText,
-        moduleId: 'drawing-register-placeholder',
+        moduleId: 'drawing-register',
         requiredCards: ['engineeringx'],
         keyboard: 'e r',
       },
       {
-        id: 'drawing-entry-placeholder',
+        id: 'drawing-entry',
         type: 'item',
         label: 'New Drawing',
         icon: FilePlus,
-        moduleId: 'drawing-entry-placeholder',
+        moduleId: 'drawing-entry',
         requiredCards: ['engineeringx'],
         keyboard: 'e n',
+      },
+      {
+        id: 'drawing-approvals',
+        type: 'item',
+        label: 'Approvals Pending',
+        icon: CheckSquare,
+        moduleId: 'drawing-approvals',
+        requiredCards: ['engineeringx'],
+        keyboard: 'e a',
+      },
+      {
+        id: 'drawing-version-history',
+        type: 'item',
+        label: 'Version History',
+        icon: History,
+        moduleId: 'drawing-version-history',
+        requiredCards: ['engineeringx'],
+        keyboard: 'e v',
       },
     ],
   },
