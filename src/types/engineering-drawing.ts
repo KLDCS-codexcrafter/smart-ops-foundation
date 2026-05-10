@@ -57,6 +57,7 @@ export const DRAWING_CUSTOM_TAG_KEYS = {
   drawing_revision: 'drawing_revision',
   bom_extracted: 'bom_extracted',
   ai_similarity_signature: 'ai_similarity_signature',
+  reference_source_drawing_id: 'reference_source_drawing_id',
 } as const;
 
 export type DrawingCustomTagKey = keyof typeof DRAWING_CUSTOM_TAG_KEYS;
