@@ -510,7 +510,7 @@ function buildBreadcrumbs(activeModule: CommandCenterModule): BreadcrumbEntry[] 
   const moduleLabel = getModuleLabel(activeModule);
   const crumbs: BreadcrumbEntry[] = [
     { label: 'Operix Core', href: '/erp/dashboard' },
-    { label: 'Command Centre', href: '/erp/command-center' },
+    { label: 'Command Center', href: '/erp/command-center' },
   ];
   if (group && group !== moduleLabel) crumbs.push({ label: group });
   if (moduleLabel) crumbs.push({ label: moduleLabel });

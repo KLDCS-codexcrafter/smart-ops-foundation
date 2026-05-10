@@ -40,7 +40,7 @@ interface UserGroup {
   status: 'active' | 'inactive';
 }
 
-// ─── Panel Export (Command Centre shell) ────────────────────────
+// ─── Panel Export (Command Center shell) ────────────────────────
 export function FinFramePanel() {
   const navigate = useNavigate();
   const [namingMode, setNamingMode] = useState<'indas' | 'tally'>('indas');
