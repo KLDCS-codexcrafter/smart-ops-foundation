@@ -1,8 +1,9 @@
 /**
  * @file        src/pages/erp/engineeringx/EngineeringXPage.tsx
- * @sprint      T-Phase-1.A.12 · Q-LOCK-7a · Block F.1 · activeModule extension (additive · NO App.tsx changes)
+ * @sprint      T-Phase-1.A.13 · Q-LOCK-7a · Block E.1 · activeModule extension (additive · NO App.tsx changes)
  * @decisions   D-250 Shell pattern lock · FR-58 · D-NEW-CC `'e *'` keyboard namespace ·
- *              FR-73 5th consumer · D-NEW-CP institutional pattern · D-NEW-CE 16th consumer
+ *              FR-73 5th consumer · D-NEW-CP institutional pattern · D-NEW-CE 16th consumer ·
+ *              D-NEW-CR + D-NEW-CS POSSIBLE · CLOSEOUT sprint
  */
 import { useState } from 'react';
 import { Shell } from '@/shell';
@@ -18,6 +19,10 @@ import { BomExtractor } from './transactions/BomExtractor';
 import { BomRegister } from './registers/BomRegister';
 import { ReferenceProjectLibrary } from './registers/ReferenceProjectLibrary';
 import { CloneDrawing } from './transactions/CloneDrawing';
+import { SimilarityPredictor } from './transactions/SimilarityPredictor';
+import { ChangeImpactAnalyzer } from './registers/ChangeImpactAnalyzer';
+import { ProductionHandoff } from './registers/ProductionHandoff';
+import { EngineeringXReports } from './registers/EngineeringXReports';
 
 export default function EngineeringXPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<EngineeringXModule>('welcome');
@@ -34,15 +39,11 @@ export default function EngineeringXPage(): JSX.Element {
       case 'bom-register':             return <BomRegister onNavigate={setActiveModule} />;
       case 'reference-library':        return <ReferenceProjectLibrary onNavigate={setActiveModule} />;
       case 'clone-drawing':            return <CloneDrawing onNavigate={setActiveModule} />;
-      case 'similarity-placeholder':
-      case 'reports-placeholder':
-        return (
-          <div className="p-6 text-sm text-muted-foreground">
-            Coming in subsequent sprint (A.13 Closeout).
-          </div>
-        );
-      default:
-        return <EngineeringXWelcome onNavigate={setActiveModule} />;
+      case 'similarity-predictor':     return <SimilarityPredictor onNavigate={setActiveModule} />;
+      case 'change-impact-analyzer':   return <ChangeImpactAnalyzer onNavigate={setActiveModule} />;
+      case 'production-handoff':       return <ProductionHandoff onNavigate={setActiveModule} />;
+      case 'engineeringx-reports':     return <EngineeringXReports onNavigate={setActiveModule} />;
+      default:                         return <EngineeringXWelcome onNavigate={setActiveModule} />;
     }
   };
 
