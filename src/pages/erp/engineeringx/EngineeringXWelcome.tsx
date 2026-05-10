@@ -93,14 +93,23 @@ export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
           <Button variant="outline" onClick={() => onNavigate?.('reference-library')} className="h-auto py-3">
             <BookMarked className="h-4 w-4 mr-2" /> Reference Library
           </Button>
-          <Button variant="outline" onClick={() => onNavigate?.('similarity-placeholder')} className="h-auto py-3">
+          <Button variant="outline" onClick={() => onNavigate?.('similarity-predictor')} className="h-auto py-3">
             <Sparkles className="h-4 w-4 mr-2" /> AI Similarity
           </Button>
         </CardContent>
       </Card>
 
+      <div className="rounded-lg border bg-success/5 p-4 text-sm">
+        <div className="font-semibold text-success mb-1">EngineeringX · 6/6 OOB innovations LIVE ⭐</div>
+        <div className="text-muted-foreground">
+          Drawing register · version control · approval workflow · BOM-from-drawing ·
+          Reference Project Library · AI similarity / change-impact / production handoff.
+          A.13 Closeout · MOAT #21 · 4-sprint EngineeringX arc complete.
+        </div>
+      </div>
+
       <div className="text-xs text-muted-foreground/70">
-        Tier 1 #5 · Sinha-anchor · A.12 ships BOM-from-Drawing + Reference Project Library.
+        Tier 1 #5 · Sinha-anchor demo readiness COMPLETE · Ask Dishani conversational layer integrated.
       </div>
     </div>
   );

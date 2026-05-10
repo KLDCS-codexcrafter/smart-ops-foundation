@@ -191,7 +191,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/engineeringx',
     icon: 'FileText',
-    status: 'coming_soon',
+    status: 'active',  // ⭐ T-Phase-1.A.13 EngineeringX Closeout · Q-LOCK-10a STATUS FLIP · MOAT #21 candidate · matches A.9 DocVault Closeout precedent
   },
   // store-hub · LIGHTWEIGHT department-level Stores console (NOT Inventory Hub · see arch note 2)
   {
