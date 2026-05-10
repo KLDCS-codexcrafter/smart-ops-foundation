@@ -38,6 +38,19 @@ const FineCoreLegacyRedirect = () => {
   return <Navigate to={target} replace />;
 };
 
+// T-Phase-1.H.2 · Q-LOCK-7a · backward-compat redirect /erp/qulicheak/* → /erp/qualicheck/*
+// preserves user bookmarks · D-NEW-CM Legacy Redirect Convention · D-NEW-CN canonical correction
+const QulicheakLegacyRedirect = () => {
+  const location = useLocation();
+  const target =
+    location.pathname
+      .replace(/^\/erp\/qulicheak/, '/erp/qualicheck')
+      .replace(/^\/operix-go\/qulicheak/, '/operix-go/qualicheck') +
+    (location.search || '') +
+    (location.hash || '');
+  return <Navigate to={target} replace />;
+};
+
 const Login = lazy(() => import('./pages/auth/Login'));
 const Welcome = lazy(() => import('./pages/Welcome'));
 const TowerDashboard = lazy(() => import('./pages/tower/Dashboard'));
