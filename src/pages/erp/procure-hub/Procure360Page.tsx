@@ -135,6 +135,11 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'goods-inward-day-book'
   ) return 'Outstandings';
 
+  // Vendor Documents group · SM.Procure360-Vendor-Agreements
+  if (m === 'vendor-agreements-register' || m === 'vendor-agreement-entry') {
+    return 'Vendor Documents';
+  }
+
   // Reports group (existing rule + 5 NEW reports)
   if (
     m.endsWith('-report') ||
