@@ -191,7 +191,7 @@ export function InvoiceUploadWizard({ open, onOpenChange, logistics, onCreated }
 
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub', moduleId: 'dh-t-transporter-invoice',
+      cardId: 'logistics', moduleId: 'dh-t-transporter-invoice',
       action: 'master_save', refType: 'transporter-invoice', refId: inv.id,
       refLabel: `Uploaded ${inv.invoice_no} (${lines.length} lines)`,
     });

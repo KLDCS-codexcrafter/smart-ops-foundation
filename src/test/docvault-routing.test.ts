@@ -25,10 +25,14 @@ describe('DocVault sidebar config · D-NEW-CC canonical (α-a Block B)', () => {
     expect(new Set(kbs).size).toBe(kbs.length);
   });
 
-  it('all 4 expected docvault module IDs are present', () => {
+  it('all 10 expected docvault module IDs are present (4 original + 6 A.9 BUNDLED)', () => {
     const flat = flatten(docVaultSidebarItems);
     const ids = new Set(flat.map((i) => i.moduleId).filter((m): m is string => Boolean(m)));
-    for (const e of ['welcome', 'documents-register', 'document-entry', 'approvals-pending']) {
+    for (const e of [
+      'welcome', 'documents-register', 'document-entry', 'approvals-pending',
+      'drawing-register-tree', 'tag-index', 'similarity-viewer',
+      'documents-by-dept', 'approval-latency', 'version-velocity',
+    ]) {
       expect(ids.has(e)).toBe(true);
     }
   });
@@ -39,11 +43,11 @@ describe('DocVault sidebar config · D-NEW-CC canonical (α-a Block B)', () => {
     for (const kb of kbs) expect(kb.startsWith('d ')).toBe(true);
   });
 
-  it('Q-LOCK-10a · docvault status flipped to wip at A.8 Foundation close', async () => {
+  it('Q-LOCK-8a · docvault status flipped to active at A.9 BUNDLED close · MOAT #20', async () => {
     const mod = await import('@/components/operix-core/applications');
     const apps = (mod as { applications?: ReadonlyArray<{ id: string; status: string }> }).applications;
     expect(apps).toBeDefined();
     const dv = apps?.find((a) => a.id === 'docvault');
-    expect(dv?.status).toBe('wip');
+    expect(dv?.status).toBe('active');
   });
 });

@@ -95,19 +95,19 @@ export default function DispatchOpsPage() {
   useEffect(() => {
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-ops' as never, action: 'card_open',
+      cardId: 'dispatch-hub' as never, action: 'card_open',
     });
   }, [entityCode, userId]);
 
   useEffect(() => {
-    rememberModule('dispatch-ops' as never, activeModule);
+    rememberModule('dispatch-hub' as never, activeModule);
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-ops' as never, moduleId: activeModule,
+      cardId: 'dispatch-hub' as never, moduleId: activeModule,
       action: 'module_open',
     });
     recordActivity(entityCode, userId, {
-      card_id: 'dispatch-ops' as never, kind: 'module',
+      card_id: 'dispatch-hub' as never, kind: 'module',
       ref_id: activeModule,
       title: `Dispatch Hub · ${activeModule}`,
       subtitle: null,

@@ -68,7 +68,7 @@ const LANES: Array<{
       'requestx',
       'supplyx',
       'sitex',             // NEW · Tier 1 #12 · site execution · post-production
-      'dispatch-hub',
+      'logistics',
     ],
   },
   {
@@ -76,7 +76,7 @@ const LANES: Array<{
     label: 'Dispatch',
     borderColor: 'border-l-orange-500',
     labelColor: 'text-orange-600 dark:text-orange-400',
-    ids: ['dispatch-ops'],
+    ids: ['dispatch-hub'],
   },
   {
     id: 'finance',

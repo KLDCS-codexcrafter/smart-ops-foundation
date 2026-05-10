@@ -78,19 +78,19 @@ export default function DispatchHubPage() {
   useEffect(() => {
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub' as never, action: 'card_open',
+      cardId: 'logistics' as never, action: 'card_open',
     });
   }, [entityCode, userId]);
 
   useEffect(() => {
-    rememberModule('dispatch-hub' as never, activeModule);
+    rememberModule('logistics' as never, activeModule);
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub' as never, moduleId: activeModule,
+      cardId: 'logistics' as never, moduleId: activeModule,
       action: 'module_open',
     });
     recordActivity(entityCode, userId, {
-      card_id: 'dispatch-hub' as never, kind: 'module',
+      card_id: 'logistics' as never, kind: 'module',
       ref_id: activeModule,
       title: `Logistics Hub · ${activeModule}`,
       subtitle: null,

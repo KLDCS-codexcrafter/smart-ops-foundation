@@ -11,8 +11,8 @@ export type CardId =
   | 'procure360' | 'inventory-hub' | 'qulicheak' | 'gateflow'
   | 'production' | 'maintainpro' | 'requestx' | 'frontdesk'
   | 'servicedesk'
+  | 'logistics'
   | 'dispatch-hub'
-  | 'dispatch-ops'
   | 'projx'                   // Sprint T-Phase-1.1.2-a · ProjX Foundation
   // ── Sprint T-Phase-1.3-DashboardLanes-Fix · 11 NEW IDs (close type-drift gap) ──
   | 'engineeringx'            // Tier 1 #5 NEW (Master Plan §51.2)
@@ -53,7 +53,7 @@ export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   finance: ['finecore', 'receivx', 'payout', 'insightx', 'command-center'],
   sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx'],
   operations: ['procure360', 'inventory-hub', 'production', 'qulicheak', 'gateflow',
-    'maintainpro', 'requestx', 'dispatch-hub', 'dispatch-ops'],
+    'maintainpro', 'requestx', 'logistics', 'dispatch-hub'],
   hr: ['peoplepay', 'insightx'],
   support: ['servicedesk'],
   view_only: ['insightx'],

@@ -175,7 +175,7 @@ export function TransporterInvoiceInboxPanel() {
 
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub', moduleId: 'dh-t-transporter-invoice',
+      cardId: 'logistics', moduleId: 'dh-t-transporter-invoice',
       action: 'master_save', refType: 'transporter-invoice', refId: inv.id,
       refLabel: `Reconciled ${inv.invoice_no}`,
     });
@@ -205,7 +205,7 @@ export function TransporterInvoiceInboxPanel() {
     } catch { /* ignore */ }
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub', moduleId: 'dh-t-transporter-invoice',
+      cardId: 'logistics', moduleId: 'dh-t-transporter-invoice',
       action: 'master_save', refType: 'transporter-invoice', refId: inv.id,
       refLabel: `Bulk approved ${inv.invoice_no}`,
     });
@@ -484,7 +484,7 @@ function ManualInvoiceDialog({ open, onOpenChange, logistics, onSaved }: {
     } catch { /* ignore */ }
     logAudit({
       entityCode, userId, userName: userId,
-      cardId: 'dispatch-hub', moduleId: 'dh-t-transporter-invoice',
+      cardId: 'logistics', moduleId: 'dh-t-transporter-invoice',
       action: 'master_save', refType: 'transporter-invoice', refId: inv.id,
       refLabel: `Manual invoice ${inv.invoice_no}`,
     });

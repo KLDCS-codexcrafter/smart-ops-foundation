@@ -15,7 +15,7 @@
  * ──────────────────────────────────────────────────────────────────────────
  *
  * 1. DISPATCH-OPS vs DISPATCH-HUB (NEVER MERGE):
- *    - dispatch-ops · 'Dispatch Hub'  · /erp/dispatch  · Internal department · inward/outward operations
+ *    - dispatch-hub · 'Dispatch Hub'  · /erp/dispatch  · Internal department · inward/outward operations
  *    - dispatch-hub · 'Logistics'     · /erp/logistics · Transporter panel · LR · POD · freight · external party
  *
  * 2. INVENTORY-HUB vs STORE-HUB (related but distinct):
@@ -327,9 +327,9 @@ export const applications: AppDefinition[] = [
     status: 'active',
   },
   // dispatch-hub · 'Logistics' · transporter panel (NOT operational dispatch · see arch note 1)
-  // ⚠️ id='dispatch-hub' kept for backward-compat · scope is Logistics
+  // ⚠️ id='logistics' kept for backward-compat · scope is Logistics
   {
-    id: 'dispatch-hub',
+    id: 'logistics',
     name: 'Logistics',
     description: 'Transporter panel · LR tracking, POD, courier management, freight reconciliation, transporter scorecard, dispute queue. External-party coordination. (Distinct from Dispatch Hub which handles inward/outward stock operations.)',
     category: 'Ops Hub',
@@ -337,9 +337,9 @@ export const applications: AppDefinition[] = [
     icon: 'Truck',
     status: 'active',  // Sprint T-Phase-1.3-DashboardLanes-Fix · Q1-Status · 1,360 unique LOC + 8,127 shared LOC · /erp/logistics functional since T-Phase-1.1.1p-v2
   },
-  // dispatch-ops · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
+  // dispatch-hub · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
   {
-    id: 'dispatch-ops',
+    id: 'dispatch-hub',
     name: 'Dispatch Hub',
     description: 'Internal department · inward & outward logistic operations · Delivery Memo, Packing Slip, GRN inward receipts, Sample/Demo outward issue, Outward Movement Report, Dispatch Exceptions. Works WITH stock. NOT transporter panel (see Logistics).',
     category: 'Dispatch Hub',
@@ -381,7 +381,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/docvault',
     icon: 'FileText',
-    status: 'wip',  // T-Phase-1.A.8.α-a · Q-LOCK-10a · coming_soon→wip (A.9 Closeout completes wip→active)
+    status: 'active',  // T-Phase-1.A.9 BUNDLED · Q-LOCK-8a · D-NEW-BB pattern · 7th consumer · MOAT #20 · A.8+A.9 pair CLOSED
   },
   // ─── INSIGHTX ARCHITECTURAL RULE — LOCKED BEFORE BUILD ──────────────────────
   // InsightX is a read-only analytics layer for top management.

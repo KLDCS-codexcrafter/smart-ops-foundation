@@ -111,7 +111,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
           {greeting.emoji} {greeting.text}, {userName}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">{today}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">Command Centre — Single Source of Truth for IT & Department Admins</p>
+        <p className="text-xs text-muted-foreground mt-0.5">Command Center — Single Source of Truth for IT & Department Admins</p>
       </div>
 
       {/* CC-010 First-run banner */}

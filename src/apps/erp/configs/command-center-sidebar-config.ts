@@ -1,7 +1,7 @@
 /**
  * command-center-sidebar-config.ts — Data config replacing CommandCenterSidebar.tsx
  *
- * Structure matches the full Command Centre module set defined in CommandCenterPage.
+ * Structure matches the full Command Center module set defined in CommandCenterPage.
  * Module IDs are PRESERVED — CommandCenterPage's activeModule state depends on them.
  */
 
