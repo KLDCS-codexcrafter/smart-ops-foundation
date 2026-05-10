@@ -1,19 +1,25 @@
 /**
- * StoreHubPage.tsx — Module-based Shell · Indigo-600 accent
- * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1 · Block D · D-379
- *
- * UPGRADE from D-298 thin tabs card to module-based Shell matching DispatchHubPage
- * (Card #6) pattern. Existing 3 panels (Stock Check, Reorder Suggestions, Demand
- * Forecast) preserved as modules · 3 NEW transaction modules added (Stock Issue
- * Entry/Register, Receipt Ack). store-hub-engine.ts NOT modified.
+ * @file        src/pages/erp/store-hub/StoreHubPage.tsx
+ * @purpose     Store Hub entry shell · canonical Shell consumer · 11 modules render
+ * @who         Store Keeper · Department Heads · Storekeeper Supervisor
+ * @when        2026-05-09 (T1 Shell retrofit)
+ * @sprint      T-Phase-1.A.9.T1 · Q-LOCK-T1-F1 · Block A.1 · Shell retrofit
+ * @iso         ISO 25010 Maintainability · Usability
+ * @whom        Audit Owner
+ * @decisions   D-379 (module-based Shell · matches DispatchHubPage pattern) · D-250 (Shell pattern lock · FR-58) ·
+ *              D-NEW-CK related (this is INTERNAL · contrast with Logistics external portal) ·
+ *              Q-LOCK-T1-F1 · Shell retrofit (A.9.T1 · canonical pattern lock per FR-58)
+ * @disciplines FR-30 · FR-58
+ * @reuses      @/shell Shell · store-hub-shell-config · panels · transactions · reports
+ * @[JWT]       Multiple via panels (see panel files for endpoints)
  */
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ERPHeader } from '@/components/layout/ERPHeader';
+import { Shell } from '@/shell';
+import { storeHubShellConfig } from '@/apps/erp/configs/store-hub-shell-config';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Warehouse } from 'lucide-react';
-import { StoreHubSidebar, type StoreHubModule } from './StoreHubSidebar';
+import type { StoreHubModule } from './StoreHubSidebar';
 import {
   StockCheckPanel, ReorderSuggestionsPanel, DemandForecastPanel,
 } from './StoreHubPanels';
@@ -73,6 +79,7 @@ export default function StoreHubPage(): JSX.Element {
     if (hash.startsWith('sh-')) return hash as StoreHubModule;
     return 'sh-r-welcome';
   });
+  const { entitlements, profile } = useCardEntitlement();
 
   useEffect(() => {
     if (activeModule !== 'sh-r-welcome') {
@@ -83,16 +90,18 @@ export default function StoreHubPage(): JSX.Element {
   }, [activeModule]);
 
   return (
-    <SidebarProvider defaultOpen>
-      <StoreHubSidebar activeModule={activeModule} onModuleChange={setActiveModule} />
-      <SidebarInset>
-        <ERPHeader />
-        <ScrollArea className="flex-1 h-[calc(100vh-var(--erp-header-height,112px))]">
-          <div className="p-4 md:p-6 animate-fade-in">
-            {renderModule(activeModule, setActiveModule)}
-          </div>
-        </ScrollArea>
-      </SidebarInset>
-    </SidebarProvider>
+    <Shell
+      config={storeHubShellConfig}
+      userProfile={profile}
+      tenantEntitlements={entitlements}
+      contextFlags={{ accounting_mode: 'standalone' }}
+      onSidebarItemClick={(item) => {
+        if (item.moduleId) setActiveModule(item.moduleId as StoreHubModule);
+      }}
+    >
+      <div className="p-4 md:p-6 animate-fade-in">
+        {renderModule(activeModule, setActiveModule)}
+      </div>
+    </Shell>
   );
 }
