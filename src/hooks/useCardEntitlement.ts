@@ -57,6 +57,14 @@ export function useCardEntitlement() {
     // (All three flipped to active per Phase 1.A milestones. New installs get fresh seed.)
     let migrated = false;
     for (const ent of entitlementsRaw) {
+      // T-Phase-1.H.2 · D-NEW-BB · 3rd consumer · Migrate stale card_id 'qulicheak' → 'qualicheck'
+      // Decision C Reverse · D-NEW-CN canonical correction · idempotent (post-migration card_id won't match)
+      // Parallel to dispatch swap A.9 institutional pattern · candidate FR-72 promotion (3 consumers)
+      if ((ent.card_id as unknown as string) === 'qulicheak') {
+        (ent as { card_id: string }).card_id = 'qualicheck';
+        ent.updated_at = new Date().toISOString();
+        migrated = true;
+      }
       const gfProd =
         (ent.card_id === 'gateflow' || ent.card_id === 'production') &&
         ent.status === 'locked';
