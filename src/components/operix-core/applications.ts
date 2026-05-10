@@ -15,7 +15,7 @@
  * ──────────────────────────────────────────────────────────────────────────
  *
  * 1. DISPATCH-OPS vs DISPATCH-HUB (NEVER MERGE):
- *    - dispatch-ops · 'Dispatch Hub'  · /erp/dispatch  · Internal department · inward/outward operations
+ *    - dispatch-hub · 'Dispatch Hub'  · /erp/dispatch  · Internal department · inward/outward operations
  *    - dispatch-hub · 'Logistics'     · /erp/logistics · Transporter panel · LR · POD · freight · external party
  *
  * 2. INVENTORY-HUB vs STORE-HUB (related but distinct):
@@ -337,7 +337,7 @@ export const applications: AppDefinition[] = [
     icon: 'Truck',
     status: 'active',  // Sprint T-Phase-1.3-DashboardLanes-Fix · Q1-Status · 1,360 unique LOC + 8,127 shared LOC · /erp/logistics functional since T-Phase-1.1.1p-v2
   },
-  // dispatch-ops · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
+  // dispatch-hub · 'Dispatch Hub' · internal operations (NOT transporter panel · see arch note 1)
   {
     id: 'dispatch-hub',
     name: 'Dispatch Hub',
