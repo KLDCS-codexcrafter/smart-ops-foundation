@@ -39,7 +39,7 @@ export function registerConfigKey(entityCode: string): string {
  */
 export function loadRegisterConfig(entityCode: string): RegisterConfig {
   try {
-    // [JWT] GET /api/finecore/register-config/:entityCode
+    // [JWT] GET /api/fincore/register-config/:entityCode
     const raw = localStorage.getItem(registerConfigKey(entityCode));
     if (!raw) return DEFAULT_REGISTER_CONFIG;
     const parsed = JSON.parse(raw) as Partial<RegisterConfig>;
@@ -63,7 +63,7 @@ export function loadRegisterConfig(entityCode: string): RegisterConfig {
  */
 export function saveRegisterConfig(entityCode: string, config: RegisterConfig): void {
   try {
-    // [JWT] PUT /api/finecore/register-config/:entityCode
+    // [JWT] PUT /api/fincore/register-config/:entityCode
     localStorage.setItem(registerConfigKey(entityCode), JSON.stringify(config));
   } catch (err) {
     // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
@@ -77,7 +77,7 @@ export function saveRegisterConfig(entityCode: string, config: RegisterConfig): 
  */
 export function resetRegisterConfig(entityCode: string): void {
   try {
-    // [JWT] DELETE /api/finecore/register-config/:entityCode
+    // [JWT] DELETE /api/fincore/register-config/:entityCode
     localStorage.removeItem(registerConfigKey(entityCode));
   } catch {
     // ignore

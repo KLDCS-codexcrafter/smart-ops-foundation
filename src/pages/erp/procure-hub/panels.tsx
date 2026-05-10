@@ -1735,7 +1735,7 @@ export function PoListPanel(): JSX.Element {
     <div className="p-6 space-y-4">
       <div>
         <h1 className="text-2xl font-bold">Purchase Orders</h1>
-        <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FineCore PurchaseOrder voucher (D-283)</p>
+        <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FinCore PurchaseOrder voucher (D-283)</p>
       </div>
 
       {monthlySummary.length > 0 && (
@@ -2509,8 +2509,8 @@ export function AgedGitProcurePanel(): JSX.Element {
   }), [aged]);
 
   const handleNotify = (g: GitStage1Record): void => {
-    // [JWT] POST /api/finecore/notify · Stage 2 reminder · Phase 1 stub
-    toast.success(`Notification sent to FineCore for ${g.git_no}`);
+    // [JWT] POST /api/fincore/notify · Stage 2 reminder · Phase 1 stub
+    toast.success(`Notification sent to FinCore for ${g.git_no}`);
   };
 
   return (
@@ -2518,7 +2518,7 @@ export function AgedGitProcurePanel(): JSX.Element {
       <div>
         <h1 className="text-2xl font-bold">Aged Goods in Transit · Procure360 View</h1>
         <p className="text-sm text-muted-foreground">
-          Stage 1 received at gate · awaiting Stage 2 inventory acceptance (FineCore Receipt Note)
+          Stage 1 received at gate · awaiting Stage 2 inventory acceptance (FinCore Receipt Note)
         </p>
       </div>
 
@@ -2573,7 +2573,7 @@ export function AgedGitProcurePanel(): JSX.Element {
                     <TableCell><Badge variant="outline">{g.status}</Badge></TableCell>
                     <TableCell>
                       <Button size="sm" variant="outline" onClick={() => handleNotify(g)}>
-                        <Bell className="h-3 w-3 mr-1" />Notify FineCore
+                        <Bell className="h-3 w-3 mr-1" />Notify FinCore
                       </Button>
                     </TableCell>
                   </TableRow>

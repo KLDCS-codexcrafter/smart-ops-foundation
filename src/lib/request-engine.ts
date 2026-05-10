@@ -321,7 +321,7 @@ export function runAutoRules(
  * Mirrors rejectIndent pattern EXACTLY but for status='draft' transitions to 'cancelled'.
  * Uses approval_history audit pattern (NOT separate fields) · cleaner than Card #7 D-399.
  *
- * D-128 boundary respect: rejects non-DRAFT statuses (use rejectIndent or finecore.cancelVoucher).
+ * D-128 boundary respect: rejects non-DRAFT statuses (use rejectIndent or fincore.cancelVoucher).
  */
 export function cancelIndent(
   id: string,

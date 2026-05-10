@@ -6,12 +6,12 @@ import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
-import { journalKey } from '@/lib/finecore-engine';
+import { journalKey } from '@/lib/fincore-engine';
 import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
 import { FoundationModule } from '../modules/FoundationModule';
 import { SecurityModule } from '../modules/SecurityModule';
 import { OverviewModule } from '../modules/OverviewModule';
-import { FineCoreMastersModule } from '../modules/FineCoreMastersModule';
+import { FinCoreMastersModule } from '../modules/FinCoreMastersModule';
 import { TaxRateMasterPanel } from '@/pages/erp/accounting/TaxRateMaster';
 import { TDSSectionMasterPanel } from '@/pages/erp/accounting/TDSSectionMaster';
 import { TCSSectionMasterPanel } from '@/pages/erp/accounting/TCSSectionMaster';
@@ -35,8 +35,8 @@ import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfP
 import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
 import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
-import { AssetCentreMasterPanel } from '@/pages/erp/finecore/masters/AssetCentreMaster';
-import VoucherClassMasterPage from '@/pages/erp/finecore/masters/VoucherClassMaster';
+import { AssetCentreMasterPanel } from '@/pages/erp/fincore/masters/AssetCentreMaster';
+import VoucherClassMasterPage from '@/pages/erp/fincore/masters/VoucherClassMaster';
 import { ProjectCentreMasterPanel } from '@/pages/erp/projx/masters/ProjectCentreMaster';
 import { ParametricPanel } from '@/pages/erp/inventory/Parametric';
 import { BatchGridPanel } from '@/pages/erp/inventory/BatchGrid';
@@ -130,30 +130,30 @@ export type CommandCenterModule =
   | 'foundation'
   | 'geography'
   | 'org-structure'
-  | 'finecore-hub'
-  | 'finecore-tax-rates'
-  | 'finecore-tds'
-  | 'finecore-tcs'
-  | 'finecore-hsn-sac'
-  | 'finecore-professional-tax'
-  | 'finecore-epf-esi-lwf'
-  | 'finecore-income-tax'
-  | 'finecore-statutory-reg'
-  | 'finecore-gst-config'
-  | 'finecore-compliance-settings'
-  | 'finecore-production-config'
-  | 'finecore-finframe'
-  | 'finecore-ledgers'
-  | 'finecore-voucher-types'
-  | 'finecore-currency'
-  | 'finecore-transaction-templates'
-  | 'finecore-mode-of-payment'
-  | 'finecore-terms-of-payment'
-  | 'finecore-terms-of-delivery'
-  | 'finecore-fiscal-year'
-  | 'finecore-business-unit'
-  | 'finecore-asset-centres'
-  | 'finecore-voucher-class'
+  | 'fincore-hub'
+  | 'fincore-tax-rates'
+  | 'fincore-tds'
+  | 'fincore-tcs'
+  | 'fincore-hsn-sac'
+  | 'fincore-professional-tax'
+  | 'fincore-epf-esi-lwf'
+  | 'fincore-income-tax'
+  | 'fincore-statutory-reg'
+  | 'fincore-gst-config'
+  | 'fincore-compliance-settings'
+  | 'fincore-production-config'
+  | 'fincore-finframe'
+  | 'fincore-ledgers'
+  | 'fincore-voucher-types'
+  | 'fincore-currency'
+  | 'fincore-transaction-templates'
+  | 'fincore-mode-of-payment'
+  | 'fincore-terms-of-payment'
+  | 'fincore-terms-of-delivery'
+  | 'fincore-fiscal-year'
+  | 'fincore-business-unit'
+  | 'fincore-asset-centres'
+  | 'fincore-voucher-class'
   | 'projx-project-centres'
   | 'console'
   | 'inventory-parametric'
@@ -242,13 +242,13 @@ export default function CommandCenterPage() {
   const [activeModule, setActiveModule] = useState<CommandCenterModule>(() => {
     const hash = window.location.hash.replace('#', '');
     if (hash === 'core' || hash === 'foundation') return 'foundation';
-    if (['geography', 'console', 'finecore-hub',
-      'finecore-tax-rates', 'finecore-tds', 'finecore-tcs', 'finecore-hsn-sac',
-      'finecore-professional-tax', 'finecore-epf-esi-lwf', 'finecore-income-tax',
-      'finecore-statutory-reg', 'finecore-gst-config', 'finecore-compliance-settings', 'finecore-production-config',
+    if (['geography', 'console', 'fincore-hub',
+      'fincore-tax-rates', 'fincore-tds', 'fincore-tcs', 'fincore-hsn-sac',
+      'fincore-professional-tax', 'fincore-epf-esi-lwf', 'fincore-income-tax',
+      'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
-      'finecore-finframe', 'finecore-ledgers', 'finecore-voucher-types', 'finecore-currency', 'finecore-transaction-templates',
-      'finecore-mode-of-payment', 'finecore-terms-of-payment', 'finecore-terms-of-delivery', 'finecore-fiscal-year', 'finecore-business-unit', 'finecore-asset-centres', 'finecore-voucher-class', 'projx-project-centres',
+      'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -318,31 +318,31 @@ export default function CommandCenterPage() {
       case 'foundation': return <FoundationModule />;
       case 'geography': return <GeographyHubPanel />;
       case 'org-structure': return <OrgStructurePanel />;
-      case 'finecore-hub': return <FineCoreMastersModule onNavigate={handleNavigate} />;
-      case 'finecore-tax-rates': return <TaxRateMasterPanel />;
-      case 'finecore-tds': return <TDSSectionMasterPanel />;
-      case 'finecore-tcs': return <TCSSectionMasterPanel />;
-      case 'finecore-hsn-sac': return <HSNSACMasterPanel />;
-      case 'finecore-professional-tax': return <ProfessionalTaxMasterPanel />;
-      case 'finecore-epf-esi-lwf': return <EPFESILWFMasterPanel />;
-      case 'finecore-income-tax': return <IncomeTaxMasterPanel />;
-      case 'finecore-statutory-reg': return <StatutoryRegistrationsPanel />;
-      case 'finecore-gst-config': return <GSTEntityConfigPanel />;
-      case 'finecore-compliance-settings': return <ComplianceSettingsAutomationPanel />;
-      case 'finecore-production-config': return <ProductionConfigAutomationPanel />;
-      case 'finecore-finframe': return <FinFramePanel />;
-      case 'finecore-ledgers': return <LedgerMasterPanel />;
-      case 'finecore-voucher-types': return <VoucherTypesMasterPanel />;
-      case 'finecore-currency': return <CurrencyMasterPanel />;
-      case 'finecore-transaction-templates': return <TransactionTemplatesPanel />;
+      case 'fincore-hub': return <FinCoreMastersModule onNavigate={handleNavigate} />;
+      case 'fincore-tax-rates': return <TaxRateMasterPanel />;
+      case 'fincore-tds': return <TDSSectionMasterPanel />;
+      case 'fincore-tcs': return <TCSSectionMasterPanel />;
+      case 'fincore-hsn-sac': return <HSNSACMasterPanel />;
+      case 'fincore-professional-tax': return <ProfessionalTaxMasterPanel />;
+      case 'fincore-epf-esi-lwf': return <EPFESILWFMasterPanel />;
+      case 'fincore-income-tax': return <IncomeTaxMasterPanel />;
+      case 'fincore-statutory-reg': return <StatutoryRegistrationsPanel />;
+      case 'fincore-gst-config': return <GSTEntityConfigPanel />;
+      case 'fincore-compliance-settings': return <ComplianceSettingsAutomationPanel />;
+      case 'fincore-production-config': return <ProductionConfigAutomationPanel />;
+      case 'fincore-finframe': return <FinFramePanel />;
+      case 'fincore-ledgers': return <LedgerMasterPanel />;
+      case 'fincore-voucher-types': return <VoucherTypesMasterPanel />;
+      case 'fincore-currency': return <CurrencyMasterPanel />;
+      case 'fincore-transaction-templates': return <TransactionTemplatesPanel />;
       // T-H1.5-C-S1 — Supporting masters (CC-017/018/019/020)
-      case 'finecore-mode-of-payment': return <ModeOfPaymentMasterPanel />;
-      case 'finecore-terms-of-payment': return <TermsOfPaymentMasterPanel />;
-      case 'finecore-terms-of-delivery': return <TermsOfDeliveryMasterPanel />;
-      case 'finecore-fiscal-year': return <FiscalYearMasterPanel />;
-      case 'finecore-business-unit': return <BusinessUnitMasterPanel />;
-      case 'finecore-asset-centres': return <AssetCentreMasterPanel />;
-      case 'finecore-voucher-class': return <VoucherClassMasterPage />;
+      case 'fincore-mode-of-payment': return <ModeOfPaymentMasterPanel />;
+      case 'fincore-terms-of-payment': return <TermsOfPaymentMasterPanel />;
+      case 'fincore-terms-of-delivery': return <TermsOfDeliveryMasterPanel />;
+      case 'fincore-fiscal-year': return <FiscalYearMasterPanel />;
+      case 'fincore-business-unit': return <BusinessUnitMasterPanel />;
+      case 'fincore-asset-centres': return <AssetCentreMasterPanel />;
+      case 'fincore-voucher-class': return <VoucherClassMasterPage />;
       case 'projx-project-centres': return <ProjectCentreMasterPanel />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
@@ -460,7 +460,7 @@ const GROUP_LABELS: Partial<Record<CommandCenterModule, string>> = {
   foundation: 'Foundation & Core',
   geography: 'Geography',
   'org-structure': 'Organisation Structure',
-  'finecore-hub': 'Finance & Compliance',
+  'fincore-hub': 'Finance & Compliance',
   console: 'Security Console',
   'utility-import': 'Utilities',
   'opening-ledger-balances': 'Opening Balances',
@@ -468,7 +468,7 @@ const GROUP_LABELS: Partial<Record<CommandCenterModule, string>> = {
 };
 
 function getGroupLabel(m: CommandCenterModule): string {
-  if (m.startsWith('finecore-')) return 'Finance & Compliance';
+  if (m.startsWith('fincore-')) return 'Finance & Compliance';
   if (m.startsWith('projx-')) return 'Project Masters';
   if (m.startsWith('inventory-')) return 'Inventory Masters';
   if (m.startsWith('ph-')) return 'People Core';
@@ -489,13 +489,13 @@ function getModuleLabel(m: CommandCenterModule): string {
     geography: 'Geography',
     'org-structure': 'Business Units',
     console: 'Security Console',
-    'finecore-hub': 'Finance & Compliance Hub',
-    'finecore-ledgers': 'Ledger Master',
-    'finecore-finframe': 'FinFrame',
-    'finecore-gst-config': 'GST Config',
-    'finecore-compliance-settings': 'Compliance Settings & Automation',
-    'finecore-production-config': 'Production Configuration',
-    'finecore-asset-centres': 'Asset Centre Master',
+    'fincore-hub': 'Finance & Compliance Hub',
+    'fincore-ledgers': 'Ledger Master',
+    'fincore-finframe': 'FinFrame',
+    'fincore-gst-config': 'GST Config',
+    'fincore-compliance-settings': 'Compliance Settings & Automation',
+    'fincore-production-config': 'Production Configuration',
+    'fincore-asset-centres': 'Asset Centre Master',
     'projx-project-centres': 'Project Centre Master',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',

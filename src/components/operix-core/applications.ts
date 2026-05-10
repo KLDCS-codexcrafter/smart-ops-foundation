@@ -263,18 +263,18 @@ export const applications: AppDefinition[] = [
   },
   // ⚠️ Display name 'Fin Core' (with space) intentional · keep as-is
   {
-    id: 'finecore',
+    id: 'fincore',
     name: 'Fin Core',
     description: 'Accounting + inventory transactions · sales, purchase, payments, journals, voucher register. The financial heart of the ERP. India compliance baked in (GST/TDS/E-invoice).',
     category: 'Fin Hub',
-    route: '/erp/finecore',
+    route: '/erp/fincore',
     icon: 'Calculator',
     status: 'active',
   },
   {
     id: 'comply360',
     name: 'Comply360',
-    description: 'India + global statutory compliance · GST, TDS, TCS, E-invoice, E-way bill, ROC, MSME 43BH. Wraps existing FineCore compliance. Tier 4 deferred to Phase 1.4+.',
+    description: 'India + global statutory compliance · GST, TDS, TCS, E-invoice, E-way bill, ROC, MSME 43BH. Wraps existing FinCore compliance. Tier 4 deferred to Phase 1.4+.',
     category: 'Fin Hub',
     route: '/erp/comply360',
     icon: 'Shield',
@@ -387,7 +387,7 @@ export const applications: AppDefinition[] = [
   // InsightX is a read-only analytics layer for top management.
   // ALLOWED : read from any hook
   // FORBIDDEN: postVoucher(), cancelVoucher(), any localStorage.setItem(),
-  //            any import of write functions from finecore-engine.ts
+  //            any import of write functions from fincore-engine.ts
   // ─────────────────────────────────────────────────────────────────────────────
   {
     id: 'insightx',

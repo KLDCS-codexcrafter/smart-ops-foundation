@@ -2,11 +2,11 @@
  * useAssetCentres.ts — Asset Centre CRUD hook
  * Sprint T-Phase-1.1.2-pre · D-218 two-master architecture
  * Storage: assetCentresKey(entityCode) = erp_asset_centres_{entityCode}
- * [JWT] GET/POST/PUT/DELETE /api/finecore/asset-centres
+ * [JWT] GET/POST/PUT/DELETE /api/fincore/asset-centres
  */
 import { useState, useCallback } from 'react';
-import type { AssetCentre } from '@/types/finecore/asset-centre';
-import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
+import type { AssetCentre } from '@/types/fincore/asset-centre';
+import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/fincore/asset-centre';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 function ls<T>(key: string): T[] {
@@ -47,7 +47,7 @@ export function useAssetCentres(entityCode: string = DEFAULT_ENTITY_SHORTCODE) {
     const all = [...ls<AssetCentre>(key), ac];
     ss(key, all);
     setCentres(all);
-    // [JWT] POST /api/finecore/asset-centres
+    // [JWT] POST /api/fincore/asset-centres
     return ac;
   }, [key, entityCode]);
 
@@ -56,14 +56,14 @@ export function useAssetCentres(entityCode: string = DEFAULT_ENTITY_SHORTCODE) {
       ac.id === id ? { ...ac, ...patch, updated_at: new Date().toISOString() } : ac);
     ss(key, all);
     setCentres(all);
-    // [JWT] PATCH /api/finecore/asset-centres/:id
+    // [JWT] PATCH /api/fincore/asset-centres/:id
   }, [key]);
 
   const deleteAssetCentre = useCallback((id: string) => {
     const all = ls<AssetCentre>(key).filter(ac => ac.id !== id);
     ss(key, all);
     setCentres(all);
-    // [JWT] DELETE /api/finecore/asset-centres/:id
+    // [JWT] DELETE /api/fincore/asset-centres/:id
   }, [key]);
 
   const toggleActive = useCallback((id: string) => {

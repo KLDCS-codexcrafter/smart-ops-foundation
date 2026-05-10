@@ -17,12 +17,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Save, Send, CheckCircle2, XCircle, FilePlus2 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { NonFineCoreVoucherType } from '@/lib/non-finecore-voucher-type-registry';
+import type { NonFinCoreVoucherType } from '@/lib/non-fincore-voucher-type-registry';
 
 export type SaveButtonStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'posted' | 'cancelled' | undefined;
 
 interface Props {
-  voucherType: NonFineCoreVoucherType | null;
+  voucherType: NonFinCoreVoucherType | null;
   recordValue: number;
   recordStatus: SaveButtonStatus;
   userRoles: string[];

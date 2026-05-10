@@ -16,7 +16,7 @@ describe('audit-trail-engine · deep · MCA Rule 3(1)', () => {
       recordId, recordLabel: `JV/${recordId}`,
       beforeState: action === 'create' ? null : { v: 1 },
       afterState: { v: action === 'create' ? 1 : 2 },
-      sourceModule: 'finecore',
+      sourceModule: 'fincore',
     });
   }
 

@@ -45,7 +45,7 @@ import {
   postVoucher,
   vouchersKey,
   journalKey,
-} from '@/lib/finecore-engine';
+} from '@/lib/fincore-engine';
 import { computeTDS } from '@/lib/tds-engine';
 import {
   setPeriodLock,
@@ -760,7 +760,7 @@ describe('Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1', () => {
 
   it('A21 · generateDocNo uses FY-scoped storage key', async () => {
     cleanFYTEST();
-    const { generateDocNo } = await import('@/lib/finecore-engine');
+    const { generateDocNo } = await import('@/lib/fincore-engine');
     const fy = localFY();
     const docNo = generateDocNo('GRN', FYTEST);
     expect(docNo).toMatch(new RegExp(`^GRN/${fy}/0001$`));
@@ -772,7 +772,7 @@ describe('Sprint T-Phase-1.2.5h-a · Foundation Hardening Wave 1', () => {
     cleanFYTEST();
     // Seed legacy non-FY key
     localStorage.setItem(`erp_doc_seq_GRN_${FYTEST}`, '47');
-    const { generateDocNo } = await import('@/lib/finecore-engine');
+    const { generateDocNo } = await import('@/lib/fincore-engine');
     const fy = localFY();
     const docNo = generateDocNo('GRN', FYTEST);
     // Migration: legacy 47 → FY-scoped 47, then incremented to 48
@@ -812,7 +812,7 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
       entityCode: ENT, action: 'create', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001',
       beforeState: null, afterState: { id: 'V1', amount: 100 },
-      sourceModule: 'finecore',
+      sourceModule: 'fincore',
     });
     const raw = localStorage.getItem(auditTrailKey(ENT));
     expect(raw).toBeTruthy();
@@ -828,11 +828,11 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
     const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
     logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
-      afterState: { id: 'V1' }, sourceModule: 'finecore' });
+      afterState: { id: 'V1' }, sourceModule: 'fincore' });
     logAudit({ entityCode: ENT, action: 'post', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001',
       beforeState: { id: 'V1', status: 'draft' },
-      afterState: { id: 'V1', status: 'posted' }, sourceModule: 'finecore' });
+      afterState: { id: 'V1', status: 'posted' }, sourceModule: 'fincore' });
     const entries = readAuditTrail(ENT);
     expect(entries).toHaveLength(2);
     expect(entries.map(e => e.action).sort()).toEqual(['create', 'post']);
@@ -844,10 +844,10 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
     const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
     logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
-      afterState: {}, sourceModule: 'finecore' });
+      afterState: {}, sourceModule: 'fincore' });
     logAudit({ entityCode: ENT, action: 'cancel', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001', beforeState: {},
-      afterState: null, reason: 'duplicate', sourceModule: 'finecore' });
+      afterState: null, reason: 'duplicate', sourceModule: 'fincore' });
     const cancels = readAuditTrail(ENT, { action: 'cancel' });
     expect(cancels).toHaveLength(1);
     expect(cancels[0].reason).toBe('duplicate');
@@ -860,10 +860,10 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
     const { logAudit, readAuditTrail } = await import('@/lib/audit-trail-engine');
     logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'A', beforeState: null,
-      afterState: {}, sourceModule: 'finecore' });
+      afterState: {}, sourceModule: 'fincore' });
     logAudit({ entityCode: 'OTHER', action: 'create', entityType: 'voucher',
       recordId: 'V2', recordLabel: 'B', beforeState: null,
-      afterState: {}, sourceModule: 'finecore' });
+      afterState: {}, sourceModule: 'fincore' });
     expect(readAuditTrail(ENT)).toHaveLength(1);
     expect(readAuditTrail('OTHER')).toHaveLength(1);
     expect(readAuditTrail(ENT)[0].record_id).toBe('V1');
@@ -898,7 +898,7 @@ describe('Sprint T-Phase-1.2.5h-b1 · Government Compliance Audit Trail', () => 
     const { logAudit, readAuditTrail, exportAuditTrailCsv } = await import('@/lib/audit-trail-engine');
     logAudit({ entityCode: ENT, action: 'create', entityType: 'voucher',
       recordId: 'V1', recordLabel: 'JV/0001', beforeState: null,
-      afterState: { amount: 100 }, sourceModule: 'finecore' });
+      afterState: { amount: 100 }, sourceModule: 'fincore' });
     const csv = exportAuditTrailCsv(readAuditTrail(ENT));
     const lines = csv.split('\n');
     expect(lines.length).toBe(2); // header + 1 row

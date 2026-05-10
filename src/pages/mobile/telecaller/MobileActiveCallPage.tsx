@@ -29,7 +29,7 @@ import {
   type Enquiry, type EnquiryFollowUp, enquiriesKey,
 } from '@/types/enquiry';
 import { type WaTemplate, waTemplatesKey } from '@/types/wa-template';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 function readSession(): MobileSession | null {
   try {

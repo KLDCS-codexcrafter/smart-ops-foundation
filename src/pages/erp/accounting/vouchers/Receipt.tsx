@@ -3,7 +3,7 @@
  * Sprint 3C: TDS Deducted by Customer (26AS)
  * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
  * VoucherFormFooter, useEntityCode, useTenantConfig.
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
@@ -20,17 +20,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { SettlementPanel } from '@/components/finecore/SettlementPanel';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { SettlementPanel } from '@/components/fincore/SettlementPanel';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/fincore/pickers/PartyPicker';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import type { Voucher, BillReference, TDSReceivableLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
@@ -323,7 +323,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/receipt-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/receipt-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -575,7 +575,7 @@ export default function Receipt() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Receipt Voucher' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Receipt Voucher' }]} showDatePicker={false} showCompany={false} />
         <main><ReceiptPanel /></main>
       </div>
     </SidebarProvider>

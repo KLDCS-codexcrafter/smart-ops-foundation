@@ -40,7 +40,7 @@ export interface DeliveryMemo {
   created_by: string | null;
   delivered_at: string | null;
   pod_reference: string | null;
-  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FinCore Voucher pattern). */
   bill_to_address_id?: string | null;
   bill_to_address_snapshot?: string | null;
   bill_to_state_code?: string | null;

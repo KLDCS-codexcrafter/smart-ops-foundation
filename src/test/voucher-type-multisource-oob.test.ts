@@ -8,11 +8,11 @@ import {
   getDefaultVoucherTypeForFamily,
   findVoucherTypeById,
   DEFAULT_NON_FINECORE_VOUCHER_TYPES,
-} from '@/lib/non-finecore-voucher-type-registry';
+} from '@/lib/non-fincore-voucher-type-registry';
 import { resolveSources, hasMultipleSources, totalSourceAmount } from '@/types/multi-source-ref';
 import { findLastVoucher, stripForUseLast } from '@/lib/use-last-voucher-engine';
 
-describe('Non-FineCore Voucher Type Registry · Q1-b', () => {
+describe('Non-FinCore Voucher Type Registry · Q1-b', () => {
   it('VT1 · DEFAULT registry has at least 17 entries across all 10 families', () => {
     expect(DEFAULT_NON_FINECORE_VOUCHER_TYPES.length).toBeGreaterThanOrEqual(17);
     const families = new Set(DEFAULT_NON_FINECORE_VOUCHER_TYPES.map(vt => vt.family));

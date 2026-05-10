@@ -20,8 +20,8 @@ import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 import {
   buildInvoicePrintPayload, buildInvoiceExportRows, type InvoicePrintPayload,
 } from '@/lib/invoice-print-engine';
-import PrintToolbarExport from '@/components/finecore/print/PrintToolbarExport';
-import { vouchersKey } from '@/lib/finecore-engine';
+import PrintToolbarExport from '@/components/fincore/print/PrintToolbarExport';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
 import { loadPrintConfig } from '@/lib/print-config-storage';
@@ -55,7 +55,7 @@ export function SalesInvoicePrintPanel() {
     const vouchers = loadList<Voucher>(vouchersKey(entityCode));
     const v = vouchers.find(x => x.id === voucherId);
     if (!v) return;
-    // [JWT] GET /api/finecore/irn/:voucher_id
+    // [JWT] GET /api/fincore/irn/:voucher_id
     const irns = loadList<IRNRecord>(irnRecordsKey(entityCode));
     const irn = irns.find(r => r.voucher_id === voucherId && r.status === 'generated') ?? null;
     const supplierGst = loadOne<EntityGSTConfig>(

@@ -9,13 +9,13 @@
  *
  * INPUT        From + To ledgers (filtered to CASH/BANK groups), amount,
  *              instrument type + ref, narration.
- * OUTPUT       Posted Voucher via finecore-engine.postVoucher().
+ * OUTPUT       Posted Voucher via fincore-engine.postVoucher().
  *
  * DEPENDENCIES TallyVoucherHeader, LedgerPicker, VoucherFormFooter,
- *              useEntityCode, useTenantConfig, finecore-engine.
+ *              useEntityCode, useTenantConfig, fincore-engine.
  *
  * SPEC DOC     Sprint T10-pre.1a Session B — owner-flagged "Contra bug"
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
@@ -27,15 +27,15 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 
@@ -226,7 +226,7 @@ export function ContraEntryPanel({ onSaveDraft }: ContraEntryPanelProps) {
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/contra-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/contra-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -371,7 +371,7 @@ export default function ContraEntry() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Contra Entry' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Contra Entry' }]} showDatePicker={false} showCompany={false} />
         <main><ContraEntryPanel /></main>
       </div>
     </SidebarProvider>

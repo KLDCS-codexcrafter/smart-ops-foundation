@@ -1,6 +1,6 @@
 /**
  * DistributorHub.tsx — Tenant-internal hub for managing the distributor programme.
- * Sprint 10. Indigo-600 accent. Peer of SalesX/ReceivX/FineCore hubs.
+ * Sprint 10. Indigo-600 accent. Peer of SalesX/ReceivX/FinCore hubs.
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -107,7 +107,7 @@ export default function DistributorHub() {
       badge: 'Soon' },
     { title: 'Intimation Queue', icon: FileCheck,
       description: 'Verify payment intimations and convert to receipts',
-      route: '/erp/finecore/distributor-intimations' },
+      route: '/erp/fincore/distributor-intimations' },
     { title: 'Broadcast Console', icon: Megaphone,
       description: 'Fire WhatsApp / Email / In-portal messages by tier',
       route: '/erp/salesx/distributor-broadcast' },

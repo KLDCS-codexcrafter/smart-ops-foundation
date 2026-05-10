@@ -26,7 +26,7 @@
 import type { AdvanceEntry, AdvanceAdjustment } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
 
 // ── Storage helpers ──────────────────────────────────────────────

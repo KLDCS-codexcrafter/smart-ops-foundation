@@ -2,7 +2,7 @@
  * @file        git-engine.ts
  * @sprint      T-Phase-1.2.6f-c-1 · Block C · per D-284 GIT Stage 1 ownership
  * @purpose     Goods in Transit Stage 1 engine · Procure360 owns gate-receipt workflow.
- *              Stage 2 (final inventory) remains FineCore Receipt Note (SD-9 ZERO TOUCH).
+ *              Stage 2 (final inventory) remains FinCore Receipt Note (SD-9 ZERO TOUCH).
  * @decisions   D-284 · D-257 · D-127 · SD-9 · D-194
  * @reuses      po-management-engine · audit-trail-hash-chain
  * @[JWT]       POST /api/procure360/git-stage1

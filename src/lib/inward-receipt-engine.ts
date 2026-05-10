@@ -3,10 +3,10 @@
  * @sprint      T-Phase-1.2.6f-d-2-card6-6-pre-1 · Block B
  * @purpose     Inward Receipt CRUD + state machine + QualiCheck-driven quarantine routing.
  *              Pure engine · no React · sibling discipline (mirrors gateflow-engine.ts shape).
- * @decisions   D-127 (lives in src/lib/, NOT finecore-engine touched)
+ * @decisions   D-127 (lives in src/lib/, NOT fincore-engine touched)
  *              · D-128 (NOT a voucher; no GL post)
  *              · D-228 (UTH stamping)
- * @reuses      types/inward-receipt · finecore-engine.generateDocNo · audit-trail-hash-chain
+ * @reuses      types/inward-receipt · fincore-engine.generateDocNo · audit-trail-hash-chain
  * [JWT] POST /api/logistic/inward-receipts · PATCH /api/logistic/inward-receipts/:id/transition
  */
 
@@ -17,7 +17,7 @@ import type {
   InwardRoutingDecision,
 } from '@/types/inward-receipt';
 import { inwardReceiptsKey } from '@/types/inward-receipt';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 import {
   comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,

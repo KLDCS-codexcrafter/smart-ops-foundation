@@ -122,7 +122,7 @@ export interface DemoOutwardMemo {
   // marked lost/converted (instead of returned), triggering Marketing Expense voucher.
   pending_expense_voucher: boolean;
 
-  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FinCore Voucher pattern). */
   bill_to_address_id?: string | null;
   bill_to_address_snapshot?: string | null;
   bill_to_state_code?: string | null;

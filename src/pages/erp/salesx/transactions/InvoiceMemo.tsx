@@ -12,7 +12,7 @@
  *
  * D-127/D-128 ZERO-TOUCH: This component NEVER posts vouchers.
  * Status flow: draft → raised → invoice_posted.
- * Accounts (FineCore side · Phase 2) flips status to 'invoice_posted' after posting Sales Invoice.
+ * Accounts (FinCore side · Phase 2) flips status to 'invoice_posted' after posting Sales Invoice.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 // Sprint T-Phase-2.7-a · Batch C2 · GST + Bill/Ship mount
@@ -36,7 +36,7 @@ import { toast } from 'sonner';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';

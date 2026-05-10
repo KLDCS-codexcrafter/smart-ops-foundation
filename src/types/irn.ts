@@ -1,9 +1,9 @@
 /**
  * irn.ts — Invoice Reference Number (IRN) + E-Way Bill types
  * Sprint 9. Shape matches NIC IRP schema v1.1.0 (https://einv-apisandbox.nic.in).
- * [JWT] POST /api/finecore/irn/generate
- * [JWT] POST /api/finecore/irn/cancel
- * [JWT] POST /api/finecore/ewb/generate
+ * [JWT] POST /api/fincore/irn/generate
+ * [JWT] POST /api/fincore/irn/cancel
+ * [JWT] POST /api/fincore/ewb/generate
  */
 
 export type IRNStatus = 'pending' | 'generated' | 'cancelled' | 'failed';

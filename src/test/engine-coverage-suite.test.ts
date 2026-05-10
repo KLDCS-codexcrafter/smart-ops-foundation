@@ -12,7 +12,7 @@ import {
 } from '@/lib/consumption-intelligence-engine';
 import { classifyItemsABC, applyAbcClassification } from '@/lib/abc-classification-engine';
 import { getItemMovementHistory } from '@/lib/item-movement-engine';
-import { generateDocNo, getCurrentFY } from '@/lib/finecore-engine';
+import { generateDocNo, getCurrentFY } from '@/lib/fincore-engine';
 import type { InventoryItem } from '@/types/inventory-item';
 
 const ENT = 'TST';

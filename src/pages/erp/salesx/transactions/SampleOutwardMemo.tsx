@@ -28,7 +28,7 @@ import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
 import { computeIRNLockState } from '@/lib/irn-lock-engine';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';

@@ -41,7 +41,7 @@ function getUserName(): string {
 const QUICK_ACTIONS = [
   { icon: Building2, label: 'Entity Setup', module: 'foundation' as CommandCenterModule },
   { icon: Globe, label: 'Geography', module: 'geography' as CommandCenterModule },
-  { icon: Landmark, label: 'FineCore Masters', module: 'finecore-hub' as CommandCenterModule },
+  { icon: Landmark, label: 'FinCore Masters', module: 'fincore-hub' as CommandCenterModule },
   { icon: Terminal, label: 'Security Console', module: 'console' as CommandCenterModule },
 ];
 
@@ -135,7 +135,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
                   Start with Parent Company
                 </button>
                 <button
-                  onClick={() => onNavigate('finecore-currency')}
+                  onClick={() => onNavigate('fincore-currency')}
                   className="px-3 py-1.5 rounded-lg bg-background border border-border text-xs font-medium hover:bg-accent transition-colors"
                 >
                   Configure Currency

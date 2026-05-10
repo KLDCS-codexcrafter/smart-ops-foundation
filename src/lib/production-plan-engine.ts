@@ -16,7 +16,7 @@ import type {
   CapacityCheckStatus,
 } from '@/types/production-plan';
 import { productionPlansKey } from '@/types/production-plan';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { runCapacityCheck as runCapacityCheckPlanOps } from '@/lib/capacity-planning-engine';
 
 // ════════════════════════════════════════════════════════════════════

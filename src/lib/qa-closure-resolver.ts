@@ -3,11 +3,11 @@
  * @sprint      T-Phase-1.2.6f-d-2-card5-5-pre-2 · Block B · D-338 (Q1=a · Q2=a)
  * @purpose     Replaces 5-pre-1 triggerInspectionClosure stub. On QA inspection completion,
  *              creates up to 3 Stock Journal vouchers (Quarantine→Approved · Quarantine→Sample
- *              · Quarantine→Rejection) via finecore-engine.postVoucher API.
+ *              · Quarantine→Rejection) via fincore-engine.postVoucher API.
  *              SIBLING DISCIPLINE: matches D-309 gateflow-git-bridge pattern.
  *              D-128 voucher schema BYTE-IDENTICAL preserved.
  * @reuses      qa-inspection-engine.getQaInspection (read-only · CORE preserved)
- *              · finecore-engine.postVoucher (existing public API)
+ *              · fincore-engine.postVoucher (existing public API)
  *              · ComplianceSettingsAutomation.constants comply360QCKey + 4 godown IDs (D-337)
  *              · audit-trail-hash-chain.appendAuditEntry
  * @[JWT]       POST /api/qa/closure/route
@@ -15,7 +15,7 @@
 
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { QaInspectionRecord } from '@/types/qa-inspection';
-import { postVoucher } from '@/lib/finecore-engine';
+import { postVoucher } from '@/lib/fincore-engine';
 import { getQaInspection } from '@/lib/qa-inspection-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 import {

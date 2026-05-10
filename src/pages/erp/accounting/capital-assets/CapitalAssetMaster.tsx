@@ -29,7 +29,7 @@ import { onEnterNext } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import type { AssetUnitRecord, AssetUnitLine, ITActBlock } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 

@@ -2,7 +2,7 @@
  * GRNEntry.tsx — Goods Receipt Note transaction
  * Sprint T-Phase-1.2.1 · Inventory Hub · Tier 1 Card #2 sub-sprint 1/3
  *
- * D-127: lives in inventory/ NOT finecore/. GRN is an authorization document, not a voucher.
+ * D-127: lives in inventory/ NOT fincore/. GRN is an authorization document, not a voucher.
  * Stock balance updated in localStorage on Post.
  * [JWT] POST /api/inventory/grn/:id/post
  */
@@ -41,7 +41,7 @@ import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';

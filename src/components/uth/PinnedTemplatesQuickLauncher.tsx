@@ -99,7 +99,7 @@ export function PinnedTemplatesQuickLauncher({ entityCode, voucherTypeId, onClon
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => navigate('/erp/finecore/pinned-templates')}>
+          <DropdownMenuItem onSelect={() => navigate('/erp/fincore/pinned-templates')}>
             View All Templates →
           </DropdownMenuItem>
         </DropdownMenuContent>

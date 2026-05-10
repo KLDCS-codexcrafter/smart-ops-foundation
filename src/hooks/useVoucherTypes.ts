@@ -86,7 +86,7 @@ export function useVoucherTypes() {
       recordId: id, recordLabel: vt.name,
       beforeState: { ...vt } as unknown as Record<string, unknown>,
       afterState: { ...vt, ...patch } as unknown as Record<string, unknown>,
-      sourceModule: 'finecore',
+      sourceModule: 'fincore',
     });
     // [JWT] PUT /api/accounting/voucher-types/:id
   };

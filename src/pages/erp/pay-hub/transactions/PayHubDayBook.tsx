@@ -1,6 +1,6 @@
 /**
  * PayHubDayBook.tsx — Pay Hub activity log panel (ph-daybook)
- * Mirrors FineCore DayBook layout. Reads payroll runs via useDayBook(entityCode, 'people').
+ * Mirrors FinCore DayBook layout. Reads payroll runs via useDayBook(entityCode, 'people').
  */
 import { useState, useMemo } from 'react';
 import { BookOpen, Download, FileText } from 'lucide-react';
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDayBook } from '@/hooks/useDayBook';
 import { onEnterNext } from '@/lib/keyboard';
-import { inr, fmtDate, today, exportCSV } from '@/pages/erp/finecore/reports/reportUtils';
+import { inr, fmtDate, today, exportCSV } from '@/pages/erp/fincore/reports/reportUtils';
 
 interface PayHubDayBookPanelProps {
   entityCode: string;

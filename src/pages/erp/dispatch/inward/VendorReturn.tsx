@@ -98,7 +98,7 @@ export function VendorReturnPanel() {
         </div>
         <div>
           <h1 className="text-xl font-bold">Vendor Return (RTV)</h1>
-          <p className="text-xs text-muted-foreground">Returns to vendor · QA-driven · Debit Note via FineCore</p>
+          <p className="text-xs text-muted-foreground">Returns to vendor · QA-driven · Debit Note via FinCore</p>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 /**
  * DeliveryNote.tsx — Full Delivery Note form with SAM injection (Sprint 5)
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
@@ -11,10 +11,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Send, ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
-import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
+import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -382,7 +382,7 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   }, []);
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/delivery-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=consignee`;
+      const url = `/erp/fincore/delivery-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=consignee`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);
@@ -633,7 +633,7 @@ export default function DeliveryNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Delivery Note' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Delivery Note' }]} showDatePicker={false} />
         <main>{entityCode ? <DeliveryNotePanel /> : <SelectCompanyGate title="Select a company to create a Delivery Note" />}</main>
       </div>
     </SidebarProvider>

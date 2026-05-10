@@ -1,9 +1,9 @@
 /**
- * @file     multi-source-ref.ts — Multi-source reference type for non-FineCore transactions
+ * @file     multi-source-ref.ts — Multi-source reference type for non-FinCore transactions
  * @sprint   T-Phase-1.2.6e-tally-1 · Q2-c · purely additive (don't break existing single refs)
  * @purpose  Tally-Prime parity: 1 GRN against multiple POs · 1 IM against multiple DMs · etc.
  *
- *   Re-exports the FineCore BillReference shape so non-FineCore transactions
+ *   Re-exports the FinCore BillReference shape so non-FinCore transactions
  *   carry the same structure (auditor consistency · cross-card reports work).
  *
  *   D-128 SIBLING DISCIPLINE: we IMPORT the type · do NOT modify voucher.ts.
@@ -11,7 +11,7 @@
 
 import type { BillReference } from '@/types/voucher';
 
-/** Re-export under domain-friendly name · same shape as FineCore's. */
+/** Re-export under domain-friendly name · same shape as FinCore's. */
 export type MultiSourceRef = BillReference;
 
 /** Helper: is this transaction multi-source? */

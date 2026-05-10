@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 import { getLogisticSession, recordLogisticActivity } from '@/lib/logistic-auth-engine';
 import { lrAcceptancesKey, type LRAcceptance } from '@/types/logistic-portal';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 
 function ageDays(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));

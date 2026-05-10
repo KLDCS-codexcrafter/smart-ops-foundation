@@ -1,7 +1,7 @@
 /**
  * demo-transactions-salesx.ts — 60-90 days of Sales Invoices + Receipts
  * Writes to erp_group_vouchers_{e} and erp_outstanding_{e} (additive).
- * [JWT] POST /api/finecore/vouchers, POST /api/accounting/outstanding
+ * [JWT] POST /api/fincore/vouchers, POST /api/accounting/outstanding
  */
 import { customersForArchetype, type DemoArchetype } from '@/data/demo-customers-vendors';
 import { itemsForArchetype } from '@/data/demo-items-master';

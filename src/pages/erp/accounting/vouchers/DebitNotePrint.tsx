@@ -11,7 +11,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PrintSheetFrame } from '@/components/finecore/print/PrintSheetFrame';
+import { PrintSheetFrame } from '@/components/fincore/print/PrintSheetFrame';
 import {
   buildDebitNotePrintPayload, DEBIT_NOTE_COPY_CONFIG,
   formatINR, formatDDMMMYYYY,

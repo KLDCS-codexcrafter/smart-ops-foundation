@@ -56,7 +56,7 @@ export function FinFramePanel() {
     setUserGroups(groups);
     // [JWT] PATCH /api/accounting/finframe
     localStorage.setItem('erp_group_finframe_l4_groups', JSON.stringify(groups));
-    // [JWT] Replace with sync to /api/group/finecore/account-groups
+    // [JWT] Replace with sync to /api/group/fincore/account-groups
   };
 
   // Tree expand state
@@ -672,7 +672,7 @@ export default function FinFrame() {
           <ERPHeader
             breadcrumbs={[
               { label: 'Operix Core', href: '/erp/dashboard' },
-              { label: 'FineCore', href: '/erp/accounting' },
+              { label: 'FinCore', href: '/erp/accounting' },
               { label: 'FinFrame' },
             ]}
             showDatePicker={false}

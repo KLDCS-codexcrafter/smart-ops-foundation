@@ -1,7 +1,7 @@
 /**
  * @file        RequestXVoucherTypesMaster.tsx
  * @sprint      T-Phase-1.2.6f-pre-2 · Block F
- * @purpose     Edit RequestX voucher types · reads from non-finecore registry · D-128 sibling.
+ * @purpose     Edit RequestX voucher types · reads from non-fincore registry · D-128 sibling.
  */
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,25 +15,25 @@ import { Pencil, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
-  getNonFineCoreVoucherTypes, saveNonFineCoreVoucherTypes,
-  type NonFineCoreVoucherType,
-} from '@/lib/non-finecore-voucher-type-registry';
+  getNonFinCoreVoucherTypes, saveNonFinCoreVoucherTypes,
+  type NonFinCoreVoucherType,
+} from '@/lib/non-fincore-voucher-type-registry';
 import { inrFmt } from '@/lib/requestx-report-engine';
 
 export function RequestXVoucherTypesMasterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [types, setTypes] = useState<NonFineCoreVoucherType[]>([]);
-  const [editing, setEditing] = useState<NonFineCoreVoucherType | null>(null);
+  const [types, setTypes] = useState<NonFinCoreVoucherType[]>([]);
+  const [editing, setEditing] = useState<NonFinCoreVoucherType | null>(null);
 
   useEffect(() => {
-    setTypes(getNonFineCoreVoucherTypes(entityCode));
+    setTypes(getNonFinCoreVoucherTypes(entityCode));
   }, [entityCode]);
 
   const requestTypes = types.filter(t => t.family === 'request');
 
-  const persist = (next: NonFineCoreVoucherType[]): void => {
+  const persist = (next: NonFinCoreVoucherType[]): void => {
     setTypes(next);
-    saveNonFineCoreVoucherTypes(entityCode, next);
+    saveNonFinCoreVoucherTypes(entityCode, next);
   };
 
   const saveEditing = (): void => {

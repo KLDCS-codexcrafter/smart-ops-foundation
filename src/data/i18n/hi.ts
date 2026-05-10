@@ -256,7 +256,7 @@ export const hi: Record<string, string> = {
   'projx.title': 'प्रोजेक्ट हब',
   'projx.project_entry.title': 'परियोजना प्रविष्टि',
   'projx.milestone_tracker.title': 'माइलस्टोन ट्रैकर',
-  'finecore.title': 'फाइनकोर',
+  'fincore.title': 'फाइनकोर',
   'comp.audit_trail.title': 'ऑडिट ट्रेल रिपोर्ट',
   'comp.monthly_production.title': 'मासिक उत्पादन लेखे',
   'foundation.entity_hub.title': 'इकाई हब',

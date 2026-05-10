@@ -103,7 +103,7 @@ export interface Quotation {
   project_id: string | null;
 
   is_active: boolean;
-  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FinCore Voucher pattern). */
   bill_to_address_id?: string | null;
   bill_to_address_snapshot?: string | null;
   bill_to_state_code?: string | null;

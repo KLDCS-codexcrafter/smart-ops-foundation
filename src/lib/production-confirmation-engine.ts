@@ -16,7 +16,7 @@ import type {
 import { productionConfirmationsKey } from '@/types/production-confirmation';
 import type { ProductionOrder, ProductionOrderStatusEvent } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { resolveFGOutputGodown } from '@/lib/production-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';

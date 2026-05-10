@@ -3,8 +3,8 @@
  * @purpose  Monthly Interest Accrual engine. On the EMI billing day of each
  *           month, walks all active Borrowing ledgers and posts:
  *             DR Interest Expense   /   CR <Lender>
- *           for that month's interestPortion. Pure consumer of FineCore's
- *           postVoucher() — does not modify finecore-engine.ts.
+ *           for that month's interestPortion. Pure consumer of FinCore's
+ *           postVoucher() — does not modify fincore-engine.ts.
  *
  *           Idempotency key: 'YYYY-MM' per (ledger, action='monthly_interest').
  *           Running twice for the same month is a no-op.
@@ -13,7 +13,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { EMIScheduleLiveRow } from '../lib/emi-lifecycle-engine';
 import {
   resolveExpenseLedger,
@@ -148,7 +148,7 @@ export function planMonthlyAccrual(asOfDate: string, ledgerIdFilter?: string): A
 /**
  * Commit the monthly accrual run. Idempotent — items previously logged
  * are skipped. Returns counts + any per-ledger errors. All postings emit
- * standard FineCore Journal vouchers via postVoucher().
+ * standard FinCore Journal vouchers via postVoucher().
  */
 export function commitMonthlyAccrual(asOfDate: string, entityCode: string): AccrualRunResult {
   const result: AccrualRunResult = { posted: 0, skipped: 0, errors: [] };

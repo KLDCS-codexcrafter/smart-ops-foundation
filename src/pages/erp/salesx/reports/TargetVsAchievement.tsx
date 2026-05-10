@@ -15,7 +15,7 @@ import { Search } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
 import Decimal from 'decimal.js';

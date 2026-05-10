@@ -5,16 +5,16 @@
  *              Live computation from voucher inventory_lines · NO new storage key.
  *              D-128 ZERO TOUCH · reads vouchersKey · iterates VoucherInventoryLine.
  * @decisions   D-298 · D-128 (voucher schemas ZERO TOUCH · we READ only) · D-194
- * @reuses      vouchersKey (finecore-engine) · Voucher · VoucherInventoryLine (types/voucher)
+ * @reuses      vouchersKey (fincore-engine) · Voucher · VoucherInventoryLine (types/voucher)
  *              · types/location-reorder-rule
  * @consumers   Block B · StoreHubPage 3 panels.
- * @notes       Direction is derived from base_voucher_type (matches finecore-engine
+ * @notes       Direction is derived from base_voucher_type (matches fincore-engine
  *              isOutward heuristic) since VoucherInventoryLine has no direction field.
  *              Reorder threshold uses LocationReorderRule.min_stock (no reorder_level field).
  */
 
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { LocationReorderRule } from '@/types/location-reorder-rule';
 
 // ============================================================
@@ -62,7 +62,7 @@ export interface DemandForecast {
 
 // ============================================================
 // DIRECTION RESOLVER · derived from base_voucher_type (D-128 zero-touch READ)
-// Matches finecore-engine.ts:345 isOutward heuristic, generalised for inward types.
+// Matches fincore-engine.ts:345 isOutward heuristic, generalised for inward types.
 // ============================================================
 
 const OUTWARD_TYPES: ReadonlySet<string> = new Set([

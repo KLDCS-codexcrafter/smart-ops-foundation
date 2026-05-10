@@ -12,7 +12,7 @@ import {
 } from '@/data/masters-seed-data';
 import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
 // Sprint T-Phase-1.2.6f-pre-1 · RequestX wiring (sibling additions only)
-import { DEFAULT_NON_FINECORE_VOUCHER_TYPES, nonFineCoreVoucherTypesKey } from '@/lib/non-finecore-voucher-type-registry';
+import { DEFAULT_NON_FINECORE_VOUCHER_TYPES, nonFinCoreVoucherTypesKey } from '@/lib/non-fincore-voucher-type-registry';
 import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } from '@/data/demo-requestx-data';
 import { materialIndentsKey } from '@/types/material-indent';
 import { serviceRequestsKey } from '@/types/service-request';
@@ -270,7 +270,7 @@ const createDefaultLedgers = (opts: SetupOptions): number => {
   const updated = [...existing, ...toCreate];
   // [JWT] POST /api/entities/setup/:entityId
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(updated));
-  // [JWT] POST /api/group/finecore/ledger-definitions/bulk
+  // [JWT] POST /api/group/fincore/ledger-definitions/bulk
 
   // Auto-create entity instances for ALL registered entities
   const entities = loadEntities();
@@ -348,7 +348,7 @@ const loadIndustryPack = (businessActivity: string): number => {
     // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem('erp_group_finframe_l4_groups',
       JSON.stringify([...existing, ...toCreate]));
-    // [JWT] POST /api/group/finecore/account-groups/bulk
+    // [JWT] POST /api/group/fincore/account-groups/bulk
   }
   return toCreate.length;
 };
@@ -419,7 +419,7 @@ const createBDLedgers = (opts: SetupOptions): number => {
     // [JWT] POST /api/entities/setup/:entityId
     localStorage.setItem('erp_group_ledger_definitions',
       JSON.stringify([...all, ...toCreate]));
-    // [JWT] POST /api/group/finecore/ledger-definitions/bulk
+    // [JWT] POST /api/group/fincore/ledger-definitions/bulk
   }
   return opts.siblingEntities.length;
 };
@@ -447,10 +447,10 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     }
   } catch { /* ignore */ }
 
-  // 2c. Sprint T-Phase-1.2.6f-pre-1 — Seed Non-FineCore voucher types (RequestX + sibling families).
+  // 2c. Sprint T-Phase-1.2.6f-pre-1 — Seed Non-FinCore voucher types (RequestX + sibling families).
   try {
-    // [JWT] POST /api/voucher-types/non-finecore/bulk-seed
-    const nfcKey = nonFineCoreVoucherTypesKey(opts.shortCode);
+    // [JWT] POST /api/voucher-types/non-fincore/bulk-seed
+    const nfcKey = nonFinCoreVoucherTypesKey(opts.shortCode);
     if (!localStorage.getItem(nfcKey)) {
       localStorage.setItem(nfcKey, JSON.stringify(DEFAULT_NON_FINECORE_VOUCHER_TYPES));
       }

@@ -19,7 +19,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { mountQaBridge } from '@/lib/bill-passing-qa-bridge';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
-import { journalKey } from '@/lib/finecore-engine';
+import { journalKey } from '@/lib/fincore-engine';
 import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
 import type { Procure360Module } from './Procure360Sidebar.types';
 import {
@@ -218,7 +218,7 @@ function buildBreadcrumbs(activeModule: Procure360Module): BreadcrumbEntry[] {
 
 function computeLastEntryLabel(entityCode: string): string | undefined {
   try {
-    // [JWT] GET /api/finecore/journal — localStorage-backed in Phase 1
+    // [JWT] GET /api/fincore/journal — localStorage-backed in Phase 1
     const raw = localStorage.getItem(journalKey(entityCode));
     if (!raw) return undefined;
     const entries: Array<{ created_at: string }> = JSON.parse(raw);

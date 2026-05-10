@@ -113,7 +113,7 @@ function loadItems(): ItemLite[] {
 // Sprint T-Phase-1.2.6a · UTS doc-no consolidation (D-226).
 // New records use generateDocNo('SEC', entityCode) for FY-scoped sequencing.
 // Existing records keep their secondary_code as-is (backward compat).
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { UseLastVoucherButton } from '@/components/uth/UseLastVoucherButton';
 function nextSecondaryCode(_existing: SecondarySales[], entityCode: string): string {
   return generateDocNo('SEC', entityCode);

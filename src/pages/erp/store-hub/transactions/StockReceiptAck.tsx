@@ -192,7 +192,7 @@ export function StockReceiptAckPanel(): JSX.Element {
               size="sm"
               disabled={busy}
               onClick={() => navigate(
-                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+                `/erp/fincore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
               )}
             >
               <Printer className="h-3.5 w-3.5 mr-1" /> Print

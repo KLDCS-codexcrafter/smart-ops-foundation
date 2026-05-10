@@ -1,6 +1,6 @@
 /**
  * DebitNote.tsx — Full Debit Note form
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
@@ -12,13 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
-import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
-import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
-import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
-import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
+import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
+import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
+import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -121,7 +121,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/debit-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/debit-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -212,7 +212,7 @@ export default function DebitNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Debit Note' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Debit Note' }]} showDatePicker={false} />
         <main>{entityCode ? <DebitNotePanel /> : <SelectCompanyGate title="Select a company to create a Debit Note" />}</main>
       </div>
     </SidebarProvider>

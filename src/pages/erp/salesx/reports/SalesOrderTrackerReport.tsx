@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table';
 import { ChevronDown, ChevronRight, Search, ClipboardList, ArrowRight } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';

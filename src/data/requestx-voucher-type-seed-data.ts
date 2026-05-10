@@ -1,11 +1,11 @@
 /**
  * @file        requestx-voucher-type-seed-data.ts
  * @sprint      T-Phase-1.2.6f-pre-1
- * @purpose     Seed 3 RequestX voucher types (sibling to non-finecore registry · D-128 discipline).
+ * @purpose     Seed 3 RequestX voucher types (sibling to non-fincore registry · D-128 discipline).
  */
-import type { NonFineCoreVoucherType } from '@/lib/non-finecore-voucher-type-registry';
+import type { NonFinCoreVoucherType } from '@/lib/non-fincore-voucher-type-registry';
 
-export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFineCoreVoucherType[] = [
+export const REQUESTX_VOUCHER_TYPE_SEEDS: NonFinCoreVoucherType[] = [
   {
     id: 'vt-material-indent',
     family: 'request',

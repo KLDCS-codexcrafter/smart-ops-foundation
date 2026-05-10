@@ -3,7 +3,7 @@
  *
  * Sprint T-Phase-1.2.6a · Card #2.6 sub-sprint 1 of 5 · D-226 UTS Foundation
  *
- * Sibling abstraction. Voucher prints continue to use FineCore's print
+ * Sibling abstraction. Voucher prints continue to use FinCore's print
  * components; non-voucher consumers (GRN, MIN, RTV, Quotation, ...) wrap
  * their content in this frame to satisfy UTS dimension #8 (print parity).
  *

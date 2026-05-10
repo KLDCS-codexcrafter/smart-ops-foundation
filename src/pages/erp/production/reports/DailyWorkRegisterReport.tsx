@@ -41,7 +41,7 @@ export function DailyWorkRegisterReportPanel(): JSX.Element {
     <div className="p-6 space-y-4">
       <button
         type="button"
-        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        onClick={() => navigate('/erp/command-center?module=fincore-production-config')}
         className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 flex items-center justify-between"
       >
         <span>ⓘ DWR settings live in Command Center → Production Configuration</span>

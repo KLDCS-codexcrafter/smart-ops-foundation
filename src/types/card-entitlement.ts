@@ -7,7 +7,7 @@
 
 export type CardId =
   | 'command-center' | 'salesx' | 'distributor-hub' | 'customer-hub'
-  | 'finecore' | 'receivx' | 'peoplepay' | 'payout' | 'insightx'
+  | 'fincore' | 'receivx' | 'peoplepay' | 'payout' | 'insightx'
   | 'procure360' | 'inventory-hub' | 'qulicheak' | 'gateflow'
   | 'production' | 'maintainpro' | 'requestx' | 'frontdesk'
   | 'servicedesk'
@@ -50,7 +50,7 @@ export type UserRole =
 export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   super_admin: [],
   tenant_admin: [],
-  finance: ['finecore', 'receivx', 'payout', 'insightx', 'command-center'],
+  finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center'],
   sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx'],
   operations: ['procure360', 'inventory-hub', 'production', 'qulicheak', 'gateflow',
     'maintainpro', 'requestx', 'logistics', 'dispatch-hub'],

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Quotation, QuotationItem } from '@/types/quotation';
 import { quotationsKey } from '@/types/quotation';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 function load(entityCode: string): Quotation[] {
   try {

@@ -1,6 +1,6 @@
 /**
  * @file     period-lock-engine.ts
- * @purpose  Period-lock storage + validation primitive. Used by finecore-engine
+ * @purpose  Period-lock storage + validation primitive. Used by fincore-engine
  *           validateVoucher() to reject voucher posting beyond locked accounting periods.
  * @who      Operix Engineering
  * @when     Apr-2026
@@ -8,7 +8,7 @@
  * @iso      Functional Suitability (HIGH+ year-end close firewall)
  *           Reliability (HIGH+ prevents fiscal-year drift)
  *           Compatibility (HIGH+ Phase 2 backend can swap localStorage for REST)
- * @whom     finecore-engine.ts validateVoucher · PeriodLockSettings.tsx admin UI · auditors
+ * @whom     fincore-engine.ts validateVoucher · PeriodLockSettings.tsx admin UI · auditors
  * @depends  none (pure logic + localStorage)
  *
  * D-127 STORAGE-KEY CONVENTION:

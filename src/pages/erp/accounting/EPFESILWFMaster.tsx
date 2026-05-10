@@ -232,7 +232,7 @@ export function EPFESILWFMasterPanel() {
             variant="outline"
             className="gap-2"
             onClick={() => {
-              window.location.hash = 'finecore-income-tax';
+              window.location.hash = 'fincore-income-tax';
               window.dispatchEvent(new HashChangeEvent('hashchange'));
             }}
           >
@@ -251,7 +251,7 @@ export default function EPFESILWFMaster() {
         <ERPHeader
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'FineCore', href: '/erp/accounting' },
+            { label: 'FinCore', href: '/erp/accounting' },
             { label: 'Payroll Statutory Reference' },
           ]}
           showDatePicker={false} showCompany={false}

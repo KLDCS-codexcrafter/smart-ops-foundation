@@ -3,8 +3,8 @@
  * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-2 · Block A · D-306 · D-308
  * @purpose     Weighbridge Ticket CRUD + 5-state machine + net computation.
  *              Manual entry + photo proof (Q1=A) · NO hardware integration.
- *              Doc-no via finecore-engine.generateDocNo with 'WB' prefix (D-308).
- * @reuses      types/weighbridge-ticket · finecore-engine.generateDocNo
+ *              Doc-no via fincore-engine.generateDocNo with 'WB' prefix (D-308).
+ * @reuses      types/weighbridge-ticket · fincore-engine.generateDocNo
  *              · decimal-helpers (dSub · round2) · audit-trail-hash-chain
  * [JWT] POST /api/weighbridge/tickets · PATCH /api/weighbridge/tickets/:id/weigh-in|weigh-out|close
  */
@@ -13,7 +13,7 @@ import type {
   WeighbridgeTicket, WeighbridgeTicketStatus,
 } from '@/types/weighbridge-ticket';
 import { weighbridgeTicketsKey } from '@/types/weighbridge-ticket';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { dSub, round2 } from '@/lib/decimal-helpers';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 

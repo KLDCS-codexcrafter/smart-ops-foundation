@@ -1,6 +1,6 @@
 /**
  * secondary-sales.ts — Distributor sell-through to sub-dealers/retailers
- * Sprint 7. Primary sale = your sale TO distributor (FineCore Sales Invoice).
+ * Sprint 7. Primary sale = your sale TO distributor (FinCore Sales Invoice).
  * Secondary sale = distributor's sale FROM their stock to the next tier.
  * No accounting impact — informs forecasting, scheme payouts, trade promo.
  * [JWT] GET/POST /api/salesx/secondary-sales

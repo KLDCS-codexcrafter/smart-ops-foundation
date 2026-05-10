@@ -8,10 +8,10 @@
  *              per-line via the Explode button on consumption rows.
  *
  * INPUT        onSaveDraft callback from FinCorePage's draft tray
- * OUTPUT       Posted Voucher via finecore-engine.postVoucher().
+ * OUTPUT       Posted Voucher via fincore-engine.postVoucher().
  *
  * DEPENDENCIES TallyVoucherHeader, BOMPicker, useBOM, useEntityCode,
- *              useVoucherEntityGuard, useTenantConfig, finecore-engine,
+ *              useVoucherEntityGuard, useTenantConfig, fincore-engine,
  *              LedgerPicker, DepartmentPicker, ManufacturingJournalLineGrid.
  *
  * TALLY-ON-TOP Honors accounting_mode. Emits via eventBus when in tally_bridge
@@ -33,23 +33,23 @@ import { Factory, Layers, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { DepartmentPicker } from '@/components/finecore/pickers/DepartmentPicker';
-import { BOMPicker } from '@/components/finecore/pickers/BOMPicker';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { DepartmentPicker } from '@/components/fincore/pickers/DepartmentPicker';
+import { BOMPicker } from '@/components/fincore/pickers/BOMPicker';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import {
   ManufacturingJournalLineGrid,
   type ManufacturingJournalLine,
-} from '@/components/finecore/ManufacturingJournalLineGrid';
+} from '@/components/fincore/ManufacturingJournalLineGrid';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { useBOM } from '@/hooks/useBOM';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { Bom } from '@/types/bom';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 
 interface ManufacturingJournalPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -218,7 +218,7 @@ export function ManufacturingJournalPanel({ onSaveDraft }: ManufacturingJournalP
 
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/mfg-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      const url = `/erp/fincore/mfg-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);

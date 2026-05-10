@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
-import { vouchersKey, generateDocNo } from '@/lib/finecore-engine';
+import { vouchersKey, generateDocNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';

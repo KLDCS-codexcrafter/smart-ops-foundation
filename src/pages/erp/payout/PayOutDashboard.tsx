@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Wallet, Clock, AlertTriangle, ArrowRightCircle, Plus, ListChecks } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 // [T-T8.5-MSME-Compliance] live 43B(h) breach count for MSME Alerts KPI
 import { compute43BhSummary } from '@/lib/msme-43bh-engine';

@@ -139,7 +139,7 @@ export function FiscalYearMasterPanel() {
           <div className="flex items-center gap-2 mb-1">
             <Calendar className="h-5 w-5 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Fiscal Year Calendar</h1>
-            <Badge className="text-[10px] bg-indigo-500/10 text-indigo-600 border-indigo-500/20">FineCore</Badge>
+            <Badge className="text-[10px] bg-indigo-500/10 text-indigo-600 border-indigo-500/20">FinCore</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
             12-period FY calendar with lock-period and close-FY governance for entity{' '}

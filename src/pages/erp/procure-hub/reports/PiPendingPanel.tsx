@@ -1,6 +1,6 @@
 /**
  * @file        PiPendingPanel.tsx
- * @purpose     PI Pending report · drafts awaiting FineCore review · KPIs + drill-down.
+ * @purpose     PI Pending report · drafts awaiting FinCore review · KPIs + drill-down.
  * @who         Procurement · Finance liaison
  * @when        Sprint T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring · Block E
  * @sprint      T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring
@@ -45,7 +45,7 @@ export function PiPendingPanel(): JSX.Element {
       <div>
         <h1 className="text-2xl font-bold">PI Pending</h1>
         <p className="text-sm text-muted-foreground">
-          Purchase Invoice drafts awaiting FineCore review.
+          Purchase Invoice drafts awaiting FinCore review.
         </p>
       </div>
 

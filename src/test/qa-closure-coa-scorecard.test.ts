@@ -14,7 +14,7 @@ import { qaInspectionKey, type QaInspectionRecord } from '@/types/qa-inspection'
 import { qaSpecKey } from '@/types/qa-spec';
 import { qaClosureLogKey } from '@/types/qa-closure-log';
 import { comply360QCKey, DEFAULT_QC_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 
 const E = 'TST5P2';
 

@@ -27,7 +27,7 @@ import type {
   BankBalanceRow, CashFlowProjection, PaymentForecastWeek, PaymentTimingSuggestion,
 } from '@/types/smart-ap';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { PaymentRequisition } from '@/types/payment-requisition';
 import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';

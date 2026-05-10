@@ -14,7 +14,7 @@
 import type { EntityGSTConfig } from '@/types/entity-gst';
 import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { amountInWordsIN } from '@/lib/invoice-print-engine';
 import { formatDDMMMYYYY } from '@/lib/customer-address-lookup';
 

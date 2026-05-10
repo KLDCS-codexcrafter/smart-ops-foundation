@@ -3,7 +3,7 @@
  * Sprint 3B: TDS Auto-Intelligence Enhancement
  * Sprint T10-pre.1a Session B: rewired with TallyVoucherHeader, master pickers,
  * VoucherFormFooter, useEntityCode, useTenantConfig.
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
@@ -18,12 +18,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { SettlementPanel } from '@/components/finecore/SettlementPanel';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { SettlementPanel } from '@/components/fincore/SettlementPanel';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/fincore/pickers/PartyPicker';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
@@ -33,7 +33,7 @@ import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import type { Voucher, BillReference } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { detectDuplicatePayments, type DuplicateHit } from '@/features/loan-emi/lib/duplicate-detector';
@@ -324,7 +324,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/payment-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/payment-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -643,7 +643,7 @@ export default function Payment() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Payment Voucher' }]} showDatePicker={false} showCompany={false} />
         <main><PaymentPanel /></main>
       </div>
     </SidebarProvider>

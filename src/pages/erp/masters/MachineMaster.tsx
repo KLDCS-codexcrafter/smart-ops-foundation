@@ -214,7 +214,7 @@ export function MachineMasterPanel() {
                   variant="outline"
                   size="sm"
                   className="mt-2"
-                  onClick={() => navigate(`/erp/finecore?m=fixed-asset-register&id=${form.fixed_asset_id}`)}
+                  onClick={() => navigate(`/erp/fincore?m=fixed-asset-register&id=${form.fixed_asset_id}`)}
                 >
                   📋 View in Fixed Asset Register →
                 </Button>

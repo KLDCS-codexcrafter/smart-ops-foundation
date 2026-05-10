@@ -43,7 +43,7 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'salesx':          '/erp/salesx',
   'distributor-hub': '/erp/distributor-hub',
   'customer-hub':    '/erp/customer-hub',
-  'finecore':        '/erp/finecore',
+  'fincore':        '/erp/fincore',
   'receivx':         '/erp/receivx',
   'peoplepay':       '/erp/pay-hub',
   'payout':          '/erp/payout',

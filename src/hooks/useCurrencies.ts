@@ -115,7 +115,7 @@ export function useCurrencies() {
     }
     // Guard: check if used in any ledger
     try {
-      // [JWT] GET /api/group/finecore/ledger-definitions
+      // [JWT] GET /api/group/fincore/ledger-definitions
       const ledgers = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
       const inUse = ledgers.some((l: { currency?: string; currency_id?: string }) => l.currency === c.iso_code || l.currency_id === c.id);
       if (inUse) {

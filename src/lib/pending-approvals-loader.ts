@@ -8,7 +8,7 @@
  *   [JWT] GET /api/approvals/pending?entityCode=:entityCode&userRoles=:roles
  */
 
-import { findVoucherTypeById } from '@/lib/non-finecore-voucher-type-registry';
+import { findVoucherTypeById } from '@/lib/non-fincore-voucher-type-registry';
 
 export type PendingApprovalRecordType =
   | 'grn' | 'rtv' | 'cycle_count' | 'consumption_entry'

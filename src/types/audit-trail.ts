@@ -23,7 +23,7 @@ export type AuditAction =
   | 'reject';     // approval workflow rejection
 
 export type AuditEntityType =
-  // FineCore vouchers (all voucher types collapse to 'voucher')
+  // FinCore vouchers (all voucher types collapse to 'voucher')
   | 'voucher'
   // Inventory transactions
   | 'grn' | 'min' | 'consumption_entry' | 'cycle_count' | 'rtv' | 'heat_master'
@@ -64,7 +64,7 @@ export interface AuditTrailEntry {
   /** Optional reason / comment supplied by user (required for cancel + unpost) */
   reason: string | null;
 
-  /** Source module — for filterability (e.g. 'inventory', 'finecore', 'salesx', 'payhub') */
+  /** Source module — for filterability (e.g. 'inventory', 'fincore', 'salesx', 'payhub') */
   source_module: string;
 }
 

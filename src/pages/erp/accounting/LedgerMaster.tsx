@@ -853,7 +853,7 @@ const saveDefinition = (def: AnyLedgerDefinition) => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(all));
-  // [JWT] POST/PUT /api/group/finecore/ledger-definitions
+  // [JWT] POST/PUT /api/group/fincore/ledger-definitions
 };
 
 const hasLedgerData = (defId: string): boolean => {
@@ -882,7 +882,7 @@ const removeDefinition = (defId: string): void => {
   // [INTENTIONAL] Group-level master — entityShortCode per row controls scope, not the storage key
   // [JWT] GET /api/accounting/ledger-definitions (group-scoped, filtered by entityShortCode client-side)
   localStorage.setItem('erp_group_ledger_definitions', JSON.stringify(filtered));
-  // [JWT] DELETE /api/group/finecore/ledger-definitions/:id
+  // [JWT] DELETE /api/group/fincore/ledger-definitions/:id
   // Remove entity instances for this definition
   const entities = loadEntities();
   entities.forEach(entity => {
@@ -893,7 +893,7 @@ const removeDefinition = (defId: string): void => {
     // [JWT] PATCH /api/ledger/instances/:entityId
     localStorage.setItem(key, JSON.stringify(remaining));
   });
-  // [JWT] DELETE /api/group/finecore/ledger-instances/by-definition/:id
+  // [JWT] DELETE /api/group/fincore/ledger-instances/by-definition/:id
 };
 
 // ─── T-H1.5-Z-Z10 — 11 Per-Sub-Type Import Schemas ───────────────────
@@ -1609,7 +1609,7 @@ const saveInstance = (inst: EntityLedgerInstance) => {
   if (idx >= 0) all[idx] = inst; else all.push(inst);
   // [JWT] POST /api/accounting/ledgers
   localStorage.setItem(`erp_entity_${inst.entityId}_ledger_instances`, JSON.stringify(all));
-  // [JWT] POST/PUT /api/entity/${inst.entityId}/finecore/ledger-instances
+  // [JWT] POST/PUT /api/entity/${inst.entityId}/fincore/ledger-instances
 };
 
 // ── Custodian History ─────────────────────────────────────────────
@@ -1625,7 +1625,7 @@ const appendCustodianHistory = (record: CustodianHistoryRecord) => {
   const existing = loadCustodianHistory(record.entityId, record.ledgerDefinitionId);
   // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify([...existing, record]));
-  // [JWT] POST /api/entity/${record.entityId}/finecore/custodian-history
+  // [JWT] POST /api/entity/${record.entityId}/fincore/custodian-history
 };
 
 // ── Cheque Book helpers ───────────────────────────────────────────
@@ -1643,7 +1643,7 @@ const saveChequeBook = (book: ChequeBook): void => {
   if (idx >= 0) all[idx] = book; else all.push(book);
   // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
-  // [JWT] POST/PUT /api/entity/${book.entityId}/finecore/cheque-books
+  // [JWT] POST/PUT /api/entity/${book.entityId}/fincore/cheque-books
 };
 
 // ── Cheque Record helpers ─────────────────────────────────────────
@@ -1661,7 +1661,7 @@ const saveChequeRecord = (rec: ChequeRecord): void => {
   if (idx >= 0) all[idx] = rec; else all.push(rec);
   // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
-  // [JWT] POST/PUT /api/entity/${rec.entityId}/finecore/cheque-records
+  // [JWT] POST/PUT /api/entity/${rec.entityId}/fincore/cheque-records
 };
 
 // ── NACH Mandate helpers ──────────────────────────────────────────
@@ -1679,7 +1679,7 @@ const saveNachMandate = (m: NachMandate): void => {
   if (idx >= 0) all[idx] = m; else all.push(m);
   // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(all));
-  // [JWT] POST/PUT /api/entity/${m.entityId}/finecore/nach-mandates
+  // [JWT] POST/PUT /api/entity/${m.entityId}/fincore/nach-mandates
 };
 
 // ── Loan Schedule helpers ─────────────────────────────────────────
@@ -1689,7 +1689,7 @@ const saveLoanSchedule = (records: LoanRepaymentRecord[]): void => {
   const key = `erp_entity_${entityId}_loan_schedule_${defId}`;
   // [JWT] PATCH /api/ledger/instances/:entityId
   localStorage.setItem(key, JSON.stringify(records));
-  // [JWT] POST /api/entity/${entityId}/finecore/loan-schedule
+  // [JWT] POST /api/entity/${entityId}/fincore/loan-schedule
 };
 const loadLoanSchedule = (entityId: string, defId: string): LoanRepaymentRecord[] => {
   try {
@@ -2808,7 +2808,7 @@ export function LedgerMasterPanel() {
     autoCreateInstances(def, assetForm.openingBalance, 'Dr');
     toast.success(`${def.name} created`);
     setAssetOpen(false); setAssetEditTarget(null); setAssetForm(defaultAssetForm); refreshAll();
-    // [JWT] POST /api/group/finecore/ledger-definitions
+    // [JWT] POST /api/group/fincore/ledger-definitions
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: reads many form fields; explicit deps brittle. Handler invoked from event handlers; closure captures fresh state via re-render.
   }, [assetForm, assetEditTarget, entities]);
 
@@ -3733,7 +3733,7 @@ export function LedgerMasterPanel() {
     setSuspendTarget(null);
     setSuspendReason('');
     refreshAll();
-    // [JWT] POST /api/group/finecore/ledger-definitions/audit
+    // [JWT] POST /api/group/fincore/ledger-definitions/audit
   };
 
   const _openReinstate = (def: AnyLedgerDefinition) => {
@@ -3762,7 +3762,7 @@ export function LedgerMasterPanel() {
     setSuspendTarget(null);
     setReinstateReason('');
     refreshAll();
-    // [JWT] POST /api/group/finecore/ledger-definitions/audit
+    // [JWT] POST /api/group/fincore/ledger-definitions/audit
   };
 
   // ── Save Opening Balances ──
@@ -3786,7 +3786,7 @@ export function LedgerMasterPanel() {
       const key = `erp_entity_${inst.entityId}_custodian_history_${inst.ledgerDefinitionId}`;
       // [JWT] PATCH /api/ledger/instances/:entityId
       localStorage.setItem(key, JSON.stringify(updatedHistory));
-      // [JWT] PUT /api/entity/${inst.entityId}/finecore/custodian-history (close previous)
+      // [JWT] PUT /api/entity/${inst.entityId}/fincore/custodian-history (close previous)
     }
     const newRecord: CustodianHistoryRecord = {
       id: crypto.randomUUID(), ledgerDefinitionId: inst.ledgerDefinitionId,
@@ -3946,7 +3946,7 @@ export function LedgerMasterPanel() {
     const updatedSchedule = existing.map(r => r.id === updated.id ? updated : r);
     // [JWT] PATCH /api/ledger/instances/:entityId
     localStorage.setItem(key, JSON.stringify(updatedSchedule));
-    // [JWT] PUT /api/entity/${updated.entityId}/finecore/loan-schedule
+    // [JWT] PUT /api/entity/${updated.entityId}/fincore/loan-schedule
     setLoanSchedule(updatedSchedule);
     setMarkPaidOpen(false);
     setMarkPaidTarget(null);

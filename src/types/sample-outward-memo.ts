@@ -115,10 +115,10 @@ export interface SampleOutwardMemo {
   total_value: number;
 
   // Sprint T-Phase-1.1.1q · Phase 2 hookpoint — non-refundable items will trigger
-  // Marketing Expense voucher posting in FineCore Phase 2. True when posting is pending.
+  // Marketing Expense voucher posting in FinCore Phase 2. True when posting is pending.
   pending_expense_voucher: boolean;
 
-  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FinCore Voucher pattern). */
   bill_to_address_id?: string | null;
   bill_to_address_snapshot?: string | null;
   bill_to_state_code?: string | null;

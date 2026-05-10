@@ -322,7 +322,7 @@ export default function ParentCompany() {
       // Auto-create forex ledgers + voucher type when multi-currency is enabled
       if (form.enableMultiCurrency) {
         try {
-          // [JWT] POST /api/group/finecore/ledger-definitions (forex system ledgers)
+          // [JWT] POST /api/group/fincore/ledger-definitions (forex system ledgers)
           const ledgerDefs: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_ledger_definitions') || '[]');
           const now = new Date().toISOString();
           const fxGainCode = 'FXGAIN-SYS';

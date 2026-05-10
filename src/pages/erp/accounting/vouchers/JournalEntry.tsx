@@ -6,10 +6,10 @@
  * (customer or vendor) and optional Department tag for cost reporting.
  *
  * INPUT        Multi-line ledger Dr/Cr grid + optional party/department + narration.
- * OUTPUT       Posted Voucher via finecore-engine.postVoucher().
+ * OUTPUT       Posted Voucher via fincore-engine.postVoucher().
  *
  * DEPENDENCIES TallyVoucherHeader, PartyPicker, VoucherFormFooter, LedgerLineGrid,
- *              useEntityCode, useTenantConfig, finecore-engine.
+ *              useEntityCode, useTenantConfig, fincore-engine.
  *
  * SPEC DOC     Sprint T10-pre.1a Session B
  *
@@ -17,7 +17,7 @@
  *              name field (see line ~60). A future polish pass should swap it
  *              for an inline <LedgerPicker>. Out of scope here per sprint spec.
  *
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -28,16 +28,16 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
+import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { PartyPicker } from '@/components/fincore/pickers/PartyPicker';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 
@@ -215,7 +215,7 @@ export function JournalEntryPanel({ onSaveDraft }: JournalEntryPanelProps) {
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -339,7 +339,7 @@ export default function JournalEntry() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Journal Entry' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Journal Entry' }]} showDatePicker={false} showCompany={false} />
         <main><JournalEntryPanel /></main>
       </div>
     </SidebarProvider>

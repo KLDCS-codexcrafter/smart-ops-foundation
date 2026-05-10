@@ -10,8 +10,8 @@
  *           Idempotency: periodKey = 'YYYY-MM' per advance. Running twice
  *           in the same calendar month is a no-op (skipReason set).
  *
- *           Pure consumer of FineCore's postVoucher() — does NOT modify
- *           finecore-engine.ts. Closes leak L6.
+ *           Pure consumer of FinCore's postVoucher() — does NOT modify
+ *           fincore-engine.ts. Closes leak L6.
  *
  * @sprint   T-H1.5-D-D5
  * @finding  CC-066
@@ -20,7 +20,7 @@
 import type { Voucher } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import {
   resolveExpenseLedger,
   getLedgerName as resolveLedgerName,

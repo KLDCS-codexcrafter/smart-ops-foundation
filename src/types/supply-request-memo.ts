@@ -51,7 +51,7 @@ export interface SupplyRequestMemo {
   delivery_memo_no: string | null;
   /** D-226 UTS · accounting effective date; falls back to primary date when null. */
   effective_date?: string | null;
-  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FineCore Voucher pattern). */
+  /** Sprint 2.7-a · Bill-To/Ship-To FK + snapshot (Q1-a · mirrors FinCore Voucher pattern). */
   bill_to_address_id?: string | null;
   bill_to_address_snapshot?: string | null;
   bill_to_state_code?: string | null;

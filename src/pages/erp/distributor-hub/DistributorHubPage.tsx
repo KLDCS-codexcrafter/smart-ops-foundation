@@ -26,7 +26,7 @@ import { DistributorHubPanel } from '@/pages/erp/distributor/DistributorHub';
 import { DistributorHierarchyMasterPanel } from '@/pages/erp/distributor/DistributorHierarchyMaster';
 import { CreditApprovalQueuePanel } from '@/pages/erp/distributor/CreditApprovalQueue';
 import { DistributorDisputeQueuePanel } from '@/pages/erp/distributor/DistributorDisputeQueue';
-import { DistributorIntimationQueuePanel } from '@/pages/erp/finecore/DistributorIntimationQueue';
+import { DistributorIntimationQueuePanel } from '@/pages/erp/fincore/DistributorIntimationQueue';
 import { DistributorBroadcastPanel } from '@/pages/erp/salesx/DistributorBroadcast';
 
 // CC replica masters (open inline inside the card shell via Panel exports)

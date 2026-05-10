@@ -3,7 +3,7 @@
  * @purpose  Thin wrapper · renders existing PaymentRegisterPanel inside PayOut layout.
  * @sprint   T-T8.2-Foundation · D-146 reuse · zero rebuild.
  */
-import { PaymentRegisterPanel } from '@/pages/erp/finecore/registers/PaymentRegister';
+import { PaymentRegisterPanel } from '@/pages/erp/fincore/registers/PaymentRegister';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 

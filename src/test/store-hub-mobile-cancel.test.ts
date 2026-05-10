@@ -47,12 +47,12 @@ describe('Card #7 7-pre-3 · DRAFT-ONLY cancel discipline', () => {
     expect(r.reason).toBe('cancel-reason-required');
   });
 
-  it('refuses cancel of posted Stock Issue (must use finecore.cancelVoucher)', async () => {
+  it('refuses cancel of posted Stock Issue (must use fincore.cancelVoucher)', async () => {
     const si = await createStockIssue(makeIssueInput(), E, 'u1');
     await postStockIssue(si.id, E, 'u1');
     const r = await cancelStockIssue(si.id, 'mistake', E, 'u1');
     expect(r.ok).toBe(false);
-    expect(r.reason).toMatch(/finecore/);
+    expect(r.reason).toMatch(/fincore/);
   });
 
   it('refuses cancel on unknown id', async () => {

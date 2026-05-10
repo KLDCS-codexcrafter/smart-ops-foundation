@@ -1,16 +1,16 @@
 /**
  * @file     payment-engine.ts
  * @purpose  Vendor Payment Voucher orchestrator · validates · constructs voucher ·
- *           delegates to existing finecore-engine.postVoucher · returns voucher result.
+ *           delegates to existing fincore-engine.postVoucher · returns voucher result.
  * @who      Operix Engineering
  * @when     Apr-2026 · T-T8.2-Foundation (Group B Sprint B.2)
  * @sprint   T-T8.2-Foundation
  * @phase    Phase 1 · localStorage · Phase 2 swap to backend with same contract.
  * @whom     VendorPaymentEntry.tsx · payout-N smoke checks
- * @depends  finecore-engine (postVoucher · validateVoucher · generateVoucherNo) ·
- *           tds-engine (computeTDS) · voucher-org-tag-engine (auto-fires via finecore-engine).
+ * @depends  fincore-engine (postVoucher · validateVoucher · generateVoucherNo) ·
+ *           tds-engine (computeTDS) · voucher-org-tag-engine (auto-fires via fincore-engine).
  *
- * IMPORTANT: This is an orchestrator · NOT a duplicate of finecore-engine.
+ * IMPORTANT: This is an orchestrator · NOT a duplicate of fincore-engine.
  * - Validation: delegates to existing validateVoucher
  * - Save: delegates to existing postVoucher (which auto-fires B.0 tagVoucher)
  * - TDS: uses existing computeTDS from tds-engine
@@ -24,7 +24,7 @@
  */
 
 import type { Voucher, BillReference } from '@/types/voucher';
-import { postVoucher, validateVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, validateVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import { computeTDS } from '@/lib/tds-engine';
 import { getCurrentUserId } from '@/lib/auth-helpers';
 
@@ -65,7 +65,7 @@ export interface VendorPaymentResult {
 
 /** Build the Voucher object · validate · post · return result.
  *  Thin orchestrator — delegates all heavy lifting to existing engines.
- *  After postVoucher succeeds · B.0 voucher-org-tag-engine auto-tags via finecore-engine hook. */
+ *  After postVoucher succeeds · B.0 voucher-org-tag-engine auto-tags via fincore-engine hook. */
 export function processVendorPayment(input: VendorPaymentInput): VendorPaymentResult {
   const now = new Date().toISOString();
   const voucherNo = generateVoucherNo('PV', input.entityCode);

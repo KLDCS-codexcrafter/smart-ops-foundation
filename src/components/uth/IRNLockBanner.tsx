@@ -2,7 +2,7 @@
  * @file     IRNLockBanner.tsx — Q2-d read-only banner for IRN-locked records
  * @sprint   T-Phase-2.7-c · Card #2.7 sub-sprint 3 of 5
  * @purpose  Mounted ONLY in InvoiceMemo (D-127 voucher .tsx files unchanged ·
- *           they get engine-level reject from finecore-engine.ts).
+ *           they get engine-level reject from fincore-engine.ts).
  *           Renders nothing when the record isn't IRN-locked.
  */
 

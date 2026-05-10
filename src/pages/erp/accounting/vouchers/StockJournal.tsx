@@ -1,6 +1,6 @@
 /**
  * StockJournal.tsx — Full Stock Journal form (two-grid layout)
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { StockJournalLineGrid } from '@/components/finecore/StockJournalLineGrid';
-import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { StockJournalLineGrid } from '@/components/fincore/StockJournalLineGrid';
+import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -36,8 +36,8 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const [purpose, setPurpose] = useState('Store Transfer');
   const [department, setDepartment] = useState('');
   const [referenceNo, setReferenceNo] = useState('');
-  const [consumptionLines, setConsumptionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
-  const [productionLines, setProductionLines] = useState<import('@/components/finecore/StockJournalLineGrid').StockJournalLine[]>([]);
+  const [consumptionLines, setConsumptionLines] = useState<import('@/components/fincore/StockJournalLineGrid').StockJournalLine[]>([]);
+  const [productionLines, setProductionLines] = useState<import('@/components/fincore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
 
@@ -135,7 +135,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   }, []);
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      const url = `/erp/fincore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);
@@ -229,7 +229,7 @@ export default function StockJournal() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Stock Journal' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Stock Journal' }]} showDatePicker={false} />
         <main>{entityCode ? <StockJournalPanel /> : <SelectCompanyGate title="Select a company to create a Stock Journal" />}</main>
       </div>
     </SidebarProvider>

@@ -13,7 +13,7 @@ import { Download, Search } from 'lucide-react';
 import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import type { DispatchHubModule } from '../DispatchHubSidebar';

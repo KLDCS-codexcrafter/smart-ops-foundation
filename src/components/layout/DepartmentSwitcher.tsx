@@ -29,7 +29,7 @@ function getCardStats(cardId: CardId): string {
       return pending > 0 ? `${pending} pending approvals` : 'all clear';
     }
     if (cardId === 'receivx') return 'outstanding AR';
-    if (cardId === 'finecore') return 'ledger open';
+    if (cardId === 'fincore') return 'ledger open';
     if (cardId === 'salesx') return 'pipeline today';
     if (cardId === 'peoplepay') return 'payroll cycle';
     return '';

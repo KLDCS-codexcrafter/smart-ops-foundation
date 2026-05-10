@@ -36,7 +36,7 @@ export function CRMMastersModule({ onNavigate }: Props) {
     return [
       {
         title: 'Customer Master',
-        desc: 'All tenant customers — ledger, contacts, addresses, credit limits. Used by FineCore, SalesX, ReceivX, Distributor Hub, Customer Hub.',
+        desc: 'All tenant customers — ledger, contacts, addresses, credit limits. Used by FinCore, SalesX, ReceivX, Distributor Hub, Customer Hub.',
         icon: Users,
         module: 'crm-customer',
         storageKey: 'erp_group_customer_master',
@@ -44,7 +44,7 @@ export function CRMMastersModule({ onNavigate }: Props) {
       },
       {
         title: 'Vendor Master',
-        desc: 'All tenant vendors — ledger, GSTIN, TDS, bank details, payment terms. Used by FineCore, Procure360, PayOut.',
+        desc: 'All tenant vendors — ledger, GSTIN, TDS, bank details, payment terms. Used by FinCore, Procure360, PayOut.',
         icon: Truck,
         module: 'crm-vendor',
         storageKey: 'erp_group_vendor_master',

@@ -2,7 +2,7 @@
  * demo-asset-centres.ts — Sprint T-Phase-1.1.2-pre · D-218
  * 8 demo Asset Centres seeded across realistic Indian manufacturing setup.
  */
-import type { AssetCentre } from '@/types/finecore/asset-centre';
+import type { AssetCentre } from '@/types/fincore/asset-centre';
 
 const NOW = new Date().toISOString();
 

@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
-import { exportCSV } from '@/pages/erp/finecore/reports/reportUtils';
+import { exportCSV } from '@/pages/erp/fincore/reports/reportUtils';
 import {
   getTopVendorsBySpend,
   getVendorAnalyticsForSlice,

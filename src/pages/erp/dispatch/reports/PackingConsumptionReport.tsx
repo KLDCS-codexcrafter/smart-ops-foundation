@@ -17,7 +17,7 @@ import {
 } from 'recharts';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import {
   type PackingBOM, type PackingBOMActual,
   packingBOMsKey, packingBOMActualsKey, classifyVariance,

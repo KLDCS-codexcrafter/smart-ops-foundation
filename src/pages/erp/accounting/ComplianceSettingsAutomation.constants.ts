@@ -159,7 +159,7 @@ export const comply360TallyKey = (entityId: string | null | undefined): string =
   `erp_comply360_tally_${entityId ?? 'default'}`;
 
 // ─── Sprint T-Phase-2.7-a · RCM Auto-Post Policy (Q9 founder catch · existing infra) ───
-// Per-voucher-type policy gate for finecore-engine RCM JV auto-posting.
+// Per-voucher-type policy gate for fincore-engine RCM JV auto-posting.
 // [JWT] GET/PATCH /api/compliance/comply360/rcm-auto-post/:entityId
 
 export type RCMAutoPostMode = 'always' | 'report_only' | 'never';

@@ -1,7 +1,7 @@
 /**
  * @file     CancellationDashboardWidget.tsx — Q3-d UPGRADED dashboard tile
  * @sprint   T-Phase-2.7-c · Card #2.7 sub-sprint 3 of 5
- * @purpose  This-month cancellation pulse for FineCoreMastersModule. Shows
+ * @purpose  This-month cancellation pulse for FinCoreMastersModule. Shows
  *           total + severity buckets · alerts when HIGH > 0 · drill-down to
  *           CancellationAuditRegister.
  */
@@ -61,7 +61,7 @@ export function CancellationDashboardWidget(): JSX.Element {
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => navigate('/erp/finecore/registers/cancellation-audit-register')}
+            onClick={() => navigate('/erp/fincore/registers/cancellation-audit-register')}
           >
             View All <ArrowRight className="h-3 w-3 ml-1" />
           </Button>

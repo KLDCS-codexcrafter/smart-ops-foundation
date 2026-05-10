@@ -13,7 +13,7 @@
  */
 
 import type { Voucher } from '@/types/voucher';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { EMIScheduleLiveRow } from '../lib/emi-lifecycle-engine';
 import {
   resolveExpenseLedger,

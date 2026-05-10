@@ -10,7 +10,7 @@
  *              D-NEW-CG canonical (AuditHistoryButton · institutional audit-UI pattern via VoucherDiffViewer) ·
  *              Q-LOCK-4b revised (approval-workflow-engine integration via FR-19 siblings) ·
  *              Q-LOCK-3a Path A revised (stock-journal-print-engine reuse · navigates to existing
- *              /erp/finecore/stock-journal-print page · NO new print engine · α-b Block A)
+ *              /erp/fincore/stock-journal-print page · NO new print engine · α-b Block A)
  * @disciplines FR-29 (FormCarryForwardKit · 11/12 honest baseline) · FR-19 (sibling consumption) · FR-30
  * @reuses      @/components/canonical/form-carry-forward-kit · @/lib/form-carry-forward-kit ·
  *              @/components/uth/AuditHistoryButton (D-NEW-CG canonical) ·
@@ -372,7 +372,7 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
               variant="outline"
               disabled={busy}
               onClick={() => navigate(
-                `/erp/finecore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+                `/erp/fincore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
               )}
             >
               <Printer className="h-3.5 w-3.5 mr-1" /> Print

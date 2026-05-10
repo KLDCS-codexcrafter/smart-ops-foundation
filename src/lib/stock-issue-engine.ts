@@ -5,8 +5,8 @@
  * Stock Issue CRUD + Stock Journal voucher posting.
  * Pure engine · no React · sibling discipline (mirrors inward-receipt-engine.ts shape).
  *
- * D-127 boundary: lives in src/lib/ (NOT finecore).
- * D-128 boundary: posts via finecore postVoucher API using existing 'Stock Journal'
+ * D-127 boundary: lives in src/lib/ (NOT fincore).
+ * D-128 boundary: posts via fincore postVoucher API using existing 'Stock Journal'
  * base_voucher_type — voucher schema NOT modified (74-sprint streak preserved).
  * D-228 UTH stamping.
  *
@@ -16,7 +16,7 @@
 import type { StockIssue, StockIssueLine, StockIssueStatus } from '@/types/stock-issue';
 import { stockIssuesKey } from '@/types/stock-issue';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import { generateDocNo, postVoucher } from '@/lib/finecore-engine';
+import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 
 // ============================================================
@@ -276,7 +276,7 @@ function write(e: string, list: StockIssue[]): void {
 
 /**
  * Cancel a Stock Issue · DRAFT-ONLY (D-399 · D-128 boundary respect)
- * Posted vouchers (status='issued') must use finecore.cancelVoucher API
+ * Posted vouchers (status='issued') must use fincore.cancelVoucher API
  * to maintain CGST Rule 56(8) edit/delete chain compliance.
  * [JWT] PATCH /api/store-hub/stock-issues/:id/cancel
  */
@@ -292,7 +292,7 @@ export async function cancelStockIssue(
   if (idx === -1) return { ok: false, reason: 'not-found' };
   const cur = list[idx];
   if (cur.status === 'cancelled') return { ok: false, reason: 'already-cancelled' };
-  if (cur.status === 'issued') return { ok: false, reason: 'use-finecore-cancel-voucher-for-posted-issues' };
+  if (cur.status === 'issued') return { ok: false, reason: 'use-fincore-cancel-voucher-for-posted-issues' };
 
   const now = new Date().toISOString();
   list[idx] = { ...cur, status: 'cancelled', cancelled_at: now, cancel_reason: cancelReason, updated_at: now, updated_by: byUserId };

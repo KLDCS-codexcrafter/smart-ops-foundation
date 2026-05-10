@@ -1,7 +1,7 @@
 /**
  * @file        po.ts
  * @sprint      T-Phase-1.2.6f-c-1 · Block A · per D-283 PO management sibling
- * @purpose     Procure360 PO workflow types · sibling of FineCore PurchaseOrder voucher (D-127 ZERO TOUCH).
+ * @purpose     Procure360 PO workflow types · sibling of FinCore PurchaseOrder voucher (D-127 ZERO TOUCH).
  * @decisions   D-283 (sibling pattern) · D-127 (voucher form ZERO TOUCH) · D-194 (localStorage)
  * @disciplines FR-22 Type Discipline · FR-50 Multi-entity 6-point
  * @[JWT]       GET /api/procure360/purchase-orders?entityCode=...

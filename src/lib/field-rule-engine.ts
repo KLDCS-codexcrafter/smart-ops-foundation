@@ -5,7 +5,7 @@
  *           Returns errors map for forms to render · severity matches Q2-c rule.
  */
 
-import type { FieldRule } from '@/lib/non-finecore-voucher-type-registry';
+import type { FieldRule } from '@/lib/non-fincore-voucher-type-registry';
 
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 export type FormState = 'draft' | 'posted';

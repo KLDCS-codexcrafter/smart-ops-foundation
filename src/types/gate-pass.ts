@@ -2,7 +2,7 @@
  * @file        gate-pass.ts
  * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 (Block A) · T-Phase-1.A.1.a (FR-51 branch_id additive)
  * @purpose     Gate Pass type · single type with direction discriminator (Q2=A) · 5-state workflow (Q4=A)
- *              · optional FK linking (Q3=A) · matches FineCore voucher pattern.
+ *              · optional FK linking (Q3=A) · matches FinCore voucher pattern.
  *              [JWT] erp_gate_passes_<entityCode>
  * @decisions   D-302 (single type · direction discriminator · 5-state workflow · optional FK)
  *              · D-305 (storage key namespace)
@@ -22,16 +22,16 @@ export type GatePassStatus =
 export type LinkedVoucherType =
   | 'po'           // Purchase Order (Procure360 · 3-c-1)
   | 'git_stage1'   // GIT Stage 1 (3-c-1 · received_at_gate)
-  | 'dln'          // Delivery Note (FineCore voucher)
+  | 'dln'          // Delivery Note (FinCore voucher)
   | 'som'          // Sample Outward Memo (Dispatch)
   | 'dom'          // Demo Outward Memo (Dispatch)
-  | 'gst_invoice'      // GST Invoice (FineCore)
+  | 'gst_invoice'      // GST Invoice (FinCore)
   | 'inward_receipt'   // Inward Receipt (Card #6 · 6-pre-1 · Block E bridge)
   | null;              // Walk-in · visitor · service vendor · ad-hoc
 
 export interface GatePass {
   id: string;
-  gate_pass_no: string;             // 'GP/${entity}/${YY-YY}/0001' (Q5=A · finecore generateDocNo)
+  gate_pass_no: string;             // 'GP/${entity}/${YY-YY}/0001' (Q5=A · fincore generateDocNo)
   direction: GatePassDirection;
   entity_id: string;
   entity_code: string;

@@ -1,8 +1,8 @@
 /**
  * card-context-relay.ts — Pass context between cards via sessionStorage
  * Usage:
- *   pushContext({ from_card: 'distributor-hub', to_card: 'finecore', payload: { voucher_id, party_id } })
- *   navigate(buildCardRoute('finecore'))  -> on target, popContext('finecore')
+ *   pushContext({ from_card: 'distributor-hub', to_card: 'fincore', payload: { voucher_id, party_id } })
+ *   navigate(buildCardRoute('fincore'))  -> on target, popContext('fincore')
  */
 
 export interface CardContextEntry {

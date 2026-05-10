@@ -122,7 +122,7 @@ export default function GSTEntityConfigPage() {
         <ERPHeader
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'FineCore', href: '/erp/accounting' },
+            { label: 'FinCore', href: '/erp/accounting' },
             { label: 'GST Entity Config' },
           ]}
           showDatePicker={false}

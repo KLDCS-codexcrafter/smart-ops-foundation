@@ -20,9 +20,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { PartyPicker } from '@/components/finecore/pickers/PartyPicker';
-import { generateVoucherNo } from '@/lib/finecore-engine';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { PartyPicker } from '@/components/fincore/pickers/PartyPicker';
+import { generateVoucherNo } from '@/lib/fincore-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { computeTDS } from '@/lib/tds-engine';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
@@ -75,7 +75,7 @@ export default function VendorPaymentEntry() {
   const [tdsAmount, setTdsAmount] = useState(0);
   const [departmentId, setDepartmentId] = useState('');
   const [bills, setBills] = useState<BillReference[]>([]);
-  // [T-T8.3-AdvanceIntel] Payment purpose · 'advance' triggers finecore-engine
+  // [T-T8.3-AdvanceIntel] Payment purpose · 'advance' triggers fincore-engine
   // auto-create AdvanceEntry via bill_references[].type='advance' at line 452-475.
   const [paymentPurpose, setPaymentPurpose] = useState<'regular' | 'advance'>('regular');
   const [saving, setSaving] = useState(false);
@@ -148,7 +148,7 @@ export default function VendorPaymentEntry() {
     if (amount <= 0) { toast.error('Amount must be greater than zero'); return; }
     setSaving(true);
     // [T-T8.3-AdvanceIntel] When purpose='advance' · write a single advance
-    // bill_reference · finecore-engine line 452-475 auto-creates AdvanceEntry.
+    // bill_reference · fincore-engine line 452-475 auto-creates AdvanceEntry.
     const effectiveBillRefs: BillReference[] = paymentPurpose === 'advance'
       ? [{
           voucher_id: '', voucher_no: '', voucher_date: date,
@@ -326,7 +326,7 @@ export default function VendorPaymentEntry() {
             <div className="flex items-end">
               {paymentPurpose === 'advance' && (
                 <Badge variant="outline" className="text-[10px] border-violet-500/40 text-violet-600 dark:text-violet-300">
-                  Advance Mode · finecore auto-tag active
+                  Advance Mode · fincore auto-tag active
                 </Badge>
               )}
             </div>

@@ -70,7 +70,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     feature_flags: [], notes: '', created_at: now, updated_at: now,
   });
   return [
-    one('command-center'), one('finecore'), one('salesx'),
+    one('command-center'), one('fincore'), one('salesx'),
     one('distributor-hub'), one('receivx'), one('peoplepay'),
     one('insightx'),
     one('payout', 'trial'),

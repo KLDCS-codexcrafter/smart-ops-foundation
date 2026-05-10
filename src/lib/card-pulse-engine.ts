@@ -109,7 +109,7 @@ export function computeCardPulse(cardId: CardId, entityCode: string): CardPulse 
         status_note: `${outstanding} open`,
       };
     }
-    case 'finecore': {
+    case 'fincore': {
       const vouchers = readList(`erp_group_vouchers_${entityCode}`);
       return {
         metrics: [

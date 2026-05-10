@@ -39,7 +39,7 @@ import { dSum, round2 } from '@/lib/decimal-helpers';
 import Decimal from 'decimal.js';
 import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n-engine';
