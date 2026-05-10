@@ -3,7 +3,7 @@
  * @sprint T-Phase-1.A.9 BUNDLED · Block A.10
  */
 import { describe, it, expect } from 'vitest';
-import { buildVersionTree } from '@/pages/erp/docvault/registers/DrawingRegisterTree';
+import { buildVersionTree } from '@/lib/docvault-tree-util';
 import type { DocumentVersion } from '@/types/docvault';
 
 const v = (no: string, supersedes?: string): DocumentVersion => ({
