@@ -1,39 +1,65 @@
 /**
- * @file     EngineeringXPage.tsx
- * @sprint   T-Phase-1.3-DashboardAudit-Fix · Block B
- * @purpose  Tier 1 #5 (NEW) placeholder page · per Master Plan §51.2 April 30, 2026 LOCK.
- *
- * Status: coming_soon · 0 of 7,500 LOC plan
- * Sprints planned: 1.5.7-1 / 1.5.7-2 / 1.5.7-3
- * Hard deps: DocVault (drawing storage) · Procure360 (BOM material codes)
+ * @file        src/pages/erp/engineeringx/EngineeringXPage.tsx
+ * @purpose     EngineeringX entry shell · canonical Shell consumer · 7 modules render
+ * @who         Engineering Lead · Document Controller · Production · Procurement · QualiCheck
+ * @when        2026-05-10
+ * @sprint      T-Phase-1.A.10 EngineeringX Foundation · Q-LOCK-4a + Q-LOCK-7a · Block C
+ * @iso         ISO 9001:2015 §7.5 · ISO 25010 Maintainability + Usability
+ * @whom        Audit Owner
+ * @decisions   D-250 (Shell pattern lock · FR-58) · D-NEW-CC keyboard uniqueness ('e *' namespace) ·
+ *              D-NEW-BV Phase 1 mock pattern · FR-30 11/11 header standard
+ * @disciplines FR-30 · FR-58 · FR-67
+ * @reuses      @/shell Shell · engineeringx-shell-config · EngineeringXModule type
+ * @[JWT]       N/A (page shell · routes handled by App.tsx)
  */
-import { ERPHeader } from '@/components/layout/ERPHeader';
-import { Card, CardContent } from '@/components/ui/card';
-import { FileText, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Shell } from '@/shell';
+import { engineeringxShellConfig } from '@/apps/erp/configs/engineeringx-shell-config';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import type { EngineeringXModule } from './EngineeringXSidebar.types';
+import { EngineeringXWelcome } from './EngineeringXWelcome';
+import { DrawingRegisterPlaceholder } from './placeholders/DrawingRegisterPlaceholder';
+import { DrawingEntryPlaceholder } from './placeholders/DrawingEntryPlaceholder';
+import { ReferenceProjectsPlaceholder } from './placeholders/ReferenceProjectsPlaceholder';
 
 export default function EngineeringXPage(): JSX.Element {
+  const [activeModule, setActiveModule] = useState<EngineeringXModule>('welcome');
+  const { entitlements, profile } = useCardEntitlement();
+
+  const renderModule = (): JSX.Element => {
+    switch (activeModule) {
+      case 'welcome':
+        return <EngineeringXWelcome onNavigate={setActiveModule} />;
+      case 'drawing-register-placeholder':
+        return <DrawingRegisterPlaceholder onNavigate={setActiveModule} />;
+      case 'drawing-entry-placeholder':
+        return <DrawingEntryPlaceholder onNavigate={setActiveModule} />;
+      case 'reference-projects-placeholder':
+        return <ReferenceProjectsPlaceholder onNavigate={setActiveModule} />;
+      case 'bom-placeholder':
+      case 'similarity-placeholder':
+      case 'reports-placeholder':
+        return (
+          <div className="p-6 text-sm text-muted-foreground">
+            Coming in subsequent sprints (A.12 · A.13).
+          </div>
+        );
+      default:
+        return <EngineeringXWelcome onNavigate={setActiveModule} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <ERPHeader breadcrumbs={[{ label: 'ERP', href: '/erp/dashboard' }, { label: 'EngineeringX' }]} />
-      <div className="container mx-auto p-6 max-w-3xl">
-        <Card>
-          <CardContent className="p-12 text-center space-y-4">
-            <FileText className="h-16 w-16 mx-auto text-primary/50" />
-            <h1 className="text-2xl font-bold">EngineeringX · Coming Soon</h1>
-            <p className="text-muted-foreground">
-              Engineering design control · drawing register, version control, BOM-from-drawing,
-              Reference Project Library, AI similarity/change-impact prediction.
-            </p>
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-4">
-              <Sparkles className="h-4 w-4" />
-              <span>Tier 1 #5 · planned 7,500 LOC · 3 sub-sprints (1.5.7-1/2/3)</span>
-            </div>
-            <p className="text-xs text-muted-foreground/70 pt-2">
-              Depends on: DocVault (drawing storage) · Procure360 (BOM material codes)
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <Shell
+      config={engineeringxShellConfig}
+      userProfile={profile}
+      tenantEntitlements={entitlements}
+      breadcrumbs={[{ label: 'ERP', href: '/erp/dashboard' }, { label: 'EngineeringX' }]}
+      onSidebarItemClick={(item) => {
+        if (item.moduleId) setActiveModule(item.moduleId as EngineeringXModule);
+      }}
+    >
+      {renderModule()}
+    </Shell>
   );
 }
