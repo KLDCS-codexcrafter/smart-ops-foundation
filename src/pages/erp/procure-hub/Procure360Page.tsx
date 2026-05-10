@@ -216,6 +216,9 @@ function getModuleLabel(m: Procure360Module): string {
     'po-status-by-enquiry': 'PO Status by Enquiry',
     'enquiry-details-report': 'Enquiry Details',
     'material-rfq-print': 'Material RFQ Print',
+    // ─── NEW · SM.Procure360-Vendor-Agreements ───
+    'vendor-agreements-register': 'Vendor Agreements',
+    'vendor-agreement-entry': 'New Agreement',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
