@@ -209,7 +209,7 @@ function buildBreadcrumbs(activeModule: Procure360Module): BreadcrumbEntry[] {
   const moduleLabel = getModuleLabel(activeModule);
   const crumbs: BreadcrumbEntry[] = [
     { label: 'Operix Core', href: '/erp/dashboard' },
-    { label: 'Procure 360', href: '/erp/procure-hub' },
+    { label: 'Procure360', href: '/erp/procure-hub' },  // T-Phase-1.H.3 · Q-LOCK-2a · canonical brand form
   ];
   if (group && group !== moduleLabel) crumbs.push({ label: group });
   if (moduleLabel) crumbs.push({ label: moduleLabel });
@@ -267,7 +267,7 @@ export default function Procure360Page(): JSX.Element {
       card_id: 'procure360',
       kind: 'module',
       ref_id: activeModule,
-      title: `Procure 360 · ${activeModule}`,
+      title: `Procure360 · ${activeModule}`,  // T-Phase-1.H.3 · Q-LOCK-2a · canonical brand form
       subtitle: null,
       deep_link: `/erp/procure-hub#${activeModule}`,
     });

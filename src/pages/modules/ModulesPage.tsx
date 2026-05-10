@@ -46,7 +46,7 @@ const MODULES: StandaloneModule[] = [
   },
   {
     id: 'servicedesk',
-    title: 'Service Desk',
+    title: 'ServiceDesk',  // T-Phase-1.H.3 · Q-LOCK-3a · canonical brand form (was 'Service Desk' with space)
     icon: Headphones,
     description: 'Customer support ticketing with SLA management, escalation rules, and knowledge base.',
     details: 'Planned: Multi-channel ticket intake (email, WhatsApp, portal), SLA calendar, escalation matrix, CSAT surveys, and canned responses. Works for both internal IT and customer support.',
