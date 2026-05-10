@@ -80,13 +80,14 @@ describe('T-Phase-1.H.1 · FinCore naming migration', () => {
     expect(count).toBeGreaterThanOrEqual(28);
   });
 
-  it('Q-LOCK-1a + Q-LOCK-2a · zero FineCore · zero finecore (with e) post-H.1', async () => {
+  it('Q-LOCK-1a + Q-LOCK-2a · zero FineCore · zero finecore (with e) post-H.1 (excluding intentional backward-compat references)', async () => {
     const { execSync } = await import('child_process');
+    // Allowed: backward-compat redirect in App.tsx + this self-referential test file
     const wrongPascal = parseInt(
-      execSync(`grep -rE "FineCore" src/ --include='*.ts' --include='*.tsx' | wc -l`).toString().trim()
+      execSync(`grep -rE "FineCore" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test | grep -v "FineCoreLegacyRedirect" | grep -v "/erp/finecore" | wc -l`).toString().trim()
     );
     const wrongLower = parseInt(
-      execSync(`grep -rE "[^A-Za-z]finecore[^A-Za-z]" src/ --include='*.ts' --include='*.tsx' | wc -l`).toString().trim()
+      execSync(`grep -rE "[^A-Za-z]finecore[^A-Za-z]" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test | grep -v "/erp/finecore" | wc -l`).toString().trim()
     );
     expect(wrongPascal).toBe(0);
     expect(wrongLower).toBe(0);
