@@ -451,6 +451,7 @@ const App = () => (
               <Route path="/erp/fincore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
+              <Route path="/erp/projx/documents" element={<P><ProjXPage /></P>} />
               {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 NEW · EngineeringX placeholder */}
               <Route path="/erp/engineeringx" element={<P><EngineeringXPage /></P>} />
               {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #12 NEW · SiteX placeholder */}

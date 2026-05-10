@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, FolderKanban, ChevronRight, ExternalLink,
   Milestone, Users, Clock, FileText, BarChart3, TrendingUp, PieChart, Activity, Wallet,
+  FolderOpen, Plus,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -21,6 +22,7 @@ import type { ProjXModule } from './ProjXSidebar.types';
 const LIVE_MODULES: ProjXModule[] = [
   'welcome', 't-project-entry', 'm-project-centres',
   't-milestone-tracker', 't-resource-allocation', 't-time-entry', 't-invoice-scheduling',
+  't-documents', 't-document-entry',
   'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
   'r-cash-flow-projection',
   'r-project-register', 'r-milestone-register', 'r-time-entry-register',
@@ -48,6 +50,8 @@ const TXN_ITEMS: SidebarItem[] = [
   { id: 't-resource-allocation', label: 'Resource Allocation', icon: Users },
   { id: 't-time-entry', label: 'Time Entry', icon: Clock },
   { id: 't-invoice-scheduling', label: 'Invoice Scheduling', icon: FileText },
+  { id: 't-documents', label: 'Documents', icon: FolderOpen },
+  { id: 't-document-entry', label: 'New Document', icon: Plus },
 ];
 
 const RPT_ITEMS: SidebarItem[] = [
