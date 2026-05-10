@@ -3,14 +3,14 @@
  * @purpose MTC lifecycle engine · pure compute · per-parameter evaluation + overall status derivation
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability · ISO 9001:2015 Clause 8.4.2
  * @whom Quality Inspector · QA Manager
  * @decisions D-NEW-BF (MTC engine NEW) · D-NEW-BJ (3-arg userId-2nd signature)
  * @disciplines FR-21 (Banned patterns · 0 any · 0 console.log · 0 float-money · 0 TODO) ·
  *              FR-22 (ActivityItemKind 'voucher')
  * @reuses cross-card-activity-engine.recordActivity
- * @[JWT] GET/POST /api/qulicheak/mtcs · localStorage key: erp_mtc_${entityCode}
+ * @[JWT] GET/POST /api/qualicheck/mtcs · localStorage key: erp_mtc_${entityCode}
  */
 import type {
   MaterialTestCertificate,
@@ -25,7 +25,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 
 function readAll(entityCode: string): MaterialTestCertificate[] {
   try {
-    // [JWT] GET /api/qulicheak/mtcs
+    // [JWT] GET /api/qualicheck/mtcs
     const raw = localStorage.getItem(mtcKey(entityCode));
     return raw ? (JSON.parse(raw) as MaterialTestCertificate[]) : [];
   } catch {
@@ -35,7 +35,7 @@ function readAll(entityCode: string): MaterialTestCertificate[] {
 
 function writeAll(entityCode: string, list: MaterialTestCertificate[]): void {
   try {
-    // [JWT] PUT /api/qulicheak/mtcs (bulk)
+    // [JWT] PUT /api/qualicheck/mtcs (bulk)
     localStorage.setItem(mtcKey(entityCode), JSON.stringify(list));
   } catch {
     /* quota / private-mode · silent */
@@ -107,12 +107,12 @@ export function createMtc(
   // FR-22 · ActivityItemKind = 'voucher'
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: id,
     title: `MTC ${id}`,
     subtitle: `${draft.supplier_name} · ${draft.certificate_no}`,
-    deep_link: `/erp/qulicheak#mtc-register/${id}`,
+    deep_link: `/erp/qualicheck#mtc-register/${id}`,
   });
 
   return mtc;

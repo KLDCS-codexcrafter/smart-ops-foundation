@@ -1,6 +1,6 @@
 /**
  * @file src/types/iso9001.ts
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
+ * @sprint T-Phase-1.A.5.c-QualiCheck-Welder-Vendor-ISO-IQC
  * @decisions D-NEW-BP (ISO 9001 audit document register · 7-clause taxonomy · URL-only)
  * @disciplines FR-22 (kind='document') · FR-30 · FR-50
  * @[JWT] localStorage key: erp_iso9001_${entityCode}

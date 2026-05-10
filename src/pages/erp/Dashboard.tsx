@@ -64,7 +64,7 @@ const LANES: Array<{
       'production',
       'engineeringx',      // NEW · Tier 1 #5 · drawings + BOM feeds production
       'maintainpro',
-      'qulicheak',
+      'qualicheck',
       'requestx',
       'supplyx',
       'sitex',             // NEW · Tier 1 #12 · site execution · post-production

@@ -1,10 +1,10 @@
 /**
  * @file src/lib/ncr-engine.ts
  * @purpose NCR lifecycle engine · pure compute · consumes qa-plan + qa-spec
- *          · feeds Procure360 vendor scoring (via qulicheak-bridges emit · zero Procure360 touches)
+ *          · feeds Procure360 vendor scoring (via qualicheck-bridges emit · zero Procure360 touches)
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-08
- * @sprint T-Phase-1.A.5.a-bis-Qulicheak-NCR-Foundation
+ * @sprint T-Phase-1.A.5.a-bis-QualiCheck-NCR-Foundation
  * @iso 25010 Maintainability + Reliability + Performance Efficiency
  * @whom Quality Inspector · QA Manager
  * @decisions D-NEW-AV (NCR engine NEW) · D-NEW-AX (close emits applyQaOutcome)
@@ -13,7 +13,7 @@
  *              FR-22 (ActivityItemKind · 'voucher' citation per A.3 Supplement 2) ·
  *              FR-23 (localStorage with entityCode prefix · [JWT] markers)
  * @reuses cross-card-activity-engine (recordActivity) · types/ncr (ncrKey)
- * @[JWT] GET/POST /api/qulicheak/ncrs · localStorage key: erp_ncr_${entityCode}
+ * @[JWT] GET/POST /api/qualicheck/ncrs · localStorage key: erp_ncr_${entityCode}
  */
 import type {
   NonConformanceReport,
@@ -29,7 +29,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 
 function readAll(entityCode: string): NonConformanceReport[] {
   try {
-    // [JWT] GET /api/qulicheak/ncrs
+    // [JWT] GET /api/qualicheck/ncrs
     const raw = localStorage.getItem(ncrKey(entityCode));
     return raw ? (JSON.parse(raw) as NonConformanceReport[]) : [];
   } catch {
@@ -39,7 +39,7 @@ function readAll(entityCode: string): NonConformanceReport[] {
 
 function writeAll(entityCode: string, list: NonConformanceReport[]): void {
   try {
-    // [JWT] PUT /api/qulicheak/ncrs (bulk)
+    // [JWT] PUT /api/qualicheck/ncrs (bulk)
     localStorage.setItem(ncrKey(entityCode), JSON.stringify(list));
   } catch {
     /* quota / private-mode · silent */
@@ -76,12 +76,12 @@ export function raiseNcr(
   // FR-22 · ActivityItemKind = 'voucher' per A.3 Supplement 2 (NCR is a voucher · Q-LOCK-4(a))
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: id,
     title: `NCR ${id}`,
     subtitle: draft.description.slice(0, 80),
-    deep_link: `/erp/qulicheak#ncr-register/${id}`,
+    deep_link: `/erp/qualicheck#ncr-register/${id}`,
   });
 
   return ncr;
@@ -146,12 +146,12 @@ export function closeNcr(
 
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: id,
     title: `NCR ${id} closed`,
     subtitle: `Outcome: ${outcome}`,
-    deep_link: `/erp/qulicheak#ncr-register/${id}`,
+    deep_link: `/erp/qualicheck#ncr-register/${id}`,
   });
 
   return updated;

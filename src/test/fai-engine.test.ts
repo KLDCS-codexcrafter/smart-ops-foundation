@@ -1,7 +1,7 @@
 /**
  * @file src/test/fai-engine.test.ts
  * @purpose Unit coverage for FAI engine · evaluateDimension · recomputeOverallStatus · createFai · approveFai
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 import {

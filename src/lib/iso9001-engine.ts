@@ -1,9 +1,9 @@
 /**
  * @file src/lib/iso9001-engine.ts
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
+ * @sprint T-Phase-1.A.5.c-QualiCheck-Welder-Vendor-ISO-IQC
  * @decisions D-NEW-BP · D-NEW-BJ (3-arg signature)
  * @disciplines FR-22 (kind='document') · URL-only storage (rejects base64)
- * @[JWT] GET/POST /api/qulicheak/iso9001 · localStorage key: erp_iso9001_${entityCode}
+ * @[JWT] GET/POST /api/qualicheck/iso9001 · localStorage key: erp_iso9001_${entityCode}
  */
 import type {
   Iso9001AuditDocument, Iso9001ClauseId, Iso9001LinkedRecord,
@@ -13,7 +13,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 
 function readAll(entityCode: string): Iso9001AuditDocument[] {
   try {
-    // [JWT] GET /api/qulicheak/iso9001
+    // [JWT] GET /api/qualicheck/iso9001
     const raw = localStorage.getItem(iso9001Key(entityCode));
     return raw ? (JSON.parse(raw) as Iso9001AuditDocument[]) : [];
   } catch {
@@ -23,7 +23,7 @@ function readAll(entityCode: string): Iso9001AuditDocument[] {
 
 function writeAll(entityCode: string, list: Iso9001AuditDocument[]): void {
   try {
-    // [JWT] PUT /api/qulicheak/iso9001 (bulk)
+    // [JWT] PUT /api/qualicheck/iso9001 (bulk)
     localStorage.setItem(iso9001Key(entityCode), JSON.stringify(list));
   } catch {
     /* silent */
@@ -73,12 +73,12 @@ export function createIso9001Doc(
   // FR-22 · kind='document'
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'document',
     ref_id: id,
     title: `ISO 9001: ${draft.title}`,
     subtitle: draft.clause,
-    deep_link: `/erp/qulicheak#iso9001-register/${id}`,
+    deep_link: `/erp/qualicheck#iso9001-register/${id}`,
   });
   return doc;
 }

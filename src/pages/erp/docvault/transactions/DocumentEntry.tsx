@@ -247,7 +247,7 @@ export function DocumentEntry(): JSX.Element {
           {showNc && (
             <div>
               <Label>NCR ID</Label>
-              <Input value={ncId} onChange={(e) => setNcId(e.target.value)} placeholder="Qulicheak" />
+              <Input value={ncId} onChange={(e) => setNcId(e.target.value)} placeholder="QualiCheck" />
             </div>
           )}
           {showEquipment && (

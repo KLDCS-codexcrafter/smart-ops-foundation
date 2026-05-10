@@ -3,7 +3,7 @@
  * @purpose CAPA lifecycle engine · pure compute · consumes NCR via public API · feeds NcrRegister via CustomEvent
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability + Performance Efficiency · ISO 9001:2015 Clause 10.2.1
  * @whom Quality Manager · Quality Engineer
  * @decisions D-NEW-BD · D-NEW-BE · D-NEW-BH (verification 30/60/90 milestones) ·
@@ -12,7 +12,7 @@
  *              FR-21 (Banned patterns · 0 any · 0 console.log · 0 float-money · 0 TODO) ·
  *              FR-22 (ActivityItemKind 'voucher' · CrossCardActivityItem shape)
  * @reuses ncr-engine.transitionNcr · ncr-engine.getNcrById · cross-card-activity-engine.recordActivity
- * @[JWT] GET/POST /api/qulicheak/capas · localStorage key: erp_capa_${entityCode}
+ * @[JWT] GET/POST /api/qualicheck/capas · localStorage key: erp_capa_${entityCode}
  */
 import type {
   CorrectiveAndPreventiveAction,
@@ -35,7 +35,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 
 function readAll(entityCode: string): CorrectiveAndPreventiveAction[] {
   try {
-    // [JWT] GET /api/qulicheak/capas
+    // [JWT] GET /api/qualicheck/capas
     const raw = localStorage.getItem(capaKey(entityCode));
     return raw ? (JSON.parse(raw) as CorrectiveAndPreventiveAction[]) : [];
   } catch {
@@ -45,7 +45,7 @@ function readAll(entityCode: string): CorrectiveAndPreventiveAction[] {
 
 function writeAll(entityCode: string, list: CorrectiveAndPreventiveAction[]): void {
   try {
-    // [JWT] PUT /api/qulicheak/capas (bulk)
+    // [JWT] PUT /api/qualicheck/capas (bulk)
     localStorage.setItem(capaKey(entityCode), JSON.stringify(list));
   } catch {
     /* quota / private-mode · silent */
@@ -119,12 +119,12 @@ export function raiseCapa(
   // FR-22 · ActivityItemKind = 'voucher' · CrossCardActivityItem shape per α-a-bis
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: id,
     title: `CAPA ${id}`,
     subtitle: draft.title.slice(0, 80),
-    deep_link: `/erp/qulicheak#capa-register/${id}`,
+    deep_link: `/erp/qualicheck#capa-register/${id}`,
   });
 
   return capa;
@@ -293,12 +293,12 @@ export function closeCapa(
 
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: capaId,
     title: `CAPA ${capaId} closed`,
     subtitle: `Outcome: ${outcome}`,
-    deep_link: `/erp/qulicheak#capa-register/${capaId}`,
+    deep_link: `/erp/qualicheck#capa-register/${capaId}`,
   });
 
   return updated;

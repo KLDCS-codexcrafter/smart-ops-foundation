@@ -45,7 +45,7 @@ describe('Store Hub sidebar config · D-NEW-CC canonical (α-a Block A)', () => 
     ];
     for (const e of expected) expect(ids.has(e)).toBe(true);
   });
-  it('keyboard namespace is store-hub-prefixed (s *) · no collision with qulicheak (q *)', () => {
+  it('keyboard namespace is store-hub-prefixed (s *) · no collision with qualicheck (q *)', () => {
     const flat = flatten(storeHubSidebarItems);
     const kbs = flat.map((i) => i.keyboard).filter((k): k is string => Boolean(k));
     for (const kb of kbs) {

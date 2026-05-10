@@ -38,6 +38,19 @@ const FineCoreLegacyRedirect = () => {
   return <Navigate to={target} replace />;
 };
 
+// T-Phase-1.H.2 · Q-LOCK-7a · backward-compat redirect /erp/qulicheak/* → /erp/qualicheck/*
+// preserves user bookmarks · D-NEW-CM Legacy Redirect Convention · D-NEW-CN canonical correction
+const QulicheakLegacyRedirect = () => {
+  const location = useLocation();
+  const target =
+    location.pathname
+      .replace(/^\/erp\/qulicheak/, '/erp/qualicheck')
+      .replace(/^\/operix-go\/qulicheak/, '/operix-go/qualicheck') +
+    (location.search || '') +
+    (location.hash || '');
+  return <Navigate to={target} replace />;
+};
+
 const Login = lazy(() => import('./pages/auth/Login'));
 const Welcome = lazy(() => import('./pages/Welcome'));
 const TowerDashboard = lazy(() => import('./pages/tower/Dashboard'));
@@ -173,7 +186,7 @@ const BillPassingPage = lazy(() => import('./pages/erp/bill-passing/BillPassingP
 // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow Foundation
 const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
 // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck Foundation
-const QualiCheckPage = lazy(() => import('./pages/erp/qulicheak/QualiCheckPage'));
+const QualiCheckPage = lazy(() => import('./pages/erp/qualicheck/QualiCheckPage'));
 const SupplyXPage = lazy(() => import('./pages/erp/supplyx/SupplyXPage'));
 const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
@@ -338,7 +351,7 @@ const App = () => (
               <Route path="/operix-go/salesx" element={<P><SalesXGoMobile /></P>} />
               <Route path="/operix-go/receivx" element={<P><ReceivXGoMobile /></P>} />
               <Route path="/operix-go/gate-guard" element={<P><MobileGateGuardPage /></P>} />
-              <Route path="/operix-go/qulicheak" element={<P><MobileQualiCheckPage /></P>} />
+              <Route path="/operix-go/qualicheck" element={<P><MobileQualiCheckPage /></P>} />
               <Route path="/operix-go/inward-receipt" element={<P><MobileInwardReceiptPage /></P>} />
               <Route path="/operix-go/store-issue" element={<P><MobileStoreIssuePage /></P>} />
               <Route path="/operix-go/receipt-ack" element={<P><MobileReceiptAckPage /></P>} />
@@ -513,7 +526,7 @@ const App = () => (
               {/* Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow */}
               <Route path="/erp/gateflow" element={<P><GateFlowPage /></P>} />
               {/* Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck */}
-              <Route path="/erp/qulicheak" element={<P><QualiCheckPage /></P>} />
+              <Route path="/erp/qualicheck" element={<P><QualiCheckPage /></P>} />
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
@@ -610,6 +623,10 @@ const App = () => (
               {/* T-Phase-1.H.1 · Q-LOCK-7a · backward-compat for old /erp/finecore bookmarks */}
               <Route path="/erp/finecore" element={<FineCoreLegacyRedirect />} />
               <Route path="/erp/finecore/*" element={<FineCoreLegacyRedirect />} />
+              {/* T-Phase-1.H.2 · Q-LOCK-7a · backward-compat for old /erp/qulicheak + /operix-go/qulicheak bookmarks · D-NEW-CM Legacy Redirect Convention · D-NEW-CN canonical */}
+              <Route path="/erp/qulicheak" element={<QulicheakLegacyRedirect />} />
+              <Route path="/erp/qulicheak/*" element={<QulicheakLegacyRedirect />} />
+              <Route path="/operix-go/qulicheak" element={<QulicheakLegacyRedirect />} />
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           </Suspense>

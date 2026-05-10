@@ -131,8 +131,8 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
               <span className="text-xs text-muted-foreground">
                 QC Inspection auto-created ·{' '}
                 <button type="button" className="underline text-primary"
-                  onClick={() => navigate(`/erp/qulicheak?m=inspection-detail&id=${newInspectionId}`)}>
-                  Open in Qulicheak →
+                  onClick={() => navigate(`/erp/qualicheck?m=inspection-detail&id=${newInspectionId}`)}>
+                  Open in QualiCheck →
                 </button>
               </span>
             </div>,

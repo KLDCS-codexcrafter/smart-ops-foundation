@@ -10,10 +10,10 @@
  * @whom Audit Owner
  * @decisions D-NEW-AJ-revised CLOSED · D-NEW-BV (entity_code+vendor_id required)
  * @disciplines FR-19 · FR-30 · FR-50
- * @reuses qulicheak-bridges QaOutcomePayload channel
+ * @reuses qualicheck-bridges QaOutcomePayload channel
  * @[JWT] localStorage key: erp_procure360_vendor_qa_inbox_${entityCode}
  */
-import type { QaOutcomePayload } from '@/lib/qulicheak-bridges';
+import type { QaOutcomePayload } from '@/lib/qualicheck-bridges';
 
 const CH = 'qa.outcome.applied';
 const KEY = (e: string): string => `erp_procure360_vendor_qa_inbox_${e}`;

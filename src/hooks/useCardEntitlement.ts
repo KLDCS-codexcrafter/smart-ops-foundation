@@ -57,17 +57,25 @@ export function useCardEntitlement() {
     // (All three flipped to active per Phase 1.A milestones. New installs get fresh seed.)
     let migrated = false;
     for (const ent of entitlementsRaw) {
+      // T-Phase-1.H.2 · D-NEW-BB · 3rd consumer · Migrate stale card_id 'qulicheak' → 'qualicheck'
+      // Decision C Reverse · D-NEW-CN canonical correction · idempotent (post-migration card_id won't match)
+      // Parallel to dispatch swap A.9 institutional pattern · candidate FR-72 promotion (3 consumers)
+      if ((ent.card_id as unknown as string) === 'qulicheak') {
+        (ent as { card_id: string }).card_id = 'qualicheck';
+        ent.updated_at = new Date().toISOString();
+        migrated = true;
+      }
       const gfProd =
         (ent.card_id === 'gateflow' || ent.card_id === 'production') &&
         ent.status === 'locked';
       const procure360 =
         ent.card_id === 'procure360' &&
         (ent.status === 'add_on_available' || ent.status === 'locked');
-      // T-Phase-1.A.5.a-bis-T2 · D-NEW-BB · Migrate stale 'locked' for qulicheak
-      const qulicheak =
-        ent.card_id === 'qulicheak' &&
+      // T-Phase-1.A.5.a-bis-T2 · D-NEW-BB · Migrate stale 'locked' for qualicheck
+      const qualicheck =
+        ent.card_id === 'qualicheck' &&
         (ent.status === 'add_on_available' || ent.status === 'locked');
-      if (gfProd || procure360 || qulicheak) {
+      if (gfProd || procure360 || qualicheck) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
         migrated = true;
@@ -82,14 +90,14 @@ export function useCardEntitlement() {
     // T-Phase-1.A.9 BUNDLED · D-NEW-BB · Q-LOCK-11a
     // Atomic dispatch ID swap migration: old 'dispatch-hub' (= Logistics) → 'logistics' ·
     // old 'dispatch-ops' (= Dispatch Hub internal) → 'dispatch-hub'.
-    // Idempotent · matches qulicheak A.5 institutional pattern.
+    // Idempotent · matches qualicheck A.5 institutional pattern.
     try {
       const oldHubKey = `erp_card_entitlements_old_dispatch-hub_${entityCode}`;
       void oldHubKey; // reserved for backwards-compat read fallback (Phase 2)
       // For per-card key migration the legacy keys may not exist if entitlements live
       // inside a single aggregate list (cardEntitlementsKey). The aggregate list above
       // already carries all entries, so per-card migration is a no-op for that storage
-      // model. The block is preserved here for parity with qulicheak A.5 pattern and to
+      // model. The block is preserved here for parity with qualicheck A.5 pattern and to
       // catch any per-card stale keys that future code may write.
       const legacyOpsKey = `erp_card_entitlements_dispatch-ops`;
       const legacyHubKey = `erp_card_entitlements_dispatch-hub`;

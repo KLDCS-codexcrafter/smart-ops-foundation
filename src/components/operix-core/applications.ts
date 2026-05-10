@@ -28,7 +28,7 @@
  *
  * 4. TIER CLASSIFICATION (Master Plan §51.2 LOCKED April 30, 2026):
  *    - Tier 1 (15): ProjX · Inventory Hub · Procure360 · DocVault · EngineeringX (NEW) ·
- *      Production · Qulicheak · GateFlow · MaintainPro · RequestX · SupplyX · SiteX (NEW) ·
+ *      Production · QualiCheck · GateFlow · MaintainPro · RequestX · SupplyX · SiteX (NEW) ·
  *      ServiceDesk · EximX · InsightX
  *    - Tier 3 (stub): WebStoreX · UniComm · TaskFlow · FrontDesk
  *    - Tier 4 (defer): Comply360
@@ -37,6 +37,11 @@
  *
  * 6. NAMING CONVENTIONS:
  *    - 'Fin Core' (with space) intentional · do not rename
+ *      D-NEW-CM-fincore-naming-canonical (CANONICAL · 12th at v15 · technical-vs-display split)
+ *      Technical names use FinCore/fincore short form · display name 'Fin Core' (with space) preserved
+ *    - 'QualiCheck' (no space · PascalCase) canonical · was 'Qulicheak' (wrong · corrected at H.2)
+ *      D-NEW-CN-qualicheck-naming-canonical (CANONICAL · 13th at v16 · canonical correction pattern)
+ *      Both technical AND display change · distinguishes from D-NEW-CM display preservation pattern
  *    - 'Inventory Hub' · 'Department Stores' (NOT 'Store Hub' duplicate)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)
  *
@@ -123,11 +128,11 @@ export const applications: AppDefinition[] = [
     status: 'active',
   },
   {
-    id: 'qulicheak',
-    name: 'Qulicheak',
+    id: 'qualicheck',
+    name: 'QualiCheck',
     description: 'Quality control module · incoming/in-process/final inspection · NCR, CAPA, MTC, FAI, welder qualification. ISO 9001 + IEC 17025 compliance.',
     category: 'Ops Hub',
-    route: '/erp/qulicheak',
+    route: '/erp/qualicheck',
     icon: 'CheckSquare',
     status: 'active',
   },
@@ -185,7 +190,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/store-hub',
     icon: 'Warehouse',
-    status: 'active',  // T-Phase-1.A.6.α-b · Q-LOCK-13a · D-NEW-BB pattern (parallel to qulicheak A.5)
+    status: 'active',  // T-Phase-1.A.6.α-b · Q-LOCK-13a · D-NEW-BB pattern (parallel to qualicheck A.5)
   },
   {
     id: 'supplyx',
@@ -194,7 +199,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/supplyx',
     icon: 'Truck',
-    status: 'active',  // T-Phase-1.A.7.α-a · Q-LOCK-13a · D-NEW-BB pattern (parallel to qulicheak A.5 + store-hub A.6)
+    status: 'active',  // T-Phase-1.A.7.α-a · Q-LOCK-13a · D-NEW-BB pattern (parallel to qualicheck A.5 + store-hub A.6)
   },
   // 🆕 NEW Tier 1 #12 (Master Plan §51.2 April 30, 2026 LOCK)
   {

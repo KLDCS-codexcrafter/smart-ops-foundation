@@ -3,7 +3,7 @@
  * @purpose CAPA (Corrective and Preventive Action) data model · 8D + 5 Whys per Q-LOCK-1(a)
  * @who Lovable on behalf of Operix Founder (Codexcrafter)
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability + Auditability + ISO 9001:2015 Clause 10.2
  * @whom Quality Manager · Quality Engineer · Process Owner
  * @decisions D-NEW-BD (CAPA engine NEW · two-engine pattern · per Q-LOCK-4(a))

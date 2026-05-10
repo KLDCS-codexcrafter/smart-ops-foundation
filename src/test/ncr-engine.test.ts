@@ -1,7 +1,7 @@
 /**
  * @file src/test/ncr-engine.test.ts
  * @purpose 6 NEW Vitest cases for ncr-engine · raise · close · transition · filter
- * @sprint T-Phase-1.A.5.a-bis-Qulicheak-NCR-Foundation
+ * @sprint T-Phase-1.A.5.a-bis-QualiCheck-NCR-Foundation
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { raiseNcr, closeNcr, transitionNcr, filterNcrs, listNcrs } from '@/lib/ncr-engine';
@@ -37,7 +37,7 @@ describe('ncr-engine', () => {
     expect(spy).toHaveBeenCalled();
     const call = spy.mock.calls[0];
     expect(call[2].kind).toBe('voucher');
-    expect(call[2].card_id).toBe('qulicheak');
+    expect(call[2].card_id).toBe('qualicheck');
     spy.mockRestore();
   });
 

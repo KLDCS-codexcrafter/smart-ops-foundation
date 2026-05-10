@@ -50,7 +50,7 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'insightx':        '/erp/insightx',
   'procure360':      '/erp/procure-hub',
   'inventory-hub':   '/erp/inventory-hub',
-  'qulicheak':       '/erp/qulicheak',
+  'qualicheck':       '/erp/qualicheck',
   'gateflow':        '/erp/gateflow',
   'production':      '/erp/production',
   'maintainpro':     '/erp/maintainpro',

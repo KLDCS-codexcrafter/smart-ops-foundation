@@ -20,7 +20,7 @@
  *   welcome · open-rfqs · pending-quotations · pending-awards
  *
  * Keyboard namespace: 'x *' prefix · D-NEW-CC uniqueness preserved
- *   (no collision with qulicheak's 'q *' or store-hub's 's *' namespaces · verified at α-a Block 0)
+ *   (no collision with qualicheck's 'q *' or store-hub's 's *' namespaces · verified at α-a Block 0)
  */
 import { Home, Send, FileText, Award } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
