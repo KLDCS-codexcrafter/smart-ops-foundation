@@ -23,6 +23,12 @@ import { DocVaultWelcome } from './DocVaultWelcome';
 import { DocumentEntry } from './transactions/DocumentEntry';
 import { DocumentRegister } from './transactions/DocumentRegister';
 import { ApprovalsPendingPanel } from './approvals/ApprovalsPendingPanel';
+import { DrawingRegisterTree } from './registers/DrawingRegisterTree';
+import { TagIndex } from './registers/TagIndex';
+import { SimilarityViewer } from './registers/SimilarityViewer';
+import { DocumentsByDeptReport } from './reports/DocumentsByDeptReport';
+import { ApprovalLatencyReport } from './reports/ApprovalLatencyReport';
+import { VersionVelocityReport } from './reports/VersionVelocityReport';
 import type { DocVaultModule } from './DocVaultSidebar.types';
 
 export default function DocVaultPage(): JSX.Element {
@@ -34,6 +40,12 @@ export default function DocVaultPage(): JSX.Element {
       case 'documents-register': return <DocumentRegister />;
       case 'document-entry':     return <DocumentEntry />;
       case 'approvals-pending':  return <ApprovalsPendingPanel />;
+      case 'drawing-register-tree': return <DrawingRegisterTree />;
+      case 'tag-index':          return <TagIndex />;
+      case 'similarity-viewer':  return <SimilarityViewer />;
+      case 'documents-by-dept':  return <DocumentsByDeptReport />;
+      case 'approval-latency':   return <ApprovalLatencyReport />;
+      case 'version-velocity':   return <VersionVelocityReport />;
       default:                   return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
