@@ -22,7 +22,6 @@ describe('T-Phase-1.A.13 EngineeringX · routing + Shell', () => {
     expect(content).toMatch(/'production-handoff'/);
     expect(content).toMatch(/'engineeringx-reports'/);
   });
-  });
 
   it("D-NEW-CC `e *` keyboard namespace · 11 shortcuts (4 NEW at A.13)", () => {
     const content = execSync(`cat src/apps/erp/configs/engineeringx-sidebar-config.ts`).toString();
