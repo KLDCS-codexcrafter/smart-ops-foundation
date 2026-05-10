@@ -14,9 +14,10 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, FilePlus, CheckSquare, Sparkles, BookMarked } from 'lucide-react';
+import { FileText, FilePlus, CheckSquare, Sparkles, BookMarked, Cog } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listDrawings, listDrawingsByStatus } from '@/lib/engineeringx-engine';
+import { loadBomEntries } from '@/lib/engineeringx-bom-engine';
 import type { EngineeringXModule } from './EngineeringXSidebar.types';
 
 interface Props {
@@ -26,13 +27,16 @@ interface Props {
 export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const stats = useMemo(() => {
-    if (!entityCode) return { total: 0, draft: 0, submitted: 0, approved: 0 };
+    if (!entityCode) return { total: 0, draft: 0, submitted: 0, approved: 0, withBom: 0 };
     const all = listDrawings(entityCode);
+    const bom = loadBomEntries(entityCode);
+    const drawingsWithBom = new Set(bom.map((b) => b.drawing_id));
     return {
       total: all.length,
       draft: listDrawingsByStatus(entityCode, 'draft').length,
       submitted: listDrawingsByStatus(entityCode, 'submitted').length,
       approved: listDrawingsByStatus(entityCode, 'approved').length,
+      withBom: drawingsWithBom.size,
     };
   }, [entityCode]);
 
@@ -48,7 +52,7 @@ export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardContent className="p-4">
           <div className="text-sm text-muted-foreground">Total Drawings</div>
           <div className="text-3xl font-bold font-mono">{stats.total}</div>
@@ -65,6 +69,10 @@ export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
           <div className="text-sm text-muted-foreground">Approved</div>
           <div className="text-3xl font-bold font-mono text-success">{stats.approved}</div>
         </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <div className="text-sm text-muted-foreground">Drawings with BOM</div>
+          <div className="text-3xl font-bold font-mono">{stats.withBom}</div>
+        </CardContent></Card>
       </div>
 
       <Card>
@@ -79,8 +87,11 @@ export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
           <Button variant="outline" onClick={() => onNavigate?.('drawing-approvals')} className="h-auto py-3">
             <CheckSquare className="h-4 w-4 mr-2" /> Approvals Pending
           </Button>
-          <Button variant="outline" onClick={() => onNavigate?.('reference-projects-placeholder')} className="h-auto py-3">
-            <BookMarked className="h-4 w-4 mr-2" /> Reference Projects
+          <Button variant="outline" onClick={() => onNavigate?.('bom-extractor')} className="h-auto py-3">
+            <Cog className="h-4 w-4 mr-2" /> BOM Extractor
+          </Button>
+          <Button variant="outline" onClick={() => onNavigate?.('reference-library')} className="h-auto py-3">
+            <BookMarked className="h-4 w-4 mr-2" /> Reference Library
           </Button>
           <Button variant="outline" onClick={() => onNavigate?.('similarity-placeholder')} className="h-auto py-3">
             <Sparkles className="h-4 w-4 mr-2" /> AI Similarity
@@ -89,7 +100,7 @@ export function EngineeringXWelcome({ onNavigate }: Props): JSX.Element {
       </Card>
 
       <div className="text-xs text-muted-foreground/70">
-        Tier 1 #5 · Sinha-anchor · A.11 ships Drawing Register + Version Control · 5th FR-73 consumer.
+        Tier 1 #5 · Sinha-anchor · A.12 ships BOM-from-Drawing + Reference Project Library.
       </div>
     </div>
   );

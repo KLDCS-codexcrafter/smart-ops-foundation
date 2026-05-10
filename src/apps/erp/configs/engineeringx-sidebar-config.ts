@@ -1,19 +1,11 @@
 /**
  * @file        src/apps/erp/configs/engineeringx-sidebar-config.ts
- * @purpose     EngineeringX canonical sidebar · 'e *' keyboard namespace · D-NEW-CC compliance · 5 consumers
- * @who         Engineering · Document Controller · Production · Procurement · QualiCheck
- * @when        2026-05-10
- * @sprint      T-Phase-1.A.11 EngineeringX Drawing Register + Version Control · Q-LOCK-6a + Q-LOCK-10a · Block G.2
- * @iso         ISO 25010 Usability · Maintainability
- * @whom        Audit Owner
- * @decisions   D-NEW-CC keyboard uniqueness · 'e *' namespace extension within consumer · FR-73 5th consumer
- * @disciplines FR-30 · FR-67
- * @reuses      @/shell/types SidebarItem · lucide-react icons
- * @[JWT]       N/A (config only)
+ * @sprint      T-Phase-1.A.12 · Q-LOCK-12a · Block E.2 · D-NEW-CC `'e *'` namespace extension within consumer
+ * @decisions   D-NEW-CC keyboard uniqueness · FR-73 5th consumer · 4 NEW shortcuts (`e b` · `e g` · `e l` · `e c`)
  */
 import {
-  Home, FileText, FilePlus, BookMarked, ListTree, Sparkles, BarChart3,
-  CheckSquare, History,
+  Home, FileText, FilePlus, BookMarked, Sparkles, BarChart3,
+  CheckSquare, History, Cog, List, Copy,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -72,28 +64,54 @@ export const engineeringxSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'bom-group',
+    type: 'group',
+    label: 'BOM',
+    icon: List,
+    children: [
+      {
+        id: 'bom-extractor',
+        type: 'item',
+        label: 'BOM Extractor',
+        icon: Cog,
+        moduleId: 'bom-extractor',
+        requiredCards: ['engineeringx'],
+        keyboard: 'e b',
+      },
+      {
+        id: 'bom-register',
+        type: 'item',
+        label: 'BOM Register',
+        icon: List,
+        moduleId: 'bom-register',
+        requiredCards: ['engineeringx'],
+        keyboard: 'e g',
+      },
+    ],
+  },
+  {
     id: 'design-reuse-group',
     type: 'group',
     label: 'Design Re-use',
     icon: BookMarked,
     children: [
       {
-        id: 'reference-projects-placeholder',
+        id: 'reference-library',
         type: 'item',
-        label: 'Reference Projects',
+        label: 'Reference Library',
         icon: BookMarked,
-        moduleId: 'reference-projects-placeholder',
+        moduleId: 'reference-library',
         requiredCards: ['engineeringx'],
-        keyboard: 'e p',
+        keyboard: 'e l',
       },
       {
-        id: 'bom-placeholder',
+        id: 'clone-drawing',
         type: 'item',
-        label: 'BOM-from-Drawing',
-        icon: ListTree,
-        moduleId: 'bom-placeholder',
+        label: 'Clone Drawing',
+        icon: Copy,
+        moduleId: 'clone-drawing',
         requiredCards: ['engineeringx'],
-        keyboard: 'e b',
+        keyboard: 'e c',
       },
     ],
   },
