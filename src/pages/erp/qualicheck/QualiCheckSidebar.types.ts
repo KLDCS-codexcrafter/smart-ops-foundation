@@ -48,4 +48,7 @@ export type QualiCheckModule =
   | 'rinsp-report-page'
   | 'qc-rejection-analysis'
   | 'fg-receiving-inspection'
-  | 'reprocess-report';
+  | 'reprocess-report'
+  // ─── NEW · SM.QualiCheck-NCR-Evidence · D-NEW-CJ 4th CONSUMER · INSTITUTIONAL FR PROMOTION THRESHOLD MET ───
+  | 'ncr-evidence-register'
+  | 'ncr-evidence-entry';

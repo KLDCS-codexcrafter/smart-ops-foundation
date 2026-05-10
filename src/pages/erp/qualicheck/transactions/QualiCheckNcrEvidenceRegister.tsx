@@ -32,8 +32,7 @@ interface QualiCheckNcrEvidenceRegisterProps {
 export function QualiCheckNcrEvidenceRegisterPanel({
   onNavigate,
 }: QualiCheckNcrEvidenceRegisterProps): JSX.Element {
-  const { profile } = useCardEntitlement();
-  const entityCode = profile?.activeEntityCode ?? '';
+  const { entityCode } = useCardEntitlement();
   const ncrs = useMemo(() => listAvailableNcrs(entityCode), [entityCode]);
   const [filterNcId, setFilterNcId] = useState<string>('all');
 
