@@ -623,6 +623,10 @@ const App = () => (
               {/* T-Phase-1.H.1 · Q-LOCK-7a · backward-compat for old /erp/finecore bookmarks */}
               <Route path="/erp/finecore" element={<FineCoreLegacyRedirect />} />
               <Route path="/erp/finecore/*" element={<FineCoreLegacyRedirect />} />
+              {/* T-Phase-1.H.2 · Q-LOCK-7a · backward-compat for old /erp/qulicheak + /operix-go/qulicheak bookmarks · D-NEW-CM Legacy Redirect Convention · D-NEW-CN canonical */}
+              <Route path="/erp/qulicheak" element={<QulicheakLegacyRedirect />} />
+              <Route path="/erp/qulicheak/*" element={<QulicheakLegacyRedirect />} />
+              <Route path="/operix-go/qulicheak" element={<QulicheakLegacyRedirect />} />
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           </Suspense>
