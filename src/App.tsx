@@ -27,6 +27,17 @@ const ConditionalDishani = () => {
   );
 };
 
+// T-Phase-1.H.1 · Q-LOCK-7a · backward-compat redirect /erp/finecore/* → /erp/fincore/*
+// preserves user bookmarks · D-NEW-CM-fincore-naming-canonical
+const FineCoreLegacyRedirect = () => {
+  const location = useLocation();
+  const target =
+    location.pathname.replace(/^\/erp\/finecore/, '/erp/fincore') +
+    (location.search || '') +
+    (location.hash || '');
+  return <Navigate to={target} replace />;
+};
+
 const Login = lazy(() => import('./pages/auth/Login'));
 const Welcome = lazy(() => import('./pages/Welcome'));
 const TowerDashboard = lazy(() => import('./pages/tower/Dashboard'));
