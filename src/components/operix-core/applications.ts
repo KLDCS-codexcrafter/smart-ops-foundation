@@ -37,6 +37,11 @@
  *
  * 6. NAMING CONVENTIONS:
  *    - 'Fin Core' (with space) intentional · do not rename
+ *      D-NEW-CM-fincore-naming-canonical (CANONICAL · 12th at v15 · technical-vs-display split)
+ *      Technical names use FinCore/fincore short form · display name 'Fin Core' (with space) preserved
+ *    - 'QualiCheck' (no space · PascalCase) canonical · was 'Qulicheak' (wrong · corrected at H.2)
+ *      D-NEW-CN-qualicheck-naming-canonical (CANONICAL · 13th at v16 · canonical correction pattern)
+ *      Both technical AND display change · distinguishes from D-NEW-CM display preservation pattern
  *    - 'Inventory Hub' · 'Department Stores' (NOT 'Store Hub' duplicate)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)
  *
