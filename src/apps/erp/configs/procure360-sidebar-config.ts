@@ -12,7 +12,7 @@
 
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
-  ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt,
+  ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
