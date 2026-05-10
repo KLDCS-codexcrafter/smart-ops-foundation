@@ -13,7 +13,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+
 import { qualicheckSidebarItems } from '@/apps/erp/configs/qualicheck-sidebar-config';
 import type { SidebarItem } from '@/shell/types';
 import type { QualiCheckModule } from '@/pages/erp/qualicheck/QualiCheckSidebar.types';
