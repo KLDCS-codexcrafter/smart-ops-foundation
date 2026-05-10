@@ -76,6 +76,14 @@ import {
   MaterialRfqPrintPanel,
 } from './reports';
 
+// ─── NEW · SM.Procure360-Vendor-Agreements · D-NEW-CJ 3rd consumer ───
+import {
+  Procure360VendorAgreementsRegisterPanel,
+} from './transactions/Procure360VendorAgreementsRegister';
+import {
+  Procure360VendorAgreementEntryPanel,
+} from './transactions/Procure360VendorAgreementEntry';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
@@ -99,6 +107,9 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'purchase-cost-variance-category', 'rate-variance-graph',
   'po-itemwise', 'po-status-by-enquiry', 'enquiry-details-report',
   'material-rfq-print',
+  // ─── NEW · SM.Procure360-Vendor-Agreements ───
+  'vendor-agreements-register',
+  'vendor-agreement-entry',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -123,6 +134,11 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'group-wise-outstanding' ||
     m === 'goods-inward-day-book'
   ) return 'Outstandings';
+
+  // Vendor Documents group · SM.Procure360-Vendor-Agreements
+  if (m === 'vendor-agreements-register' || m === 'vendor-agreement-entry') {
+    return 'Vendor Documents';
+  }
 
   // Reports group (existing rule + 5 NEW reports)
   if (
@@ -200,6 +216,9 @@ function getModuleLabel(m: Procure360Module): string {
     'po-status-by-enquiry': 'PO Status by Enquiry',
     'enquiry-details-report': 'Enquiry Details',
     'material-rfq-print': 'Material RFQ Print',
+    // ─── NEW · SM.Procure360-Vendor-Agreements ───
+    'vendor-agreements-register': 'Vendor Agreements',
+    'vendor-agreement-entry': 'New Agreement',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -339,6 +358,11 @@ export default function Procure360Page(): JSX.Element {
       case 'po-status-by-enquiry':            return <PoStatusByEnquiryPanel />;
       case 'enquiry-details-report':          return <EnquiryDetailsReportPanel />;
       case 'material-rfq-print':              return <MaterialRfqPrintPanel />;
+      // ─── NEW · SM.Procure360-Vendor-Agreements ───
+      case 'vendor-agreements-register':
+        return <Procure360VendorAgreementsRegisterPanel onNavigate={handleNavigate} />;
+      case 'vendor-agreement-entry':
+        return <Procure360VendorAgreementEntryPanel onNavigate={handleNavigate} />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

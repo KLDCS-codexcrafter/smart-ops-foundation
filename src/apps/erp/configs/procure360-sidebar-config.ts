@@ -12,7 +12,7 @@
 
 import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
-  ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt,
+  ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
@@ -66,6 +66,16 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: BarChart3, moduleId: 'group-wise-outstanding', requiredCards: ['procure360'] },
       { id: 'goods-inward-day-book', type: 'item', label: 'Goods Inward Day Book',
         icon: PackageCheck, moduleId: 'goods-inward-day-book', requiredCards: ['procure360'] },
+    ],
+  },
+  // ─── NEW · SM.Procure360-Vendor-Agreements · D-NEW-CJ Hub-and-Spoke 3rd consumer ───
+  {
+    id: 'vendor-documents-group', type: 'group', label: 'Vendor Documents', icon: FileText,
+    children: [
+      { id: 'vendor-agreements-register', type: 'item', label: 'Vendor Agreements',
+        icon: FileText, moduleId: 'vendor-agreements-register', requiredCards: ['procure360'] },
+      { id: 'vendor-agreement-entry', type: 'item', label: 'New Agreement',
+        icon: Plus, moduleId: 'vendor-agreement-entry', requiredCards: ['procure360'] },
     ],
   },
   {
