@@ -7,6 +7,7 @@
  * @iso         ISO 9001:2015 §7.5 (document control · drawing revision history)
  * @whom        Audit Owner · Engineering Manager · Document Controller
  * @decisions   D-NEW-CL-docvault-version-tree-pattern (CANONICAL · 11th at v14 · institutional tree pattern) ·
+ *              D-NEW-CL helper extracted to docvault-tree-util.ts (Q-LOCK-T1-F2 · FR-21 no eslint-disable) ·
  *              D-NEW-CJ-docvault-file-metadata-schema (consumes Document.versions[] + supersedes_version) ·
  *              D-NEW-BV Phase 1 mock pattern (uses existing loadDocuments)
  * @disciplines FR-30 (this header) · FR-50 multi-entity · FR-25 dept-scoped visibility
@@ -19,27 +20,8 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronRight, ChevronDown, FileText } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadDocuments } from '@/lib/docvault-engine';
-import type { Document, DocumentVersion } from '@/types/docvault';
-
-interface VersionNode {
-  version: DocumentVersion;
-  children: VersionNode[];
-}
-
-export function buildVersionTree(versions: DocumentVersion[]): VersionNode[] {
-  const map = new Map<string, VersionNode>();
-  for (const v of versions) map.set(v.version_no, { version: v, children: [] });
-  const roots: VersionNode[] = [];
-  for (const v of versions) {
-    const node = map.get(v.version_no)!;
-    if (v.supersedes_version && map.has(v.supersedes_version)) {
-      map.get(v.supersedes_version)!.children.push(node);
-    } else {
-      roots.push(node);
-    }
-  }
-  return roots;
-}
+import { buildVersionTree, type VersionNode } from '@/lib/docvault-tree-util';
+import type { Document } from '@/types/docvault';
 
 function TreeNode({ node, depth }: { node: VersionNode; depth: number }): JSX.Element {
   const [open, setOpen] = useState(true);

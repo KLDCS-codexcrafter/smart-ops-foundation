@@ -1,12 +1,21 @@
 /**
- * SupplyXPage.tsx — Sprint T-Phase-1.2.6f-b-2-fix-2 · Block O · D-282
- * Internal procurement-side dashboard · mirrors Procure360Page shell.
+ * @file        src/pages/erp/supplyx/SupplyXPage.tsx
+ * @purpose     SupplyX entry shell · canonical Shell consumer · internal procurement read-only mirror
+ * @who         Internal Procurement · Buyer · Procurement Manager
+ * @when        2026-05-09 (T1 Shell retrofit)
+ * @sprint      T-Phase-1.A.9.T1 · Q-LOCK-T1-F1 · Block A.2 · Shell retrofit
+ * @iso         ISO 25010 Maintainability · Usability
+ * @whom        Audit Owner
+ * @decisions   D-282 (SupplyX as Procure360 internal mirror) · D-250 (Shell pattern lock · FR-58) ·
+ *              Q-LOCK-T1-F1 · Shell retrofit (A.9.T1 · canonical pattern lock per FR-58)
+ * @disciplines FR-30 · FR-58
+ * @reuses      @/shell Shell · supplyx-shell-config · panels · SupplyXModule type
+ * @[JWT]       N/A (page shell)
  */
 import { useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ERPHeader } from '@/components/layout/ERPHeader';
-import { SupplyXSidebar } from './SupplyXSidebar';
+import { Shell } from '@/shell';
+import { supplyxShellConfig } from '@/apps/erp/configs/supplyx-shell-config';
+import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   SupplyXWelcome,
   OpenRfqsPanel,
@@ -17,6 +26,7 @@ import type { SupplyXModule } from './SupplyXSidebar.types';
 
 export default function SupplyXPage(): JSX.Element {
   const [active, setActive] = useState<SupplyXModule>('welcome');
+  const { entitlements, profile } = useCardEntitlement();
 
   const render = (): JSX.Element => {
     switch (active) {
@@ -29,16 +39,16 @@ export default function SupplyXPage(): JSX.Element {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex flex-col w-full bg-background">
-        <ERPHeader />
-        <div className="flex-1 flex w-full overflow-hidden">
-          <SupplyXSidebar active={active} onNavigate={setActive} />
-          <main className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full">{render()}</ScrollArea>
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <Shell
+      config={supplyxShellConfig}
+      userProfile={profile}
+      tenantEntitlements={entitlements}
+      contextFlags={{ accounting_mode: 'standalone' }}
+      onSidebarItemClick={(item) => {
+        if (item.moduleId) setActive(item.moduleId as SupplyXModule);
+      }}
+    >
+      {render()}
+    </Shell>
   );
 }
