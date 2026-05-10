@@ -607,6 +607,9 @@ const App = () => (
               <Route path="/customer/profile" element={<P><CustomerProfile /></P>} />
               <Route path="/my" element={<P><CustomerDashboard /></P>} />
               <Route path="/my/dashboard" element={<P><CustomerDashboard /></P>} />
+              {/* T-Phase-1.H.1 · Q-LOCK-7a · backward-compat for old /erp/finecore bookmarks */}
+              <Route path="/erp/finecore" element={<FineCoreLegacyRedirect />} />
+              <Route path="/erp/finecore/*" element={<FineCoreLegacyRedirect />} />
               <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           </Suspense>
