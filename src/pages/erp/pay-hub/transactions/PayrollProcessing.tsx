@@ -564,7 +564,7 @@ export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel
                 </TableBody>
               </Table>
             </div>
-            <p className="text-xs text-muted-foreground italic">GL posting creates journal entries in FineCore Accounting module.</p>
+            <p className="text-xs text-muted-foreground italic">GL posting creates journal entries in FinCore Accounting module.</p>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setActiveStep(5)}>← Back</Button>
               <Button data-primary onClick={() => { postRun(selectedPeriod); setActiveStep(7); }}>

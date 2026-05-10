@@ -1,10 +1,10 @@
 /**
- * UniversalRegisterTypes.ts — Generic register type contracts (D-226 UTS · sibling to FineCore RegisterTypes)
+ * UniversalRegisterTypes.ts — Generic register type contracts (D-226 UTS · sibling to FinCore RegisterTypes)
  *
  * Sprint T-Phase-1.2.6a · Card #2.6 sub-sprint 1 of 5
  *
  * Sibling discipline: this file is the type contract for non-voucher
- * registers. The voucher-typed `src/components/finecore/registers/RegisterTypes.ts`
+ * registers. The voucher-typed `src/components/fincore/registers/RegisterTypes.ts`
  * stays untouched and continues to back 13 production voucher consumers.
  *
  * Consumers (1.2.6b/c/d retrofits): GRN, MIN, RTV, Quotation, SRM, IM, SOM,

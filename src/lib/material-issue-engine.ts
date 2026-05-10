@@ -17,7 +17,7 @@ import type {
 import { materialIssueNotesKey } from '@/types/material-issue-note';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { releaseProductionOrderReservations } from '@/lib/stock-reservation-engine';
 
 export interface CreateMaterialIssueInput {

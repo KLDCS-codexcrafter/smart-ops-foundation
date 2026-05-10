@@ -1,12 +1,12 @@
 /**
  * FinCorePage.tsx — Main Fin Core container
- * Mirrors PayHubPage.tsx — SidebarProvider + FineCoreSidebar + content area.
+ * Mirrors PayHubPage.tsx — SidebarProvider + FinCoreSidebar + content area.
  * [JWT] All data loaded via hooks
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 import { useState, useCallback, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { FineCoreSidebar } from './FineCoreSidebar';
+import { FinCoreSidebar } from './FinCoreSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
@@ -15,9 +15,9 @@ import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
-import { DraftTray, type FineCoreModule, type DraftEntry } from '@/components/finecore/DraftTray';
-import { ComingSoonPanel } from '@/components/finecore/ComingSoonPanel';
-import { FineCoreHubPanel } from './FineCoreHub';
+import { DraftTray, type FinCoreModule, type DraftEntry } from '@/components/fincore/DraftTray';
+import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
+import { FinCoreHubPanel } from './FinCoreHub';
 import { SalesInvoicePanel } from '@/pages/erp/accounting/vouchers/SalesInvoice';
 import { PurchaseInvoicePanel } from '@/pages/erp/accounting/vouchers/PurchaseInvoice';
 import { ReceiptPanel } from '@/pages/erp/accounting/vouchers/Receipt';
@@ -32,8 +32,8 @@ import { StockJournalPanel } from '@/pages/erp/accounting/vouchers/StockJournal'
 import { ManufacturingJournalPanel } from '@/pages/erp/accounting/vouchers/ManufacturingJournal';
 import { StockAdjustmentPanel } from '@/pages/erp/accounting/vouchers/StockAdjustment';
 import { StockTransferDispatchPanel } from '@/pages/erp/accounting/vouchers/StockTransferDispatch';
-import { PurchaseOrderPanel } from '@/pages/erp/finecore/PurchaseOrder';
-import { SalesOrderPanel } from '@/pages/erp/finecore/SalesOrder';
+import { PurchaseOrderPanel } from '@/pages/erp/fincore/PurchaseOrder';
+import { SalesOrderPanel } from '@/pages/erp/fincore/SalesOrder';
 import { DayBookPanel } from './reports/DayBook';
 import { LedgerReportPanel } from './reports/LedgerReport';
 import { TrialBalancePanel } from './reports/TrialBalance';
@@ -88,7 +88,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useT } from '@/lib/i18n-engine';
 
-const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
+const breadcrumbLabels: Partial<Record<FinCoreModule, string>> = {
   'fc-hub': 'Hub Overview',
   'fc-txn-sales-invoice': 'Sales Invoice',
   'fc-txn-purchase-invoice': 'Purchase Invoice',
@@ -157,7 +157,7 @@ const breadcrumbLabels: Partial<Record<FineCoreModule, string>> = {
 
 export function FinCorePagePanel() {
   const t = useT();
-  const [activeModule, setActiveModule] = useState<FineCoreModule>('fc-hub');
+  const [activeModule, setActiveModule] = useState<FinCoreModule>('fc-hub');
   const [drafts, setDrafts] = useState<DraftEntry[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
   // [T10-pre.2d-B] Pre-filter passed to DayBookPanel when arriving via register drill-down.
@@ -174,27 +174,27 @@ export function FinCorePagePanel() {
     if (!entityCode) return;
     logAudit({
       entityCode: entCode, userId, userName: userId,
-      cardId: 'finecore',
+      cardId: 'fincore',
       action: 'card_open',
     });
   }, [entCode, userId, entityCode]);
 
   useEffect(() => {
     if (!entityCode) return;
-    rememberModule('finecore', activeModule);
+    rememberModule('fincore', activeModule);
     logAudit({
       entityCode: entCode, userId, userName: userId,
-      cardId: 'finecore',
+      cardId: 'fincore',
       moduleId: activeModule,
       action: 'module_open',
     });
     recordActivity(entCode, userId, {
-      card_id: 'finecore',
+      card_id: 'fincore',
       kind: 'module',
       ref_id: activeModule,
-      title: `FineCore · ${activeModule}`,
+      title: `FinCore · ${activeModule}`,
       subtitle: null,
-      deep_link: `/erp/finecore#${activeModule}`,
+      deep_link: `/erp/fincore#${activeModule}`,
     });
   }, [activeModule, entCode, userId, entityCode]);
 
@@ -223,7 +223,7 @@ export function FinCorePagePanel() {
 
   const renderModule = () => {
     switch (activeModule) {
-      case 'fc-hub': return <FineCoreHubPanel onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
+      case 'fc-hub': return <FinCoreHubPanel onNavigate={mod => setActiveModule(mod as FinCoreModule)} />;
       case 'fc-txn-sales-invoice': return <SalesInvoicePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-purchase-invoice': return <PurchaseInvoicePanel onSaveDraft={addToDraftTray} />;
       case 'fc-txn-receipt': return <ReceiptPanel onSaveDraft={addToDraftTray} />;
@@ -240,7 +240,7 @@ export function FinCorePagePanel() {
       case 'fc-inv-mfg-journal': return <ManufacturingJournalPanel onSaveDraft={addToDraftTray} />;
       case 'fc-ord-purchase-order': return <PurchaseOrderPanel entityCode={entityCode} />;
       case 'fc-ord-sales-order': return <SalesOrderPanel entityCode={entityCode} />;
-      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} initialFilters={dayBookInitialFilters as { dateFrom?: string; dateTo?: string; typeFilter?: string; search?: string } | undefined} onNavigate={mod => setActiveModule(mod as FineCoreModule)} />;
+      case 'fc-rpt-daybook': return <DayBookPanel entityCode={entityCode} initialFilters={dayBookInitialFilters as { dateFrom?: string; dateTo?: string; typeFilter?: string; search?: string } | undefined} onNavigate={mod => setActiveModule(mod as FinCoreModule)} />;
       case 'fc-rpt-ledger': return <LedgerReportPanel entityCode={entityCode} />;
       case 'fc-rpt-trial-balance': return <TrialBalancePanel entityCode={entityCode} />;
       case 'fc-rpt-pl': return <ProfitLossPanel entityCode={entityCode} />;
@@ -301,7 +301,7 @@ export function FinCorePagePanel() {
       <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen bg-background flex flex-col">
           <ERPHeader
-            breadcrumbs={[{ label: t('finecore.title', 'Fin Core'), href: '/erp/finecore' }]}
+            breadcrumbs={[{ label: t('fincore.title', 'Fin Core'), href: '/erp/fincore' }]}
             showDatePicker={false}
           />
           <main className="flex-1">
@@ -317,14 +317,14 @@ export function FinCorePagePanel() {
 
   return (
     <>
-      <GuidedTourOverlay cardId='finecore' />
+      <GuidedTourOverlay cardId='fincore' />
       <SidebarProvider defaultOpen>
-        <FineCoreSidebar active={activeModule} onNavigate={setActiveModule} />
+        <FinCoreSidebar active={activeModule} onNavigate={setActiveModule} />
         <SidebarInset>
           <ERPHeader
             breadcrumbs={[
               { label: 'Operix Core', href: '/erp/dashboard' },
-              { label: t('finecore.title', 'Fin Core') },
+              { label: t('fincore.title', 'Fin Core') },
               { label: breadcrumbLabels[activeModule] ?? activeModule },
             ]}
             showDatePicker={false}

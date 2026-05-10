@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 import type { OutstandingEntry } from '@/types/voucher';
-import { outstandingKey } from '@/lib/finecore-engine';
+import { outstandingKey } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {

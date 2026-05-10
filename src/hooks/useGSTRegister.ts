@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 import type { GSTEntry } from '@/types/voucher';
-import { gstRegisterKey } from '@/lib/finecore-engine';
+import { gstRegisterKey } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {

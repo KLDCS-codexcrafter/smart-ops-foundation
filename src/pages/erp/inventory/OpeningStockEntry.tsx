@@ -13,7 +13,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
-import { stockLedgerKey } from '@/lib/finecore-engine';
+import { stockLedgerKey } from '@/lib/fincore-engine';
 import { onEnterNext } from '@/lib/keyboard';
 
 const IKEY = 'erp_inventory_items';

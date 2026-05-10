@@ -1,6 +1,6 @@
 /**
- * SimpleGSTPanel.tsx — GST computation summary for non-FineCore line shapes
- * Sprint T-Phase-2.7-a · sibling to FineCore GSTComputationPanel.
+ * SimpleGSTPanel.tsx — GST computation summary for non-FinCore line shapes
+ * Sprint T-Phase-2.7-a · sibling to FinCore GSTComputationPanel.
  *
  * Consumes simpler line shape: { qty, rate, discount_pct?, gst_rate? }.
  * Splits into CGST/SGST or IGST based on supplier vs PoS state codes.

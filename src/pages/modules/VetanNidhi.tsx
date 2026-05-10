@@ -40,7 +40,7 @@ const COMPARE = [
   { feature: 'PF ECR file',             erp: 'Auto-generated',                            standalone: 'Auto-generated',                       tally: 'Auto-generated' },
   { feature: 'Form 24Q',                erp: 'Full 24Q with TRACES challan linking',      standalone: 'Full 24Q (HR+Payroll tier+)',           tally: 'Full 24Q (HR+Payroll tier+)' },
   { feature: 'Form 16',                 erp: 'Part A + B — bulk generation',              standalone: 'Part A + B (Professional+)',            tally: 'Part A + B (Professional+)' },
-  { feature: 'Accounting entries',      erp: 'Auto-posted to Operix FineCore GL',         standalone: 'Excel export only',                    tally: 'Auto-pushed to Tally via Bridge' },
+  { feature: 'Accounting entries',      erp: 'Auto-posted to Operix FinCore GL',         standalone: 'Excel export only',                    tally: 'Auto-pushed to Tally via Bridge' },
   { feature: 'Attendance tracking',     erp: 'Full — manual, biometric, geo-fence, web',  standalone: 'HR Starter+',                          tally: 'HR Starter+' },
   { feature: 'Leave management',        erp: 'Full — EL, CL, SL, ML, PL, OD, CO',        standalone: 'HR Starter+',                          tally: 'HR Starter+' },
   { feature: 'Appraisal cycles',        erp: 'Full — KRA, 9-box, succession',             standalone: 'HR+Payroll tier+',                     tally: 'HR+Payroll tier+' },

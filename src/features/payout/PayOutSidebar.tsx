@@ -8,7 +8,7 @@
  * @whom     PayOutPage container
  * @consumers Routes /erp/payout/*
  *
- * Mirrors FineCoreSidebar.tsx pattern · violet color scheme matches PayOut card.
+ * Mirrors FinCoreSidebar.tsx pattern · violet color scheme matches PayOut card.
  */
 import { useNavigate, useLocation } from 'react-router-dom';
 import {

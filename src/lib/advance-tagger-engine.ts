@@ -8,7 +8,7 @@
  * @phase    Phase 1 · localStorage · Phase 2 swap to backend with same join contract.
  *
  * IMPORTANT: This is a pure query/suggestion engine · does NOT mutate state.
- * Reads existing advancesKey storage (auto-populated by finecore-engine on
+ * Reads existing advancesKey storage (auto-populated by fincore-engine on
  * voucher post · line 452-475) and existing voucher storage for open
  * invoice queries. Returns matchable pairs · UI decides what to do with them.
  *
@@ -17,7 +17,7 @@
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 
 // ── Internal storage helpers ─────────────────────────────────────
 

@@ -7,19 +7,19 @@
  * @decisions   D-287 (FCPI auto-draft on approval) · D-259 (FinCore PI booking hybrid) ·
  *              D-127 (PurchaseOrder.tsx ZERO TOUCH) · D-128 (voucher schemas ZERO TOUCH · we WRITE drafts only)
  *              · D-194 localStorage canonical
- * @reuses      bill-passing-engine · finecore-engine.generateDocNo · audit-trail-hash-chain · decimal-helpers
- * @[JWT]       POST /api/finecore/pi/auto-draft
+ * @reuses      bill-passing-engine · fincore-engine.generateDocNo · audit-trail-hash-chain · decimal-helpers
+ * @[JWT]       POST /api/fincore/pi/auto-draft
  */
 
 import type { BillPassingRecord, BillPassingLine } from '@/types/bill-passing';
 import { getBillPassing, setFcpiLink } from './bill-passing-engine';
-import { generateDocNo } from './finecore-engine';
+import { generateDocNo } from './fincore-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { dMul, dAdd, round2 } from './decimal-helpers';
 
 // ---------------- Types ----------------
 
-export type FcpiDraftStatus = 'draft' | 'reviewed_by_finecore' | 'posted' | 'rejected_by_finecore';
+export type FcpiDraftStatus = 'draft' | 'reviewed_by_fincore' | 'posted' | 'rejected_by_fincore';
 
 export interface FcpiDraftLine {
   id: string;
@@ -94,7 +94,7 @@ export const fcpiDraftKey = (entityCode: string): string =>
 
 function read(entityCode: string): FcpiDraftRecord[] {
   try {
-    // [JWT] GET /api/finecore/pi/drafts?entityCode=...
+    // [JWT] GET /api/fincore/pi/drafts?entityCode=...
     const raw = localStorage.getItem(fcpiDraftKey(entityCode));
     return raw ? (JSON.parse(raw) as FcpiDraftRecord[]) : [];
   } catch {
@@ -104,7 +104,7 @@ function read(entityCode: string): FcpiDraftRecord[] {
 
 function write(entityCode: string, list: FcpiDraftRecord[]): void {
   try {
-    // [JWT] POST /api/finecore/pi/drafts
+    // [JWT] POST /api/fincore/pi/drafts
     localStorage.setItem(fcpiDraftKey(entityCode), JSON.stringify(list));
   } catch {
     /* quota silent */

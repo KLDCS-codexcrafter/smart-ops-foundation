@@ -201,7 +201,7 @@ export default function RegisterConfigPage() {
       <div className="min-h-screen bg-background">
         <ERPHeader
           breadcrumbs={[
-            { label: 'Fin Core', href: '/erp/finecore' },
+            { label: 'Fin Core', href: '/erp/fincore' },
             { label: 'Settings' },
             { label: 'Register Config' },
           ]}

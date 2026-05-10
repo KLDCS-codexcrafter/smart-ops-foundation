@@ -12,7 +12,7 @@ import { Truck, ClipboardEdit, CheckCircle2, AlertTriangle, ArrowRight, Inbox } 
 import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchHubModule } from './DispatchHubSidebar';
 import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';

@@ -21,7 +21,7 @@ import {
   type CancellationAuditEntry,
 } from '@/types/cancellation-audit-log';
 import { validateFieldRules } from '@/lib/field-rule-engine';
-import type { FieldRule } from '@/lib/non-finecore-voucher-type-registry';
+import type { FieldRule } from '@/lib/non-fincore-voucher-type-registry';
 
 describe('Sprint 2.7-c · bank-instrument + IRN + cancel-audit', () => {
   // ---------- IC1 · NEFT/RTGS UTR regex ----------

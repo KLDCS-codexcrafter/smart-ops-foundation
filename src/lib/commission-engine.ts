@@ -13,7 +13,7 @@ import type {
 import type { TDSDeductionEntry } from '@/types/compliance';
 import type { VoucherLedgerLine } from '@/types/voucher';
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
-import { getQuarter, getAssessmentYear } from '@/lib/finecore-engine';
+import { getQuarter, getAssessmentYear } from '@/lib/fincore-engine';
 import { round2 } from '@/lib/decimal-helpers';
 
 export interface CommissionReceiptResult {

@@ -3,7 +3,7 @@
  * Sprint 9. Lists every EWBRecord. Time Left column is colour-coded.
  * Extend dialog re-uses computeEWBValidity to compute new validity.
  *
- * [JWT] GET /api/finecore/ewb/list?entity={code}
+ * [JWT] GET /api/fincore/ewb/list?entity={code}
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -79,7 +79,7 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
   useEffect(() => { refresh(); }, [refresh]);
 
   const persist = useCallback((next: EWBRecord[]) => {
-    // [JWT] PUT /api/finecore/ewb/bulk
+    // [JWT] PUT /api/fincore/ewb/bulk
     localStorage.setItem(ewbRecordsKey(entityCode), JSON.stringify(next));
     setRecords(next);
   }, [entityCode]);

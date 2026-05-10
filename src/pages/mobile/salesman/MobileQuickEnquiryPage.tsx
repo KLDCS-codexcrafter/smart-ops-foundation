@@ -19,7 +19,7 @@ import {
   type Enquiry, type EnquiryType, type EnquiryPriority, type EnquiryFollowUp,
   enquiriesKey,
 } from '@/types/enquiry';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 function readSession(): MobileSession | null {
   try {

@@ -3,7 +3,7 @@
  * [JWT] GET /api/orders?type=sales_order
  *
  * Phase 1: read-only list. Creating new SOs still happens via Quote→SO conversion
- * or via FineCore /sales-order page.
+ * or via FinCore /sales-order page.
  */
 import { Fragment, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -126,8 +126,8 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
           <Badge variant="outline" className="text-[10px]">Sales Orders</Badge>
         </div>
         <Button size="sm" variant="outline"
-          onClick={() => navigate('/erp/finecore/sales-order')}>
-          <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open in FineCore
+          onClick={() => navigate('/erp/fincore/sales-order')}>
+          <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open in FinCore
         </Button>
       </div>
 

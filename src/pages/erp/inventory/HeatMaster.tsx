@@ -2,7 +2,7 @@
  * HeatMaster.tsx — Heat / Cast number register with chemistry + mechanical + MTC upload.
  * Sprint T-Phase-1.2.3 · Sinha-critical · 4 collapsible sections.
  *
- * D-127: lives outside finecore/.
+ * D-127: lives outside fincore/.
  * [JWT] GET/POST /api/inventory/heat-numbers
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration

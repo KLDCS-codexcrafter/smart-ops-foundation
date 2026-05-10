@@ -260,7 +260,7 @@ export default function IncomeTaxMaster() {
         <ERPHeader
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'FineCore', href: '/erp/accounting' },
+            { label: 'FinCore', href: '/erp/accounting' },
             { label: 'Income Tax Reference' },
           ]}
           showDatePicker={false} showCompany={false}

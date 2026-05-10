@@ -456,7 +456,7 @@ export default function TransactionTemplates() {
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
             { label: 'Command Center', href: '/erp/command-center' },
-            { label: 'FineCore Masters' },
+            { label: 'FinCore Masters' },
             { label: 'Transaction Templates' },
           ]}
           showDatePicker={false} showCompany={false}

@@ -30,7 +30,7 @@
 
 import { addDays, parseISO, differenceInDays } from 'date-fns';
 import type { Voucher } from '@/types/voucher';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 
 // ── Schemas ─────────────────────────────────────────────────────
 

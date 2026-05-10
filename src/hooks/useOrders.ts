@@ -1,14 +1,14 @@
 /**
  * useOrders.ts — CRUD hook for Purchase Orders & Sales Orders
  * Orders are pure commitment documents — zero GL, zero stock, zero GST impact.
- * This hook NEVER calls finecore-engine.postVoucher().
+ * This hook NEVER calls fincore-engine.postVoucher().
  * [JWT] Replace with GET/POST /api/orders
  */
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { Order } from '@/types/order';
 import { ordersKey } from '@/types/order';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {

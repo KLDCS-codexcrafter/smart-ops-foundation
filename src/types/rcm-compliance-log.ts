@@ -4,7 +4,7 @@
  *
  * Captures EVERY purchase-side voucher's RCM detection outcome — not just posted ones.
  * Severity tiers HIGH/MED/LOW/INFO surface in RCMComplianceReport.
- * [JWT] GET/POST /api/finecore/rcm-compliance-log
+ * [JWT] GET/POST /api/fincore/rcm-compliance-log
  */
 
 export type RCMSeverity = 'HIGH' | 'MED' | 'LOW' | 'INFO';

@@ -1,7 +1,7 @@
 /**
  * useEntityList.ts — reads all entities from Foundation storage
  * Returns the entity list, selected entity, and multi-entity flag.
- * Used by Pay Hub, FineCore (Sprint 22), and all future modules.
+ * Used by Pay Hub, FinCore (Sprint 22), and all future modules.
  */
 import { useMemo, useCallback } from 'react';
 import { useERPCompany, type ERPCompany } from '@/components/layout/ERPCompanySelector';

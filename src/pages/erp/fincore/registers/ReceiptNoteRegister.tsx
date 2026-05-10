@@ -11,13 +11,13 @@
 import { useMemo } from 'react';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { fmtDate } from '../reports/reportUtils';
-import { RegisterGrid, StatusBadge } from '@/components/finecore/registers/RegisterGrid';
-import type { RegisterColumn, RegisterMeta, SummaryCard } from '@/components/finecore/registers/RegisterTypes';
-import type { FineCoreModule } from '@/components/finecore/DraftTray';
+import { RegisterGrid, StatusBadge } from '@/components/fincore/registers/RegisterGrid';
+import type { RegisterColumn, RegisterMeta, SummaryCard } from '@/components/fincore/registers/RegisterTypes';
+import type { FinCoreModule } from '@/components/fincore/DraftTray';
 
 interface ReceiptNoteRegisterProps {
   entityCode: string;
-  onNavigate?: (module: FineCoreModule, initialFilters?: Record<string, unknown>) => void;
+  onNavigate?: (module: FinCoreModule, initialFilters?: Record<string, unknown>) => void;
 }
 
 const totalQty = (lines?: VoucherInventoryLine[]) =>

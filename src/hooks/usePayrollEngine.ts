@@ -19,7 +19,7 @@ import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCHARGE_RATES }
   from '@/data/payroll-statutory-seed-data';
-import { journalKey } from '@/lib/finecore-engine';
+import { journalKey } from '@/lib/fincore-engine';
 import type { JournalEntry } from '@/types/voucher';
 
 // PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that

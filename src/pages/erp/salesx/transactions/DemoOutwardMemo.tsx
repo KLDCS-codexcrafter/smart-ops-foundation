@@ -33,7 +33,7 @@ import { computeIRNLockState } from '@/lib/irn-lock-engine';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import {

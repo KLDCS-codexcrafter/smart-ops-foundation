@@ -13,13 +13,13 @@
  * @depends  RegisterTypes (RegisterSavedView) · register-config (RegisterTypeCode)
  * @consumers RegisterGrid.tsx · SmokeTestRunner (view-1 / view-2 round-trip checks)
  *
- * NOTE: Phase 2 will swap localStorage for `GET /api/finecore/register-saved-views/...`
+ * NOTE: Phase 2 will swap localStorage for `GET /api/fincore/register-saved-views/...`
  *       backend endpoints — the storage-key naming pattern is preserved so the
  *       JWT-annotated comments below map 1:1 to future REST routes.
  */
 
 import type { RegisterTypeCode } from '@/types/register-config';
-import type { RegisterSavedView } from '@/components/finecore/registers/RegisterTypes';
+import type { RegisterSavedView } from '@/components/fincore/registers/RegisterTypes';
 
 const STORAGE_VERSION = 1;
 
@@ -42,7 +42,7 @@ export function savedViewsKey(entityCode: string, registerType: RegisterTypeCode
  */
 export function loadSavedViews(entityCode: string, registerType: RegisterTypeCode): RegisterSavedView[] {
   try {
-    // [JWT] GET /api/finecore/register-saved-views/:entityCode/:registerType
+    // [JWT] GET /api/fincore/register-saved-views/:entityCode/:registerType
     const raw = localStorage.getItem(savedViewsKey(entityCode, registerType));
     if (!raw) return [];
     const parsed = JSON.parse(raw) as Partial<SavedViewsBlob>;
@@ -56,7 +56,7 @@ export function loadSavedViews(entityCode: string, registerType: RegisterTypeCod
 function writeBlob(entityCode: string, registerType: RegisterTypeCode, views: RegisterSavedView[]): void {
   try {
     const blob: SavedViewsBlob = { version: STORAGE_VERSION, views };
-    // [JWT] PUT /api/finecore/register-saved-views/:entityCode/:registerType
+    // [JWT] PUT /api/fincore/register-saved-views/:entityCode/:registerType
     localStorage.setItem(savedViewsKey(entityCode, registerType), JSON.stringify(blob));
   } catch (err) {
     // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
@@ -94,7 +94,7 @@ export function deleteView(
 ): void {
   const existing = loadSavedViews(entityCode, registerType);
   const next = existing.filter(v => v.id !== viewId);
-  // [JWT] DELETE /api/finecore/register-saved-views/:entityCode/:registerType/:viewId
+  // [JWT] DELETE /api/fincore/register-saved-views/:entityCode/:registerType/:viewId
   writeBlob(entityCode, registerType, next);
 }
 

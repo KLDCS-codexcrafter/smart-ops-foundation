@@ -1,5 +1,5 @@
 /**
- * finecore-engine.ts — Core posting engine for FineCore vouchers
+ * fincore-engine.ts — Core posting engine for FinCore vouchers
  * [JWT] Replace with POST /api/accounting/vouchers/post
  */
 import Decimal from 'decimal.js';
@@ -330,7 +330,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     beforeState: null,
     afterState: { ...voucher, status: 'posted' },
     reason: null,
-    sourceModule: 'finecore',
+    sourceModule: 'fincore',
   });
 
   // [T-T8.0-OrgTagFoundation] Auto-tag · ensures both useVouchers and direct postVoucher paths populate metadata.
@@ -558,7 +558,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
 
     // ── Sprint T-Phase-2.7-a · RCM Compliance Log (additive · Q5-b · Q9) ──
     // Always writes a log entry for purchase-side vouchers (auditable trail).
-    // [JWT] POST /api/finecore/rcm-compliance-log
+    // [JWT] POST /api/fincore/rcm-compliance-log
     try {
       const purchaseSideTypes = new Set([
         'Purchase', 'Expense', 'Journal', 'Debit Note', 'Credit Note', 'Payment',
@@ -619,7 +619,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
           created_at: now,
           created_by: voucher.created_by ?? null,
         });
-        // [JWT] POST /api/finecore/rcm-compliance-log
+        // [JWT] POST /api/fincore/rcm-compliance-log
         ss(rcmComplianceLogKey(entityCode), logStore);
       }
     } catch {
@@ -772,7 +772,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
       },
     });
   } catch (err) {
-    console.error('[finecore-engine] event emit failed (non-fatal):', err);
+    console.error('[fincore-engine] event emit failed (non-fatal):', err);
   }
 }
 
@@ -806,7 +806,7 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
     beforeState: prevSnapshot,
     afterState: { ...vouchers[idx] },
     reason: reason ?? 'No reason provided',
-    sourceModule: 'finecore',
+    sourceModule: 'fincore',
   });
 
   // Mark journal entries
@@ -927,7 +927,7 @@ export function cancelVoucher(voucherId: string, entityCode: string, reason: str
       meta: {},
     });
   } catch (err) {
-    console.error('[finecore-engine] cancel event emit failed (non-fatal):', err);
+    console.error('[fincore-engine] cancel event emit failed (non-fatal):', err);
   }
 }
 

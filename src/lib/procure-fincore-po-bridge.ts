@@ -15,7 +15,7 @@ import type { PurchaseOrderLine } from '@/types/po';
 import { getPurchaseOrder } from './po-management-engine';
 import type { Order, OrderLine } from '@/types/order';
 import { ordersKey } from '@/types/order';
-import { generateDocNo } from './finecore-engine';
+import { generateDocNo } from './fincore-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { emitLeakEvent } from './leak-register-engine';
 

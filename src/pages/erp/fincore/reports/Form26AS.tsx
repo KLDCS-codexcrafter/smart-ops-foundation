@@ -20,7 +20,7 @@ import { inr, exportCSV } from './reportUtils';
 import { parse26ASTextFile, type TRACES26ASRow } from '@/lib/gst-portal-service';
 import type { TDSReceivableEntry } from '@/types/compliance';
 import { tdsReceivableKey } from '@/types/compliance';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';

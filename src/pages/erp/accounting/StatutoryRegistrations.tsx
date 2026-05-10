@@ -129,7 +129,7 @@ export default function StatutoryRegistrations() {
         <ERPHeader
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'FineCore', href: '/erp/accounting' },
+            { label: 'FinCore', href: '/erp/accounting' },
             { label: 'Statutory Registrations' },
           ]}
           showDatePicker={false}

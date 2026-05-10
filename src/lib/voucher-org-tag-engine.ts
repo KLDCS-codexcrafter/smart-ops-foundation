@@ -127,7 +127,7 @@ export function getOperatorContext(
 export function getOrgTagCoverage(): { total: number; tagged: number; coveragePct: number } {
   const tags = loadAllTags();
   // Count vouchers across entity-scoped storage keys.
-  // finecore-engine uses key pattern `erp_group_vouchers_{entityCode}`.
+  // fincore-engine uses key pattern `erp_group_vouchers_{entityCode}`.
   let totalVouchers = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);

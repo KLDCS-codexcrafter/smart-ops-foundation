@@ -10,7 +10,7 @@
  *              dispatch_dept_id + receive_dept_id populated.
  *
  * DEPENDENCIES TallyVoucherHeader, DepartmentPicker, StockTransferLineGrid,
- *              VoucherFormFooter, useEntityCode, useTenantConfig, finecore-engine.
+ *              VoucherFormFooter, useEntityCode, useTenantConfig, fincore-engine.
  *
  * TALLY-ON-TOP Inventory-only. Emits voucher.posted for Bridge routing.
  *
@@ -28,16 +28,16 @@ import { Link2, Truck, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { DepartmentPicker } from '@/components/finecore/pickers/DepartmentPicker';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
-import { StockTransferLineGrid, type StockTransferLine } from '@/components/finecore/StockTransferLineGrid';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { DepartmentPicker } from '@/components/fincore/pickers/DepartmentPicker';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
+import { StockTransferLineGrid, type StockTransferLine } from '@/components/fincore/StockTransferLineGrid';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 
 interface StockTransferDispatchPanelProps {
   onSaveDraft?: (draft: DraftEntry) => void;
@@ -77,7 +77,7 @@ export function StockTransferDispatchPanel({ onSaveDraft }: StockTransferDispatc
 
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/stock-transfer-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=dispatch`;
+      const url = `/erp/fincore/stock-transfer-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=dispatch`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);

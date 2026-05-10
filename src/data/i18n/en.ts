@@ -255,7 +255,7 @@ export const en: Record<string, string> = {
   'projx.title': 'ProjX',
   'projx.project_entry.title': 'Project Entry',
   'projx.milestone_tracker.title': 'Milestone Tracker',
-  'finecore.title': 'FineCore',
+  'fincore.title': 'FinCore',
   'comp.audit_trail.title': 'Audit Trail Report',
   'comp.monthly_production.title': 'Monthly Production Accounts',
   'foundation.entity_hub.title': 'Entity Hub',

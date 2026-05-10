@@ -85,8 +85,8 @@ const LANES: Array<{
     labelColor: 'text-indigo-600 dark:text-indigo-400',
     // Sprint T-Phase-1.3-DashboardLanes-Fix · 1 NEW added (bill-passing) · 3-way match feeds payout in P2P chain
     ids: [
-      'finecore',
-      'bill-passing',      // NEW · 3-way match · 1,550 LOC built · adjacent to finecore in P2P chain
+      'fincore',
+      'bill-passing',      // NEW · 3-way match · 1,550 LOC built · adjacent to fincore in P2P chain
       'comply360',
       'payout',
       'receivx',
@@ -145,7 +145,7 @@ function getUserName(): string {
 
 // ── Prefetch map for hover-based code splitting ───────────────────────────────
 const PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
-  '/erp/finecore':       () => import('@/pages/erp/finecore/FinCorePage'),
+  '/erp/fincore':       () => import('@/pages/erp/fincore/FinCorePage'),
   '/erp/pay-hub':        () => import('@/features/pay-hub/PayHubPage'),
   '/erp/salesx':         () => import('@/features/salesx/SalesXPage'),
   '/erp/command-center': () => import('@/features/command-center/pages/CommandCenterPage'),

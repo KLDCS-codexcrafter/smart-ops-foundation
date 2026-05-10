@@ -257,7 +257,7 @@ export default function BankReconciliation() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Bank Reconciliation' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Bank Reconciliation' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <BankReconciliationPanel entityCode={entityCode} />

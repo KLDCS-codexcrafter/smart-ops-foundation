@@ -268,7 +268,7 @@ export function AssetTagManagerPanel() {
                 </Select>
               </div>
               <div className="space-y-1.5 col-span-2">
-                <Label>Asset Centre <span className="text-[10px] text-muted-foreground">(FineCore master)</span></Label>
+                <Label>Asset Centre <span className="text-[10px] text-muted-foreground">(FinCore master)</span></Label>
                 <Select
                   value={form.asset_centre_id ?? 'none'}
                   onValueChange={v => {

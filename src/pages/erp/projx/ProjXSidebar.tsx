@@ -1,6 +1,6 @@
 /**
  * ProjXSidebar.tsx — ProjX left sidebar
- * Sprint T-Phase-1.1.2-a · Tier 1 Card #1 · mirrors FineCoreSidebar pattern
+ * Sprint T-Phase-1.1.2-a · Tier 1 Card #1 · mirrors FinCoreSidebar pattern
  * Indigo color scheme. Masters section LINKS OUT to Command Center.
  */
 import { useState, useEffect } from 'react';

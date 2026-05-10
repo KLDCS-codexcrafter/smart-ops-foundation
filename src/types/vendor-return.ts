@@ -5,9 +5,9 @@
  * Vendor return records goods being returned to vendor — typically driven by
  * QualiCheck rejection, quarantine release-to-reject, or supersession.
  *
- * D-127: Lives in src/pages/erp/logistic/ (NOT finecore).
+ * D-127: Lives in src/pages/erp/logistic/ (NOT fincore).
  * D-128: Vendor return is NOT a voucher; the financial debit note is posted
- * by FineCore in Phase 2.
+ * by FinCore in Phase 2.
  *
  * [JWT] GET/POST/PATCH /api/logistic/vendor-returns
  */

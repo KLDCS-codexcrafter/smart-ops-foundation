@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { InlineMasterCreate } from '@/components/finecore/InlineMasterCreate';
+import { InlineMasterCreate } from '@/components/fincore/InlineMasterCreate';
 
 /** Minimal projection of a ledger row — works with the existing
  *  erp_group_ledger_definitions_<entity> localStorage shape (untyped in codebase). */

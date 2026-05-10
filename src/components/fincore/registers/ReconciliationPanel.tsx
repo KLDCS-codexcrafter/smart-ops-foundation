@@ -14,19 +14,19 @@
  * @whom     Accountants reconciling sales↔receipt · purchase↔payment ·
  *           delivery_note↔sales · receipt_note↔purchase
  * @depends  RegisterTypes (RegisterMeta) · register-config (RegisterTypeCode) ·
- *           voucher.ts · finecore-engine vouchersKey
+ *           voucher.ts · fincore-engine vouchersKey
  * @consumers RegisterGrid.tsx (renders this when reconMode toggled on)
  */
 
 import { useMemo, useState } from 'react';
 import type { Voucher } from '@/types/voucher';
 import type { RegisterTypeCode } from '@/types/register-config';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { GitMerge, ArrowRight } from 'lucide-react';
-import { fmtDate, inr } from '@/pages/erp/finecore/reports/reportUtils';
+import { fmtDate, inr } from '@/pages/erp/fincore/reports/reportUtils';
 import {
   computeReconMatch,
   type ReconMatchStatus,
@@ -69,7 +69,7 @@ export function ReconciliationPanel({
   // Load all vouchers for the entity, then narrow to the target register's base_voucher_type.
   const targetVouchers = useMemo<Voucher[]>(() => {
     try {
-      // [JWT] GET /api/finecore/vouchers/:entityCode (filtered by base_voucher_type below)
+      // [JWT] GET /api/fincore/vouchers/:entityCode (filtered by base_voucher_type below)
       const raw = localStorage.getItem(vouchersKey(entityCode));
       const all: Voucher[] = raw ? JSON.parse(raw) : [];
       const baseType = REGISTER_TO_BASE_TYPE[targetRegister];

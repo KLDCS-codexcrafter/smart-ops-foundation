@@ -1,18 +1,18 @@
 /**
- * @file     non-finecore-voucher-type-registry.ts — Sibling voucher type registry
+ * @file     non-fincore-voucher-type-registry.ts — Sibling voucher type registry
  * @sprint   T-Phase-1.2.6e-tally-1 · Q1-b · schema + registry only (UI in 2.7-b)
  * @updated  T-Phase-2.7-b · OOB-3 · field_rules + 3 demo seed voucher types
- * @purpose  Non-FineCore voucher types for Tally-Prime header parity.
- *           Mirrors FineCore VoucherType structure but separate (sibling discipline).
+ * @purpose  Non-FinCore voucher types for Tally-Prime header parity.
+ *           Mirrors FinCore VoucherType structure but separate (sibling discipline).
  *
- *   D-128 SIBLING DISCIPLINE: this file is NOT voucher-type.ts (which is FineCore).
+ *   D-128 SIBLING DISCIPLINE: this file is NOT voucher-type.ts (which is FinCore).
  *   Keep them parallel · do NOT cross-import.
  *
- *   [JWT] GET/PUT /api/voucher-types/non-finecore?entityCode=:entityCode
+ *   [JWT] GET/PUT /api/voucher-types/non-fincore?entityCode=:entityCode
  */
 import { REQUESTX_VOUCHER_TYPE_SEEDS } from '@/data/requestx-voucher-type-seed-data';
 
-export type NonFineCoreVoucherFamily =
+export type NonFinCoreVoucherFamily =
   | 'inventory_in'
   | 'inventory_out'
   | 'inventory_adjust'
@@ -42,9 +42,9 @@ export interface FieldRule {
   amount_field?: string;
 }
 
-export interface NonFineCoreVoucherType {
+export interface NonFinCoreVoucherType {
   id: string;
-  family: NonFineCoreVoucherFamily;
+  family: NonFinCoreVoucherFamily;
   display_name: string;
   prefix: string;
   is_default: boolean;
@@ -58,7 +58,7 @@ export interface NonFineCoreVoucherType {
 }
 
 /** Default registry · seeded on first load if no entity-specific config exists. */
-export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFineCoreVoucherType[] = [
+export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFinCoreVoucherType[] = [
   // Inventory In
   {
     id: 'vt-grn-domestic', family: 'inventory_in', display_name: 'GRN Domestic', prefix: 'GRN',
@@ -145,41 +145,41 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFineCoreVoucherType[] = [
 ];
 
 /** Storage key (per-entity custom voucher types · entities can extend defaults). */
-export const nonFineCoreVoucherTypesKey = (entityCode: string): string =>
+export const nonFinCoreVoucherTypesKey = (entityCode: string): string =>
   `erp_non_fc_voucher_types_${entityCode}`;
 
 /** Read configured voucher types for an entity · falls back to defaults. */
-export function getNonFineCoreVoucherTypes(entityCode: string): NonFineCoreVoucherType[] {
+export function getNonFinCoreVoucherTypes(entityCode: string): NonFinCoreVoucherType[] {
   try {
-    // [JWT] GET /api/voucher-types/non-finecore?entityCode=:entityCode
-    const raw = localStorage.getItem(nonFineCoreVoucherTypesKey(entityCode));
-    if (raw) return JSON.parse(raw) as NonFineCoreVoucherType[];
+    // [JWT] GET /api/voucher-types/non-fincore?entityCode=:entityCode
+    const raw = localStorage.getItem(nonFinCoreVoucherTypesKey(entityCode));
+    if (raw) return JSON.parse(raw) as NonFinCoreVoucherType[];
   } catch { /* fallthrough */ }
   return DEFAULT_NON_FINECORE_VOUCHER_TYPES;
 }
 
 /** Persist entity-specific voucher types (extends defaults). */
-export function saveNonFineCoreVoucherTypes(entityCode: string, types: NonFineCoreVoucherType[]): void {
+export function saveNonFinCoreVoucherTypes(entityCode: string, types: NonFinCoreVoucherType[]): void {
   try {
-    // [JWT] PUT /api/voucher-types/non-finecore?entityCode=:entityCode
-    localStorage.setItem(nonFineCoreVoucherTypesKey(entityCode), JSON.stringify(types));
+    // [JWT] PUT /api/voucher-types/non-fincore?entityCode=:entityCode
+    localStorage.setItem(nonFinCoreVoucherTypesKey(entityCode), JSON.stringify(types));
   } catch { /* ignore quota errors */ }
 }
 
 /** Get all voucher types for a specific family. */
 export function getVoucherTypesForFamily(
   entityCode: string,
-  family: NonFineCoreVoucherFamily,
-): NonFineCoreVoucherType[] {
-  return getNonFineCoreVoucherTypes(entityCode)
+  family: NonFinCoreVoucherFamily,
+): NonFinCoreVoucherType[] {
+  return getNonFinCoreVoucherTypes(entityCode)
     .filter(vt => vt.family === family && vt.is_active);
 }
 
 /** Get the default voucher type for a family · used by forms when user hasn't picked. */
 export function getDefaultVoucherTypeForFamily(
   entityCode: string,
-  family: NonFineCoreVoucherFamily,
-): NonFineCoreVoucherType | null {
+  family: NonFinCoreVoucherFamily,
+): NonFinCoreVoucherType | null {
   return getVoucherTypesForFamily(entityCode, family).find(vt => vt.is_default) ?? null;
 }
 
@@ -187,6 +187,6 @@ export function getDefaultVoucherTypeForFamily(
 export function findVoucherTypeById(
   entityCode: string,
   id: string,
-): NonFineCoreVoucherType | null {
-  return getNonFineCoreVoucherTypes(entityCode).find(vt => vt.id === id) ?? null;
+): NonFinCoreVoucherType | null {
+  return getNonFinCoreVoucherTypes(entityCode).find(vt => vt.id === id) ?? null;
 }

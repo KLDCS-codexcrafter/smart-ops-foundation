@@ -3,7 +3,7 @@
  * Sprint 9. Lists every IRNRecord for the entity. Bulk Generate (run all
  * pending), Retry Generate (per row), Cancel (within 24h), View signed QR.
  *
- * [JWT] GET /api/finecore/irn/list?entity={code}
+ * [JWT] GET /api/fincore/irn/list?entity={code}
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +29,7 @@ import {
 import type { Voucher } from '@/types/voucher';
 import type { EntityGSTConfig } from '@/types/entity-gst';
 import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import {
   buildIRNPayload, generateIRN, cancelIRN, type IRPCredentials,
 } from '@/lib/irn-engine';
@@ -65,7 +65,7 @@ export function IRNRegisterPanel({ entityCode }: Props) {
   useEffect(() => { refresh(); }, [refresh]);
 
   const persist = useCallback((next: IRNRecord[]) => {
-    // [JWT] PUT /api/finecore/irn/bulk
+    // [JWT] PUT /api/fincore/irn/bulk
     localStorage.setItem(irnRecordsKey(entityCode), JSON.stringify(next));
     setRecords(next);
   }, [entityCode]);

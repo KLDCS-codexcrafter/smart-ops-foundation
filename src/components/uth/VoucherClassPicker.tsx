@@ -14,16 +14,16 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import {
   getVoucherTypesForFamily,
-  type NonFineCoreVoucherFamily,
-  type NonFineCoreVoucherType,
-} from '@/lib/non-finecore-voucher-type-registry';
+  type NonFinCoreVoucherFamily,
+  type NonFinCoreVoucherType,
+} from '@/lib/non-fincore-voucher-type-registry';
 
 interface Props {
   entityCode: string;
-  family: NonFineCoreVoucherFamily;
+  family: NonFinCoreVoucherFamily;
   voucherTypeId: string | null;
   voucherTypeName: string | null;
-  onChange: (id: string | null, name: string | null, vt: NonFineCoreVoucherType | null) => void;
+  onChange: (id: string | null, name: string | null, vt: NonFinCoreVoucherType | null) => void;
   className?: string;
   /** Force-show even when only 1 type · used by Voucher Class Master preview. */
   forceShow?: boolean;

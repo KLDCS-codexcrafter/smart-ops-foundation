@@ -5,10 +5,10 @@
  * Pattern: PO (Procure360) → GRN (Inventory Hub) → stock credited to godown
  *
  * D-128 boundary: GRN is NOT a voucher. It is an authorization document.
- * The actual accounting voucher (Purchase Entry) is posted by FineCore/Procure360 in Phase 2.
+ * The actual accounting voucher (Purchase Entry) is posted by FinCore/Procure360 in Phase 2.
  * Phase 1: GRN records physical receipt; stock balance updates in localStorage.
  *
- * D-127 boundary: GRN form lives in src/pages/erp/inventory/transactions/ (NOT finecore).
+ * D-127 boundary: GRN form lives in src/pages/erp/inventory/transactions/ (NOT fincore).
  *
  * [JWT] GET/POST/PATCH /api/inventory/grns
  */

@@ -1,7 +1,7 @@
 /**
- * DistributorIntimationQueue.tsx — FineCore queue for accountants to verify partner
+ * DistributorIntimationQueue.tsx — FinCore queue for accountants to verify partner
  * payment intimations and convert to Receipt vouchers. Sprint 10.
- * [JWT] GET /api/finecore/intimations + POST /api/finecore/intimations/:id/convert
+ * [JWT] GET /api/fincore/intimations + POST /api/fincore/intimations/:id/convert
  */
 import { useMemo, useState } from 'react';
 import {
@@ -112,7 +112,7 @@ function DistributorIntimationQueueInner({ entityCode }: { entityCode: string })
 
   const handleConvert = (id: string) => {
     setBusy(id);
-    // [JWT] POST /api/finecore/intimations/:id/convert → creates a Receipt voucher.
+    // [JWT] POST /api/fincore/intimations/:id/convert → creates a Receipt voucher.
     const receiptId = `rcp_${Date.now()}`;
     updateStatus(id, {
       status: 'converted',

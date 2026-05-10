@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Trash2 } from 'lucide-react';
-import { GodownPicker } from '@/components/finecore/pickers/GodownPicker';
+import { GodownPicker } from '@/components/fincore/pickers/GodownPicker';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 
 export interface StockTransferLine {

@@ -7,7 +7,7 @@
  * @iso      Usability (HIGH — Tally F12 familiar) · Functional Suitability (HIGH — all 20 toggles editable) · Maintainability (HIGH — driven from PRINT_TOGGLES metadata)
  * @whom     Entity admins · Accountants (trim prints) · Stores (more detail)
  * @depends  print-config.ts · print-config-storage.ts · @/components/ui/switch, accordion, button, label, badge · lucide-react · sonner toast
- * @consumers Route /erp/finecore/settings/print-config
+ * @consumers Route /erp/fincore/settings/print-config
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -153,8 +153,8 @@ export function PrintConfigPagePanel() {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto p-6 space-y-6">
 
-        <Button variant="ghost" size="sm" onClick={() => navigate('/erp/finecore')}>
-          <ArrowLeft className="h-4 w-4 mr-1" />Back to FineCore
+        <Button variant="ghost" size="sm" onClick={() => navigate('/erp/fincore')}>
+          <ArrowLeft className="h-4 w-4 mr-1" />Back to FinCore
         </Button>
 
         <div className="flex items-start gap-4">
@@ -189,7 +189,7 @@ export function PrintConfigPagePanel() {
 
           <div className="ml-auto flex items-center gap-2">
             <Button variant="outline" size="sm" asChild>
-              <Link to="/erp/finecore/settings/register-config">
+              <Link to="/erp/fincore/settings/register-config">
                 <FileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Register Config
               </Link>
             </Button>

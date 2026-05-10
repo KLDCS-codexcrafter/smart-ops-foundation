@@ -1,5 +1,5 @@
 /**
- * FineCoreHub.tsx — Fin Core landing dashboard with 8 KPIs, recent activity,
+ * FinCoreHub.tsx — Fin Core landing dashboard with 8 KPIs, recent activity,
  * GST snapshot, debtor aging and quick entry shortcuts.
  * [JWT] All data via finance hooks
  */
@@ -32,7 +32,7 @@ import type { Quotation } from '@/types/quotation';
 import { commissionRegisterKey } from '@/types/commission-register';
 import type { CommissionEntry } from '@/types/commission-register';
 
-interface FineCoreHubPanelProps {
+interface FinCoreHubPanelProps {
   onNavigate?: (module: string) => void;
 }
 
@@ -84,7 +84,7 @@ const QUICK_ENTRIES: Array<{
   { module: 'fc-ord-sales-order',      label: 'Sales Order',      icon: ClipboardList, accent: 'text-green-500 bg-green-500/10' },
 ];
 
-export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
+export function FinCoreHubPanel({ onNavigate }: FinCoreHubPanelProps = {}) {
   const { entityCode } = useEntityCode();
 
   const { vouchers } = useVouchers(entityCode);
@@ -468,16 +468,16 @@ export function FineCoreHubPanel({ onNavigate }: FineCoreHubPanelProps = {}) {
   );
 }
 
-export default function FineCoreHub() {
+export default function FinCoreHub() {
   const { entityCode } = useEntityCode();
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader breadcrumbs={[
-          { label: 'Fin Core', href: '/erp/finecore' },
+          { label: 'Fin Core', href: '/erp/fincore' },
         ]} showDatePicker={false} />
         <main>
-          {entityCode ? <FineCoreHubPanel /> : <SelectCompanyGate title="Select a company to view Fin Core Hub" />}
+          {entityCode ? <FinCoreHubPanel /> : <SelectCompanyGate title="Select a company to view Fin Core Hub" />}
         </main>
       </div>
     </SidebarProvider>

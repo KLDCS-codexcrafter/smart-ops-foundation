@@ -180,7 +180,7 @@ export default function DayBook() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Day Book' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Day Book' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <DayBookPanel entityCode={entityCode} />

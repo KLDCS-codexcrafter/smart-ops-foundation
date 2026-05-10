@@ -17,7 +17,7 @@ import { onEnterNext } from '@/lib/keyboard';
 import { inr, fyStart, today, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 
 function ls<T>(key: string): T[] {

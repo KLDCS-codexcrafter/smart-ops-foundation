@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { CycleCount, CycleCountSuggestion } from '@/types/cycle-count';
 import { cycleCountsKey } from '@/types/cycle-count';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import type { InventoryItem } from '@/types/inventory-item';
 // Sprint T-Phase-1.2.5h-c1 · Generalized approval workflow (M-4) — engine wires audit trail.

@@ -16,7 +16,7 @@ import {
   countPendingReceiptAcks,
 } from '@/lib/stock-receipt-ack-engine';
 import { createInwardReceipt, transitionInwardReceipt } from '@/lib/inward-receipt-engine';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 
 const E = 'SHTEST';

@@ -17,7 +17,7 @@ import type {
   JobWorkOutOrderStatus,
 } from '@/types/job-work-out-order';
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 export interface CreateJobWorkReceiptInput {

@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 import type { StockEntry } from '@/types/voucher';
-import { stockLedgerKey } from '@/lib/finecore-engine';
+import { stockLedgerKey } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {

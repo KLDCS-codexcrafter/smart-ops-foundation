@@ -15,7 +15,7 @@ import type { Voucher } from '@/types/voucher';
 import type { ItemPacking } from '@/types/item-packing';
 import type { PackingSlip } from '@/types/packing-slip';
 import { packingSlipsKey } from '@/types/packing-slip';
-import { vouchersKey } from '@/lib/finecore-engine';
+import { vouchersKey } from '@/lib/fincore-engine';
 import { computePackingSlip } from '@/lib/packing-slip-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';

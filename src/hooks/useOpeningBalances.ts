@@ -13,7 +13,7 @@ import type { OutstandingEntry, JournalEntry } from '@/types/voucher';
 import type { AdvanceEntry, TDSReceivableEntry } from '@/types/compliance';
 import {
   outstandingKey, journalKey,
-} from '@/lib/finecore-engine';
+} from '@/lib/fincore-engine';
 import { advancesKey, tdsReceivableKey } from '@/types/compliance';
 import type { LoanApplication, SalaryAdvance } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY } from '@/types/employee-finance';

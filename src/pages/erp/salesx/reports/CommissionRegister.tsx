@@ -32,7 +32,7 @@ import {
   commissionRegisterKey,
 } from '@/types/commission-register';
 import type { CommissionEntry, CommissionPayment } from '@/types/commission-register';
-import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { getQuarter, getAssessmentYear, generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { dAdd, dSub, dMul, dPct, dSum, round2 } from '@/lib/decimal-helpers';

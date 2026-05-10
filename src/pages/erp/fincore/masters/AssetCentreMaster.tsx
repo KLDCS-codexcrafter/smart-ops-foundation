@@ -1,10 +1,10 @@
 /**
- * AssetCentreMaster.tsx — FineCore Asset Centre master
+ * AssetCentreMaster.tsx — FinCore Asset Centre master
  * Sprint T-Phase-1.1.2-pre · D-218 two-master architecture (Asset Centre)
  *
  * Two surfaces:
  *  - AssetCentreMasterPanel — embedded inside Command Center
- *  - AssetCentreMasterPage  — standalone route at /erp/finecore/masters/asset-centres
+ *  - AssetCentreMasterPage  — standalone route at /erp/fincore/masters/asset-centres
  */
 import { useMemo, useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -33,8 +33,8 @@ import { Lock, Plus, Edit2, Trash2, Search, Building2, Database } from 'lucide-r
 import { toast } from 'sonner';
 import { useAssetCentres } from '@/hooks/useAssetCentres';
 import { useOrgStructure } from '@/hooks/useOrgStructure';
-import type { AssetCentre, AssetCentreCategory } from '@/types/finecore/asset-centre';
-import { ASSET_CENTRE_CATEGORY_LABELS, assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
+import type { AssetCentre, AssetCentreCategory } from '@/types/fincore/asset-centre';
+import { ASSET_CENTRE_CATEGORY_LABELS, assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/fincore/asset-centre';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
@@ -177,7 +177,7 @@ export function AssetCentreMasterPanel() {
             Asset Centres
           </h1>
           <p className="text-sm text-muted-foreground">
-            FineCore master · capital infrastructure cost-tagging (D-218 two-master architecture)
+            FinCore master · capital infrastructure cost-tagging (D-218 two-master architecture)
           </p>
         </div>
         <div className="flex gap-2">

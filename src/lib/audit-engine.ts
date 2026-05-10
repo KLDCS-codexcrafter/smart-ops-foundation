@@ -5,7 +5,7 @@
  */
 import type { Voucher, GSTEntry, JournalEntry } from '@/types/voucher';
 import type { TDSDeductionEntry, ChallanEntry, RCMEntry, TDSReceivableEntry } from '@/types/compliance';
-import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/finecore-engine';
+import { vouchersKey, journalKey, gstRegisterKey, ledgerDefsKey } from '@/lib/fincore-engine';
 import { rcmEntriesKey, tdsDeductionsKey, challansKey, tdsReceivableKey } from '@/types/compliance';
 import { dAdd, dSub, dSum } from '@/lib/decimal-helpers';
 

@@ -2,7 +2,7 @@
  * SalesInvoice.tsx — Full Sales Invoice form
  * Sprint 3B: Customer Advance Linking
  * Sprint 3 SalesX: SAM assignment + commission preview + commission-on-receipt register booking
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
@@ -24,16 +24,16 @@ import {
 import type { OutstandingEntry } from '@/types/voucher';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { TemplateField } from '@/components/finecore/TemplateField';
-import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
-import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
-import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
-import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
-import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { TemplateField } from '@/components/fincore/TemplateField';
+import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
+import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
+import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
+import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -629,7 +629,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         client_id: gst.irp_client_id, client_secret: gst.irp_client_secret,
         gsp_provider: gst.gsp_provider, test_mode: gst.irp_test_mode,
       }, v, entityCode);
-      // [JWT] POST /api/finecore/irn
+      // [JWT] POST /api/fincore/irn
       const all = JSON.parse(localStorage.getItem(irnRecordsKey(entityCode)) || '[]');
       all.push(rec);
       localStorage.setItem(irnRecordsKey(entityCode), JSON.stringify(all));
@@ -716,7 +716,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
 
   const handlePrintInvoice = useCallback(() => {
     if (!postedVoucherId) return;
-    window.open(`/erp/finecore/invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`, '_blank');
+    window.open(`/erp/fincore/invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`, '_blank');
   }, [postedVoucherId, entityCode]);
 
   // ── Audit fix #1+#2: auto-generate IRN on post + auto-EWB above threshold ──
@@ -1202,7 +1202,7 @@ export default function SalesInvoice() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Sales Invoice' }]} showDatePicker={false} showCompany={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Sales Invoice' }]} showDatePicker={false} showCompany={false} />
         <main><SalesInvoicePanel /></main>
       </div>
     </SidebarProvider>

@@ -159,20 +159,20 @@ const CHECKS: CheckSpec[] = [
     run: () => { const n = readArray('erp_inventory_items').length;
       return { actual: n, expected: '≥5', pass: n >= 5, details: `${n} items` }; } },
 
-  // FineCore
-  { id: 'fc-1', section: 'FineCore', name: 'Vouchers exist for entity',
+  // FinCore
+  { id: 'fc-1', section: 'FinCore', name: 'Vouchers exist for entity',
     run: (e) => { const n = readArray(`erp_group_vouchers_${e}`).length;
       return { actual: n, expected: '≥20', pass: n >= 20, details: `${n} vouchers` }; } },
-  { id: 'fc-2', section: 'FineCore', name: 'Outstanding entries exist',
+  { id: 'fc-2', section: 'FinCore', name: 'Outstanding entries exist',
     run: (e) => { const n = readArray(`erp_outstanding_${e}`).length;
       return { actual: n, expected: '≥10', pass: n >= 10, details: `${n} outstanding records` }; } },
-  { id: 'fc-3', section: 'FineCore', name: 'Sales invoices present',
+  { id: 'fc-3', section: 'FinCore', name: 'Sales invoices present',
     run: (e) => {
       const v = readArray(`erp_group_vouchers_${e}`) as Array<{ voucher_type?: string }>;
       const n = v.filter(x => x.voucher_type === 'sales_invoice').length;
       return { actual: n, expected: '≥20', pass: n >= 20, details: `${n} sales invoices` };
     } },
-  { id: 'fc-4', section: 'FineCore', name: 'Receipts present',
+  { id: 'fc-4', section: 'FinCore', name: 'Receipts present',
     run: (e) => {
       const v = readArray(`erp_group_vouchers_${e}`) as Array<{ voucher_type?: string }>;
       const n = v.filter(x => x.voucher_type === 'receipt').length;
@@ -1457,7 +1457,7 @@ const CHECKS: CheckSpec[] = [
   { id: 'recon-1', section: 'Register Views',
     name: 'Sales→Receipt match: bill_reference covers full amount → matched',
     run: async () => {
-      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel.helpers');
+      const { computeReconMatch } = await import('@/components/fincore/registers/ReconciliationPanel.helpers');
       const sales = buildTallyFixtureVoucher();
       const receipt: Voucher = {
         ...buildTallyFixtureVoucher(), id: 'rcpt-1', voucher_no: 'RCPT/0001',
@@ -1473,7 +1473,7 @@ const CHECKS: CheckSpec[] = [
   { id: 'recon-2', section: 'Register Views',
     name: 'DeliveryNote→Sales match: target.so_ref === source.voucher_no',
     run: async () => {
-      const { computeReconMatch } = await import('@/components/finecore/registers/ReconciliationPanel.helpers');
+      const { computeReconMatch } = await import('@/components/fincore/registers/ReconciliationPanel.helpers');
       const dn: Voucher = { ...buildTallyFixtureVoucher(), id: 'dn-1', voucher_no: 'DN/0001', base_voucher_type: 'Delivery Note', voucher_type_name: 'Delivery Note' };
       const inv: Voucher = { ...buildTallyFixtureVoucher(), id: 'inv-2', voucher_no: 'INV/0002', so_ref: 'DN/0001' };
       const m = computeReconMatch(dn, [inv], 'delivery_note_register', 'sales_register');
@@ -1729,7 +1729,7 @@ const CHECKS: CheckSpec[] = [
     name: 'processVendorPayment posts a Payment voucher to localStorage',
     run: async () => {
       const { processVendorPayment } = await import('@/lib/payment-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_PO__';
       localStorage.removeItem(vouchersKey(ent));
       const res = processVendorPayment({
@@ -1746,14 +1746,14 @@ const CHECKS: CheckSpec[] = [
       const ok = res.ok && list.length === 1 && list[0].base_voucher_type === 'Payment';
       return { actual: `ok=${res.ok}, count=${list.length}, type=${list[0]?.base_voucher_type}`,
         expected: 'ok=true, count=1, type=Payment',
-        pass: ok, details: 'payment-engine orchestrator persists via finecore-engine.postVoucher' };
+        pass: ok, details: 'payment-engine orchestrator persists via fincore-engine.postVoucher' };
     } },
 
   { id: 'payout-2', section: 'PayOut',
     name: 'processVendorPayment computes TDS via tds-engine when applyTDS=true',
     run: async () => {
       const { processVendorPayment } = await import('@/lib/payment-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_PO2__';
       localStorage.removeItem(vouchersKey(ent));
       const res = processVendorPayment({
@@ -1798,7 +1798,7 @@ const CHECKS: CheckSpec[] = [
     name: 'PaymentRegisterRoute is a thin wrapper · imports existing PaymentRegisterPanel',
     run: async () => {
       const mod = await import('@/pages/erp/payout/PaymentRegisterRoute');
-      const panelMod = await import('@/pages/erp/finecore/registers/PaymentRegister');
+      const panelMod = await import('@/pages/erp/fincore/registers/PaymentRegister');
       const ok = typeof mod.default === 'function' && typeof panelMod.PaymentRegisterPanel === 'function';
       return { actual: `route=${typeof mod.default}, panel=${typeof panelMod.PaymentRegisterPanel}`,
         expected: 'both functions exported · route reuses panel',
@@ -1810,7 +1810,7 @@ const CHECKS: CheckSpec[] = [
     run: async () => {
       const { processVendorPayment } = await import('@/lib/payment-engine');
       const { getVoucherTags } = await import('@/lib/voucher-org-tag-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_PO5__';
       localStorage.removeItem(vouchersKey(ent));
       const res = processVendorPayment({
@@ -1893,7 +1893,7 @@ const CHECKS: CheckSpec[] = [
       const ok = result.ok && !!created && created.status === 'open' && created.balance_amount === 75000;
       return { actual: `voucher=${result.ok}, advance=${!!created}, status=${created?.status}, balance=${created?.balance_amount}`,
         expected: 'voucher saved + AdvanceEntry auto-created with status=open balance=75000',
-        pass: ok, details: 'finecore-engine line 452-475 auto-create works · bill_references[].type=advance is the trigger' };
+        pass: ok, details: 'fincore-engine line 452-475 auto-create works · bill_references[].type=advance is the trigger' };
     } },
 
   { id: 'advance-4', section: 'Bill Settlement',
@@ -1901,7 +1901,7 @@ const CHECKS: CheckSpec[] = [
     run: async () => {
       const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
       const { advancesKey } = await import('@/types/compliance');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_ADV4__';
       localStorage.setItem(advancesKey(ent), JSON.stringify([
         { id: 'a4', advance_ref_no: 'ADVP/26/0004', entity_id: ent, party_type: 'vendor', party_id: 'v-4', party_name: 'V4', date: '2026-04-01', source_voucher_id: 'sv4', source_voucher_no: 'PV/26/0004', advance_amount: 100000, tds_amount: 0, net_amount: 100000, adjustments: [], balance_amount: 100000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
@@ -1926,7 +1926,7 @@ const CHECKS: CheckSpec[] = [
     run: async () => {
       const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
       const { advancesKey } = await import('@/types/compliance');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_ADV5__';
       localStorage.setItem(advancesKey(ent), JSON.stringify([
         { id: 'a5', advance_ref_no: 'ADVP/26/0005', entity_id: ent, party_type: 'vendor', party_id: 'v-5', party_name: 'V5', date: '2026-04-01', source_voucher_id: 'sv5', source_voucher_no: 'PV/26/0005', advance_amount: 80000, tds_amount: 0, net_amount: 80000, adjustments: [], balance_amount: 80000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
@@ -1954,7 +1954,7 @@ const CHECKS: CheckSpec[] = [
     run: async () => {
       const { applyAdvanceToInvoice } = await import('@/lib/bill-settlement-engine');
       const { advancesKey } = await import('@/types/compliance');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_ADV6__';
       localStorage.setItem(advancesKey(ent), JSON.stringify([
         { id: 'a6', advance_ref_no: 'ADVP/26/0006', entity_id: ent, party_type: 'vendor', party_id: 'v-6', party_name: 'V6', date: '2026-04-01', source_voucher_id: 'sv6', source_voucher_no: 'PV/26/0006', advance_amount: 30000, tds_amount: 0, net_amount: 30000, adjustments: [], balance_amount: 30000, tds_balance: 0, status: 'open', tds_status: 'na', created_at: '2026-04-01', updated_at: '2026-04-01' },
@@ -2171,7 +2171,7 @@ const CHECKS: CheckSpec[] = [
     name: 'Breach detection · unsettled invoice past deadline returns status=breached',
     run: async () => {
       const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_MSME3__';
       // Seed vendor master (writes only to test entity vendor key)
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
@@ -2197,7 +2197,7 @@ const CHECKS: CheckSpec[] = [
     name: 'No breach · invoice fully settled within deadline (against_ref Payment voucher)',
     run: async () => {
       const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_MSME4__';
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
         { id: 'v-msme4', name: 'Beta Small Co', msmeRegistered: true,
@@ -2227,7 +2227,7 @@ const CHECKS: CheckSpec[] = [
     name: 'Only micro/small flagged · medium MSME excluded from breach detection',
     run: async () => {
       const { getMSMEBreaches } = await import('@/lib/msme-43bh-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_MSME5__';
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
         { id: 'v-medium', name: 'Medium Co', msmeRegistered: true,
@@ -2257,7 +2257,7 @@ const CHECKS: CheckSpec[] = [
     name: 'compute43BhSummary aggregates KPIs across multiple vendors and invoices',
     run: async () => {
       const { compute43BhSummary } = await import('@/lib/msme-43bh-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_MSME6__';
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
         { id: 'v6a', name: 'V6A Micro', msmeRegistered: true, msmeCategory: 'micro', creditDays: 0 },
@@ -2300,7 +2300,7 @@ const CHECKS: CheckSpec[] = [
     name: 'getTopVendorsBySpend orders vendors by spend desc within entity slice',
     run: async () => {
       const { getTopVendorsBySpend } = await import('@/lib/vendor-analytics-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const { VOUCHER_ORG_TAGS_KEY } = await import('@/types/voucher-org-tag');
       const ent = '__SMK_ANL1__';
       const entityId = 'ent-anl1';
@@ -2330,7 +2330,7 @@ const CHECKS: CheckSpec[] = [
     name: 'getVendorPaymentCycleTime computes days via against_ref bill_references',
     run: async () => {
       const { getVendorPaymentCycleTime } = await import('@/lib/vendor-analytics-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_ANL2__';
       localStorage.setItem(vouchersKey(ent), JSON.stringify([
         { id: 'pi-2', voucher_no: 'PI/2', date: '2025-04-01', party_id: 'vc2',
@@ -2374,7 +2374,7 @@ const CHECKS: CheckSpec[] = [
     name: 'getVendorMSMEBreachRate reuses B.5 engine · per-vendor breach %',
     run: async () => {
       const { getVendorMSMEBreachRate } = await import('@/lib/vendor-analytics-engine');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_ANL4__';
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
         { id: 've4', name: 'Vendor E Micro', msmeRegistered: true,
@@ -2602,7 +2602,7 @@ const CHECKS: CheckSpec[] = [
     run: async () => {
       const { suggestPaymentTiming } = await import('@/lib/cash-flow-engine');
       const { paymentRequisitionsKey } = await import('@/types/payment-requisition');
-      const { vouchersKey } = await import('@/lib/finecore-engine');
+      const { vouchersKey } = await import('@/lib/fincore-engine');
       const ent = '__SMK_SAP7__';
       localStorage.setItem('erp_group_vendor_master', JSON.stringify([
         { id: 'vm7', name: 'Micro Vendor', msmeRegistered: true, msmeCategory: 'micro', creditDays: 0 },

@@ -1,5 +1,5 @@
 /**
- * asset-centre.ts — Asset Centre master (FineCore · Capital infrastructure cost-tagging)
+ * asset-centre.ts — Asset Centre master (FinCore · Capital infrastructure cost-tagging)
  * Sprint T-Phase-1.1.2-pre · D-218 two-master architecture (Asset Centre)
  * Sister master = Project Centre (built in T-Phase-1.1.2-a · ProjX)
  *

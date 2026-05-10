@@ -2,11 +2,11 @@
  * RCMComplianceReport.tsx — RCM Compliance Report
  * Sprint T-Phase-2.7-a · Q5-b · Q6-c-expanded
  *
- * Reads from erp_rcm_compliance_log_{entityCode} written by finecore-engine.
+ * Reads from erp_rcm_compliance_log_{entityCode} written by fincore-engine.
  * Severity tiers HIGH/MED/LOW/INFO + outcome facets. Sibling to RCMRegister
  * (which tracks JV-postable lifecycle) — this view tracks DETECTION coverage.
  *
- * [JWT] GET /api/finecore/rcm-compliance-log/:entityCode
+ * [JWT] GET /api/fincore/rcm-compliance-log/:entityCode
  */
 import { useMemo, useState } from 'react';
 import { Shield } from 'lucide-react';
@@ -27,7 +27,7 @@ interface RCMComplianceReportPanelProps { entityCode: string; }
 
 function loadLog(entityCode: string): RCMComplianceLogEntry[] {
   try {
-    // [JWT] GET /api/finecore/rcm-compliance-log/:entityCode
+    // [JWT] GET /api/fincore/rcm-compliance-log/:entityCode
     const raw = localStorage.getItem(rcmComplianceLogKey(entityCode));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }

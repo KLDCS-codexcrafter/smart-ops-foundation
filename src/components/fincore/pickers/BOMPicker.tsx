@@ -2,7 +2,7 @@
  * BOMPicker.tsx — Reusable BOM picker dialog
  *
  * Built for Sprint T10-pre.2a-S1b's Manufacturing Journal voucher to pick the
- * BOM that drives a production run. Lives under finecore/pickers alongside
+ * BOM that drives a production run. Lives under fincore/pickers alongside
  * LedgerPicker / GodownPicker for consistency.
  *
  * INPUT        open, onClose, onPick, productItemId?, activeOnly?, entityCode

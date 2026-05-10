@@ -3,8 +3,8 @@
  *
  * Sprint T-Phase-1.2.6a · Card #2.6 sub-sprint 1 of 5 · D-226 UTS Foundation
  *
- * Sibling abstraction: the FineCore RegisterGrid (voucher-typed) at
- * `src/components/finecore/registers/RegisterGrid.tsx` STAYS UNTOUCHED and
+ * Sibling abstraction: the FinCore RegisterGrid (voucher-typed) at
+ * `src/components/fincore/registers/RegisterGrid.tsx` STAYS UNTOUCHED and
  * continues to back 13 production voucher consumers. This component is for
  * non-voucher consumers landing in 1.2.6b/c/d.
  *

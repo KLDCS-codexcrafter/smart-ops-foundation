@@ -38,7 +38,7 @@ import { Button } from '@/components/ui/button';
 import { eventBus } from '@/lib/event-bus';
 import { toast } from 'sonner';
 import { useForceSwitchEntity } from '@/components/layout/ERPCompanyProvider';
-import type { DraftEntry, FineCoreModule } from '@/components/finecore/DraftTray';
+import type { DraftEntry, FinCoreModule } from '@/components/fincore/DraftTray';
 import type { Voucher } from '@/types/voucher';
 
 interface VoucherEntityGuardParams {
@@ -47,7 +47,7 @@ interface VoucherEntityGuardParams {
   onSaveDraft?: (draft: DraftEntry) => void;
   clearForm: () => void;
   voucherTypeName: string;
-  fineCoreModule: FineCoreModule;
+  fineCoreModule: FinCoreModule;
   currentEntityCode: string;
 }
 

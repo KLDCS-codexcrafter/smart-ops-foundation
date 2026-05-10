@@ -1,5 +1,5 @@
 /**
- * FineCoreSidebar.tsx — Fin Core left sidebar
+ * FinCoreSidebar.tsx — Fin Core left sidebar
  * Mirrors PayHubSidebar.tsx structure. Teal color scheme.
  * Masters section items are LINK-OUTS to Command Center.
  */
@@ -19,9 +19,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { FineCoreModule } from '@/components/finecore/DraftTray';
+import type { FinCoreModule } from '@/components/fincore/DraftTray';
 
-const LIVE_MODULES: FineCoreModule[] = [
+const LIVE_MODULES: FinCoreModule[] = [
   'fc-hub',
   'fc-txn-sales-invoice', 'fc-txn-purchase-invoice',
   'fc-txn-receipt', 'fc-txn-payment',
@@ -54,7 +54,7 @@ const LIVE_MODULES: FineCoreModule[] = [
 ];
 
 interface SidebarItem {
-  id: FineCoreModule;
+  id: FinCoreModule;
   label: string;
   icon: React.ElementType;
 }
@@ -66,13 +66,13 @@ interface LinkOutItem {
 }
 
 const MASTERS_LINKS: LinkOutItem[] = [
-  { label: 'FinFrame — Account Groups', icon: Layers, hash: '#finecore-finframe' },
-  { label: 'Ledger Master', icon: BookOpen, hash: '#finecore-ledgers' },
-  { label: 'Voucher Types', icon: FileText, hash: '#finecore-voucher-types' },
-  { label: 'Currency Master', icon: IndianRupee, hash: '#finecore-currency' },
-  { label: 'GST / TDS Config', icon: Shield, hash: '#finecore-gst-config' },
-  { label: 'Compliance Settings & Automation', icon: Shield, hash: '#finecore-compliance-settings' },
-  { label: 'Asset Centres', icon: Package, hash: '#finecore-asset-centres' },
+  { label: 'FinFrame — Account Groups', icon: Layers, hash: '#fincore-finframe' },
+  { label: 'Ledger Master', icon: BookOpen, hash: '#fincore-ledgers' },
+  { label: 'Voucher Types', icon: FileText, hash: '#fincore-voucher-types' },
+  { label: 'Currency Master', icon: IndianRupee, hash: '#fincore-currency' },
+  { label: 'GST / TDS Config', icon: Shield, hash: '#fincore-gst-config' },
+  { label: 'Compliance Settings & Automation', icon: Shield, hash: '#fincore-compliance-settings' },
+  { label: 'Asset Centres', icon: Package, hash: '#fincore-asset-centres' },
 ];
 
 const TXN_ITEMS: SidebarItem[] = [
@@ -175,12 +175,12 @@ const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-clause44', label: 'Clause 44 Report', icon: Table2 },
 ];
 
-interface FineCoreSidebarProps {
-  active: FineCoreModule;
-  onNavigate: (m: FineCoreModule) => void;
+interface FinCoreSidebarProps {
+  active: FinCoreModule;
+  onNavigate: (m: FinCoreModule) => void;
 }
 
-export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
+export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const navigate = useNavigate();
   const [mastersOpen, setMastersOpen] = useState(false);
   const [txnOpen, setTxnOpen] = useState(true);
@@ -231,7 +231,7 @@ export function FineCoreSidebar({ active, onNavigate }: FineCoreSidebarProps) {
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
-  const isLive = (id: FineCoreModule) => LIVE_MODULES.includes(id);
+  const isLive = (id: FinCoreModule) => LIVE_MODULES.includes(id);
 
   const renderItem = (item: SidebarItem) => {
     const live = isLive(item.id);

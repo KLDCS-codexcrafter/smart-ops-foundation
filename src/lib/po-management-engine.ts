@@ -1,7 +1,7 @@
 /**
  * @file        po-management-engine.ts
  * @sprint      T-Phase-1.2.6f-c-1 · Block A · per D-283 sibling pattern
- * @purpose     Procure360 PO workflow engine · sibling of FineCore PurchaseOrder voucher (D-127 ZERO TOUCH).
+ * @purpose     Procure360 PO workflow engine · sibling of FinCore PurchaseOrder voucher (D-127 ZERO TOUCH).
  *              Reads voucher schema only · creates own status state machine · localStorage-backed (D-194).
  * @decisions   D-283 · D-127 · D-194 · D-256 (followup auto-fallback hint)
  * @reuses      vendor-quotation-engine (awarded source) · audit-trail-hash-chain · decimal-helpers

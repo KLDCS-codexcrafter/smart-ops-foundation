@@ -3,12 +3,12 @@
  * @sprint      T-Phase-1.2.6f-d-2-card6-6-pre-2 · Block E · D-364
  * @purpose     Vendor Return (RTV) CRUD + auto-DN + Debit Note voucher post.
  *              Sibling pattern · matches inward-receipt-engine 6-pre-1 shape.
- * @decisions   D-127 (lives in src/lib/, not finecore touched)
+ * @decisions   D-127 (lives in src/lib/, not fincore touched)
  *              · D-128 (uses existing 'Debit Note' base_voucher_type · zero schema mods)
  *              · D-194 (vendorReturnsKey reserved in 6-pre-1)
  *              · D-309 (sibling discipline · qa-closure-resolver delegates voucher post here)
  *              · D-349 (closure of Card #5 5-pre-3 deferral)
- * @reuses      types/vendor-return · finecore-engine.{generateDocNo,postVoucher}
+ * @reuses      types/vendor-return · fincore-engine.{generateDocNo,postVoucher}
  *              · audit-trail-hash-chain
  * [JWT] POST /api/logistic/vendor-returns · POST /api/logistic/vendor-returns/:id/post-dn
  */
@@ -21,7 +21,7 @@ import type {
 } from '@/types/vendor-return';
 import { vendorReturnsKey } from '@/types/vendor-return';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
-import { generateDocNo, postVoucher } from '@/lib/finecore-engine';
+import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 
 // ─── Types ──────────────────────────────────────────────────────────
@@ -231,7 +231,7 @@ export async function createAutoDebitNote(
 }
 
 /**
- * Post the Debit Note voucher via finecore postVoucher API.
+ * Post the Debit Note voucher via fincore postVoucher API.
  * Uses existing 'Debit Note' base_voucher_type — D-128 schema BYTE-IDENTICAL.
  */
 export async function postDebitNote(

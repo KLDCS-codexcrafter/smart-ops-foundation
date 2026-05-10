@@ -2,7 +2,7 @@
  * @file     AccrualRunModal.tsx
  * @purpose  Two-tab modal (Monthly Interest · Daily Penal) for previewing and
  *           committing D2 accrual runs. Each tab shows a plan from the engine
- *           (dry-run), then a Commit button posts standard FineCore Journal
+ *           (dry-run), then a Commit button posts standard FinCore Journal
  *           vouchers. Idempotency makes Commit safe to repeat.
  * @sprint   T-H1.5-D-D2
  */

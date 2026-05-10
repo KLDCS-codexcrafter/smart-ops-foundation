@@ -12,7 +12,7 @@ import type { TimeEntry } from '@/types/projx/time-entry';
 import type { ProjectResource } from '@/types/projx/project-resource';
 import type { ExpenseClaim } from '@/types/employee-finance';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 /** Result type — no values persisted, computed live (D-216) */
 export interface ProjectPnLResult {

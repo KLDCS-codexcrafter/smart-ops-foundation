@@ -28,7 +28,7 @@ THE OPERIX PLATFORM — 14 MODULES:
 - MaintainPro (/erp/maintainpro): Asset maintenance — work orders, PM schedules, MRO spares, failure codes
 - RequestX (/erp/requestx): Internal purchase requests and indent management
 - SalesX Hub (/erp/salesx): Sales, CRM, Telecaller, Field Force — pipeline, visits, proforma, geo-tracking
-- FineCore (/erp/finecore): Financial operations — bank reconciliation, payables, receivables, treasury
+- FinCore (/erp/fincore): Financial operations — bank reconciliation, payables, receivables, treasury
 - PeoplePay (/erp/peoplepay): Full HR and Payroll — employees, attendance, leaves, payroll, statutory compliance
 - FrontDesk (/erp/frontdesk): Front desk — visitor check-in, room booking, desk reservation
 - ServiceDesk (/erp/servicedesk): Support ticketing — SLA, escalations, knowledge base
@@ -61,13 +61,13 @@ YOUR BEHAVIOUR RULES:
 // [AI-BACKEND] Mock response generator — replace with edge function call when Cloud is enabled.
 function getMockResponse(userInput: string): string {
   const q = userInput.toLowerCase();
-  if (q.includes("gst")) return "GST in Operix supports CGST+SGST (intra-state) and IGST (inter-state) at rates 0%, 5%, 12%, 18%, and 28%. The FineCore module handles GST invoicing and return preparation (GSTR-1, GSTR-3B, GSTR-2B). This module is coming soon.";
+  if (q.includes("gst")) return "GST in Operix supports CGST+SGST (intra-state) and IGST (inter-state) at rates 0%, 5%, 12%, 18%, and 28%. The FinCore module handles GST invoicing and return preparation (GSTR-1, GSTR-3B, GSTR-2B). This module is coming soon.";
   if (q.includes("procurement") || q.includes("pr") || q.includes("purchase")) return "Procurement in Operix follows: Purchase Request → RFQ → Quotation Comparison → Purchase Order → GRN → Invoice Matching → Payment. Head to Procure360 (/erp/procure-hub) once it's live.";
   if (q.includes("module") || q.includes("available")) return "Operix has 16 modules: Command Center, Procure360, Store Hub, Qulicheak, GateFlow, Production, MaintainPro, RequestX (dept indent), SalesX Hub, Fin Core, PayOut (vendor payments), ReceivX (customer collections), PeoplePay, Back Office Pro, ServiceDesk, and InsightX (top management analytics). Fin Core and PeoplePay are live. Others are coming soon.";
   if (q.includes("requestx") || q.includes("indent") || q.includes("requisition")) return "RequestX is for department material requisitions and indents — a department raises a request for materials or services, it gets approved, and flows into Procure360 for vendor sourcing and purchase orders.";
   if (q.includes("payout") || q.includes("vendor payment") || q.includes("ap ")) return "PayOut manages outgoing vendor payments – schedule payment runs, track advances, release approvals, and reconcile vendor accounts. It works alongside Fin Core.";
   if (q.includes("receivx") || q.includes("collection") || q.includes("outstanding") || q.includes("ar ")) return "ReceivX handles customer outstanding management – track unpaid invoices, run collection follow-ups, view aging reports and monitor credit limits.";
-  if (q.includes("tds")) return "TDS in Operix covers sections 194A (interest), 194C (contractors), 194H (commission), 194I (rent), 194J (professional fees), and 192 (salary). FineCore will handle TDS computation and return filing.";
+  if (q.includes("tds")) return "TDS in Operix covers sections 194A (interest), 194C (contractors), 194H (commission), 194I (rent), 194J (professional fees), and 192 (salary). FinCore will handle TDS computation and return filing.";
   if (q.includes("payroll") || q.includes("salary") || q.includes("epf") || q.includes("esi")) return "PeoplePay handles full HR and Payroll — employee management, attendance, leaves, payroll processing, and statutory compliance (EPF 12%+12%, ESI 0.75%+3.25%). Coming soon.";
   if (q.includes("hello") || q.includes("hi") || q.includes("hey")) return "Hello! I'm Dishani, your AI guide for Operix. Ask me about any module, Indian compliance (GST, TDS, EPF/ESI), or how to navigate the platform.";
   return "I can help you with Operix modules, Indian business compliance (GST, TDS, EPF/ESI), procurement workflows, and platform navigation. What would you like to know?";

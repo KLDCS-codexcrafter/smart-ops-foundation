@@ -3,7 +3,7 @@
  * @sprint   T-Phase-2.7-c · Card #2.7 sub-sprint 3 of 5
  * @purpose  Register of every cancel action across 12 transaction forms with
  *           severity, impact, party, voucher type, and date filters. Backed by
- *           the UniversalRegisterGrid (sibling to FineCore RegisterGrid · D-127
+ *           the UniversalRegisterGrid (sibling to FinCore RegisterGrid · D-127
  *           safe).
  */
 

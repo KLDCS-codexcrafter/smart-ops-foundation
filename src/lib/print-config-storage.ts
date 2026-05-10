@@ -41,7 +41,7 @@ export function printConfigKey(entityCode: string): string {
  */
 export function loadPrintConfig(entityCode: string): PrintConfig {
   try {
-    // [JWT] GET /api/finecore/print-config/:entityCode
+    // [JWT] GET /api/fincore/print-config/:entityCode
     const raw = localStorage.getItem(printConfigKey(entityCode));
     if (!raw) return DEFAULT_PRINT_CONFIG;
     const parsed = JSON.parse(raw) as PrintConfig;
@@ -62,7 +62,7 @@ export function loadPrintConfig(entityCode: string): PrintConfig {
 export function savePrintConfig(entityCode: string, config: PrintConfig): void {
   const stamped: PrintConfig = { ...config, updatedAt: new Date().toISOString() };
   try {
-    // [JWT] PUT /api/finecore/print-config/:entityCode
+    // [JWT] PUT /api/fincore/print-config/:entityCode
     localStorage.setItem(printConfigKey(entityCode), JSON.stringify(stamped));
   } catch {
     // [Critical] localStorage quota or privacy-mode can fail — silent swallow is acceptable
@@ -76,7 +76,7 @@ export function savePrintConfig(entityCode: string, config: PrintConfig): void {
  */
 export function resetPrintConfig(entityCode: string): void {
   try {
-    // [JWT] DELETE /api/finecore/print-config/:entityCode
+    // [JWT] DELETE /api/fincore/print-config/:entityCode
     localStorage.removeItem(printConfigKey(entityCode));
   } catch {
     // [Critical] same as savePrintConfig — non-fatal

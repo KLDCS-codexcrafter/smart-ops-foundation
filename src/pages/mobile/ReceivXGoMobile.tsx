@@ -20,7 +20,7 @@ const COLLECTION_EXEC_FEATURES = [
   { icon: Navigation, title: "Today's Route",
     desc: "Optimised collection route — overdue customers prioritised by amount and aging. One-tap to call, navigate, or check in. Total to be collected today shown at the top." },
   { icon: Receipt, title: 'Receipt Capture with UTR',
-    desc: 'Punch a receipt the moment cash or UPI lands — amount, mode, UTR / cheque no, party. Auto-allocates against the oldest invoice. Receipt voucher posted live to FineCore.' },
+    desc: 'Punch a receipt the moment cash or UPI lands — amount, mode, UTR / cheque no, party. Auto-allocates against the oldest invoice. Receipt voucher posted live to FinCore.' },
   { icon: Camera, title: 'Photo Capture',
     desc: 'Photo of the cheque, cash counted, UPI confirmation screen — all attached to the receipt. Tamper-evident audit trail.' },
   { icon: CreditCard, title: 'Payment Link + UPI QR',

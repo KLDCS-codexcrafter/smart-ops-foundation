@@ -2,7 +2,7 @@
  * @file        git.ts
  * @sprint      T-Phase-1.2.6f-c-1 · Block C · per D-284 GIT 2-stage Procure360 owns Stage 1
  * @purpose     Goods in Transit · Stage 1 (gate-receipt) types · Procure360-owned.
- *              Stage 2 (final inventory acceptance) remains FineCore Receipt Note (SD-9 ZERO TOUCH).
+ *              Stage 2 (final inventory acceptance) remains FinCore Receipt Note (SD-9 ZERO TOUCH).
  * @decisions   D-284 (Stage 1 ownership) · D-257 (GIT awareness from 3-a) · D-127 · D-194
  * @disciplines FR-22 · FR-50 · FR-58
  */
@@ -53,7 +53,7 @@ export interface GitStage1Record {
 
   status: GitStage1Status;
 
-  // Stage 2 linkage (set when FineCore Receipt Note created · OUT OF SCOPE for 3-c-1)
+  // Stage 2 linkage (set when FinCore Receipt Note created · OUT OF SCOPE for 3-c-1)
   stage2_grn_id: string | null;
   stage2_completed_at: string | null;
 

@@ -1,7 +1,7 @@
 /**
  * partner-order.ts — Distributor cart + order + payment intimation types.
  * Sprint 10. Cart is offline-first (IndexedDB), order persists to localStorage
- * once submitted (FineCore reads it as a Sales Order draft).
+ * once submitted (FinCore reads it as a Sales Order draft).
  */
 
 export type DistributorOrderStatus =

@@ -83,19 +83,19 @@ const EPFESILWFMaster = lazy(() => import('./pages/erp/accounting/EPFESILWFMaste
 const StatutoryRegistrations = lazy(() => import('./pages/erp/accounting/StatutoryRegistrations'));
 const GSTEntityConfig = lazy(() => import('./pages/erp/accounting/GSTEntityConfig'));
 const ComplianceSettingsAutomation = lazy(() => import('./pages/erp/accounting/ComplianceSettingsAutomation'));
-const RCMComplianceReport = lazy(() => import('./pages/erp/finecore/reports/gst/RCMComplianceReport'));
+const RCMComplianceReport = lazy(() => import('./pages/erp/fincore/reports/gst/RCMComplianceReport'));
 const FinFrame = lazy(() => import('./pages/erp/accounting/FinFrame'));
 const LedgerMaster = lazy(() => import('./pages/erp/accounting/LedgerMaster'));
 const IncomeTaxMaster = lazy(() => import('./pages/erp/accounting/IncomeTaxMaster'));
 const VoucherTypesMaster = lazy(() => import('./pages/erp/accounting/VoucherTypesMaster'));
 const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'));
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
-const FinCorePage = lazy(() => import('./pages/erp/finecore/FinCorePage'));
-const AssetCentreMasterPage = lazy(() => import('./pages/erp/finecore/masters/AssetCentreMaster'));
-const VoucherClassMasterPage = lazy(() => import('./pages/erp/finecore/masters/VoucherClassMaster'));
-const ApprovalsPendingPage = lazy(() => import('./pages/erp/finecore/registers/ApprovalsPendingPage'));
-const CancellationAuditRegister = lazy(() => import('./pages/erp/finecore/registers/CancellationAuditRegister'));
-const PinnedTemplatesView = lazy(() => import('./pages/erp/finecore/PinnedTemplatesView'));
+const FinCorePage = lazy(() => import('./pages/erp/fincore/FinCorePage'));
+const AssetCentreMasterPage = lazy(() => import('./pages/erp/fincore/masters/AssetCentreMaster'));
+const VoucherClassMasterPage = lazy(() => import('./pages/erp/fincore/masters/VoucherClassMaster'));
+const ApprovalsPendingPage = lazy(() => import('./pages/erp/fincore/registers/ApprovalsPendingPage'));
+const CancellationAuditRegister = lazy(() => import('./pages/erp/fincore/registers/CancellationAuditRegister'));
+const PinnedTemplatesView = lazy(() => import('./pages/erp/fincore/PinnedTemplatesView'));
 const ProjXPage = lazy(() => import('./pages/erp/projx/ProjXPage'));
 const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/ProjectCentreMaster'));
 // Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 + #12 NEW · stub pages
@@ -115,8 +115,8 @@ const StockAdjustmentPrint = lazy(() => import('./pages/erp/accounting/vouchers/
 const StockJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockJournalPrint'));
 const StockTransferPrint = lazy(() => import('./pages/erp/accounting/vouchers/StockTransferPrint'));
 const ManufacturingJournalPrint = lazy(() => import('./pages/erp/accounting/vouchers/ManufacturingJournalPrint'));
-const PrintConfigPage = lazy(() => import('./pages/erp/finecore/settings/PrintConfigPage'));
-const RegisterConfigPage = lazy(() => import('./pages/erp/finecore/settings/RegisterConfigPage'));
+const PrintConfigPage = lazy(() => import('./pages/erp/fincore/settings/PrintConfigPage'));
+const RegisterConfigPage = lazy(() => import('./pages/erp/fincore/settings/RegisterConfigPage'));
 // [T-T8.2-Foundation] PayOut hub
 const PayOutPage = lazy(() => import('./features/payout/PayOutPage'));
 const PayOutDashboard = lazy(() => import('./pages/erp/payout/PayOutDashboard'));
@@ -409,7 +409,7 @@ const App = () => (
               <Route path="/erp/accounting/statutory-registrations" element={<P><StatutoryRegistrations /></P>} />
               <Route path="/erp/accounting/gst-config" element={<P><GSTEntityConfig /></P>} />
               <Route path="/erp/accounting/compliance-settings-automation" element={<P><ComplianceSettingsAutomation /></P>} />
-              <Route path="/erp/finecore/reports/gst/rcm-compliance-report" element={<P><RCMComplianceReport /></P>} />
+              <Route path="/erp/fincore/reports/gst/rcm-compliance-report" element={<P><RCMComplianceReport /></P>} />
               <Route path="/erp/accounting/finframe" element={<P><FinFrame /></P>} />
               <Route path="/erp/accounting/ledger-master" element={<P><LedgerMaster /></P>} />
               <Route path="/erp/accounting/income-tax" element={<P><IncomeTaxMaster /></P>} />
@@ -419,34 +419,34 @@ const App = () => (
               <Route path="/erp/accounting/period-lock" element={<P><PeriodLockSettings /></P>} />
               {/* PHASE 2 REMOVE — Mock auth dev panel route */}
               <Route path="/erp/accounting/mock-auth" element={<P><MockAuthDevPanel /></P>} />
-              <Route path="/erp/finecore" element={<P><FinCorePage /></P>} />
-              <Route path="/erp/finecore/masters/asset-centres" element={<P><AssetCentreMasterPage /></P>} />
-              <Route path="/erp/finecore/masters/voucher-class" element={<P><VoucherClassMasterPage /></P>} />
-              <Route path="/erp/finecore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
-              <Route path="/erp/finecore/registers/cancellation-audit-register" element={<P><CancellationAuditRegister /></P>} />
-              <Route path="/erp/finecore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
+              <Route path="/erp/fincore" element={<P><FinCorePage /></P>} />
+              <Route path="/erp/fincore/masters/asset-centres" element={<P><AssetCentreMasterPage /></P>} />
+              <Route path="/erp/fincore/masters/voucher-class" element={<P><VoucherClassMasterPage /></P>} />
+              <Route path="/erp/fincore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
+              <Route path="/erp/fincore/registers/cancellation-audit-register" element={<P><CancellationAuditRegister /></P>} />
+              <Route path="/erp/fincore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 NEW · EngineeringX placeholder */}
               <Route path="/erp/engineeringx" element={<P><EngineeringXPage /></P>} />
               {/* Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #12 NEW · SiteX placeholder */}
               <Route path="/erp/sitex" element={<P><SiteXPage /></P>} />
-              <Route path="/erp/finecore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
-              <Route path="/erp/finecore/receipt-print" element={<P><ReceiptPrint /></P>} />
-              <Route path="/erp/finecore/payment-print" element={<P><PaymentPrint /></P>} />
-              <Route path="/erp/finecore/contra-print" element={<P><ContraEntryPrint /></P>} />
-              <Route path="/erp/finecore/journal-print" element={<P><JournalEntryPrint /></P>} />
-              <Route path="/erp/finecore/purchase-invoice-print" element={<P><PurchaseInvoicePrint /></P>} />
-              <Route path="/erp/finecore/credit-note-print" element={<P><CreditNotePrint /></P>} />
-              <Route path="/erp/finecore/debit-note-print" element={<P><DebitNotePrint /></P>} />
-              <Route path="/erp/finecore/delivery-note-print" element={<P><DeliveryNotePrint /></P>} />
-              <Route path="/erp/finecore/receipt-note-print" element={<P><ReceiptNotePrint /></P>} />
-              <Route path="/erp/finecore/stock-adjustment-print" element={<P><StockAdjustmentPrint /></P>} />
-              <Route path="/erp/finecore/stock-journal-print" element={<P><StockJournalPrint /></P>} />
-              <Route path="/erp/finecore/stock-transfer-print" element={<P><StockTransferPrint /></P>} />
-              <Route path="/erp/finecore/mfg-journal-print" element={<P><ManufacturingJournalPrint /></P>} />
-              <Route path="/erp/finecore/settings/print-config" element={<P><PrintConfigPage /></P>} />
-              <Route path="/erp/finecore/settings/register-config" element={<P><RegisterConfigPage /></P>} />
+              <Route path="/erp/fincore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
+              <Route path="/erp/fincore/receipt-print" element={<P><ReceiptPrint /></P>} />
+              <Route path="/erp/fincore/payment-print" element={<P><PaymentPrint /></P>} />
+              <Route path="/erp/fincore/contra-print" element={<P><ContraEntryPrint /></P>} />
+              <Route path="/erp/fincore/journal-print" element={<P><JournalEntryPrint /></P>} />
+              <Route path="/erp/fincore/purchase-invoice-print" element={<P><PurchaseInvoicePrint /></P>} />
+              <Route path="/erp/fincore/credit-note-print" element={<P><CreditNotePrint /></P>} />
+              <Route path="/erp/fincore/debit-note-print" element={<P><DebitNotePrint /></P>} />
+              <Route path="/erp/fincore/delivery-note-print" element={<P><DeliveryNotePrint /></P>} />
+              <Route path="/erp/fincore/receipt-note-print" element={<P><ReceiptNotePrint /></P>} />
+              <Route path="/erp/fincore/stock-adjustment-print" element={<P><StockAdjustmentPrint /></P>} />
+              <Route path="/erp/fincore/stock-journal-print" element={<P><StockJournalPrint /></P>} />
+              <Route path="/erp/fincore/stock-transfer-print" element={<P><StockTransferPrint /></P>} />
+              <Route path="/erp/fincore/mfg-journal-print" element={<P><ManufacturingJournalPrint /></P>} />
+              <Route path="/erp/fincore/settings/print-config" element={<P><PrintConfigPage /></P>} />
+              <Route path="/erp/fincore/settings/register-config" element={<P><RegisterConfigPage /></P>} />
               {/* T-T8.2-Foundation · PayOut hub nested routes */}
               <Route path="/erp/payout" element={<P><PayOutPage /></P>}>
                 <Route index element={<Navigate to="dashboard" replace />} />

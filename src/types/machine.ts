@@ -25,7 +25,7 @@ export interface Machine {
   name: string;
   asset_tag: string;
 
-  // D-NEW-M · Machine ↔ FineCore Fixed Asset link (FR-11 SSOT)
+  // D-NEW-M · Machine ↔ FinCore Fixed Asset link (FR-11 SSOT)
   fixed_asset_id?: string | null;
 
   manufacturer: string;

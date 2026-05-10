@@ -161,7 +161,7 @@ export default function ProfessionalTaxMaster() {
         <ERPHeader
           breadcrumbs={[
             { label: 'Operix Core', href: '/erp/dashboard' },
-            { label: 'FineCore', href: '/erp/accounting' },
+            { label: 'FinCore', href: '/erp/accounting' },
             { label: 'Professional Tax Reference' },
           ]}
           showDatePicker={false} showCompany={false}

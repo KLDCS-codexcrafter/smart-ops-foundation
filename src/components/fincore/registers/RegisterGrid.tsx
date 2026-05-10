@@ -42,7 +42,7 @@ import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import type { Voucher } from '@/types/voucher';
 import { useVouchers } from '@/hooks/useVouchers';
-import { today } from '@/pages/erp/finecore/reports/reportUtils';
+import { today } from '@/pages/erp/fincore/reports/reportUtils';
 import {
   exportVoucherAsXLSX, exportVoucherAsPDF, exportVoucherAsWord,
   exportVoucherAsTallyXML, exportVoucherAsTallyJSON,

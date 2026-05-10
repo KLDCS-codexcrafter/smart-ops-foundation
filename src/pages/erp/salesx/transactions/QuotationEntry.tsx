@@ -29,7 +29,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useQuotations } from '@/hooks/useQuotations';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useOrders } from '@/hooks/useOrders';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import type { OrderLine } from '@/types/order';
 import type { Quotation, QuotationItem, QuotationStage, QuotationType } from '@/types/quotation';
 import { applySchemes, totalSchemeDiscountPaise, type SchemeCart } from '@/lib/scheme-engine';

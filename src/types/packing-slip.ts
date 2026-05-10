@@ -1,5 +1,5 @@
 /**
- * packing-slip.ts — Packing slip entity (operational document, not a FineCore voucher)
+ * packing-slip.ts — Packing slip entity (operational document, not a FinCore voucher)
  * Auto-generated when a Delivery Note is posted.
  * [JWT] GET/POST /api/dispatch/packing-slips
  */

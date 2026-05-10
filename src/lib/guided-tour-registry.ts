@@ -32,9 +32,9 @@ export const TOURS: Partial<Record<CardId, TourStep[]>> = {
     { title: 'Welcome to PeoplePay', body: 'HR + payroll + attendance. Violet-themed card.' },
     { title: 'Employee master', body: 'Employees live here; also registered in Command Center > People Core.' },
   ],
-  'finecore': [
-    { title: 'Welcome to FineCore', body: 'Accounting core — vouchers, ledgers, journals, IRN / e-invoice / EWB.' },
-    { title: 'Masters from CC', body: 'GST rates, TDS, HSN/SAC, voucher types all live in Command Center. FineCore consumes them.' },
+  'fincore': [
+    { title: 'Welcome to FinCore', body: 'Accounting core — vouchers, ledgers, journals, IRN / e-invoice / EWB.' },
+    { title: 'Masters from CC', body: 'GST rates, TDS, HSN/SAC, voucher types all live in Command Center. FinCore consumes them.' },
   ],
   'receivx': [
     { title: 'Welcome to ReceivX', body: 'Amber-accented collections hub. Outstanding, PTP, dunning automation.' },

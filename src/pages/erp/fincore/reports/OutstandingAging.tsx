@@ -171,7 +171,7 @@ export default function OutstandingAging() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Outstanding Aging' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Outstanding Aging' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <OutstandingAgingPanel entityCode={entityCode} />

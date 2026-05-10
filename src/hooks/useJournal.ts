@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 import type { JournalEntry } from '@/types/voucher';
-import { journalKey } from '@/lib/finecore-engine';
+import { journalKey } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {

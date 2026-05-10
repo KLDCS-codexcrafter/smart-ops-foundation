@@ -7,7 +7,7 @@
 import {
   type RateContract, type RateContractLine, type RateContractStatus, rateContractKey,
 } from '@/types/rate-contract';
-import { generateDocNo } from './finecore-engine';
+import { generateDocNo } from './fincore-engine';
 
 const now = (): string => new Date().toISOString();
 const newId = (p: string): string =>

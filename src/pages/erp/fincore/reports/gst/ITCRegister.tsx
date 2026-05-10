@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
-import { gstRegisterKey } from '@/lib/finecore-engine';
+import { gstRegisterKey } from '@/lib/fincore-engine';
 import { inr, fmtDate, exportCSV } from '../reportUtils';
 import { onEnterNext } from '@/lib/keyboard';
 import type { GSTEntry } from '@/types/voucher';

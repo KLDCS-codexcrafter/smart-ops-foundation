@@ -16,7 +16,7 @@ import type { RCMEntry } from '@/types/compliance';
 import { rcmEntriesKey } from '@/types/compliance';
 import { comply360RCMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { RCMLedgerConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation';
-import { postVoucher, generateVoucherNo } from '@/lib/finecore-engine';
+import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { inr, fmtDate } from '../reportUtils';
 

@@ -20,7 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, RotateCcw, Printer, Truck, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
 // Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log

@@ -1,6 +1,6 @@
 /**
  * @file     VoucherClassMaster.tsx — Sprint 2.7-b · Voucher class catalogue
- * @purpose  CRUD UI for NonFineCoreVoucherType records · groups by family ·
+ * @purpose  CRUD UI for NonFinCoreVoucherType records · groups by family ·
  *           edit field rules + approval thresholds + defaults.
  */
 
@@ -26,14 +26,14 @@ import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   DEFAULT_NON_FINECORE_VOUCHER_TYPES,
-  getNonFineCoreVoucherTypes,
-  saveNonFineCoreVoucherTypes,
+  getNonFinCoreVoucherTypes,
+  saveNonFinCoreVoucherTypes,
   type FieldRule,
-  type NonFineCoreVoucherFamily,
-  type NonFineCoreVoucherType,
-} from '@/lib/non-finecore-voucher-type-registry';
+  type NonFinCoreVoucherFamily,
+  type NonFinCoreVoucherType,
+} from '@/lib/non-fincore-voucher-type-registry';
 
-const FAMILIES: NonFineCoreVoucherFamily[] = [
+const FAMILIES: NonFinCoreVoucherFamily[] = [
   'inventory_in', 'inventory_out', 'inventory_adjust',
   'sales_quote', 'sales_request', 'sales_invoice_memo',
   'sales_secondary', 'sales_sample', 'sales_demo', 'dispatch',
@@ -43,7 +43,7 @@ function blankRule(): FieldRule {
   return { field_path: '', field_label: '', rule: 'mandatory', enforce_on: 'posted' };
 }
 
-function blankType(family: NonFineCoreVoucherFamily): NonFineCoreVoucherType {
+function blankType(family: NonFinCoreVoucherFamily): NonFinCoreVoucherType {
   return {
     id: `vt-custom-${Date.now()}`,
     family,
@@ -57,17 +57,17 @@ function blankType(family: NonFineCoreVoucherFamily): NonFineCoreVoucherType {
 
 export default function VoucherClassMaster() {
   const { entityCode } = useEntityCode();
-  const [types, setTypes] = useState<NonFineCoreVoucherType[]>([]);
-  const [editing, setEditing] = useState<NonFineCoreVoucherType | null>(null);
+  const [types, setTypes] = useState<NonFinCoreVoucherType[]>([]);
+  const [editing, setEditing] = useState<NonFinCoreVoucherType | null>(null);
 
   const refresh = useCallback(() => {
-    if (entityCode) setTypes(getNonFineCoreVoucherTypes(entityCode));
+    if (entityCode) setTypes(getNonFinCoreVoucherTypes(entityCode));
   }, [entityCode]);
 
   useEffect(() => { refresh(); }, [refresh]);
 
   const grouped = useMemo(() => {
-    const map = new Map<NonFineCoreVoucherFamily, NonFineCoreVoucherType[]>();
+    const map = new Map<NonFinCoreVoucherFamily, NonFinCoreVoucherType[]>();
     FAMILIES.forEach(f => map.set(f, []));
     for (const t of types) {
       const list = map.get(t.family) ?? [];
@@ -77,17 +77,17 @@ export default function VoucherClassMaster() {
     return map;
   }, [types]);
 
-  const persist = (next: NonFineCoreVoucherType[]) => {
-    saveNonFineCoreVoucherTypes(entityCode, next);
+  const persist = (next: NonFinCoreVoucherType[]) => {
+    saveNonFinCoreVoucherTypes(entityCode, next);
     setTypes(next);
   };
 
-  const onAdd = (family: NonFineCoreVoucherFamily) => {
+  const onAdd = (family: NonFinCoreVoucherFamily) => {
     setEditing(blankType(family));
   };
 
-  const onClone = (t: NonFineCoreVoucherType) => {
-    const cloned: NonFineCoreVoucherType = {
+  const onClone = (t: NonFinCoreVoucherType) => {
+    const cloned: NonFinCoreVoucherType = {
       ...t,
       id: `vt-clone-${Date.now()}`,
       display_name: `${t.display_name} Copy`,
@@ -96,11 +96,11 @@ export default function VoucherClassMaster() {
     setEditing(cloned);
   };
 
-  const onToggleActive = (t: NonFineCoreVoucherType) => {
+  const onToggleActive = (t: NonFinCoreVoucherType) => {
     persist(types.map(x => (x.id === t.id ? { ...x, is_active: !x.is_active } : x)));
   };
 
-  const onDelete = (t: NonFineCoreVoucherType) => {
+  const onDelete = (t: NonFinCoreVoucherType) => {
     if (DEFAULT_NON_FINECORE_VOUCHER_TYPES.find(d => d.id === t.id)) {
       toast.error('Cannot delete a default voucher class · toggle inactive instead');
       return;
@@ -233,7 +233,7 @@ export default function VoucherClassMaster() {
               </div>
               <div>
                 <Label className="text-xs">Family</Label>
-                <Select value={editing.family} onValueChange={(v: NonFineCoreVoucherFamily) => setEditing({ ...editing, family: v })}>
+                <Select value={editing.family} onValueChange={(v: NonFinCoreVoucherFamily) => setEditing({ ...editing, family: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {FAMILIES.map(f => <SelectItem key={f} value={f}>{f.replace(/_/g, ' ')}</SelectItem>)}

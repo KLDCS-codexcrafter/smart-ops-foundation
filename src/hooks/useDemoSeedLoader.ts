@@ -173,7 +173,7 @@ export const DEMO_MODULES: DemoModule[] = [
     getCount: (key) => getStoredCount(key),
   },
   {
-    id: 'finecore',
+    id: 'fincore',
     label: 'Fin Core',
     sprint: 'FC Sprint 1',
     status: 'partial' as const,
@@ -182,8 +182,8 @@ export const DEMO_MODULES: DemoModule[] = [
     loadMasters: () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { loadFineCoreTransactions } = require('@/data/demo-transactions-finecore');
-        loadFineCoreTransactions(DEFAULT_ENTITY_SHORTCODE);
+        const { loadFinCoreTransactions } = require('@/data/demo-transactions-fincore');
+        loadFinCoreTransactions(DEFAULT_ENTITY_SHORTCODE);
       } catch { /* seed data module not yet loaded */ }
     },
     loadTransactions: () => {},

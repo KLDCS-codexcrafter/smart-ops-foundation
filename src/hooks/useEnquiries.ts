@@ -12,7 +12,7 @@ import type { Prospectus } from '@/types/prospectus';
 import { prospectsKey } from '@/types/prospectus';
 import type { Quotation } from '@/types/quotation';
 import { quotationsKey } from '@/types/quotation';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import {
   mapEnquiryToQuotationDraft,
   canConvertEnquiryToQuotation,

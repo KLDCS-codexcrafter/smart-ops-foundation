@@ -89,7 +89,7 @@ export function PinnedTemplatesWidget({ entityCode, className }: Props) {
           variant="ghost"
           size="sm"
           className="text-xs"
-          onClick={() => navigate('/erp/finecore/pinned-templates')}
+          onClick={() => navigate('/erp/fincore/pinned-templates')}
         >
           View All →
         </Button>

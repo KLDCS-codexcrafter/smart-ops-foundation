@@ -112,12 +112,12 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     phase: 'planned',
   },
   {
-    id: 'finecore',
-    title: 'FineCore Mobile',
+    id: 'fincore',
+    title: 'FinCore Mobile',
     icon: Landmark,
     description: 'Accounts approvals on the move — payment voucher sign-off, outstanding alerts, and cash position.',
-    details: 'Planned: Finance manager app for FineCore. Approve payment vouchers, view party outstanding, check bank balances, and get alerts on overdue receivables — without opening the full ERP.',
-    route: '/operix-go/finecore',
+    details: 'Planned: Finance manager app for FinCore. Approve payment vouchers, view party outstanding, check bank balances, and get alerts on overdue receivables — without opening the full ERP.',
+    route: '/operix-go/fincore',
     phase: 'planned',
   },
 ];

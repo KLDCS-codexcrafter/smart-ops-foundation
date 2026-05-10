@@ -3,12 +3,12 @@
  * @sprint      T-Phase-1.2.6f-d-2-card4-4-pre-1 (Block B) · T-Phase-1.A.1.a (FR-51 branch_id additive)
  * @purpose     Gate Pass CRUD + state machine + linking · single source of truth for GateFlow.
  *              No modifications to Card #3 audited engines (sibling discipline · D-285+D-286+D-287 lesson).
- *              Doc number generation via finecore-engine.generateDocNo (Q5=A · 'GP' prefix added in Block C).
+ *              Doc number generation via fincore-engine.generateDocNo (Q5=A · 'GP' prefix added in Block C).
  * @decisions   D-302 (state machine · 5 states + partial · direction discriminator · optional FK)
- *              · D-303 (doc-no via finecore-engine)
+ *              · D-303 (doc-no via fincore-engine)
  *              · D-305 (storage namespace)
- *              · D-127/D-128 (FineCore voucher schemas ZERO TOUCH · we READ types only)
- * @reuses      types/gate-pass · types/gate-entry · finecore-engine.generateDocNo
+ *              · D-127/D-128 (FinCore voucher schemas ZERO TOUCH · we READ types only)
+ * @reuses      types/gate-pass · types/gate-entry · fincore-engine.generateDocNo
  *              · audit-trail-hash-chain (state transition logging)
  * [JWT] POST /api/gateflow/passes · PATCH /api/gateflow/passes/:id/transition
  */
@@ -17,7 +17,7 @@ import type {
   GatePass, GatePassDirection, GatePassStatus, LinkedVoucherType,
 } from '@/types/gate-pass';
 import { gatePassesKey } from '@/types/gate-pass';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 
 // ============================================================

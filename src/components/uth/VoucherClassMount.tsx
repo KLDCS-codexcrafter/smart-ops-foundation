@@ -24,9 +24,9 @@ import { validateFieldRules, type FormState } from '@/lib/field-rule-engine';
 import {
   findVoucherTypeById,
   getDefaultVoucherTypeForFamily,
-  type NonFineCoreVoucherFamily,
-  type NonFineCoreVoucherType,
-} from '@/lib/non-finecore-voucher-type-registry';
+  type NonFinCoreVoucherFamily,
+  type NonFinCoreVoucherType,
+} from '@/lib/non-fincore-voucher-type-registry';
 
 export type VoucherPersistStatus =
   | 'draft'
@@ -37,7 +37,7 @@ export type VoucherPersistStatus =
 
 interface Props {
   entityCode: string;
-  family: NonFineCoreVoucherFamily;
+  family: NonFinCoreVoucherFamily;
   /** Current form values · used by validateFieldRules. */
   formData: Record<string, unknown>;
   /** Total ₹ value for threshold breach check. */
@@ -73,7 +73,7 @@ export function VoucherClassMount({
     setBootstrapped(true);
   }, [bootstrapped, voucherTypeId, entityCode, family, onVoucherTypeChange]);
 
-  const vt: NonFineCoreVoucherType | null = useMemo(
+  const vt: NonFinCoreVoucherType | null = useMemo(
     () => (voucherTypeId ? findVoucherTypeById(entityCode, voucherTypeId) : null),
     [entityCode, voucherTypeId],
   );

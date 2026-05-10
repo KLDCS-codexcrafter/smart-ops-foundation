@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { validateFieldRules } from '@/lib/field-rule-engine';
-import { findVoucherTypeById, getVoucherTypesForFamily } from '@/lib/non-finecore-voucher-type-registry';
+import { findVoucherTypeById, getVoucherTypesForFamily } from '@/lib/non-fincore-voucher-type-registry';
 
 describe('Field Rule Engine · OOB-3 · Q2-c', () => {
   it('VC1 · mandatory rule on posted state blocks save', () => {

@@ -158,7 +158,7 @@ export function EntitySetupDialog({
             </div>
 
             <p className="text-[11px] text-muted-foreground text-center pt-1">
-              You can add or modify any ledger later in Ledger Master → FineCore Masters
+              You can add or modify any ledger later in Ledger Master → FinCore Masters
             </p>
           </>
         ) : (

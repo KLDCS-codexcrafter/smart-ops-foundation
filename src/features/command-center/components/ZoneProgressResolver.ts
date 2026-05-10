@@ -40,8 +40,8 @@ export const ZONE_DEFINITIONS: ZoneDefinition[] = [
   },
   {
     zone: 'Zone 3',
-    label: 'FineCore Masters',
-    module: 'finecore-hub',
+    label: 'FinCore Masters',
+    module: 'fincore-hub',
     masterKeys: [
       'erp_tax_rates',
       'erp_tds_sections',

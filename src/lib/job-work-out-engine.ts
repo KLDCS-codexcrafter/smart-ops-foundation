@@ -14,7 +14,7 @@ import type {
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 
 export interface CreateJobWorkOutOrderInput {
   entity_id: string;

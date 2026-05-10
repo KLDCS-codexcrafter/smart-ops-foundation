@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronsUpDown, Check, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { InlineMasterCreate } from '@/components/finecore/InlineMasterCreate';
+import { InlineMasterCreate } from '@/components/fincore/InlineMasterCreate';
 
 export interface PartyPickerRow {
   id: string;

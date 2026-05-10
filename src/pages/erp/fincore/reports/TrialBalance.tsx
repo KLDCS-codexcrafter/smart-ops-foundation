@@ -148,7 +148,7 @@ export default function TrialBalance() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Trial Balance' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Trial Balance' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <TrialBalancePanel entityCode={entityCode} />

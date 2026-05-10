@@ -8,11 +8,11 @@
  *              user can override to any ledger (Q2 decision).
  *
  * INPUT        onSaveDraft callback from FinCorePage's draft tray
- * OUTPUT       Posted Voucher via finecore-engine.postVoucher().
+ * OUTPUT       Posted Voucher via fincore-engine.postVoucher().
  *
  * DEPENDENCIES TallyVoucherHeader, LedgerPicker, DepartmentPicker,
  *              StockAdjustmentLineGrid, VoucherFormFooter, useEntityCode,
- *              useTenantConfig, finecore-engine.
+ *              useTenantConfig, fincore-engine.
  *
  * TALLY-ON-TOP Honors accounting_mode. In tally_bridge mode, Stock Adjustment
  *              is emitted via eventBus.emit('voucher.posted') — routing layer
@@ -30,17 +30,17 @@ import { Scale, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
-import { DepartmentPicker } from '@/components/finecore/pickers/DepartmentPicker';
-import { VoucherFormFooter } from '@/components/finecore/VoucherFormFooter';
-import { StockAdjustmentLineGrid, type StockAdjustmentLine } from '@/components/finecore/StockAdjustmentLineGrid';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
+import { DepartmentPicker } from '@/components/fincore/pickers/DepartmentPicker';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
+import { StockAdjustmentLineGrid, type StockAdjustmentLine } from '@/components/fincore/StockAdjustmentLineGrid';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
-import { generateVoucherNo, postVoucher } from '@/lib/finecore-engine';
+import { generateVoucherNo, postVoucher } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { Button } from '@/components/ui/button';
 
 interface LedgerDef { id: string; name: string; }
@@ -99,7 +99,7 @@ export function StockAdjustmentPanel({ onSaveDraft }: StockAdjustmentPanelProps)
 
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/stock-adjustment-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      const url = `/erp/fincore/stock-adjustment-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);

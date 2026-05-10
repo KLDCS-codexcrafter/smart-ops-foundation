@@ -19,7 +19,7 @@ import { Plus, Send, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { useOrders } from '@/hooks/useOrders';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useItemVendors } from '@/hooks/useItemVendors';
@@ -28,10 +28,10 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
-import { TallyVoucherHeader } from '@/components/finecore/TallyVoucherHeader';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import {
   PartyDispatchDialog, ItemAllocationDialog,
-} from '@/components/finecore/dialogs';
+} from '@/components/fincore/dialogs';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { eventBus } from '@/lib/event-bus';
 import type { VoucherDispatchDetails } from '@/types/voucher';
@@ -564,7 +564,7 @@ export default function PurchaseOrder() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Order' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Purchase Order' }]} showDatePicker={false} />
         <main>{entityCode ? <PurchaseOrderPanel entityCode={entityCode} /> : <SelectCompanyGate title="Select a company to manage Purchase Orders" />}</main>
       </div>
     </SidebarProvider>

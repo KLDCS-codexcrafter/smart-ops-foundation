@@ -80,7 +80,7 @@ import type { StockReservation } from '@/types/stock-reservation';
 import type { SampleOutwardMemo } from '@/types/sample-outward-memo';
 import type { DemoOutwardMemo } from '@/types/demo-outward-memo';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
-import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/finecore/asset-centre';
+import { assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/fincore/asset-centre';
 import {
   DEMO_PROJECT_CENTRES, DEMO_PROJECTS,
   DEMO_PROJECT_MILESTONES, DEMO_PROJECT_RESOURCES,

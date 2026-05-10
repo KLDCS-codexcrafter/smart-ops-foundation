@@ -5,7 +5,7 @@
  * Stock Issue records release of stock from Stores godown to a department/recipient.
  * Posts a Stock Journal voucher (D-128 zero-touch · uses existing 'Stock Journal' base_voucher_type).
  *
- * D-127 boundary: lives in src/lib/ (NOT finecore engine touched beyond 'SI' prefix concession).
+ * D-127 boundary: lives in src/lib/ (NOT fincore engine touched beyond 'SI' prefix concession).
  * D-228 UTH stamping fields included.
  *
  * [JWT] GET/POST/PATCH /api/store/stock-issues

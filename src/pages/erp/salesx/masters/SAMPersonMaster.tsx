@@ -811,7 +811,7 @@ export function SAMPersonMasterPanel({ personType, entityCode }: Props) {
                 </Select>
                 {commissionLedgerOptions.length === 0 && (
                   <p className="text-[10px] text-amber-600">
-                    No income/expense ledgers found. Create them in FineCore → Ledger Master first.
+                    No income/expense ledgers found. Create them in FinCore → Ledger Master first.
                   </p>
                 )}
               </div>

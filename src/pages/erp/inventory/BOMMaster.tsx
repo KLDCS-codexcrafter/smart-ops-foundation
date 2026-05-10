@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { LedgerPicker } from '@/components/finecore/pickers/LedgerPicker';
+import { LedgerPicker } from '@/components/fincore/pickers/LedgerPicker';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';

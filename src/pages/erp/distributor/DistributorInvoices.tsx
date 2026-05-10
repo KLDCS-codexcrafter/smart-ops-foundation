@@ -350,14 +350,14 @@ export default function DistributorInvoices() {
                           <td className="px-4 py-3 text-right">
                             <div className="inline-flex items-center gap-1">
                               <button
-                                onClick={() => navigate(`/erp/finecore/invoice-print?id=${v.id}`)}
+                                onClick={() => navigate(`/erp/fincore/invoice-print?id=${v.id}`)}
                                 className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
                                 title="View PDF"
                               >
                                 <ExternalLink className="h-3.5 w-3.5" />
                               </button>
                               <button
-                                onClick={() => navigate(`/erp/finecore/invoice-print?id=${v.id}&download=1`)}
+                                onClick={() => navigate(`/erp/fincore/invoice-print?id=${v.id}&download=1`)}
                                 className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
                                 title="Download"
                               >

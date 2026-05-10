@@ -1,7 +1,7 @@
 /**
  * PurchaseInvoice.tsx — Full Purchase Invoice form
  * Sprint 3B: Advance Adjustment Enhancement
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useMemo, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,17 +16,17 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ChevronDown, Send, Info, Link2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { TemplateField } from '@/components/finecore/TemplateField';
-import { InvoiceModeToggle } from '@/components/finecore/InvoiceModeToggle';
-import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
-import { LedgerLineGrid } from '@/components/finecore/LedgerLineGrid';
-import { GSTComputationPanel } from '@/components/finecore/GSTComputationPanel';
-import { TDSDeductionPanel } from '@/components/finecore/TDSDeductionPanel';
-import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { TemplateField } from '@/components/fincore/TemplateField';
+import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
+import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
+import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
+import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { TDSDeductionPanel } from '@/components/fincore/TDSDeductionPanel';
+import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
 import { advancesKey } from '@/types/compliance';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { useOrders } from '@/hooks/useOrders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
@@ -192,7 +192,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
-      `/erp/finecore/purchase-invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
+      `/erp/fincore/purchase-invoice-print?voucher_id=${postedVoucherId}&entity=${entityCode}`,
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
@@ -364,7 +364,7 @@ export default function PurchaseInvoice() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Purchase Invoice' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Purchase Invoice' }]} showDatePicker={false} />
         <main>{entityCode ? <PurchaseInvoicePanel /> : <SelectCompanyGate title="Select a company to create a Purchase Invoice" />}</main>
       </div>
     </SidebarProvider>

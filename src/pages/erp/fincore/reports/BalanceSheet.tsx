@@ -171,7 +171,7 @@ export default function BalanceSheet() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Balance Sheet' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Balance Sheet' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <BalanceSheetPanel entityCode={entityCode} />

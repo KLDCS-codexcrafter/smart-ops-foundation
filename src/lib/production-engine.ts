@@ -24,7 +24,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import type { QualiCheckConfig, ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { productionOrdersKey } from '@/types/production-order';
 import { emptyCostStructure } from '@/types/production-cost';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
 import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';

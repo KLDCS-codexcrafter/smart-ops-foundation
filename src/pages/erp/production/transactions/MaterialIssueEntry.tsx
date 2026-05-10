@@ -172,7 +172,7 @@ export function MaterialIssueEntryPanel(): JSX.Element {
 
       <button
         type="button"
-        onClick={() => navigate('/erp/command-center?module=finecore-production-config')}
+        onClick={() => navigate('/erp/command-center?module=fincore-production-config')}
         className="w-full text-left rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground hover:bg-muted/60 transition-colors flex items-center justify-between gap-2 cursor-pointer"
       >
         <span>

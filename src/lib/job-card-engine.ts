@@ -10,7 +10,7 @@ import type { ProductionOrder } from '@/types/production-order';
 import type { Employee } from '@/types/employee';
 import type { Machine } from '@/types/machine';
 import type { Shift } from '@/types/payroll-masters';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { rollupDWREntry } from '@/lib/dwr-aggregation-engine';
 

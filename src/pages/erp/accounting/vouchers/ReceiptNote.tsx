@@ -1,6 +1,6 @@
 /**
  * ReceiptNote.tsx — Full Receipt Note (GRN) form
- * [JWT] All storage via finecore-engine
+ * [JWT] All storage via fincore-engine
  */
 import { useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
-import { InventoryLineGrid } from '@/components/finecore/InventoryLineGrid';
-import { generateVoucherNo, vouchersKey } from '@/lib/finecore-engine';
+import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
+import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import type { DraftEntry } from '@/components/finecore/DraftTray';
+import type { DraftEntry } from '@/components/fincore/DraftTray';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -101,7 +101,7 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
   }, []);
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
-      const url = `/erp/finecore/receipt-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
+      const url = `/erp/fincore/receipt-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);
@@ -210,7 +210,7 @@ export default function ReceiptNote() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Receipt Note (GRN)' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Receipt Note (GRN)' }]} showDatePicker={false} />
         <main>{entityCode ? <ReceiptNotePanel /> : <SelectCompanyGate title="Select a company to create a Receipt Note" />}</main>
       </div>
     </SidebarProvider>

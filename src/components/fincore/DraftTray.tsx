@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import type { Voucher } from '@/types/voucher';
 import { useERPCompanyContext } from '@/components/layout/ERPCompanyProvider';
 
-export type FineCoreModule =
+export type FinCoreModule =
   | 'fc-hub'
   | 'fc-txn-sales-invoice' | 'fc-txn-purchase-invoice'
   | 'fc-txn-receipt' | 'fc-txn-payment'
@@ -41,7 +41,7 @@ export type FineCoreModule =
 
 export interface DraftEntry {
   id: string;
-  module: FineCoreModule;
+  module: FinCoreModule;
   label: string;
   voucherTypeName: string;
   formState: Partial<Voucher>;

@@ -1,5 +1,5 @@
 /**
- * demo-transactions-finecore.ts — Demo seed data for FineCore vouchers
+ * demo-transactions-fincore.ts — Demo seed data for FinCore vouchers
  * [JWT] Replace with REST endpoints as annotated
  */
 import type { Voucher } from '@/types/voucher';
@@ -96,7 +96,7 @@ export const DEMO_VOUCHERS: Voucher[] = [
   }),
 ];
 
-export function loadFineCoreTransactions(entityCode: string): void {
+export function loadFinCoreTransactions(entityCode: string): void {
   const key = `erp_group_vouchers_${entityCode}`;
   // [JWT] GET /api/accounting/vouchers
   const existing = localStorage.getItem(key);

@@ -5,7 +5,7 @@
  * Inward receipt records the physical arrival of goods at the gate before
  * GRN posting. Pairs with QualiCheck (Card #5) for quarantine routing.
  *
- * D-127 boundary: Inward receipt lives in src/pages/erp/logistic/ (NOT finecore).
+ * D-127 boundary: Inward receipt lives in src/pages/erp/logistic/ (NOT fincore).
  * D-128 boundary: Inward receipt is NOT a voucher — it is an authorization
  * document that precedes GRN posting.
  *

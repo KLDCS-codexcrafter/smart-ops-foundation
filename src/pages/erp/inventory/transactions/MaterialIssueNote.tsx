@@ -2,7 +2,7 @@
  * MaterialIssueNote.tsx — godown-to-godown transfer with real-time balance check
  * Sprint T-Phase-1.2.2 · Inventory Hub MOAT sprint
  *
- * D-127 boundary: lives in inventory/transactions/ (NOT finecore/).
+ * D-127 boundary: lives in inventory/transactions/ (NOT fincore/).
  * MIN uses base voucher type 'vt-stock-transfer' which is already active.
  *
  * [JWT] POST /api/inventory/material-issue-notes/:id/issue
@@ -40,7 +40,7 @@ import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { useItemSubstitutes } from '@/hooks/useItemSubstitutes';
 import { useHazmatProfiles } from '@/hooks/useHazmatProfiles';
 import { areDgClassesCompatible, DG_CLASS_LABELS } from '@/types/hazmat-profile';
-import { generateDocNo } from '@/lib/finecore-engine';
+import { generateDocNo } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';

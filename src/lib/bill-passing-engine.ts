@@ -6,7 +6,7 @@
  *              On approval · triggers FinCore PI auto-draft via finance-pi-bridge (Block C).
  * @decisions   D-285 · D-286 · D-287 · D-194 · D-NEW-AH · D-NEW-AI (wired) · D-NEW-AJ (bidirectional · outbound wired) · D-NEW-AL (T-fix)
  * @reuses      po-management-engine · git-engine · audit-trail-hash-chain · decimal-helpers
- *              · leak-register-engine · finecore-engine.generateDocNo
+ *              · leak-register-engine · fincore-engine.generateDocNo
  *              · bill-passing-tax-derivation (deriveAllTaxes) · bill-passing-qa-bridge (notifyQaHandoff)
  * @[JWT]       POST /api/bill-passing
  */
@@ -22,7 +22,7 @@ import { getGitStage1 } from './git-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { dSub, dSum, dMul, dAdd, round2 } from './decimal-helpers';
 import { emitLeakEvent } from './leak-register-engine';
-import { generateDocNo } from './finecore-engine';
+import { generateDocNo } from './fincore-engine';
 import { deriveAllTaxes } from './bill-passing-tax-derivation';
 import { notifyQaHandoff } from './bill-passing-qa-bridge';
 

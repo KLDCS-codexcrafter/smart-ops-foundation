@@ -142,7 +142,7 @@ export default function ProfitLoss() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
-        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Profit & Loss' }]} showDatePicker={false} />
+        <ERPHeader breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Profit & Loss' }]} showDatePicker={false} />
         <main>
           {entityCode
             ? <ProfitLossPanel entityCode={entityCode} />

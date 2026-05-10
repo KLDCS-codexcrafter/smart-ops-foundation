@@ -2165,7 +2165,7 @@ export function ComplianceSettingsAutomationPanel() {
           <Badge className="text-[10px] bg-indigo-500/10 text-indigo-600 border-indigo-500/20">Sprint 22A</Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          Enable compliance automations and configure per-entity ledger mappings. All changes here affect FineCore transactions.
+          Enable compliance automations and configure per-entity ledger mappings. All changes here affect FinCore transactions.
         </p>
       </div>
 

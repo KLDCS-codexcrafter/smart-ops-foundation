@@ -206,7 +206,7 @@ export default function LedgerReport() {
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen bg-background">
         <ERPHeader
-          breadcrumbs={[{ label: 'Fin Core', href: '/erp/finecore' }, { label: 'Ledger Report' }]}
+          breadcrumbs={[{ label: 'Fin Core', href: '/erp/fincore' }, { label: 'Ledger Report' }]}
           showDatePicker={false}
         />
         <main>
