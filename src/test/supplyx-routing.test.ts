@@ -40,7 +40,7 @@ describe('SupplyX sidebar config · D-NEW-CC canonical (α-a Block A)', () => {
     const expected = ['welcome', 'open-rfqs', 'pending-quotations', 'pending-awards'];
     for (const e of expected) expect(ids.has(e)).toBe(true);
   });
-  it('keyboard namespace is supplyx-prefixed (x *) · no collision with qulicheak (q *) or store-hub (s *)', () => {
+  it('keyboard namespace is supplyx-prefixed (x *) · no collision with qualicheck (q *) or store-hub (s *)', () => {
     const flat = flatten(supplyXSidebarItems);
     const kbs = flat.map((i) => i.keyboard).filter((k): k is string => Boolean(k));
     for (const kb of kbs) {

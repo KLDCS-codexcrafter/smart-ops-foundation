@@ -2692,7 +2692,7 @@ export function BillPassingPiStatusPanel(): JSX.Element {
                           className="text-xs px-2 py-0.5 rounded-lg bg-warning/15 text-warning hover:bg-warning/25"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/erp/qulicheak#qc-entry?bill_id=${r.lastBillId}`;
+                            window.location.href = `/erp/qualicheck#qc-entry?bill_id=${r.lastBillId}`;
                           }}
                         >
                           QC Pending

@@ -3,12 +3,12 @@
  * @purpose Welder Qualification engine · ASME IX + AWS D1.1 · Welder→WPS→PQR→WPQ chain
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
+ * @sprint T-Phase-1.A.5.c-QualiCheck-Welder-Vendor-ISO-IQC
  * @iso 25010 + ASME IX QW-322 (expiry) · AWS D1.1 4.20
  * @decisions D-NEW-BN · D-NEW-BJ (3-arg userId-2nd signature)
  * @disciplines FR-21 (no any/console/TODO) · FR-22 (Welder='master' · cert='document')
  * @reuses cross-card-activity-engine.recordActivity
- * @[JWT] GET/POST /api/qulicheak/welders|wps|pqr|wpq · localStorage keys per types/welder.ts
+ * @[JWT] GET/POST /api/qualicheck/welders|wps|pqr|wpq · localStorage keys per types/welder.ts
  */
 import type {
   Welder, WelderId, WeldingProcedureSpec, WpsId,
@@ -60,12 +60,12 @@ export function createWelder(
   // FR-22 · Welder = 'master'
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'master',
     ref_id: id,
     title: `Welder ${draft.full_name}`,
     subtitle: draft.employee_code ?? draft.party_id,
-    deep_link: `/erp/qulicheak#welder-qualification/${id}`,
+    deep_link: `/erp/qualicheck#welder-qualification/${id}`,
   });
   return w;
 }
@@ -90,9 +90,9 @@ export function createWps(
   all.unshift(wps);
   write(wpsKey(entityCode), all);
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak', kind: 'document', ref_id: id,
+    card_id: 'qualicheck', kind: 'document', ref_id: id,
     title: `WPS ${draft.wps_no}`, subtitle: draft.standard.toUpperCase(),
-    deep_link: `/erp/qulicheak#welder-qualification/wps/${id}`,
+    deep_link: `/erp/qualicheck#welder-qualification/wps/${id}`,
   });
   return wps;
 }
@@ -133,9 +133,9 @@ export function createPqr(
   all.unshift(pqr);
   write(pqrKey(entityCode), all);
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak', kind: 'document', ref_id: id,
+    card_id: 'qualicheck', kind: 'document', ref_id: id,
     title: `PQR ${draft.pqr_no}`, subtitle: `Tensile ${draft.tensile_strength_mpa} MPa`,
-    deep_link: `/erp/qulicheak#welder-qualification/pqr/${id}`,
+    deep_link: `/erp/qualicheck#welder-qualification/pqr/${id}`,
   });
   return pqr;
 }
@@ -162,9 +162,9 @@ export function createWpq(
   all.unshift(wpq);
   write(wpqKey(entityCode), all);
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak', kind: 'document', ref_id: id,
+    card_id: 'qualicheck', kind: 'document', ref_id: id,
     title: `WPQ ${draft.wpq_no}`, subtitle: `${draft.standard.toUpperCase()} · expires ${draft.qualified_through.slice(0, 10)}`,
-    deep_link: `/erp/qulicheak#welder-qualification/wpq/${id}`,
+    deep_link: `/erp/qualicheck#welder-qualification/wpq/${id}`,
   });
   return wpq;
 }

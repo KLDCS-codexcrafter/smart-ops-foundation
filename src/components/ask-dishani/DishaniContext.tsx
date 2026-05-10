@@ -22,7 +22,7 @@ THE OPERIX PLATFORM — 14 MODULES:
 - Command Center (/erp/command-center): Platform admin — Overview, Foundation and Core, Security Console
 - Procure360 (/erp/procure-hub): Full procurement — PR to RFQ to PO to GRN to Invoice to Payment. Includes Vendor Portal.
 - Inventory Hub (/erp/inventory-hub): Stock control, store ops, bin management, cycle count, ABC analysis
-- Qulicheak (/erp/qulicheak): Quality Control and QA — inspections, NCR, sample testing, acceptance limits
+- QualiCheck (/erp/qualicheck): Quality Control and QA — inspections, NCR, sample testing, acceptance limits
 - GateFlow (/erp/gateflow): Gate management — inward/outward, gate passes, vehicle tracking, weighbridge
 - Production (/erp/production): BOM, production orders, WIP tracking, MRP planning, job cards, routing, capacity
 - MaintainPro (/erp/maintainpro): Asset maintenance — work orders, PM schedules, MRO spares, failure codes
@@ -63,7 +63,7 @@ function getMockResponse(userInput: string): string {
   const q = userInput.toLowerCase();
   if (q.includes("gst")) return "GST in Operix supports CGST+SGST (intra-state) and IGST (inter-state) at rates 0%, 5%, 12%, 18%, and 28%. The FinCore module handles GST invoicing and return preparation (GSTR-1, GSTR-3B, GSTR-2B). This module is coming soon.";
   if (q.includes("procurement") || q.includes("pr") || q.includes("purchase")) return "Procurement in Operix follows: Purchase Request → RFQ → Quotation Comparison → Purchase Order → GRN → Invoice Matching → Payment. Head to Procure360 (/erp/procure-hub) once it's live.";
-  if (q.includes("module") || q.includes("available")) return "Operix has 16 modules: Command Center, Procure360, Store Hub, Qulicheak, GateFlow, Production, MaintainPro, RequestX (dept indent), SalesX Hub, Fin Core, PayOut (vendor payments), ReceivX (customer collections), PeoplePay, Back Office Pro, ServiceDesk, and InsightX (top management analytics). Fin Core and PeoplePay are live. Others are coming soon.";
+  if (q.includes("module") || q.includes("available")) return "Operix has 16 modules: Command Center, Procure360, Store Hub, QualiCheck, GateFlow, Production, MaintainPro, RequestX (dept indent), SalesX Hub, Fin Core, PayOut (vendor payments), ReceivX (customer collections), PeoplePay, Back Office Pro, ServiceDesk, and InsightX (top management analytics). Fin Core and PeoplePay are live. Others are coming soon.";
   if (q.includes("requestx") || q.includes("indent") || q.includes("requisition")) return "RequestX is for department material requisitions and indents — a department raises a request for materials or services, it gets approved, and flows into Procure360 for vendor sourcing and purchase orders.";
   if (q.includes("payout") || q.includes("vendor payment") || q.includes("ap ")) return "PayOut manages outgoing vendor payments – schedule payment runs, track advances, release approvals, and reconcile vendor accounts. It works alongside Fin Core.";
   if (q.includes("receivx") || q.includes("collection") || q.includes("outstanding") || q.includes("ar ")) return "ReceivX handles customer outstanding management – track unpaid invoices, run collection follow-ups, view aging reports and monitor credit limits.";

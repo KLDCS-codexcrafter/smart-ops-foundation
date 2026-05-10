@@ -3,7 +3,7 @@
  * @purpose Welder Qualification data model · ASME IX + AWS D1.1 chain (Welder + WPS + PQR + WPQ)
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.c-Qulicheak-Welder-Vendor-ISO-IQC
+ * @sprint T-Phase-1.A.5.c-QualiCheck-Welder-Vendor-ISO-IQC
  * @iso 25010 Maintainability + Reliability + Auditability · ASME IX QW-200/QW-300/QW-450 · AWS D1.1
  * @whom QA Manager · Welding Engineer · Welder
  * @decisions D-NEW-BN (Welder Qualification engine NEW · Welder→WPS→PQR→WPQ chain)

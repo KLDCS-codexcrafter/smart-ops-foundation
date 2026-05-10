@@ -3,13 +3,13 @@
  * @purpose FAI lifecycle engine · evaluateDimension · recomputeOverallStatus · createFai · transitionFai · approveFai
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability · ISO 9001:2015 Clause 8.5.1.1
  * @whom Quality Inspector · QA Manager · Production Lead
  * @decisions D-NEW-BG (FAI engine NEW) · D-NEW-BJ (3-arg userId-2nd signature)
  * @disciplines FR-21 · FR-22 (ActivityItemKind 'voucher') · FR-30 (header)
  * @reuses cross-card-activity-engine.recordActivity
- * @[JWT] GET/POST /api/qulicheak/fais · localStorage key: erp_fai_${entityCode}
+ * @[JWT] GET/POST /api/qualicheck/fais · localStorage key: erp_fai_${entityCode}
  */
 import type {
   FirstArticleInspection,
@@ -24,7 +24,7 @@ import { recordActivity } from '@/lib/cross-card-activity-engine';
 
 function readAll(entityCode: string): FirstArticleInspection[] {
   try {
-    // [JWT] GET /api/qulicheak/fais
+    // [JWT] GET /api/qualicheck/fais
     const raw = localStorage.getItem(faiKey(entityCode));
     return raw ? (JSON.parse(raw) as FirstArticleInspection[]) : [];
   } catch {
@@ -34,7 +34,7 @@ function readAll(entityCode: string): FirstArticleInspection[] {
 
 function writeAll(entityCode: string, list: FirstArticleInspection[]): void {
   try {
-    // [JWT] PUT /api/qulicheak/fais (bulk)
+    // [JWT] PUT /api/qualicheck/fais (bulk)
     localStorage.setItem(faiKey(entityCode), JSON.stringify(list));
   } catch {
     /* quota / private-mode · silent */
@@ -108,12 +108,12 @@ export function createFai(
   // FR-22 · ActivityItemKind = 'voucher'
   // [JWT] POST /api/activity/recent
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: id,
     title: `FAI ${id}`,
     subtitle: `${draft.part_no} · ${draft.part_name}`,
-    deep_link: `/erp/qulicheak#fai-register/${id}`,
+    deep_link: `/erp/qualicheck#fai-register/${id}`,
   });
 
   return fai;

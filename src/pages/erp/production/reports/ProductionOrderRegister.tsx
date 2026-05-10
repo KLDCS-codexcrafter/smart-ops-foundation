@@ -127,7 +127,7 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
                       <td className="p-2 text-xs">
                         {qcN > 0 ? (
                           <button type="button" className="underline text-primary"
-                            onClick={() => navigate(`/erp/qulicheak?m=inspection-list&po=${po.id}`)}>
+                            onClick={() => navigate(`/erp/qualicheck?m=inspection-list&po=${po.id}`)}>
                             Inspected ({qcN})
                           </button>
                         ) : '—'}

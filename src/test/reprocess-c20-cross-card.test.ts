@@ -4,7 +4,7 @@
  * @decisions Q-LOCK-4 Path B · D-NEW-CF
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { findReworkJobCardsForNcr } from '@/lib/qulicheak-bridges';
+import { findReworkJobCardsForNcr } from '@/lib/qualicheck-bridges';
 
 const ENTITY = 'TEST_RPC';
 const KEY = `erp_job_cards_${ENTITY}`;

@@ -12,7 +12,7 @@
  * @[JWT] reads erp_ncr_${entityCode} · erp_capa_${entityCode} for assertion
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { QcVoucherDetailPanel } from '@/pages/erp/qulicheak/QcVoucherDetailPanel';
+import { QcVoucherDetailPanel } from '@/pages/erp/qualicheck/QcVoucherDetailPanel';
 import { raiseNcr } from '@/lib/ncr-engine';
 import { raiseCapa } from '@/lib/capa-engine';
 

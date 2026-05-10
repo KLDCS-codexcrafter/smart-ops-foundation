@@ -3,7 +3,7 @@
  * @purpose MTC (Material Test Certificate) data model · IQC-side certificate of conformance for incoming material lots
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability + Auditability · ISO 9001:2015 Clause 8.4.2
  * @whom Quality Inspector · QA Manager · Vendor Manager
  * @decisions D-NEW-BF (MTC engine NEW · two-engine pattern · IQC-attached) ·

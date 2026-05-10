@@ -10,10 +10,10 @@
  * @whom Audit Owner
  * @decisions D-NEW-CF (NCR↔Rework traceability) · D-NEW-BV (entity_code required)
  * @disciplines FR-19 (sibling · zero Production engine touch) · FR-30 · FR-50
- * @reuses qulicheak-bridges.QaOutcomePayload channel
+ * @reuses qualicheck-bridges.QaOutcomePayload channel
  * @[JWT] localStorage key: erp_pending_rework_ncrs_${entityCode}
  */
-import type { QaOutcomePayload } from '@/lib/qulicheak-bridges';
+import type { QaOutcomePayload } from '@/lib/qualicheck-bridges';
 
 const CH = 'qa.outcome.applied';
 const KEY = (e: string): string => `erp_pending_rework_ncrs_${e}`;

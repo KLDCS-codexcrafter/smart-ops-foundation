@@ -3,7 +3,7 @@
  * @purpose NCR (Non-Conformance Report) data model · consumes qa-plan + qa-spec
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-08
- * @sprint T-Phase-1.A.5.a-bis-Qulicheak-NCR-Foundation
+ * @sprint T-Phase-1.A.5.a-bis-QualiCheck-NCR-Foundation
  * @iso 25010 Maintainability + Reliability + Auditability
  * @whom Quality Inspector · QA Manager · Vendor Manager
  * @decisions D-NEW-AV (NCR data model · two-engine pattern per Q-LOCK-4(a))

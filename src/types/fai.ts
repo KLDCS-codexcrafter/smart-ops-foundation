@@ -3,7 +3,7 @@
  * @purpose FAI (First Article Inspection) data model · per-dimension pass/fail · approval workflow
  * @who Lovable on behalf of Operix Founder
  * @when 2026-05-09
- * @sprint T-Phase-1.A.5.b-Qulicheak-CAPA-MTC-FAI
+ * @sprint T-Phase-1.A.5.b-QualiCheck-CAPA-MTC-FAI
  * @iso 25010 Maintainability + Reliability · ISO 9001:2015 Clause 8.5.1.1 (PPAP/FAI)
  * @whom Quality Inspector · QA Manager · Production Lead
  * @decisions D-NEW-BG (FAI engine NEW · per-dimension model · fail-dominant) ·

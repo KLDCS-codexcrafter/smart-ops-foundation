@@ -1,11 +1,11 @@
 /**
  * @file        bill-passing-qa-bridge.ts
- * @purpose     Bidirectional Bill Passing ↔ Qulicheak QA bridge.
+ * @purpose     Bidirectional Bill Passing ↔ QualiCheck QA bridge.
  *              Outbound: notifyQaHandoff fires toast + recordActivity + deep-link
  *                        when a bill enters awaiting_qa or qa_failed.
  *              Inbound:  applyQaOutcome listens for QA finalization events and
  *                        patches qa_passed on the matching line + re-runs match.
- * @who         Procurement · Bill Passing · Qulicheak
+ * @who         Procurement · Bill Passing · QualiCheck
  * @when        Sprint T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring · Block D
  * @sprint      T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring
  * @iso         25010 · Functional Suitability · Interoperability
@@ -24,7 +24,7 @@ import { recordActivity } from './cross-card-activity-engine';
 import { toast } from 'sonner';
 
 // ============================================================================
-// Outbound · Bill Passing → Qulicheak (notify QC)
+// Outbound · Bill Passing → QualiCheck (notify QC)
 // ============================================================================
 
 /**
@@ -40,13 +40,13 @@ export function notifyQaHandoff(
   const verb = reason === 'awaiting_qa'
     ? 'awaiting QC inspection'
     : 'QC inspection FAILED';
-  const deepLink = `/erp/qulicheak#qc-entry?bill_id=${bill.id}`;
+  const deepLink = `/erp/qualicheck#qc-entry?bill_id=${bill.id}`;
 
   // [JWT] POST /api/notifications · client-side toast in Phase 1
   toast.info(`Bill ${bill.bill_no} ${verb}`, {
-    description: `Vendor: ${bill.vendor_name} · open in Qulicheak`,
+    description: `Vendor: ${bill.vendor_name} · open in QualiCheck`,
     action: {
-      label: 'Open Qulicheak',
+      label: 'Open QualiCheck',
       onClick: () => {
         window.location.href = deepLink;
       },
@@ -54,7 +54,7 @@ export function notifyQaHandoff(
   });
 
   recordActivity(entityCode, userId, {
-    card_id: 'qulicheak',
+    card_id: 'qualicheck',
     kind: 'voucher',
     ref_id: bill.id,
     title: `QC needed: ${bill.bill_no}`,
@@ -64,7 +64,7 @@ export function notifyQaHandoff(
 }
 
 // ============================================================================
-// Inbound · Qulicheak → Bill Passing (QA outcome applied)
+// Inbound · QualiCheck → Bill Passing (QA outcome applied)
 // ============================================================================
 
 export interface QaInspectionFinalizedDetail {

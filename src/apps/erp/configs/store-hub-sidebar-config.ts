@@ -15,7 +15,7 @@
  * @[JWT]       N/A (config only)
  *
  * Module IDs PRESERVED from existing StoreHubSidebar.tsx StoreHubModule type.
- * Keyboard namespace: 's *' prefix · D-NEW-CC uniqueness preserved (no collision with qulicheak's 'q *').
+ * Keyboard namespace: 's *' prefix · D-NEW-CC uniqueness preserved (no collision with qualicheck's 'q *').
  */
 import {
   Home, Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,

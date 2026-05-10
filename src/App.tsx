@@ -173,7 +173,7 @@ const BillPassingPage = lazy(() => import('./pages/erp/bill-passing/BillPassingP
 // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow Foundation
 const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
 // Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck Foundation
-const QualiCheckPage = lazy(() => import('./pages/erp/qulicheak/QualiCheckPage'));
+const QualiCheckPage = lazy(() => import('./pages/erp/qualicheck/QualiCheckPage'));
 const SupplyXPage = lazy(() => import('./pages/erp/supplyx/SupplyXPage'));
 const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
@@ -338,7 +338,7 @@ const App = () => (
               <Route path="/operix-go/salesx" element={<P><SalesXGoMobile /></P>} />
               <Route path="/operix-go/receivx" element={<P><ReceivXGoMobile /></P>} />
               <Route path="/operix-go/gate-guard" element={<P><MobileGateGuardPage /></P>} />
-              <Route path="/operix-go/qulicheak" element={<P><MobileQualiCheckPage /></P>} />
+              <Route path="/operix-go/qualicheck" element={<P><MobileQualiCheckPage /></P>} />
               <Route path="/operix-go/inward-receipt" element={<P><MobileInwardReceiptPage /></P>} />
               <Route path="/operix-go/store-issue" element={<P><MobileStoreIssuePage /></P>} />
               <Route path="/operix-go/receipt-ack" element={<P><MobileReceiptAckPage /></P>} />
@@ -513,7 +513,7 @@ const App = () => (
               {/* Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow */}
               <Route path="/erp/gateflow" element={<P><GateFlowPage /></P>} />
               {/* Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck */}
-              <Route path="/erp/qulicheak" element={<P><QualiCheckPage /></P>} />
+              <Route path="/erp/qualicheck" element={<P><QualiCheckPage /></P>} />
               <Route path="/erp/supplyx" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />

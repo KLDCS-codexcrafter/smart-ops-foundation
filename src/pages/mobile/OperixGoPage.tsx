@@ -54,7 +54,7 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     icon: FlaskConical,
     description: 'Inspector 5-step capture · pick pending · qty (P/F/S) · spec parameters · photos · review · auto-routes 3 Stock Journals on submit.',
     details: 'Live: Sprint 5-pre-3 · D-346. Mirrors GateFlow Gate Guard 5-step pattern. Triggers D-339 closure resolver on submit (Quarantine→Approved/Sample/Rejection Stock Journals · D-128 schemas preserved). Offline queue when no network. PWA — no install.',
-    route: '/operix-go/qulicheak',
+    route: '/operix-go/qualicheck',
     phase: 'live',
   },
   {
