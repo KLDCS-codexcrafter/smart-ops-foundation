@@ -1,13 +1,15 @@
 /**
  * EngineeringXSidebar.types.ts
- * Sprint T-Phase-1.A.10 EngineeringX Foundation · Q-LOCK-6a · Block D.1
+ * Sprint T-Phase-1.A.11 EngineeringX Drawing Register + Version Control · Q-LOCK-6a + Q-LOCK-10a · Block G.1
  *
- * 7 base modules · FLAT IDs · A.11+ extensions are additive only.
+ * 9 modules · FLAT IDs · A.11 ships 4 real drawing modules (replacing 2 stubs).
  */
 export type EngineeringXModule =
   | 'welcome'
-  | 'drawing-register-placeholder'
-  | 'drawing-entry-placeholder'
+  | 'drawing-register'
+  | 'drawing-entry'
+  | 'drawing-approvals'
+  | 'drawing-version-history'
   | 'reference-projects-placeholder'
   | 'bom-placeholder'
   | 'similarity-placeholder'
