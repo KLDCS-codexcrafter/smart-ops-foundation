@@ -76,6 +76,14 @@ import {
   MaterialRfqPrintPanel,
 } from './reports';
 
+// ─── NEW · SM.Procure360-Vendor-Agreements · D-NEW-CJ 3rd consumer ───
+import {
+  Procure360VendorAgreementsRegisterPanel,
+} from './transactions/Procure360VendorAgreementsRegister';
+import {
+  Procure360VendorAgreementEntryPanel,
+} from './transactions/Procure360VendorAgreementEntry';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
