@@ -84,6 +84,14 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('requestx', 'locked'),
     one('frontdesk', 'locked'),
     one('servicedesk', 'locked'),
+    // ─── A.13.T2 Hotfix · seed parity with active Shell-pattern cards ───
+    // 4 cards drifted out of seed coverage over A.8/A.9.T1/A.10/A.13. Without seed entries the
+    // matrix filter denied all sidebar items → empty sidebars. Invariant test in
+    // src/test/seed-entitlement-coverage.test.ts prevents recurrence (D-NEW-CT 17th canonical).
+    one('store-hub'),       // active · A.9.T1 Shell retrofit
+    one('supplyx'),         // active · A.9.T1 Shell retrofit
+    one('docvault'),        // active · A.8 DocVault Hub-and-Spoke (FR-73)
+    one('engineeringx'),    // active · A.10/A.13 EngineeringX (MOAT #21)
   ];
 }
 
