@@ -358,6 +358,11 @@ export default function Procure360Page(): JSX.Element {
       case 'po-status-by-enquiry':            return <PoStatusByEnquiryPanel />;
       case 'enquiry-details-report':          return <EnquiryDetailsReportPanel />;
       case 'material-rfq-print':              return <MaterialRfqPrintPanel />;
+      // ─── NEW · SM.Procure360-Vendor-Agreements ───
+      case 'vendor-agreements-register':
+        return <Procure360VendorAgreementsRegisterPanel onNavigate={handleNavigate} />;
+      case 'vendor-agreement-entry':
+        return <Procure360VendorAgreementEntryPanel onNavigate={handleNavigate} />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
