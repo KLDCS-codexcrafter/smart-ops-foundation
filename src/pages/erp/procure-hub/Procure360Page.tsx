@@ -107,6 +107,9 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'purchase-cost-variance-category', 'rate-variance-graph',
   'po-itemwise', 'po-status-by-enquiry', 'enquiry-details-report',
   'material-rfq-print',
+  // ─── NEW · SM.Procure360-Vendor-Agreements ───
+  'vendor-agreements-register',
+  'vendor-agreement-entry',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
