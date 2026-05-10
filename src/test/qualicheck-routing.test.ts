@@ -100,3 +100,52 @@ describe('QualiCheck sidebar config · D-NEW-CC canonical (T1 Block C)', () => {
     }
   });
 });
+
+// T-Phase-1.H.2 · QualiCheck Reverse Naming Migration · NEW tests
+import { readFileSync } from 'fs';
+
+describe('T-Phase-1.H.2 · QualiCheck Reverse Naming Migration', () => {
+  it('Q-LOCK-5a · applications.ts uses id="qualicheck" name="QualiCheck" · D-NEW-CN canonical', async () => {
+    const mod = await import('@/components/operix-core/applications');
+    const apps = mod.applications;
+    const qc = apps.find((a) => a.id === 'qualicheck');
+    expect(qc).toBeDefined();
+    expect(qc?.name).toBe('QualiCheck');
+    expect(qc?.route).toBe('/erp/qualicheck');
+    expect(apps.find((a) => (a.id as string) === 'qulicheak')).toBeUndefined();
+  });
+
+  it('Q-LOCK-7a · /erp/qulicheak redirects to /erp/qualicheck (D-NEW-CM Legacy Redirect Convention)', () => {
+    const content = readFileSync('src/App.tsx', 'utf-8');
+    expect(content).toMatch(/<Route\s+path="\/erp\/qualicheck"/);
+    expect(content).toMatch(/QulicheakLegacyRedirect/);
+    expect(content).toMatch(/path="\/erp\/qulicheak"/);
+  });
+
+  it('Q-LOCK-1a + Q-LOCK-2a · zero Qulicheak/qulicheak in source (excluding App.tsx + tests)', () => {
+    const { execSync } = require('child_process');
+    const wrongPascal = parseInt(
+      execSync(`grep -rE "Qulicheak" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test --exclude=App.tsx | wc -l`).toString().trim()
+    );
+    const wrongLower = parseInt(
+      execSync(`grep -rE "qulicheak" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test --exclude=App.tsx | wc -l`).toString().trim()
+    );
+    expect(wrongPascal).toBe(0);
+    expect(wrongLower).toBe(0);
+  });
+
+  it('Q-LOCK-8a + Q-LOCK-14a · D-NEW-BB 3rd consumer · qulicheak → qualicheck card_id migration block exists', () => {
+    const content = readFileSync('src/hooks/useCardEntitlement.ts', 'utf-8');
+    expect(content).toMatch(/T-Phase-1\.H\.2.*D-NEW-BB.*3rd consumer/);
+    expect(content).toMatch(/'qulicheak'/);
+    expect(content).toMatch(/'qualicheck'/);
+  });
+
+  it('Q-LOCK-9a · D-NEW-CN canonical registered · NAMING CONVENTIONS section extended', () => {
+    const content = readFileSync('src/components/operix-core/applications.ts', 'utf-8');
+    expect(content).toMatch(/D-NEW-CM-fincore-naming-canonical/);
+    expect(content).toMatch(/D-NEW-CN-qualicheck-naming-canonical/);
+    expect(content).toMatch(/'Fin Core' \(with space\) intentional/);
+    expect(content).toMatch(/'QualiCheck'.*PascalCase.*canonical/);
+  });
+});
