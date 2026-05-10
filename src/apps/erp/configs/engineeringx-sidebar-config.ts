@@ -1,11 +1,11 @@
 /**
  * @file        src/apps/erp/configs/engineeringx-sidebar-config.ts
- * @sprint      T-Phase-1.A.12 · Q-LOCK-12a · Block E.2 · D-NEW-CC `'e *'` namespace extension within consumer
- * @decisions   D-NEW-CC keyboard uniqueness · FR-73 5th consumer · 4 NEW shortcuts (`e b` · `e g` · `e l` · `e c`)
+ * @sprint      T-Phase-1.A.13 · Q-LOCK-13a · Block D.2 · D-NEW-CC `'e *'` namespace extension within consumer (5 consumers UNCHANGED · 4 NEW shortcuts at A.13)
+ * @decisions   D-NEW-CC keyboard uniqueness · FR-73 5th consumer · 4 NEW shortcuts (`e i` · `e h`) + 2 renames (`e s` · `e t`)
  */
 import {
   Home, FileText, FilePlus, BookMarked, Sparkles, BarChart3,
-  CheckSquare, History, Cog, List, Copy,
+  CheckSquare, History, Cog, List, Copy, GitBranch, Send,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
