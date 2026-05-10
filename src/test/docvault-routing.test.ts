@@ -87,7 +87,7 @@ describe('T-Phase-1.H.1 · FinCore naming migration', () => {
       execSync(`grep -rE "FineCore" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test | grep -v "FineCoreLegacyRedirect" | grep -v "/erp/finecore" | wc -l`).toString().trim()
     );
     const wrongLower = parseInt(
-      execSync(`grep -rE "[^A-Za-z]finecore[^A-Za-z]" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test | grep -v "/erp/finecore" | wc -l`).toString().trim()
+      execSync(`grep -rE "[^A-Za-z]finecore[^A-Za-z]" src/ --include='*.ts' --include='*.tsx' --exclude-dir=test | grep -v "/erp/finecore" | grep -v "/erp\\\\\\\\/finecore" | wc -l`).toString().trim()
     );
     expect(wrongPascal).toBe(0);
     expect(wrongLower).toBe(0);
