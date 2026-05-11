@@ -11,6 +11,7 @@ import { Briefcase, Users, FlaskConical, ExternalLink, Factory, Layers, Clock, A
 import { Card, CardContent } from '@/components/ui/card';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { MaintenancePulseWidget } from '@/components/maintainpro/MaintenancePulseWidget';
 
 interface Props {
   onNavigate?: (m: string) => void;
@@ -62,6 +63,9 @@ export function ProductionWelcome({ onNavigate: _onNavigate }: Props): JSX.Eleme
           Manage production orders · BOM consumption · WIP tracking · 6 production patterns
         </p>
       </div>
+
+      {/* A.16b · MaintenancePulseWidget · OOB-M3 bidirectional capacity feedback (Q-LOCK-5) */}
+      <MaintenancePulseWidget />
 
       <button
         type="button"

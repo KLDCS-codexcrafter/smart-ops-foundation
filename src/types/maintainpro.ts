@@ -273,3 +273,269 @@ export interface MaintenanceVendorView {
   on_time_completion_pct: number;
   last_engaged_date: string | null;
 }
+
+// ============================================================================
+// === A.16b · 9 TRANSACTIONS · APPENDED ===
+// (Master types above ABSOLUTE preserved · NOT modified)
+// ============================================================================
+
+// --- TRANSACTION 1 · BREAKDOWN REPORT ---
+export interface BreakdownReport {
+  id: string;
+  entity_id: string;
+  breakdown_no: string;
+  equipment_id: string;
+  reported_by_user_id: string;
+  originating_department_id: string;
+  occurred_at: string;
+  reported_at: string;
+  resolved_at: string | null;
+  downtime_minutes: number;
+  nature_of_complaint: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  similar_breakdowns_last_12m_count: number;
+  similar_breakdowns_pattern_detected: string | null;
+  is_equipment_in_warranty: boolean;
+  warranty_claim_recommended: boolean;
+  warranty_contact: string | null;
+  corrective_action: string;
+  attended_by_user_id: string | null;
+  remarks: string;
+  triggered_work_order_id: string | null;
+  project_id: string | null;
+  status: 'open' | 'work_order_created' | 'resolved' | 'closed';
+  created_at: string;
+  updated_at: string;
+}
+export const breakdownReportKey = (entityCode: string): string =>
+  `erp_maintainpro_breakdown_${entityCode}`;
+
+// --- TRANSACTION 2 · WORK ORDER ---
+export type WorkOrderType = 'breakdown' | 'pm_scheduled' | 'pm_overdue' | 'inspection' | 'safety';
+export type WorkOrderStatus = 'draft' | 'assigned' | 'in_progress' | 'on_hold' | 'completed' | 'cancelled';
+
+export interface WorkOrder {
+  id: string;
+  entity_id: string;
+  wo_no: string;
+  wo_type: WorkOrderType;
+  source_breakdown_id: string | null;
+  source_pm_schedule_id: string | null;
+  equipment_id: string;
+  assigned_to_user_id: string | null;
+  assigned_at: string | null;
+  estimated_minutes: number;
+  actual_minutes: number | null;
+  status: WorkOrderStatus;
+  started_at: string | null;
+  paused_at: string | null;
+  resumed_at: string | null;
+  completed_at: string | null;
+  activities_planned: Array<{ activity_code: string; description: string; estimated_minutes: number; completed: boolean }>;
+  parts_used: Array<{ spare_id: string; qty: number; issue_id: string | null }>;
+  completion_notes: string;
+  followup_required: boolean;
+  project_id: string | null;
+  created_by_user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+export const workOrderKey = (entityCode: string): string =>
+  `erp_maintainpro_work_order_${entityCode}`;
+
+// --- TRANSACTION 3 · PM TICK-OFF ---
+export interface PMTickoff {
+  id: string;
+  entity_id: string;
+  pm_no: string;
+  pm_schedule_template_id: string;
+  equipment_id: string;
+  scheduled_date: string;
+  actual_completion_date: string;
+  performed_by_user_id: string;
+  duration_minutes: number;
+  activities_completed: Array<{ activity_code: string; description: string; completed: boolean; notes: string; issues_found: boolean; issue_details: string }>;
+  parts_used: Array<{ spare_id: string; qty: number }>;
+  next_due_date: string | null;
+  status: 'in_progress' | 'completed' | 'aborted';
+  project_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export const pmTickoffKey = (entityCode: string): string =>
+  `erp_maintainpro_pm_tickoff_${entityCode}`;
+
+// --- TRANSACTION 4 · SPARES ISSUE ---
+export interface SparesIssue {
+  id: string;
+  entity_id: string;
+  issue_no: string;
+  spare_id: string;
+  qty: number;
+  consuming_equipment_id: string;
+  consuming_work_order_id: string | null;
+  consuming_breakdown_id: string | null;
+  issued_to_user_id: string;
+  current_velocity: number;
+  historical_median_velocity: number;
+  velocity_spike_detected: boolean;
+  reorder_alert_emitted: boolean;
+  unit_cost: number;
+  total_cost: number;
+  fincore_voucher_id: string | null;
+  project_id: string | null;
+  issued_at: string;
+  created_at: string;
+}
+export const sparesIssueKey = (entityCode: string): string =>
+  `erp_maintainpro_spares_issue_${entityCode}`;
+
+// --- TRANSACTION 5 · EQUIPMENT MOVEMENT ---
+export interface EquipmentMovement {
+  id: string;
+  entity_id: string;
+  movement_no: string;
+  equipment_id: string;
+  source_location: string;
+  source_site_id: string | null;
+  destination_location: string;
+  destination_site_id: string | null;
+  movement_reason: 'deploy_to_site' | 'return_to_base' | 'inter_site_transfer' | 'decommission' | 'maintenance_workshop';
+  movement_date: string;
+  transport_vehicle: string;
+  transport_cost: number;
+  authorized_by_user_id: string;
+  project_id: string | null;
+  created_at: string;
+}
+export const equipmentMovementKey = (entityCode: string): string =>
+  `erp_maintainpro_movement_${entityCode}`;
+
+// --- TRANSACTION 6 · CALIBRATION CERTIFICATE ---
+export interface CalibrationCertificate {
+  id: string;
+  entity_id: string;
+  certificate_no: string;
+  instrument_id: string;
+  calibrated_on: string;
+  next_due_date: string;
+  calibrated_by_vendor_id: string | null;
+  calibrated_by_user_id: string | null;
+  pre_calibration_drift: string;
+  post_calibration_accuracy: string;
+  certificate_url: string | null;
+  is_pass: boolean;
+  cost: number;
+  fincore_voucher_id: string | null;
+  project_id: string | null;
+  created_at: string;
+}
+export const calibrationCertificateKey = (entityCode: string): string =>
+  `erp_maintainpro_cal_cert_${entityCode}`;
+
+// --- TRANSACTION 7 · AMC OUT-TO-VENDOR ---
+export type AMCOutStatus = 'sent' | 'in_progress_at_vendor' | 'returned' | 'cancelled';
+export type AMCOutStockState = 'maintenance_inventory' | 'wip_at_vendor';
+
+export interface AMCOutToVendor {
+  id: string;
+  entity_id: string;
+  rma_no: string;
+  equipment_id: string;
+  parts_sent: Array<{ spare_id: string | null; serial_no: string; description: string; qty: number }>;
+  vendor_id: string;
+  vendor_rma_no: string | null;
+  sent_date: string;
+  expected_return_date: string;
+  actual_return_date: string | null;
+  status: AMCOutStatus;
+  stock_state: AMCOutStockState;
+  reminder_50pct_sent: boolean;
+  reminder_75pct_sent: boolean;
+  reminder_overdue_sent: boolean;
+  estimated_cost: number;
+  actual_cost: number | null;
+  is_under_warranty: boolean;
+  fincore_voucher_id: string | null;
+  project_id: string | null;
+  triggered_by_work_order_id: string | null;
+  originating_department_id: 'maintenance';
+  created_by_user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+export const amcOutToVendorKey = (entityCode: string): string =>
+  `erp_maintainpro_amc_out_${entityCode}`;
+
+// --- TRANSACTION 8 · INTERNAL MAINTENANCE TICKET (FULL SLA) ---
+export type TicketCategory = 'electrical' | 'mechanical' | 'pneumatic' | 'hydraulic' | 'safety' | 'calibration' | 'housekeeping';
+export type TicketSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type TicketStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed' | 'reopened';
+export type EscalationLevel = 0 | 1 | 2 | 3;
+
+export interface InternalMaintenanceTicket {
+  id: string;
+  entity_id: string;
+  ticket_no: string;
+  originating_department_id: string;
+  originating_user_id: string;
+  receiving_department_id: 'maintenance';
+  equipment_id: string | null;
+  category: TicketCategory;
+  symptom: string;
+  photo_urls: string[];
+  severity: TicketSeverity;
+  sla_ack_hours: number;
+  sla_resolution_hours: number;
+  status: TicketStatus;
+  acknowledged_at: string | null;
+  acknowledged_by_user_id: string | null;
+  in_progress_at: string | null;
+  resolved_at: string | null;
+  closed_at: string | null;
+  reopened_count: number;
+  is_ack_breached: boolean;
+  is_resolution_breached: boolean;
+  escalation_level: EscalationLevel;
+  escalation_log: Array<{ level: 1 | 2 | 3; escalated_at: string; escalated_to_user_id: string }>;
+  converted_to_work_order_id: string | null;
+  resolution_notes: string;
+  resolved_by_user_id: string | null;
+  parts_used: Array<{ spare_id: string; qty: number }>;
+  project_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export const internalTicketKey = (entityCode: string): string =>
+  `erp_maintainpro_internal_ticket_${entityCode}`;
+
+// SLA MATRIX · 7 categories × 4 severities = 28 cells (FR-39 §B Audit Immutability)
+export const SLA_MATRIX: Record<TicketCategory, Record<TicketSeverity, { ack_hours: number; resolution_hours: number }>> = {
+  electrical:    { critical: { ack_hours: 1, resolution_hours: 4 },  high: { ack_hours: 2, resolution_hours: 8 },  medium: { ack_hours: 4, resolution_hours: 24 }, low: { ack_hours: 8, resolution_hours: 72 } },
+  mechanical:    { critical: { ack_hours: 2, resolution_hours: 4 },  high: { ack_hours: 4, resolution_hours: 8 },  medium: { ack_hours: 8, resolution_hours: 24 }, low: { ack_hours: 24, resolution_hours: 72 } },
+  pneumatic:     { critical: { ack_hours: 2, resolution_hours: 8 },  high: { ack_hours: 4, resolution_hours: 12 }, medium: { ack_hours: 8, resolution_hours: 48 }, low: { ack_hours: 24, resolution_hours: 72 } },
+  hydraulic:     { critical: { ack_hours: 2, resolution_hours: 8 },  high: { ack_hours: 4, resolution_hours: 12 }, medium: { ack_hours: 8, resolution_hours: 48 }, low: { ack_hours: 24, resolution_hours: 72 } },
+  safety:        { critical: { ack_hours: 1, resolution_hours: 2 },  high: { ack_hours: 2, resolution_hours: 4 },  medium: { ack_hours: 4, resolution_hours: 12 }, low: { ack_hours: 8, resolution_hours: 24 } },
+  calibration:   { critical: { ack_hours: 4, resolution_hours: 24 }, high: { ack_hours: 8, resolution_hours: 48 }, medium: { ack_hours: 24, resolution_hours: 72 }, low: { ack_hours: 48, resolution_hours: 168 } },
+  housekeeping:  { critical: { ack_hours: 8, resolution_hours: 24 }, high: { ack_hours: 24, resolution_hours: 48 }, medium: { ack_hours: 48, resolution_hours: 72 }, low: { ack_hours: 72, resolution_hours: 168 } },
+};
+
+// --- TRANSACTION 9 · ASSET CAPITALIZATION ---
+export interface AssetCapitalization {
+  id: string;
+  entity_id: string;
+  capitalization_no: string;
+  equipment_id: string;
+  triggered_by_handoff_id: string | null;
+  purchase_cost: number;
+  depreciation_method: 'straight_line' | 'wdv' | 'units_of_production';
+  useful_life_years: number;
+  salvage_value: number;
+  fincore_voucher_id: string | null;
+  project_id: string | null;
+  capitalized_at: string;
+  capitalized_by_user_id: string;
+  created_at: string;
+}
+export const assetCapitalizationKey = (entityCode: string): string =>
+  `erp_maintainpro_asset_cap_${entityCode}`;
