@@ -52,6 +52,7 @@ export const maintainproSidebarItems: SidebarItem[] = [
     icon: Home,
     moduleId: 'welcome',
     requiredCards: ['maintainpro'],
+    keyboard: 'm w',
   },
   {
     id: 'asset-master-group',
@@ -59,12 +60,12 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'Asset Master',
     icon: Wrench,
     children: [
-      { id: 'equipment-list', type: 'item', label: 'Equipment List', icon: ListChecks, moduleId: 'equipment-list', requiredCards: ['maintainpro'] },
-      { id: 'equipment-detail', type: 'item', label: 'Equipment Detail', icon: FileText, moduleId: 'equipment-detail', requiredCards: ['maintainpro'] },
-      { id: 'spare-parts', type: 'item', label: 'Spare Parts (Inventory Hub replica)', icon: Package, moduleId: 'spare-parts', requiredCards: ['maintainpro'] },
-      { id: 'calibration-instruments', type: 'item', label: 'Calibration Instruments', icon: FlaskConical, moduleId: 'calibration-instruments', requiredCards: ['maintainpro'] },
-      { id: 'fire-safety', type: 'item', label: 'Fire Safety & Emergency', icon: Flame, moduleId: 'fire-safety', requiredCards: ['maintainpro'] },
-      { id: 'maintenance-vendor', type: 'item', label: 'Maintenance Vendor (CC replica)', icon: Building, moduleId: 'maintenance-vendor', requiredCards: ['maintainpro'] },
+      { id: 'equipment-list', type: 'item', label: 'Equipment List', icon: ListChecks, moduleId: 'equipment-list', requiredCards: ['maintainpro'], keyboard: 'm e' },
+      { id: 'equipment-detail', type: 'item', label: 'Equipment Detail', icon: FileText, moduleId: 'equipment-detail', requiredCards: ['maintainpro'], keyboard: 'm d' },
+      { id: 'spare-parts', type: 'item', label: 'Spare Parts (Inventory Hub replica)', icon: Package, moduleId: 'spare-parts', requiredCards: ['maintainpro'], keyboard: 'm s' },
+      { id: 'calibration-instruments', type: 'item', label: 'Calibration Instruments', icon: FlaskConical, moduleId: 'calibration-instruments', requiredCards: ['maintainpro'], keyboard: 'm c' },
+      { id: 'fire-safety', type: 'item', label: 'Fire Safety & Emergency', icon: Flame, moduleId: 'fire-safety', requiredCards: ['maintainpro'], keyboard: 'm f' },
+      { id: 'maintenance-vendor', type: 'item', label: 'Maintenance Vendor (CC replica)', icon: Building, moduleId: 'maintenance-vendor', requiredCards: ['maintainpro'], keyboard: 'm v' },
     ],
   },
   {
@@ -73,7 +74,7 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'PM Schedules',
     icon: Calendar,
     children: [
-      { id: 'pm-template-master', type: 'item', label: 'PM Schedule Template Master', icon: BookOpen, moduleId: 'pm-template-master', requiredCards: ['maintainpro'] },
+      { id: 'pm-template-master', type: 'item', label: 'PM Schedule Template Master', icon: BookOpen, moduleId: 'pm-template-master', requiredCards: ['maintainpro'], keyboard: 'm p' },
       { id: 'active-schedules', type: 'item', label: 'Active PM Schedules', icon: Calendar, moduleId: 'active-schedules', requiredCards: ['maintainpro'] },
       { id: 'pm-calendar', type: 'item', label: 'PM Calendar View', icon: Calendar, moduleId: 'pm-calendar', requiredCards: ['maintainpro'] },
       { id: 'overdue-pm', type: 'item', label: 'Overdue PM', icon: AlertOctagon, moduleId: 'overdue-pm', requiredCards: ['maintainpro'] },
@@ -85,11 +86,11 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'Breakdowns & Work Orders',
     icon: AlertTriangle,
     children: [
-      { id: 'raise-breakdown', type: 'item', label: 'Raise Breakdown', icon: AlertTriangle, moduleId: 'raise-breakdown', requiredCards: ['maintainpro'] },
-      { id: 'work-orders', type: 'item', label: 'Work Orders', icon: ClipboardList, moduleId: 'work-orders', requiredCards: ['maintainpro'] },
+      { id: 'raise-breakdown', type: 'item', label: 'Raise Breakdown', icon: AlertTriangle, moduleId: 'raise-breakdown', requiredCards: ['maintainpro'], keyboard: 'm b' },
+      { id: 'work-orders', type: 'item', label: 'Work Orders', icon: ClipboardList, moduleId: 'work-orders', requiredCards: ['maintainpro'], keyboard: 'm o' },
       { id: 'wo-inbox', type: 'item', label: 'WO Inbox (Assigned to Me)', icon: Inbox, moduleId: 'wo-inbox', requiredCards: ['maintainpro'] },
       { id: 'completed-wo', type: 'item', label: 'Completed Work Orders', icon: CheckCircle2, moduleId: 'completed-wo', requiredCards: ['maintainpro'] },
-      { id: 'equipment-history', type: 'item', label: 'Equipment History (TDL Day Book)', icon: BookCheck, moduleId: 'equipment-history', requiredCards: ['maintainpro'] },
+      { id: 'equipment-history', type: 'item', label: 'Equipment History (TDL Day Book)', icon: BookCheck, moduleId: 'equipment-history', requiredCards: ['maintainpro'], keyboard: 'm h' },
     ],
   },
   {
@@ -98,7 +99,7 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'Spare Parts Movement',
     icon: Package,
     children: [
-      { id: 'spares-issue', type: 'item', label: 'Spares Issue (TDL)', icon: Send, moduleId: 'spares-issue', requiredCards: ['maintainpro'] },
+      { id: 'spares-issue', type: 'item', label: 'Spares Issue (TDL)', icon: Send, moduleId: 'spares-issue', requiredCards: ['maintainpro'], keyboard: 'm i' },
       { id: 'equipment-movement', type: 'item', label: 'Equipment Movement', icon: Truck, moduleId: 'equipment-movement', requiredCards: ['maintainpro'] },
       { id: 'amc-out-to-vendor', type: 'item', label: 'AMC Out-to-Vendor', icon: GitBranch, moduleId: 'amc-out-to-vendor', requiredCards: ['maintainpro'] },
       { id: 'spare-reorder-alerts', type: 'item', label: 'Spare Reorder Alerts (OOB-M7)', icon: AlertOctagon, moduleId: 'spare-reorder-alerts', requiredCards: ['maintainpro'] },
@@ -110,7 +111,7 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'Internal Helpdesk',
     icon: Inbox,
     children: [
-      { id: 'raise-ticket', type: 'item', label: 'Raise Ticket', icon: Inbox, moduleId: 'raise-ticket', requiredCards: ['maintainpro'] },
+      { id: 'raise-ticket', type: 'item', label: 'Raise Ticket', icon: Inbox, moduleId: 'raise-ticket', requiredCards: ['maintainpro'], keyboard: 'm t' },
       { id: 'ticket-inbox', type: 'item', label: 'Ticket Inbox', icon: Inbox, moduleId: 'ticket-inbox', requiredCards: ['maintainpro'] },
       { id: 'open-tickets', type: 'item', label: 'Open Tickets', icon: AlertTriangle, moduleId: 'open-tickets', requiredCards: ['maintainpro'] },
       { id: 'sla-dashboard', type: 'item', label: 'SLA Performance Dashboard', icon: BarChart3, moduleId: 'sla-dashboard', requiredCards: ['maintainpro'] },
@@ -135,7 +136,7 @@ export const maintainproSidebarItems: SidebarItem[] = [
     label: 'Reports',
     icon: BarChart3,
     children: [
-      { id: 'equipment-master-list', type: 'item', label: 'Equipment Master List', icon: ListChecks, moduleId: 'equipment-master-list', requiredCards: ['maintainpro'] },
+      { id: 'equipment-master-list', type: 'item', label: 'Equipment Master List', icon: ListChecks, moduleId: 'equipment-master-list', requiredCards: ['maintainpro'], keyboard: 'm r' },
       { id: 'spares-stock-summary', type: 'item', label: 'Spares Stock Summary', icon: Package, moduleId: 'spares-stock-summary', requiredCards: ['maintainpro'] },
       { id: 'breakdown-register', type: 'item', label: 'Breakdown Register', icon: AlertTriangle, moduleId: 'breakdown-register', requiredCards: ['maintainpro'] },
       { id: 'maintenance-graph', type: 'item', label: 'Maintenance Graph', icon: TrendingUp, moduleId: 'maintenance-graph', requiredCards: ['maintainpro'] },
