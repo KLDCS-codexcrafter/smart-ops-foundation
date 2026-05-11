@@ -103,6 +103,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     phase: 'phase2',
   },
   {
+    id: 'maintenance-technician',
+    title: 'MaintainPro — Maintenance Technician',
+    icon: Wrench,
+    description: 'Field-first mobile landing for maintenance technicians · captures land at A.17 (OOB-M9). Active WO / today PM / open ticket summary tiles live now.',
+    details: 'A.16c: landing-only per Q-LOCK-3. A.17 wires 4 captures (breakdown · PM tick-off · spares issue · asset photo).',
+    route: '/operix-go/maintenance-technician',
+    phase: 'phase2',
+  },
+  {
     id: 'site-dpr',
     title: 'Site DPR',
     icon: ClipboardList,
