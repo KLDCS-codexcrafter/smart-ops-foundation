@@ -116,7 +116,7 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     title: 'Site Snag',
     icon: AlertTriangle,
     description: 'One-tap snag capture · severity ≥ medium auto-escalates to NCR via emitSnagRaisedSevere (OOB #10).',
-    details: 'Live: A.15b · Q-LOCK-4a. Zero-touch on Qulicheak NCR engine via institutional bridge.',
+    details: 'Live: A.15b · Q-LOCK-4a. Zero-touch on QualiCheck NCR engine via institutional bridge.',
     route: '/operix-go/site-snag',
     phase: 'live',
   },
