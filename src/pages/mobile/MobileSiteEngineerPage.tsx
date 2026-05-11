@@ -31,7 +31,6 @@ export default function MobileSiteEngineerPage(): JSX.Element {
     refresh();
     const i = setInterval(refresh, 5000);
     return () => clearInterval(i);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
