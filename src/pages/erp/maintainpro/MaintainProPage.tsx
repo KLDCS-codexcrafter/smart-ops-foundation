@@ -43,8 +43,9 @@ export default function MaintainProPage(): JSX.Element {
       case 'spare-parts':
         return <SparePartsView onNavigate={nav} />;
       case 'calibration-instruments':
-      case 'calibration-due':
         return <CalibrationMaster onNavigate={nav} />;
+      case 'calibration-due':
+        return <CalibrationCertificate onNavigate={nav} />;
       case 'fire-safety':
       case 'fire-safety-expiry':
         return <FireSafetyMaster onNavigate={nav} />;
