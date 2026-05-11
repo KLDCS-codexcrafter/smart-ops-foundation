@@ -92,6 +92,37 @@ export default function MaintainProPage(): JSX.Element {
         return <InternalMaintenanceTicket onNavigate={nav} />;
       case 'asset-capitalization':
         return <AssetCapitalization onNavigate={nav} />;
+      // A.16c reports + dashboard
+      case 'maint-entry-day-book':
+        return <MaintenanceEntryDayBook />;
+      case 'calibration-status':
+        return <CalibrationStatusReport />;
+      case 'fire-safety-expiry-report':
+        return <FireSafetyExpiryReport />;
+      case 'equipment-history':
+        return <EquipmentHistory />;
+      case 'spares-issue-day-book':
+        return <SparesIssueDayBook />;
+      case 'mtbf-mttr':
+        return <MTBFMTTRReport />;
+      case 'pm-compliance':
+        return <PMComplianceReport />;
+      case 'open-wo-status':
+        return <OpenWOStatusReport />;
+      case 'amc-out-status-report':
+        return <AMCOutToVendorStatus />;
+      case 'energy-esg':
+        return <EnergyESGDashboard />;
+      case 'open-tickets-live':
+        return <OpenTicketsLive />;
+      case 'sla-performance':
+        return <SLAPerformanceReport />;
+      case 'aging-tickets':
+        return <AgingTicketsReport />;
+      case 'top-reporters':
+        return <TopReportersByDepartment />;
+      case 'production-capacity-dashboard':
+        return <ProductionCapacityLiveDashboard />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }
