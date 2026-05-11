@@ -9,7 +9,7 @@ import {
   emitMaintenanceEquipmentRestored,
   emitSparePartReorderRequired,
   emitInternalTicketEscalation,
-  consumeQulicheakCalibrationFail,
+  consumeQualiCheckCalibrationFail,
   consumeSiteXPTWRequest,
   type SiteXMaintainProHandoff,
 } from '@/lib/maintainpro-bridges';
@@ -90,8 +90,8 @@ describe('Emit-only bridges shape', () => {
 });
 
 describe('Inbound guards', () => {
-  it('consumeQulicheakCalibrationFail blocks', () => {
-    const r = consumeQulicheakCalibrationFail(E, {
+  it('consumeQualiCheckCalibrationFail blocks', () => {
+    const r = consumeQualiCheckCalibrationFail(E, {
       qc_entry_id: 'qc1', instrument_id: 'inst1', qc_inspector_user_id: 'u1',
       attempted_at: '2026-01-01T00:00:00Z',
     });

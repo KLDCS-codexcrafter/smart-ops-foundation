@@ -61,7 +61,7 @@ export interface InternalTicketEscalationEvent {
   emitted_at: string;
 }
 
-export interface QulicheakCalibrationFailEvent {
+export interface QualiCheckCalibrationFailEvent {
   qc_entry_id: string;
   instrument_id: string;
   qc_inspector_user_id: string;
@@ -232,12 +232,12 @@ export function emitInternalTicketEscalation(
   return event;
 }
 
-// === BRIDGE 6 · consumeQulicheakCalibrationFail (IN · OOB-M5 guard) ===
-export function consumeQulicheakCalibrationFail(
+// === BRIDGE 6 · consumeQualiCheckCalibrationFail (IN · OOB-M5 guard) ===
+export function consumeQualiCheckCalibrationFail(
   _entityCode: string,
-  event: QulicheakCalibrationFailEvent,
+  event: QualiCheckCalibrationFailEvent,
 ): { blocked: boolean; reason: string | null } {
-  // [JWT] Phase 2: Qulicheak emits this · MaintainPro auto-creates calibration WO
+  // [JWT] Phase 2: QualiCheck emits this · MaintainPro auto-creates calibration WO
   return {
     blocked: true,
     reason: `Calibration instrument ${event.instrument_id} is quarantined · cannot be used in QC entry · auto-creating calibration work order`,
