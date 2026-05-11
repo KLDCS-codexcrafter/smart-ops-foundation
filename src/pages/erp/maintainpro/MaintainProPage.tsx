@@ -17,6 +17,16 @@ import { FireSafetyMaster } from './masters/FireSafetyMaster';
 import { PMScheduleTemplateMaster } from './masters/PMScheduleTemplateMaster';
 import { SparePartsView } from './masters/SparePartsView';
 import { MaintenanceVendorView } from './masters/MaintenanceVendorView';
+// A.16b transactions
+import { BreakdownReport } from './transactions/BreakdownReport';
+import { WorkOrderEntry } from './transactions/WorkOrderEntry';
+import { PMTickoffEntry } from './transactions/PMTickoffEntry';
+import { SparesIssueEntry } from './transactions/SparesIssueEntry';
+import { EquipmentMovement } from './transactions/EquipmentMovement';
+import { CalibrationCertificate } from './transactions/CalibrationCertificate';
+import { AMCOutToVendor } from './transactions/AMCOutToVendor';
+import { InternalMaintenanceTicket } from './transactions/InternalMaintenanceTicket';
+import { AssetCapitalization } from './transactions/AssetCapitalization';
 
 export default function MaintainProPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<MaintainProModule>('welcome');
