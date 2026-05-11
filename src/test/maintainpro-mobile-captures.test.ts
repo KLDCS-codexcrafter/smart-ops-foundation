@@ -12,7 +12,7 @@ import {
   createBreakdownReport,
   createPMTickoff,
   createSparesIssue,
-  createEquipment,
+
 } from '@/lib/maintainpro-engine';
 
 const E = 'TEST_A17';
@@ -85,10 +85,11 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
 
   it('existing engine functions still create records (zero regression)', () => {
     const eqId = 'eq-test-1';
+    void eqId;
 
     const bd = createBreakdownReport(E, {
       breakdown_no: 'BD-T1',
-      equipment_id: eq.id,
+      equipment_id: eqId,
       reported_by_user_id: 'u1',
       originating_department_id: 'maintenance',
       occurred_at: new Date().toISOString(),
@@ -108,7 +109,7 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
     const pm = createPMTickoff(E, {
       pm_no: 'PM-T1',
       pm_schedule_template_id: 't',
-      equipment_id: eq.id,
+      equipment_id: eqId,
       scheduled_date: new Date().toISOString(),
       actual_completion_date: new Date().toISOString(),
       performed_by_user_id: 'u1',
@@ -125,7 +126,7 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
       issue_no: 'SI-T1',
       spare_id: 'sp1',
       qty: 1,
-      consuming_equipment_id: eq.id,
+      consuming_equipment_id: eqId,
       consuming_work_order_id: null,
       consuming_breakdown_id: null,
       issued_to_user_id: 'u1',
