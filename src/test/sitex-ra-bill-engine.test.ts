@@ -65,7 +65,7 @@ describe('sitex-ra-bill-engine', () => {
     const r = createRABill(E, mkInput('sub_contractor'));
     submitForApproval(E, r.ra_bill_id!, 'mgr');
     approveRABill(E, r.ra_bill_id!, 'fin', '');
-    expect(markPaid(E, r.ra_bill_id!, 'VOU-1').allowed).toBe(true);
+    expect(markPaid(E, r.ra_bill_id!, 'fin', 'VOU-1').allowed).toBe(true);
     expect(listRABills(E)[0].status).toBe('paid');
   });
 });
