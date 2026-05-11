@@ -125,6 +125,7 @@ const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/Pro
 // Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 + #12 NEW · stub pages
 const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/EngineeringXPage'));
 const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
+const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
