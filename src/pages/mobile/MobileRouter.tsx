@@ -267,6 +267,8 @@ export default function MobileRouter() {
         s.role === 'telecaller'    ? '/mobile/telecaller' :
         s.role === 'supervisor'    ? '/mobile/supervisor' :
         s.role === 'sales_manager' ? '/mobile/manager' :
+        s.role === 'site_engineer' ? '/operix-go/site-engineer' :
+        s.role === 'site_manager'  ? '/operix-go/site-engineer' :
         '/mobile/home';
       navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
