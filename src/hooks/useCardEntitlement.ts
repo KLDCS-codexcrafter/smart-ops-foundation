@@ -82,26 +82,21 @@ export function useCardEntitlement() {
       }
     }
 
-    // ─── A.13.T2 Hotfix · seed parity migration for stale localStorage ───
-    // Existing users may have stale localStorage missing the 4 Shell-pattern card_ids.
-    // Idempotent · matches A.9 dispatch swap institutional pattern.
-    const A13T2_REQUIRED: CardId[] = ['store-hub', 'supplyx', 'docvault', 'engineeringx'];
+    // ─── Self-healing seed parity migration (T-Phase-1.A.15b.T1) ───
+    // REPLACES the static A13T2_REQUIRED list. Derives missing cards from
+    // seedDemoEntitlements() so every NEW Shell-pattern card auto-migrates
+    // without manual list updates. Idempotent · matches institutional
+    // migration pattern · eliminates D-NEW-CT structural gap (seed
+    // invariant covered seed parity but not migration parity).
+    const expectedFromSeed = seedDemoEntitlements(entityCode);
     const seenCardIds = new Set(entitlementsRaw.map((e) => e.card_id as string));
-    for (const cardId of A13T2_REQUIRED) {
-      if (!seenCardIds.has(cardId)) {
-        const nowIso = new Date().toISOString();
+    for (const seedEntry of expectedFromSeed) {
+      if (!seenCardIds.has(seedEntry.card_id as string)) {
+        // Preserve the seed's intended status (active · trial · locked ·
+        // add_on_available) so plan-tier semantics carry through migration.
         entitlementsRaw.push({
-          tenant_id: entityCode,
-          card_id: cardId,
-          status: 'active',
-          plan_tier: 'growth',
-          effective_from: nowIso,
-          effective_until: null,
-          trial_days_remaining: null,
-          feature_flags: [],
-          notes: 'Seeded by A.13.T2 hotfix migration',
-          created_at: nowIso,
-          updated_at: nowIso,
+          ...seedEntry,
+          notes: 'Seeded by self-healing migration (T-Phase-1.A.15b.T1)',
         });
         migrated = true;
       }
