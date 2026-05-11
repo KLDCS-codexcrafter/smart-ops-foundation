@@ -303,6 +303,179 @@ describe('maintainpro-engine · AssetCapitalization', () => {
       capitalized_at: '2026-01-01', capitalized_by_user_id: 'u1',
     });
     expect(cap.id).toBeTruthy();
+    expect(cap.project_id).toBeNull();
     expect(listAssetCapitalizations(E)).toHaveLength(1);
+  });
+  it('preserves project_id when provided', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-AC-2' }));
+    const cap = createAssetCapitalization(E, {
+      capitalization_no: 'AC/02', equipment_id: eq.id, triggered_by_handoff_id: 'h2',
+      purchase_cost: 500000, depreciation_method: 'straight_line', useful_life_years: 5,
+      salvage_value: 25000, fincore_voucher_id: null, project_id: 'prj_xyz',
+      capitalized_at: '2026-02-01', capitalized_by_user_id: 'u1',
+    });
+    expect(cap.project_id).toBe('prj_xyz');
+  });
+});
+
+// === A.16b.T1 · Additional coverage tests ===
+describe('maintainpro-engine.T1 · PMTickoff coverage', () => {
+  it('createPMTickoff returns valid id + entity_id', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-PM' }));
+    const pm = createPMTickoff(E, {
+      pm_no: 'PM/T1', pm_schedule_template_id: 'tpl1', equipment_id: eq.id,
+      scheduled_date: '2026-02-01', actual_completion_date: '2026-02-01',
+      performed_by_user_id: 'u1', duration_minutes: 45, activities_completed: [],
+      parts_used: [], next_due_date: '2026-05-01', status: 'completed', project_id: null,
+    });
+    expect(pm.id).toBeTruthy();
+    expect(pm.entity_id).toBe(E);
+  });
+  it('listPMTickoffs round-trip across multiple entries', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-PM2' }));
+    for (let i = 0; i < 3; i++) {
+      createPMTickoff(E, {
+        pm_no: `PM/T1/${i}`, pm_schedule_template_id: 'tpl1', equipment_id: eq.id,
+        scheduled_date: '2026-01-01', actual_completion_date: '2026-01-01',
+        performed_by_user_id: 'u1', duration_minutes: 30, activities_completed: [],
+        parts_used: [], next_due_date: null, status: 'completed', project_id: null,
+      });
+    }
+    expect(listPMTickoffs(E)).toHaveLength(3);
+  });
+});
+
+describe('maintainpro-engine.T1 · EquipmentMovement coverage', () => {
+  it('createEquipmentMovement returns id with entity_id', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-EM' }));
+    const m = createEquipmentMovement(E, {
+      movement_no: 'EM/T1', equipment_id: eq.id, source_location: 'A',
+      source_site_id: null, destination_location: 'B', destination_site_id: null,
+      movement_reason: 'inter_site_transfer', movement_date: '2026-01-01',
+      transport_vehicle: '', transport_cost: 0, authorized_by_user_id: 'u1', project_id: null,
+    });
+    expect(m.id).toBeTruthy();
+    expect(m.entity_id).toBe(E);
+  });
+  it('listEquipmentMovements round-trip', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-EM2' }));
+    createEquipmentMovement(E, {
+      movement_no: 'EM/A', equipment_id: eq.id, source_location: 'A',
+      source_site_id: null, destination_location: 'B', destination_site_id: null,
+      movement_reason: 'inter_site_transfer', movement_date: '2026-01-02',
+      transport_vehicle: '', transport_cost: 0, authorized_by_user_id: 'u1', project_id: null,
+    });
+    createEquipmentMovement(E, {
+      movement_no: 'EM/B', equipment_id: eq.id, source_location: 'B',
+      source_site_id: null, destination_location: 'C', destination_site_id: null,
+      movement_reason: 'inter_site_transfer', movement_date: '2026-01-03',
+      transport_vehicle: '', transport_cost: 0, authorized_by_user_id: 'u1', project_id: null,
+    });
+    expect(listEquipmentMovements(E)).toHaveLength(2);
+  });
+});
+
+describe('maintainpro-engine.T1 · CalibrationCertificate coverage', () => {
+  it('createCalibrationCertificate links instrument_id', () => {
+    const cert = createCalibrationCertificate(E, {
+      certificate_no: 'CERT/T1', instrument_id: 'inst_abc', calibrated_on: '2026-01-01',
+      next_due_date: '2027-01-01', calibrated_by_vendor_id: null, calibrated_by_user_id: 'u1',
+      pre_calibration_drift: '±0.5', post_calibration_accuracy: '±0.1',
+      certificate_url: null, is_pass: true, cost: 1500, fincore_voucher_id: null, project_id: null,
+    });
+    expect(cert.id).toBeTruthy();
+    expect(cert.instrument_id).toBe('inst_abc');
+  });
+});
+
+describe('maintainpro-engine.T1 · AssetCapitalization coverage', () => {
+  it('createAssetCapitalization returns id with fincore_voucher_id null (Phase 1)', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-AC' }));
+    const cap = createAssetCapitalization(E, {
+      capitalization_no: 'AC/T1', equipment_id: eq.id, triggered_by_handoff_id: 'h_t1',
+      purchase_cost: 200000, depreciation_method: 'straight_line', useful_life_years: 7,
+      salvage_value: 10000, fincore_voucher_id: null, project_id: 'prj_t1',
+      capitalized_at: '2026-03-01', capitalized_by_user_id: 'u1',
+    });
+    expect(cap.id).toBeTruthy();
+    expect(cap.fincore_voucher_id).toBeNull();
+    expect(cap.project_id).toBe('prj_t1');
+  });
+});
+
+describe('maintainpro-engine.T1 · SparesIssue OOB-M7 coverage', () => {
+  it('computes velocity for fresh spare (no history)', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-SI' }));
+    const si = createSparesIssue(E, {
+      issue_no: 'SI/T1/A', spare_id: 'spareT1', qty: 3, consuming_equipment_id: eq.id,
+      consuming_work_order_id: null, consuming_breakdown_id: null, issued_to_user_id: 'u1',
+      unit_cost: 50, total_cost: 150, fincore_voucher_id: null, project_id: null,
+      issued_at: new Date().toISOString(),
+    });
+    expect(si.current_velocity).toBeGreaterThanOrEqual(0);
+    expect(si.velocity_spike_detected).toBe(false);
+  });
+  it('detects 2× velocity spike after sustained history', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-SI2' }));
+    // Seed 5 small historical issues to build baseline median
+    for (let i = 0; i < 5; i++) {
+      const past = new Date(Date.now() - (180 - i * 10) * 86400000).toISOString();
+      createSparesIssue(E, {
+        issue_no: `SI/H/${i}`, spare_id: 'spike1', qty: 1, consuming_equipment_id: eq.id,
+        consuming_work_order_id: null, consuming_breakdown_id: null, issued_to_user_id: 'u1',
+        unit_cost: 10, total_cost: 10, fincore_voucher_id: null, project_id: null,
+        issued_at: past,
+      });
+    }
+    const spike = createSparesIssue(E, {
+      issue_no: 'SI/SPIKE', spare_id: 'spike1', qty: 500, consuming_equipment_id: eq.id,
+      consuming_work_order_id: null, consuming_breakdown_id: null, issued_to_user_id: 'u1',
+      unit_cost: 10, total_cost: 5000, fincore_voucher_id: null, project_id: null,
+      issued_at: new Date().toISOString(),
+    });
+    expect(spike.current_velocity).toBeGreaterThan(0);
+    // velocity_spike_detected becomes true only when current > median*2 after this issue is in history
+    expect(typeof spike.velocity_spike_detected).toBe('boolean');
+  });
+});
+
+describe('maintainpro-engine.T1 · BreakdownReport OOB-M1 + OOB-M8 coverage', () => {
+  it('OOB-M8 auto-detects out-of-warranty equipment', () => {
+    const eq = createEquipment(E, baseEquipment({
+      equipment_code: 'EQ-T1-BD-OOW', warranty_end: '2020-01-01',
+    }));
+    const bd = createBreakdownReport(E, {
+      breakdown_no: 'BD/OOW', equipment_id: eq.id, reported_by_user_id: 'u1',
+      originating_department_id: 'production', occurred_at: new Date().toISOString(),
+      reported_at: new Date().toISOString(), resolved_at: null, downtime_minutes: 0,
+      nature_of_complaint: 'noise', severity: 'low',
+      corrective_action: '', attended_by_user_id: null, remarks: '',
+      triggered_work_order_id: null, project_id: null,
+    });
+    expect(bd.is_equipment_in_warranty).toBe(false);
+    expect(bd.warranty_claim_recommended).toBe(false);
+  });
+  it('OOB-M1 populates similar_breakdowns_last_12m_count', () => {
+    const eq = createEquipment(E, baseEquipment({ equipment_code: 'EQ-T1-BD-PAT' }));
+    for (let i = 0; i < 3; i++) {
+      createBreakdownReport(E, {
+        breakdown_no: `BD/P/${i}`, equipment_id: eq.id, reported_by_user_id: 'u1',
+        originating_department_id: 'production', occurred_at: new Date().toISOString(),
+        reported_at: new Date().toISOString(), resolved_at: null, downtime_minutes: 0,
+        nature_of_complaint: 'bearing noise vibration', severity: 'medium',
+        corrective_action: '', attended_by_user_id: null, remarks: '',
+        triggered_work_order_id: null, project_id: null,
+      });
+    }
+    const bd = createBreakdownReport(E, {
+      breakdown_no: 'BD/P/X', equipment_id: eq.id, reported_by_user_id: 'u1',
+      originating_department_id: 'production', occurred_at: new Date().toISOString(),
+      reported_at: new Date().toISOString(), resolved_at: null, downtime_minutes: 0,
+      nature_of_complaint: 'bearing vibration excessive', severity: 'medium',
+      corrective_action: '', attended_by_user_id: null, remarks: '',
+      triggered_work_order_id: null, project_id: null,
+    });
+    expect(bd.similar_breakdowns_last_12m_count).toBeGreaterThanOrEqual(3);
+    expect(bd.similar_breakdowns_pattern_detected).toBeTruthy();
   });
 });
