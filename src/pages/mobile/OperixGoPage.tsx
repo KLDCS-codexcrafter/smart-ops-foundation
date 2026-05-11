@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -92,6 +92,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     details: 'Live: Sprint 8-pre-1 · D-403 + D-404. Calls request-engine.createMaterialIndent (Card #3 · NO MODIFICATIONS · D-128 schemas preserved). Offline queue when no network.',
     route: '/operix-go/material-indent',
     phase: 'live',
+  },
+  {
+    id: 'site-engineer',
+    title: 'SiteX Mobile — साइट इंजीनियर',
+    icon: MapPin,
+    description: 'Site engineer mobile · DPR with geo-photos · snag capture · safety incidents · material issue · labour attendance · toolbox talk · PTW. Field-first · offline-resilient.',
+    details: 'A.14 Foundation: landing page only. A.15 Closeout: full 5-step capture flows. Consumes existing geolocation-bridge · camera-bridge · offline-queue-engine · biometric-bridge zero-touch. PWA — no install.',
+    route: '/operix-go/site-engineer',
+    phase: 'phase2',
   },
   {
     id: 'approval-inbox',

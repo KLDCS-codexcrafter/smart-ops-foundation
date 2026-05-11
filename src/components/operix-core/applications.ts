@@ -216,7 +216,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'sitex',
     name: 'SiteX',
-    description: 'Site / Installation execution · DPR (Daily Progress Report), geo-photos, snag list, customer signoff, commissioning report, mobile site engineer pages. For turnkey installations · ServiceDesk handover trigger.',
+    description: 'Site execution hub · install/commission + construction + CAPEX internal modes · DPR with geo-fenced photos · snag list (mobile-first) · safety suite (PTW · JSA · Toolbox Talks · Incidents) · site imprest treasury · customer signoff + commissioning + 4 closeout handoffs (ServiceDesk · MaintainPro · Asset Capitalization · Final Reconciliation). Site = Branch with project lifecycle architecture.',
     category: 'Ops Hub',
     route: '/erp/sitex',
     icon: 'MapPin',

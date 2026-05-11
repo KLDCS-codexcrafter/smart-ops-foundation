@@ -38,6 +38,10 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
     expect(seeded.has('engineeringx')).toBe(true);
   });
 
+  it('A.14 · sitex in seed (Q-LOCK-13a · D-NEW-CT 17th canonical extension · 10th Shell-pattern card)', () => {
+    expect(seeded.has('sitex')).toBe(true);
+  });
+
   for (const file of sidebarConfigs) {
     it(`${file} · all requiredCards must be in seedDemoEntitlements`, () => {
       const required = extractRequiredCards(`${CONFIG_DIR}/${file}`);
