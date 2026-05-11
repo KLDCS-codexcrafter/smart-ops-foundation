@@ -369,6 +369,10 @@ const App = () => (
               <Route path="/operix-go/production/job-card" element={<P><MobileJobCardPage /></P>} />
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/operix-go/site-engineer" element={<P><MobileSiteEngineerPage /></P>} />
+              <Route path="/operix-go/site-dpr" element={<P><MobileSiteDPRCapture /></P>} />
+              <Route path="/operix-go/site-snag" element={<P><MobileSiteSnagCapture /></P>} />
+              <Route path="/operix-go/site-safety" element={<P><MobileSiteSafetyIncidentCapture /></P>} />
+              <Route path="/operix-go/site-material-issue" element={<P><MobileSiteMaterialIssueCapture /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
