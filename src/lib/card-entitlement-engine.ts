@@ -92,6 +92,8 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('supplyx'),         // active · A.9.T1 Shell retrofit
     one('docvault'),        // active · A.8 DocVault Hub-and-Spoke (FR-73)
     one('engineeringx'),    // active · A.10/A.13 EngineeringX (MOAT #21)
+    // ─── A.14 Foundation · 10th card on Shell pattern · D-NEW-CT invariant extension ───
+    one('sitex', 'locked'), // locked at A.14 Foundation · active at A.15 Closeout (MOAT #22)
   ];
 }
 
