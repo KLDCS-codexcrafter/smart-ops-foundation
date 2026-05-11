@@ -65,10 +65,10 @@ export default function MobileSiteEngineerPage(): JSX.Element {
           </Card>
 
           <div className="grid grid-cols-2 gap-3">
-            <QuickActionCard icon={FileText} label="DPR" sub="Daily Progress" disabled />
-            <QuickActionCard icon={AlertTriangle} label="Snag" sub="Capture issue" disabled />
-            <QuickActionCard icon={Shield} label="Safety" sub="PTW · JSA · Incident" disabled />
-            <QuickActionCard icon={Package} label="Material" sub="Receive · Issue" disabled />
+            <QuickActionCard icon={FileText} label="DPR" sub="Daily Progress" onClick={() => navigate('/operix-go/site-dpr')} />
+            <QuickActionCard icon={AlertTriangle} label="Snag" sub="Capture issue" onClick={() => navigate('/operix-go/site-snag')} />
+            <QuickActionCard icon={Shield} label="Safety" sub="Incident report" onClick={() => navigate('/operix-go/site-safety')} />
+            <QuickActionCard icon={Package} label="Material" sub="Issue · offline" onClick={() => navigate('/operix-go/site-material-issue')} />
           </div>
 
           <Card className="p-4 text-xs text-muted-foreground bg-slate-50 dark:bg-slate-900/50">
