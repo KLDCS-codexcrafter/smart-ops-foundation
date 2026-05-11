@@ -92,17 +92,21 @@ export default function MobileSiteDPRCapture(): JSX.Element {
       site_id: site.id,
       entity_id: site.entity_id,
       report_date: new Date().toISOString().slice(0, 10),
+      prepared_by: 'site_engineer',
       work_completed: workCompleted,
       manpower_count: manpower,
-      equipment_used: equipment,
-      material_consumed: materials,
+      equipment_count: equipment ? equipment.split(',').length : 0,
+      material_consumed: materials
+        ? [{ item_id: 'misc', qty: 1, uom: 'lot' }]
+        : [],
       weather,
       delays,
+      geo_validated: true,
+      geo_lat: photoGeo.lat,
+      geo_lng: photoGeo.lng,
+      geo_distance_from_site_m: haversineMeters(photoGeo.lat, photoGeo.lng, site.location.geo_lat, site.location.geo_lng),
+      geo_accuracy_m: 100,
       photo_url: photoUrl,
-      photo_geo_lat: photoGeo.lat,
-      photo_geo_lng: photoGeo.lng,
-      geo_fence_passed: true,
-      created_by: 'site_engineer',
       created_at: new Date().toISOString(),
     };
     try {
@@ -111,7 +115,7 @@ export default function MobileSiteDPRCapture(): JSX.Element {
         toast.success('Queued · will sync when online');
       } else {
         // [JWT] POST /api/sitex/dpr
-        const key = sitexDprsKey(ENTITY);
+        const key = dprsKey(ENTITY);
         const all = JSON.parse(localStorage.getItem(key) ?? '[]') as DPR[];
         all.push(dpr);
         localStorage.setItem(key, JSON.stringify(all));
