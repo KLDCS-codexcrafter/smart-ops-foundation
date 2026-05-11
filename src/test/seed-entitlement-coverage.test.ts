@@ -57,4 +57,14 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
       ).toEqual([]);
     });
   }
+
+  it('A.15b.T1 · self-healing migration covers every seeded card_id (D-NEW-CT extension · structural anti-recurrence)', () => {
+    // Static-analysis invariant: the migration logic in useCardEntitlement.ts
+    // MUST derive expected card_ids from seedDemoEntitlements() · not a static
+    // literal array. This prevents the recurring sidebar invisibility bug
+    // that fired at A.14 (sitex absent from A13T2_REQUIRED static list).
+    const hookSource = readFileSync('src/hooks/useCardEntitlement.ts', 'utf-8');
+    expect(hookSource).toMatch(/expectedFromSeed\s*=\s*seedDemoEntitlements/);
+    expect(hookSource).not.toMatch(/A13T2_REQUIRED\s*:\s*CardId\[\]\s*=/);
+  });
 });
