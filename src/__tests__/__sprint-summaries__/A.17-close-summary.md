@@ -78,3 +78,27 @@ M1 NL failure-mode pattern · M2 AMC Out-to-Vendor · M3 Production Capacity And
 ## Path forward · v31 FULL handoff
 Next: v31 FULL handoff (1st FULL since v26 at A.15 MOAT #22 close).
 After v31: C.1 ServiceDesk Foundation (43rd composite · MOAT #24 candidate).
+
+---
+
+## T1 close (A.17.T1) · 2026-05-14 · Stale-Status Migration
+
+CRITICAL runtime fix caught by founder visual inspection at audit cycle #41.
+
+- **T1.1 hook fix**: useCardEntitlement.ts migration block extended with 3 NEW
+  stale-status migrations (engineeringx · sitex · maintainpro · defensive
+  retrofit for all 3 historical status-flip cards · matches D-NEW-BB
+  institutional pattern at 4-6th consumer · approaches FR-72 promotion
+  threshold).
+- **T1.2 test coverage**: 3 NEW tests in maintainpro-status-flip.test.ts
+  verifying source-level presence of all 3 migrations + combined if condition.
+- AC#15 (NEW · ADDED post-audit): Stale-status migration parity with seed must
+  be present for all status-flipped cards in useCardEntitlement.ts. Verification:
+  grep for each status-flipped card_id === in migration block.
+- §2.4 audit discipline gap closed · future status-flip sprints MUST include
+  explicit stale-status migration in spec (institutional learning).
+- 42nd composite BANKS POST-T1 ⭐ · MOAT #23 BANKS (runtime-validated) ⭐
+- 6th consecutive T1 success ESTABLISHES extended institutional pattern
+  (A.13.T1+T2 · A.15b.T1 · A.16a.T1 · A.16b.T1 · A.16c.T1 · A.17.T1).
+- A.17 path opens to v31 FULL handoff (1st FULL since v26 at A.15 MOAT #22).
+- Triple Gate FINAL: TSC 0 · ESLint 0/0 · Vitest 865/121 · Build PASS.
