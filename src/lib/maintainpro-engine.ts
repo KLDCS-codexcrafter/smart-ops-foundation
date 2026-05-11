@@ -343,3 +343,373 @@ export function listSpareParts(_entityCode: string): SparePartView[] {
 export function listMaintenanceVendors(_entityCode: string): MaintenanceVendorView[] {
   return [];
 }
+
+// ============================================================================
+// === A.16b · TRANSACTIONS APPENDED ===
+// (Master CRUD + 6 OOB helpers above ABSOLUTE preserved)
+// ============================================================================
+
+import type {
+  BreakdownReport, WorkOrder, WorkOrderStatus, PMTickoff, SparesIssue, EquipmentMovement,
+  CalibrationCertificate, AMCOutToVendor, InternalMaintenanceTicket, AssetCapitalization,
+  TicketStatus, EscalationLevel,
+} from '@/types/maintainpro';
+import {
+  breakdownReportKey, workOrderKey, pmTickoffKey, sparesIssueKey, equipmentMovementKey,
+  calibrationCertificateKey, amcOutToVendorKey, internalTicketKey, assetCapitalizationKey,
+  SLA_MATRIX,
+} from '@/types/maintainpro';
+
+function readList<T>(key: string): T[] {
+  // [JWT] GET /api/maintainpro/<resource>
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) as T[] : []; } catch { return []; }
+}
+function writeList<T>(key: string, list: T[]): void {
+  // [JWT] POST/PUT /api/maintainpro/<resource>
+  try { localStorage.setItem(key, JSON.stringify(list)); } catch { /* quota silent */ }
+}
+
+// === 1. BREAKDOWN REPORT (OOB-M1 + OOB-M8) ===
+export function listBreakdownReports(entityCode: string): BreakdownReport[] {
+  return readList<BreakdownReport>(breakdownReportKey(entityCode));
+}
+
+function findSimilarBreakdowns(
+  entityCode: string,
+  equipmentId: string,
+  complaint: string,
+): { count: number; pattern: string | null } {
+  const past = listBreakdownReports(entityCode).filter(b => {
+    if (b.equipment_id !== equipmentId) return false;
+    const ageMs = Date.now() - new Date(b.occurred_at).getTime();
+    return ageMs < 365 * 24 * 60 * 60 * 1000;
+  });
+  const keywords = complaint.toLowerCase().split(/\s+/).filter(w => w.length >= 4);
+  const similar = past.filter(b => {
+    const pastKeywords = b.nature_of_complaint.toLowerCase().split(/\s+/);
+    return keywords.some(k => pastKeywords.some(pk => pk.includes(k) || k.includes(pk)));
+  });
+  if (similar.length >= 3) {
+    return { count: similar.length, pattern: `Recurring pattern: ${similar.length} similar breakdowns in last 12 months · root-cause investigation recommended` };
+  }
+  return { count: similar.length, pattern: null };
+  // [JWT] Phase 2: ML embedding semantic similarity
+}
+
+export function createBreakdownReport(
+  entityCode: string,
+  data: Omit<BreakdownReport, 'id' | 'entity_id' | 'created_at' | 'updated_at' | 'status' |
+    'similar_breakdowns_last_12m_count' | 'similar_breakdowns_pattern_detected' |
+    'is_equipment_in_warranty' | 'warranty_claim_recommended' | 'warranty_contact'>,
+): BreakdownReport {
+  const similar = findSimilarBreakdowns(entityCode, data.equipment_id, data.nature_of_complaint);
+  const equipment = getEquipmentById(entityCode, data.equipment_id);
+  const inWarranty = equipment ? isEquipmentInWarranty(equipment) : false;
+  const now = nowIso();
+  const breakdown: BreakdownReport = {
+    ...data,
+    id: newId('bd'),
+    entity_id: entityCode,
+    status: 'open',
+    similar_breakdowns_last_12m_count: similar.count,
+    similar_breakdowns_pattern_detected: similar.pattern,
+    is_equipment_in_warranty: inWarranty,
+    warranty_claim_recommended: inWarranty,
+    warranty_contact: equipment?.amc_vendor_id ?? null,
+    created_at: now,
+    updated_at: now,
+  };
+  const list = listBreakdownReports(entityCode);
+  list.push(breakdown);
+  writeList(breakdownReportKey(entityCode), list);
+  return breakdown;
+}
+
+// === 2. WORK ORDER ===
+export function listWorkOrders(entityCode: string): WorkOrder[] {
+  return readList<WorkOrder>(workOrderKey(entityCode));
+}
+export function createWorkOrder(
+  entityCode: string,
+  data: Omit<WorkOrder, 'id' | 'entity_id' | 'created_at' | 'updated_at'>,
+): WorkOrder {
+  const now = nowIso();
+  const wo: WorkOrder = { ...data, id: newId('wo'), entity_id: entityCode, created_at: now, updated_at: now };
+  const list = listWorkOrders(entityCode);
+  list.push(wo);
+  writeList(workOrderKey(entityCode), list);
+  return wo;
+}
+export function updateWorkOrderStatus(
+  entityCode: string,
+  woId: string,
+  newStatus: WorkOrderStatus,
+): WorkOrder | null {
+  const list = listWorkOrders(entityCode);
+  const idx = list.findIndex(w => w.id === woId);
+  if (idx === -1) return null;
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status: newStatus,
+    started_at: newStatus === 'in_progress' && !list[idx].started_at ? now : list[idx].started_at,
+    completed_at: newStatus === 'completed' ? now : list[idx].completed_at,
+    updated_at: now,
+  };
+  writeList(workOrderKey(entityCode), list);
+  return list[idx];
+}
+
+// === 3. PM TICK-OFF ===
+export function listPMTickoffs(entityCode: string): PMTickoff[] {
+  return readList<PMTickoff>(pmTickoffKey(entityCode));
+}
+export function createPMTickoff(
+  entityCode: string,
+  data: Omit<PMTickoff, 'id' | 'entity_id' | 'created_at' | 'updated_at'>,
+): PMTickoff {
+  const now = nowIso();
+  const t: PMTickoff = { ...data, id: newId('pm'), entity_id: entityCode, created_at: now, updated_at: now };
+  const list = listPMTickoffs(entityCode);
+  list.push(t);
+  writeList(pmTickoffKey(entityCode), list);
+  return t;
+}
+
+// === 4. SPARES ISSUE (OOB-M7) ===
+export function listSparesIssues(entityCode: string): SparesIssue[] {
+  return readList<SparesIssue>(sparesIssueKey(entityCode));
+}
+function computeSpareVelocity(entityCode: string, spareId: string): { current: number; median: number } {
+  const past = listSparesIssues(entityCode).filter(i => i.spare_id === spareId);
+  const now = Date.now();
+  const last3m = past.filter(i => now - new Date(i.issued_at).getTime() < 90 * 24 * 60 * 60 * 1000);
+  const current = last3m.reduce((sum, i) => sum + i.qty, 0) / 3;
+  const all = past.length > 0 ? past.reduce((sum, i) => sum + i.qty, 0) / Math.max(past.length / 30, 1) : 0;
+  return { current, median: all };
+  // [JWT] Phase 2: rolling 24-month median
+}
+export function createSparesIssue(
+  entityCode: string,
+  data: Omit<SparesIssue, 'id' | 'entity_id' | 'created_at' |
+    'current_velocity' | 'historical_median_velocity' | 'velocity_spike_detected' | 'reorder_alert_emitted'>,
+): SparesIssue {
+  const velocity = computeSpareVelocity(entityCode, data.spare_id);
+  const spike = velocity.current > velocity.median * 2;
+  const issue: SparesIssue = {
+    ...data,
+    id: newId('si'),
+    entity_id: entityCode,
+    current_velocity: velocity.current,
+    historical_median_velocity: velocity.median,
+    velocity_spike_detected: spike,
+    reorder_alert_emitted: spike,
+    created_at: nowIso(),
+  };
+  const list = listSparesIssues(entityCode);
+  list.push(issue);
+  writeList(sparesIssueKey(entityCode), list);
+  return issue;
+}
+
+// === 5. EQUIPMENT MOVEMENT ===
+export function listEquipmentMovements(entityCode: string): EquipmentMovement[] {
+  return readList<EquipmentMovement>(equipmentMovementKey(entityCode));
+}
+export function createEquipmentMovement(
+  entityCode: string,
+  data: Omit<EquipmentMovement, 'id' | 'entity_id' | 'created_at'>,
+): EquipmentMovement {
+  const m: EquipmentMovement = { ...data, id: newId('em'), entity_id: entityCode, created_at: nowIso() };
+  const list = listEquipmentMovements(entityCode);
+  list.push(m);
+  writeList(equipmentMovementKey(entityCode), list);
+  return m;
+}
+
+// === 6. CALIBRATION CERTIFICATE ===
+export function listCalibrationCertificates(entityCode: string): CalibrationCertificate[] {
+  return readList<CalibrationCertificate>(calibrationCertificateKey(entityCode));
+}
+export function createCalibrationCertificate(
+  entityCode: string,
+  data: Omit<CalibrationCertificate, 'id' | 'entity_id' | 'created_at'>,
+): CalibrationCertificate {
+  const cert: CalibrationCertificate = { ...data, id: newId('cert'), entity_id: entityCode, created_at: nowIso() };
+  const list = listCalibrationCertificates(entityCode);
+  list.push(cert);
+  writeList(calibrationCertificateKey(entityCode), list);
+  // [JWT] Phase 2: update linked CalibrationInstrument.calibrated_on + due_date
+  return cert;
+}
+
+// === 7. AMC OUT-TO-VENDOR (OOB-M2) ===
+export function listAMCOutToVendor(entityCode: string): AMCOutToVendor[] {
+  return readList<AMCOutToVendor>(amcOutToVendorKey(entityCode));
+}
+export function createAMCOutToVendor(
+  entityCode: string,
+  data: Omit<AMCOutToVendor, 'id' | 'entity_id' | 'created_at' | 'updated_at' |
+    'reminder_50pct_sent' | 'reminder_75pct_sent' | 'reminder_overdue_sent'>,
+): AMCOutToVendor {
+  const now = nowIso();
+  const amc: AMCOutToVendor = {
+    ...data,
+    id: newId('amc'),
+    entity_id: entityCode,
+    reminder_50pct_sent: false,
+    reminder_75pct_sent: false,
+    reminder_overdue_sent: false,
+    created_at: now,
+    updated_at: now,
+  };
+  const list = listAMCOutToVendor(entityCode);
+  list.push(amc);
+  writeList(amcOutToVendorKey(entityCode), list);
+  return amc;
+}
+function isReminderDue(amc: AMCOutToVendor, now: number, pct: number): boolean {
+  const sent = new Date(amc.sent_date).getTime();
+  const expected = new Date(amc.expected_return_date).getTime();
+  const elapsed = now - sent;
+  const total = expected - sent;
+  return elapsed >= total * pct;
+}
+export function getAMCRemindersDue(entityCode: string): {
+  fifty_pct: AMCOutToVendor[];
+  seventy_five_pct: AMCOutToVendor[];
+  overdue: AMCOutToVendor[];
+} {
+  const all = listAMCOutToVendor(entityCode).filter(a => a.status !== 'returned' && a.status !== 'cancelled');
+  const now = Date.now();
+  return {
+    fifty_pct: all.filter(a => !a.reminder_50pct_sent && isReminderDue(a, now, 0.5)),
+    seventy_five_pct: all.filter(a => !a.reminder_75pct_sent && isReminderDue(a, now, 0.75)),
+    overdue: all.filter(a => !a.reminder_overdue_sent && new Date(a.expected_return_date).getTime() < now),
+  };
+}
+
+// === 8. INTERNAL TICKET + SLA + 3-LEVEL ESCALATION ===
+export function listInternalTickets(entityCode: string): InternalMaintenanceTicket[] {
+  return readList<InternalMaintenanceTicket>(internalTicketKey(entityCode));
+}
+export function createInternalTicket(
+  entityCode: string,
+  data: Omit<InternalMaintenanceTicket, 'id' | 'entity_id' | 'created_at' | 'updated_at' |
+    'sla_ack_hours' | 'sla_resolution_hours' | 'is_ack_breached' | 'is_resolution_breached' |
+    'escalation_level' | 'escalation_log' | 'reopened_count' | 'receiving_department_id'>,
+): InternalMaintenanceTicket {
+  const sla = SLA_MATRIX[data.category][data.severity];
+  const now = nowIso();
+  const ticket: InternalMaintenanceTicket = {
+    ...data,
+    id: newId('tkt'),
+    entity_id: entityCode,
+    receiving_department_id: 'maintenance',
+    sla_ack_hours: sla.ack_hours,
+    sla_resolution_hours: sla.resolution_hours,
+    is_ack_breached: false,
+    is_resolution_breached: false,
+    escalation_level: 0,
+    escalation_log: [],
+    reopened_count: 0,
+    created_at: now,
+    updated_at: now,
+  };
+  const list = listInternalTickets(entityCode);
+  list.push(ticket);
+  writeList(internalTicketKey(entityCode), list);
+  return ticket;
+}
+export function transitionTicketStatus(
+  entityCode: string,
+  ticketId: string,
+  newStatus: TicketStatus,
+  byUserId: string,
+  resolutionNotes?: string,
+): InternalMaintenanceTicket | null {
+  const list = listInternalTickets(entityCode);
+  const idx = list.findIndex(t => t.id === ticketId);
+  if (idx === -1) return null;
+  const now = nowIso();
+  const t = list[idx];
+  switch (newStatus) {
+    case 'acknowledged':
+      t.acknowledged_at = now;
+      t.acknowledged_by_user_id = byUserId;
+      break;
+    case 'in_progress':
+      t.in_progress_at = now;
+      break;
+    case 'resolved':
+      t.resolved_at = now;
+      t.resolved_by_user_id = byUserId;
+      if (resolutionNotes) t.resolution_notes = resolutionNotes;
+      break;
+    case 'closed':
+      t.closed_at = now;
+      break;
+    case 'reopened':
+      t.reopened_count += 1;
+      t.acknowledged_at = null;
+      t.acknowledged_by_user_id = null;
+      t.in_progress_at = null;
+      t.resolved_at = null;
+      t.resolved_by_user_id = null;
+      list[idx] = { ...t, status: 'open', updated_at: now };
+      writeList(internalTicketKey(entityCode), list);
+      return list[idx];
+    case 'open':
+      break;
+  }
+  list[idx] = { ...t, status: newStatus, updated_at: now };
+  writeList(internalTicketKey(entityCode), list);
+  return list[idx];
+}
+export function evaluateTicketEscalations(entityCode: string): InternalMaintenanceTicket[] {
+  const list = listInternalTickets(entityCode);
+  const now = Date.now();
+  const updated: InternalMaintenanceTicket[] = [];
+  for (let i = 0; i < list.length; i++) {
+    const t = list[i];
+    if (t.status === 'closed' || t.status === 'resolved') continue;
+    const createdMs = new Date(t.created_at).getTime();
+    const ackMs = t.sla_ack_hours * 60 * 60 * 1000;
+    const resMs = t.sla_resolution_hours * 60 * 60 * 1000;
+    const elapsed = now - createdMs;
+    let newLevel: EscalationLevel = t.escalation_level;
+    if (elapsed > resMs * 2 && t.escalation_level < 3) newLevel = 3;
+    else if (elapsed > resMs && t.escalation_level < 2 && !t.resolved_at) newLevel = 2;
+    else if (elapsed > ackMs && t.escalation_level < 1 && !t.acknowledged_at) newLevel = 1;
+    if (newLevel !== t.escalation_level) {
+      const escalatedToUserId = `escalation_target_L${newLevel}`;
+      list[i] = {
+        ...t,
+        escalation_level: newLevel,
+        escalation_log: [...t.escalation_log, { level: newLevel as 1|2|3, escalated_at: new Date().toISOString(), escalated_to_user_id: escalatedToUserId }],
+        is_ack_breached: !t.acknowledged_at && elapsed > ackMs,
+        is_resolution_breached: !t.resolved_at && elapsed > resMs,
+        updated_at: new Date().toISOString(),
+      };
+      updated.push(list[i]);
+    }
+  }
+  if (updated.length > 0) writeList(internalTicketKey(entityCode), list);
+  return updated;
+  // [JWT] Phase 2: cron job invokes this periodically
+}
+
+// === 9. ASSET CAPITALIZATION ===
+export function listAssetCapitalizations(entityCode: string): AssetCapitalization[] {
+  return readList<AssetCapitalization>(assetCapitalizationKey(entityCode));
+}
+export function createAssetCapitalization(
+  entityCode: string,
+  data: Omit<AssetCapitalization, 'id' | 'entity_id' | 'created_at'>,
+): AssetCapitalization {
+  const cap: AssetCapitalization = { ...data, id: newId('cap'), entity_id: entityCode, created_at: nowIso() };
+  const list = listAssetCapitalizations(entityCode);
+  list.push(cap);
+  writeList(assetCapitalizationKey(entityCode), list);
+  return cap;
+}
