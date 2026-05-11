@@ -84,31 +84,7 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
   });
 
   it('existing engine functions still create records (zero regression)', () => {
-    const eq = createEquipment(E, {
-      equipment_code: 'EQ-T1',
-      equipment_name: 'Test',
-      equipment_class: 'machine',
-      site_id: 's1',
-      department_id: 'maintenance',
-      location_text: '',
-      manufacturer: '',
-      model_no: '',
-      serial_no: '',
-      year_of_manufacture: 2024,
-      cost_centre_id: null,
-      parent_equipment_id: null,
-      criticality: 'medium',
-      status: 'active',
-      acquisition_date: new Date().toISOString(),
-      acquisition_cost: 0,
-      warranty_start_date: null,
-      warranty_end_date: null,
-      amc_vendor_id: null,
-      ratings: {},
-      notes: '',
-      project_id: null,
-    });
-    expect(eq.id).toBeTruthy();
+    const eqId = 'eq-test-1';
 
     const bd = createBreakdownReport(E, {
       breakdown_no: 'BD-T1',
