@@ -172,7 +172,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/maintainpro',
     icon: 'Wrench',
-    status: 'coming_soon',
+    status: 'active',  // A.17 STATUS FLIP · MOAT #23 banks · matches A.15a SiteX Q-LOCK-16a precedent
   },
   {
     id: 'requestx',
