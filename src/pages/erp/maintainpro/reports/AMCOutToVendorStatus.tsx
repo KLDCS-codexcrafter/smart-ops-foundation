@@ -34,7 +34,7 @@ export function AMCOutToVendorStatus(): JSX.Element {
         <>
           <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Open RMAs</div><div className="text-2xl font-mono">{data.all.filter((a) => a.status !== 'returned' && a.status !== 'cancelled').length}</div></div>
           <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Overdue</div><div className="text-2xl font-mono text-destructive">{data.reminders.overdue.length}</div></div>
-          <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Due 75%</div><div className="text-2xl font-mono text-warning">{data.reminders.due75pct.length}</div></div>
+          <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Due 75%</div><div className="text-2xl font-mono text-warning">{data.reminders.seventy_five_pct.length}</div></div>
           <div className="rounded border p-3"><div className="text-xs text-muted-foreground">Vendors</div><div className="text-2xl font-mono">{data.scorecard.length}</div></div>
         </>
       }

@@ -15,7 +15,8 @@ export function EnergyESGDashboard(): JSX.Element {
     const byCat = new Map<string, number>();
     let total = 0;
     eq.forEach((e) => {
-      const kwh = computeEquipmentEnergyConsumption(e);
+      const r = computeEquipmentEnergyConsumption(e, 24 * 30);
+      const kwh = r ? r.kwh_per_month * 12 : 0;
       total += kwh;
       byCat.set(e.category, (byCat.get(e.category) ?? 0) + kwh);
     });
