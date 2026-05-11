@@ -65,24 +65,24 @@ export default function MobileSiteEngineerPage(): JSX.Element {
           </Card>
 
           <div className="grid grid-cols-2 gap-3">
-            <QuickActionCard icon={FileText} label="DPR" sub="Daily Progress" disabled />
-            <QuickActionCard icon={AlertTriangle} label="Snag" sub="Capture issue" disabled />
-            <QuickActionCard icon={Shield} label="Safety" sub="PTW · JSA · Incident" disabled />
-            <QuickActionCard icon={Package} label="Material" sub="Receive · Issue" disabled />
+            <QuickActionCard icon={FileText} label="DPR" sub="Daily Progress" onClick={() => navigate('/operix-go/site-dpr')} />
+            <QuickActionCard icon={AlertTriangle} label="Snag" sub="Capture issue" onClick={() => navigate('/operix-go/site-snag')} />
+            <QuickActionCard icon={Shield} label="Safety" sub="Incident report" onClick={() => navigate('/operix-go/site-safety')} />
+            <QuickActionCard icon={Package} label="Material" sub="Issue · offline" onClick={() => navigate('/operix-go/site-material-issue')} />
           </div>
 
           <Card className="p-4 text-xs text-muted-foreground bg-slate-50 dark:bg-slate-900/50">
             <div className="flex items-center gap-2 mb-2">
               <Activity className="h-4 w-4" />
-              <strong>A.15 Closeout adds:</strong>
+              <strong>A.15b · 4 captures LIVE:</strong>
             </div>
-            DPR capture (geo-fenced photos) · Snag capture (one-tap photo+severity) · Toolbox Talk (camera badge scan attendance) · Material Issue (offline queue) · Labour Attendance (biometric) · Safety Incident capture.
+            DPR (geo-fenced photo · BLOCKS submit if outside fence) · Snag (auto-NCR for medium+) · Safety Incident (high/critical escalation + dashboard alert) · Material Issue (offline-queue resilience).
           </Card>
         </>
       )}
 
       <p className="text-[10px] text-muted-foreground text-center pt-2">
-        Status: coming_soon · Foundation A.14 · captures land A.15
+        Status: live · A.15b mobile · institutional 5-step pattern
       </p>
     </div>
   );
@@ -93,12 +93,14 @@ interface QuickActionProps {
   label: string;
   sub: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
-function QuickActionCard({ icon: Icon, label, sub, disabled }: QuickActionProps): JSX.Element {
+function QuickActionCard({ icon: Icon, label, sub, disabled, onClick }: QuickActionProps): JSX.Element {
   return (
     <button
       disabled={disabled}
+      onClick={onClick}
       className="rounded-xl border bg-card p-4 text-left transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <Icon className="h-5 w-5 text-amber-600 mb-2" />

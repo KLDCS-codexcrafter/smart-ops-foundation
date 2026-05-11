@@ -17,7 +17,7 @@ const CRITERIA: Criterion[] = [
   { id: 3, label: '6/6 Master Plan §6.3 SiteX OOBs LIVE', status: 'banked', note: 'DPR + Snag + Customer Signoff + Commissioning + Turnkey + ServiceDesk Handoff bridge' },
   { id: 4, label: 'Sinha Mode 1 install/commission demo end-to-end', status: 'banked', note: 'NTPC blower' },
   { id: 5, label: 'Sinha Mode 3 CAPEX expansion demo end-to-end', status: 'banked', note: 'Internal capex' },
-  { id: 6, label: 'Mobile site-engineer 5-step capture pattern × 4 captures', status: 'pending', note: 'A.15b mobile (scaffold ready)' },
+  { id: 6, label: 'Mobile site-engineer 5-step capture pattern × 4 captures', status: 'banked', note: 'A.15b · DPR (geo-fenced) · Snag (auto-NCR) · Safety (auto-escalate + dashboard) · Material Issue (offline-queue)' },
   { id: 7, label: 'Path B own entity · 4th + 5th consumers (Imprest + RA Bill)', status: 'banked', note: 'DocVault Hub purity preserved · FR-73.1 absolute' },
   { id: 8, label: 'Status FLIPPED to active · 23/32 cards active', status: 'banked', note: 'Q-LOCK-16a' },
 ];

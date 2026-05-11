@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -101,6 +101,42 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     details: 'A.14 Foundation: landing page only. A.15 Closeout: full 5-step capture flows. Consumes existing geolocation-bridge · camera-bridge · offline-queue-engine · biometric-bridge zero-touch. PWA — no install.',
     route: '/operix-go/site-engineer',
     phase: 'phase2',
+  },
+  {
+    id: 'site-dpr',
+    title: 'Site DPR',
+    icon: ClipboardList,
+    description: 'Daily progress report · 5-step capture with geo-fenced photo validation. Submit BLOCKED if photo outside site fence.',
+    details: 'Live: A.15b · Q-LOCK-3a. Consumes geolocation-bridge (100m accuracy gate · haversine fence check). Offline queue when no network.',
+    route: '/operix-go/site-dpr',
+    phase: 'live',
+  },
+  {
+    id: 'site-snag',
+    title: 'Site Snag',
+    icon: AlertTriangle,
+    description: 'One-tap snag capture · severity ≥ medium auto-escalates to NCR via emitSnagRaisedSevere (OOB #10).',
+    details: 'Live: A.15b · Q-LOCK-4a. Zero-touch on QualiCheck NCR engine via institutional bridge.',
+    route: '/operix-go/site-snag',
+    phase: 'live',
+  },
+  {
+    id: 'site-safety',
+    title: 'Safety Incident',
+    icon: ShieldAlert,
+    description: 'Safety incident reporting · high/critical auto-escalates to NCR + dashboard alert badge.',
+    details: 'Live: A.15b · Q-LOCK-5a. Severity auto-derived from incident type. Fatal incident shows immediate notification banner.',
+    route: '/operix-go/site-safety',
+    phase: 'live',
+  },
+  {
+    id: 'site-material-issue',
+    title: 'Material Issue',
+    icon: Package,
+    description: 'Field material issue · 5-step · offline-queue resilience for poor-connectivity sites.',
+    details: 'Live: A.15b · Q-LOCK-6a. Consumes offline-queue-engine institutionally (3-retry auto-sync).',
+    route: '/operix-go/site-material-issue',
+    phase: 'live',
   },
   {
     id: 'approval-inbox',

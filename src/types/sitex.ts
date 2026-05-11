@@ -355,3 +355,55 @@ export interface SnagRaisedEvent {
   description: string;
   timestamp: string;
 }
+
+// ============================================================================
+// A.15b · Mobile capture types (DPR · SafetyIncident · MaterialIssue)
+// ============================================================================
+
+// DPR is defined above (line 262); A.15b reuses canonical type via existing DPR + dprsKey.
+
+export interface SafetyIncident {
+  id: string;
+  site_id: string;
+  entity_id: string;
+  incident_type: 'near_miss' | 'minor_injury' | 'medical_treatment' | 'lost_time' | 'fatal' | 'property_damage';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  location_on_site: string;
+  photo_url: string | null;
+  reported_by: string;
+  occurred_at: string;
+  ncr_id: string | null;
+  created_at: string;
+}
+
+export interface SiteMaterialIssue {
+  id: string;
+  site_id: string;
+  entity_id: string;
+  item_id: string;
+  item_name: string;
+  quantity: number;
+  issued_to: string;
+  purpose: string;
+  photo_url: string | null;
+  issued_by: string;
+  issued_at: string;
+  created_at: string;
+}
+
+export const sitexDprsKey = (entityCode: string): string => `erp_sitex_dpr_captures_${entityCode}`;
+export const sitexSafetyIncidentsKey = (entityCode: string): string => `erp_sitex_safety_incidents_${entityCode}`;
+export const sitexMaterialIssuesKey = (entityCode: string): string => `erp_sitex_material_issues_${entityCode}`;
+
+export interface SafetyIncidentEscalationEvent {
+  type: 'sitex.safety.incident.escalate';
+  incident_id: string;
+  site_id: string;
+  entity_id: string;
+  severity: 'high' | 'critical';
+  incident_type: SafetyIncident['incident_type'];
+  reported_by: string;
+  occurred_at: string;
+  timestamp: string;
+}
