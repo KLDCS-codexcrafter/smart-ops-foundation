@@ -16,7 +16,7 @@ export function CalibrationStatusReport(): JSX.Element {
       const due = new Date(c.due_date).getTime();
       const days = Math.floor((due - now) / 86400000);
       const bucket = days < 0 ? 'Overdue' : days <= 30 ? '0–30 days' : days <= 60 ? '31–60 days' : days <= 90 ? '61–90 days' : '>90 days';
-      return { ...c, days, bucket, quarantined: isCalibrationInstrumentQuarantined(c) };
+      return { ...c, days, bucket, quarantined: isCalibrationInstrumentQuarantined(E, c.id) };
     }).sort((a, b) => a.days - b.days);
   }, []);
 
