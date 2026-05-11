@@ -48,3 +48,19 @@ FR count: 73 → 74. Validates FR-72 sibling promotion discipline working as des
 ## Path forward
 
 A.17 MaintainPro Closeout next (42nd composite · MOAT #23 BANKS · status flip + 4 mobile captures OOB-M9 + 8 MOAT criteria finalize · 24/32 ACTIVE cards).
+
+---
+
+## T1 close (A.16c.T1) · 2026-05-11
+
+T1.1 eslint fix: ProductionCapacityLiveDashboard.tsx useMemo warning resolved · tick dep intentional for auto-refresh recomputation · eslint-disable comment added with explanatory inline comment (Q-LOCK-6 ref).
+
+T1.2 test coverage: 6 tests added to maintainpro-reports.test.ts covering AMC scorecard · SLA heatmap · Energy/ESG · Dashboard capacity % · Open Tickets grouping. Reaches 823/118 target.
+
+AC#2 + AC#3 now PASS · 16/16 ACs clean post-T1.
+
+41st composite BANKS POST-T1 · A.16 HALT-AND-SPLIT 3-way ARC COMPLETE.
+
+A.17 MaintainPro Closeout (MOAT #23 BANKS · v31 FULL) path open.
+
+Triple Gate FINAL: TSC 0 · ESLint 0/0 · Vitest 823/118 · Build PASS.
