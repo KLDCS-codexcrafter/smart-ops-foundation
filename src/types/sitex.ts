@@ -181,3 +181,177 @@ export const siteRaBillsKey = (entityCode: string): string =>
 
 export const siteImprestsKey = (entityCode: string): string =>
   `erp_sitex_imprests_${entityCode}`;
+
+// ============================================================================
+// A.15a · Imprest extended types (Q-LOCK-2a · Path B own entity)
+// ============================================================================
+
+export interface ImprestTransaction {
+  id: string;
+  imprest_id: string;
+  site_id: string;
+  txn_type: 'replenishment' | 'payment' | 'reconciliation' | 'closeout_return';
+  amount: number;
+  currency: string;
+  fx_rate: number;
+  fx_date: string;
+  reference: string;
+  payee_name: string | null;
+  notes: string;
+  posted_by: string;
+  posted_at: string;
+  reverses_txn_id: string | null;
+}
+
+export interface ImprestReplenishmentRequest {
+  id: string;
+  imprest_id: string;
+  site_id: string;
+  amount_requested: number;
+  reason: string;
+  status: 'pending' | 'approved' | 'rejected' | 'transferred';
+  requested_by: string;
+  requested_at: string;
+  approved_by: string | null;
+  approved_at: string | null;
+  bd_ledger_voucher_id: string | null;
+}
+
+export const imprestTransactionsKey = (entityCode: string): string =>
+  `erp_sitex_imprest_txns_${entityCode}`;
+
+export const imprestReplenishmentsKey = (entityCode: string): string =>
+  `erp_sitex_imprest_replenishments_${entityCode}`;
+
+// ============================================================================
+// A.15a · RA Bill extended types (Q-LOCK-4a · Path B own entity)
+// ============================================================================
+
+export interface RABillLineItem {
+  id: string;
+  ra_bill_id: string;
+  description: string;
+  uom: 'nos' | 'sqm' | 'cum' | 'mt' | 'kg' | 'rmt' | 'hr' | 'day' | 'ls';
+  quantity_this_period: number;
+  rate_per_unit: number;
+  amount: number;
+  cumulative_quantity: number;
+  cumulative_amount: number;
+  notes: string;
+}
+
+export interface RABillApprovalHistory {
+  id: string;
+  ra_bill_id: string;
+  action: 'submitted' | 'approved' | 'rejected' | 'paid';
+  action_by: string;
+  action_at: string;
+  comments: string;
+}
+
+export const raBillLinesKey = (entityCode: string): string =>
+  `erp_sitex_ra_bill_lines_${entityCode}`;
+
+export const raBillApprovalsKey = (entityCode: string): string =>
+  `erp_sitex_ra_bill_approvals_${entityCode}`;
+
+// ============================================================================
+// A.15a · DPR + Snag + LookAhead types (Q-LOCK-6a Master Plan §6.3 + OOB #2/#10/#19)
+// ============================================================================
+
+export interface DPR {
+  id: string;
+  site_id: string;
+  entity_id: string;
+  report_date: string;
+  prepared_by: string;
+  work_completed: string;
+  manpower_count: number;
+  equipment_count: number;
+  material_consumed: { item_id: string; qty: number; uom: string }[];
+  weather: 'sunny' | 'rainy' | 'cloudy' | 'extreme';
+  delays: string;
+  geo_validated: boolean;
+  geo_lat: number;
+  geo_lng: number;
+  geo_distance_from_site_m: number;
+  geo_accuracy_m: number;
+  photo_url: string | null;
+  created_at: string;
+}
+
+export interface Snag {
+  id: string;
+  site_id: string;
+  entity_id: string;
+  raised_by: string;
+  raised_at: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: 'workmanship' | 'safety' | 'material' | 'design' | 'other';
+  description: string;
+  location_on_site: string;
+  photo_url: string | null;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed' | 'escalated_to_ncr';
+  ncr_id: string | null;
+  resolved_at: string | null;
+}
+
+export interface LookAheadEntry {
+  id: string;
+  site_id: string;
+  entry_date: string;
+  planned_activities: string[];
+  required_manpower: number;
+  required_materials: { item_id: string; qty: number }[];
+  weather_forecast: 'sunny' | 'rainy' | 'cloudy' | 'extreme';
+  weather_impact_risk: 'low' | 'medium' | 'high';
+  notes: string;
+}
+
+export const dprsKey = (entityCode: string): string => `erp_sitex_dprs_${entityCode}`;
+export const snagsKey = (entityCode: string): string => `erp_sitex_snags_${entityCode}`;
+export const lookAheadKey = (entityCode: string): string => `erp_sitex_lookahead_${entityCode}`;
+
+// ============================================================================
+// A.15a · Bridge event payloads (Q-LOCK-15a · 3 closeout bridges + Snag-to-NCR OOB #10)
+// ============================================================================
+
+export interface CommissioningHandoffEvent {
+  type: 'sitex.commissioning.handoff';
+  site_id: string;
+  entity_id: string;
+  customer_id: string | null;
+  commissioning_report_doc_id: string | null;
+  amc_start_date: string;
+  amc_duration_months: number;
+  timestamp: string;
+}
+
+export interface MaintainProHandoffEvent {
+  type: 'sitex.maintainpro.handoff';
+  site_id: string;
+  entity_id: string;
+  equipment_list: { description: string; serial_no: string; capitalized_value: number }[];
+  timestamp: string;
+}
+
+export interface AssetCapitalizationEvent {
+  type: 'sitex.asset.capitalization';
+  site_id: string;
+  entity_id: string;
+  total_capitalized_value: number;
+  cwip_voucher_id: string | null;
+  fixed_asset_voucher_id: string | null;
+  timestamp: string;
+}
+
+export interface SnagRaisedEvent {
+  type: 'sitex.snag.raised.severe';
+  snag_id: string;
+  site_id: string;
+  entity_id: string;
+  severity: 'medium' | 'high' | 'critical';
+  category: Snag['category'];
+  description: string;
+  timestamp: string;
+}
