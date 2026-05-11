@@ -75,8 +75,7 @@ export function MaintainProWelcome({ onNavigate }: Props): JSX.Element {
           <h1 className="text-2xl font-bold">MaintainPro · Maintenance Operations</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Asset master · preventive maintenance · breakdowns · calibration · fire safety ·
-            internal helpdesk. Foundation Masters layer (6 masters) — transactions and reports
-            ship in A.16b / A.16c.
+            internal helpdesk. 6 masters · 9 transactions · 14 reports · 4 mobile captures.
           </p>
         </div>
       </div>
@@ -84,13 +83,13 @@ export function MaintainProWelcome({ onNavigate }: Props): JSX.Element {
       <Card className="p-6 bg-cyan-50 dark:bg-cyan-950/30 border-cyan-200 dark:border-cyan-900">
         <div className="flex items-center gap-3 mb-2">
           <Sparkles className="h-5 w-5 text-cyan-600" />
-          <h2 className="font-semibold">Foundation Sprint · 6 Masters Delivered</h2>
+          <h2 className="font-semibold">MaintainPro · Live (MOAT #23)</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           Equipment (35 fields with ProjX deep wiring) · Spare Parts (Inventory Hub replica) ·
           Calibration (TDL 9 fields) · Fire Safety (TDL 5 fields × 6 types) ·
-          PM Schedule Template (4-axis) · Maintenance Vendor (Command Center replica).
-          Card status flips to active at A.17 Closeout.
+          PM Schedule Template (4-axis) · Maintenance Vendor (Command Center replica) ·
+          9 transactions · 14 reports · Full SLA · 4 mobile captures (OOB-M9).
         </p>
       </Card>
 
