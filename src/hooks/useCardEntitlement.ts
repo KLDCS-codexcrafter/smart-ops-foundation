@@ -75,7 +75,23 @@ export function useCardEntitlement() {
       const qualicheck =
         ent.card_id === 'qualicheck' &&
         (ent.status === 'add_on_available' || ent.status === 'locked');
-      if (gfProd || procure360 || qualicheck) {
+      // T-Phase-1.A.13 (retrofit) · D-NEW-BB · Migrate stale 'locked' for engineeringx
+      //   (A.13 status flip didn't add explicit migration · defensive retrofit at A.17.T1)
+      const engineeringx =
+        ent.card_id === 'engineeringx' &&
+        ent.status === 'locked';
+      // T-Phase-1.A.15a (retrofit) · D-NEW-BB · Migrate stale 'locked' for sitex
+      //   (A.15a status flip didn't add explicit migration · defensive retrofit at A.17.T1)
+      const sitex =
+        ent.card_id === 'sitex' &&
+        ent.status === 'locked';
+      // T-Phase-1.A.17.T1 · D-NEW-BB · Migrate stale 'locked' for maintainpro
+      //   (A.17 status flip needed this for existing tenants · caught by audit cycle #41
+      //   founder visual inspection · §2.4 audit discipline gap closed)
+      const maintainpro =
+        ent.card_id === 'maintainpro' &&
+        ent.status === 'locked';
+      if (gfProd || procure360 || qualicheck || engineeringx || sitex || maintainpro) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
         migrated = true;
