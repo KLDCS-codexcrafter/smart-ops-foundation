@@ -94,6 +94,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     phase: 'live',
   },
   {
+    id: 'site-engineer',
+    title: 'SiteX Mobile — साइट इंजीनियर',
+    icon: MapPin,
+    description: 'Site engineer mobile · DPR with geo-photos · snag capture · safety incidents · material issue · labour attendance · toolbox talk · PTW. Field-first · offline-resilient.',
+    details: 'A.14 Foundation: landing page only. A.15 Closeout: full 5-step capture flows. Consumes existing geolocation-bridge · camera-bridge · offline-queue-engine · biometric-bridge zero-touch. PWA — no install.',
+    route: '/operix-go/site-engineer',
+    phase: 'phase2',
+  },
+  {
     id: 'approval-inbox',
     title: 'Approval Inbox Mobile',
     icon: ClipboardCheck,
