@@ -20,7 +20,7 @@ import { listSites } from '@/lib/sitex-engine';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { sitexDprsKey, type DPR, type SiteMaster } from '@/types/sitex';
+import { dprsKey, type DPR, type SiteMaster } from '@/types/sitex';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
