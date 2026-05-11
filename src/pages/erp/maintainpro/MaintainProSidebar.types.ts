@@ -54,4 +54,15 @@ export type MaintainProModule =
   | 'equipment-tco'
   | 'open-tickets-report'
   | 'amc-out-status-report'
-  | 'energy-esg';
+  | 'energy-esg'
+  // A.16c reports + dashboard (NEW)
+  | 'maint-entry-day-book'
+  | 'calibration-status'
+  | 'fire-safety-expiry-report'
+  | 'spares-issue-day-book'
+  | 'open-wo-status'
+  | 'open-tickets-live'
+  | 'sla-performance'
+  | 'aging-tickets'
+  | 'top-reporters'
+  | 'production-capacity-dashboard';
