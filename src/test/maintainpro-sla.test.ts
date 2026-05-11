@@ -98,7 +98,7 @@ describe('Ticket state machine', () => {
 
 describe('3-level escalation', () => {
   it('escalates L1 when ack SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     // backdate created_at to simulate elapsed time
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() };
@@ -111,7 +111,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalates to L3 when 2× resolution SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     const list = listInternalTickets(E);
     // 2× resolution_hours (2h) = 4h elapsed minimum; we use 10h to be safe
     list[0] = { ...list[0], created_at: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString() };
@@ -122,7 +122,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalation_log entries are append-only', () => {
-    const t = createInternalTicket(E, baseTicket('electrical', 'critical'));
+    createInternalTicket(E, baseTicket('electrical', 'critical'));
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() };
     localStorage.setItem(`erp_maintainpro_internal_ticket_${E}`, JSON.stringify(list));
@@ -139,5 +139,60 @@ describe('3-level escalation', () => {
     transitionTicketStatus(E, t.id, 'resolved', 'u2');
     const updated = evaluateTicketEscalations(E);
     expect(updated.length).toBe(0);
+  });
+});
+
+// === A.16b.T1 · Additional SLA coverage ===
+describe('SLA_MATRIX.T1 · additional cells', () => {
+  it('housekeeping low = slowest tier', () => {
+    expect(SLA_MATRIX.housekeeping.low.resolution_hours).toBeGreaterThanOrEqual(
+      SLA_MATRIX.safety.critical.resolution_hours,
+    );
+  });
+  it('every category × severity cell has positive numeric SLAs', () => {
+    for (const c of CATEGORIES) for (const s of SEVERITIES) {
+      const cell = SLA_MATRIX[c][s];
+      expect(Number.isFinite(cell.ack_hours)).toBe(true);
+      expect(Number.isFinite(cell.resolution_hours)).toBe(true);
+      expect(cell.resolution_hours).toBeGreaterThanOrEqual(cell.ack_hours);
+    }
+  });
+});
+
+describe('Ticket state machine.T1 · additional', () => {
+  it('reopen path resets acknowledged_at + in_progress_at + resolved_at', () => {
+    const t = createInternalTicket(E, baseTicket('mechanical', 'medium'));
+    transitionTicketStatus(E, t.id, 'acknowledged', 'u2');
+    transitionTicketStatus(E, t.id, 'in_progress', 'u2');
+    transitionTicketStatus(E, t.id, 'resolved', 'u2');
+    const re = transitionTicketStatus(E, t.id, 'reopened', 'u2');
+    expect(re?.acknowledged_at).toBeNull();
+    expect(re?.in_progress_at).toBeNull();
+    expect(re?.resolved_at).toBeNull();
+    expect(re?.reopened_count).toBe(1);
+  });
+});
+
+describe('Escalation.T1 · is_ack_breached', () => {
+  it('marks is_ack_breached when SLA elapsed without acknowledgement', () => {
+    createInternalTicket(E, baseTicket('safety', 'critical'));
+    const list = listInternalTickets(E);
+    list[0] = { ...list[0], created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() };
+    localStorage.setItem(`erp_maintainpro_internal_ticket_${E}`, JSON.stringify(list));
+    evaluateTicketEscalations(E);
+    const after = listInternalTickets(E);
+    expect(after[0].is_ack_breached).toBe(true);
+  });
+
+  it('escalation_log is append-only across multiple evaluations', () => {
+    createInternalTicket(E, baseTicket('electrical', 'critical'));
+    const list = listInternalTickets(E);
+    list[0] = { ...list[0], created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() };
+    localStorage.setItem(`erp_maintainpro_internal_ticket_${E}`, JSON.stringify(list));
+    evaluateTicketEscalations(E);
+    const firstLen = listInternalTickets(E)[0].escalation_log.length;
+    evaluateTicketEscalations(E);
+    const secondLen = listInternalTickets(E)[0].escalation_log.length;
+    expect(secondLen).toBeGreaterThanOrEqual(firstLen);
   });
 });
