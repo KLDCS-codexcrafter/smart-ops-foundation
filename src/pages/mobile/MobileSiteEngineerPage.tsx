@@ -93,12 +93,14 @@ interface QuickActionProps {
   label: string;
   sub: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
-function QuickActionCard({ icon: Icon, label, sub, disabled }: QuickActionProps): JSX.Element {
+function QuickActionCard({ icon: Icon, label, sub, disabled, onClick }: QuickActionProps): JSX.Element {
   return (
     <button
       disabled={disabled}
+      onClick={onClick}
       className="rounded-xl border bg-card p-4 text-left transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <Icon className="h-5 w-5 text-amber-600 mb-2" />
