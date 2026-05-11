@@ -126,6 +126,11 @@ const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/Pro
 const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/EngineeringXPage'));
 const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
+// A.15b · 4 mobile SiteX captures
+const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDPRCapture'));
+const MobileSiteSnagCapture = lazy(() => import('./components/mobile/MobileSiteSnagCapture'));
+const MobileSiteSafetyIncidentCapture = lazy(() => import('./components/mobile/MobileSiteSafetyIncidentCapture'));
+const MobileSiteMaterialIssueCapture = lazy(() => import('./components/mobile/MobileSiteMaterialIssueCapture'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
