@@ -125,6 +125,8 @@ const ProjectCentreMasterPage = lazy(() => import('./pages/erp/projx/masters/Pro
 // Sprint T-Phase-1.3-DashboardAudit-Fix · Block D · Tier 1 #5 + #12 NEW · stub pages
 const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/EngineeringXPage'));
 const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
+// Sprint T-Phase-1.A.16a · MaintainPro Foundation (Masters) · 11th card on Shell
+const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 // A.15b · 4 mobile SiteX captures
 const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDPRCapture'));
