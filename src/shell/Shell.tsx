@@ -31,6 +31,7 @@
  */
 
 import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShellThemeProvider } from './ShellThemeProvider';
@@ -67,10 +68,10 @@ export function Shell({
   contextFlags = {},
   onSidebarItemClick,
 }: ShellProps) {
-  const visibleItems = filterSidebarByMatrix(
-    config.sidebar.items,
-    userProfile,
-    tenantEntitlements,
+  // A.16c.G.3 T3.3 · memoize sidebar filter to avoid recompute on unrelated re-renders
+  const visibleItems = useMemo(
+    () => filterSidebarByMatrix(config.sidebar.items, userProfile, tenantEntitlements),
+    [config.sidebar.items, userProfile, tenantEntitlements],
   );
 
   const visibleChips = filterChipsByMatrix(
