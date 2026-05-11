@@ -360,24 +360,7 @@ export interface SnagRaisedEvent {
 // A.15b · Mobile capture types (DPR · SafetyIncident · MaterialIssue)
 // ============================================================================
 
-export interface DPR {
-  id: string;
-  site_id: string;
-  entity_id: string;
-  report_date: string;
-  work_completed: string;
-  manpower_count: number;
-  equipment_used: string;
-  material_consumed: string;
-  weather: 'sunny' | 'rainy' | 'cloudy' | 'extreme';
-  delays: string;
-  photo_url: string | null;
-  photo_geo_lat: number | null;
-  photo_geo_lng: number | null;
-  geo_fence_passed: boolean;
-  created_by: string;
-  created_at: string;
-}
+// DPR is defined above (line 262); A.15b reuses canonical type via existing DPR + dprsKey.
 
 export interface SafetyIncident {
   id: string;
