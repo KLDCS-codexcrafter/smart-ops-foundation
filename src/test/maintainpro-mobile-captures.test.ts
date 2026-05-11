@@ -84,7 +84,6 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
 
   it('existing engine functions still create records (zero regression)', () => {
     const eqId = 'eq-test-1';
-    void eqId;
 
     const bd = createBreakdownReport(E, {
       breakdown_no: 'BD-T1',
