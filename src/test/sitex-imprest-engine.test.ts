@@ -1,5 +1,7 @@
 /**
- * sitex-imprest-engine.test.ts — A.15b T2 catch-up · Block G.1
+ * @file        src/test/sitex-imprest-engine.test.ts
+ * @purpose     A.15b imprest engine tests (FR-30 header backfilled at A.16c.G.1 T3.1)
+ * @sprint      T-Phase-1.A.15b SiteX Closeout Mobile · Block G.1
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {

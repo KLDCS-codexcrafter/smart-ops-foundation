@@ -1,5 +1,7 @@
 /**
- * sitex-closeout-guards.test.ts — A.15b T2 catch-up · Block G.3
+ * @file        src/test/sitex-closeout-guards.test.ts
+ * @purpose     A.15b closeout guard tests (FR-30 header backfilled at A.16c.G.1 T3.1)
+ * @sprint      T-Phase-1.A.15b SiteX Closeout Mobile · Block G.3
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {

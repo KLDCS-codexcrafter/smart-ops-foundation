@@ -1,5 +1,7 @@
 /**
- * sitex-ra-bill-engine.test.ts — A.15b T2 catch-up · Block G.2
+ * @file        src/test/sitex-ra-bill-engine.test.ts
+ * @purpose     A.15b RA-bill engine tests (FR-30 header backfilled at A.16c.G.1 T3.1)
+ * @sprint      T-Phase-1.A.15b SiteX Closeout Mobile · Block G.2
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {

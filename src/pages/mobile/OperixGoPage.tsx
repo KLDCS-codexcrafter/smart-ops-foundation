@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -100,6 +100,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Site engineer mobile · DPR with geo-photos · snag capture · safety incidents · material issue · labour attendance · toolbox talk · PTW. Field-first · offline-resilient.',
     details: 'A.14 Foundation: landing page only. A.15 Closeout: full 5-step capture flows. Consumes existing geolocation-bridge · camera-bridge · offline-queue-engine · biometric-bridge zero-touch. PWA — no install.',
     route: '/operix-go/site-engineer',
+    phase: 'phase2',
+  },
+  {
+    id: 'maintenance-technician',
+    title: 'MaintainPro — Maintenance Technician',
+    icon: Wrench,
+    description: 'Field-first mobile landing for maintenance technicians · captures land at A.17 (OOB-M9). Active WO / today PM / open ticket summary tiles live now.',
+    details: 'A.16c: landing-only per Q-LOCK-3. A.17 wires 4 captures (breakdown · PM tick-off · spares issue · asset photo).',
+    route: '/operix-go/maintenance-technician',
     phase: 'phase2',
   },
   {

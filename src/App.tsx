@@ -128,6 +128,7 @@ const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 // Sprint T-Phase-1.A.16a · MaintainPro Foundation (Masters) · 11th card on Shell
 const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
+const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
 // A.15b · 4 mobile SiteX captures
 const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDPRCapture'));
 const MobileSiteSnagCapture = lazy(() => import('./components/mobile/MobileSiteSnagCapture'));
@@ -371,6 +372,7 @@ const App = () => (
               <Route path="/operix-go/production/job-card" element={<P><MobileJobCardPage /></P>} />
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/operix-go/site-engineer" element={<P><MobileSiteEngineerPage /></P>} />
+              <Route path="/operix-go/maintenance-technician" element={<P><MobileMaintenanceTechnicianPage /></P>} />
               <Route path="/operix-go/site-dpr" element={<P><MobileSiteDPRCapture /></P>} />
               <Route path="/operix-go/site-snag" element={<P><MobileSiteSnagCapture /></P>} />
               <Route path="/operix-go/site-safety" element={<P><MobileSiteSafetyIncidentCapture /></P>} />

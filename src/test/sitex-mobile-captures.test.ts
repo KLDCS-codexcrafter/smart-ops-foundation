@@ -1,5 +1,7 @@
 /**
- * sitex-mobile-captures.test.ts — A.15b · Block H · minimal capture smoke tests
+ * @file        src/test/sitex-mobile-captures.test.ts
+ * @purpose     A.15b mobile capture smoke tests (FR-30 header backfilled at A.16c.G.1 T3.1)
+ * @sprint      T-Phase-1.A.15b SiteX Closeout Mobile · Block H
  */
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';

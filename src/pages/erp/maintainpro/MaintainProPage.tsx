@@ -27,6 +27,22 @@ import { CalibrationCertificate } from './transactions/CalibrationCertificate';
 import { AMCOutToVendor } from './transactions/AMCOutToVendor';
 import { InternalMaintenanceTicket } from './transactions/InternalMaintenanceTicket';
 import { AssetCapitalization } from './transactions/AssetCapitalization';
+// A.16c reports + dashboard
+import { MaintenanceEntryDayBook } from './reports/MaintenanceEntryDayBook';
+import { CalibrationStatusReport } from './reports/CalibrationStatusReport';
+import { FireSafetyExpiryReport } from './reports/FireSafetyExpiryReport';
+import { EquipmentHistory } from './reports/EquipmentHistory';
+import { SparesIssueDayBook } from './reports/SparesIssueDayBook';
+import { MTBFMTTRReport } from './reports/MTBFMTTRReport';
+import { PMComplianceReport } from './reports/PMComplianceReport';
+import { OpenWOStatusReport } from './reports/OpenWOStatusReport';
+import { AMCOutToVendorStatus } from './reports/AMCOutToVendorStatus';
+import { EnergyESGDashboard } from './reports/EnergyESGDashboard';
+import { OpenTicketsLive } from './reports/OpenTicketsLive';
+import { SLAPerformanceReport } from './reports/SLAPerformanceReport';
+import { AgingTicketsReport } from './reports/AgingTicketsReport';
+import { TopReportersByDepartment } from './reports/TopReportersByDepartment';
+import { ProductionCapacityLiveDashboard } from './reports/ProductionCapacityLiveDashboard';
 
 export default function MaintainProPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<MaintainProModule>('welcome');
@@ -76,6 +92,37 @@ export default function MaintainProPage(): JSX.Element {
         return <InternalMaintenanceTicket onNavigate={nav} />;
       case 'asset-capitalization':
         return <AssetCapitalization onNavigate={nav} />;
+      // A.16c reports + dashboard
+      case 'maint-entry-day-book':
+        return <MaintenanceEntryDayBook />;
+      case 'calibration-status':
+        return <CalibrationStatusReport />;
+      case 'fire-safety-expiry-report':
+        return <FireSafetyExpiryReport />;
+      case 'equipment-history':
+        return <EquipmentHistory />;
+      case 'spares-issue-day-book':
+        return <SparesIssueDayBook />;
+      case 'mtbf-mttr':
+        return <MTBFMTTRReport />;
+      case 'pm-compliance':
+        return <PMComplianceReport />;
+      case 'open-wo-status':
+        return <OpenWOStatusReport />;
+      case 'amc-out-status-report':
+        return <AMCOutToVendorStatus />;
+      case 'energy-esg':
+        return <EnergyESGDashboard />;
+      case 'open-tickets-live':
+        return <OpenTicketsLive />;
+      case 'sla-performance':
+        return <SLAPerformanceReport />;
+      case 'aging-tickets':
+        return <AgingTicketsReport />;
+      case 'top-reporters':
+        return <TopReportersByDepartment />;
+      case 'production-capacity-dashboard':
+        return <ProductionCapacityLiveDashboard />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }
