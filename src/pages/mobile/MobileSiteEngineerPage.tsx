@@ -74,15 +74,15 @@ export default function MobileSiteEngineerPage(): JSX.Element {
           <Card className="p-4 text-xs text-muted-foreground bg-slate-50 dark:bg-slate-900/50">
             <div className="flex items-center gap-2 mb-2">
               <Activity className="h-4 w-4" />
-              <strong>A.15 Closeout adds:</strong>
+              <strong>A.15b · 4 captures LIVE:</strong>
             </div>
-            DPR capture (geo-fenced photos) · Snag capture (one-tap photo+severity) · Toolbox Talk (camera badge scan attendance) · Material Issue (offline queue) · Labour Attendance (biometric) · Safety Incident capture.
+            DPR (geo-fenced photo · BLOCKS submit if outside fence) · Snag (auto-NCR for medium+) · Safety Incident (high/critical escalation + dashboard alert) · Material Issue (offline-queue resilience).
           </Card>
         </>
       )}
 
       <p className="text-[10px] text-muted-foreground text-center pt-2">
-        Status: coming_soon · Foundation A.14 · captures land A.15
+        Status: live · A.15b mobile · institutional 5-step pattern
       </p>
     </div>
   );
