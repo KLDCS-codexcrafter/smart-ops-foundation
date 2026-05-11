@@ -21,8 +21,9 @@ describe('MobileMaintenanceTechnicianPage source', () => {
     expect(src).toMatch(/Spares Issue/);
     expect(src).toMatch(/Asset Photo/);
   });
-  it('marks captures as Available at A.17', () => {
-    expect(src).toMatch(/Available at A\.17/);
+  it('wires captures to A.17 routes (A.17 status flip · markers removed)', () => {
+    expect(src).toMatch(/\/operix-go\/breakdown-capture/);
+    expect(src).not.toMatch(/Available at A\.17/);
   });
   it('has 3 active summary tiles', () => {
     expect(src).toMatch(/Active WOs/);
