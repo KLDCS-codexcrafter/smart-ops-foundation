@@ -52,6 +52,29 @@ export default function MaintainProPage(): JSX.Element {
         return <PMScheduleTemplateMaster onNavigate={nav} />;
       case 'maintenance-vendor':
         return <MaintenanceVendorView onNavigate={nav} />;
+      // A.16b transactions
+      case 'raise-breakdown':
+        return <BreakdownReport onNavigate={nav} />;
+      case 'work-orders':
+      case 'wo-inbox':
+      case 'completed-wo':
+        return <WorkOrderEntry onNavigate={nav} />;
+      case 'active-schedules':
+      case 'pm-calendar':
+      case 'overdue-pm':
+        return <PMTickoffEntry onNavigate={nav} />;
+      case 'spares-issue':
+        return <SparesIssueEntry onNavigate={nav} />;
+      case 'equipment-movement':
+        return <EquipmentMovement onNavigate={nav} />;
+      case 'amc-out-to-vendor':
+        return <AMCOutToVendor onNavigate={nav} />;
+      case 'raise-ticket':
+      case 'ticket-inbox':
+      case 'open-tickets':
+        return <InternalMaintenanceTicket onNavigate={nav} />;
+      case 'asset-capitalization':
+        return <AssetCapitalization onNavigate={nav} />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }
