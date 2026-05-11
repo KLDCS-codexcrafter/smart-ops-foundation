@@ -11,6 +11,7 @@ import { Briefcase, Users, FlaskConical, ExternalLink, Factory, Layers, Clock, A
 import { Card, CardContent } from '@/components/ui/card';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { MaintenancePulseWidget } from '@/components/maintainpro/MaintenancePulseWidget';
 
 interface Props {
   onNavigate?: (m: string) => void;
