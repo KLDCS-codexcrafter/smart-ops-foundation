@@ -220,7 +220,7 @@ export const applications: AppDefinition[] = [
     category: 'Ops Hub',
     route: '/erp/sitex',
     icon: 'MapPin',
-    status: 'coming_soon',
+    status: 'active',  // A.15a Q-LOCK-16a STATUS FLIP · MOAT #22 banks · matches A.13 EngineeringX precedent
   },
   {
     id: 'salesx',
