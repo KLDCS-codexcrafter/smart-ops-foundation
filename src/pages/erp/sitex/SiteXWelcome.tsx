@@ -42,11 +42,10 @@ export function SiteXWelcome({ onNavigate }: Props): JSX.Element {
       <Card className="p-6 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
         <div className="flex items-center gap-3 mb-2">
           <Sparkles className="h-5 w-5 text-amber-600" />
-          <h2 className="font-semibold">Site Health Score · Coming in A.15</h2>
+          <h2 className="font-semibold">Site Health Score · Live</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Live 0-100 score per active site combining safety record · budget variance · progress · quality · workforce stability.
-          Multi-site view at next sprint close (A.15 Closeout).
+          Live 0-100 score per active site combining safety record · budget variance · progress · quality · workforce stability. View in Site Twin Dashboard.
         </p>
       </Card>
 

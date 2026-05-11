@@ -94,7 +94,7 @@ export function SiteList({ onNavigate }: Props): JSX.Element {
       )}
 
       <Card className="p-4 bg-slate-50 dark:bg-slate-900/50 text-xs text-muted-foreground">
-        <strong>A.15 Closeout will add:</strong> Mobilize Site wizard · Site Detail view · 5-state machine transitions · DPR · Snag Register · Safety Suite · Imprest · Customer Signoff · Commissioning · 4 closeout handoffs · Site Twin Dashboard with live Site Health Score · 5-6 mobile capture pages.
+        <strong>SiteX delivers:</strong> site list · mobilize wizard · site detail · DPR · Snag Register · Safety Suite · Imprest · Customer Signoff · Commissioning · 4 closeout handoffs · Site Twin Dashboard with live Site Health Score · 5 mobile captures.
       </Card>
     </div>
   );
