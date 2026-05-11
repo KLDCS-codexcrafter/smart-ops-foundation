@@ -87,7 +87,7 @@ describe('A.17 · appendEquipmentPhoto engine helper · D-NEW-DG', () => {
     const eq = createEquipment(E, {
       equipment_code: 'EQ-T1',
       equipment_name: 'Test',
-      equipment_class: 'production_machine',
+      equipment_class: 'machine',
       site_id: 's1',
       department_id: 'maintenance',
       location_text: '',
