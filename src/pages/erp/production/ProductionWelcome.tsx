@@ -64,6 +64,9 @@ export function ProductionWelcome({ onNavigate: _onNavigate }: Props): JSX.Eleme
         </p>
       </div>
 
+      {/* A.16b · MaintenancePulseWidget · OOB-M3 bidirectional capacity feedback (Q-LOCK-5) */}
+      <MaintenancePulseWidget />
+
       <button
         type="button"
         onClick={() => { window.location.href = '/erp/command-center?module=fincore-production-config'; }}
