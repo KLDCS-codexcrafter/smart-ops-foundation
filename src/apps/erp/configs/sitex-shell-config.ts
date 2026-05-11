@@ -22,7 +22,7 @@ export const sitexShellConfig: ShellConfig = {
     version: '1.0.0',
   },
   theme: {
-    accent: 'orange',
+    accent: 'amber',
     mode: 'auto',
   },
   header: {
