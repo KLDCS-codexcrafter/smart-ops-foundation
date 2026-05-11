@@ -67,7 +67,8 @@ export function ProductionCapacityLiveDashboard(): JSX.Element {
       equipment,
     };
     // tick included to trigger recompute on interval
-    // eslint-disable-next-line react-hooks/exhaustive-deps — tick intentionally in deps to drive auto-refresh recomputation (Q-LOCK-6)
+    // tick intentionally in deps to drive auto-refresh recomputation (Q-LOCK-6)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, groupBy]);
 
   const bandClass = view.status === 'green' ? 'bg-success/20 text-success border-success/40'
