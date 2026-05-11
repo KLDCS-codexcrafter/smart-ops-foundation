@@ -46,7 +46,7 @@ export function prepareCapitalizationDraft(entityCode: string, siteId: string, l
   };
 }
 
-export function postCapitalization(entityCode: string, draft: AssetCapitalizationDraft): {
+export function postCapitalization(_entityCode: string, draft: AssetCapitalizationDraft): {
   allowed: boolean; reason: string | null; cwip_voucher_id: string; fixed_asset_voucher_id: string;
 } {
   const now = new Date().toISOString();
