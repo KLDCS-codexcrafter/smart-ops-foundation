@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# A.17 · T3.2 hardening · Z-evidence files cease tracking · Q-LOCK-6
+# Override for intentional updates: git add -f audit_workspace/Z*_close_evidence/*.json
+audit_workspace/Z*_close_evidence/*.json
