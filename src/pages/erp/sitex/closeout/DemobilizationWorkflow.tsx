@@ -44,7 +44,6 @@ export function DemobilizationWorkflow({ onNavigate: _onNavigate }: Props): JSX.
     const r = closeSite(entity, siteId);
     setRefresh((x) => x + 1);
     if (!r.allowed) {
-      // eslint-disable-next-line no-alert
       alert(`Cannot close: ${r.failed_guards.join(', ')}`);
     }
   };
