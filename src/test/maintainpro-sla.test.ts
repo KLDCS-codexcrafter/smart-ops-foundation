@@ -7,7 +7,7 @@ import {
   createInternalTicket, listInternalTickets, transitionTicketStatus, evaluateTicketEscalations,
 } from '@/lib/maintainpro-engine';
 import { SLA_MATRIX } from '@/types/maintainpro';
-import type { TicketCategory, TicketSeverity, InternalMaintenanceTicket } from '@/types/maintainpro';
+import type { TicketCategory, TicketSeverity } from '@/types/maintainpro';
 
 const E = 'SLATEST';
 const CATEGORIES: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
@@ -62,7 +62,7 @@ describe('SLA_MATRIX completeness', () => {
 
 describe('Ticket state machine', () => {
   it('createInternalTicket sets SLA from matrix', () => {
-    const t = createInternalTicket(E, baseTicket('electrical', 'critical'));
+    createInternalTicket(E, baseTicket('electrical', 'critical'));
     expect(t.sla_ack_hours).toBe(1);
     expect(t.sla_resolution_hours).toBe(4);
     expect(t.escalation_level).toBe(0);
@@ -71,7 +71,7 @@ describe('Ticket state machine', () => {
   });
 
   it('transitions open → acknowledged → in_progress → resolved → closed', () => {
-    const t = createInternalTicket(E, baseTicket('mechanical', 'high'));
+    createInternalTicket(E, baseTicket('mechanical', 'high'));
     transitionTicketStatus(E, t.id, 'acknowledged', 'u2');
     transitionTicketStatus(E, t.id, 'in_progress', 'u2');
     transitionTicketStatus(E, t.id, 'resolved', 'u2', 'fixed');
@@ -85,7 +85,7 @@ describe('Ticket state machine', () => {
   });
 
   it('Reopen path increments reopened_count + resets timestamps', () => {
-    const t = createInternalTicket(E, baseTicket('housekeeping', 'low'));
+    createInternalTicket(E, baseTicket('housekeeping', 'low'));
     transitionTicketStatus(E, t.id, 'acknowledged', 'u2');
     transitionTicketStatus(E, t.id, 'resolved', 'u2');
     const re = transitionTicketStatus(E, t.id, 'reopened', 'u2');
@@ -98,7 +98,7 @@ describe('Ticket state machine', () => {
 
 describe('3-level escalation', () => {
   it('escalates L1 when ack SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     // backdate created_at to simulate elapsed time
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() };
@@ -111,7 +111,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalates to L3 when 2× resolution SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     const list = listInternalTickets(E);
     // 2× resolution_hours (2h) = 4h elapsed minimum; we use 10h to be safe
     list[0] = { ...list[0], created_at: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString() };
@@ -122,7 +122,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalation_log entries are append-only', () => {
-    const t = createInternalTicket(E, baseTicket('electrical', 'critical'));
+    createInternalTicket(E, baseTicket('electrical', 'critical'));
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() };
     localStorage.setItem(`erp_maintainpro_internal_ticket_${E}`, JSON.stringify(list));
@@ -135,7 +135,7 @@ describe('3-level escalation', () => {
   });
 
   it('does not escalate resolved/closed tickets', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     transitionTicketStatus(E, t.id, 'resolved', 'u2');
     const updated = evaluateTicketEscalations(E);
     expect(updated.length).toBe(0);
