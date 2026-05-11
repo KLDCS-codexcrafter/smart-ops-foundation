@@ -41,3 +41,13 @@ MOAT: #22 preserved · #23 candidate progress (SiteX→MaintainPro CAPEX bridge 
 ## Path forward
 
 A.16c MaintainPro Foundation (Reports + Mobile Landing + Hygiene) next: 14 reports + mobile landing + entitlement flip + T3 hygiene (Z-evidence trigger lock).
+
+---
+
+## T1 close (A.16b.T1) · 2026-05-13
+
+- **T1.1 eslint fix**: 3 unused `t` variable assignments removed in `maintainpro-sla.test.ts` (lines 101 · 114 · 125). 3 → 0 ESLint errors.
+- **T1.2 test coverage**: tests added across 3 test files (engine +12 · sla +6 · bridges +3) · reaches 769+/114 target.
+- AC#2 + AC#3 now PASS · 15/15 ACs clean post-T1.
+- 40th composite BANKS POST-T1 · A.16c path open.
+- Triple Gate FINAL: TSC 0 · ESLint 0/0 · Vitest 769+/114 · Build PASS.
