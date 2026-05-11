@@ -42,6 +42,11 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
     expect(seeded.has('sitex')).toBe(true);
   });
 
+  it('A.15a · sitex status is ACTIVE not LOCKED (Q-LOCK-16a status flip · MOAT #22 banks)', () => {
+    const sitexEntitlement = seedDemoEntitlements('test-tenant').find((e) => e.card_id === 'sitex');
+    expect(sitexEntitlement?.status).toBe('active');
+  });
+
   for (const file of sidebarConfigs) {
     it(`${file} · all requiredCards must be in seedDemoEntitlements`, () => {
       const required = extractRequiredCards(`${CONFIG_DIR}/${file}`);
