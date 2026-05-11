@@ -131,7 +131,7 @@ export function consumeSiteXMaintainProHandoff(
     depreciation_method: 'straight_line',
     useful_life_years: 10,
     salvage_value: handoff.capex_value * 0.05,
-    fincore_voucher_id: null, // [JWT] Phase 2 FineCore asset entry
+    fincore_voucher_id: null, // [JWT] Phase 2 FinCore asset entry
     project_id: handoff.project_id,
     capitalized_at: handoff.installation_date,
     capitalized_by_user_id: handoff.custodian_user_id ?? 'system',
@@ -255,5 +255,5 @@ export function consumeSiteXPTWRequest(
 
 // === PLANNED BRIDGES (3) ===
 // [PLANNED] emitWarrantyClaimAutoDetect · OOB-M8 at breakdown → vendor email (A.17)
-// [PLANNED] emitAssetEntryToFineCore · Asset Cap → FineCore asset voucher (A.17 finalizes)
+// [PLANNED] emitAssetEntryToFinCore · Asset Cap → FinCore asset voucher (A.17 finalizes)
 // [PLANNED] emitServiceDeskHandoff · decommission customer-deployed Equipment → ServiceDesk (C.1-C.2)
