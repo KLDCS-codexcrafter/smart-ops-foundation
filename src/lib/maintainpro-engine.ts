@@ -713,3 +713,70 @@ export function createAssetCapitalization(
   writeList(assetCapitalizationKey(entityCode), list);
   return cap;
 }
+
+// ============================================================================
+// === A.17 · MOBILE CAPTURE HELPERS (APPENDED · existing 23 functions ABSOLUTE preserved) ===
+// D-NEW-DG POSSIBLE 30th canonical · Equipment Photo Append Pattern
+// ============================================================================
+
+interface EquipmentPhotoRecord {
+  equipment_id: string;
+  photo_url: string;
+  context: string;
+  taken_by: string;
+  taken_at: string;
+}
+
+const equipmentPhotosKey = (entityCode: string): string =>
+  `erp_maintainpro_equipment_photos_${entityCode}`;
+
+export function appendEquipmentPhoto(
+  entityCode: string,
+  equipmentId: string,
+  photoUrl: string,
+  context: 'pre_maintenance' | 'post_maintenance' | 'warranty_claim' | 'audit' | 'general',
+  takenBy: string,
+): { equipment_id: string; photo_count: number } {
+  const key = equipmentPhotosKey(entityCode);
+  let photos: EquipmentPhotoRecord[];
+  try {
+    const raw = localStorage.getItem(key);
+    photos = raw ? (JSON.parse(raw) as EquipmentPhotoRecord[]) : [];
+  } catch {
+    photos = [];
+  }
+  photos.push({
+    equipment_id: equipmentId,
+    photo_url: photoUrl,
+    context,
+    taken_by: takenBy,
+    taken_at: new Date().toISOString(),
+  });
+  try {
+    localStorage.setItem(key, JSON.stringify(photos));
+  } catch {
+    /* ignore quota */
+  }
+  // [JWT] Phase 2: real upload to DocVault · returns CDN URL
+  return {
+    equipment_id: equipmentId,
+    photo_count: photos.filter((p) => p.equipment_id === equipmentId).length,
+  };
+}
+
+export function listEquipmentPhotos(
+  entityCode: string,
+  equipmentId: string,
+): Array<{ photo_url: string; context: string; taken_by: string; taken_at: string }> {
+  const key = equipmentPhotosKey(entityCode);
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const photos = JSON.parse(raw) as EquipmentPhotoRecord[];
+    return photos
+      .filter((p) => p.equipment_id === equipmentId)
+      .map(({ photo_url, context, taken_by, taken_at }) => ({ photo_url, context, taken_by, taken_at }));
+  } catch {
+    return [];
+  }
+}
