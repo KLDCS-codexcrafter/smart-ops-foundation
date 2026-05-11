@@ -31,8 +31,6 @@ export function ProductionCapacityLiveDashboard(): JSX.Element {
     // [JWT] Phase 2: WebSocket streaming instead of polling
   }, []);
 
-  // tick intentionally in deps to drive auto-refresh recomputation (Q-LOCK-6)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const view = useMemo(() => {
     const equipment = listEquipment(E);
     const recent = listBreakdownReports(E).filter((b) => {
