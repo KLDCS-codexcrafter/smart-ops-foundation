@@ -19,6 +19,8 @@ export type MobileAuditRole =
   | 'sales_manager'
   | 'distributor'
   | 'customer'
+  | 'site_engineer'   // A.15b.T1 · Q-LOCK-7a · 4 captures consumer
+  | 'site_manager'    // A.15b.T1 · Q-LOCK-7a · A.16+ approval workflows
   | 'unknown';
 
 interface MobileAuditInput {

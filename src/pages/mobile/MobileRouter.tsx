@@ -160,6 +160,8 @@ export interface MobileSession {
     | 'sales_manager'
     | 'distributor'
     | 'customer'
+    | 'site_engineer'   // A.15b.T1 · Q-LOCK-7a · 4 captures consumer
+    | 'site_manager'    // A.15b.T1 · Q-LOCK-7a · A.16+ approval workflows
     | 'unknown';
   user_id: string | null;
   display_name: string;
@@ -265,15 +267,19 @@ export default function MobileRouter() {
         s.role === 'telecaller'    ? '/mobile/telecaller' :
         s.role === 'supervisor'    ? '/mobile/supervisor' :
         s.role === 'sales_manager' ? '/mobile/manager' :
+        s.role === 'site_engineer' ? '/operix-go/site-engineer' :
+        s.role === 'site_manager'  ? '/operix-go/site-engineer' :
         '/mobile/home';
       navigate(dest, { replace: true });
     } else if (location.pathname === '/mobile' || location.pathname === '/mobile/') {
       const dest = s
-        ? (s.role === 'salesman'      ? '/mobile/salesman' :
-           s.role === 'telecaller'    ? '/mobile/telecaller' :
-           s.role === 'supervisor'    ? '/mobile/supervisor' :
-           s.role === 'sales_manager' ? '/mobile/manager' :
-           '/mobile/home')
+         ? (s.role === 'salesman'      ? '/mobile/salesman' :
+            s.role === 'telecaller'    ? '/mobile/telecaller' :
+            s.role === 'supervisor'    ? '/mobile/supervisor' :
+            s.role === 'sales_manager' ? '/mobile/manager' :
+            s.role === 'site_engineer' ? '/operix-go/site-engineer' :
+            s.role === 'site_manager'  ? '/operix-go/site-engineer' :
+            '/mobile/home')
         : '/mobile/login';
       navigate(dest, { replace: true });
     }
