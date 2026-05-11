@@ -30,3 +30,12 @@ Sprint: 39th first-pass A target · 11th card on Shell pattern · D-NEW-CT auto-
 
 ## Path forward
 A.16b MaintainPro Foundation (Transactions + Internal Helpdesk) next.
+
+---
+
+## T1 close (A.16a.T1) · 2026-05-12
+
+- T1.1 keyboard namespace: 14 'm *' keyboard shortcuts added to `maintainpro-sidebar-config.ts` · D-NEW-CC 7th consumer registered
+- T1.2 demo seed: `src/data/demo-maintainpro-data.ts` created with 2 Sinha equipment + PM template + calibration + fire safety entries
+- AC#8 + AC#13 now PASS · 13/13 ACs clean post-T1
+- 39th composite BANKS POST-T1 · A.16b path open
