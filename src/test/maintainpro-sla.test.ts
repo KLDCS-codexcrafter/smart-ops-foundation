@@ -122,7 +122,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalation_log entries are append-only', () => {
-    const t = createInternalTicket(E, baseTicket('electrical', 'critical'));
+    createInternalTicket(E, baseTicket('electrical', 'critical'));
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() };
     localStorage.setItem(`erp_maintainpro_internal_ticket_${E}`, JSON.stringify(list));
