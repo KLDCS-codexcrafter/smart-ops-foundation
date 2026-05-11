@@ -107,3 +107,32 @@ describe('Inbound guards', () => {
     expect(r.reason).toBeNull();
   });
 });
+
+// === A.16b.T1 · Additional bridge shape coverage ===
+describe('Bridges.T1 · event shapes', () => {
+  it('emitMaintenanceEquipmentDown carries ISO emitted_at timestamp', () => {
+    const ev = emitMaintenanceEquipmentDown('eqT1', 'Pump', 'siteT1', 'critical', 80, '2026-06-01');
+    expect(ev.type).toBe('maintenance:equipment.down');
+    expect(ev.equipment_id).toBe('eqT1');
+    expect(ev.equipment_name).toBe('Pump');
+    expect(ev.site_id).toBe('siteT1');
+    expect(ev.capacity_impact_pct).toBe(80);
+    expect(typeof ev.emitted_at).toBe('string');
+    expect(new Date(ev.emitted_at).toString()).not.toBe('Invalid Date');
+  });
+  it('emitSparePartReorderRequired returns recommended_order_qty + ISO timestamp', () => {
+    const ev = emitSparePartReorderRequired('spareT1', 12, 4, 200);
+    expect(ev.type).toBe('maintenance:spare.reorder_required');
+    expect(ev.spare_id).toBe('spareT1');
+    expect(ev.current_velocity).toBe(12);
+    expect(ev.historical_median).toBe(4);
+    expect(ev.recommended_order_qty).toBe(200);
+    expect(new Date(ev.emitted_at).toString()).not.toBe('Invalid Date');
+  });
+  it('emitMaintenanceEquipmentRestored zeroes capacity_impact_pct', () => {
+    const ev = emitMaintenanceEquipmentRestored('eqT1', 'Pump', null);
+    expect(ev.type).toBe('maintenance:equipment.restored');
+    expect(ev.capacity_impact_pct).toBe(0);
+    expect(ev.site_id).toBeNull();
+  });
+});
