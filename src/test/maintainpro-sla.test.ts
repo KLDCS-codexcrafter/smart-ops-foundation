@@ -98,7 +98,7 @@ describe('Ticket state machine', () => {
 
 describe('3-level escalation', () => {
   it('escalates L1 when ack SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     // backdate created_at to simulate elapsed time
     const list = listInternalTickets(E);
     list[0] = { ...list[0], created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() };
