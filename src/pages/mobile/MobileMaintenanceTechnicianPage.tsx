@@ -52,18 +52,21 @@ export default function MobileMaintenanceTechnicianPage(): JSX.Element {
       </div>
 
       <section>
-        <div className="text-xs text-muted-foreground mb-2">Capture (available at A.17)</div>
+        <div className="text-xs text-muted-foreground mb-2">Capture</div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Capture Breakdown', Icon: AlertCircle },
-            { label: 'PM Tick-off', Icon: ClipboardCheck },
-            { label: 'Spares Issue', Icon: Package },
-            { label: 'Asset Photo', Icon: Camera },
+            { label: 'Capture Breakdown', Icon: AlertCircle, path: '/operix-go/breakdown-capture' },
+            { label: 'PM Tick-off', Icon: ClipboardCheck, path: '/operix-go/pm-tickoff-capture' },
+            { label: 'Spares Issue', Icon: Package, path: '/operix-go/spares-issue-capture' },
+            { label: 'Asset Photo', Icon: Camera, path: '/operix-go/asset-photo-capture' },
           ].map((t) => (
-            <Card key={t.label} className="p-4 opacity-60 cursor-not-allowed">
-              <t.Icon className="h-5 w-5 text-muted-foreground mb-2" />
+            <Card
+              key={t.label}
+              className="p-4 cursor-pointer hover:bg-accent/40"
+              onClick={() => navigate(t.path)}
+            >
+              <t.Icon className="h-5 w-5 text-primary mb-2" />
               <div className="text-sm font-medium">{t.label}</div>
-              <div className="text-xs text-muted-foreground">Available at A.17</div>
             </Card>
           ))}
         </div>

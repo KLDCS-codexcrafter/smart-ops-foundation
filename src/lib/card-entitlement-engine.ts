@@ -80,7 +80,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('qualicheck'),     // active per α-d-2 AC#11 · Q-LOCK-9a · D-NEW-BB (T2-fix) · D-NEW-CE
     one('gateflow'),     // active per Phase 1.A.1 (3 sub-sprints closed)
     one('production'),   // active per A.2.b D-NEW-T
-    one('maintainpro', 'locked'),
+    one('maintainpro'),  // A.17 STATUS FLIP · MOAT #23 banks · matches A.13 EngineeringX + A.15a SiteX precedent
     one('requestx', 'locked'),
     one('frontdesk', 'locked'),
     one('servicedesk', 'locked'),

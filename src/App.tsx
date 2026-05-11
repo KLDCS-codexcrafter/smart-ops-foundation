@@ -134,6 +134,11 @@ const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDP
 const MobileSiteSnagCapture = lazy(() => import('./components/mobile/MobileSiteSnagCapture'));
 const MobileSiteSafetyIncidentCapture = lazy(() => import('./components/mobile/MobileSiteSafetyIncidentCapture'));
 const MobileSiteMaterialIssueCapture = lazy(() => import('./components/mobile/MobileSiteMaterialIssueCapture'));
+// A.17 · 4 MaintainPro mobile captures (OOB-M9 5-step pattern)
+const MobileBreakdownCapture = lazy(() => import('./components/mobile/MobileBreakdownCapture'));
+const MobilePMTickoffCapture = lazy(() => import('./components/mobile/MobilePMTickoffCapture'));
+const MobileSparesIssueCapture = lazy(() => import('./components/mobile/MobileSparesIssueCapture'));
+const MobileAssetPhotoCapture = lazy(() => import('./components/mobile/MobileAssetPhotoCapture'));
 const SalesInvoicePrint = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoicePrint'));
 const ReceiptPrint = lazy(() => import('./pages/erp/accounting/vouchers/ReceiptPrint').then(m => ({ default: m.ReceiptPrintPanel })));
 const PaymentPrint = lazy(() => import('./pages/erp/accounting/vouchers/PaymentPrint').then(m => ({ default: m.PaymentPrintPanel })));
@@ -377,6 +382,10 @@ const App = () => (
               <Route path="/operix-go/site-snag" element={<P><MobileSiteSnagCapture /></P>} />
               <Route path="/operix-go/site-safety" element={<P><MobileSiteSafetyIncidentCapture /></P>} />
               <Route path="/operix-go/site-material-issue" element={<P><MobileSiteMaterialIssueCapture /></P>} />
+              <Route path="/operix-go/breakdown-capture" element={<P><MobileBreakdownCapture /></P>} />
+              <Route path="/operix-go/pm-tickoff-capture" element={<P><MobilePMTickoffCapture /></P>} />
+              <Route path="/operix-go/spares-issue-capture" element={<P><MobileSparesIssueCapture /></P>} />
+              <Route path="/operix-go/asset-photo-capture" element={<P><MobileAssetPhotoCapture /></P>} />
               <Route path="/prudent360" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
                   <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
