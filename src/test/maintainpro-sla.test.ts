@@ -111,7 +111,7 @@ describe('3-level escalation', () => {
   });
 
   it('escalates to L3 when 2× resolution SLA elapsed', () => {
-    const t = createInternalTicket(E, baseTicket('safety', 'critical'));
+    createInternalTicket(E, baseTicket('safety', 'critical'));
     const list = listInternalTickets(E);
     // 2× resolution_hours (2h) = 4h elapsed minimum; we use 10h to be safe
     list[0] = { ...list[0], created_at: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString() };
