@@ -52,3 +52,19 @@ export function emitSnagRaisedSevere(event: SnagRaisedEvent): void {
     window.dispatchEvent(new CustomEvent('sitex:snag.raised.severe', { detail: event }));
   }
 }
+
+// ============================================================================
+// A.15b WIRED · Safety Incident high/critical auto-escalation (Q-LOCK-5a)
+// ============================================================================
+
+import type { SafetyIncidentEscalationEvent } from '@/types/sitex';
+
+export function emitSafetyIncidentEscalate(event: SafetyIncidentEscalationEvent): void {
+  // [JWT] Phase 2: direct ncr-engine.createNCR() call + dashboard alert badge
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('sitex:safety.incident.escalate', { detail: event }));
+    window.dispatchEvent(new CustomEvent('sitex:dashboard.alert', {
+      detail: { type: 'safety', site_id: event.site_id, severity: event.severity },
+    }));
+  }
+}
