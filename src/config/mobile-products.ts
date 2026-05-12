@@ -29,4 +29,12 @@ export const MOBILE_PRODUCTS: MobileProductEntry[] = [
     displayName: 'MaintainPro Technician',
     icon: 'wrench',
   },
+  // C.1a · ServiceDesk · D-NEW-CV 3rd consumer · Sarathi REUSE
+  {
+    id: 'servicedesk',
+    role: 'service_engineer',
+    landingPath: '/operix-go/service-engineer',
+    displayName: 'ServiceDesk Engineer',
+    icon: 'headset',
+  },
 ];
