@@ -151,22 +151,16 @@ export const DEFAULT_SLA_MATRIX_SETTINGS: SLAMatrixSettings = {
       severity: sev,
       response_hours: sev === 'sev1_critical' ? 2 : sev === 'sev2_high' ? 4 : sev === 'sev3_medium' ? 8 : 24,
       resolution_hours: sev === 'sev1_critical' ? 8 : sev === 'sev2_high' ? 24 : sev === 'sev3_medium' ? 48 : 96,
-      flash_timer_minutes: sev === 'sev1_critical' ? 15 : sev === 'sev2_high' ? 30 : 60,
+      flash_timer_minutes: sev === 'sev1_critical' ? 15 : sev === 'sev2_high' ? 30 : sev === 'sev3_medium' ? 60 : 120,
     })),
   ),
 };
 
 export const DEFAULT_TELLICALLER_TRIGGER_SETTINGS: TellicallerTriggerSettings = {
   triggers: [
-    {
-      trigger_id: 'tc-renewal-90',
-      trigger_name: 'Renewal 90-day window',
-      trigger_at_days: 90,
-      push_to_queue_threshold: 50,
-      script_id: 'script-renewal-1',
-      assignment_rule: 'territory',
-      language_pref: 'hi',
-    },
+    { trigger_id: 'tc-renewal-90', trigger_name: 'Renewal 90-day window', trigger_at_days: 90, push_to_queue_threshold: 50, script_id: 'script-renewal-1', assignment_rule: 'territory', language_pref: 'hi' },
+    { trigger_id: 'tc-renewal-60', trigger_name: 'Renewal 60-day window', trigger_at_days: 60, push_to_queue_threshold: 60, script_id: 'script-renewal-2', assignment_rule: 'territory', language_pref: 'hi' },
+    { trigger_id: 'tc-renewal-30', trigger_name: 'Renewal 30-day window', trigger_at_days: 30, push_to_queue_threshold: 70, script_id: 'script-renewal-3', assignment_rule: 'oem_specialist', language_pref: 'hi' },
   ],
 };
 
@@ -191,6 +185,61 @@ function writeSettings<T>(key: string, value: T): void {
   }
 }
 
+// ============================================================================
+// AUDIT LOG (FR-39 §B audit immutability) · all updates write to ${NS}_audit_<entity>
+// ============================================================================
+interface CCSettingsAuditEntry {
+  at: string;
+  by: string;
+  setting_group: string;
+  before: unknown;
+  after: unknown;
+}
+const ccAuditKey = (e: string): string => `${NS}_audit_${e}`;
+function appendCCSettingsAudit(
+  entityCode: string,
+  by: string,
+  setting_group: string,
+  before: unknown,
+  after: unknown,
+): void {
+  try {
+    const key = ccAuditKey(entityCode);
+    const log = JSON.parse(localStorage.getItem(key) ?? '[]') as CCSettingsAuditEntry[];
+    log.push({ at: new Date().toISOString(), by, setting_group, before, after });
+    localStorage.setItem(key, JSON.stringify(log));
+  } catch { /* quota silent */ }
+}
+
+// ============================================================================
+// VALIDATORS (FR-39 §B data integrity)
+// ============================================================================
+export function validateRiskWeights(w: RiskFactorWeights): { valid: boolean; sum: number; error?: string } {
+  const sum = w.payment_history + w.expiry_proximity + w.contract_value + w.service_status + w.customer_activity;
+  if (sum < 95 || sum > 105) {
+    return { valid: false, sum, error: `Risk factor weights must sum to ~100 (got ${sum})` };
+  }
+  return { valid: true, sum };
+}
+export function validateRenewalCascade(s: RenewalCascadeSettings): { valid: boolean; error?: string } {
+  if (!(s.first_reminder_days > s.second_reminder_days && s.second_reminder_days > s.third_reminder_days && s.third_reminder_days > s.final_reminder_days)) {
+    return { valid: false, error: 'Renewal cascade days must be strictly descending (first > second > third > final)' };
+  }
+  if (s.final_reminder_days < 1) return { valid: false, error: 'Final reminder must be ≥ 1 day' };
+  return { valid: true };
+}
+export function validateSLAMatrix(s: SLAMatrixSettings): { valid: boolean; error?: string } {
+  for (const cell of s.matrix) {
+    if (cell.response_hours <= 0 || cell.resolution_hours <= 0 || cell.flash_timer_minutes <= 0) {
+      return { valid: false, error: `SLA cell ${cell.call_type_code}/${cell.severity} has non-positive value` };
+    }
+    if (cell.response_hours > cell.resolution_hours) {
+      return { valid: false, error: `SLA cell ${cell.call_type_code}/${cell.severity}: response (${cell.response_hours}h) > resolution (${cell.resolution_hours}h)` };
+    }
+  }
+  return { valid: true };
+}
+
 // Group 1 · Risk
 export function getRiskEngineSettings(entityCode: string): RiskEngineSettings {
   // [JWT] GET /api/cc/compliance-settings/risk
@@ -201,10 +250,15 @@ export function updateRiskEngineSettings(
   updates: Partial<RiskEngineSettings>,
   updated_by: string,
 ): RiskEngineSettings {
-  void updated_by;
-  const next = { ...getRiskEngineSettings(entityCode), ...updates };
+  const before = getRiskEngineSettings(entityCode);
+  const next = { ...before, ...updates };
+  if (updates.risk_factor_weights) {
+    const v = validateRiskWeights(next.risk_factor_weights);
+    if (!v.valid) throw new Error(v.error);
+  }
   // [JWT] PUT /api/cc/compliance-settings/risk
   writeSettings(riskKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'risk_engine', before, next);
   return next;
 }
 
@@ -217,9 +271,10 @@ export function updateCommissionRateSettings(
   updates: Partial<CommissionRateSettings>,
   updated_by: string,
 ): CommissionRateSettings {
-  void updated_by;
-  const next = { ...getCommissionRateSettings(entityCode), ...updates };
+  const before = getCommissionRateSettings(entityCode);
+  const next = { ...before, ...updates };
   writeSettings(commissionKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'commission', before, next);
   return next;
 }
 
@@ -232,9 +287,12 @@ export function updateRenewalCascadeSettings(
   updates: Partial<RenewalCascadeSettings>,
   updated_by: string,
 ): RenewalCascadeSettings {
-  void updated_by;
-  const next = { ...getRenewalCascadeSettings(entityCode), ...updates };
+  const before = getRenewalCascadeSettings(entityCode);
+  const next = { ...before, ...updates };
+  const v = validateRenewalCascade(next);
+  if (!v.valid) throw new Error(v.error);
   writeSettings(renewalKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'renewal_cascade', before, next);
   return next;
 }
 
@@ -247,9 +305,10 @@ export function updateServiceTierSettings(
   updates: Partial<ServiceTierSettings>,
   updated_by: string,
 ): ServiceTierSettings {
-  void updated_by;
-  const next = { ...getServiceTierSettings(entityCode), ...updates };
+  const before = getServiceTierSettings(entityCode);
+  const next = { ...before, ...updates };
   writeSettings(serviceTierKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'service_tier', before, next);
   return next;
 }
 
@@ -262,9 +321,10 @@ export function updateEmailTemplateSettings(
   updates: Partial<EmailTemplateSettings>,
   updated_by: string,
 ): EmailTemplateSettings {
-  void updated_by;
-  const next = { ...getEmailTemplateSettings(entityCode), ...updates };
+  const before = getEmailTemplateSettings(entityCode);
+  const next = { ...before, ...updates };
   writeSettings(emailTemplateKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'email_template', before, next);
   return next;
 }
 
@@ -277,9 +337,12 @@ export function updateSLAMatrixSettings(
   updates: Partial<SLAMatrixSettings>,
   updated_by: string,
 ): SLAMatrixSettings {
-  void updated_by;
-  const next = { ...getSLAMatrixSettings(entityCode), ...updates };
+  const before = getSLAMatrixSettings(entityCode);
+  const next = { ...before, ...updates };
+  const v = validateSLAMatrix(next);
+  if (!v.valid) throw new Error(v.error);
   writeSettings(slaMatrixKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'sla_matrix', before, next);
   return next;
 }
 
@@ -292,8 +355,9 @@ export function updateTellicallerTriggerSettings(
   updates: Partial<TellicallerTriggerSettings>,
   updated_by: string,
 ): TellicallerTriggerSettings {
-  void updated_by;
-  const next = { ...getTellicallerTriggerSettings(entityCode), ...updates };
+  const before = getTellicallerTriggerSettings(entityCode);
+  const next = { ...before, ...updates };
   writeSettings(tellicallerKey(entityCode), next);
+  appendCCSettingsAudit(entityCode, updated_by, 'tellicaller', before, next);
   return next;
 }
