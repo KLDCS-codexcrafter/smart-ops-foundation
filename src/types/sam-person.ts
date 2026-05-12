@@ -5,15 +5,26 @@
  */
 
 // D-224 (Sprint T-Phase-1.1.2-c): added 'project_manager' role
-export type SAMPersonType = 'salesman' | 'agent' | 'broker' | 'receiver' | 'reference' | 'project_manager';
+// C.1a (Sprint T-Phase-1.C.1a · v2): added 'service_engineer' + 'service_call_center_agent' · Sarathi REUSE · D-NEW-DI POSSIBLE 33rd
+export type SAMPersonType =
+  | 'salesman'
+  | 'agent'
+  | 'broker'
+  | 'receiver'
+  | 'reference'
+  | 'project_manager'
+  | 'service_engineer'
+  | 'service_call_center_agent';
 
 export const SAM_GROUP_CODE: Record<SAMPersonType, string> = {
-  salesman:        'SLSM',
-  agent:           'AGNT',
-  broker:          'BRKR',
-  receiver:        'RCVR',
-  reference:       'REFR',
-  project_manager: 'MGMT',
+  salesman:                  'SLSM',
+  agent:                     'AGNT',
+  broker:                    'BRKR',
+  receiver:                  'RCVR',
+  reference:                 'REFR',
+  project_manager:           'MGMT',
+  service_engineer:          'SVCE',
+  service_call_center_agent: 'SVCC',
 };
 
 export type CommissionMethod = 'item_amount' | 'item_qty' | 'both' | 'slab_based' | 'net_margin';

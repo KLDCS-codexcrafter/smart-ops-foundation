@@ -21,6 +21,8 @@ export type MobileAuditRole =
   | 'customer'
   | 'site_engineer'   // A.15b.T1 · Q-LOCK-7a · 4 captures consumer
   | 'site_manager'    // A.15b.T1 · Q-LOCK-7a · A.16+ approval workflows
+  | 'service_engineer'           // C.1a · Sarathi REUSE
+  | 'service_call_center_agent'  // C.1a · Three-Layer Layer 3
   | 'unknown';
 
 interface MobileAuditInput {

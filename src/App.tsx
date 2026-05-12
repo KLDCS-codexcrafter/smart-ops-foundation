@@ -127,6 +127,8 @@ const EngineeringXPage = lazy(() => import('./pages/erp/engineeringx/Engineering
 const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 // Sprint T-Phase-1.A.16a · MaintainPro Foundation (Masters) · 11th card on Shell
 const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPage'));
+// Sprint T-Phase-1.C.1a · ServiceDesk Masters Foundation · 12th card on Shell
+const ServiceDeskPage = lazy(() => import('./pages/erp/servicedesk/ServiceDeskPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
 // A.15b · 4 mobile SiteX captures
@@ -482,6 +484,8 @@ const App = () => (
               <Route path="/erp/sitex" element={<P><SiteXPage /></P>} />
               {/* Sprint T-Phase-1.A.16a · MaintainPro Foundation Masters · 11th card on Shell */}
               <Route path="/erp/maintainpro" element={<P><MaintainProPage /></P>} />
+              {/* Sprint T-Phase-1.C.1a · ServiceDesk Masters Foundation · 12th card on Shell */}
+              <Route path="/erp/servicedesk" element={<P><ServiceDeskPage /></P>} />
               <Route path="/erp/fincore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/fincore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/fincore/payment-print" element={<P><PaymentPrint /></P>} />
