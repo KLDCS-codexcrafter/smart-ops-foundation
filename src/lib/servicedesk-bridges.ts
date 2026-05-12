@@ -236,7 +236,7 @@ export function consumeAMCEnquiryFromCustomerHub(
 // 10 OUTBOUND bridges · PLANNED for C.1b-C.1f activation (signatures only)
 // ============================================================================
 
-/* C.1b · emitAMCInvoiceToFineCore       — AMC billing → FineCore voucher post */
+/* C.1b · emitAMCInvoiceToFinCore       — AMC billing → FinCore voucher post */
 /* C.1b · emitCommissionToPeoplePay      — Commission accrual → PeoplePay payroll */
 /* C.1b · emitTellicallerWorkItem        — D-NEW-DJ Layer 2 first execution · POSSIBLE 32nd */
 /* C.1b · emitSalesmanActivityToSalesX   — Engineer activity → Sales activity log */
