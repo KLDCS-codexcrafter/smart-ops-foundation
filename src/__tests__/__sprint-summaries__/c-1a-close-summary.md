@@ -85,6 +85,18 @@
 - 2 small downstream type fixes were required after the SAMPersonType union extension (`SalesXHub.tsx` and `SAMPersonMaster.tsx` had non-exhaustive `Record<SAMPersonType,…>` literal maps that needed the two new keys); also `MobileAuditRole` and `MobileLogin.tsx` `ROLE_TO_CARD_ID` needed the new resolved roles. All are purely additive at downstream call sites; no business logic changed.
 - 14/14 ACs satisfied; no T-fix dockets recommended.
 
+## T1 Post-close fix (audit cycle #43)
+
+| Item | Detail |
+|---|---|
+| File | `src/lib/servicedesk-bridges.ts` line 239 |
+| Issue | "FineCore" → "FinCore" in C.1b planned bridge comment (D-NEW-CM H.1 naming compliance) |
+| Diff | 1 line modified · 2 chars replaced (e→nothing twice) |
+| TSC | 0 ✓ |
+| ESLint | 0 ✓ |
+| Vitest | 910/910 · 125 files ✓ |
+| docvault-routing.test.ts | PASSING (8/8) ✓ |
+
 ## ACs satisfied
 
 | AC# | Status |
