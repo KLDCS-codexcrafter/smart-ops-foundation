@@ -42,10 +42,12 @@ interface Props {
 const TYPE_LABEL: Record<SAMPersonType, string> = {
   salesman: 'Salesman', agent: 'Agent', broker: 'Broker',
   receiver: 'Receiver', reference: 'Reference', project_manager: 'Project Manager',
+  service_engineer: 'Service Engineer', service_call_center_agent: 'Service Call Center Agent',
 };
 const GROUP_LABEL: Record<string, string> = {
   SLSM: 'Sales Man', AGNT: 'Agent', BRKR: 'Broker',
   RCVR: 'Receiver', REFR: 'Reference', MGMT: 'Management',
+  SVCE: 'Service Engineer', SVCC: 'Service Call Center',
 };
 
 type View = 'list' | 'form';
