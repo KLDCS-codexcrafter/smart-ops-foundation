@@ -20,6 +20,8 @@ export type ResolvedRole =
   | 'sales_manager'
   | 'distributor'
   | 'customer'
+  | 'service_engineer'           // C.1a · Sarathi REUSE
+  | 'service_call_center_agent'  // C.1a · Three-Layer Layer 3
   | 'unknown';
 
 export interface CustomerLite {
@@ -101,6 +103,8 @@ export function roleFromPersonCode(personCode: string): ResolvedRole {
   if (upper.startsWith('TC-')) return 'telecaller';
   if (upper.startsWith('SUP-')) return 'supervisor';
   if (upper.startsWith('MGR-')) return 'sales_manager';
+  if (upper.startsWith('SVCE-')) return 'service_engineer';            // C.1a
+  if (upper.startsWith('SVCC-')) return 'service_call_center_agent';   // C.1a
   return 'unknown';
 }
 
