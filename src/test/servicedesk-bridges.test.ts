@@ -34,13 +34,16 @@ describe('servicedesk-bridges · 9 INBOUND consumers', () => {
     });
     expect(result).toBeNull();
   });
-  it('consumes SiteX commissioning handoff', () => {
+  it('consumes SiteX commissioning handoff with entity/branch from event', () => {
     const rec = consumeSiteXCommissioningForAMC({
-      type: 'sitex:commissioning.handoff', site_id: 'S-1', customer_id: 'C-1',
-      capex_value_paise: 5000000, equipment_name: 'AC-1', installation_date: '2026-05-01',
-      warranty_end: '2027-05-01', oem_name: 'Daikin', emitted_at: at,
+      type: 'sitex:commissioning.handoff', site_id: 'S-1',
+      entity_id: 'OPRX', branch_id: 'BR-MUM',
+      customer_id: 'C-1', capex_value_paise: 5000000, equipment_name: 'AC-1',
+      installation_date: '2026-05-01', warranty_end: '2027-05-01', oem_name: 'Daikin', emitted_at: at,
     });
     expect(rec.oem_name).toBe('Daikin');
+    expect(rec.entity_id).toBe('OPRX');
+    expect(rec.branch_id).toBe('BR-MUM');
   });
   it('ack MaintainPro escalation', () => {
     const r = consumeInternalTicketEscalation({

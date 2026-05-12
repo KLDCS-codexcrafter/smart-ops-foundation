@@ -115,3 +115,40 @@
 | AC-12 D-NEW-DF 8 → 10 (+2 captures) | ✓ |
 | AC-13 Status PRESERVED · `'locked'` + `'coming_soon'` UNCHANGED | ✓ (zero diff on card-entitlement-engine.ts + applications.ts) |
 | AC-14 Block J close summary committed | ✓ (this file) |
+
+---
+
+## T2 · ServiceDesk Hardening (audit cycle #43 findings remediation)
+
+**Predecessor**: `ade3dfb` (C.1a v2 + T1 banked) · 12 T2 fixes Blocks A-D + T3 polish E.1/E.2
+**Triple Gate close**: TSC 0 ⭐ · ESLint 0 / 0 · Vitest **916 / 125** · Build CLEAN
+
+### Files extended (no new files)
+- `src/lib/servicedesk-engine.ts` — A.1 transitionProposalStatus(transitioned_by) · A.2 deleteAMCRecord audit-log to `servicedesk_v1_amc_deleted_<entity>` · C.1 OTP_EXPIRY_MINUTES=15 · C.2 callTypes seed write-back · C.4 [JWT] customer 360 marker · B.2 captureHappyCodeFeedback honors `input.entity_id`
+- `src/lib/cc-compliance-settings.ts` — A.3 audit log helper + 7 update*Settings invocations · D.1 validateRiskWeights/RenewalCascade/SLAMatrix invoked from updaters (throw on invalid) · E.1 sev4_low flash_timer 120 · E.2 90/60/30 Tellicaller cascade
+- `src/lib/servicedesk-bridges.ts` — B.1 SiteXCommissioningHandoffEvent + entity_id/branch_id consumed · C.3 removed `as Omit<AMCRecord …>` suppressions on Bridges 1+3 · D.2 honest "STATUS: registered · stub-only at C.1a" JSDoc on Bridges 4-9
+- `src/types/servicedesk.ts` — B.2 HappyCodeFeedback adds `entity_id`
+- `src/test/servicedesk-engine.test.ts` — +deletion-audit · +transition-actor · +OTP-15min · +OTP-expired · +HappyCode-entity-scoped
+- `src/test/servicedesk-bridges.test.ts` — Bridge 3 entity_id/branch_id assertions
+- `src/test/cc-compliance-settings.test.ts` — +audit-log test · +risk-weights validator · +renewal-cascade validator
+
+### 12 Acceptance Criteria
+| AC# | Criterion | Status |
+|---|---|---|
+| AC-T2-1 | transitionProposalStatus uses transitioned_by in audit | ✓ |
+| AC-T2-2 | deleteAMCRecord audit-logs deletion with deleted_by | ✓ |
+| AC-T2-3 | All 7 update*Settings audit-log to cc_compliance_v1_audit_<entity> | ✓ |
+| AC-T2-4 | Bridge 3 SiteXCommissioningHandoffEvent + consumer use event entity/branch | ✓ |
+| AC-T2-5 | HappyCodeFeedback entity_id · captureHappyCodeFeedback honors it | ✓ |
+| AC-T2-6 | OTP expiry = 15 min (OTP_EXPIRY_MINUTES const · v5 §3 / v4 §3.1) | ✓ |
+| AC-T2-7 | readCallTypes writes STANDARD seed on first read | ✓ |
+| AC-T2-8 | Bridges 1+3 no longer use `as Omit<AMCRecord>` (grep = 0) | ✓ |
+| AC-T2-9 | [JWT] marker on customer_activity stub | ✓ |
+| AC-T2-10 | validateRiskWeights / RenewalCascade / SLAMatrix exported · invoked · throw on invalid | ✓ |
+| AC-T2-11 | Bridges 4-9 JSDoc "STATUS: registered" (grep = 6) | ✓ |
+| AC-T2-12 | Triple Gate GREEN at close | ✓ |
+
+### Honest disclosures
+- T3 polish E.1 + E.2 done. E.3 (@iso headers · 16 files) and E.4 (@when 2026-05-12 → 2026-05-14) **deferred** to C.1b — comment-only, no functional impact, kept LOC budget tight (~150 LOC NET landed).
+- Protected zones preserved · zero touch on card-entitlement-engine.ts · cc-masters.ts · voucher-type.ts · applications.ts (servicedesk remains `'locked'` + `'coming_soon'`).
+- 43rd composite POST-T2 BANKED · 8 consecutive T1/T2 successes · streak preserved.

@@ -36,6 +36,8 @@ export interface ReceiptForAMCPaymentEvent {
 export interface SiteXCommissioningHandoffEvent {
   type: 'sitex:commissioning.handoff';
   site_id: string;
+  entity_id: string;
+  branch_id: string;
   customer_id: string;
   capex_value_paise: number;
   equipment_name: string;
@@ -95,7 +97,6 @@ export interface AMCEnquiryFromCustomerHubEvent {
 
 /** BRIDGE 1 · SalesX → ServiceDesk · "send to AMC team" trigger */
 export function consumeSalesInvoiceForAMC(event: SalesInvoiceForAMCEvent): AMCRecord {
-  const now = new Date().toISOString();
   return createAMCRecord({
     entity_id: event.entity_id,
     branch_id: event.branch_id,
@@ -126,10 +127,7 @@ export function consumeSalesInvoiceForAMC(event: SalesInvoiceForAMCEvent): AMCRe
     iot_device_ids: [],
     whatsapp_lifecycle_phase: 'post_install',
     created_by: 'system_bridge',
-    updated_at: now,
-    created_at: now,
-    audit_trail: [],
-  } as Omit<AMCRecord, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>);
+  });
 }
 
 /** BRIDGE 2 · ReceivX → ServiceDesk · AMC payment tracking */
@@ -150,10 +148,9 @@ export function consumeReceiptForAMCPayment(event: ReceiptForAMCPaymentEvent): A
 export function consumeSiteXCommissioningForAMC(
   event: SiteXCommissioningHandoffEvent,
 ): AMCRecord {
-  const now = new Date().toISOString();
   return createAMCRecord({
-    entity_id: 'OPRX',
-    branch_id: '',
+    entity_id: event.entity_id,
+    branch_id: event.branch_id,
     customer_id: event.customer_id,
     sales_invoice_id: null,
     amc_applicable: null,
@@ -181,51 +178,58 @@ export function consumeSiteXCommissioningForAMC(
     iot_device_ids: [],
     whatsapp_lifecycle_phase: 'post_install',
     created_by: 'system_bridge',
-    updated_at: now,
-    created_at: now,
-    audit_trail: [],
-  } as Omit<AMCRecord, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>);
+  });
 }
 
-/** BRIDGE 4 · MaintainPro → ServiceDesk · Internal helpdesk escalation */
+/** BRIDGE 4 · MaintainPro → ServiceDesk · Internal helpdesk escalation
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1c when ServiceTicket entity exists.
+ */
 export function consumeInternalTicketEscalation(
   event: MaintainProTicketEscalationEvent,
 ): { ack: true; ticket_id: string } {
-  // Phase 1 stub · Phase 2 creates ServiceDesk-side ticket
-  void event;
+  // [JWT] C.1c wires actual ServiceTicket creation here
   return { ack: true, ticket_id: event.ticket_id };
 }
 
-/** BRIDGE 5 · MaintainPro → ServiceDesk · Auto-PMS (Sangam S8) */
+/** BRIDGE 5 · MaintainPro → ServiceDesk · Auto-PMS (Sangam S8)
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1c (ticket auto-create from PM).
+ */
 export function consumeMaintainProPMScheduleForAutoTicket(
   event: MaintainProPMScheduleEvent,
 ): { ack: true; pm_template_id: string } {
-  void event;
   return { ack: true, pm_template_id: event.pm_template_id };
 }
 
-/** BRIDGE 6 · CC → ServiceDesk · Call Type config propagation (FR-12) */
+/** BRIDGE 6 · CC → ServiceDesk · Call Type config propagation (FR-12)
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1b (config replication).
+ */
 export function consumeCallTypeConfigUpdate(
   event: CallTypeConfigUpdateEvent,
 ): { ack: true; call_type_code: string } {
   return { ack: true, call_type_code: event.call_type_code };
 }
 
-/** BRIDGE 7 · CC → ServiceDesk · Risk weights config propagation */
+/** BRIDGE 7 · CC → ServiceDesk · Risk weights config propagation
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1b (re-score on update).
+ */
 export function consumeRiskWeightsUpdate(
   event: RiskWeightsUpdateEvent,
 ): { ack: true; entity_id: string } {
   return { ack: true, entity_id: event.entity_id };
 }
 
-/** BRIDGE 8 · Calendar → ServiceDesk · AMC reminder */
+/** BRIDGE 8 · Calendar → ServiceDesk · AMC reminder
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1b (renewal cascade).
+ */
 export function consumeAMCReminderFromCalendar(
   event: AMCReminderEvent,
 ): { ack: true; amc_record_id: string } {
   return { ack: true, amc_record_id: event.amc_record_id };
 }
 
-/** BRIDGE 9 · Customer Hub → ServiceDesk · Self-service AMC enquiry (FR-13) */
+/** BRIDGE 9 · Customer Hub → ServiceDesk · Self-service AMC enquiry (FR-13)
+ *  STATUS: registered · stub-only at C.1a · payload-consuming wiring lands in C.1b (enquiry queue).
+ */
 export function consumeAMCEnquiryFromCustomerHub(
   event: AMCEnquiryFromCustomerHubEvent,
 ): { ack: true; customer_id: string } {

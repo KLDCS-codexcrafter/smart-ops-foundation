@@ -224,6 +224,7 @@ export type FeedbackSource = 'otp_channel' | 'email_channel' | 'verbal_channel';
 
 export interface HappyCodeFeedback {
   id: string;
+  entity_id: string;
   ticket_id: string;
   customer_id: string;
   source: FeedbackSource;

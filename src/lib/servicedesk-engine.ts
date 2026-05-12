@@ -136,10 +136,15 @@ export function deleteAMCRecord(
   deleted_by: string,
   entity_id: string = DEFAULT_ENTITY,
 ): boolean {
-  void deleted_by;
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
+  const target = list.find((r) => r.id === id);
+  if (!target) return false;
+  // Audit-log the deletion BEFORE removing · immutable deletion log (FR-39 §B)
+  const finalAudit = appendAudit(target.audit_trail, deleted_by, 'deleted');
+  const delLogKey = `servicedesk_v1_amc_deleted_${entity_id}`;
+  const delLog = readJson<AMCRecord>(delLogKey);
+  writeJson(delLogKey, [...delLog, { ...target, audit_trail: finalAudit }]);
   const next = list.filter((r) => r.id !== id);
-  if (next.length === list.length) return false;
   // [JWT] DELETE /api/servicedesk/amc-records/:id
   writeJson(amcRecordKey(entity_id), next);
   return true;
@@ -200,6 +205,7 @@ export function createAMCProposal(
 export function transitionProposalStatus(
   proposal_id: string,
   new_status: AMCProposalStatus,
+  transitioned_by: string,
   reason?: string,
   entity_id: string = DEFAULT_ENTITY,
 ): AMCProposal {
@@ -218,7 +224,7 @@ export function transitionProposalStatus(
   const next: AMCProposal = {
     ...prev,
     ...updates,
-    audit_trail: appendAudit(prev.audit_trail, prev.created_by, `transition_to_${new_status}`, reason),
+    audit_trail: appendAudit(prev.audit_trail, transitioned_by, `transition_to_${new_status}`, reason),
   };
   list[idx] = next;
   // [JWT] PUT /api/servicedesk/amc-proposals/:id/transition
@@ -305,11 +311,12 @@ function readCallTypes(entity: string): CallTypeConfiguration[] {
   try {
     const raw = localStorage.getItem(callTypeConfigurationKey(entity));
     if (raw) return JSON.parse(raw) as CallTypeConfiguration[];
+    // First-run seed · WRITE BACK so subsequent edits persist alongside seed (AC-T2-7)
+    localStorage.setItem(callTypeConfigurationKey(entity), JSON.stringify(STANDARD_CALL_TYPES));
+    return STANDARD_CALL_TYPES;
   } catch {
-    /* fallthrough */
+    return STANDARD_CALL_TYPES;
   }
-  // First-run seed
-  return STANDARD_CALL_TYPES;
 }
 
 export function getCallTypeConfiguration(
@@ -385,7 +392,7 @@ export function computeAMCRiskScore(
   // Factor 4 · service_status (active = lower risk)
   const serviceScore = record.status === 'active' ? 20 : 70;
   // Factor 5 · customer_activity (placeholder · would consume customer 360 in Phase 2)
-  const activityScore = 50;
+  const activityScore = 50;  // [JWT] Phase 2 wires customer 360° score from InsightX
 
   const total =
     (paymentScore * w.payment_history +
@@ -465,12 +472,14 @@ interface TicketOTPEntry {
   verified: boolean;
 }
 
+const OTP_EXPIRY_MINUTES = 15;  // v5 §3 / v4 §3.1 spec lock
+
 export function generateOTPForTicketClose(
   ticket_id: string,
   entity_id: string = DEFAULT_ENTITY,
 ): { otp: string; expires_at: string } {
   const otp = String(Math.floor(100000 + Math.random() * 900000));
-  const expires_at = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  const expires_at = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
   const list = readJson<TicketOTPEntry>(ticketOTPKey(entity_id));
   const next = list.filter((e) => e.ticket_id !== ticket_id);
   next.push({ ticket_id, otp, expires_at, verified: false });
@@ -506,9 +515,8 @@ export function captureHappyCodeFeedback(
     created_at: now,
     updated_at: now,
   };
-  const entity = DEFAULT_ENTITY;
-  const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity));
+  const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(input.entity_id));
   // [JWT] POST /api/servicedesk/happy-code
-  writeJson(happyCodeFeedbackKey(entity), [...list, feedback]);
+  writeJson(happyCodeFeedbackKey(input.entity_id), [...list, feedback]);
   return feedback;
 }

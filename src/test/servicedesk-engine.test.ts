@@ -1,7 +1,7 @@
 /**
- * Sprint T-Phase-1.C.1a · Block I.1 · ServiceDesk engine tests
+ * Sprint T-Phase-1.C.1a · Block I.1 · ServiceDesk engine tests · T2 hardened
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   createAMCRecord,
   getAMCRecord,
@@ -88,6 +88,16 @@ describe('servicedesk-engine · AMC Record CRUD', () => {
     expect(deleteAMCRecord(rec.id, 'auditor')).toBe(true);
     expect(getAMCRecord(rec.id)).toBeNull();
   });
+  it('deleteAMCRecord audit-logs deletion with deleted_by (T2 AC-T2-2)', () => {
+    const rec = createAMCRecord(baseAMCInput());
+    deleteAMCRecord(rec.id, 'auditor');
+    const delLog = JSON.parse(localStorage.getItem(`servicedesk_v1_amc_deleted_${ENTITY}`) ?? '[]');
+    expect(delLog.length).toBe(1);
+    expect(delLog[0].id).toBe(rec.id);
+    const last = delLog[0].audit_trail[delLog[0].audit_trail.length - 1];
+    expect(last.by).toBe('auditor');
+    expect(last.action).toBe('deleted');
+  });
 });
 
 describe('servicedesk-engine · AMC Applicability Decision', () => {
@@ -131,11 +141,13 @@ describe('servicedesk-engine · AMC Proposal lifecycle', () => {
       created_by: 'test',
     };
     const p = createAMCProposal(baseProp);
-    const sent = transitionProposalStatus(p.id, 'sent');
+    const sent = transitionProposalStatus(p.id, 'sent', 'actor-1');
     expect(sent.status).toBe('sent');
     expect(sent.sent_at).toBeTruthy();
-    const acc = transitionProposalStatus(p.id, 'accepted');
+    expect(sent.audit_trail[sent.audit_trail.length - 1].by).toBe('actor-1');
+    const acc = transitionProposalStatus(p.id, 'accepted', 'actor-2');
     expect(acc.accepted_at).toBeTruthy();
+    expect(acc.audit_trail[acc.audit_trail.length - 1].by).toBe('actor-2');
   });
 });
 
@@ -209,8 +221,9 @@ describe('servicedesk-engine · OTP gate', () => {
     generateOTPForTicketClose('T-2');
     expect(verifyOTPForTicketClose('T-2', '000000')).toBe(false);
   });
-  it('captures HappyCode feedback', () => {
+  it('captures HappyCode feedback honoring entity_id (T2 AC-T2-5)', () => {
     const fb = captureHappyCodeFeedback({
+      entity_id: ENTITY,
       ticket_id: 'T-3',
       customer_id: 'C-1',
       source: 'otp_channel',
@@ -225,5 +238,21 @@ describe('servicedesk-engine · OTP gate', () => {
       notes: '',
     });
     expect(fb.id).toMatch(/^happy_/);
+    const stored = JSON.parse(localStorage.getItem(`servicedesk_v1_happy_${ENTITY}`) ?? '[]');
+    expect(stored.length).toBe(1);
+  });
+  it('OTP expiry is 15 minutes per v5 §3 / v4 §3.1 (T2 AC-T2-6)', () => {
+    const before = Date.now();
+    const { expires_at } = generateOTPForTicketClose('T-EXPIRE-1');
+    const actual = new Date(expires_at).getTime();
+    expect(actual).toBeGreaterThanOrEqual(before + 14 * 60 * 1000);
+    expect(actual).toBeLessThanOrEqual(before + 16 * 60 * 1000);
+  });
+  it('OTP rejected after expiry', () => {
+    vi.useFakeTimers();
+    const { otp } = generateOTPForTicketClose('T-EXP-2');
+    vi.advanceTimersByTime(16 * 60 * 1000);
+    expect(verifyOTPForTicketClose('T-EXP-2', otp)).toBe(false);
+    vi.useRealTimers();
   });
 });
