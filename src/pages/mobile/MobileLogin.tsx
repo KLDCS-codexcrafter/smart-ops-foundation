@@ -81,6 +81,8 @@ const ROLE_TO_CARD_ID: Record<ResolvedRole, CardId> = {
   sales_manager: 'salesx',
   distributor: 'distributor-hub',
   customer: 'customer-hub',
+  service_engineer: 'servicedesk',
+  service_call_center_agent: 'servicedesk',
   unknown: 'customer-hub',
 };
 
