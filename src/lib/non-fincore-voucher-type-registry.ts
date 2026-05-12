@@ -145,6 +145,12 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFinCoreVoucherType[] = [
   { id: 'vt-dm-export', family: 'dispatch', display_name: 'Delivery Memo Export', prefix: 'DM', is_default: false, is_active: true },
   // Sprint T-Phase-1.2.6f-pre-1 · RequestX seeds (sibling addition · D-128 discipline preserved)
   ...REQUESTX_VOUCHER_TYPE_SEEDS,
+  // C.1a · ServiceDesk · 5 voucher type registrations
+  { id: 'vt-amc-invoice', family: 'amc_invoice', display_name: 'AMC Invoice', prefix: 'AMC/INV', is_default: true, is_active: true },
+  { id: 'vt-amc-proposal', family: 'sales_quote', display_name: 'AMC Proposal', prefix: 'AMC/PROP', is_default: false, is_active: true },
+  { id: 'vt-service-invoice', family: 'service_invoice', display_name: 'Service Invoice', prefix: 'SVC/INV', is_default: true, is_active: true },
+  { id: 'vt-oem-claim-cn', family: 'sales_invoice_memo', display_name: 'OEM Claim Credit Note', prefix: 'OEM/CN', is_default: false, is_active: true },
+  { id: 'vt-amc-receipt', family: 'sales_invoice_memo', display_name: 'AMC Receipt', prefix: 'AMC/RCT', is_default: false, is_active: true },
 ];
 
 /** Storage key (per-entity custom voucher types · entities can extend defaults). */
