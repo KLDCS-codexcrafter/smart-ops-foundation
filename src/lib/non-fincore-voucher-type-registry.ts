@@ -23,7 +23,10 @@ export type NonFinCoreVoucherFamily =
   | 'sales_sample'
   | 'sales_demo'
   | 'dispatch'
-  | 'request';
+  | 'request'
+  // C.1a · ServiceDesk · additive
+  | 'amc_invoice'
+  | 'service_invoice';
 
 /** Sprint 2.7-b · OOB-3 field rule per voucher type.
  *  Driven from Voucher Class Master · enforced at form save (mandatory at posted state · soft warn on draft per Q2-c). */
