@@ -10,7 +10,7 @@
  */
 
 import { createAMCRecord, updateAMCRecord } from './servicedesk-engine';
-import type { AMCRecord } from '@/types/servicedesk';
+import type { AMCRecord, TellicallerWorkItemEvent } from '@/types/servicedesk';
 
 // ============================================================================
 // Bridge event payload types
@@ -238,16 +238,205 @@ export function consumeAMCEnquiryFromCustomerHub(
 }
 
 // ============================================================================
-// 10 OUTBOUND bridges · PLANNED for C.1b-C.1f activation (signatures only)
+// C.1b · OUTBOUND bridge event payload types · 6 LIVE
+// ============================================================================
+export interface AMCInvoicePostToFinCoreEvent {
+  type: 'servicedesk:amc_invoice.post';
+  amc_record_id: string;
+  invoice_no: string;
+  voucher_type_id:
+    | 'vt-amc-invoice'
+    | 'vt-amc-receipt'
+    | 'vt-amc-proposal'
+    | 'vt-service-invoice'
+    | 'vt-oem-claim-cn';
+  entity_id: string;
+  branch_id: string;
+  amount_paise: number;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface CommissionToPeoplePayEvent {
+  type: 'servicedesk:commission.accrue';
+  amc_record_id: string;
+  entity_id: string;
+  payee_id: string;
+  payee_role: 'salesman' | 'receiver' | 'amc';
+  amount_paise: number;
+  basis_invoice_id: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface SalesmanActivityToSalesXEvent {
+  type: 'servicedesk:salesman.activity';
+  amc_record_id: string;
+  salesman_id: string;
+  activity_type: 'renewal_call' | 'proposal_meeting' | 'site_visit' | 'follow_up';
+  notes: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface RenewalEmailToTemplateEngineEvent {
+  type: 'servicedesk:renewal_email.send';
+  amc_record_id: string;
+  customer_id: string;
+  template_id: string;
+  cascade_stage: 'first' | 'second' | 'third' | 'final';
+  language: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface AMCReminderToCalendarEvent {
+  type: 'servicedesk:amc_reminder.create';
+  amc_record_id: string;
+  reminder_date: string;
+  reminder_type: 'renewal_window' | 'service_due' | 'inspection_due';
+  notes: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+// ============================================================================
+// 6 OUTBOUND emit functions · LIVE at C.1b · FR-19 sibling sequencing
 // ============================================================================
 
-/* C.1b · emitAMCInvoiceToFinCore       — AMC billing → FinCore voucher post */
-/* C.1b · emitCommissionToPeoplePay      — Commission accrual → PeoplePay payroll */
-/* C.1b · emitTellicallerWorkItem        — D-NEW-DJ Layer 2 first execution · POSSIBLE 32nd */
-/* C.1b · emitSalesmanActivityToSalesX   — Engineer activity → Sales activity log */
-/* C.1b · emitRenewalEmailToTemplateEngine — Renewal cascade email send */
-/* C.1b · emitAMCReminderToCalendar      — AMC reminder calendar entry */
-/* C.1c · emitServiceTicketToMaintainPro — 4-Way Repair In-House route */
-/* C.1d · emitOEMClaimPacketToProcure360 — D-NEW-DJ 4th consumer · FR-79 promotion */
-/* C.1c · emitInternalNumberToInventoryHub — Serial registry */
+/** OUTBOUND 1 · ServiceDesk → FinCore · AMC billing event (D-NEW-CM "Fin Core" naming compliance) */
+export function emitAMCInvoiceToFinCore(
+  payload: Omit<AMCInvoicePostToFinCoreEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): AMCInvoicePostToFinCoreEvent {
+  const event: AMCInvoicePostToFinCoreEvent = {
+    type: 'servicedesk:amc_invoice.post',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit(event.type, event)
+  return event;
+}
+
+/** OUTBOUND 2 · ServiceDesk → PeoplePay · 3-role commission accrual */
+export function emitCommissionToPeoplePay(
+  payload: Omit<CommissionToPeoplePayEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): CommissionToPeoplePayEvent {
+  const event: CommissionToPeoplePayEvent = {
+    type: 'servicedesk:commission.accrue',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit
+  return event;
+}
+
+/** OUTBOUND 3 · ServiceDesk → SalesX (D-NEW-DJ Three-Layer · Layer 2 emit · ⭐ Layer 3 first execution at C.1b) */
+export function emitTellicallerWorkItem(
+  payload: Omit<TellicallerWorkItemEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): TellicallerWorkItemEvent {
+  const event: TellicallerWorkItemEvent = {
+    type: 'tellicaller:work_item.created',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit · C.1b wires SalesX consumer stub for D-NEW-DJ validation
+  consumeTellicallerWorkItemFromServiceDesk(event);
+  return event;
+}
+
+/** OUTBOUND 4 · ServiceDesk → SalesX · Engineer renewal-call activity → Sales activity log */
+export function emitSalesmanActivityToSalesX(
+  payload: Omit<SalesmanActivityToSalesXEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): SalesmanActivityToSalesXEvent {
+  const event: SalesmanActivityToSalesXEvent = {
+    type: 'servicedesk:salesman.activity',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit
+  return event;
+}
+
+/** OUTBOUND 5 · ServiceDesk → CC Email Template Engine · Renewal cascade trigger */
+export function emitRenewalEmailToTemplateEngine(
+  payload: Omit<RenewalEmailToTemplateEngineEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): RenewalEmailToTemplateEngineEvent {
+  const event: RenewalEmailToTemplateEngineEvent = {
+    type: 'servicedesk:renewal_email.send',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit · Email Template Engine subscribes
+  return event;
+}
+
+/** OUTBOUND 6 · ServiceDesk → Calendar · AMC reminder calendar entry */
+export function emitAMCReminderToCalendar(
+  payload: Omit<AMCReminderToCalendarEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): AMCReminderToCalendarEvent {
+  const event: AMCReminderToCalendarEvent = {
+    type: 'servicedesk:amc_reminder.create',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit · Calendar card subscribes
+  return event;
+}
+
+// ============================================================================
+// 4 OUTBOUND bridges · PLANNED for C.1c-C.1f
+// ============================================================================
+/* C.1c · emitServiceTicketToMaintainPro    — 4-Way Repair In-House route (D-NEW-DJ 4th consumer · FR-72 threshold) */
+/* C.1c · emitInternalNumberToInventoryHub  — Serial registry */
+/* C.1d · emitOEMClaimPacketToProcure360    — D-NEW-DJ 5th consumer · FR-79 promotion threshold */
 /* C.1d · emitCustomerHealthScoreToInsightX — Cross-card 360° */
+
+// ============================================================================
+// D-NEW-DJ Three-Layer Pattern · Layer 3 stub consumer (SalesX side · stub at C.1b)
+// FR-72 promotion path: 3 consumers at C.1b · 4th at C.1c · FR-79 at C.2
+// [JWT] Phase 2: SalesX wires real work-item entity · Phase 1.B-C territory
+// ============================================================================
+const tellicallerStubKey = 'salesx_tellicaller_stub_v1';
+
+interface TellicallerStubEntry {
+  work_item_id: string;
+  amc_record_id: string;
+  customer_id: string;
+  originating_card_id: string;
+  received_at: string;
+}
+
+export function consumeTellicallerWorkItemFromServiceDesk(
+  event: TellicallerWorkItemEvent,
+): { ack: true; stubbed: true; work_item_id: string } {
+  try {
+    const raw = localStorage.getItem(tellicallerStubKey);
+    const list: TellicallerStubEntry[] = raw ? JSON.parse(raw) : [];
+    list.push({
+      work_item_id: event.work_item_id,
+      amc_record_id: event.amc_record_id,
+      customer_id: event.customer_id,
+      originating_card_id: event.originating_card_id,
+      received_at: new Date().toISOString(),
+    });
+    localStorage.setItem(tellicallerStubKey, JSON.stringify(list));
+  } catch {
+    /* quota silent */
+  }
+  return { ack: true, stubbed: true, work_item_id: event.work_item_id };
+}
+
+export function listSalesXTellicallerStubs(): TellicallerStubEntry[] {
+  try {
+    const raw = localStorage.getItem(tellicallerStubKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
