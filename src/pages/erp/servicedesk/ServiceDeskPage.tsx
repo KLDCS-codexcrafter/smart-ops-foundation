@@ -87,6 +87,41 @@ export default function ServiceDeskPage(): JSX.Element {
         return <RiskEngineSettings />;
       case 'renewal-cascade-settings':
         return <RenewalCascadeSettings />;
+      case 'ticket-inbox':
+        return (
+          <ServiceTicketInbox
+            onOpen={(id) => {
+              setSelectedTicketId(id);
+              setAutoOpenOTP(false);
+              setActiveModule('ticket-detail');
+            }}
+            onRaise={() => setActiveModule('ticket-raise')}
+          />
+        );
+      case 'ticket-raise':
+        return <ServiceTicketRaise onDone={() => setActiveModule('ticket-inbox')} />;
+      case 'ticket-detail':
+        return (
+          <ServiceTicketDetail
+            ticketId={selectedTicketId ?? ''}
+            autoOpenOTP={autoOpenOTP}
+            onBack={() => setActiveModule('ticket-inbox')}
+          />
+        );
+      case 'ticket-completion':
+        return (
+          <ServiceTicketDetail
+            ticketId={selectedTicketId ?? ''}
+            autoOpenOTP={true}
+            onBack={() => setActiveModule('ticket-inbox')}
+          />
+        );
+      case 'standby-loans':
+        return <StandbyLoanList />;
+      case 'repair-routes':
+        return <RepairRouteList />;
+      case 'spares-issued':
+        return <SparesIssuedFromField />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }
