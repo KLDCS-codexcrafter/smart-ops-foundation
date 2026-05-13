@@ -26,7 +26,10 @@ export type NonFinCoreVoucherFamily =
   | 'request'
   // C.1a · ServiceDesk · additive
   | 'amc_invoice'
-  | 'service_invoice';
+  | 'service_invoice'
+  // C.1c · ServiceDesk · additive (Q-LOCK-5)
+  | 'customer_in'
+  | 'customer_out';
 
 /** Sprint 2.7-b · OOB-3 field rule per voucher type.
  *  Driven from Voucher Class Master · enforced at form save (mandatory at posted state · soft warn on draft per Q2-c). */
@@ -151,6 +154,9 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFinCoreVoucherType[] = [
   { id: 'vt-service-invoice', family: 'service_invoice', display_name: 'Service Invoice', prefix: 'SVC/INV', is_default: true, is_active: true },
   { id: 'vt-oem-claim-cn', family: 'sales_invoice_memo', display_name: 'OEM Claim Credit Note', prefix: 'OEM/CN', is_default: false, is_active: true },
   { id: 'vt-amc-receipt', family: 'sales_invoice_memo', display_name: 'AMC Receipt', prefix: 'AMC/RCT', is_default: false, is_active: true },
+  // C.1c · ServiceDesk · 2 voucher type registrations
+  { id: 'vt-customer-in', family: 'customer_in', display_name: 'Customer In', prefix: 'CIN', is_default: true, is_active: true },
+  { id: 'vt-customer-out', family: 'customer_out', display_name: 'Customer Out', prefix: 'COUT', is_default: true, is_active: true },
 ];
 
 /** Storage key (per-entity custom voucher types · entities can extend defaults). */
