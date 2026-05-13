@@ -1367,3 +1367,26 @@ export function computeAMCProfitability(
   const margin_pct = revenue > 0 ? Math.round((margin / revenue) * 100) : 0;
   return { amc_record_id, revenue_paise: revenue, cost_paise: cost, margin_paise: margin, margin_pct };
 }
+
+// ============================================================================
+// C.1d · BLOCK B.5 · Read helpers for HappyCodeFeedback (CSAT report)
+// ============================================================================
+export function listHappyCodeFeedback(filters?: {
+  entity_id?: string;
+  ticket_id?: string;
+  customer_id?: string;
+}): HappyCodeFeedback[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity)).filter((f) => {
+    if (filters?.ticket_id && f.ticket_id !== filters.ticket_id) return false;
+    if (filters?.customer_id && f.customer_id !== filters.customer_id) return false;
+    return true;
+  });
+}
+
+export function getHappyCodeFeedback(
+  feedback_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): HappyCodeFeedback | null {
+  return readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id)).find((f) => f.id === feedback_id) ?? null;
+}
