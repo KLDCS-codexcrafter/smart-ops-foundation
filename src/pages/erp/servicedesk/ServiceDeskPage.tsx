@@ -33,6 +33,8 @@ export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [selectedIVId, setSelectedIVId] = useState<string | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [autoOpenOTP, setAutoOpenOTP] = useState(false);
   const { entitlements, profile } = useCardEntitlement();
 
   const renderModule = (): JSX.Element => {
