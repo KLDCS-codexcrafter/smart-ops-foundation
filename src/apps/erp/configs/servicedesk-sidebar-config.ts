@@ -93,9 +93,9 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     icon: BarChart3,
     children: [
       { id: 'amc-renewal-forecast', type: 'item', label: 'Renewal Forecast', moduleId: 'amc-renewal-forecast', requiredCards: ['servicedesk'], keyboard: 'd r f' },
-      { id: 'sla-performance', type: 'item', label: 'SLA Performance', moduleId: 'sla-performance', requiredCards: ['servicedesk'], keyboard: 'd r s', comingSoon: true },
-      { id: 'csat-happy-code', type: 'item', label: 'CSAT · HappyCode', moduleId: 'csat-happy-code', requiredCards: ['servicedesk'], keyboard: 'd r h', comingSoon: true },
-      { id: 'service-day-book', type: 'item', label: 'Service Day Book', moduleId: 'service-day-book', requiredCards: ['servicedesk'], keyboard: 'd r d', comingSoon: true },
+      { id: 'sla-performance', type: 'item', label: 'SLA Performance', moduleId: 'sla-performance', requiredCards: ['servicedesk'], keyboard: 'd r s' },
+      { id: 'csat-happy-code', type: 'item', label: 'CSAT · HappyCode', moduleId: 'csat-happy-code', requiredCards: ['servicedesk'], keyboard: 'd r h' },
+      { id: 'service-day-book', type: 'item', label: 'Service Day Book', moduleId: 'service-day-book', requiredCards: ['servicedesk'], keyboard: 'd r d' },
     ],
   },
   {
@@ -104,8 +104,8 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'SLA + Escalation',
     icon: ShieldCheck,
     children: [
-      { id: 'sla-matrix', type: 'item', label: 'SLA Matrix', moduleId: 'sla-matrix', requiredCards: ['servicedesk'], keyboard: 'd s m', comingSoon: true },
-      { id: 'escalation-tree', type: 'item', label: 'Escalation Tree', moduleId: 'escalation-tree', requiredCards: ['servicedesk'], keyboard: 'd s e', comingSoon: true },
+      { id: 'sla-matrix', type: 'item', label: 'SLA Matrix', moduleId: 'sla-matrix', requiredCards: ['servicedesk'], keyboard: 'd s m' },
+      { id: 'escalation-tree', type: 'item', label: 'Escalation Tree', moduleId: 'escalation-tree', requiredCards: ['servicedesk'], keyboard: 'd s e' },
     ],
   },
   {
@@ -114,8 +114,8 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'OEM Claims',
     icon: Headphones,
     children: [
-      { id: 'oem-claim-list', type: 'item', label: 'Claims', moduleId: 'oem-claim-list', requiredCards: ['servicedesk'], keyboard: 'd o l', comingSoon: true },
-      { id: 'oem-claim-detail', type: 'item', label: 'Claim Detail', moduleId: 'oem-claim-detail', requiredCards: ['servicedesk'], keyboard: 'd o d', comingSoon: true },
+      { id: 'oem-claim-list', type: 'item', label: 'Claims', moduleId: 'oem-claim-list', requiredCards: ['servicedesk'], keyboard: 'd o l' },
+      { id: 'oem-claim-detail', type: 'item', label: 'Claim Detail', moduleId: 'oem-claim-detail', requiredCards: ['servicedesk'], keyboard: 'd o d' },
     ],
   },
   {
