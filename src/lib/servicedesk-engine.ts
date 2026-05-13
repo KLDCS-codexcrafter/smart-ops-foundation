@@ -1207,7 +1207,9 @@ function makeChannel2Token(feedback_id: string, expires_at_iso: string): string 
 
 function decodeChannel2Token(token: string): { fid: string; exp: string } | null {
   try {
-    const payload = JSON.parse(atob(token + '=='));
+    const pad = (4 - (token.length % 4)) % 4;
+    const padded = token + '='.repeat(pad);
+    const payload = JSON.parse(atob(padded));
     if (payload.sig !== CH2_JWT_SECRET) return null;
     return { fid: payload.fid, exp: payload.exp };
   } catch { return null; }
