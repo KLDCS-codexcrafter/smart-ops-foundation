@@ -563,3 +563,76 @@ export function listMaintainProServiceDeskTicketStubs(): MaintainProTicketStubEn
     return [];
   }
 }
+
+// ============================================================================
+// C.1d · 1 NEW OUTBOUND bridge LIVE (D-NEW-DJ 5th consumer ⭐ · FR-75 pattern at scale)
+// ============================================================================
+
+export interface OEMClaimPacketToProcure360Event {
+  type: 'servicedesk:oem_claim_packet.created';
+  oem_claim_packet_id: string;
+  claim_no: string;
+  oem_claim_no: string;
+  entity_id: string;
+  branch_id: string;
+  ticket_id: string;
+  oem_name: string;
+  total_claim_value_paise: number;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+/** OUTBOUND 10 · ServiceDesk → Procure360 · OEM Warranty Claim Recovery (⭐ D-NEW-DJ 5th consumer · FR-75 proves at scale) */
+export function emitOEMClaimPacketToProcure360(
+  payload: Omit<OEMClaimPacketToProcure360Event, 'type' | 'emitted_at' | 'originating_card_id'>,
+): OEMClaimPacketToProcure360Event {
+  const event: OEMClaimPacketToProcure360Event = {
+    type: 'servicedesk:oem_claim_packet.created',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  consumeOEMClaimFromServiceDesk(event);
+  return event;
+}
+
+// ============================================================================
+// Procure360 stub consumer (D-NEW-DJ Layer 3 · 5th consumer ⭐ · FR-75 at scale)
+// [JWT] Phase 2: Procure360 wires real OEM claim ingestion to Vendor Account
+// ============================================================================
+const procure360OEMClaimKey = 'procure360_servicedesk_oem_claim_stub_v1';
+
+interface Procure360OEMClaimStubEntry {
+  oem_claim_packet_id: string;
+  claim_no: string;
+  oem_claim_no: string;
+  oem_name: string;
+  total_claim_value_paise: number;
+  received_at: string;
+}
+
+export function consumeOEMClaimFromServiceDesk(
+  event: OEMClaimPacketToProcure360Event,
+): { ack: true; stubbed: true; oem_claim_packet_id: string } {
+  try {
+    const raw = localStorage.getItem(procure360OEMClaimKey);
+    const list: Procure360OEMClaimStubEntry[] = raw ? JSON.parse(raw) : [];
+    list.push({
+      oem_claim_packet_id: event.oem_claim_packet_id,
+      claim_no: event.claim_no,
+      oem_claim_no: event.oem_claim_no,
+      oem_name: event.oem_name,
+      total_claim_value_paise: event.total_claim_value_paise,
+      received_at: new Date().toISOString(),
+    });
+    localStorage.setItem(procure360OEMClaimKey, JSON.stringify(list));
+  } catch { /* quota silent */ }
+  return { ack: true, stubbed: true, oem_claim_packet_id: event.oem_claim_packet_id };
+}
+
+export function listProcure360OEMClaimStubs(): Procure360OEMClaimStubEntry[] {
+  try {
+    const raw = localStorage.getItem(procure360OEMClaimKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
