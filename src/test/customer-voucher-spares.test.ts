@@ -34,13 +34,15 @@ describe('Customer vouchers + Spares', () => {
   it('createCustomerInVoucher emits CIN no with sequence', () => {
     const v = createCustomerInVoucher({
       entity_id: ENTITY,
+      branch_id: 'BR-1',
       ticket_id: 'st-001',
-      customer_id: 'CUST-001',
-      equipment_serial: 'SN-1',
+      serial: 'SN-1',
+      internal_no: 'INT-001',
+      warranty_status_at_intake: 'in_warranty',
       condition_notes: 'cracked panel',
+      photos: [],
       received_by: 'desk_user',
       received_at: new Date().toISOString(),
-      photos: [],
     });
     expect(v.voucher_no).toMatch(/^CIN\/OPRX\/000001$/);
     expect(listCustomerInVouchers(ENTITY)).toHaveLength(1);
@@ -51,12 +53,18 @@ describe('Customer vouchers + Spares', () => {
       entity_id: ENTITY,
       branch_id: 'BR-1',
       ticket_id: 'st-001',
-      customer_id: 'CUST-001',
-      equipment_serial: 'SN-1',
-      delivered_by: 'ENG-1',
-      amount_paise: 350000,
-      gst_paise: 63000,
-      total_paise: 413000,
+      resolution_summary: 'replaced compressor',
+      old_serial: 'SN-1',
+      new_serial: 'SN-1',
+      circle_readings: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      spares_consumed_summary: 'compressor x1',
+      charges_paise: 413000,
+      paid: true,
+      payment_method: 'upi',
+      delivered_to: 'CUST-001',
+      delivered_at: new Date().toISOString(),
+      acknowledgement_signed: true,
+      acknowledgement_signature_url: null,
       created_by: 'desk_user',
     });
     expect(v.voucher_no).toMatch(/^COUT/);
