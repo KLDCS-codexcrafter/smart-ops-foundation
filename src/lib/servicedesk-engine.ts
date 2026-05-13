@@ -1392,3 +1392,251 @@ export function getHappyCodeFeedback(
 ): HappyCodeFeedback | null {
   return readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id)).find((f) => f.id === feedback_id) ?? null;
 }
+
+// ============================================================================
+// C.1e · BLOCK B.1 · CustomerServiceTier CRUD
+// ============================================================================
+import type { CustomerServiceTier, ServiceTierLevel } from '@/types/customer-service-tier';
+import { customerServiceTierKey, TIER_BENEFITS } from '@/types/customer-service-tier';
+import type { CustomerReminder, ReminderChannel } from '@/types/customer-reminder';
+import { customerReminderKey } from '@/types/customer-reminder';
+import { emitRenewalEmailToTemplateEngine } from './servicedesk-bridges';
+
+export function assignCustomerServiceTier(
+  input: Omit<CustomerServiceTier, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>,
+): CustomerServiceTier {
+  const now = nowIso();
+  const list = readJson<CustomerServiceTier>(customerServiceTierKey(input.entity_id));
+  const updated = list.map((t) =>
+    t.customer_id === input.customer_id
+      ? { ...t, updated_at: now, audit_trail: appendAudit(t.audit_trail, input.assigned_by, 'tier_superseded') }
+      : t,
+  );
+  const tier: CustomerServiceTier = {
+    ...input,
+    id: newId('tier'),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.assigned_by, action: `tier_assigned_${input.tier}` }],
+  };
+  // [JWT] POST /api/servicedesk/customer-service-tiers
+  writeJson(customerServiceTierKey(input.entity_id), [...updated, tier]);
+  return tier;
+}
+
+export function getActiveCustomerTier(
+  customer_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerServiceTier | null {
+  const list = readJson<CustomerServiceTier>(customerServiceTierKey(entity_id))
+    .filter((t) => t.customer_id === customer_id)
+    .sort((a, b) => b.assigned_at.localeCompare(a.assigned_at));
+  return list[0] ?? null;
+}
+
+export function listCustomerTiers(filters?: {
+  entity_id?: string;
+  tier?: ServiceTierLevel;
+}): CustomerServiceTier[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<CustomerServiceTier>(customerServiceTierKey(entity)).filter((t) =>
+    !filters?.tier || t.tier === filters.tier,
+  );
+}
+
+export function getTierBenefits(tier: ServiceTierLevel): typeof TIER_BENEFITS[ServiceTierLevel] {
+  return TIER_BENEFITS[tier];
+}
+
+export function applyTierToSLAHours(
+  base_hours: number,
+  customer_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): number {
+  const tier = getActiveCustomerTier(customer_id, entity_id);
+  if (!tier) return base_hours;
+  const benefits = getTierBenefits(tier.tier);
+  return Math.ceil(base_hours * benefits.sla_multiplier);
+}
+
+// ============================================================================
+// C.1e · BLOCK B.2 · CustomerReminder CRUD + FR-75 fire wire
+// ============================================================================
+export function createCustomerReminder(
+  input: Omit<CustomerReminder, 'id' | 'created_at' | 'updated_at' | 'audit_trail' | 'status' | 'fired_at' | 'fired_via_channel' | 'snoozed_until'>,
+): CustomerReminder {
+  const now = nowIso();
+  const reminder: CustomerReminder = {
+    ...input,
+    id: newId('rem'),
+    status: 'pending',
+    fired_at: null,
+    fired_via_channel: null,
+    snoozed_until: null,
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: `reminder_created_${input.reminder_type}` }],
+  };
+  const list = readJson<CustomerReminder>(customerReminderKey(input.entity_id));
+  // [JWT] POST /api/servicedesk/customer-reminders
+  writeJson(customerReminderKey(input.entity_id), [...list, reminder]);
+  return reminder;
+}
+
+export function fireReminderNow(
+  reminder_id: string,
+  actor: string,
+  channel: ReminderChannel,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerReminder {
+  const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
+  const idx = list.findIndex((r) => r.id === reminder_id);
+  if (idx === -1) throw new Error(`CustomerReminder ${reminder_id} not found`);
+  const now = nowIso();
+  const target = list[idx];
+  list[idx] = {
+    ...target,
+    status: 'fired',
+    fired_at: now,
+    fired_via_channel: channel,
+    updated_at: now,
+    audit_trail: appendAudit(target.audit_trail, actor, `reminder_fired_via_${channel}`),
+  };
+  // [JWT] Phase 2 wires real email/sms · Phase 1 reuses FR-75 emit pattern
+  if (channel === 'email' && target.template_id) {
+    emitRenewalEmailToTemplateEngine({
+      amc_record_id: '',
+      customer_id: target.customer_id,
+      template_id: target.template_id,
+      cascade_stage: 'first',
+      language: 'en',
+    });
+  }
+  writeJson(customerReminderKey(entity_id), list);
+  return list[idx];
+}
+
+export function snoozeReminder(
+  reminder_id: string,
+  actor: string,
+  snooze_until_iso: string,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerReminder {
+  const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
+  const idx = list.findIndex((r) => r.id === reminder_id);
+  if (idx === -1) throw new Error(`CustomerReminder ${reminder_id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status: 'snoozed',
+    snoozed_until: snooze_until_iso,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, 'reminder_snoozed'),
+  };
+  writeJson(customerReminderKey(entity_id), list);
+  return list[idx];
+}
+
+export function dismissReminder(
+  reminder_id: string,
+  actor: string,
+  reason: string,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerReminder {
+  const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
+  const idx = list.findIndex((r) => r.id === reminder_id);
+  if (idx === -1) throw new Error(`CustomerReminder ${reminder_id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status: 'dismissed',
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, 'reminder_dismissed', reason),
+  };
+  writeJson(customerReminderKey(entity_id), list);
+  return list[idx];
+}
+
+export function listUpcomingReminders(
+  days_ahead: number = 30,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerReminder[] {
+  const cutoff = new Date(Date.now() + days_ahead * 86400 * 1000).toISOString();
+  return readJson<CustomerReminder>(customerReminderKey(entity_id)).filter(
+    (r) => r.status === 'pending' && r.trigger_date <= cutoff,
+  ).sort((a, b) => a.trigger_date.localeCompare(b.trigger_date));
+}
+
+export function listAllRemindersForCustomer(
+  customer_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): CustomerReminder[] {
+  return readJson<CustomerReminder>(customerReminderKey(entity_id))
+    .filter((r) => r.customer_id === customer_id)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+// ============================================================================
+// C.1e · BLOCK B.3 · ServiceAvailed (OOB-21 AMC stock consumption tracker)
+// ============================================================================
+export interface ServiceAvailedRecord {
+  id: string;
+  entity_id: string;
+  amc_record_id: string;
+  ticket_id: string;
+  service_count_incremented_at: string;
+  remaining_service_count: number;
+  spares_value_paise: number;
+  audit_trail: AuditEntry[];
+}
+
+const serviceAvailedKey = (e: string): string => `servicedesk_v1_service_availed_${e}`;
+
+export function recordServiceAvailed(
+  amc_record_id: string,
+  ticket_id: string,
+  spares_value_paise: number,
+  entity_id: string = DEFAULT_ENTITY,
+): ServiceAvailedRecord {
+  const amc = getAMCRecord(amc_record_id, entity_id);
+  if (!amc) throw new Error(`AMCRecord ${amc_record_id} not found`);
+  const includedRaw = (amc as unknown as { included_service_count?: number }).included_service_count;
+  const included = typeof includedRaw === 'number' ? includedRaw : 999;
+  const availedSoFar = listServiceAvailedForAMC(amc_record_id, entity_id).length;
+  const remaining = Math.max(0, included - availedSoFar - 1);
+  const now = nowIso();
+  const record: ServiceAvailedRecord = {
+    id: newId('avail'),
+    entity_id,
+    amc_record_id,
+    ticket_id,
+    service_count_incremented_at: now,
+    remaining_service_count: remaining,
+    spares_value_paise,
+    audit_trail: [{ at: now, by: 'system', action: 'service_availed_recorded' }],
+  };
+  const list = readJson<ServiceAvailedRecord>(serviceAvailedKey(entity_id));
+  // [JWT] POST /api/servicedesk/service-availed
+  writeJson(serviceAvailedKey(entity_id), [...list, record]);
+  return record;
+}
+
+export function listServiceAvailedForAMC(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): ServiceAvailedRecord[] {
+  return readJson<ServiceAvailedRecord>(serviceAvailedKey(entity_id))
+    .filter((r) => r.amc_record_id === amc_record_id);
+}
+
+export function computeRemainingServices(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): { included: number; availed: number; remaining: number } {
+  const amc = getAMCRecord(amc_record_id, entity_id);
+  if (!amc) return { included: 0, availed: 0, remaining: 0 };
+  const includedRaw = (amc as unknown as { included_service_count?: number }).included_service_count;
+  const included = typeof includedRaw === 'number' ? includedRaw : 0;
+  const availed = listServiceAvailedForAMC(amc_record_id, entity_id).length;
+  return { included, availed, remaining: Math.max(0, included - availed) };
+}

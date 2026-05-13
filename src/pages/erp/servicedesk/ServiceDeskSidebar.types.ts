@@ -44,6 +44,14 @@ export type ServiceDeskModule =
   // Customer Hub (`d c*`)
   | 'customer-360'
   | 'customer-tier'
+  // Customer Hub extensions · C.1e NEW
+  | 'customer-sla-enquiry'
+  | 'customer-reminders'
+  | 'service-availed'
+  | 'customer-comm-log'
+  // Reports · C.1e carry-forward from C.1d T2
+  | 'promised-vs-actual-variance'
+  | 'amc-profitability-per-customer'
   // Settings (`d g*`)
   | 'risk-engine-settings'
   | 'commission-settings'

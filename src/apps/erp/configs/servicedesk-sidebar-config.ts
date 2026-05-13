@@ -96,6 +96,8 @@ export const servicedeskSidebarItems: SidebarItem[] = [
       { id: 'sla-performance', type: 'item', label: 'SLA Performance', moduleId: 'sla-performance', requiredCards: ['servicedesk'], keyboard: 'd r s' },
       { id: 'csat-happy-code', type: 'item', label: 'CSAT · HappyCode', moduleId: 'csat-happy-code', requiredCards: ['servicedesk'], keyboard: 'd r h' },
       { id: 'service-day-book', type: 'item', label: 'Service Day Book', moduleId: 'service-day-book', requiredCards: ['servicedesk'], keyboard: 'd r d' },
+      { id: 'promised-vs-actual-variance', type: 'item', label: 'Promised vs Actual', moduleId: 'promised-vs-actual-variance', requiredCards: ['servicedesk'], keyboard: 'd r v' },
+      { id: 'amc-profitability-per-customer', type: 'item', label: 'AMC Profitability', moduleId: 'amc-profitability-per-customer', requiredCards: ['servicedesk'], keyboard: 'd r p' },
     ],
   },
   {
@@ -124,8 +126,12 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'Customer Hub',
     icon: Building,
     children: [
-      { id: 'customer-360', type: 'item', label: 'Customer 360', moduleId: 'customer-360', requiredCards: ['servicedesk'], keyboard: 'd c h', comingSoon: true },
-      { id: 'customer-tier', type: 'item', label: 'Service Tier', moduleId: 'customer-tier', requiredCards: ['servicedesk'], keyboard: 'd c t', comingSoon: true },
+      { id: 'customer-360', type: 'item', label: 'Customer 360', moduleId: 'customer-360', requiredCards: ['servicedesk'], keyboard: 'd c h' },
+      { id: 'customer-tier', type: 'item', label: 'Service Tier', moduleId: 'customer-tier', requiredCards: ['servicedesk'], keyboard: 'd c t' },
+      { id: 'customer-sla-enquiry', type: 'item', label: 'SLA Enquiry', moduleId: 'customer-sla-enquiry', requiredCards: ['servicedesk'], keyboard: 'd c s' },
+      { id: 'customer-reminders', type: 'item', label: 'Reminders', moduleId: 'customer-reminders', requiredCards: ['servicedesk'], keyboard: 'd c r' },
+      { id: 'service-availed', type: 'item', label: 'Service Availed', moduleId: 'service-availed', requiredCards: ['servicedesk'], keyboard: 'd c v' },
+      { id: 'customer-comm-log', type: 'item', label: 'Comm Log', moduleId: 'customer-comm-log', requiredCards: ['servicedesk'], keyboard: 'd c m' },
     ],
   },
   {

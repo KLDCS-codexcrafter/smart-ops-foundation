@@ -35,6 +35,14 @@ import { CSATHappyCode } from './reports/CSATHappyCode';
 import { ServiceDayBook } from './reports/ServiceDayBook';
 import { OEMClaimList } from './oem-claims/OEMClaimList';
 import { OEMClaimDetail } from './oem-claims/OEMClaimDetail';
+import { Customer360 } from './customer-hub/Customer360';
+import { CustomerSLAEnquiry } from './customer-hub/CustomerSLAEnquiry';
+import { CustomerServiceTierPage } from './customer-hub/CustomerServiceTierPage';
+import { CustomerReminders } from './customer-hub/CustomerReminders';
+import { ServiceAvailedTracker } from './customer-hub/ServiceAvailedTracker';
+import { CustomerCommLog } from './customer-hub/CustomerCommLog';
+import { PromisedVsActualVariance } from './reports/PromisedVsActualVariance';
+import { AMCProfitabilityPerCustomer } from './reports/AMCProfitabilityPerCustomer';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
@@ -43,6 +51,7 @@ export default function ServiceDeskPage(): JSX.Element {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [selectedOEMClaimId, setSelectedOEMClaimId] = useState<string | null>(null);
   const [autoOpenOTP, setAutoOpenOTP] = useState(false);
+  const [selectedCustomerId] = useState<string | null>(null);
   const { entitlements, profile } = useCardEntitlement();
 
   const renderModule = (): JSX.Element => {
@@ -156,6 +165,22 @@ export default function ServiceDeskPage(): JSX.Element {
             onBack={() => setActiveModule('oem-claim-list')}
           />
         );
+      case 'customer-360':
+        return <Customer360 customerId={selectedCustomerId} />;
+      case 'customer-tier':
+        return <CustomerServiceTierPage />;
+      case 'customer-sla-enquiry':
+        return <CustomerSLAEnquiry customerId={selectedCustomerId} />;
+      case 'customer-reminders':
+        return <CustomerReminders />;
+      case 'service-availed':
+        return <ServiceAvailedTracker />;
+      case 'customer-comm-log':
+        return <CustomerCommLog />;
+      case 'promised-vs-actual-variance':
+        return <PromisedVsActualVariance />;
+      case 'amc-profitability-per-customer':
+        return <AMCProfitabilityPerCustomer />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }
