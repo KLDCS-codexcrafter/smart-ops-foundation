@@ -3,6 +3,7 @@
  * @purpose     Mobile landing for service_engineer role · Sarathi REUSE pattern
  * @sprint      T-Phase-1.C.1a · Block G.3 · v2 spec
  * @decisions   D-NEW-DI POSSIBLE 33rd · Sarathi pattern reuse
+ * @iso        Usability
  */
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';

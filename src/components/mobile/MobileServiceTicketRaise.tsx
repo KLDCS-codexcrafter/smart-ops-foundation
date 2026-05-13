@@ -2,6 +2,7 @@
  * @file        src/components/mobile/MobileServiceTicketRaise.tsx
  * @purpose     OOB-M9 omnichannel 5-step ticket raise · D-NEW-DF consumer #9
  * @sprint      T-Phase-1.C.1a · Block G.4 · v2 spec
+ * @iso        Usability + Functional Suitability
  */
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';

@@ -3,6 +3,7 @@
  * @purpose     ServiceDesk cross-card bridges · 9 INBOUND active + 10 OUTBOUND planned
  * @sprint      T-Phase-1.C.1a · Block C · v2 spec · Q-LOCK-7
  * @decisions   D-NEW-DJ Three-Layer Tellicaller POSSIBLE 32nd · Layer 2 emit
+ * @iso        Compatibility + Maintainability
  * @disciplines FR-19 sibling · FR-53 inter-dept · FR-73.1 absolute
  * @reuses      Pattern matches sitex-bridges.ts + maintainpro-bridges.ts (sibling)
  * @[JWT]       Phase 2 eventBus.emit wires real cross-card subscribers

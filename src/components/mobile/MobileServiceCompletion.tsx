@@ -3,6 +3,7 @@
  * @purpose     5-step service completion · Channel 1 HappyCode OTP MANDATORY gate
  * @sprint      T-Phase-1.C.1a · Block G.5 · v2 spec
  * @decisions   D-NEW-DF consumer #10
+ * @iso        Usability + Functional Suitability + Reliability
  */
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';

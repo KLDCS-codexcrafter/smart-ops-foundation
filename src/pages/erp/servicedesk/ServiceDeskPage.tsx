@@ -3,6 +3,7 @@
  * @purpose     ServiceDesk main page · Shell pattern · 12th card · activeModule switch
  * @sprint      T-Phase-1.C.1a · Block F.1 · v2 spec
  * @decisions   D-250 Shell pattern · FR-58 · D-NEW-CC 'd *' (FR-74 keyboard namespace) · D-NEW-CT 12th card already seeded
+ * @iso        Usability
  */
 import { useState } from 'react';
 import { Shell } from '@/shell';

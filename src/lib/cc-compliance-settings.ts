@@ -3,6 +3,7 @@
  * @purpose     CC Compliance Settings · NEW canonical home · 7 ServiceDesk-relevant setting groups
  * @sprint      T-Phase-1.C.1a · Block D.2 · v2 spec · Q-LOCK-6
  * @decisions   D-NEW-CY 2nd consumer (SLA Matrix · FR-77 promotion threshold MET)
+ * @iso        Functional Suitability + Maintainability
  * @disciplines FR-30 · FR-54
  * @[JWT]       Phase 2 wires real backend
  */
