@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/servicedesk/ServiceDeskSidebar.types.ts
  * @purpose     ServiceDesk discriminated module union · maps to sidebar moduleId
- * @sprint      T-Phase-1.C.1a · Block F.2 · v2 spec
+ * @sprint      T-Phase-1.C.1a · Block F.2 · v2 spec · EXTENDED at C.1b for IV
  * @iso        Usability
  */
 
@@ -10,9 +10,13 @@ export type ServiceDeskModule =
   // AMC Pipeline (`d a*`)
   | 'amc-applicability-decision'
   | 'amc-proposal-list'
+  | 'amc-proposal-detail'
   | 'amc-active-list'
   | 'amc-expiring-list'
   | 'amc-lapsed-list'
+  // Installation Verification (`d i*`) · C.1b NEW
+  | 'installation-verification-list'
+  | 'installation-verification-detail'
   // Service Tickets (`d t*`)
   | 'ticket-inbox'
   | 'ticket-raise'
