@@ -212,6 +212,7 @@ const VendorInbox = lazy(() => import('./pages/vendor-portal/VendorInbox'));
 const VendorPortalProfile = lazy(() => import('./pages/vendor-portal/VendorPortalProfile'));
 const VendorCommLog = lazy(() => import('./pages/vendor-portal/VendorCommLog'));
 const VendorOnboardingFirstQuote = lazy(() => import('./pages/vendor-portal/VendorOnboardingFirstQuote'));
+const HappyCodeChannel2Form = lazy(() => import('./pages/public/HappyCodeChannel2Form'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
@@ -347,6 +348,8 @@ const App = () => (
               <Route path="/vendor-portal/commlog" element={<VendorCommLog />} />
               <Route path="/vendor-portal/onboarding" element={<VendorOnboardingFirstQuote />} />
               <Route path="/vendor-portal/rfq/:rfqId" element={<RFQPublicForm />} />
+              {/* Sprint T-Phase-1.C.1d · ServiceDesk HappyCode Channel 2 (7-day JWT · public · no auth) */}
+              <Route path="/feedback/happy-code" element={<HappyCodeChannel2Form />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">

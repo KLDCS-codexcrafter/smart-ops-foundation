@@ -28,12 +28,20 @@ import { ServiceTicketRaise } from './service-tickets/ServiceTicketRaise';
 import { RepairRouteList } from './repair-routing/RepairRouteList';
 import { SparesIssuedFromField } from './repair-routing/SparesIssuedFromField';
 import { StandbyLoanList } from './standby-loans/StandbyLoanList';
+import { SLAMatrixSettings } from './settings/SLAMatrixSettings';
+import { EscalationTreeSettings } from './settings/EscalationTreeSettings';
+import { SLAPerformance } from './reports/SLAPerformance';
+import { CSATHappyCode } from './reports/CSATHappyCode';
+import { ServiceDayBook } from './reports/ServiceDayBook';
+import { OEMClaimList } from './oem-claims/OEMClaimList';
+import { OEMClaimDetail } from './oem-claims/OEMClaimDetail';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [selectedIVId, setSelectedIVId] = useState<string | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [selectedOEMClaimId, setSelectedOEMClaimId] = useState<string | null>(null);
   const [autoOpenOTP, setAutoOpenOTP] = useState(false);
   const { entitlements, profile } = useCardEntitlement();
 
@@ -122,6 +130,32 @@ export default function ServiceDeskPage(): JSX.Element {
         return <RepairRouteList />;
       case 'spares-issued':
         return <SparesIssuedFromField />;
+      case 'sla-matrix':
+        return <SLAMatrixSettings />;
+      case 'escalation-tree':
+        return <EscalationTreeSettings />;
+      case 'sla-performance':
+        return <SLAPerformance />;
+      case 'csat-happy-code':
+        return <CSATHappyCode />;
+      case 'service-day-book':
+        return <ServiceDayBook />;
+      case 'oem-claim-list':
+        return (
+          <OEMClaimList
+            onOpen={(id) => {
+              setSelectedOEMClaimId(id);
+              setActiveModule('oem-claim-detail');
+            }}
+          />
+        );
+      case 'oem-claim-detail':
+        return (
+          <OEMClaimDetail
+            claimId={selectedOEMClaimId ?? ''}
+            onBack={() => setActiveModule('oem-claim-list')}
+          />
+        );
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }
