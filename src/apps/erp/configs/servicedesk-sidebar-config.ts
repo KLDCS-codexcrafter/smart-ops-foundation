@@ -16,6 +16,7 @@ import {
   Building,
   Settings,
   ClipboardCheck,
+  Wrench,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
