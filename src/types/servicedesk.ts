@@ -6,6 +6,7 @@
  * @sprint      T-Phase-1.C.1a · Block A · v2 spec
  * @whom        Audit Owner
  * @decisions   D-NEW-CW Path B 7th consumer · D-NEW-DJ Three-Layer Tellicaller POSSIBLE 32nd · D-NEW-DI Sarathi REUSE POSSIBLE 33rd
+ * @iso        Functional Suitability + Maintainability
  * @disciplines FR-30 · FR-54 CC SSOT (inline literal filter types · zero CC core modification)
  * @reuses      Mirror of maintainpro/sitex type patterns
  * @[JWT]       Phase 2 wires real backend

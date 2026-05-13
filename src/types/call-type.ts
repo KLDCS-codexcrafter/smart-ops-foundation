@@ -3,6 +3,7 @@
  * @purpose     Call Type CC master · NEW CC-owned master · Q-LOCK-4
  * @sprint      T-Phase-1.C.1a · Block D.1
  * @decisions   D-NEW-CT institutional · single-file pattern (matches cc-masters.ts)
+ * @iso        Functional Suitability
  * @disciplines FR-30
  * @[JWT]       Phase 2 wires GET/POST/PUT /api/cc/call-types
  */

@@ -3,6 +3,7 @@
  * @purpose     ServiceDesk canonical sidebar · 8 groups · 12th card on Shell · FR-74 'd' keyboard namespace
  * @sprint      T-Phase-1.C.1a · Block F.5 · v2 spec
  * @decisions   D-NEW-CC 'd *' namespace · D-NEW-CT 12th sidebar
+ * @iso        Usability + Maintainability
  */
 import {
   Home,

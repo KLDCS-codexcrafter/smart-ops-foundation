@@ -3,6 +3,7 @@
  * @purpose     Canonical Shell config for ServiceDesk · 12th card on Shell
  * @sprint      T-Phase-1.C.1a · Block F.4 · v2 spec
  * @decisions   D-250 Shell pattern · D-NEW-CC 'd *'
+ * @iso        Usability + Maintainability
  */
 import type { ShellConfig } from '@/shell/types';
 import { servicedeskSidebarItems } from './servicedesk-sidebar-config';

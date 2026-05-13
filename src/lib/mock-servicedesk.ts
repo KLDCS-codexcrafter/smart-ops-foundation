@@ -2,6 +2,7 @@
  * @file        src/lib/mock-servicedesk.ts
  * @purpose     Demo seed · Sinha + Smart Power 5-archetype + Multi-OEM 1-customer-3-OEMs
  * @sprint      T-Phase-1.C.1a · Block H · v2 spec
+ * @iso        Maintainability
  */
 import type { AMCRecord } from '@/types/servicedesk';
 import { amcRecordKey } from '@/types/servicedesk';

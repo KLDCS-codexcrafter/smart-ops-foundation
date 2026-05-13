@@ -2,6 +2,7 @@
  * @file        src/pages/erp/servicedesk/ServiceDeskSidebar.types.ts
  * @purpose     ServiceDesk discriminated module union · maps to sidebar moduleId
  * @sprint      T-Phase-1.C.1a · Block F.2 · v2 spec
+ * @iso        Usability
  */
 
 export type ServiceDeskModule =

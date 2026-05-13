@@ -2,6 +2,7 @@
  * @file        src/pages/erp/servicedesk/ServiceDeskWelcome.tsx
  * @purpose     ServiceDesk welcome landing · scope summary · C.1a Foundation placeholder
  * @sprint      T-Phase-1.C.1a · Block F.3 · v2 spec
+ * @iso        Usability
  */
 import { Card } from '@/components/ui/card';
 import { Headphones, ListChecks, Users, BarChart3, ShieldCheck, MessageSquare } from 'lucide-react';
