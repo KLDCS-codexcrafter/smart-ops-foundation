@@ -3,7 +3,7 @@
  * @sprint      T-Phase-1.C.1b · Block I.6
  */
 import { describe, it, expect } from 'vitest';
-import { buildForecast } from '@/pages/erp/servicedesk/reports/AMCRenewalForecast';
+import { buildForecast } from '@/pages/erp/servicedesk/reports/AMCRenewalForecast.utils';
 import type { AMCRecord } from '@/types/servicedesk';
 
 const NOW = new Date('2026-05-15T00:00:00Z');
