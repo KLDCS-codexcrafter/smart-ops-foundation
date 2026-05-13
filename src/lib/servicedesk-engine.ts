@@ -509,15 +509,46 @@ export function verifyOTPForTicketClose(
   return true;
 }
 
-export function captureHappyCodeFeedback(
-  input: Omit<HappyCodeFeedback, 'id' | 'created_at' | 'updated_at'>,
-): HappyCodeFeedback {
+type HappyCodeFeedbackInput = Omit<
+  HappyCodeFeedback,
+  | 'id'
+  | 'created_at'
+  | 'updated_at'
+  | 'audit_trail'
+  | 'channel_2_email_sent_at'
+  | 'channel_2_jwt_token'
+  | 'channel_2_jwt_expires_at'
+  | 'channel_2_clicked_at'
+  | 'channel_2_responded_at'
+  | 'channel_2_nps_score'
+  | 'channel_2_comment'
+  | 'channel_3_captured_at'
+  | 'channel_3_captured_by_engineer_id'
+  | 'channel_3_nps_score'
+  | 'channel_3_happiness_score'
+  | 'channel_3_comment'
+>;
+
+export function captureHappyCodeFeedback(input: HappyCodeFeedbackInput): HappyCodeFeedback {
   const now = nowIso();
   const feedback: HappyCodeFeedback = {
     ...input,
     id: newId('happy'),
+    channel_2_email_sent_at: null,
+    channel_2_jwt_token: null,
+    channel_2_jwt_expires_at: null,
+    channel_2_clicked_at: null,
+    channel_2_responded_at: null,
+    channel_2_nps_score: null,
+    channel_2_comment: '',
+    channel_3_captured_at: null,
+    channel_3_captured_by_engineer_id: null,
+    channel_3_nps_score: null,
+    channel_3_happiness_score: null,
+    channel_3_comment: '',
     created_at: now,
     updated_at: now,
+    audit_trail: [{ at: now, by: input.verbal_captured_by ?? 'system', action: 'happy_code_created' }],
   };
   const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(input.entity_id));
   // [JWT] POST /api/servicedesk/happy-code
