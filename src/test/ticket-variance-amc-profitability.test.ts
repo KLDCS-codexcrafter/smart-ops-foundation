@@ -30,7 +30,7 @@ function makeAMCInput(overrides: Partial<AMCInput> = {}): AMCInput {
     amc_type: 'comprehensive',
     contract_start: '2026-01-01',
     contract_end: '2026-12-31',
-    billing_cycle: 'annual',
+    billing_cycle: 'upfront',
     contract_value_paise: 12_00_000,
     billed_to_date_paise: 6_00_000,
     outstanding_paise: 6_00_000,
