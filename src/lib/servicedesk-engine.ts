@@ -1193,3 +1193,177 @@ export function listSparesForTicket(
 export function listAllSparesIssues(entity_id: string = DEFAULT_ENTITY): SparesIssueRecord[] {
   return readJson<SparesIssueRecord>(sparesIssueKey(entity_id));
 }
+
+// ============================================================================
+// C.1d · BLOCK B.2 · HappyCode Channel 2 · Email 7-day JWT
+// ============================================================================
+const CH2_JWT_EXPIRY_DAYS = 7;
+const CH2_JWT_SECRET = 'phase1_dev_secret_replaced_at_phase2_backend';  // [JWT] Phase 2
+
+function makeChannel2Token(feedback_id: string, expires_at_iso: string): string {
+  const payload = JSON.stringify({ fid: feedback_id, exp: expires_at_iso, sig: CH2_JWT_SECRET });
+  return btoa(payload).replace(/=/g, '');
+}
+
+function decodeChannel2Token(token: string): { fid: string; exp: string } | null {
+  try {
+    const payload = JSON.parse(atob(token + '=='));
+    if (payload.sig !== CH2_JWT_SECRET) return null;
+    return { fid: payload.fid, exp: payload.exp };
+  } catch { return null; }
+}
+
+export function triggerChannel2EmailRequest(
+  feedback_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): { token: string; expires_at: string } {
+  const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id));
+  const idx = list.findIndex((f) => f.id === feedback_id);
+  if (idx === -1) throw new Error(`HappyCodeFeedback ${feedback_id} not found`);
+  const expires_at = new Date(Date.now() + CH2_JWT_EXPIRY_DAYS * 86400 * 1000).toISOString();
+  const token = makeChannel2Token(feedback_id, expires_at);
+  list[idx] = {
+    ...list[idx],
+    channel_2_email_sent_at: nowIso(),
+    channel_2_jwt_token: token,
+    channel_2_jwt_expires_at: expires_at,
+    updated_at: nowIso(),
+    audit_trail: appendAudit(list[idx].audit_trail, 'system', 'ch2_email_triggered'),
+  };
+  writeJson(happyCodeFeedbackKey(entity_id), list);
+  return { token, expires_at };
+}
+
+export function verifyChannel2JWT(token: string): { feedback_id: string } | { error: string } {
+  const decoded = decodeChannel2Token(token);
+  if (!decoded) return { error: 'invalid_token' };
+  if (new Date(decoded.exp).getTime() < Date.now()) return { error: 'expired' };
+  return { feedback_id: decoded.fid };
+}
+
+export function submitChannel2Feedback(
+  token: string,
+  nps_score: number,
+  comment: string,
+  entity_id: string = DEFAULT_ENTITY,
+): HappyCodeFeedback {
+  const verified = verifyChannel2JWT(token);
+  if ('error' in verified) throw new Error(`Channel 2 JWT ${verified.error}`);
+  const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id));
+  const idx = list.findIndex((f) => f.id === verified.feedback_id);
+  if (idx === -1) throw new Error(`HappyCodeFeedback ${verified.feedback_id} not found`);
+  const now = nowIso();
+  if (!list[idx].channel_2_clicked_at) {
+    list[idx].channel_2_clicked_at = now;
+  }
+  list[idx] = {
+    ...list[idx],
+    channel_2_responded_at: now,
+    channel_2_nps_score: nps_score,
+    channel_2_comment: comment,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, 'customer_via_ch2', 'ch2_responded'),
+  };
+  writeJson(happyCodeFeedbackKey(entity_id), list);
+  return list[idx];
+}
+
+// ============================================================================
+// C.1d · BLOCK B.3 · HappyCode Channel 3 · Verbal NPS+Happiness inline
+// ============================================================================
+export function captureChannel3VerbalFeedback(
+  feedback_id: string,
+  engineer_id: string,
+  nps_score: number,
+  happiness_score: number,
+  comment: string,
+  entity_id: string = DEFAULT_ENTITY,
+): HappyCodeFeedback {
+  const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id));
+  const idx = list.findIndex((f) => f.id === feedback_id);
+  if (idx === -1) throw new Error(`HappyCodeFeedback ${feedback_id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    channel_3_captured_at: now,
+    channel_3_captured_by_engineer_id: engineer_id,
+    channel_3_nps_score: nps_score,
+    channel_3_happiness_score: happiness_score,
+    channel_3_comment: comment,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, engineer_id, 'ch3_verbal_captured'),
+  };
+  writeJson(happyCodeFeedbackKey(entity_id), list);
+  return list[idx];
+}
+
+// ============================================================================
+// C.1d · BLOCK B.4 · Variance + Profitability helpers
+// ============================================================================
+export interface TicketVariance {
+  ticket_id: string;
+  timeline_variance_days: number;
+  cost_variance_paise: number;
+  route_changed: boolean;
+  spares_variance_qty: number;
+  trust_score: number;
+}
+
+export function computeTicketVariance(
+  ticket_id: string,
+  estimated: { timeline_days: number; cost_paise: number; route_type: string; spares_qty: number },
+  entity_id: string = DEFAULT_ENTITY,
+): TicketVariance | null {
+  const ticket = getServiceTicket(ticket_id, entity_id);
+  if (!ticket || !ticket.closed_at) return null;
+  const actual_days = Math.ceil(
+    (new Date(ticket.closed_at).getTime() - new Date(ticket.raised_at).getTime()) / (86400 * 1000),
+  );
+  const routes = listRoutesForTicket(ticket_id, entity_id);
+  const spares = listSparesForTicket(ticket_id, entity_id);
+  const total_cost = routes.reduce((s, r) => s + (r.cost_paise ?? 0), 0)
+    + spares.reduce((s, sp) => s + (sp.total_cost_paise ?? 0), 0);
+  const actual_spares_qty = spares.reduce((s, sp) => s + sp.qty, 0);
+  const actual_route = routes[0]?.route_type ?? estimated.route_type;
+  const timeline_pct = Math.max(0, 100 - Math.abs((actual_days - estimated.timeline_days) / Math.max(1, estimated.timeline_days)) * 100);
+  const cost_pct = Math.max(0, 100 - Math.abs((total_cost - estimated.cost_paise) / Math.max(1, estimated.cost_paise)) * 100);
+  const route_pct = actual_route === estimated.route_type ? 100 : 0;
+  const spares_pct = Math.max(0, 100 - Math.abs((actual_spares_qty - estimated.spares_qty) / Math.max(1, estimated.spares_qty)) * 100);
+  const trust_score = Math.round((timeline_pct * 0.3 + cost_pct * 0.3 + route_pct * 0.2 + spares_pct * 0.2));
+  return {
+    ticket_id,
+    timeline_variance_days: actual_days - estimated.timeline_days,
+    cost_variance_paise: total_cost - estimated.cost_paise,
+    route_changed: actual_route !== estimated.route_type,
+    spares_variance_qty: actual_spares_qty - estimated.spares_qty,
+    trust_score,
+  };
+}
+
+export interface AMCProfitability {
+  amc_record_id: string;
+  revenue_paise: number;
+  cost_paise: number;
+  margin_paise: number;
+  margin_pct: number;
+}
+
+export function computeAMCProfitability(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): AMCProfitability | null {
+  const amc = getAMCRecord(amc_record_id, entity_id);
+  if (!amc) return null;
+  const tickets = listServiceTickets({ entity_id, customer_id: amc.customer_id })
+    .filter((t) => t.amc_record_id === amc_record_id);
+  let cost = 0;
+  for (const t of tickets) {
+    cost += listRoutesForTicket(t.id, entity_id).reduce((s, r) => s + (r.cost_paise ?? 0), 0);
+    cost += listStandbyLoansForTicket(t.id, entity_id).reduce((s, l) => s + (l.total_cost_paise ?? 0), 0);
+    cost += listSparesForTicket(t.id, entity_id).reduce((s, sp) => s + (sp.total_cost_paise ?? 0), 0);
+  }
+  const revenue = amc.billed_to_date_paise;
+  const margin = revenue - cost;
+  const margin_pct = revenue > 0 ? Math.round((margin / revenue) * 100) : 0;
+  return { amc_record_id, revenue_paise: revenue, cost_paise: cost, margin_paise: margin, margin_pct };
+}
