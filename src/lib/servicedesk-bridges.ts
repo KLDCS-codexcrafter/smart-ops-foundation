@@ -390,10 +390,9 @@ export function emitAMCReminderToCalendar(
 }
 
 // ============================================================================
-// 4 OUTBOUND bridges · PLANNED for C.1c-C.1f
+// 2 OUTBOUND bridges · PLANNED for C.1d-C.1f
 // ============================================================================
-/* C.1c · emitServiceTicketToMaintainPro    — 4-Way Repair In-House route (D-NEW-DJ 4th consumer · FR-72 threshold) */
-/* C.1c · emitInternalNumberToInventoryHub  — Serial registry */
+/* C.1c+ · emitInternalNumberToInventoryHub  — Serial registry (planned · C.1d if needed) */
 /* C.1d · emitOEMClaimPacketToProcure360    — D-NEW-DJ 5th consumer · FR-79 promotion threshold */
 /* C.1d · emitCustomerHealthScoreToInsightX — Cross-card 360° */
 
@@ -435,6 +434,131 @@ export function consumeTellicallerWorkItemFromServiceDesk(
 export function listSalesXTellicallerStubs(): TellicallerStubEntry[] {
   try {
     const raw = localStorage.getItem(tellicallerStubKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+// ============================================================================
+// C.1c · 3 NEW OUTBOUND bridges LIVE (D-NEW-DJ 4th consumer · FR-72 promotion ⭐)
+// ============================================================================
+
+export interface ServiceTicketToMaintainProEvent {
+  type: 'servicedesk:service_ticket.route_in_house';
+  service_ticket_id: string;
+  service_ticket_no: string;
+  customer_id: string;
+  equipment_serial: string;
+  category: string;
+  severity: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface FinalInvoiceToFinCoreEvent {
+  type: 'servicedesk:final_invoice.post';
+  service_ticket_id: string;
+  customer_out_voucher_id: string;
+  entity_id: string;
+  branch_id: string;
+  voucher_type_id: 'vt-customer-out';
+  amount_paise: number;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+export interface SparesIssueToInventoryHubEvent {
+  type: 'servicedesk:spares_issue.field';
+  spares_issue_id: string;
+  spare_id: string;
+  qty: number;
+  engineer_id: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+/** OUTBOUND 7 · ServiceDesk → MaintainPro · 4-Way Repair In-House route (⭐ D-NEW-DJ 4th consumer · FR-72 threshold) */
+export function emitServiceTicketToMaintainPro(
+  payload: Omit<ServiceTicketToMaintainProEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): ServiceTicketToMaintainProEvent {
+  const event: ServiceTicketToMaintainProEvent = {
+    type: 'servicedesk:service_ticket.route_in_house',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit · C.1c wires MaintainPro consumer stub for D-NEW-DJ 4th consumer
+  consumeServiceTicketFromServiceDesk(event);
+  return event;
+}
+
+/** OUTBOUND 8 · ServiceDesk → FinCore · Final invoice on Customer-Out */
+export function emitFinalInvoiceToFinCore(
+  payload: Omit<FinalInvoiceToFinCoreEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): FinalInvoiceToFinCoreEvent {
+  const event: FinalInvoiceToFinCoreEvent = {
+    type: 'servicedesk:final_invoice.post',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit
+  return event;
+}
+
+/** OUTBOUND 9 · ServiceDesk → InventoryHub · Spares issued from field */
+export function emitSparesIssueToInventoryHub(
+  payload: Omit<SparesIssueToInventoryHubEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
+): SparesIssueToInventoryHubEvent {
+  const event: SparesIssueToInventoryHubEvent = {
+    type: 'servicedesk:spares_issue.field',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  // [JWT] Phase 2: eventBus.emit · InventoryHub stock decrement
+  return event;
+}
+
+// ============================================================================
+// MaintainPro stub consumer (D-NEW-DJ Layer 3 · 4th consumer ⭐)
+// FR-72 promotion threshold MET when this lands · D-NEW-DJ promotes to FR-75 canonical
+// [JWT] Phase 2: MaintainPro wires real Internal Helpdesk ticket creation
+// ============================================================================
+const maintainproServiceDeskTicketKey = 'maintainpro_servicedesk_ticket_stub_v1';
+
+interface MaintainProTicketStubEntry {
+  service_ticket_id: string;
+  service_ticket_no: string;
+  customer_id: string;
+  equipment_serial: string;
+  received_at: string;
+}
+
+export function consumeServiceTicketFromServiceDesk(
+  event: ServiceTicketToMaintainProEvent,
+): { ack: true; stubbed: true; service_ticket_id: string } {
+  try {
+    const raw = localStorage.getItem(maintainproServiceDeskTicketKey);
+    const list: MaintainProTicketStubEntry[] = raw ? JSON.parse(raw) : [];
+    list.push({
+      service_ticket_id: event.service_ticket_id,
+      service_ticket_no: event.service_ticket_no,
+      customer_id: event.customer_id,
+      equipment_serial: event.equipment_serial,
+      received_at: new Date().toISOString(),
+    });
+    localStorage.setItem(maintainproServiceDeskTicketKey, JSON.stringify(list));
+  } catch {
+    /* quota silent */
+  }
+  return { ack: true, stubbed: true, service_ticket_id: event.service_ticket_id };
+}
+
+export function listMaintainProServiceDeskTicketStubs(): MaintainProTicketStubEntry[] {
+  try {
+    const raw = localStorage.getItem(maintainproServiceDeskTicketKey);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
