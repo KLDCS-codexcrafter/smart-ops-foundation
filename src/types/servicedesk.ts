@@ -2,7 +2,7 @@
  * @file        src/types/servicedesk.ts
  * @purpose     ServiceDesk canonical types · AMC + Service Ticket + Service Engineer + HappyCode
  * @who         ServiceDesk module (Tier 1 #13 · 12th card on Shell)
- * @when        2026-05-12
+ * @when        2026-05-14
  * @sprint      T-Phase-1.C.1a · Block A · v2 spec
  * @whom        Audit Owner
  * @decisions   D-NEW-CW Path B 7th consumer · D-NEW-DJ Three-Layer Tellicaller POSSIBLE 32nd · D-NEW-DI Sarathi REUSE POSSIBLE 33rd

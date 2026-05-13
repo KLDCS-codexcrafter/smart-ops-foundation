@@ -2,7 +2,7 @@
  * @file        src/lib/servicedesk-engine.ts
  * @purpose     ServiceDesk Path B own entity engine · 7th Path B consumer (matches maintainpro-engine 6th precedent)
  * @who         ServiceDesk module
- * @when        2026-05-12
+ * @when        2026-05-14
  * @sprint      T-Phase-1.C.1a · Block B · v2 spec
  * @whom        Audit Owner
  * @decisions   D-NEW-CW REGISTER 20th canonical (7th Path B consumer) · D-NEW-DJ POSSIBLE 32nd · D-NEW-DI POSSIBLE 33rd
