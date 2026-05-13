@@ -713,3 +713,452 @@ export function recomputeAllAMCRiskScores(
   writeJson(amcRecordKey(entity_id), updated);
   return { recomputed: updated.length, ids: updated.map((r) => r.id) };
 }
+
+// ============================================================================
+// C.1c · BLOCK B · Service Ticket + Repair Route + Standby Loan + Customer Vouchers + Spares Issue
+// All additive · existing exports ABSOLUTE preserved
+// ============================================================================
+import type {
+  ServiceTicket,
+  ServiceTicketStatus,
+  ServiceTicketSeverity,
+  ServiceTicketChannel,
+} from '@/types/service-ticket';
+import { serviceTicketKey } from '@/types/service-ticket';
+import type { RepairRoute, RepairRouteType, RepairRouteStatus } from '@/types/repair-route';
+import { repairRouteKey } from '@/types/repair-route';
+import type { StandbyLoan } from '@/types/standby-loan';
+import { standbyLoanKey } from '@/types/standby-loan';
+import type { CustomerInVoucher, CustomerOutVoucher } from '@/types/customer-voucher';
+import { customerInVoucherKey, customerOutVoucherKey } from '@/types/customer-voucher';
+import type { SparesIssueRecord } from '@/types/spares-issue';
+import { sparesIssueKey } from '@/types/spares-issue';
+
+// ----------------------------------------------------------------------------
+// B.1 · ServiceTicket CRUD + 8-state machine
+// ----------------------------------------------------------------------------
+function nextTicketNo(entity_id: string): string {
+  const list = readJson<ServiceTicket>(serviceTicketKey(entity_id));
+  const n = list.length + 1;
+  return `ST/${entity_id}/${String(n).padStart(6, '0')}`;
+}
+
+export function raiseServiceTicket(
+  input: Omit<
+    ServiceTicket,
+    | 'id'
+    | 'ticket_no'
+    | 'created_at'
+    | 'updated_at'
+    | 'audit_trail'
+    | 'status'
+    | 'raised_at'
+    | 'acked_at'
+    | 'started_at'
+    | 'on_hold_since'
+    | 'resolved_at'
+    | 'closed_at'
+    | 'reopened_count'
+    | 'reopened_at'
+  >,
+): ServiceTicket {
+  const now = nowIso();
+  const ticket: ServiceTicket = {
+    ...input,
+    id: newId('st'),
+    ticket_no: nextTicketNo(input.entity_id),
+    status: 'raised',
+    raised_at: now,
+    acked_at: null,
+    started_at: null,
+    on_hold_since: null,
+    resolved_at: null,
+    closed_at: null,
+    reopened_count: 0,
+    reopened_at: null,
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: 'raised' }],
+  };
+  const list = readJson<ServiceTicket>(serviceTicketKey(input.entity_id));
+  // [JWT] POST /api/servicedesk/service-tickets
+  writeJson(serviceTicketKey(input.entity_id), [...list, ticket]);
+  return ticket;
+}
+
+export function getServiceTicket(id: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket | null {
+  return readJson<ServiceTicket>(serviceTicketKey(entity_id)).find((t) => t.id === id) ?? null;
+}
+
+export function listServiceTickets(filters?: {
+  entity_id?: string;
+  status?: ServiceTicketStatus;
+  severity?: ServiceTicketSeverity;
+  channel?: ServiceTicketChannel;
+  assigned_engineer_id?: string;
+  customer_id?: string;
+}): ServiceTicket[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<ServiceTicket>(serviceTicketKey(entity)).filter((t) => {
+    if (filters?.status && t.status !== filters.status) return false;
+    if (filters?.severity && t.severity !== filters.severity) return false;
+    if (filters?.channel && t.channel !== filters.channel) return false;
+    if (filters?.assigned_engineer_id && t.assigned_engineer_id !== filters.assigned_engineer_id) return false;
+    if (filters?.customer_id && t.customer_id !== filters.customer_id) return false;
+    return true;
+  });
+}
+
+function transitionTicketState(
+  ticket_id: string,
+  to_status: ServiceTicketStatus,
+  actor: string,
+  patch: Partial<ServiceTicket>,
+  reason: string | undefined,
+  entity_id: string = DEFAULT_ENTITY,
+): ServiceTicket {
+  const list = readJson<ServiceTicket>(serviceTicketKey(entity_id));
+  const idx = list.findIndex((t) => t.id === ticket_id);
+  if (idx === -1) throw new Error(`ServiceTicket ${ticket_id} not found`);
+  const now = nowIso();
+  const next: ServiceTicket = {
+    ...list[idx],
+    ...patch,
+    status: to_status,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, `transition_to_${to_status}`, reason),
+  };
+  list[idx] = next;
+  writeJson(serviceTicketKey(entity_id), list);
+  return next;
+}
+
+export function acknowledgeTicket(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+  return transitionTicketState(id, 'acknowledged', actor, { acked_at: nowIso() }, undefined, entity_id);
+}
+
+export function assignTicketToEngineer(
+  id: string,
+  engineer_id: string,
+  actor: string,
+  entity_id: string = DEFAULT_ENTITY,
+): ServiceTicket {
+  return transitionTicketState(id, 'assigned', actor, { assigned_engineer_id: engineer_id }, undefined, entity_id);
+}
+
+export function startTicketWork(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+  return transitionTicketState(id, 'in_progress', actor, { started_at: nowIso() }, undefined, entity_id);
+}
+
+export function putTicketOnHold(id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+  return transitionTicketState(id, 'on_hold', actor, { on_hold_since: nowIso() }, reason, entity_id);
+}
+
+export function markTicketResolved(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+  return transitionTicketState(id, 'resolved', actor, { resolved_at: nowIso() }, undefined, entity_id);
+}
+
+/** Close ticket · ENFORCES HappyCode Ch1 OTP gate (Q-LOCK-7) */
+export function closeTicket(
+  id: string,
+  actor: string,
+  otp_verified: boolean,
+  entity_id: string = DEFAULT_ENTITY,
+): ServiceTicket {
+  if (!otp_verified) {
+    throw new Error('HappyCode Ch1 OTP verification required before close · per v5 §3 / v4 §3.1 spec lock');
+  }
+  return transitionTicketState(
+    id,
+    'closed',
+    actor,
+    { closed_at: nowIso(), happy_code_otp_verified: true },
+    undefined,
+    entity_id,
+  );
+}
+
+export function reopenTicket(id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+  const list = readJson<ServiceTicket>(serviceTicketKey(entity_id));
+  const idx = list.findIndex((t) => t.id === id);
+  if (idx === -1) throw new Error(`ServiceTicket ${id} not found`);
+  const now = nowIso();
+  const prev = list[idx];
+  const next: ServiceTicket = {
+    ...prev,
+    status: 'reopened',
+    reopened_count: prev.reopened_count + 1,
+    reopened_at: now,
+    resolved_at: null,
+    closed_at: null,
+    updated_at: now,
+    audit_trail: appendAudit(prev.audit_trail, actor, 'reopened', reason),
+  };
+  list[idx] = next;
+  writeJson(serviceTicketKey(entity_id), list);
+  return next;
+}
+
+// ----------------------------------------------------------------------------
+// B.2 · RepairRoute CRUD
+// ----------------------------------------------------------------------------
+export function createRepairRoute(
+  input: Omit<
+    RepairRoute,
+    'id' | 'created_at' | 'updated_at' | 'audit_trail' | 'status' | 'repair_in_at' | 'turnaround_days'
+  >,
+): RepairRoute {
+  const now = nowIso();
+  const route: RepairRoute = {
+    ...input,
+    id: newId('rr'),
+    status: 'routed',
+    repair_in_at: null,
+    turnaround_days: null,
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: `routed_to_${input.route_type}` }],
+  };
+  const list = readJson<RepairRoute>(repairRouteKey(input.entity_id));
+  // [JWT] POST /api/servicedesk/repair-routes
+  writeJson(repairRouteKey(input.entity_id), [...list, route]);
+  return route;
+}
+
+export function markRouteInRepair(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RepairRoute {
+  const list = readJson<RepairRoute>(repairRouteKey(entity_id));
+  const idx = list.findIndex((r) => r.id === id);
+  if (idx === -1) throw new Error(`RepairRoute ${id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status: 'in_repair',
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, 'in_repair'),
+  };
+  writeJson(repairRouteKey(entity_id), list);
+  return list[idx];
+}
+
+export function markReturnedFromRepair(
+  id: string,
+  actor: string,
+  final_cost_paise: number,
+  entity_id: string = DEFAULT_ENTITY,
+): RepairRoute {
+  const list = readJson<RepairRoute>(repairRouteKey(entity_id));
+  const idx = list.findIndex((r) => r.id === id);
+  if (idx === -1) throw new Error(`RepairRoute ${id} not found`);
+  const now = nowIso();
+  const outAt = new Date(list[idx].repair_out_at).getTime();
+  const inAt = Date.now();
+  const turnaround_days = Math.max(0, Math.ceil((inAt - outAt) / (86400 * 1000)));
+  list[idx] = {
+    ...list[idx],
+    status: 'returned',
+    repair_in_at: now,
+    turnaround_days,
+    cost_paise: final_cost_paise,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, 'returned_from_repair'),
+  };
+  writeJson(repairRouteKey(entity_id), list);
+  return list[idx];
+}
+
+export function markRouteRejected(
+  id: string,
+  actor: string,
+  reason: string,
+  entity_id: string = DEFAULT_ENTITY,
+): RepairRoute {
+  const list = readJson<RepairRoute>(repairRouteKey(entity_id));
+  const idx = list.findIndex((r) => r.id === id);
+  if (idx === -1) throw new Error(`RepairRoute ${id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status: 'rejected',
+    rejection_reason: reason,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, 'rejected', reason),
+  };
+  writeJson(repairRouteKey(entity_id), list);
+  return list[idx];
+}
+
+export function listRoutesForTicket(
+  ticket_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): RepairRoute[] {
+  return readJson<RepairRoute>(repairRouteKey(entity_id)).filter((r) => r.ticket_id === ticket_id);
+}
+
+export function listRepairRoutes(filters?: {
+  entity_id?: string;
+  route_type?: RepairRouteType;
+  status?: RepairRouteStatus;
+}): RepairRoute[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<RepairRoute>(repairRouteKey(entity)).filter((r) => {
+    if (filters?.route_type && r.route_type !== filters.route_type) return false;
+    if (filters?.status && r.status !== filters.status) return false;
+    return true;
+  });
+}
+
+// ----------------------------------------------------------------------------
+// B.3 · StandbyLoan CRUD + overdue
+// ----------------------------------------------------------------------------
+export function createStandbyLoan(
+  input: Omit<
+    StandbyLoan,
+    | 'id'
+    | 'created_at'
+    | 'updated_at'
+    | 'audit_trail'
+    | 'status'
+    | 'returned_at'
+    | 'total_cost_paise'
+    | 'damage_on_return'
+    | 'damage_charge_paise'
+  >,
+): StandbyLoan {
+  const now = nowIso();
+  const loan: StandbyLoan = {
+    ...input,
+    id: newId('sb'),
+    status: 'out',
+    returned_at: null,
+    total_cost_paise: 0,
+    damage_on_return: false,
+    damage_charge_paise: 0,
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: 'loaned_out' }],
+  };
+  const list = readJson<StandbyLoan>(standbyLoanKey(input.entity_id));
+  writeJson(standbyLoanKey(input.entity_id), [...list, loan]);
+  return loan;
+}
+
+export function returnStandbyLoan(
+  id: string,
+  actor: string,
+  damage: boolean,
+  damage_charge_paise: number,
+  entity_id: string = DEFAULT_ENTITY,
+): StandbyLoan {
+  const list = readJson<StandbyLoan>(standbyLoanKey(entity_id));
+  const idx = list.findIndex((l) => l.id === id);
+  if (idx === -1) throw new Error(`StandbyLoan ${id} not found`);
+  const now = nowIso();
+  const loan = list[idx];
+  const outAt = new Date(loan.loaned_out_at).getTime();
+  const days = Math.max(1, Math.ceil((Date.now() - outAt) / (86400 * 1000)));
+  const total_cost_paise = days * loan.daily_cost_paise + (damage ? damage_charge_paise : 0);
+  list[idx] = {
+    ...loan,
+    status: 'returned',
+    returned_at: now,
+    total_cost_paise,
+    damage_on_return: damage,
+    damage_charge_paise: damage ? damage_charge_paise : 0,
+    updated_at: now,
+    audit_trail: appendAudit(loan.audit_trail, actor, 'returned'),
+  };
+  writeJson(standbyLoanKey(entity_id), list);
+  return list[idx];
+}
+
+export function listOverdueStandbyLoans(entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+  const now = Date.now();
+  return readJson<StandbyLoan>(standbyLoanKey(entity_id)).filter(
+    (l) => l.status === 'out' && new Date(l.expected_return_date).getTime() < now,
+  );
+}
+
+export function listStandbyLoansForTicket(ticket_id: string, entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+  return readJson<StandbyLoan>(standbyLoanKey(entity_id)).filter((l) => l.ticket_id === ticket_id);
+}
+
+export function listStandbyLoans(entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+  return readJson<StandbyLoan>(standbyLoanKey(entity_id));
+}
+
+// ----------------------------------------------------------------------------
+// B.4 · CustomerIn + CustomerOut voucher CRUD
+// ----------------------------------------------------------------------------
+function nextCustomerVoucherNo(prefix: string, entity_id: string, count: number): string {
+  return `${prefix}/${entity_id}/${String(count + 1).padStart(6, '0')}`;
+}
+
+export function createCustomerInVoucher(
+  input: Omit<CustomerInVoucher, 'id' | 'voucher_no' | 'created_at' | 'updated_at' | 'audit_trail'>,
+): CustomerInVoucher {
+  const now = nowIso();
+  const list = readJson<CustomerInVoucher>(customerInVoucherKey(input.entity_id));
+  const voucher: CustomerInVoucher = {
+    ...input,
+    id: newId('cin'),
+    voucher_no: nextCustomerVoucherNo('CIN', input.entity_id, list.length),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.received_by, action: 'customer_in_received' }],
+  };
+  writeJson(customerInVoucherKey(input.entity_id), [...list, voucher]);
+  return voucher;
+}
+
+export function createCustomerOutVoucher(
+  input: Omit<CustomerOutVoucher, 'id' | 'voucher_no' | 'created_at' | 'updated_at' | 'audit_trail'>,
+): CustomerOutVoucher {
+  const now = nowIso();
+  const list = readJson<CustomerOutVoucher>(customerOutVoucherKey(input.entity_id));
+  const voucher: CustomerOutVoucher = {
+    ...input,
+    id: newId('cout'),
+    voucher_no: nextCustomerVoucherNo('COUT', input.entity_id, list.length),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: 'customer_out_delivered' }],
+  };
+  writeJson(customerOutVoucherKey(input.entity_id), [...list, voucher]);
+  return voucher;
+}
+
+export function listCustomerInVouchers(entity_id: string = DEFAULT_ENTITY): CustomerInVoucher[] {
+  return readJson<CustomerInVoucher>(customerInVoucherKey(entity_id));
+}
+
+export function listCustomerOutVouchers(entity_id: string = DEFAULT_ENTITY): CustomerOutVoucher[] {
+  return readJson<CustomerOutVoucher>(customerOutVoucherKey(entity_id));
+}
+
+// ----------------------------------------------------------------------------
+// B.5 · SparesIssue CRUD
+// ----------------------------------------------------------------------------
+export function createSparesIssue(
+  input: Omit<SparesIssueRecord, 'id' | 'audit_trail'>,
+): SparesIssueRecord {
+  const now = nowIso();
+  const issue: SparesIssueRecord = {
+    ...input,
+    id: newId('sp'),
+    audit_trail: [{ at: now, by: input.engineer_id, action: 'spares_issued_from_field' }],
+  };
+  const list = readJson<SparesIssueRecord>(sparesIssueKey(input.entity_id));
+  writeJson(sparesIssueKey(input.entity_id), [...list, issue]);
+  return issue;
+}
+
+export function listSparesForTicket(
+  ticket_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): SparesIssueRecord[] {
+  return readJson<SparesIssueRecord>(sparesIssueKey(entity_id)).filter((s) => s.ticket_id === ticket_id);
+}
+
+export function listAllSparesIssues(entity_id: string = DEFAULT_ENTITY): SparesIssueRecord[] {
+  return readJson<SparesIssueRecord>(sparesIssueKey(entity_id));
+}
