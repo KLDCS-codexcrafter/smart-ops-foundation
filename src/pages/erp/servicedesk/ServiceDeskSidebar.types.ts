@@ -22,6 +22,10 @@ export type ServiceDeskModule =
   | 'ticket-raise'
   | 'ticket-detail'
   | 'ticket-completion'
+  | 'standby-loans'
+  // Repair Routing (`d p*`) · C.1c NEW
+  | 'repair-routes'
+  | 'spares-issued'
   // Service Engineers (`d e*`)
   | 'engineer-list'
   | 'engineer-roster'
