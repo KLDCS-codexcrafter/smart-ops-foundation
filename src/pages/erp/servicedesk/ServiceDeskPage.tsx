@@ -22,6 +22,12 @@ import { InstallationVerificationDetail } from './installation-verification/Inst
 import { AMCRenewalForecast } from './reports/AMCRenewalForecast';
 import { RiskEngineSettings } from './settings/RiskEngineSettings';
 import { RenewalCascadeSettings } from './settings/RenewalCascadeSettings';
+import { ServiceTicketInbox } from './service-tickets/ServiceTicketInbox';
+import { ServiceTicketDetail } from './service-tickets/ServiceTicketDetail';
+import { ServiceTicketRaise } from './service-tickets/ServiceTicketRaise';
+import { RepairRouteList } from './repair-routing/RepairRouteList';
+import { SparesIssuedFromField } from './repair-routing/SparesIssuedFromField';
+import { StandbyLoanList } from './standby-loans/StandbyLoanList';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
