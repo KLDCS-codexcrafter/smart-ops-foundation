@@ -57,6 +57,14 @@
 | 3 | Renewal cascade 4-stage admin-tunable | ✓ Q15-d settings UI + cascade fire helper + getCascadeStageForAMC |
 | 6 | Risk Engine 5-factor configurable + recompute | ✓ Settings UI + recomputeAllAMCRiskScores audit trail |
 
+## T1 · react-refresh surgical fix (2026-05-14)
+
+- **Issue:** `react-refresh/only-export-components` warning at `AMCRenewalForecast.tsx:19` · `buildForecast` non-component named export in .tsx file
+- **Fix:** Extract `buildForecast` + `GroupBy` type to `AMCRenewalForecast.utils.ts` · component file now exports ONLY React components
+- **Test import updated:** `renewal-forecast.test.ts` now imports from `.utils.ts`
+- **Triple Gate at T1:** TSC 0 · ESLint 0/0 (max-warnings 0 PASSING) · Vitest 962/132 · Build CLEAN
+- **Streak:** 21 sprints no-HALT preserved · 44th first-pass A composite RESTORED to Grade A
+
 ## Honest disclosures
 
 - LOC NET: ~2,200 (slightly under 2,440 target) · UI kept lean to honor budget while satisfying all 14 ACs
