@@ -99,10 +99,10 @@ export function Customer360({ customerId }: { customerId?: string | null }): JSX
               <ul className="divide-y divide-border/50">{csat.map((f) => (
                 <li key={f.id} className="p-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm">{f.happy_code} · <span className="text-muted-foreground">{f.channel}</span></p>
-                    <p className="text-xs text-muted-foreground font-mono">{f.captured_at.slice(0, 16)}</p>
+                    <p className="text-sm">{f.source} · <span className="text-muted-foreground font-mono text-xs">ticket {f.ticket_id}</span></p>
+                    <p className="text-xs text-muted-foreground font-mono">{f.created_at.slice(0, 16)}</p>
                   </div>
-                  <Badge variant="secondary">⭐ {f.rating}</Badge>
+                  <Badge variant="secondary">{f.otp_verified ? 'OTP ✓' : 'pending'}</Badge>
                 </li>
               ))}</ul>
             )}
