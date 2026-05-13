@@ -241,8 +241,23 @@ export interface HappyCodeFeedback {
   verbal_captured_at: string | null;
   verbal_captured_by: string | null;
   notes: string;
+  // Channel 2 · Email 7-day JWT (Q-LOCK-4 · C.1d NEW)
+  channel_2_email_sent_at: string | null;
+  channel_2_jwt_token: string | null;
+  channel_2_jwt_expires_at: string | null;
+  channel_2_clicked_at: string | null;
+  channel_2_responded_at: string | null;
+  channel_2_nps_score: number | null;
+  channel_2_comment: string;
+  // Channel 3 · Verbal NPS+Happiness inline at customer-out (Q-LOCK-5 · C.1d NEW)
+  channel_3_captured_at: string | null;
+  channel_3_captured_by_engineer_id: string | null;
+  channel_3_nps_score: number | null;
+  channel_3_happiness_score: number | null;
+  channel_3_comment: string;
   created_at: string;
   updated_at: string;
+  audit_trail: AuditEntry[];
 }
 
 // ============================================================================
