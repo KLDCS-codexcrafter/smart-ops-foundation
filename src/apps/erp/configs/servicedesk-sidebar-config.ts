@@ -59,9 +59,20 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'Service Tickets',
     icon: MessageSquare,
     children: [
-      { id: 'ticket-inbox', type: 'item', label: 'Inbox', moduleId: 'ticket-inbox', requiredCards: ['servicedesk'], keyboard: 'd t i', comingSoon: true },
-      { id: 'ticket-raise', type: 'item', label: 'Raise Ticket', moduleId: 'ticket-raise', requiredCards: ['servicedesk'], keyboard: 'd t r', comingSoon: true },
-      { id: 'ticket-completion', type: 'item', label: 'Completion (OTP gate)', moduleId: 'ticket-completion', requiredCards: ['servicedesk'], keyboard: 'd t c', comingSoon: true },
+      { id: 'ticket-inbox', type: 'item', label: 'Inbox', moduleId: 'ticket-inbox', requiredCards: ['servicedesk'], keyboard: 'd t i' },
+      { id: 'ticket-raise', type: 'item', label: 'Raise Ticket', moduleId: 'ticket-raise', requiredCards: ['servicedesk'], keyboard: 'd t r' },
+      { id: 'ticket-completion', type: 'item', label: 'Completion (OTP gate)', moduleId: 'ticket-completion', requiredCards: ['servicedesk'], keyboard: 'd t c' },
+      { id: 'standby-loans', type: 'item', label: 'Standby Loans', moduleId: 'standby-loans', requiredCards: ['servicedesk'], keyboard: 'd t s' },
+    ],
+  },
+  {
+    id: 'repair-routing-group',
+    type: 'group',
+    label: 'Repair Routing',
+    icon: Wrench,
+    children: [
+      { id: 'repair-routes', type: 'item', label: 'Repair Routes', moduleId: 'repair-routes', requiredCards: ['servicedesk'], keyboard: 'd p r' },
+      { id: 'spares-issued', type: 'item', label: 'Spares Issued (Field)', moduleId: 'spares-issued', requiredCards: ['servicedesk'], keyboard: 'd p s' },
     ],
   },
   {
