@@ -152,3 +152,21 @@
 - T3 polish E.1 + E.2 done. E.3 (@iso headers · 16 files) and E.4 (@when 2026-05-12 → 2026-05-14) **deferred** to C.1b — comment-only, no functional impact, kept LOC budget tight (~150 LOC NET landed).
 - Protected zones preserved · zero touch on card-entitlement-engine.ts · cc-masters.ts · voucher-type.ts · applications.ts (servicedesk remains `'locked'` + `'coming_soon'`).
 - 43rd composite POST-T2 BANKED · 8 consecutive T1/T2 successes · streak preserved.
+
+---
+
+## T3 · Housekeeping Polish (close out 2 deferred items from T2)
+
+**Predecessor**: `8a40c90` (T2 banked · Triple Gate GREEN)
+**Triple Gate close**: TSC 0 ⭐ · ESLint 0 / 0 · Vitest **916 / 125** · Build CLEAN
+
+### Changes
+| # | Item | Files | Detail |
+|---|---|---|---|
+| 1 | `@iso` headers | 14 C.1a NEW files | FR-30 ISO 25010 quality characteristic annotations added per file purpose |
+| 2 | `@when` date correction | 14 C.1a NEW files | `2026-05-12` → `2026-05-14` (v2 execution date) · zero other `@when` values touched |
+
+### Honest disclosures
+- E.3 + E.4 now closed · comment-only · ~30 LOC NET · zero functional · zero test impact.
+- 43rd composite POST-T3 BANKED · 20 sprints no-HALT after H.3 ⭐ preserved.
+- Streak: 9 consecutive T1/T2/T3 successes.
