@@ -390,11 +390,10 @@ export function emitAMCReminderToCalendar(
 }
 
 // ============================================================================
-// 2 OUTBOUND bridges · PLANNED for C.1d-C.1f
+// 1 OUTBOUND bridge · PLANNED for C.1e+ (1 was promoted to LIVE at C.1d below)
 // ============================================================================
-/* C.1c+ · emitInternalNumberToInventoryHub  — Serial registry (planned · C.1d if needed) */
-/* C.1d · emitOEMClaimPacketToProcure360    — D-NEW-DJ 5th consumer · FR-79 promotion threshold */
-/* C.1d · emitCustomerHealthScoreToInsightX — Cross-card 360° */
+/* C.1c+ · emitInternalNumberToInventoryHub  — Serial registry (planned · C.1e if needed) */
+/* C.1e · emitCustomerHealthScoreToInsightX — Cross-card 360° */
 
 // ============================================================================
 // D-NEW-DJ Three-Layer Pattern · Layer 3 stub consumer (SalesX side · stub at C.1b)
