@@ -253,3 +253,49 @@ export const amcProposalKey = (e: string): string => `servicedesk_v1_amc_proposa
 export const serviceEngineerProfileKey = (e: string): string => `servicedesk_v1_engineer_${e}`;
 export const happyCodeFeedbackKey = (e: string): string => `servicedesk_v1_happy_${e}`;
 export const ticketOTPKey = (e: string): string => `servicedesk_v1_ticket_otp_${e}`;
+
+// ============================================================================
+// Installation Verification at AMC Kickoff (v5 §2 boundary #4 · v7 §4 Open #4c NEW · C.1b)
+// Distinct from SiteX Commissioning Report · proves AMC contract terms observable at customer site
+// ============================================================================
+export type InstallationVerificationStatus = 'pending' | 'in_progress' | 'verified' | 'failed';
+
+export interface InstallationVerificationPhoto {
+  id: string;
+  url: string;          // [JWT] Phase 2 wires to storage
+  caption: string;
+  captured_at: string;
+}
+
+export interface InstallationVerification {
+  id: string;
+  entity_id: string;
+  amc_record_id: string;            // FK to AMCRecord
+  site_visit_date: string;
+  // 7-point checklist
+  functional_check_passed: boolean;
+  spare_inventory_verified: boolean;
+  service_tier_config_verified: boolean;
+  customer_briefing_done: boolean;
+  emergency_contact_shared: boolean;
+  documentation_handed_over: boolean;
+  customer_acknowledgement: boolean;
+  // Capture
+  photos: InstallationVerificationPhoto[];
+  customer_signature_url: string | null;  // [JWT] Phase 2 signature pad
+  notes: string;
+  // Verifier
+  verifier_engineer_id: string;
+  // Status + audit
+  status: InstallationVerificationStatus;
+  verified_by: string | null;
+  verified_at: string | null;
+  // Standard
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  audit_trail: AuditEntry[];
+}
+
+export const installationVerificationKey = (e: string): string =>
+  `servicedesk_v1_installation_verification_${e}`;

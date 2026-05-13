@@ -15,6 +15,7 @@
 import type {
   AMCRecord,
   AMCStatus,
+  AMCLifecycleStage,
   AMCProposal,
   AMCProposalStatus,
   ServiceEngineerProfile,
@@ -22,6 +23,7 @@ import type {
   HappyCodeFeedback,
   CallTypeConfigurationReplica,
   AuditEntry,
+  InstallationVerification,
 } from '@/types/servicedesk';
 import {
   amcRecordKey,
@@ -29,6 +31,7 @@ import {
   serviceEngineerProfileKey,
   happyCodeFeedbackKey,
   ticketOTPKey,
+  installationVerificationKey,
 } from '@/types/servicedesk';
 import { STANDARD_CALL_TYPES, callTypeConfigurationKey } from '@/types/call-type';
 import type { CallTypeConfiguration } from '@/types/call-type';
@@ -520,4 +523,193 @@ export function captureHappyCodeFeedback(
   // [JWT] POST /api/servicedesk/happy-code
   writeJson(happyCodeFeedbackKey(input.entity_id), [...list, feedback]);
   return feedback;
+}
+
+// ============================================================================
+// C.1b · Block A · Lifecycle helpers + cascade + InstallationVerification CRUD
+// ============================================================================
+
+// A.1 · Lifecycle stage filter
+export function getAMCsByLifecycleStage(
+  stage: AMCLifecycleStage,
+  entity_id: string = DEFAULT_ENTITY,
+): AMCRecord[] {
+  return readJson<AMCRecord>(amcRecordKey(entity_id)).filter((r) => r.lifecycle_stage === stage);
+}
+
+// A.2 · Applicability decision pending
+export function getAMCsAwaitingApplicabilityDecision(
+  entity_id: string = DEFAULT_ENTITY,
+): AMCRecord[] {
+  return readJson<AMCRecord>(amcRecordKey(entity_id)).filter((r) => r.amc_applicable === null);
+}
+
+// A.3 · Renewal cascade fire
+export interface CascadeFireRecord {
+  id: string;
+  amc_record_id: string;
+  stage: 'first' | 'second' | 'third' | 'final';
+  fired_at: string;
+  fired_by: string;
+  template_id: string | null;
+  email_sent: boolean;
+  notes: string;
+}
+
+const cascadeFireKey = (e: string): string => `servicedesk_v1_cascade_fire_${e}`;
+
+export function fireRenewalCascadeStage(
+  amc_record_id: string,
+  stage: CascadeFireRecord['stage'],
+  fired_by: string,
+  template_id: string | null = null,
+  entity_id: string = DEFAULT_ENTITY,
+): CascadeFireRecord {
+  const fire: CascadeFireRecord = {
+    id: newId('cascade'),
+    amc_record_id,
+    stage,
+    fired_at: nowIso(),
+    fired_by,
+    template_id,
+    email_sent: false,
+    notes: `Renewal cascade ${stage} stage fired`,
+  };
+  const list = readJson<CascadeFireRecord>(cascadeFireKey(entity_id));
+  // [JWT] POST /api/servicedesk/cascade/fire
+  writeJson(cascadeFireKey(entity_id), [...list, fire]);
+  return fire;
+}
+
+export function listCascadeFiresForAMC(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): CascadeFireRecord[] {
+  return readJson<CascadeFireRecord>(cascadeFireKey(entity_id)).filter(
+    (f) => f.amc_record_id === amc_record_id,
+  );
+}
+
+import { getRenewalCascadeSettings } from './cc-compliance-settings';
+
+export function getCascadeStageForAMC(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): 'first' | 'second' | 'third' | 'final' | null {
+  const amc = getAMCRecord(amc_record_id, entity_id);
+  if (!amc?.contract_end) return null;
+  const days = Math.ceil((new Date(amc.contract_end).getTime() - Date.now()) / (86400 * 1000));
+  const settings = getRenewalCascadeSettings(entity_id);
+  if (days <= settings.final_reminder_days) return 'final';
+  if (days <= settings.third_reminder_days) return 'third';
+  if (days <= settings.second_reminder_days) return 'second';
+  if (days <= settings.first_reminder_days) return 'first';
+  return null;
+}
+
+// A.4 · InstallationVerification CRUD
+export function createInstallationVerification(
+  input: Omit<InstallationVerification, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>,
+): InstallationVerification {
+  const now = nowIso();
+  const iv: InstallationVerification = {
+    ...input,
+    id: newId('iv'),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: input.created_by, action: 'created' }],
+  };
+  const list = readJson<InstallationVerification>(installationVerificationKey(input.entity_id));
+  // [JWT] POST /api/servicedesk/installation-verifications
+  writeJson(installationVerificationKey(input.entity_id), [...list, iv]);
+  return iv;
+}
+
+export function getInstallationVerification(
+  id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): InstallationVerification | null {
+  return (
+    readJson<InstallationVerification>(installationVerificationKey(entity_id)).find(
+      (v) => v.id === id,
+    ) ?? null
+  );
+}
+
+export function listInstallationVerifications(filters?: {
+  entity_id?: string;
+  amc_record_id?: string;
+  status?: InstallationVerification['status'];
+}): InstallationVerification[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<InstallationVerification>(installationVerificationKey(entity)).filter((v) => {
+    if (filters?.amc_record_id && v.amc_record_id !== filters.amc_record_id) return false;
+    if (filters?.status && v.status !== filters.status) return false;
+    return true;
+  });
+}
+
+export function markVerificationComplete(
+  id: string,
+  verified_by: string,
+  entity_id: string = DEFAULT_ENTITY,
+): InstallationVerification {
+  const list = readJson<InstallationVerification>(installationVerificationKey(entity_id));
+  const idx = list.findIndex((v) => v.id === id);
+  if (idx === -1) throw new Error(`InstallationVerification ${id} not found`);
+  const iv = list[idx];
+  // 7-point checklist gate
+  const allChecked =
+    iv.functional_check_passed &&
+    iv.spare_inventory_verified &&
+    iv.service_tier_config_verified &&
+    iv.customer_briefing_done &&
+    iv.emergency_contact_shared &&
+    iv.documentation_handed_over &&
+    iv.customer_acknowledgement;
+  if (!allChecked) {
+    throw new Error('Cannot mark verified · all 7 checklist items required');
+  }
+  const now = nowIso();
+  list[idx] = {
+    ...iv,
+    status: 'verified',
+    verified_by,
+    verified_at: now,
+    updated_at: now,
+    audit_trail: appendAudit(iv.audit_trail, verified_by, 'marked_verified'),
+  };
+  // [JWT] PUT /api/servicedesk/installation-verifications/:id/verify
+  writeJson(installationVerificationKey(entity_id), list);
+  return list[idx];
+}
+
+export function isAMCKickoffBlocked(
+  amc_record_id: string,
+  entity_id: string = DEFAULT_ENTITY,
+): boolean {
+  const verifications = listInstallationVerifications({ entity_id, amc_record_id });
+  return !verifications.some((v) => v.status === 'verified');
+}
+
+// A.5 · Risk re-compute on settings update
+export function recomputeAllAMCRiskScores(
+  entity_id: string = DEFAULT_ENTITY,
+  triggered_by: string = 'system',
+): { recomputed: number; ids: string[] } {
+  const list = readJson<AMCRecord>(amcRecordKey(entity_id));
+  const updated: AMCRecord[] = list.map((r) => {
+    const score = computeAMCRiskScore(r.id, entity_id);
+    return {
+      ...r,
+      risk_score: score.risk_score,
+      risk_bucket: score.risk_bucket,
+      renewal_probability: score.renewal_probability,
+      updated_at: nowIso(),
+      audit_trail: appendAudit(r.audit_trail, triggered_by, 'risk_recomputed_from_settings'),
+    };
+  });
+  // [JWT] POST /api/servicedesk/amc-records/recompute-all-risk
+  writeJson(amcRecordKey(entity_id), updated);
+  return { recomputed: updated.length, ids: updated.map((r) => r.id) };
 }

@@ -1,8 +1,8 @@
 /**
  * @file        src/pages/erp/servicedesk/ServiceDeskPage.tsx
- * @purpose     ServiceDesk main page · Shell pattern · 12th card · activeModule switch
- * @sprint      T-Phase-1.C.1a · Block F.1 · v2 spec
- * @decisions   D-250 Shell pattern · FR-58 · D-NEW-CC 'd *' (FR-74 keyboard namespace) · D-NEW-CT 12th card already seeded
+ * @purpose     ServiceDesk main page · Shell pattern · 12th card · activeModule switch · EXTENDED at C.1b
+ * @sprint      T-Phase-1.C.1a · Block F.1 · v2 spec · EXTENDED at C.1b
+ * @decisions   D-250 Shell pattern · FR-58 · D-NEW-CC 'd *' (FR-74) · D-NEW-CT 12th card seeded
  * @iso        Usability
  */
 import { useState } from 'react';
@@ -11,16 +11,74 @@ import { servicedeskShellConfig } from '@/apps/erp/configs/servicedesk-shell-con
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { ServiceDeskModule } from './ServiceDeskSidebar.types';
 import { ServiceDeskWelcome } from './ServiceDeskWelcome';
+import { AMCApplicabilityDecision } from './amc-pipeline/AMCApplicabilityDecision';
+import { AMCProposalList } from './amc-pipeline/AMCProposalList';
+import { AMCProposalDetail } from './amc-pipeline/AMCProposalDetail';
+import { AMCActiveList } from './amc-pipeline/AMCActiveList';
+import { AMCExpiringList } from './amc-pipeline/AMCExpiringList';
+import { AMCLapsedList } from './amc-pipeline/AMCLapsedList';
+import { InstallationVerificationList } from './installation-verification/InstallationVerificationList';
+import { InstallationVerificationDetail } from './installation-verification/InstallationVerificationDetail';
+import { AMCRenewalForecast } from './reports/AMCRenewalForecast';
+import { RiskEngineSettings } from './settings/RiskEngineSettings';
+import { RenewalCascadeSettings } from './settings/RenewalCascadeSettings';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
+  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+  const [selectedIVId, setSelectedIVId] = useState<string | null>(null);
   const { entitlements, profile } = useCardEntitlement();
 
   const renderModule = (): JSX.Element => {
     switch (activeModule) {
       case 'welcome':
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
-      // Future modules land in C.1b-C.1f
+      case 'amc-applicability-decision':
+        return <AMCApplicabilityDecision />;
+      case 'amc-proposal-list':
+        return (
+          <AMCProposalList
+            onOpen={(id) => {
+              setSelectedProposalId(id);
+              setActiveModule('amc-proposal-detail');
+            }}
+          />
+        );
+      case 'amc-proposal-detail':
+        return (
+          <AMCProposalDetail
+            proposalId={selectedProposalId ?? ''}
+            onBack={() => setActiveModule('amc-proposal-list')}
+          />
+        );
+      case 'amc-active-list':
+        return <AMCActiveList />;
+      case 'amc-expiring-list':
+        return <AMCExpiringList />;
+      case 'amc-lapsed-list':
+        return <AMCLapsedList />;
+      case 'installation-verification-list':
+        return (
+          <InstallationVerificationList
+            onOpen={(id) => {
+              setSelectedIVId(id);
+              setActiveModule('installation-verification-detail');
+            }}
+          />
+        );
+      case 'installation-verification-detail':
+        return (
+          <InstallationVerificationDetail
+            verificationId={selectedIVId ?? undefined}
+            onBack={() => setActiveModule('installation-verification-list')}
+          />
+        );
+      case 'amc-renewal-forecast':
+        return <AMCRenewalForecast />;
+      case 'risk-engine-settings':
+        return <RiskEngineSettings />;
+      case 'renewal-cascade-settings':
+        return <RenewalCascadeSettings />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }

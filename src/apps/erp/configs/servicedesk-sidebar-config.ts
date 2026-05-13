@@ -1,7 +1,7 @@
 /**
  * @file        src/apps/erp/configs/servicedesk-sidebar-config.ts
- * @purpose     ServiceDesk canonical sidebar · 8 groups · 12th card on Shell · FR-74 'd' keyboard namespace
- * @sprint      T-Phase-1.C.1a · Block F.5 · v2 spec
+ * @purpose     ServiceDesk canonical sidebar · 8 groups + IV group · FR-74 'd' keyboard namespace
+ * @sprint      T-Phase-1.C.1a · Block F.5 · v2 spec · EXTENDED at C.1b (8 comingSoon flips + IV group)
  * @decisions   D-NEW-CC 'd *' namespace · D-NEW-CT 12th sidebar
  * @iso        Usability + Maintainability
  */
@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Building,
   Settings,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -34,11 +35,21 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'AMC Pipeline',
     icon: ListChecks,
     children: [
-      { id: 'amc-applicability', type: 'item', label: 'Applicability Decision', moduleId: 'amc-applicability-decision', requiredCards: ['servicedesk'], keyboard: 'd a a', comingSoon: true },
-      { id: 'amc-proposal', type: 'item', label: 'Proposals', moduleId: 'amc-proposal-list', requiredCards: ['servicedesk'], keyboard: 'd a p', comingSoon: true },
-      { id: 'amc-active', type: 'item', label: 'Active AMCs', moduleId: 'amc-active-list', requiredCards: ['servicedesk'], keyboard: 'd a v', comingSoon: true },
-      { id: 'amc-expiring', type: 'item', label: 'Expiring Soon', moduleId: 'amc-expiring-list', requiredCards: ['servicedesk'], keyboard: 'd a e', comingSoon: true },
-      { id: 'amc-lapsed', type: 'item', label: 'Lapsed', moduleId: 'amc-lapsed-list', requiredCards: ['servicedesk'], keyboard: 'd a l', comingSoon: true },
+      { id: 'amc-applicability', type: 'item', label: 'Applicability Decision', moduleId: 'amc-applicability-decision', requiredCards: ['servicedesk'], keyboard: 'd a a' },
+      { id: 'amc-proposal', type: 'item', label: 'Proposals', moduleId: 'amc-proposal-list', requiredCards: ['servicedesk'], keyboard: 'd a p' },
+      { id: 'amc-active', type: 'item', label: 'Active AMCs', moduleId: 'amc-active-list', requiredCards: ['servicedesk'], keyboard: 'd a v' },
+      { id: 'amc-expiring', type: 'item', label: 'Expiring Soon', moduleId: 'amc-expiring-list', requiredCards: ['servicedesk'], keyboard: 'd a e' },
+      { id: 'amc-lapsed', type: 'item', label: 'Lapsed', moduleId: 'amc-lapsed-list', requiredCards: ['servicedesk'], keyboard: 'd a l' },
+    ],
+  },
+  {
+    id: 'installation-verification-group',
+    type: 'group',
+    label: 'Installation Verification',
+    icon: ClipboardCheck,
+    children: [
+      { id: 'iv-list', type: 'item', label: 'All Verifications', moduleId: 'installation-verification-list', requiredCards: ['servicedesk'], keyboard: 'd i l' },
+      { id: 'iv-detail', type: 'item', label: 'Verification Detail', moduleId: 'installation-verification-detail', requiredCards: ['servicedesk'], keyboard: 'd i d' },
     ],
   },
   {
@@ -69,7 +80,7 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'Reports',
     icon: BarChart3,
     children: [
-      { id: 'amc-renewal-forecast', type: 'item', label: 'Renewal Forecast', moduleId: 'amc-renewal-forecast', requiredCards: ['servicedesk'], keyboard: 'd r f', comingSoon: true },
+      { id: 'amc-renewal-forecast', type: 'item', label: 'Renewal Forecast', moduleId: 'amc-renewal-forecast', requiredCards: ['servicedesk'], keyboard: 'd r f' },
       { id: 'sla-performance', type: 'item', label: 'SLA Performance', moduleId: 'sla-performance', requiredCards: ['servicedesk'], keyboard: 'd r s', comingSoon: true },
       { id: 'csat-happy-code', type: 'item', label: 'CSAT · HappyCode', moduleId: 'csat-happy-code', requiredCards: ['servicedesk'], keyboard: 'd r h', comingSoon: true },
       { id: 'service-day-book', type: 'item', label: 'Service Day Book', moduleId: 'service-day-book', requiredCards: ['servicedesk'], keyboard: 'd r d', comingSoon: true },
@@ -111,9 +122,9 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'Settings',
     icon: Settings,
     children: [
-      { id: 'risk-engine-settings', type: 'item', label: 'Risk Engine', moduleId: 'risk-engine-settings', requiredCards: ['servicedesk'], keyboard: 'd g r', comingSoon: true },
+      { id: 'risk-engine-settings', type: 'item', label: 'Risk Engine', moduleId: 'risk-engine-settings', requiredCards: ['servicedesk'], keyboard: 'd g r' },
       { id: 'commission-settings', type: 'item', label: 'Commission Rates', moduleId: 'commission-settings', requiredCards: ['servicedesk'], keyboard: 'd g c', comingSoon: true },
-      { id: 'renewal-cascade-settings', type: 'item', label: 'Renewal Cascade', moduleId: 'renewal-cascade-settings', requiredCards: ['servicedesk'], keyboard: 'd g n', comingSoon: true },
+      { id: 'renewal-cascade-settings', type: 'item', label: 'Renewal Cascade', moduleId: 'renewal-cascade-settings', requiredCards: ['servicedesk'], keyboard: 'd g n' },
       { id: 'email-templates', type: 'item', label: 'Email Templates', moduleId: 'email-templates', requiredCards: ['servicedesk'], keyboard: 'd g e', comingSoon: true },
       { id: 'tellicaller-triggers', type: 'item', label: 'Tellicaller Triggers', moduleId: 'tellicaller-triggers', requiredCards: ['servicedesk'], keyboard: 'd g t', comingSoon: true },
       { id: 'call-type-master', type: 'item', label: 'Call Type Master', moduleId: 'call-type-master', requiredCards: ['servicedesk'], keyboard: 'd g m', comingSoon: true },
