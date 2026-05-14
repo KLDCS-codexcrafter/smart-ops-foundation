@@ -636,3 +636,65 @@ export function listProcure360OEMClaimStubs(): Procure360OEMClaimStubEntry[] {
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
+
+// ============================================================================
+// C.1f · OUTBOUND 11 · D-NEW-DI Sarathi 2nd consumer wire ⭐
+// Procure360 vendor profile mobile-view retrofit · stub-pattern (matches FR-75)
+// FR-78 promotion path activated for C.2
+// ============================================================================
+export interface ServiceDeskMobileVendorViewEvent {
+  type: 'servicedesk:mobile_vendor_view_request';
+  oem_claim_packet_id: string;
+  vendor_id: string;
+  entity_id: string;
+  requested_at: string;
+  view_purpose: 'oem_claim_status' | 'oem_claim_response' | 'vendor_profile_update';
+  originating_card_id: 'servicedesk';
+}
+
+export function emitMobileVendorViewToProcure360(
+  payload: Omit<ServiceDeskMobileVendorViewEvent, 'type' | 'requested_at' | 'originating_card_id'>,
+): ServiceDeskMobileVendorViewEvent {
+  // [JWT] POST /api/procure-hub/sarathi/mobile-vendor-view
+  const event: ServiceDeskMobileVendorViewEvent = {
+    type: 'servicedesk:mobile_vendor_view_request',
+    requested_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    ...payload,
+  };
+  consumeMobileVendorViewFromServiceDesk(event);
+  return event;
+}
+
+const procureHubSarathiMobileKey = 'procure_hub_servicedesk_sarathi_mobile_stub_v1';
+
+interface ProcureHubSarathiMobileStubEntry {
+  oem_claim_packet_id: string;
+  vendor_id: string;
+  view_purpose: string;
+  received_at: string;
+}
+
+export function consumeMobileVendorViewFromServiceDesk(
+  event: ServiceDeskMobileVendorViewEvent,
+): { ack: true; stubbed: true; vendor_id: string } {
+  try {
+    const raw = localStorage.getItem(procureHubSarathiMobileKey);
+    const list: ProcureHubSarathiMobileStubEntry[] = raw ? JSON.parse(raw) : [];
+    list.push({
+      oem_claim_packet_id: event.oem_claim_packet_id,
+      vendor_id: event.vendor_id,
+      view_purpose: event.view_purpose,
+      received_at: new Date().toISOString(),
+    });
+    localStorage.setItem(procureHubSarathiMobileKey, JSON.stringify(list));
+  } catch { /* quota silent */ }
+  return { ack: true, stubbed: true, vendor_id: event.vendor_id };
+}
+
+export function listProcureHubSarathiMobileStubs(): ProcureHubSarathiMobileStubEntry[] {
+  try {
+    const raw = localStorage.getItem(procureHubSarathiMobileKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
