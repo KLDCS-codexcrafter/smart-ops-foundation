@@ -95,27 +95,29 @@ export function OpeningStockPanel() {
   [grid, postedItemIds]);
 
   const totalValue = useMemo(() => {
+    const mp = resolveMoneyPrecision(null, null);
+    const qp = resolveQtyPrecision(undefined);
     let v = 0;
     Object.entries(grid).forEach(([, row]) => {
       // batches
       row.batches.forEach(b => {
-        const q = parseFloat(b.qty || '0') || 0;
-        const r = parseFloat(b.rate || '0') || 0;
-        v += q * r;
+        const q = roundTo(parseFloat(b.qty || '0') || 0, qp);
+        const r = roundTo(parseFloat(b.rate || '0') || 0, mp);
+        v = dAdd(v, dMul(q, r));
       });
       // serials
       row.serials.forEach(s => {
-        const r = parseFloat(s.rate || '0') || 0;
-        v += r;
+        const r = roundTo(parseFloat(s.rate || '0') || 0, mp);
+        v = dAdd(v, r);
       });
       // flat qty
       activeCols.forEach(col => {
-        const q = parseFloat(row.qty[col.id] || '0') || 0;
-        const r = parseFloat(row.rate[col.id] || '0') || 0;
-        v += q * r;
+        const q = roundTo(parseFloat(row.qty[col.id] || '0') || 0, qp);
+        const r = roundTo(parseFloat(row.rate[col.id] || '0') || 0, mp);
+        v = dAdd(v, dMul(q, r));
       });
     });
-    return v;
+    return roundTo(v, mp);
   }, [grid, activeCols]);
 
   const ensureRow = (g: GridState, id: string): RowState =>
