@@ -40,6 +40,7 @@ import {
 } from '@/lib/vendor-analytics-engine';
 import type { BranchOffice } from '@/types/branch-office';
 import type { Division, Department } from '@/types/org-structure';
+import { divisionsKey, departmentsKey } from '@/types/org-structure';
 
 const inr = (n: number): string =>
   '₹' + Math.abs(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
