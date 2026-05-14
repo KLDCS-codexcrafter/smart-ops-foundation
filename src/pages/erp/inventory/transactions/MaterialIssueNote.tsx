@@ -42,7 +42,7 @@ import { useHazmatProfiles } from '@/hooks/useHazmatProfiles';
 import { areDgClassesCompatible, DG_CLASS_LABELS } from '@/types/hazmat-profile';
 import { generateDocNo } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
+import { dMul, dAdd, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import {
   MIN_STATUS_LABELS, MIN_STATUS_COLORS,
