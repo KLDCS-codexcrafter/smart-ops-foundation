@@ -47,6 +47,11 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
     expect(sitexEntitlement?.status).toBe('active');
   });
 
+  it('C.2.T1 · servicedesk status is ACTIVE not LOCKED (status flip · MOAT #24 banks · 2-step ceremony enforced)', () => {
+    const sd = seedDemoEntitlements('test-tenant').find((e) => e.card_id === 'servicedesk');
+    expect(sd?.status).toBe('active');
+  });
+
   for (const file of sidebarConfigs) {
     it(`${file} · all requiredCards must be in seedDemoEntitlements`, () => {
       const required = extractRequiredCards(`${CONFIG_DIR}/${file}`);

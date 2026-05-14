@@ -140,3 +140,15 @@ ServiceDesk becomes the **24th MOAT** in Operix institutional moat catalog.
 ## ACs satisfied: 14/14 ✓
 
 Status flip COMPLETE ⭐ · MOAT #24 BANKED ⭐ · ServiceDesk 7-sprint arc CLOSED ⭐
+
+---
+
+## T1 Audit-Fix · Sidebar Visibility (Entity-Tier Seed Flip)
+
+**Issue:** First-pass landed status flip in `applications.ts` but missed the entity-tier seed in `card-entitlement-engine.ts:86` (`one('servicedesk', 'locked')`). Sidebar filter (`status === 'active' || 'trial'`) excluded servicedesk → empty sidebar at /erp/servicedesk.
+
+**Precedent:** 4th instance of 2-step status-flip ceremony (A.13 EngineeringX · A.15a SiteX · A.17 MaintainPro · C.2 ServiceDesk).
+
+**Fix:** 1-line flip `one('servicedesk', 'locked')` → `one('servicedesk')` + 1 NEW defensive assertion in `seed-entitlement-coverage.test.ts` mirroring sitex Q-LOCK-16a pattern.
+
+**Verification:** TSC 0 · ESLint 0/0 · operational sidebar now renders.

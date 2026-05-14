@@ -83,7 +83,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('maintainpro'),  // A.17 STATUS FLIP · MOAT #23 banks · matches A.13 EngineeringX + A.15a SiteX precedent
     one('requestx', 'locked'),
     one('frontdesk', 'locked'),
-    one('servicedesk', 'locked'),
+    one('servicedesk'),  // C.2.T1 STATUS FLIP · MOAT #24 banks · matches A.13 EngineeringX + A.15a SiteX + A.17 MaintainPro precedent
     // ─── A.13.T2 Hotfix · seed parity with active Shell-pattern cards ───
     // 4 cards drifted out of seed coverage over A.8/A.9.T1/A.10/A.13. Without seed entries the
     // matrix filter denied all sidebar items → empty sidebars. Invariant test in
