@@ -19,6 +19,7 @@ import { OWNERSHIP_LABELS, RENTED_TYPES, DEPARTMENT_LABELS, DEPARTMENT_BADGE_COL
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 const STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Andaman & Nicobar Islands'];
 const OWN_C:Record<string,string>={own_own_stock:'bg-emerald-500/10 text-emerald-700',own_third_party_stock:'bg-blue-500/10 text-blue-700',third_party_our_stock:'bg-amber-500/10 text-amber-700',third_party_third_party_stock:'bg-slate-500/10 text-slate-600',job_work_location:'bg-purple-500/10 text-purple-700',consignment_at_dealer:'bg-cyan-500/10 text-cyan-700',cwc_swc_godown:'bg-orange-500/10 text-orange-700',customs_bonded:'bg-red-500/10 text-red-700',sez_ftz:'bg-indigo-500/10 text-indigo-700'};
@@ -230,7 +231,7 @@ export function StorageMatrixPanel(){
     </div>
     <Separator/>
     <div className='grid grid-cols-2 gap-4'>
-      <div className='space-y-1.5'><Label>Total Capacity</Label><Input type='number' value={gf.total_capacity||''} onChange={e=>setGf(f=>({...f,total_capacity:parseFloat(e.target.value)||null}))}/></div>
+      <div className='space-y-1.5'><Label>Total Capacity</Label><Input type='number' value={gf.total_capacity||''} onChange={e=>setGf(f=>({...f,total_capacity:roundTo(parseFloat(e.target.value),resolveQtyPrecision(undefined))||null}))}/></div>
       <div className='space-y-1.5'><Label>Unit</Label><Select value={gf.capacity_unit} onValueChange={v=>setGf(f=>({...f,capacity_unit:v}))}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['sqft','sqm','cubic_meter','pallets','quintals','MT'].map(u=><SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select></div>
     </div>
     </TabsContent>
@@ -247,7 +248,7 @@ export function StorageMatrixPanel(){
     <Separator/>
     <div className='grid grid-cols-3 gap-4'>
       <div className='space-y-1.5'><Label>Monthly Rent (₹)</Label>
-        <Input type='number' value={af.monthly_rent||''} onChange={e=>{const r=parseFloat(e.target.value)||null;setAf(f=>({...f,monthly_rent:r}));checkTDS(r);}}/></div>
+        <Input type='number' value={af.monthly_rent||''} onChange={e=>{const r=roundTo(parseFloat(e.target.value),resolveMoneyPrecision(null,null))||null;setAf(f=>({...f,monthly_rent:r}));checkTDS(r);}}/></div>
       <div className='space-y-1.5'><Label>Security Deposit (₹)</Label><Input type='number' value={af.security_deposit||''} onChange={e=>setAf(f=>({...f,security_deposit:parseFloat(e.target.value)||null}))}/></div>
       <div className='space-y-1.5'><Label>Billing Cycle</Label><Select value={af.billing_cycle} onValueChange={v=>setAf(f=>({...f,billing_cycle:v as typeof f.billing_cycle}))}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['monthly','quarterly','annual'].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
       <div className='space-y-1.5'><Label>Escalation %/Year</Label><Input type='number' placeholder='5' value={af.escalation_rate||''} onChange={e=>setAf(f=>({...f,escalation_rate:parseFloat(e.target.value)||null}))}/></div>

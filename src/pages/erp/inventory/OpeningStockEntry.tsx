@@ -15,6 +15,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { stockLedgerKey } from '@/lib/fincore-engine';
 import { onEnterNext } from '@/lib/keyboard';
+import { dMul, dAdd, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 const IKEY = 'erp_inventory_items';
 // [JWT] GET /api/entity/storage/:key
@@ -94,27 +95,29 @@ export function OpeningStockPanel() {
   [grid, postedItemIds]);
 
   const totalValue = useMemo(() => {
+    const mp = resolveMoneyPrecision(null, null);
+    const qp = resolveQtyPrecision(undefined);
     let v = 0;
     Object.entries(grid).forEach(([, row]) => {
       // batches
       row.batches.forEach(b => {
-        const q = parseFloat(b.qty || '0') || 0;
-        const r = parseFloat(b.rate || '0') || 0;
-        v += q * r;
+        const q = roundTo(parseFloat(b.qty || '0') || 0, qp);
+        const r = roundTo(parseFloat(b.rate || '0') || 0, mp);
+        v = dAdd(v, dMul(q, r));
       });
       // serials
       row.serials.forEach(s => {
-        const r = parseFloat(s.rate || '0') || 0;
-        v += r;
+        const r = roundTo(parseFloat(s.rate || '0') || 0, mp);
+        v = dAdd(v, r);
       });
       // flat qty
       activeCols.forEach(col => {
-        const q = parseFloat(row.qty[col.id] || '0') || 0;
-        const r = parseFloat(row.rate[col.id] || '0') || 0;
-        v += q * r;
+        const q = roundTo(parseFloat(row.qty[col.id] || '0') || 0, qp);
+        const r = roundTo(parseFloat(row.rate[col.id] || '0') || 0, mp);
+        v = dAdd(v, dMul(q, r));
       });
     });
-    return v;
+    return roundTo(v, mp);
   }, [grid, activeCols]);
 
   const ensureRow = (g: GridState, id: string): RowState =>
@@ -218,6 +221,8 @@ export function OpeningStockPanel() {
     const now = new Date().toISOString();
     const allItems: InventoryItem[] = ls(IKEY);
     let mrpUpdates = 0;
+    const mp = resolveMoneyPrecision(null, null);
+    const qp = resolveQtyPrecision(undefined);
 
     Object.entries(grid).forEach(([itemId, row]) => {
       if (postedItemIds.has(itemId)) return;
@@ -227,8 +232,8 @@ export function OpeningStockPanel() {
       if (item.batch_tracking) {
         // One entry per batch row
         row.batches.forEach(b => {
-          const qty = parseFloat(b.qty || '0') || 0;
-          const rate = parseFloat(b.rate || '0') || 0;
+          const qty = roundTo(parseFloat(b.qty || '0') || 0, qp);
+          const rate = roundTo(parseFloat(b.rate || '0') || 0, mp);
           if (qty <= 0) return;
           const col = activeCols.find(c => c.id === b.godown_id) || activeCols[0];
           toPost.push({
@@ -238,7 +243,7 @@ export function OpeningStockPanel() {
             batch_number: b.batch_no || null,
             mfg_date: b.mfg_date || null,
             expiry_date: b.expiry_date || null,
-            quantity: qty, rate, value: qty * rate,
+            quantity: qty, rate, value: roundTo(dMul(qty, rate), mp),
             mrp: row.mrp ? parseFloat(row.mrp) : null,
             std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
             status: 'posted', created_at: now, updated_at: now,
@@ -247,7 +252,7 @@ export function OpeningStockPanel() {
       } else if (item.serial_tracking) {
         // One entry per serial row, qty = 1
         row.serials.forEach(s => {
-          const rate = parseFloat(s.rate || '0') || 0;
+          const rate = roundTo(parseFloat(s.rate || '0') || 0, mp);
           const col = activeCols.find(c => c.id === s.godown_id) || activeCols[0];
           toPost.push({
             id: `os-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -265,14 +270,14 @@ export function OpeningStockPanel() {
       } else {
         // Flat — one entry per godown
         activeCols.forEach(col => {
-          const qty = parseFloat(row.qty[col.id] || '0') || 0;
-          const rate = parseFloat(row.rate[col.id] || '0') || 0;
+          const qty = roundTo(parseFloat(row.qty[col.id] || '0') || 0, qp);
+          const rate = roundTo(parseFloat(row.rate[col.id] || '0') || 0, mp);
           if (qty <= 0) return;
           toPost.push({
             id: `os-${Date.now()}-${Math.random().toString(36).slice(2)}`,
             item_id: itemId, item_code: item.code, item_name: item.name,
             godown_id: col.id, godown_name: col.name,
-            quantity: qty, rate, value: qty * rate,
+            quantity: qty, rate, value: roundTo(dMul(qty, rate), mp),
             mrp: row.mrp ? parseFloat(row.mrp) : null,
             std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
             status: 'posted', created_at: now, updated_at: now,
@@ -474,7 +479,7 @@ export function OpeningStockPanel() {
               const batchQtyByGodown: Record<string, number> = {};
               if (item.batch_tracking && row?.batches) {
                 row.batches.forEach(b => {
-                  batchQtyByGodown[b.godown_id] = (batchQtyByGodown[b.godown_id] || 0) + (parseFloat(b.qty) || 0);
+                  batchQtyByGodown[b.godown_id] = dAdd(batchQtyByGodown[b.godown_id] || 0, roundTo(parseFloat(b.qty) || 0, resolveQtyPrecision(undefined)));
                 });
               }
               const serialCountByGodown: Record<string, number> = {};

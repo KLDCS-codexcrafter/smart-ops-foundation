@@ -27,6 +27,7 @@ import type { ItemQCParam } from '@/types/item-qc-param';
 import type { ItemPartyCode } from '@/types/item-party-code';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 import { onEnterNext } from '@/lib/keyboard';
+import { roundTo, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 /* ─── constants ─── */
 const ITEM_TYPES: ItemType[] = [
@@ -837,10 +838,10 @@ export function ItemCraftPanel() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5"><Label>Net Weight / unit</Label>
                     <Input type="number" min="0" step="0.001" value={form.net_weight || ''}
-                      onChange={e => setForm(f => ({ ...f, net_weight: parseFloat(e.target.value) || null }))} /></div>
+                      onChange={e => setForm(f => ({ ...f, net_weight: roundTo(parseFloat(e.target.value), resolveQtyPrecision(undefined)) || null }))} /></div>
                   <div className="space-y-1.5"><Label>Gross Weight / unit</Label>
                     <Input type="number" min="0" step="0.001" value={form.gross_weight || ''}
-                      onChange={e => setForm(f => ({ ...f, gross_weight: parseFloat(e.target.value) || null }))} /></div>
+                      onChange={e => setForm(f => ({ ...f, gross_weight: roundTo(parseFloat(e.target.value), resolveQtyPrecision(undefined)) || null }))} /></div>
                   <div className="space-y-1.5"><Label>Weight Unit</Label>
                     <Select value={form.weight_unit || 'kg'} onValueChange={v => setForm(f => ({ ...f, weight_unit: v }))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>

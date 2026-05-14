@@ -43,7 +43,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { dMul, dAdd, dSub, round2 } from '@/lib/decimal-helpers';
+import { dMul, dAdd, dSub, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
 // Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
 import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
@@ -1156,7 +1156,7 @@ export function GRNEntryPanel() {
               </div>
               <div className="space-y-1.5"><Label>Unit Rate (₹)</Label>
                 <Input type="number" value={draftLine.unit_rate || ''}
-                  onChange={e => setDraftLine(l => ({ ...l, unit_rate: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(l => ({ ...l, unit_rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
             </div>
             {draftLine.item_type === 'Raw Material' && (
