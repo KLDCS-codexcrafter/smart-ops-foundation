@@ -152,3 +152,32 @@ Status flip COMPLETE ⭐ · MOAT #24 BANKED ⭐ · ServiceDesk 7-sprint arc CLOS
 **Fix:** 1-line flip `one('servicedesk', 'locked')` → `one('servicedesk')` + 1 NEW defensive assertion in `seed-entitlement-coverage.test.ts` mirroring sitex Q-LOCK-16a pattern.
 
 **Verification:** TSC 0 · ESLint 0/0 · operational sidebar now renders.
+
+---
+
+## T2 Audit-Fix · Stale-Status Migration Hotfix (audit cycle #49 · 2nd consecutive Closeout founder visual catch)
+
+**Issue:** After C.2.T1 seed flip, sidebar still invisible to existing tenants. Founder visual inspection at `/erp/servicedesk` confirmed empty sidebar.
+
+**Root cause:** Existing tenants have `{servicedesk: 'locked'}` persisted in localStorage from before C.2. The T1 seed-flip only affects fresh tenants. The D-NEW-BB stale-status migration block in `useCardEntitlement.ts` was not extended for servicedesk.
+
+**Institutional learning · 3-step status-flip ceremony confirmed:**
+1. `applications.ts` catalog flip (C.2 first-pass)
+2. `card-entitlement-engine.ts` seed flip for new tenants (C.2.T1)
+3. `useCardEntitlement.ts` D-NEW-BB migration for existing tenants (C.2.T2 ← this fix)
+
+A.17.T1 inline comment explicitly warned of this trap; C.2 reproduced it identically. The "2-step ceremony" mental model is upgraded to **3-step ceremony** — registered as institutional discipline.
+
+**D-NEW-BB consumer count:** 7 → **8** (gateflow/production · procure360 · qualicheck · engineeringx · sitex · maintainpro · **servicedesk**) · plus self-healing seed parity.
+
+**Surgical fix:**
+- `src/hooks/useCardEntitlement.ts` lines ~94-100: added `const servicedesk = … && status === 'locked'` block + extended `if` condition (8 LOC including comment).
+- `src/test/servicedesk-stale-status-migration.test.ts`: 4 NEW tests (migration · access · idempotency · source-level guard).
+
+**Verification:**
+- TSC: 0 ✓
+- ESLint: 0 errors / 0 warnings ✓
+- Vitest (new file): 4/4 passing ✓
+- Operational: stale `{servicedesk: 'locked'}` localStorage now self-heals to `'active'` on next hook init → sidebar renders.
+
+**MOAT #24 operationally banked at T2 close.**
