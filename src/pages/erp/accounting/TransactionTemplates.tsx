@@ -21,6 +21,8 @@ import { TEMPLATE_VARIABLES, PREVIEW_VARS, VOUCHER_TYPE_NAMES,
   applyVariables } from '@/types/transaction-template';
 import { cn } from '@/lib/utils';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { departmentsKey } from '@/types/org-structure';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 const DEPT_LABELS = ['Sales','Purchase','Accounts','Stores','HR','Admin','Universal'];
 
@@ -60,6 +62,7 @@ const BLANK: Omit<TransactionTemplate,'id'|'code'|'created_at'|'updated_at'> = {
 };
 
 export function TransactionTemplatesPanel() {
+  const { entityCode } = useEntityCode();
   const { templates, narrationCount, termsCount, enforcementCount,
     createTemplate, updateTemplate, deleteTemplate, toggleStatus } = useTransactionTemplates();
 
@@ -141,11 +144,13 @@ export function TransactionTemplatesPanel() {
 
   const orgDepts: { id: string; name: string }[] = useMemo(() => {
     try {
-      // [JWT] GET /api/foundation/departments
-      const raw = localStorage.getItem('erp_departments');
+      // [JWT] GET /api/foundation/departments?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const scopedRaw = localStorage.getItem(departmentsKey(entityCode));
+      const raw = scopedRaw ?? localStorage.getItem('erp_departments');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const renderTable = () => (
     <Table>

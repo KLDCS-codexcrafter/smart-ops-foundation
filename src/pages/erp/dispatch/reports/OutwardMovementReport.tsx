@@ -124,7 +124,7 @@ export function OutwardMovementReportPanel({ entityCode }: Props) {
     () => samPersons.filter(p => p.person_type === 'agent' || p.person_type === 'broker'),
     [samPersons],
   );
-  const employees = useMemo(() => ls<Employee>('erp_employees'), []);
+  const employees = useMemo(() => ls<Employee>(`erp_employees_${entityCode}`).length ? ls<Employee>(`erp_employees_${entityCode}`) : ls<Employee>('erp_employees'), [entityCode]);
 
   // Filter state
   const [customerSearch, setCustomerSearch] = useState('');

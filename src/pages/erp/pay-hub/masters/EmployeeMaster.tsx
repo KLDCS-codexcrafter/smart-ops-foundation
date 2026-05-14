@@ -22,6 +22,7 @@ import { useEmployees } from '@/hooks/useEmployees';
 import type { Employee, FamilyMember, EquipmentIssued, LoanDetail,
   LICPolicy, PrevEmployerDetail, EmployeeDocument, DocType } from '@/types/employee';
 import { BLANK_EMPLOYEE, DOC_TYPE_LABELS, EMPLOYEE_STATUS_COLORS } from '@/types/employee';
+import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/india-geography';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
@@ -97,19 +98,21 @@ export function EmployeeMasterPanel() {
   // ── Cross-module data reads ─────────────────────────────────────────
   const departments: { id: string; name: string; divisionId?: string }[] = useMemo(() => {
     try {
-      // [JWT] GET /api/foundation/departments
-      const raw = localStorage.getItem("erp_departments");
+      // [JWT] GET /api/foundation/departments?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const raw = localStorage.getItem(departmentsKey(entityCode)) ?? localStorage.getItem("erp_departments");
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const divisions: { id: string; name: string }[] = useMemo(() => {
     try {
-      // [JWT] GET /api/foundation/divisions
-      const raw = localStorage.getItem("erp_divisions");
+      // [JWT] GET /api/foundation/divisions?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const raw = localStorage.getItem(divisionsKey(entityCode)) ?? localStorage.getItem("erp_divisions");
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const salaryStructures: { id: string; code: string; name: string }[] = useMemo(() => {
     try {

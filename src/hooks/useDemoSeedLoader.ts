@@ -17,6 +17,8 @@ import {
   DEMO_LOAN_APPLICATIONS, DEMO_SALARY_ADVANCES, generateAttendanceRecords,
 } from '@/data/demo-transactions-pay-hub';
 import { payrollRunsKey } from '@/types/payroll-run';
+import { employeesKey } from '@/types/employee';
+import { attendanceRecordsKey } from '@/types/attendance-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
@@ -108,7 +110,8 @@ function loadFoundationMasters(): void {
 // ── Pay Hub master loader ───────────────────────────────────────────────
 
 function loadPayHubMasters(): void {
-  safeSet('erp_employees', DEMO_EMPLOYEES);
+  // [Hardening-A · Block A] Entity-scoped employees seed for DEFAULT entity.
+  safeSet(employeesKey(DEFAULT_ENTITY_SHORTCODE), DEMO_EMPLOYEES);
   safeSet('erp_salary_structures', DEMO_SALARY_STRUCTURES);
   safeSet('erp_pay_grades', DEMO_PAY_GRADES);
   safeSet('erp_shifts', DEMO_SHIFTS);
@@ -130,14 +133,15 @@ function loadPayHubTransactions(): void {
   safeSet('erp_loan_applications', DEMO_LOAN_APPLICATIONS);
   safeSet('erp_salary_advances', DEMO_SALARY_ADVANCES);
 
-  // Generate attendance records at runtime
-  // [JWT] GET /api/entity/storage/erp_attendance_records
-  const existingAtt = localStorage.getItem('erp_attendance_records');
+  // Generate attendance records at runtime · entity-scoped (Hardening-A · Block A).
+  const attKey = attendanceRecordsKey(DEFAULT_ENTITY_SHORTCODE);
+  // [JWT] GET /api/entity/storage/{attKey}
+  const existingAtt = localStorage.getItem(attKey);
   if (!existingAtt || JSON.parse(existingAtt).length === 0) {
     const empIds = DEMO_EMPLOYEES.map(e => e.id);
     const records = generateAttendanceRecords(empIds, ['2026-01', '2026-02', '2026-03'], DEMO_HOLIDAY_DATES);
-    // [JWT] POST /api/entity/storage/erp_attendance_records
-    localStorage.setItem('erp_attendance_records', JSON.stringify(records));
+    // [JWT] POST /api/entity/storage/{attKey}
+    localStorage.setItem(attKey, JSON.stringify(records));
   }
 }
 
@@ -161,11 +165,11 @@ export const DEMO_MODULES: DemoModule[] = [
     label: 'Pay Hub',
     sprint: 'Live — fully complete',
     status: 'complete',
-    masterKeys: ['erp_employees', 'erp_salary_structures', 'erp_pay_grades',
+    masterKeys: [employeesKey(DEFAULT_ENTITY_SHORTCODE), 'erp_salary_structures', 'erp_pay_grades',
                  'erp_shifts', 'erp_leave_types', 'erp_holiday_calendars',
                  'erp_attendance_types', 'erp_overtime_rules',
                  'erp_loan_types', 'erp_bonus_configs', 'erp_gratuity_nps_config'],
-    transactionKeys: ['erp_payroll_runs_SMRT', 'erp_attendance_records',
+    transactionKeys: [payrollRunsKey(DEFAULT_ENTITY_SHORTCODE), attendanceRecordsKey(DEFAULT_ENTITY_SHORTCODE),
                       'erp_leave_requests', 'erp_it_declarations',
                       'erp_loan_applications', 'erp_salary_advances'],
     loadMasters: loadPayHubMasters,

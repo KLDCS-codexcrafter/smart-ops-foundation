@@ -434,11 +434,12 @@ export function CustomerMasterPanel() {
 
   const empList: Array<{id:string;displayName:string;status:string}> = useMemo(() => {
     try {
-      // [JWT] GET /api/payhub/employees
-      const raw = localStorage.getItem('erp_employees');
+      // [JWT] GET /api/payhub/employees?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const raw = localStorage.getItem(`erp_employees_${entityCode}`) ?? localStorage.getItem('erp_employees');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const salesmanOptions = samPersons.filter(
     p => (p.person_type === 'salesman' || p.treat_as_salesman === true) && p.is_active
