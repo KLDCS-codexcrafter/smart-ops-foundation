@@ -43,6 +43,9 @@ import {
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
 import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 import type { ImportSchema } from '@/lib/master-import-engine';
+// [Hardening-A · Block A] Entity-scoped key helpers for divisions/departments.
+import { divisionsKey, departmentsKey } from '@/types/org-structure';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -304,6 +307,8 @@ const VENDOR_STEPS = [
 // ─── Panel Component ──────────────────────────────────────────
 
 export function VendorMasterPanel() {
+  // [Hardening-A · Block A] entity-scoped reads for division/department dropdowns.
+  const { entityCode } = useEntityCode();
   const [vendors, setVendors] = useState<VendorMasterDefinition[]>(() => loadVendors());
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<VendorMasterDefinition | null>(null);
@@ -1168,8 +1173,11 @@ export function VendorMasterPanel() {
                   <SelectItem value="__none__">— No Division</SelectItem>
                   {(() => {
                     try {
-                      // [JWT] GET /api/foundation/divisions
-                      const divs: { id: string; name: string; status: string }[] = JSON.parse(localStorage.getItem('erp_divisions') || '[]');
+                      // [JWT] GET /api/foundation/divisions?entityCode={e}
+                      const scoped: { id: string; name: string; status: string }[] = JSON.parse(localStorage.getItem(divisionsKey(entityCode)) || '[]');
+                      const divs = scoped.length > 0 || !entityCode
+                        ? scoped
+                        : JSON.parse(localStorage.getItem('erp_divisions') || '[]') as { id: string; name: string; status: string }[];
                       return divs.filter(d => d.status === 'active').map(d => (
                         <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                       ));
@@ -1186,8 +1194,11 @@ export function VendorMasterPanel() {
                   <SelectItem value="__none__">— No Department</SelectItem>
                   {(() => {
                     try {
-                      // [JWT] GET /api/foundation/departments
-                      const depts: { id: string; name: string; division_id: string | null; status: string }[] = JSON.parse(localStorage.getItem('erp_departments') || '[]');
+                      // [JWT] GET /api/foundation/departments?entityCode={e}
+                      const scopedD: { id: string; name: string; division_id: string | null; status: string }[] = JSON.parse(localStorage.getItem(departmentsKey(entityCode)) || '[]');
+                      const depts = scopedD.length > 0 || !entityCode
+                        ? scopedD
+                        : JSON.parse(localStorage.getItem('erp_departments') || '[]') as { id: string; name: string; division_id: string | null; status: string }[];
                       return depts
                         .filter(d => d.status === 'active' && (!form.primary_division_id || d.division_id === form.primary_division_id))
                         .map(d => (
