@@ -27,7 +27,7 @@ import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/i
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
