@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -465,7 +466,7 @@ export function SavingsROIDashboardPanel() {
             <div>
               <Label className="text-xs">Monthly Platform Subscription Cost (₹)</Label>
               <Input type="number" value={benchAmount}
-                onChange={e => setBenchAmount(parseFloat(e.target.value) || 0)}
+                onChange={e => setBenchAmount(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                 className="mt-1 font-mono" />
               <p className="text-[10px] text-muted-foreground mt-1">
                 Default: ₹2,499 (Growth tier)

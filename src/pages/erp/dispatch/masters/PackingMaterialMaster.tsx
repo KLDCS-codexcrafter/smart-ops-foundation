@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -291,7 +292,7 @@ export function PackingMaterialMasterPanel() {
                 <Label>Cost per UOM (₹)</Label>
                 <Input type="number" step="0.01"
                   value={(editing.cost_per_uom_paise / 100).toString()}
-                  onChange={e => setEditing({ ...editing, cost_per_uom_paise: Math.round(parseFloat(e.target.value || '0') * 100) })} />
+                  onChange={e => setEditing({ ...editing, cost_per_uom_paise: roundTo(dMul(parseFloat(e.target.value || '0'), 100), 0) })} />
               </div>
               <div>
                 <Label>Pricing Source</Label>

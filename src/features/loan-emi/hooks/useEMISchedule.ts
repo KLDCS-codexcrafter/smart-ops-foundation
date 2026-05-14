@@ -12,6 +12,7 @@
  */
 
 import { useMemo, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { toast } from 'sonner';
 import { useLedgerStore } from '@/features/ledger-master/hooks/useLedgerStore';
 import {
@@ -79,7 +80,7 @@ export function useEMISchedule(ledgerId: string) {
       overdue: count('overdue'),
       bounced: count('bounced'),
       scheduled: count('scheduled'),
-      outstandingAmount: Math.round(outstandingAmount * 100) / 100,
+      outstandingAmount: roundTo(outstandingAmount, resolveMoneyPrecision(null, null)),
       nextDueDate: nextPending?.dueDate ?? null,
       nextDueAmount: nextPending?.totalEMI ?? 0,
     };

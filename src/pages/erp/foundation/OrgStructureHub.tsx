@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -558,7 +559,7 @@ export function OrgStructurePanel() {
                 <div>
                   <Label className="text-xs">Budget</Label>
                   <Input type="text" inputMode="decimal" value={deptForm.budget ?? ''}
-                    onChange={e => setDeptForm(f => ({ ...f, budget: e.target.value ? parseFloat(e.target.value) || null : null }))}
+                    onChange={e => setDeptForm(f => ({ ...f, budget: e.target.value ? (roundTo(parseFloat(e.target.value), resolveMoneyPrecision(null, null)) || null) : null }))}
                     onKeyDown={onEnterNext} placeholder="Optional" />
                 </div>
                 <div>

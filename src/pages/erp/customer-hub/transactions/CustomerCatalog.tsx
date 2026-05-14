@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { ShoppingBag, Search, Sparkles, Star, Users, TrendingUp, Plus, Minus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,7 +64,7 @@ function loadCatalog(): CatalogItem[] {
     return raw.map(r => ({
       id: r.id, code: r.code, name: r.name,
       category: (r.stock_group_name ?? 'General').toString(),
-      price_paise: Math.round(((r.std_selling_rate ?? 0) || 0) * 100),
+      price_paise: roundTo(dMul((r.std_selling_rate ?? 0) || 0, 100), 0),
       in_stock: true,
       uom: r.primary_uom_symbol ?? 'NOS',
     })).filter(i => i.price_paise > 0);

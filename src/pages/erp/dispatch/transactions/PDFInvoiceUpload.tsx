@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -446,7 +447,7 @@ export function PDFInvoiceUploadPanel() {
                         <Input
                           type="number"
                           value={Number(getLineValue(l, 'weight'))}
-                          onChange={e => updateLineEdit(idx, { weight: parseFloat(e.target.value) || 0 })}
+                          onChange={e => updateLineEdit(idx, { weight: roundTo(parseFloat(e.target.value) || 0, resolveQtyPrecision(undefined)) })}
                           className="h-8 text-xs font-mono text-right"
                         />
                       </TableCell>
@@ -454,7 +455,7 @@ export function PDFInvoiceUploadPanel() {
                         <Input
                           type="number"
                           value={Number(getLineValue(l, 'total'))}
-                          onChange={e => updateLineEdit(idx, { total: parseFloat(e.target.value) || 0 })}
+                          onChange={e => updateLineEdit(idx, { total: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })}
                           className="h-8 text-xs font-mono text-right"
                         />
                       </TableCell>

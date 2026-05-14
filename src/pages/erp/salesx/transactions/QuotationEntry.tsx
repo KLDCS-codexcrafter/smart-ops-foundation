@@ -11,6 +11,7 @@
  * [JWT] GET/POST/PATCH /api/salesx/quotations
  */
 import { useState, useMemo, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -861,7 +862,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                           );
                         })()}
                       </TableCell>
-                      <TableCell><Input type="number" value={it.rate} onChange={e => updateLine(i, { rate: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
+                      <TableCell><Input type="number" value={it.rate} onChange={e => updateLine(i, { rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell><Input type="number" value={it.discount_pct} onChange={e => updateLine(i, { discount_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
                       <TableCell className="font-mono text-xs">₹{it.sub_total.toLocaleString('en-IN')}</TableCell>
                       <TableCell><Input type="number" value={it.tax_pct} onChange={e => updateLine(i, { tax_pct: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} /></TableCell>
@@ -893,13 +894,13 @@ export function QuotationEntryPanel({ entityCode }: Props) {
                 })();
                 const schemeCart: SchemeCart = {
                   audience: 'customer',
-                  order_value_paise: Math.round((form.total_amount || 0) * 100),
+                  order_value_paise: roundTo(dMul(form.total_amount || 0, 100), 0),
                   lines: form.items.map(it => ({
                     line_id: it.id,
                     item_id: it.id,
                     qty: it.qty,
-                    unit_price_paise: Math.round((it.rate || 0) * 100),
-                    line_total_paise: Math.round((it.sub_total || 0) * 100),
+                    unit_price_paise: roundTo(dMul(it.rate || 0, 100), 0),
+                    line_total_paise: roundTo(dMul(it.sub_total || 0, 100), 0),
                   })),
                 };
                 const applied = applySchemes(schemeCart, allSchemes);

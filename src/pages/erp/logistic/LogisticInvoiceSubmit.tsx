@@ -5,6 +5,7 @@
  * [JWT] POST /api/logistic/invoices
  */
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { useNavigate } from 'react-router-dom';
 import { LogisticLayout } from '@/features/logistic/LogisticLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -233,7 +234,7 @@ export default function LogisticInvoiceSubmit() {
                         <Input
                           type="number"
                           value={l[field] || ''}
-                          onChange={e => updateLine(l.id, field, parseFloat(e.target.value) || 0)}
+                          onChange={e => updateLine(l.id, field, roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                           className="h-7 text-xs font-mono w-20"
                         />
                       </TableCell>
