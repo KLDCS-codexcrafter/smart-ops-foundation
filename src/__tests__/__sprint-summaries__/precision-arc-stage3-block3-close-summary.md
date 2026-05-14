@@ -100,7 +100,7 @@ While editing the 6 in-scope files, the following adjacent `parseFloat` sites we
 | `…/EmployeeMaster.tsx:1227` | `annualCTC` (with `.replace(/,/g,'')` strip) — **money** | Adjacent money site, not in Appendix A. |
 | `…/EmployeeMaster.tsx:1311` | `pfNomineePct` (percentage) | Likely Class C. |
 | `…/EmployeeMaster.tsx:1312` | `gratuityNomineePct` (percentage) | Likely Class C. |
-| `…/EmployeeMaster.tsx:1432` | `lp.premiumAnnual` (LIC) — **money** | Adjacent money site, not in Appendix A. |
+| `…/EmployeeMaster.tsx:1432` | `lp.premiumAnnual` (LIC) — **money** | Adjacent money site, not in Appendix A. **Already in the parked needs-founder-ruling set (the 248)** — swept and parked at Stage 2, not missed. |
 | `…/EmployeeMaster.tsx:1433` | `lp.sumAssured` (LIC) — **money** | Adjacent money site, not in Appendix A. |
 | `…/EmployeeMaster.tsx:1448` | `medicalRembCap` — **money** | Adjacent money site, not in Appendix A. |
 | `src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:1053` | `flexiComponents[comp]` (with strip) — **money** | Adjacent money site, not in Appendix A. |
