@@ -151,7 +151,7 @@ export function computeWorkHours(
   const [oh, om] = checkOut.split(':').map(Number);
   let totalMins = (oh * 60 + om) - (ih * 60 + im);
   if (totalMins < 0) totalMins += 24 * 60; // overnight
-  return Math.max(0, Math.round((totalMins / 60 - breakHours) * 100) / 100);
+  return Math.max(0, roundTo(dSub(totalMins / 60, breakHours), resolveQtyPrecision(undefined)));
 }
 
 // ── Late / Early out computation ─────────────────────────────────
