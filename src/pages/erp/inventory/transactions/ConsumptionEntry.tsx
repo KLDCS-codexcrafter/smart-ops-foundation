@@ -39,7 +39,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useConsumptionEntries, computeConsumptionVariance } from '@/hooks/useConsumptionEntries';
 import { generateDocNo } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { dMul, dAdd, round2 } from '@/lib/decimal-helpers';
+import { dMul, dAdd, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import {
   CONSUMPTION_STATUS_LABELS, CONSUMPTION_STATUS_COLORS,
