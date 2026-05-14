@@ -17,6 +17,8 @@ import {
   DEMO_LOAN_APPLICATIONS, DEMO_SALARY_ADVANCES, generateAttendanceRecords,
 } from '@/data/demo-transactions-pay-hub';
 import { payrollRunsKey } from '@/types/payroll-run';
+import { employeesKey } from '@/types/employee';
+import { attendanceRecordsKey } from '@/types/attendance-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
