@@ -150,3 +150,22 @@ All existing pay-hub suites remain green (1099 → 1105 total, +6 from this bloc
 ---
 
 **HALT for §2.4 Real Git Clone Audit. Block 4 NOT started. No self-certification.**
+
+---
+
+## T1 — Semantic Correction
+
+Scope: 2 files (`EmployeeMaster.tsx` + this summary). Zero behavior change.
+
+1. **`EmployeeMaster.tsx:1445` — `elOpeningBalance` resolver swap (money → qty).**
+   The field's UI label is "EL Opening Balance (days)" — it is a leave-DAYS quantity, not money. Block 3 mis-classified it as carry-forward money and migrated it with `resolveMoneyPrecision(null, null)`. Corrected to `resolveQtyPrecision(undefined)`.
+   - **Runtime impact: zero.** `resolveMoneyPrecision(null, null) === resolveQtyPrecision(undefined) === 2`. The `roundTo(..., 2)` math is identical; only the semantic intent (and the resolver invoked) changes.
+   - Import in `EmployeeMaster.tsx` updated: `resolveQtyPrecision` added alongside `resolveMoneyPrecision` (the other 5 Block 3 sites in this file remain genuine money and continue to use `resolveMoneyPrecision`).
+   - Verdict table row #20 updated to reflect leave-days quantity classification.
+
+2. **§5 disposition wording correction.**
+   §5 previously speculated the flagged adjacent sites "may have been missed at sweep time." At least 2 of them — `PayslipGeneration.tsx:654` and `EmployeeMaster.tsx:1432` — are in the Stage 2 parked needs-founder-ruling set (the 248). They were swept and parked, not missed. §5 reworded accordingly.
+
+3. **Nothing else touched.** Triple Gate held at the c667a31 baseline (TSC 0 · ESLint 0/10 · Vitest 1105/155 · Build clean). `decimal-helpers.ts` 0-diff. Protected zones 0-diff. Existing Block 3 EmployeeMaster test still passes (both resolvers return 2 — math unchanged).
+
+**HALT for §2.4 re-audit. Block 4 NOT started. No self-certification.**
