@@ -9,6 +9,8 @@ import type {
   SlabDiscountPayload, FlatPercentPayload, FlatAmountPayload,
   BundlePayload, FreeSamplePayload,
 } from '@/types/scheme';
+// Precision Arc · Stage 3 · Block 1 — discount in paise (integer by D-228).
+import { dPct, roundTo } from './decimal-helpers';
 
 /** Generic cart line shape the engine understands. */
 export interface SchemeLine {
@@ -83,7 +85,7 @@ function applySlab(s: Scheme, p: SlabDiscountPayload, cart: SchemeCart, applied:
     if (!lineMatches(line, s)) continue;
     const slab = [...p.slabs].reverse().find(sl => line.qty >= sl.min_qty);
     if (!slab) continue;
-    const discount = Math.round(line.line_total_paise * slab.discount_percent / 100);
+    const discount = roundTo(dPct(line.line_total_paise, slab.discount_percent), 0);
     applied.push({
       scheme_id: s.id, scheme_code: s.code, scheme_name: s.name,
       applies_to: 'line', line_id: line.line_id,
@@ -99,7 +101,7 @@ function applyFlatPercent(s: Scheme, p: FlatPercentPayload, cart: SchemeCart, ap
   if (sum === 0) return;
   applied.push({
     scheme_id: s.id, scheme_code: s.code, scheme_name: s.name,
-    applies_to: 'order', discount_paise: Math.round(sum * p.discount_percent / 100),
+    applies_to: 'order', discount_paise: roundTo(dPct(sum, p.discount_percent), 0),
     note: `Flat ${p.discount_percent}% off`,
   });
 }

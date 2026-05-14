@@ -12,6 +12,9 @@ import {
 } from '@/types/vendor-quotation';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
+// Precision Arc · Stage 3 · Block 1 — money math on contract.
+import { dAdd, dSub, dMul, dPct, dSum, roundTo, resolveMoneyPrecision } from './decimal-helpers';
+const MP = (): number => resolveMoneyPrecision(null, null);
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -70,9 +73,9 @@ export interface SubmitQuotationInput {
 }
 
 function lineAmount(l: { qty_quoted: number; rate: number; discount_percent: number; tax_percent: number }): number {
-  const gross = l.qty_quoted * l.rate;
-  const afterDisc = gross * (1 - l.discount_percent / 100);
-  return Math.round((afterDisc * (1 + l.tax_percent / 100)) * 100) / 100;
+  const gross = dMul(l.qty_quoted, l.rate);
+  const afterDisc = dSub(gross, dPct(gross, l.discount_percent));
+  return roundTo(dAdd(afterDisc, dPct(afterDisc, l.tax_percent)), MP());
 }
 
 export function submitQuotation(input: SubmitQuotationInput, entityCode: string): VendorQuotation {
@@ -84,9 +87,9 @@ export function submitQuotation(input: SubmitQuotationInput, entityCode: string)
     line_no: idx + 1,
     amount_after_tax: lineAmount(l),
   }));
-  const totalValue = lines.reduce((s, l) => s + l.qty_quoted * l.rate, 0);
-  const totalAfterTax = lines.reduce((s, l) => s + l.amount_after_tax, 0);
-  const totalTax = Math.round((totalAfterTax - totalValue) * 100) / 100;
+  const totalValue = dSum(lines, l => dMul(l.qty_quoted, l.rate));
+  const totalAfterTax = dSum(lines, l => l.amount_after_tax);
+  const totalTax = roundTo(dSub(totalAfterTax, totalValue), MP());
 
   const q: VendorQuotation = {
     id: newId('vq'),
@@ -97,9 +100,9 @@ export function submitQuotation(input: SubmitQuotationInput, entityCode: string)
     vendor_id: input.vendor_id,
     vendor_name: input.vendor_name,
     lines,
-    total_value: Math.round(totalValue * 100) / 100,
+    total_value: roundTo(totalValue, MP()),
     total_tax: totalTax,
-    total_after_tax: Math.round(totalAfterTax * 100) / 100,
+    total_after_tax: roundTo(totalAfterTax, MP()),
     payment_terms: input.payment_terms,
     payment_terms_days: input.payment_terms_days,
     delivery_terms: input.delivery_terms,

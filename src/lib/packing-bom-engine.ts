@@ -6,6 +6,8 @@
 import type { PackingBOM, PackingBOMActual } from '@/types/packing-bom';
 import type { PackingMaterial, MaterialMovement } from '@/types/packing-material';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
+// Precision Arc · Stage 3 · Block 1 — packing cost in paise (integer by D-228).
+import { dAdd, dMul, roundTo } from './decimal-helpers';
 
 /** Find the BOM applicable for a given item on a given date. */
 export function resolveActiveBOM(
@@ -99,9 +101,9 @@ export function computeBOMTotalCost(
   for (const line of bom.lines) {
     const mat = materials.find(m => m.id === line.material_id);
     if (!mat) continue;
-    total += mat.cost_per_uom_paise * line.qty_per_unit;
+    total = dAdd(total, dMul(mat.cost_per_uom_paise, line.qty_per_unit));
   }
-  return Math.round(total);
+  return roundTo(total, 0);
 }
 
 /** Build MaterialMovement records (negative qty, dln_consumption) for a DLN. */
