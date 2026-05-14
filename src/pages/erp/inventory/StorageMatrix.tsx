@@ -19,6 +19,7 @@ import { OWNERSHIP_LABELS, RENTED_TYPES, DEPARTMENT_LABELS, DEPARTMENT_BADGE_COL
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 const STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Andaman & Nicobar Islands'];
 const OWN_C:Record<string,string>={own_own_stock:'bg-emerald-500/10 text-emerald-700',own_third_party_stock:'bg-blue-500/10 text-blue-700',third_party_our_stock:'bg-amber-500/10 text-amber-700',third_party_third_party_stock:'bg-slate-500/10 text-slate-600',job_work_location:'bg-purple-500/10 text-purple-700',consignment_at_dealer:'bg-cyan-500/10 text-cyan-700',cwc_swc_godown:'bg-orange-500/10 text-orange-700',customs_bonded:'bg-red-500/10 text-red-700',sez_ftz:'bg-indigo-500/10 text-indigo-700'};
