@@ -181,11 +181,14 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
 
   const telecallerEmployee = useMemo<EmployeeLite | null>(() => {
     try {
-      // [JWT] GET /api/payhub/employees
-      const emps: EmployeeLite[] = JSON.parse(localStorage.getItem('erp_employees') || '[]');
+      // [JWT] GET /api/payhub/employees?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const scopedRaw = localStorage.getItem(`erp_employees_${entityCode}`);
+      const raw = scopedRaw ?? localStorage.getItem('erp_employees') ?? '[]';
+      const emps: EmployeeLite[] = JSON.parse(raw);
       return emps.find(e => e.status === 'active') ?? null;
     } catch { return null; }
-  }, []);
+  }, [entityCode]);
 
   const handleNotifyWhatsApp = useCallback(() => {
     if (!telecallerEmployee?.personalMobile) {
