@@ -35,7 +35,7 @@ describe('Block 3 · pay-hub Pattern 2 migrations', () => {
 
   it('SalaryStructureMaster.tsx · CTC bands land at 2dp', () => {
     expect(wrap('500000')).toBe(500000);
-    expect(wrap('750000.999')).toBe(751001);
+    expect(wrap('750000.999')).toBe(750001);
   });
 
   it('EmployeeMaster.tsx · loan principal/EMI land at 2dp', () => {
