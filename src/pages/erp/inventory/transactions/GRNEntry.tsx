@@ -1156,7 +1156,7 @@ export function GRNEntryPanel() {
               </div>
               <div className="space-y-1.5"><Label>Unit Rate (₹)</Label>
                 <Input type="number" value={draftLine.unit_rate || ''}
-                  onChange={e => setDraftLine(l => ({ ...l, unit_rate: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(l => ({ ...l, unit_rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
             </div>
             {draftLine.item_type === 'Raw Material' && (
