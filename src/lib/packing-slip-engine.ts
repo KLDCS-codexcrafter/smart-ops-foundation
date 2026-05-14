@@ -6,6 +6,7 @@
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { ItemPacking } from '@/types/item-packing';
 import type { PackingSlip, PackingSlipLine } from '@/types/packing-slip';
+import { roundTo } from '@/lib/decimal-helpers';
 
 interface ComputeInput {
   dln: Voucher;
@@ -99,8 +100,10 @@ export function computePackingSlip(input: ComputeInput): PackingSlip {
     lines,
     total_full_cartons: totalFullCartons,
     total_loose_packs: totalLoosePacks,
-    total_gross_kg: Math.round(totalGrossKg * 1000) / 1000,
-    total_volumetric_kg: Math.round(totalVolumetricKg * 1000) / 1000,
+    // Domain-fixed precision: kg packing weight is 3-dp by logistics convention (founder ruling, Precision Arc Stage 3 Block 1). Not the contract default.
+    total_gross_kg: roundTo(totalGrossKg, 3),
+    // Domain-fixed precision: kg packing weight is 3-dp by logistics convention (founder ruling, Precision Arc Stage 3 Block 1). Not the contract default.
+    total_volumetric_kg: roundTo(totalVolumetricKg, 3),
     transporter_id: null,
     transporter_name: dln.transporter ?? null,
     vehicle_no: dln.vehicle_no,

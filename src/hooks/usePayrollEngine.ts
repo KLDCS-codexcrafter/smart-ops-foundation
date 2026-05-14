@@ -21,6 +21,7 @@ import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCH
   from '@/data/payroll-statutory-seed-data';
 import { journalKey } from '@/lib/fincore-engine';
 import type { JournalEntry } from '@/types/voucher';
+import { dSub, dPct, dAdd, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 // PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that
 // have not yet migrated to the entity-scoped helpers. New reads/writes use
@@ -89,7 +90,7 @@ export function computeCTCBreakdown(
     const ph = payHeads.find(h => h.id === balComp.payHeadId);
     if (ph) {
       const targetGross = monthlyCTC;
-      const balVal = Math.max(0, Math.round(targetGross - totalEarnings));
+      const balVal = Math.max(0, roundTo(dSub(targetGross, totalEarnings), resolveMoneyPrecision(null, null)));
       lines.push({
         headCode: ph.code, headName: ph.name, headShortName: ph.shortName,
         type: 'earning',
@@ -290,22 +291,23 @@ export function computeMonthlyTDS(
     }
   }
 
-  const taxWithSurcharge = taxAfterRebate + surcharge;
-  const cess = Math.round(taxWithSurcharge * 0.04);
+  const MP = resolveMoneyPrecision(null, null);
+  const taxWithSurcharge = dAdd(taxAfterRebate, surcharge);
+  const cess = roundTo(dPct(taxWithSurcharge, 4), MP);
 
-  const totalAnnualTax = Math.round(taxAfterRebate + surcharge + cess);
-  const remainingTax = Math.max(0, totalAnnualTax - previousTDSThisYear);
-  const monthlyTDS = Math.round(remainingTax / remainingMonths);
+  const totalAnnualTax = roundTo(dAdd(dAdd(taxAfterRebate, surcharge), cess), MP);
+  const remainingTax = Math.max(0, dSub(totalAnnualTax, previousTDSThisYear));
+  const monthlyTDS = roundTo(remainingMonths > 0 ? remainingTax / remainingMonths : 0, MP);
 
   return {
     regime: regime === 'new' ? 'New Regime FY 2025-26' : 'Old Regime',
-    grossAnnualSalary: Math.round(annualGrossSalary),
+    grossAnnualSalary: roundTo(annualGrossSalary, MP),
     standardDeduction: stdDeduction,
-    taxableIncome: Math.round(taxableIncome),
-    taxBeforeCess: Math.round(taxOnIncome - rebate87A + surcharge),
-    surcharge: Math.round(surcharge),
+    taxableIncome: roundTo(taxableIncome, MP),
+    taxBeforeCess: roundTo(dAdd(dSub(taxOnIncome, rebate87A), surcharge), MP),
+    surcharge: roundTo(surcharge, MP),
     cess,
-    rebate87A: Math.round(rebate87A),
+    rebate87A: roundTo(rebate87A, MP),
     totalAnnualTax,
     monthlyTDS,
     remainingMonths,
