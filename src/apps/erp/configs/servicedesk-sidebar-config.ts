@@ -125,6 +125,9 @@ export const servicedeskSidebarItems: SidebarItem[] = [
       { id: 'service-day-book', type: 'item', label: 'Service Day Book', moduleId: 'service-day-book', requiredCards: ['servicedesk'], keyboard: 'd r d' },
       { id: 'promised-vs-actual-variance', type: 'item', label: 'Promised vs Actual', moduleId: 'promised-vs-actual-variance', requiredCards: ['servicedesk'], keyboard: 'd r v' },
       { id: 'amc-profitability-per-customer', type: 'item', label: 'AMC Profitability', moduleId: 'amc-profitability-per-customer', requiredCards: ['servicedesk'], keyboard: 'd r p' },
+      { id: 'customer-pnl-report', type: 'item', label: 'Customer P&L', moduleId: 'customer-pnl-report', requiredCards: ['servicedesk'], keyboard: 'd r l' },
+      { id: 'voice-of-customer', type: 'item', label: 'Voice of Customer', moduleId: 'voice-of-customer', requiredCards: ['servicedesk'], keyboard: 'd r o' },
+      { id: 'service-quote-optimizer', type: 'item', label: 'Quote Optimizer', moduleId: 'service-quote-optimizer', requiredCards: ['servicedesk'], keyboard: 'd r q' },
     ],
   },
   {
@@ -173,6 +176,7 @@ export const servicedeskSidebarItems: SidebarItem[] = [
       { id: 'email-templates', type: 'item', label: 'Email Templates', moduleId: 'email-templates', requiredCards: ['servicedesk'], keyboard: 'd g e', comingSoon: true },
       { id: 'tellicaller-triggers', type: 'item', label: 'Tellicaller Triggers', moduleId: 'tellicaller-triggers', requiredCards: ['servicedesk'], keyboard: 'd g t', comingSoon: true },
       { id: 'call-type-master', type: 'item', label: 'Call Type Master', moduleId: 'call-type-master', requiredCards: ['servicedesk'], keyboard: 'd g m', comingSoon: true },
+      { id: 'future-task-register', type: 'item', label: 'Future Task Register', moduleId: 'future-task-register', requiredCards: ['servicedesk'], keyboard: 'd g f' },
     ],
   },
 ];
