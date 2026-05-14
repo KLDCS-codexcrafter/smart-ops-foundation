@@ -1,5 +1,4 @@
 /**
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * SavingsROIDashboard.tsx — Sprint 15c-3
  * MODULE ID: dh-r-savings-roi
  * Compares flagged vs recovered amounts against platform subscription cost.
@@ -7,6 +6,7 @@ import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

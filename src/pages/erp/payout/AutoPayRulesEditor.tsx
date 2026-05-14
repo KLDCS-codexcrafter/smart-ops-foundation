@@ -1,5 +1,4 @@
 /**
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * @file     AutoPayRulesEditor.tsx
  * @purpose  Auto-Pay Rules CRUD · 3 trigger types (recurring · threshold ·
  *           on_invoice_post) · "Run Auto-Pay Now" displays evaluateRulesNow
@@ -9,6 +8,7 @@ import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * Pure presentation · IMPORTS engine functions only.
  */
 import { useEffect, useMemo, useState } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { toast } from 'sonner';
 import {
   Plus, Repeat, Power, PowerOff, Trash2, Play, Edit2,

@@ -1,5 +1,4 @@
 /**
-import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
  * PDFInvoiceUpload.tsx — Sprint 15c-3
  * MODULE ID: dh-t-pdf-invoice-upload
  * Digital PDF invoice extractor with 3-step flow: Upload → Review → Finalize.
@@ -7,6 +6,7 @@ import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decim
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

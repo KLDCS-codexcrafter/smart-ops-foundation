@@ -1,11 +1,11 @@
 /**
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * LogisticInvoiceSubmit.tsx — Transporter submits invoice line-by-line.
  * Sprint 15c-2. Gold accent. Writes to erp_transporter_invoices_{entity}
  * with upload_source='portal' so manufacturer's TransporterInvoiceInbox picks it up.
  * [JWT] POST /api/logistic/invoices
  */
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { useNavigate } from 'react-router-dom';
 import { LogisticLayout } from '@/features/logistic/LogisticLayout';
 import { Card, CardContent } from '@/components/ui/card';

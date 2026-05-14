@@ -1,5 +1,4 @@
 /**
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * @file     VendorPaymentEntry.tsx
  * @purpose  Vendor Payment Voucher entry form — mirrors Payment.tsx pattern with
  *           vendor-only defaults · uses payment-engine orchestrator for save.
@@ -10,6 +9,7 @@ import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * Lives in src/pages/erp/payout/ (NEW directory · NOT in vouchers/).
  */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';

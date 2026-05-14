@@ -1,11 +1,11 @@
 /**
-import { roundTo, dMul } from '@/lib/decimal-helpers';
  * CustomerCatalog.tsx — Browse · search · filter · social proof overlays
  * Sprint 13b · Module ch-t-catalog · Teal-500 accent
  * Reads inventory + active schemes + recent orders to compute social proof.
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { ShoppingBag, Search, Sparkles, Star, Users, TrendingUp, Plus, Minus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

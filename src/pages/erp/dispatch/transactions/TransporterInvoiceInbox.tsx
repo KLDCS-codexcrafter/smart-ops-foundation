@@ -1,10 +1,10 @@
 /**
-import { roundTo, dMul } from '@/lib/decimal-helpers';
  * TransporterInvoiceInbox.tsx — Sprint 15c-1
  * MODULE ID: dh-t-transporter-invoice
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -1,10 +1,10 @@
 /**
-import { roundTo, dMul } from '@/lib/decimal-helpers';
  * PackingMaterialMaster.tsx — Sprint 15b
  * MODULE ID: dh-m-packing-material
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
