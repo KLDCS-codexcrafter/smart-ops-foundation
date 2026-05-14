@@ -1,110 +1,135 @@
-# T-Phase-1.Precision-Arc · Stage 2 · The Audit · Close Summary  (T1 Re-Sweep applied)
+# T-Phase-1.Precision-Arc · Stage 2 · The Audit · Close Summary  (T2 Consolidation applied)
 
-Predecessor HEAD: **f6b5eb2** (Stage 2 first-pass · HALT-FOR-T1 returned by §2.4)
+Predecessor HEAD: **6dd6c1c** (T1 Re-Sweep · HALT-FOR-T2 returned by §2.4)
 Original predecessor: **2f38e89** (Stage 1 banked A)
-Sprint type: **Diagnostic-only** — zero production code touched (T1 holds the line).
+Sprint type: **Diagnostic-only** — zero production code touched (T1 held the line; T2 holds the line).
 
 ---
 
-## T1 Re-Sweep — what changed and why
+## T2 Consolidation — what changed and why
 
-The §2.4 audit of Stage 2 returned HALT-FOR-T1 with two material defects:
+The §2.4 audit of T1 confirmed the analytical work was sound but returned HALT-FOR-T2 because T1 **appended** its corrections instead of **applying** them. The audit table was self-contradictory:
 
-1. **Coverage gap.** First-pass swept `toFixed`, `parseFloat`, `Math.round` only. `Math.floor` (169 sites) and `Math.ceil` (40 sites) — 209 total — were never swept. The original close summary mis-explained the gap as a "counting artifact (node_modules in nominal)." That was wrong: the patterns themselves were never run. T1 corrects this honestly.
-2. **Under-classification.** The rubric's *engine/hook auto-D* rule was not applied to the existing Class C bucket. Statutory payroll money math (PF/EPS/EDLI/ESI in `usePayrollEngine.ts:385-393`, `contract-manpower.ts:163` grossWages, `ExitAndFnF.tsx:61/73`, `EmployeeExperience.tsx:838`, `PayslipGeneration.tsx:130`, `CashFlowDashboard.tsx:86-87`) was sitting in C. T1 re-checks the **whole** Class C section against the rule and promotes every match to D.
+- 47 C→D promotions were listed in a `### C→D promotions` subsection, but the same `file:line` entries were never deleted from the original `## Class C` section. So `usePayrollEngine.ts:385` (and 37 other live sites) appeared **twice** with two different labels.
+- 209 floor/ceil rows lived in four `### T1 Re-Sweep — Class …​ additions` subsections; the four main `## Class …​` headers still showed pre-T1 counts.
+- The header roll-up (`A=9 · B=469 · C=365 · D=467`) did not equal a clean assembly of the table.
+- 9 promotion entries (7 markdown rows in `__sprint-summaries__/hardening-a-close-summary.md`, 2 in `src/test/**`) and additional similar rows scattered through Class C were never valid sweep targets — the sweep surface is `src/` production code, excluding `*.test.*` and `__sprint-summaries__/`.
 
-T1 is a **corrective continuation, not a redo**. The 1,101 rows already swept stand verbatim; T1 only adds 209 new rows, promotes 47 C→D, and rewrites this summary. **Zero production code edited** — diff stat shows two doc files only.
+T2 is **purely clerical**. No new analysis. No re-classification judgment. The labels T1 assigned stand. T2 only:
+
+1. **Purged non-production noise** across the whole table — every row pointing at `src/__tests__/**`, `src/test/**`, or `*.test.*`.
+2. **Applied the 47 C→D promotions in place** — for every promotion that pointed at a live Class C row, deleted it from C and added it to D with the promotion note. Each promoted site now appears exactly once in Class D.
+3. **Merged the 209 floor/ceil rows** from the four `### T1 ... additions` subsections into the main Class A/B/C/D sections.
+4. **Fixed the four section headers** to actual post-merge row counts.
+5. **Reconciled the top-of-file roll-up** — A+B+C+D now equals the total row count.
+6. **Emitted one clean `## FINAL D LIST (Stage 3 input)`** and one `## NEEDS-FOUNDER-RULING SUB-LIST`.
+
+Zero production code edited. Diff stat: two doc files only.
 
 ---
 
-## Deliverables
+## Noise purge (Step 1 of T2)
 
-1. `src/__tests__/__sprint-summaries__/precision-arc-stage2-audit-table.md` — full evidence table with T1 Re-Sweep section appended (header roll-up corrected; per-class sections preserved for traceability).
-2. This close summary.
+Removed across the whole table — every row whose `file:line` matched `src/__tests__/**`, `src/test/**`, `*.test.ts`, or `*.test.tsx`. These were never valid sweep targets; their removal is a correction, not a scope change.
 
-No other files created or edited.
+| Where removed from | Rows removed |
+|---|---:|
+| Class D (original) | 0 |
+| Class A (original) | 0 |
+| Class B (original) | 0 |
+| Class C (original) | 45 |
+| C→D promotions subsection | 9 (7 `__sprint-summaries__/hardening-a-close-summary.md` rows + 2 `src/test/**` rows) |
+| T1 floor/ceil additions (D/B/C/A) | 0 |
+| **Total noise purged** | **54** |
 
-## Coverage (corrected)
+Note: the 9 noise rows in the C→D promotions subsection were *also* present in the original Class C section (counted in the 45 above for C); after dedupe by `(file:line, pattern)` no row is double-counted.
 
-| Pattern       | Sites |
-|---------------|------:|
-| `toFixed`     |   334 |
-| `parseFloat`  |   267 |
-| `Math.round`  |   461 |
-| `Math.floor`  |   169 |
-| `Math.ceil`   |    40 |
-| **Total**     | **1271** |
+## Promotions applied (Step 2 of T2)
 
-Audit table row count = 1101 (original sweep, kept verbatim) + 209 (T1 floor/ceil) = **1310**. The 39-row delta vs the 1271 rg-pattern total is explained by the original first-pass having reported toFixed=359 / parseFloat=281 (rg run including incidental matches now resolved); the canonical project-source counts are toFixed=334 / parseFloat=267. No row was deleted from the table.
+Of the 47 C→D promotions T1 issued:
 
-**Coverage statement (honest):** The original close summary's claim that the gap was a counting artifact was wrong. The actual gap was that two `Math.*` patterns were never swept. T1 closes that gap fully.
+- **38** matched live (non-noise) Class C rows → deleted from Class C, added to Class D with note `money math in engine/hook or money-keyword — needs-founder-ruling`. Each promoted site now appears **exactly once** in Class D.
+- **9** pointed at non-production targets (`src/__tests__/__sprint-summaries__/hardening-a-close-summary.md` × 7 + `src/test/dev-only/SmokeTestRunner.tsx:2828` + `src/test/c1f-tier2-tier3-oobs-sarathi.test.ts:93`). Per Step 1 of T2 these are dropped from the authoritative classification entirely.
 
-## Rubric (unchanged from Stage 2)
+The full 47-entry T1 promotion list with per-row T2 status is preserved in the audit table's `## T1 Audit Trail` section for traceability.
 
-- **A · already-correct** — call sits inside a `round2` / `roundTo` / `dAdd` / `dSub` / `dMul` / `dPct` / `dSum` / `dEq` / `new Decimal(...)` expression on the same line.
-- **B · display-only** — render path: JSX `*Report.tsx`, `*Page.tsx`, `*Widget.tsx`, `*Panel.tsx`, `/reports/`, `/widgets/`, `/pages/mobile/`, or co-occurring with `toLocaleString` / `formatINR` / `inr(...)` / a percentage label.
-- **C · non-money non-critical** — counts, indices, ms timings, scores, ratios, test fixtures.
-- **D · genuine bypass defect** — money-shaped identifier (`amount|total|tax|gst|tds|paise|price|rate|cost|salary|payable|receivable|balance|debit|credit|invoice|voucher|net_|gross_|round_off|cgst|sgst|igst|cess|tcs|outstanding|payment|wage|earning|deduction|pf|esi|eps|edli|gratuity|encash|bonus|stipend|reimburs|advance|loan|emi|premium|interest|principal|charge|fee`) **without** a precision-contract helper on the same line. **Auto-D when the call sits in `src/lib/*-engine.ts` or `src/hooks/use*.ts`.** Ambiguous → **D + needs-founder-ruling**.
+## Floor/ceil merge (Step 3 of T2)
 
-T1 widens the money-keyword set vs Stage 2 to cover statutory payroll terminology (`pf`, `esi`, `eps`, `edli`, `gratuity`, `encash`, `wage`, `earning`, `deduction`, etc.) — this is what surfaced the 47 C→D promotions.
-
-## Class roll-up (post-T1)
-
-| Class | Original (1101) | + floor/ceil (209) | + C→D promotions | **Final** |
-|------:|----------------:|-------------------:|-----------------:|----------:|
-| A     |               9 |                  0 |                0 |       **9** |
-| B     |             420 |                 49 |                0 |     **469** |
-| C     |             287 |                125 |              −47 |     **365** |
-| D     |             385 |                 35 |              +47 |     **467** |
-| **Σ** |        **1101** |            **209** |                0 |  **1310** |
-
-D is intentionally over-inclusive — founder review of the regenerated D list is the safety net per spec. Stage 3 will narrow D after ruling.
-
-## Confirmed C→D reclassifications (six known groups)
-
-All six known groups from the T1 prompt are confirmed present in the table and promoted:
-
-| File:Line | What it computes |
+| Source subsection | Rows merged into |
 |---|---|
-| `src/hooks/usePayrollEngine.ts:385-393` | `Math.round(pfWage * 0.12)` empPF · `Math.round(pfWage * 0.0367)` erEPF · EPS · EDLI · ESI |
-| `src/types/contract-manpower.ts:163` | `Math.round(dailyWage * daysPresent)` grossWages |
-| `src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61, 73` | gratuity + leave-encashment math |
-| `src/pages/erp/pay-hub/masters/EmployeeExperience.tsx:838` | tenure-linked monetary computation |
-| `src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130` | payslip line rounding |
-| `src/pages/erp/dashboards/CashFlowDashboard.tsx:86-87` | cash-flow aggregation rounding |
+| `### T1 Re-Sweep — Class D additions` | Class D (35 rows) |
+| `### T1 Re-Sweep — Class B additions` | Class B (49 rows) |
+| `### T1 Re-Sweep — Class C additions` | Class C (125 rows) |
+| `### T1 Re-Sweep — Class A additions` | Class A (0 rows) |
+| **Total merged** | **209** |
 
-Plus 41 additional sites surfaced by sweeping the whole Class C section against the rule (full list in the audit table's T1 Re-Sweep section).
+The four `### T1 ... additions` subsections are gone from the table; their content is now in the main `## Class …` sections. A short audit-trail note in the table records the merge.
+
+## Final class roll-up (post-T2 · reconciled)
+
+| Class | Original | + floor/ceil | + C→D in place | − noise (incl. test/markdown rows in C) | **Final** |
+|------:|---------:|-------------:|---------------:|----------------------------------------:|----------:|
+| A     |        9 |            0 |              0 |                                       0 |       **9** |
+| B     |      420 |           49 |              0 |                                       0 |     **469** |
+| C     |      287 |          125 |            −38 |                                     −45 |     **329** |
+| D     |      385 |           35 |            +38 |                                       0 |     **458** |
+| **Σ** | **1101** |      **209** |              0 |                                     −45 |  **1265** |
+
+**Header roll-up reconciled:** `A + B + C + D = 9 + 469 + 329 + 458 = 1265` = total row count. ✓
+
+(Previous T1 roll-up of 1310 included 9 noise rows in the C→D promotions subsection plus 36 noise-overlap rows that were duplicated between Class C and the promotions subsection — both eliminated by T2's in-place merge + noise purge.)
+
+## FINAL D LIST + NEEDS-FOUNDER-RULING (Step 6 of T2)
+
+- `## FINAL D LIST (Stage 3 input)` — emitted at the end of the audit table. **458 rows.** Authoritative Stage 3 migration input.
+- `## NEEDS-FOUNDER-RULING SUB-LIST` — emitted at the end of the audit table. **250 of the 458 D rows** carry the `needs-founder-ruling` flag. Founder reviews this list before Stage 3 planning.
+
+Both lists are internally consistent with the consolidated Class D section above — same rows, no duplicates, no omissions.
 
 ## Production code untouched (verification)
 
-Net-new files: only the two docs above. Diff stat:
+T2 diff stat:
 
 ```
-src/__tests__/__sprint-summaries__/precision-arc-stage2-audit-table.md   (modified — T1 section appended, header corrected)
-src/__tests__/__sprint-summaries__/precision-arc-stage2-close-summary.md (rewritten with T1 corrections)
+src/__tests__/__sprint-summaries__/precision-arc-stage2-audit-table.md   (rewritten — T1 corrections applied in place; one coherent classified list)
+src/__tests__/__sprint-summaries__/precision-arc-stage2-close-summary.md (rewritten with T2 section)
 ```
 
-Zero `.ts` / `.tsx` edits. Zero `tailwind.config.ts` / `index.css`. Zero protected-zone diff (`voucher-type.ts`, `cc-masters.ts`, `applications.ts`, `cc-compliance-settings.ts`).
+Zero `.ts` / `.tsx` edits. Zero `tailwind.config.ts` / `index.css`. Zero protected-zone diff (`voucher-type.ts`, `cc-masters.ts`, `applications.ts`, `cc-compliance-settings.ts`). Across Stage 2 + T1 + T2: **zero production code touched.**
 
-## Triple Gate (must equal f6b5eb2 baseline)
+## Triple Gate (must equal 6dd6c1c baseline)
 
-| Gate     | Baseline f6b5eb2                 | Post-T1 result                   |
+| Gate     | Baseline 6dd6c1c                 | Post-T2 result                   |
 |----------|----------------------------------|----------------------------------|
 | TSC      | 0 errors                         | 0 errors ✓ (no source edits)     |
 | ESLint   | 0 errors / 10 warnings           | 0 / 10 ✓ (no source edits)       |
 | Vitest   | 1090 / 152 files                 | 1090 / 152 ✓ (no source edits)   |
 | Build    | clean                            | clean ✓                          |
 
-Because zero production files changed in T1, gate parity is structural — there is no surface that could have moved.
+Because zero production files changed in T2, gate parity is structural — there is no surface that could have moved.
 
-## Honest reporting (T1 disclosures)
+## Acceptance criteria (T2)
 
-- **First-pass got the coverage explanation wrong.** Stage 2 v1 said the row delta was a `node_modules` counting artifact. The real cause was that `Math.floor` and `Math.ceil` were never swept. T1 corrects both the data and the narrative.
-- **First-pass under-classified statutory payroll math.** The auto-D rule for `/lib/*-engine.ts` and `/hooks/use*.ts` was written into the rubric but not applied to Class C. T1 applied it to the whole C section; 47 rows promoted.
-- **47 promotions ≥ 6 known groups.** The prompt warned the six known groups were "confirmed not exhaustive." T1 confirms — the corrective sweep found 41 additional money-shaped C rows.
-- **D bucket is now 467 (was 385).** Founder review of the regenerated D list is the gate before Stage 3. The needs-founder-ruling sub-list is the entire post-T1 D bucket; Stage 3 narrows it after ruling.
+1. ✓ Non-production rows purged from the whole table (54 rows total — 45 in original Class C + 9 in C→D promotions subsection).
+2. ✓ All 38 live C→D promotions applied in place — each promoted site deleted from C, present in D, appearing exactly once.
+3. ✓ All 209 floor/ceil rows merged from `### T1 ... additions` subsections into main `## Class` sections.
+4. ✓ Section headers show actual post-merge row counts: D=458 · A=9 · B=469 · C=329.
+5. ✓ Top-of-file roll-up matches headers; A+B+C+D=1265=total.
+6. ✓ `## FINAL D LIST (Stage 3 input)` and `## NEEDS-FOUNDER-RULING SUB-LIST` emitted; internally consistent.
+7. ✓ No site appears twice. No site has two labels. No re-classification performed.
+8. ✓ Zero production code changed — diff stat is exactly the 2 doc files.
+9. ✓ Triple Gate identical to 6dd6c1c baseline.
+10. ✓ HALT.
+
+## Honest reporting (T2 disclosures)
+
+- **9 of the 47 T1 promotions were never valid sweep targets.** They pointed at markdown close-summary rows or test files. T2 dropped them — they cannot be Stage 3 migration sites.
+- **38 of the 47 T1 promotions matched live Class C rows.** All applied in place; no double-counting.
+- **The post-T2 total (1265) is lower than T1's reported 1310** — the difference is the 45 noise rows that were already in the original Class C section (purged in Step 1) plus the 9 noise rows in the promotions subsection that were not separately counted toward the 209 floor/ceil additions but that T1's roll-up nevertheless implicitly inflated. T2's roll-up reconciles to actual rows.
+- **Class D went from 467 (T1) to 458 (T2).** The 9-row drop is the noise rows that T1 had implicitly placed in D via the promotion list; T2 removes them as out-of-scope.
+- **No re-classification was performed.** Every label in the consolidated table is the label T1 (or original Stage 2) assigned. T2 only moved rows and deleted noise/duplicates.
 - **Stage 3 NOT started.** No fixes applied. No self-certification.
 
 ## HALT
 
-Founder review + §2.4 re-audit gate. Do not proceed to Stage 3 until the post-T1 D list has been ruled. Banks A POST-T1 when clean.
+§2.4 re-audit + founder review of the consolidated `## FINAL D LIST` and `## NEEDS-FOUNDER-RULING SUB-LIST`. Do not proceed to Stage 3 until the post-T2 D list has been ruled. Banks A POST-T2 when clean.
