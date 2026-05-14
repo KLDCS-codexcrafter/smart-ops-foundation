@@ -95,7 +95,7 @@ While editing the 6 in-scope files, the following adjacent `parseFloat` sites we
 
 | File:Line | Field | Notes |
 |-----------|-------|-------|
-| `src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654` | `duf(key, parseFloat(e.target.value) || 0)` (generic key inside a map over `Section80CKeys`) | Adjacent to migrated 80C inputs but not in Appendix A. May represent the same logical field set already covered indirectly, or an oversight at sweep time — flagging for founder ruling. |
+| `src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654` | `duf(key, parseFloat(e.target.value) || 0)` (generic key inside a map over `Section80CKeys`) | Adjacent to migrated 80C inputs but not in Appendix A. **Already in the parked needs-founder-ruling set (the 248)** — swept and parked at Stage 2, not missed. |
 | `src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1204` | `vpfPercentage` (percentage, not money) | Likely Class C (percentage); not in Appendix A. |
 | `…/EmployeeMaster.tsx:1227` | `annualCTC` (with `.replace(/,/g,'')` strip) — **money** | Adjacent money site, not in Appendix A. |
 | `…/EmployeeMaster.tsx:1311` | `pfNomineePct` (percentage) | Likely Class C. |
