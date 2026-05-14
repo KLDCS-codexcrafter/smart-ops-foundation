@@ -1,4 +1,5 @@
 /**
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * @file     VendorPaymentEntry.tsx
  * @purpose  Vendor Payment Voucher entry form — mirrors Payment.tsx pattern with
  *           vendor-only defaults · uses payment-engine orchestrator for save.
@@ -407,7 +408,7 @@ export default function VendorPaymentEntry() {
               <div>
                 <Label className="text-xs">Rate %</Label>
                 <Input type="number" value={tdsRate || ''} onChange={e => {
-                  const r = parseFloat(e.target.value) || 0;
+                  const r = roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null));
                   setTdsRate(r);
                   setTdsAmount(Math.round(amount * r / 100));
                 }} className="text-xs" />

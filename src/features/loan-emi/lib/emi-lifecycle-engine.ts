@@ -8,6 +8,7 @@
  */
 
 import type { EMIScheduleRow } from '@/features/ledger-master/lib/emi-schedule-builder';
+import { roundTo, resolveMoneyPrecision, dAdd } from '@/lib/decimal-helpers';
 
 export type EMIStatus =
   | 'scheduled'   // future EMI, dueDate > today
@@ -84,8 +85,8 @@ export function upgradeSchedule(cached: EMIScheduleRow[]): EMIScheduleLiveRow[] 
     dueDate: r.dueDate,
     principalPortion: r.principal,
     interestPortion: r.interest,
-    totalEMI: Math.round((r.principal + r.interest) * 100) / 100,
-    openingBalance: Math.round((r.runningBalance + r.principal) * 100) / 100,
+    totalEMI: roundTo(dAdd(r.principal, r.interest), resolveMoneyPrecision(null, null)),
+    openingBalance: roundTo(dAdd(r.runningBalance, r.principal), resolveMoneyPrecision(null, null)),
     closingBalance: r.runningBalance,
     status: 'scheduled' as EMIStatus,
     paymentVoucherId: null,

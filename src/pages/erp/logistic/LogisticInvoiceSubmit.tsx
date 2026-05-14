@@ -1,4 +1,5 @@
 /**
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * LogisticInvoiceSubmit.tsx — Transporter submits invoice line-by-line.
  * Sprint 15c-2. Gold accent. Writes to erp_transporter_invoices_{entity}
  * with upload_source='portal' so manufacturer's TransporterInvoiceInbox picks it up.
@@ -233,7 +234,7 @@ export default function LogisticInvoiceSubmit() {
                         <Input
                           type="number"
                           value={l[field] || ''}
-                          onChange={e => updateLine(l.id, field, parseFloat(e.target.value) || 0)}
+                          onChange={e => updateLine(l.id, field, roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                           className="h-7 text-xs font-mono w-20"
                         />
                       </TableCell>

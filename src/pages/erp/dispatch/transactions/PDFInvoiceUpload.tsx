@@ -1,4 +1,5 @@
 /**
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
  * PDFInvoiceUpload.tsx — Sprint 15c-3
  * MODULE ID: dh-t-pdf-invoice-upload
  * Digital PDF invoice extractor with 3-step flow: Upload → Review → Finalize.
@@ -446,7 +447,7 @@ export function PDFInvoiceUploadPanel() {
                         <Input
                           type="number"
                           value={Number(getLineValue(l, 'weight'))}
-                          onChange={e => updateLineEdit(idx, { weight: parseFloat(e.target.value) || 0 })}
+                          onChange={e => updateLineEdit(idx, { weight: roundTo(parseFloat(e.target.value) || 0, resolveQtyPrecision(undefined)) })}
                           className="h-8 text-xs font-mono text-right"
                         />
                       </TableCell>
@@ -454,7 +455,7 @@ export function PDFInvoiceUploadPanel() {
                         <Input
                           type="number"
                           value={Number(getLineValue(l, 'total'))}
-                          onChange={e => updateLineEdit(idx, { total: parseFloat(e.target.value) || 0 })}
+                          onChange={e => updateLineEdit(idx, { total: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })}
                           className="h-8 text-xs font-mono text-right"
                         />
                       </TableCell>

@@ -1,4 +1,5 @@
 /**
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
  * @file     AutoPayRulesEditor.tsx
  * @purpose  Auto-Pay Rules CRUD · 3 trigger types (recurring · threshold ·
  *           on_invoice_post) · "Run Auto-Pay Now" displays evaluateRulesNow
@@ -262,7 +263,7 @@ function AutoPayRulesEditorPanel({ entityCode }: Props) {
               <div>
                 <label className="text-xs font-medium mb-1 block">Threshold Amount (₹)</label>
                 <Input type="number" min={0} value={thresholdAmount}
-                  onChange={e => setThresholdAmount(parseFloat(e.target.value) || 0)}
+                  onChange={e => setThresholdAmount(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                   className="text-xs h-8 font-mono" />
                 <p className="text-[10px] text-muted-foreground mt-1">
                   Auto-pay any approved requisition ≤ this amount.

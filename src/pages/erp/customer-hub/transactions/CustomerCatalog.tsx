@@ -1,4 +1,5 @@
 /**
+import { roundTo, dMul } from '@/lib/decimal-helpers';
  * CustomerCatalog.tsx — Browse · search · filter · social proof overlays
  * Sprint 13b · Module ch-t-catalog · Teal-500 accent
  * Reads inventory + active schemes + recent orders to compute social proof.
@@ -63,7 +64,7 @@ function loadCatalog(): CatalogItem[] {
     return raw.map(r => ({
       id: r.id, code: r.code, name: r.name,
       category: (r.stock_group_name ?? 'General').toString(),
-      price_paise: Math.round(((r.std_selling_rate ?? 0) || 0) * 100),
+      price_paise: roundTo(dMul((r.std_selling_rate ?? 0) || 0, 100), 0),
       in_stock: true,
       uom: r.primary_uom_symbol ?? 'NOS',
     })).filter(i => i.price_paise > 0);

@@ -798,7 +798,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
                                 <Input
                                   type="number"
                                   value={it.rate ?? ''}
-                                  onChange={e => updateItem(i, { rate: parseFloat(e.target.value) || null })}
+                                  onChange={e => updateItem(i, { rate: roundTo(parseFloat(e.target.value), resolveMoneyPrecision(null, null)) || null })}
                                   onKeyDown={onEnterNext}
                                 />
                               </TableCell>
@@ -849,7 +849,7 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
                                   <Input
                                     type="number"
                                     value={it.amount ?? ''}
-                                    onChange={e => updateItem(i, { amount: parseFloat(e.target.value) || 0, rate: parseFloat(e.target.value) || 0, quantity: 1 })}
+                                    onChange={e => updateItem(i, { amount: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)), rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)), quantity: 1 })}
                                     onKeyDown={onEnterNext}
                                   />
                                 </TableCell>

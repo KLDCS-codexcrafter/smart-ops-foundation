@@ -1,4 +1,5 @@
 /**
+import { roundTo, dMul } from '@/lib/decimal-helpers';
  * TransporterInvoiceInbox.tsx — Sprint 15c-1
  * MODULE ID: dh-t-transporter-invoice
  */
@@ -635,9 +636,9 @@ function ToleranceSettingsDialog({ open, onOpenChange, current, onSaved }: {
   const handleSave = () => {
     const t: TenantToleranceDefault = {
       tolerance_pct: Number(pct) || 0,
-      tolerance_amount_paise: Math.round((Number(amt) || 0) * 100),
+      tolerance_amount_paise: roundTo(dMul(Number(amt) || 0, 100), 0),
       escalation_variance_pct: Number(escPct) || 0,
-      escalation_amount_paise: Math.round((Number(escAmt) || 0) * 100),
+      escalation_amount_paise: roundTo(dMul(Number(escAmt) || 0, 100), 0),
       updated_at: nowISO(), updated_by: userId,
     };
     try {

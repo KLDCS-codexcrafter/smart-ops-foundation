@@ -1,4 +1,5 @@
 /**
+import { roundTo, dMul } from '@/lib/decimal-helpers';
  * PackingMaterialMaster.tsx — Sprint 15b
  * MODULE ID: dh-m-packing-material
  */
@@ -291,7 +292,7 @@ export function PackingMaterialMasterPanel() {
                 <Label>Cost per UOM (₹)</Label>
                 <Input type="number" step="0.01"
                   value={(editing.cost_per_uom_paise / 100).toString()}
-                  onChange={e => setEditing({ ...editing, cost_per_uom_paise: Math.round(parseFloat(e.target.value || '0') * 100) })} />
+                  onChange={e => setEditing({ ...editing, cost_per_uom_paise: roundTo(dMul(parseFloat(e.target.value || '0'), 100), 0) })} />
               </div>
               <div>
                 <Label>Pricing Source</Label>

@@ -7,6 +7,7 @@
  * @finding  CC-064
  */
 import { useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision, dSum } from '@/lib/decimal-helpers';
 import { useLedgerStore } from '@/features/ledger-master/hooks/useLedgerStore';
 import { computeAlerts, type EMIAlert } from '../lib/alert-engine';
 import type { EMIScheduleLiveRow } from '../lib/emi-lifecycle-engine';
@@ -38,7 +39,7 @@ export function useEMIAlerts() {
   const summary = useMemo<EMIAlertSummary>(() => {
     const count = (b: EMIAlert['bucket']) => alerts.filter(a => a.bucket === b).length;
     const sum = (pred: (a: EMIAlert) => boolean) =>
-      Math.round(alerts.filter(pred).reduce((s, a) => s + a.amount, 0) * 100) / 100;
+      roundTo(dSum(alerts.filter(pred), a => a.amount), resolveMoneyPrecision(null, null));
     return {
       total: alerts.length,
       overdue: count('overdue'),
