@@ -15,7 +15,7 @@ describe('Precision Arc · Stage 3 · Block 2 migrations', () => {
   it('usePayrollEngine.computeMonthlyTDS — cess + monthly TDS land on contract precision', () => {
     // taxableIncome 12,00,001 (new regime), no prior TDS, 12 months.
     // Slab math at boundary should produce decimal-safe cess and TDS.
-    const it = computeMonthlyTDS(1500000, 0, 12, 'new');
+    const it = computeMonthlyTDS(1500000, 'new', '2025-04', 0);
     expect(Number.isFinite(it.cess)).toBe(true);
     expect(Number.isFinite(it.monthlyTDS)).toBe(true);
     // cess = 4% of (taxAfterRebate + surcharge), rounded to 2-dp money default.
