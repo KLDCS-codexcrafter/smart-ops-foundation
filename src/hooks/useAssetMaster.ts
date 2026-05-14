@@ -54,6 +54,7 @@ const saveEmployees = (entityCode: string, items: Employee[]) => {
 const genCode = (all: Asset[]) => 'AST-' + String(all.length + 1).padStart(6, '0');
 
 export function useAssetMaster() {
+  const [entityCode] = useEntityCode();
   const [assets, setAssets] = useState<Asset[]>(loadAssets);
 
   // ── createAsset ─────────────────────────────────────────────────
