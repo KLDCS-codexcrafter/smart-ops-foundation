@@ -902,7 +902,7 @@ export function ConsumptionEntryPanel() {
               <div className="col-span-2">
                 <Label className="text-xs">Rate (₹)</Label>
                 <Input type="number" min={0} step="0.01" value={draftLine.rate}
-                  onChange={e => setDraftLine(d => ({ ...d, rate: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
             </div>
             <div>
