@@ -1891,8 +1891,9 @@ export function suggestServiceQuote(
   entity_id: string = DEFAULT_ENTITY,
 ): QuoteSuggestion {
   const matrix = getSLAMatrixSettings(entity_id);
+  const sevMap = { low: 'sev4_low', medium: 'sev3_medium', high: 'sev2_high', critical: 'sev1_critical' } as const;
   const cell = matrix.matrix.find(
-    (c) => c.call_type_code === call_type && c.severity === severity,
+    (c) => c.call_type_code === call_type && c.severity === sevMap[severity],
   );
   const severityMultiplier: Record<typeof severity, number> = {
     low: 1, medium: 1.5, high: 2.5, critical: 4,
