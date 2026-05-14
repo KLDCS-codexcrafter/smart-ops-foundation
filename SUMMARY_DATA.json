@@ -1,0 +1,14 @@
+{
+  "total": 1101,
+  "counts": {
+    "A": 9,
+    "B": 420,
+    "C": 287,
+    "D": 385
+  },
+  "by_pattern": {
+    "toFixed": 359,
+    "parseFloat": 281,
+    "mathRound": 461
+  }
+}
