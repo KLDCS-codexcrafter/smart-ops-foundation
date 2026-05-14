@@ -3,7 +3,7 @@
 Total sites scanned: **1265**
 Pattern coverage: toFixed + parseFloat + Math.round + Math.floor + Math.ceil across `src/**/*.{ts,tsx}` (excluding `src/__tests__/**`, `src/test/**`, `*.test.*`).
 
-Class counts (post-T2): **A=9 · B=469 · C=367 · D=420**  (Σ = 1265)
+Class counts (post-T2): **A=9 · B=469 · C=329 · D=458**  (Σ = 1265)
 
 T2 reconciliation: T1 analytical work preserved; T1's append-style corrections applied **in place**. Each site appears exactly once with one label. Non-production sweep noise (rows pointing at `src/__tests__/**`, `src/test/**`, `*.test.*`) has been purged across the whole table — these were never valid sweep targets.
 
@@ -13,7 +13,7 @@ Rubric (unchanged from Stage 2 / T1):
 - **C** non-money non-critical (counts, indices, ms timings)
 - **D** genuine bypass defect (money math without precision contract) — needs-founder-ruling
 
-## Class D (420)
+## Class D (458)
 
 | File:Line | Pattern | Code | Note |
 |---|---|---|---|
@@ -437,6 +437,44 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:123 | Math.ceil | `return Math.ceil((principal + totalInterest) / tenureMonths);` | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:126 | Math.ceil | `if (r === 0) return Math.ceil(principal / tenureMonths);` | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:127 | Math.ceil | `return Math.ceil(principal * r * Math.pow(1+r,tenureMonths) / (Math.pow(1+r,tenureMonths)-1));` | money math without precision contract — needs-founder-ruling |
+| src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352 | parseFloat | `const v = parseFloat(e.target.value) \ | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654 | parseFloat | `onChange={e => duf(key, parseFloat(e.target.value) \ | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | parseFloat | `<TableCell><Input type="number" value={fm.gratuityNomineePct} onChange={e => updateFM(fm.id, { gratuityNomineePct: parseFloat(e.target.value` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432 | parseFloat | `<div><Label className="text-[10px]">Premium (₹)</Label><Input type="number" value={lp.premiumAnnual \ | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377 | parseFloat | `onChange={e => updateField('conditionalMaxWage', parseFloat(e.target.value) \ | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/types/contract-manpower.ts:163 | Math.round | `const grossWages   = Math.round(dailyWage * daysPresent);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:76 | Math.round | `val = Math.round(val);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:225 | Math.round | `return Math.round(lop * 2) / 2;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:238 | Math.round | `const reduced = Math.round(l.monthly * (1 - deductFactor));` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | `surcharge: Math.round(surcharge),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | `rebate87A: Math.round(rebate87A),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:385 | Math.round | `const empPF = employee.pfApplicable ? Math.round(pfWage * 0.12) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:386 | Math.round | `const erEPF = employee.pfApplicable ? Math.round(pfWage * 0.0367) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:387 | Math.round | `const erEPS = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.0833), 1250) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:388 | Math.round | `const erEDLI = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.005), 75) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:392 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:393 | Math.round | `const erESI = esiWage > 0 ? Math.round(esiWage * 0.0325) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/duplicate-detector.ts:51 | Math.round | `return Math.round((a - b) / 86_400_000);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/alert-engine.ts:37 | Math.round | `return Math.round((due - today) / 86_400_000);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/advance-aging.ts:58 | Math.round | `return Math.max(0, Math.round((b - a) / 86_400_000));` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:51 | Math.round | `principal: Math.round(principalPortion * 100) / 100,` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:52 | Math.round | `interest: Math.round(interest * 100) / 100,` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:66 | Math.round | `return Math.round(emi * 100) / 100;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/components/EMICalendar.tsx:69 | Math.round | `daysUntil: Math.round((dueMs - todayMs) / 86_400_000),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53 | Math.round | `returnStandbyLoan(returnId, ACTOR, damage, Math.round(Number(damageCharge) * 100));` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:43 | Math.round | `const empPF = Math.round(pfWage * 0.12);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:45 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:62 | Math.round | `grossEarnings: Math.round(grossEarnings * lopFactor),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:88 | Math.round | `const empPF = Math.round(pfWage * 0.12);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:90 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/accounting/LedgerMaster.tsx:2289 | Math.round | `return Math.round(principal * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1) * 100) / 100;` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47 | Math.round | `return convert(Math.round(num)) + ' Rupees Only';` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130 | Math.round | `pf: emp.annualCTC ? Math.round(Math.min((emp.annualCTC * 0.4 / 12) * 0.12 * 12, 21600)) : 0,` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61 | Math.round | `return Math.min(Math.round(gratuity), cap);` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73 | Math.round | `return Math.round(encashableDays * (monthlyBasic / 26));` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | `committed: Math.round(w.committed),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | `net: Math.round(w.net),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | `const gratuity = Math.round((annualBasic * 4.81) / 100);` | money math in engine/hook or money-keyword — needs-founder-ruling |
 
 ## Class A (9)
 
@@ -926,7 +964,7 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/fincore/reports/AuditDashboard.tsx:76 | Math.ceil | `return Math.ceil((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24));` | display path |
 | src/pages/erp/procure-hub/reports/PreClosePendingPanel.tsx:29 | Math.ceil | `(r) => r.vendors_quoted >= Math.ceil(r.vendors_invited / 2) && r.pct_elapsed < 100,` | display path |
 
-## Class C (367)
+## Class C (329)
 
 | File:Line | Pattern | Code | Note |
 |---|---|---|---|
@@ -1002,7 +1040,6 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/inventory/Parametric.tsx:639 | parseFloat | `onChange={e => updateParam(idx, 'validation_max', parseFloat(e.target.value))} />` | parseFloat on non-money input |
 | src/pages/erp/fincore/reports/Form3CD.tsx:198 | parseFloat | `return raw ? parseFloat(raw) : 0;` | parseFloat on non-money input |
 | src/pages/erp/fincore/reports/Form3CD.tsx:341 | parseFloat | `onChange={e => setClause14(parseFloat(e.target.value) \ | \ |
-| src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352 | parseFloat | `const v = parseFloat(e.target.value) \ | \ |
 | src/pages/erp/dispatch/transactions/PackingSlipPrint.tsx:292 | parseFloat | `x.key === r.key ? { ...x, actual_qty: parseFloat(e.target.value \ | \ |
 | src/pages/erp/inventory/LabelTemplates.tsx:251 | parseFloat | `onChange={e => setForm(f => ({ ...f, custom_width_mm: parseFloat(e.target.value) \ | \ |
 | src/pages/erp/inventory/LabelTemplates.tsx:256 | parseFloat | `onChange={e => setForm(f => ({ ...f, custom_height_mm: parseFloat(e.target.value) \ | \ |
@@ -1039,7 +1076,6 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/accounting/LedgerMaster.tsx:5767 | parseFloat | `onChange={(e) => setSignatoryForm(f => ({ ...f, signingLimit: parseFloat(e.target.value.replace(/,/g, '')) \ | \ |
 | src/pages/erp/accounting/CurrencyMaster.tsx:112 | parseFloat | `const basePerForeign = parseFloat((1 / foreignPerBase).toFixed(4));` | parseFloat on non-money input |
 | src/pages/erp/bill-passing/panels.tsx:192 | parseFloat | `const qty = parseFloat(li.qty);` | parseFloat on non-money input |
-| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654 | parseFloat | `onChange={e => duf(key, parseFloat(e.target.value) \ | \ |
 | src/pages/erp/production/transactions/JobCardEntry.tsx:119 | parseFloat | `if (!plannedQty \ | \ |
 | src/pages/erp/production/transactions/JobCardEntry.tsx:137 | parseFloat | `planned_qty: parseFloat(plannedQty),` | parseFloat on non-money input |
 | src/pages/erp/production/transactions/JobCardEntry.tsx:167 | parseFloat | `produced_qty: parseFloat(producedQty) \ | \ |
@@ -1054,13 +1090,10 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1204 | parseFloat | `onChange={e => uf('vpfPercentage', parseFloat(e.target.value) \ | \ |
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1227 | parseFloat | `onChange={e => uf('annualCTC', parseFloat(e.target.value.replace(/,/g, '')) \ | \ |
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1311 | parseFloat | `<TableCell><Input type="number" value={fm.pfNomineePct} onChange={e => updateFM(fm.id, { pfNomineePct: parseFloat(e.target.value) \ | \ |
-| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | parseFloat | `<TableCell><Input type="number" value={fm.gratuityNomineePct} onChange={e => updateFM(fm.id, { gratuityNomineePct: parseFloat(e.target.value` | parseFloat on non-money input |
-| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432 | parseFloat | `<div><Label className="text-[10px]">Premium (₹)</Label><Input type="number" value={lp.premiumAnnual \ | \ |
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1433 | parseFloat | `<div><Label className="text-[10px]">Sum Assured (₹)</Label><Input type="number" value={lp.sumAssured \ | \ |
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1448 | parseFloat | `<Input type="number" value={form.medicalRembCap \ | \ |
 | src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:362 | parseFloat | `onChange={e => updateField('calculationValue', parseFloat(e.target.value) \ | \ |
 | src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:368 | parseFloat | `onChange={e => updateField('maxValueMonthly', parseFloat(e.target.value) \ | \ |
-| src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377 | parseFloat | `onChange={e => updateField('conditionalMaxWage', parseFloat(e.target.value) \ | \ |
 | src/pages/erp/pay-hub/masters/PayGradeMaster.tsx:251 | parseFloat | `<Input type="number" value={form.minCTC \ | \ |
 | src/pages/erp/pay-hub/masters/PayGradeMaster.tsx:256 | parseFloat | `<Input type="number" value={form.maxCTC \ | \ |
 | src/pages/erp/pay-hub/masters/PayGradeMaster.tsx:268 | parseFloat | `<Input type="number" value={form.minGross \ | \ |
@@ -1074,29 +1107,9 @@ Rubric (unchanged from Stage 2 / T1):
 | src/types/webinar.ts:148 | Math.round | `? Math.round((o.orders_converted / o.enquiries_created) * 1000) / 10 : 0;` | non-money non-critical round |
 | src/types/campaign.ts:132 | Math.round | `const safe = (n: number, d: number) => d === 0 ? 0 : Math.round((n / d) * 100 * 10) / 10;` | non-money non-critical round |
 | src/features/party-master/lib/cross-sell-finder.ts:70 | Math.round | `detail: `${kpi.productsPurchasedCount} products vs sector avg ${Math.round(avgProductCount)}`,` | non-money non-critical round |
-| src/types/contract-manpower.ts:163 | Math.round | `const grossWages   = Math.round(dailyWage * daysPresent);` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:76 | Math.round | `val = Math.round(val);` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:225 | Math.round | `return Math.round(lop * 2) / 2;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:238 | Math.round | `const reduced = Math.round(l.monthly * (1 - deductFactor));` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:306 | Math.round | `surcharge: Math.round(surcharge),` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:308 | Math.round | `rebate87A: Math.round(rebate87A),` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:385 | Math.round | `const empPF = employee.pfApplicable ? Math.round(pfWage * 0.12) : 0;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:386 | Math.round | `const erEPF = employee.pfApplicable ? Math.round(pfWage * 0.0367) : 0;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:387 | Math.round | `const erEPS = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.0833), 1250) : 0;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:388 | Math.round | `const erEDLI = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.005), 75) : 0;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:392 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | non-money non-critical round |
-| src/hooks/usePayrollEngine.ts:393 | Math.round | `const erESI = esiWage > 0 ? Math.round(esiWage * 0.0325) : 0;` | non-money non-critical round |
 | src/components/fincore/dialogs/ItemAllocationDialog.tsx:92 | Math.round | `const expected = Math.round(r.qty);` | non-money non-critical round |
-| src/features/loan-emi/lib/duplicate-detector.ts:51 | Math.round | `return Math.round((a - b) / 86_400_000);` | non-money non-critical round |
-| src/features/loan-emi/lib/alert-engine.ts:37 | Math.round | `return Math.round((due - today) / 86_400_000);` | non-money non-critical round |
-| src/features/loan-emi/lib/advance-aging.ts:58 | Math.round | `return Math.max(0, Math.round((b - a) / 86_400_000));` | non-money non-critical round |
 | src/components/company/ProgressStepper.tsx:24 | Math.round | `? Math.round((completedSteps.length / validatable.length) * 100) : 0;` | non-money non-critical round |
-| src/features/ledger-master/lib/emi-schedule-builder.ts:51 | Math.round | `principal: Math.round(principalPortion * 100) / 100,` | non-money non-critical round |
-| src/features/ledger-master/lib/emi-schedule-builder.ts:52 | Math.round | `interest: Math.round(interest * 100) / 100,` | non-money non-critical round |
-| src/features/ledger-master/lib/emi-schedule-builder.ts:66 | Math.round | `return Math.round(emi * 100) / 100;` | non-money non-critical round |
-| src/features/loan-emi/components/EMICalendar.tsx:69 | Math.round | `daysUntil: Math.round((dueMs - todayMs) / 86_400_000),` | non-money non-critical round |
 | src/components/mobile/MobileSiteDPRCapture.tsx:70 | Math.round | `if (!passed) toast.error(`Photo ${Math.round(dist)}m from site (fence ${site.location.geo_radius_meters}m) · submit BLOCKED`);` | non-money non-critical round |
-| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53 | Math.round | `returnStandbyLoan(returnId, ACTOR, damage, Math.round(Number(damageCharge) * 100));` | non-money non-critical round |
 | src/features/command-center/modules/OverviewModule.tsx:83 | Math.round | `return Math.round((configured / securityKeys.length) * 100);` | non-money non-critical round |
 | src/lib/camera-bridge.ts:103 | Math.round | `return Math.round((base64.length * 3) / 4);` | non-money non-critical round |
 | src/components/mobile/MobilePODCapture.tsx:173 | Math.round | `✓ {Math.round(pod.gps_accuracy_m ?? 0)}m accuracy` | non-money non-critical round |
@@ -1123,12 +1136,7 @@ Rubric (unchanged from Stage 2 / T1):
 | src/data/demo-transactions-pay-hub.ts:25 | Math.round | `const hra = Math.round(basic * 0.5);` | non-money non-critical round |
 | src/data/demo-transactions-pay-hub.ts:33 | Math.round | `const wBasic = Math.round(t.annualCTC * 0.7 / 12);` | non-money non-critical round |
 | src/data/demo-transactions-pay-hub.ts:34 | Math.round | `const da = Math.round(wBasic * 0.15);` | non-money non-critical round |
-| src/data/demo-transactions-pay-hub.ts:43 | Math.round | `const empPF = Math.round(pfWage * 0.12);` | non-money non-critical round |
-| src/data/demo-transactions-pay-hub.ts:45 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | non-money non-critical round |
-| src/data/demo-transactions-pay-hub.ts:62 | Math.round | `grossEarnings: Math.round(grossEarnings * lopFactor),` | non-money non-critical round |
 | src/data/demo-transactions-pay-hub.ts:76 | Math.round | `const spcl = Math.round(monthlyCTC - basic - hra - conv - med);` | non-money non-critical round |
-| src/data/demo-transactions-pay-hub.ts:88 | Math.round | `const empPF = Math.round(pfWage * 0.12);` | non-money non-critical round |
-| src/data/demo-transactions-pay-hub.ts:90 | Math.round | `const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;` | non-money non-critical round |
 | src/services/entity-setup-service.ts:708 | Math.round | `const rejected = Math.round(pl.qty - accepted);` | non-money non-critical round |
 | src/services/entity-setup-service.ts:1898 | Math.round | `variance_value: Math.round(varValue * 100) / 100,` | non-money non-critical round |
 | src/lib/form-keyboard-engine.ts:230 | Math.round | `return Math.round(result * 100) / 100;` | non-money non-critical round |
@@ -1150,22 +1158,14 @@ Rubric (unchanged from Stage 2 / T1):
 | src/lib/requestx-report-engine.ts:203 | Math.round | `const tailDays = Math.max(0, Math.round((Date.now() - cursor) / 86400000));` | non-money non-critical round |
 | src/lib/site-health-score-engine.ts:57 | Math.round | `const overall = Math.round(` | non-money non-critical round |
 | src/lib/sample-kit-engine.ts:119 | Math.round | `return Math.round((converted / closed.length) * 100);` | non-money non-critical round |
-| src/pages/erp/accounting/LedgerMaster.tsx:2289 | Math.round | `return Math.round(principal * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1) * 100) / 100;` | non-money non-critical round |
 | src/pages/erp/logistic/LogisticDisputes.tsx:63 | Math.round | `: Math.round((list.filter(d => d.response_text).length / list.length) * 100);` | non-money non-critical round |
 | src/pages/erp/pay-hub/transactions/PerformanceAndTalent.tsx:212 | Math.round | `? Math.round(((compForm.newCTC - compForm.oldCTC) / compForm.oldCTC) * 1000) / 10` | non-money non-critical round |
-| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47 | Math.round | `return convert(Math.round(num)) + ' Rupees Only';` | non-money non-critical round |
-| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130 | Math.round | `pf: emp.annualCTC ? Math.round(Math.min((emp.annualCTC * 0.4 / 12) * 0.12 * 12, 21600)) : 0,` | non-money non-critical round |
 | src/pages/erp/payout/VendorAnalytics.tsx:119 | Math.round | `return Math.round(sum / valid.length);` | non-money non-critical round |
 | src/pages/erp/payout/VendorAnalytics.tsx:129 | Math.round | `return Math.round(sum / vendorMetrics.length);` | non-money non-critical round |
 | src/pages/erp/pay-hub/transactions/Onboarding.tsx:207 | Math.round | `return Math.round((done / j.tasks.length) * 100);` | non-money non-critical round |
 | src/pages/erp/salesx/SalesXAnalytics.tsx:143 | Math.round | `? Math.round((periodActual / t.target_value) * 1000) / 10` | non-money non-critical round |
-| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61 | Math.round | `return Math.min(Math.round(gratuity), cap);` | non-money non-critical round |
-| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73 | Math.round | `return Math.round(encashableDays * (monthlyBasic / 26));` | non-money non-critical round |
-| src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | `committed: Math.round(w.committed),` | non-money non-critical round |
-| src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | `net: Math.round(w.net),` | non-money non-critical round |
 | src/pages/erp/fincore/registers/CancellationAuditRegister.tsx:48 | Math.round | `return Math.max(0, Math.round((tb - ta) / (1000 * 60 * 60 * 24)));` | non-money non-critical round |
 | src/pages/erp/fincore/registers/CancellationAuditRegister.tsx:88 | Math.round | `: Math.round(` | non-money non-critical round |
-| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | `const gratuity = Math.round((annualBasic * 4.81) / 100);` | non-money non-critical round |
 | src/pages/erp/inventory/ItemCraft.tsx:274 | Math.round | `: f.warranty_unit === 'Days' ? Math.round(Number(f.warranty_period) / 30)` | non-money non-critical round |
 | src/pages/erp/fincore/FinCoreHub.tsx:190 | Math.round | `const margin = mtdRevenue > 0 ? Math.round((grossProfit / mtdRevenue) * 1000) / 10 : 0;` | non-money non-critical round |
 | src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:166 | Math.round | `? Math.round(((form.annualCTC - activeEmployee.annualCTC) / activeEmployee.annualCTC) * 100 * 100) / 100` | non-money non-critical round |
@@ -1305,7 +1305,7 @@ Rubric (unchanged from Stage 2 / T1):
 T1's corrective continuation (predecessor f6b5eb2) closed two material defects in the original Stage 2 sweep:
 
 1. **Coverage gap** — original sweep missed Math.floor (169) and Math.ceil (40) = 209 sites. T1 added them; T2 has merged them into the main Class A/B/C/D sections above.
-2. **Under-classification** — T1 promoted 47 Class C rows to Class D under the engine/hook auto-D and money-keyword rules. T2 has applied each promotion in place: removed from Class C, added to Class D. Each promoted site appears exactly once in the table above.
+2. **Under-classification** — T1 promoted 47 Class C rows to Class D under the engine/hook auto-D and money-keyword rules. T2 has applied each promotion in place: removed from Class C, added to Class D. **38 of the 47 promotions** matched live Class C rows and were applied; **9 promotions** pointed at non-production files (`src/__tests__/**`, `src/test/**`) purged in Step 1 and have therefore been dropped from the authoritative classification.
 
 ### Revised pattern coverage (T1 figure, retained for traceability)
 
@@ -1320,27 +1320,70 @@ T1's corrective continuation (predecessor f6b5eb2) closed two material defects i
 
 Post-T2 audited rows (after non-production noise purge): **1265**.
 
-### C→D promotions applied in place (T1 reclassification — audit trail)
-
-47 promotions were issued by T1. T2 matched **0** to live Class C rows and applied them in place (deleted from Class C, added to Class D with promotion note). The remaining **0** promotion entries pointed at non-production targets purged in Step 1 (`src/__tests__/__sprint-summaries__/*.md`, `src/test/**`, `*.test.*`) and have therefore been dropped from the authoritative classification entirely.
-
-Promoted file:line entries (full T1 list, retained for traceability):
+### T1 promotion list (47 entries · audit trail · status under T2)
 
 | Promoted file:line | Pattern | Status under T2 |
 |---|---|---|
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:153 | toFixed | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:164 | toFixed | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:165 | toFixed | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:93 | parseFloat | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:95 | parseFloat | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:101 | parseFloat | purged (non-production sweep target) |
+| src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:162 | parseFloat | purged (non-production sweep target) |
+| src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352 | parseFloat | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654 | parseFloat | applied in place → Class D |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | parseFloat | applied in place → Class D |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432 | parseFloat | applied in place → Class D |
+| src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377 | parseFloat | applied in place → Class D |
+| src/types/contract-manpower.ts:163 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:76 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:225 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:238 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:385 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:386 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:387 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:388 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:392 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:393 | Math.round | applied in place → Class D |
+| src/features/loan-emi/lib/duplicate-detector.ts:51 | Math.round | applied in place → Class D |
+| src/features/loan-emi/lib/alert-engine.ts:37 | Math.round | applied in place → Class D |
+| src/features/loan-emi/lib/advance-aging.ts:58 | Math.round | applied in place → Class D |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:51 | Math.round | applied in place → Class D |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:52 | Math.round | applied in place → Class D |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:66 | Math.round | applied in place → Class D |
+| src/features/loan-emi/components/EMICalendar.tsx:69 | Math.round | applied in place → Class D |
+| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53 | Math.round | applied in place → Class D |
+| src/test/dev-only/SmokeTestRunner.tsx:2828 | Math.round | purged (non-production sweep target) |
+| src/test/c1f-tier2-tier3-oobs-sarathi.test.ts:93 | Math.round | purged (non-production sweep target) |
+| src/data/demo-transactions-pay-hub.ts:43 | Math.round | applied in place → Class D |
+| src/data/demo-transactions-pay-hub.ts:45 | Math.round | applied in place → Class D |
+| src/data/demo-transactions-pay-hub.ts:62 | Math.round | applied in place → Class D |
+| src/data/demo-transactions-pay-hub.ts:88 | Math.round | applied in place → Class D |
+| src/data/demo-transactions-pay-hub.ts:90 | Math.round | applied in place → Class D |
+| src/pages/erp/accounting/LedgerMaster.tsx:2289 | Math.round | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47 | Math.round | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130 | Math.round | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61 | Math.round | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73 | Math.round | applied in place → Class D |
+| src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | applied in place → Class D |
+| src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | applied in place → Class D |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | applied in place → Class D |
 
 ### Floor/ceil additions merged in place (T1 audit trail)
 
-- Class D additions (Math.floor/Math.ceil): merged into Class D above.
-- Class B additions (Math.floor/Math.ceil): merged into Class B above.
-- Class C additions (Math.floor/Math.ceil): merged into Class C above.
-- Class A additions (Math.floor/Math.ceil): merged into Class A above (0 rows).
+- Class D additions (35 rows): merged into Class D above.
+- Class B additions (49 rows): merged into Class B above.
+- Class C additions (125 rows): merged into Class C above.
+- Class A additions (0 rows): no additions.
 
 ---
 
 ## FINAL D LIST (Stage 3 input)
 
-All 420 Class D rows, one clean list. This is the authoritative Stage 3 migration input.
+All 458 Class D rows. Authoritative Stage 3 migration input.
 
 | file:line | pattern | reason |
 |---|---|---|
@@ -1764,10 +1807,48 @@ All 420 Class D rows, one clean list. This is the authoritative Stage 3 migratio
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:123 | Math.ceil | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:126 | Math.ceil | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:127 | Math.ceil | money math without precision contract — needs-founder-ruling |
+| src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/types/contract-manpower.ts:163 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:76 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:225 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:238 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:385 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:386 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:387 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:388 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:392 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:393 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/duplicate-detector.ts:51 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/alert-engine.ts:37 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/advance-aging.ts:58 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:51 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:52 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:66 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/components/EMICalendar.tsx:69 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:43 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:45 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:62 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:88 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:90 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/accounting/LedgerMaster.tsx:2289 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 
 ## NEEDS-FOUNDER-RULING SUB-LIST
 
-212 of the 420 Class D rows carry the `needs-founder-ruling` flag. Founder reviews this list before Stage 3 planning.
+250 of 458 Class D rows carry the `needs-founder-ruling` flag. Founder reviews this list before Stage 3 planning.
 
 | file:line | pattern | reason |
 |---|---|---|
@@ -1983,3 +2064,41 @@ All 420 Class D rows, one clean list. This is the authoritative Stage 3 migratio
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:123 | Math.ceil | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:126 | Math.ceil | money math without precision contract — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:127 | Math.ceil | money math without precision contract — needs-founder-ruling |
+| src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377 | parseFloat | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/types/contract-manpower.ts:163 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:76 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:225 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:238 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:385 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:386 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:387 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:388 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:392 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:393 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/duplicate-detector.ts:51 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/alert-engine.ts:37 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/lib/advance-aging.ts:58 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:51 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:52 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/ledger-master/lib/emi-schedule-builder.ts:66 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/features/loan-emi/components/EMICalendar.tsx:69 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:43 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:45 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:62 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:88 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/data/demo-transactions-pay-hub.ts:90 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/accounting/LedgerMaster.tsx:2289 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
