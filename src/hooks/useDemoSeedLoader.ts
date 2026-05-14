@@ -110,7 +110,8 @@ function loadFoundationMasters(): void {
 // ── Pay Hub master loader ───────────────────────────────────────────────
 
 function loadPayHubMasters(): void {
-  safeSet('erp_employees', DEMO_EMPLOYEES);
+  // [Hardening-A · Block A] Entity-scoped employees seed for DEFAULT entity.
+  safeSet(employeesKey(DEFAULT_ENTITY_SHORTCODE), DEMO_EMPLOYEES);
   safeSet('erp_salary_structures', DEMO_SALARY_STRUCTURES);
   safeSet('erp_pay_grades', DEMO_PAY_GRADES);
   safeSet('erp_shifts', DEMO_SHIFTS);
@@ -132,14 +133,15 @@ function loadPayHubTransactions(): void {
   safeSet('erp_loan_applications', DEMO_LOAN_APPLICATIONS);
   safeSet('erp_salary_advances', DEMO_SALARY_ADVANCES);
 
-  // Generate attendance records at runtime
-  // [JWT] GET /api/entity/storage/erp_attendance_records
-  const existingAtt = localStorage.getItem('erp_attendance_records');
+  // Generate attendance records at runtime · entity-scoped (Hardening-A · Block A).
+  const attKey = attendanceRecordsKey(DEFAULT_ENTITY_SHORTCODE);
+  // [JWT] GET /api/entity/storage/{attKey}
+  const existingAtt = localStorage.getItem(attKey);
   if (!existingAtt || JSON.parse(existingAtt).length === 0) {
     const empIds = DEMO_EMPLOYEES.map(e => e.id);
     const records = generateAttendanceRecords(empIds, ['2026-01', '2026-02', '2026-03'], DEMO_HOLIDAY_DATES);
-    // [JWT] POST /api/entity/storage/erp_attendance_records
-    localStorage.setItem('erp_attendance_records', JSON.stringify(records));
+    // [JWT] POST /api/entity/storage/{attKey}
+    localStorage.setItem(attKey, JSON.stringify(records));
   }
 }
 
