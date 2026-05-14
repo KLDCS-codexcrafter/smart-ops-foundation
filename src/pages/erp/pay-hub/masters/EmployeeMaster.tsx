@@ -22,6 +22,7 @@ import { useEmployees } from '@/hooks/useEmployees';
 import type { Employee, FamilyMember, EquipmentIssued, LoanDetail,
   LICPolicy, PrevEmployerDetail, EmployeeDocument, DocType } from '@/types/employee';
 import { BLANK_EMPLOYEE, DOC_TYPE_LABELS, EMPLOYEE_STATUS_COLORS } from '@/types/employee';
+import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/india-geography';
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
