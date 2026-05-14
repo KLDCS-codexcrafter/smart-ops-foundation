@@ -62,6 +62,7 @@ const BLANK: Omit<TransactionTemplate,'id'|'code'|'created_at'|'updated_at'> = {
 };
 
 export function TransactionTemplatesPanel() {
+  const { entityCode } = useEntityCode();
   const { templates, narrationCount, termsCount, enforcementCount,
     createTemplate, updateTemplate, deleteTemplate, toggleStatus } = useTransactionTemplates();
 
