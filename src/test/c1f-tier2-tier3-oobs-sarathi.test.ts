@@ -88,9 +88,15 @@ describe('S31 detectEngineerBurnout', () => {
 });
 
 describe('S32 suggestServiceQuote', () => {
-  it('returns severity-scaled charge with low confidence when matrix empty', () => {
+  it('returns severity-scaled charge with high confidence when matrix auto-seeds default cell', () => {
     const q = suggestServiceQuote('REPAIR', 'critical', E);
     expect(q.suggested_charge_paise).toBe(Math.round(500 * 100 * 4));
+    // Default SLA matrix is auto-seeded for canonical call types (REPAIR included),
+    // so the matched cell yields 'high' confidence.
+    expect(q.confidence).toBe('high');
+  });
+  it('returns low confidence when call_type is unknown to seeded matrix', () => {
+    const q = suggestServiceQuote('UNKNOWN_CALL_TYPE', 'critical', E);
     expect(q.confidence).toBe('low');
   });
 });
