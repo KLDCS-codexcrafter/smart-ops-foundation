@@ -26,6 +26,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { SalaryStructure, SalaryStructureComponent, PayHeadType } from '@/types/pay-hub';
 import { PAY_HEAD_TYPE_LABELS, CALC_TYPE_LABELS } from '@/types/pay-hub';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const EMPTY_FORM: Omit<SalaryStructure, 'id' | 'code' | 'created_at' | 'updated_at'> = {
   name: '', description: '', basedOn: 'ctc', minCTC: 0, maxCTC: 0,
@@ -327,12 +328,12 @@ export function SalaryStructureMasterPanel() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Min CTC (Annual)</Label>
-                <Input type="number" value={form.minCTC || ''} onChange={e => updateField('minCTC', parseFloat(e.target.value) || 0)}
+                <Input type="number" value={form.minCTC || ''} onChange={e => updateField('minCTC', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                   onKeyDown={onEnterNext} className="text-xs" />
               </div>
               <div>
                 <Label className="text-xs">Max CTC (Annual)</Label>
-                <Input type="number" value={form.maxCTC || ''} onChange={e => updateField('maxCTC', parseFloat(e.target.value) || 0)}
+                <Input type="number" value={form.maxCTC || ''} onChange={e => updateField('maxCTC', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                   onKeyDown={onEnterNext} className="text-xs" />
               </div>
             </div>
@@ -381,7 +382,7 @@ export function SalaryStructureMasterPanel() {
                           value={comp.calculationValue || ''}
                           onChange={e => {
                             const updated = form.components.map(c =>
-                              c.payHeadId === comp.payHeadId ? { ...c, calculationValue: parseFloat(e.target.value) || 0 } : c
+                              c.payHeadId === comp.payHeadId ? { ...c, calculationValue: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) } : c
                             );
                             updateField('components', updated);
                           }}
@@ -406,7 +407,7 @@ export function SalaryStructureMasterPanel() {
               <CollapsibleContent className="mt-3 space-y-3">
                 <div>
                   <Label className="text-xs">Annual CTC</Label>
-                  <Input type="number" value={previewCTC || ''} onChange={e => setPreviewCTC(parseFloat(e.target.value) || 0)}
+                  <Input type="number" value={previewCTC || ''} onChange={e => setPreviewCTC(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                     onKeyDown={onEnterNext} className="text-xs" placeholder="Enter annual CTC" />
                 </div>
                 {previewCTC > 0 && previewBreakdown.length > 0 && (

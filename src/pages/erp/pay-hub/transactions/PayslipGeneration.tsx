@@ -26,6 +26,7 @@ import { DEDUCTION_LIMITS } from '@/data/payroll-statutory-seed-data';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 void PAYROLL_RUNS_KEY;
 
 // ── numberToWords helper (inline, no library) ──────────────────
@@ -346,7 +347,7 @@ export function PayslipGenerationPanel() {
       id: `prf-${Date.now()}`,
       section: proofSection,
       description: proofDesc,
-      declaredAmount: parseFloat(proofAmount) || 0,
+      declaredAmount: roundTo(parseFloat(proofAmount) || 0, resolveMoneyPrecision(null, null)),
       proofRef: proofRef,
       status: 'submitted',
       hrRemarks: '',
@@ -666,11 +667,11 @@ export function PayslipGenerationPanel() {
                     <Label className="font-semibold">Section 80D — Medical Insurance</Label>
                     <div className="flex items-center gap-3">
                       <Label className="text-xs w-48 shrink-0">Self & Family (limit ₹25,000)</Label>
-                      <Input {...amountInputProps} value={declForm.medicalInsuranceSelf || ''} onChange={e => duf('medicalInsuranceSelf', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                      <Input {...amountInputProps} value={declForm.medicalInsuranceSelf || ''} onChange={e => duf('medicalInsuranceSelf', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                     </div>
                     <div className="flex items-center gap-3">
                       <Label className="text-xs w-48 shrink-0">Parents (limit ₹25,000/₹50,000)</Label>
-                      <Input {...amountInputProps} value={declForm.medicalInsuranceParents || ''} onChange={e => duf('medicalInsuranceParents', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                      <Input {...amountInputProps} value={declForm.medicalInsuranceParents || ''} onChange={e => duf('medicalInsuranceParents', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                     </div>
                   </div>
                 )}
@@ -681,15 +682,15 @@ export function PayslipGenerationPanel() {
                     <Label className="font-semibold">Other Deductions</Label>
                     <div className="flex items-center gap-3">
                       <Label className="text-xs w-48 shrink-0">Education Loan Interest (80E)</Label>
-                      <Input {...amountInputProps} value={declForm.educationLoanInterest || ''} onChange={e => duf('educationLoanInterest', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                      <Input {...amountInputProps} value={declForm.educationLoanInterest || ''} onChange={e => duf('educationLoanInterest', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                     </div>
                     <div className="flex items-center gap-3">
                       <Label className="text-xs w-48 shrink-0">Donations (80G — limit ₹1,00,000)</Label>
-                      <Input {...amountInputProps} value={declForm.donations80G || ''} onChange={e => duf('donations80G', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                      <Input {...amountInputProps} value={declForm.donations80G || ''} onChange={e => duf('donations80G', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                     </div>
                     <div className="flex items-center gap-3">
                       <Label className="text-xs w-48 shrink-0">Savings Interest 80TTA (limit ₹10,000)</Label>
-                      <Input {...amountInputProps} value={declForm.savingsInterest80TTA || ''} onChange={e => duf('savingsInterest80TTA', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                      <Input {...amountInputProps} value={declForm.savingsInterest80TTA || ''} onChange={e => duf('savingsInterest80TTA', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                     </div>
                   </div>
                 )}
@@ -712,7 +713,7 @@ export function PayslipGenerationPanel() {
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Monthly Rent (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.hra as HRADeclaration | null)?.rentPerMonth || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), rentPerMonth: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.hra as HRADeclaration | null)?.rentPerMonth || ''} onChange={e => duf('hra', { ...(declForm.hra || {}), rentPerMonth: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">City Type</Label>
@@ -754,11 +755,11 @@ export function PayslipGenerationPanel() {
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Interest Paid (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.interestPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), interestPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.interestPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), interestPaid: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Principal Paid (₹)</Label>
-                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.principalPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), principalPaid: parseFloat(e.target.value) || 0 })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={(declForm.homeLoan as HomeLoanDeclaration | null)?.principalPaid || ''} onChange={e => duf('homeLoan', { ...(declForm.homeLoan || {}), principalPaid: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-40 shrink-0">Property City</Label>
@@ -778,15 +779,15 @@ export function PayslipGenerationPanel() {
                     <div className="space-y-2 pl-8">
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-48 shrink-0">Previous Employer Gross Income (₹)</Label>
-                        <Input {...amountInputProps} value={declForm.prevEmployerGross || ''} onChange={e => duf('prevEmployerGross', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={declForm.prevEmployerGross || ''} onChange={e => duf('prevEmployerGross', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-48 shrink-0">TDS Deducted by Previous Employer (₹)</Label>
-                        <Input {...amountInputProps} value={declForm.prevEmployerTDS || ''} onChange={e => duf('prevEmployerTDS', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={declForm.prevEmployerTDS || ''} onChange={e => duf('prevEmployerTDS', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                       <div className="flex items-center gap-3">
                         <Label className="text-xs w-48 shrink-0">PF Contributed (₹)</Label>
-                        <Input {...amountInputProps} value={declForm.prevEmployerPF || ''} onChange={e => duf('prevEmployerPF', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
+                        <Input {...amountInputProps} value={declForm.prevEmployerPF || ''} onChange={e => duf('prevEmployerPF', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} className="h-8 text-xs max-w-40" />
                       </div>
                     </div>
                   )}

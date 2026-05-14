@@ -27,6 +27,7 @@ import type { Employee } from '@/types/employee';
 import { JOB_APPLICATIONS_KEY } from '@/types/recruitment';
 import { EMPLOYEES_KEY, BLANK_EMPLOYEE } from '@/types/employee';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const STATUS_COLORS: Record<JourneyStatus, string> = {
   active: 'bg-green-500/10 text-green-700 border-green-500/30',
@@ -753,7 +754,7 @@ export function OnboardingPanel() {
             </div>
             <div>
               <Label className="text-xs">Offer / Annual CTC (₹)</Label>
-              <Input {...amountInputProps} value={journeyForm.offerAmount || ''} onChange={e => jf('offerAmount', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+              <Input {...amountInputProps} value={journeyForm.offerAmount || ''} onChange={e => jf('offerAmount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">Orientation Date</Label>

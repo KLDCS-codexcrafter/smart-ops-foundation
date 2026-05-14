@@ -36,6 +36,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useT } from '@/lib/i18n-engine';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 /* ── generateEMISchedule — pure function, no library ─────────────── */
 function generateEMISchedule(
@@ -885,7 +886,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             <div className="space-y-1.5">
               <Label>Principal Amount *</Label>
               <Input {...amountInputProps} value={loanForm.principalAmount || ''} onKeyDown={onEnterNext}
-                onChange={e => luf('principalAmount', parseFloat(e.target.value.replace(/,/g,'')) || 0)} />
+                onChange={e => luf('principalAmount', roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)))} />
             </div>
             <div className="space-y-1.5">
               <Label>Tenure (months) *</Label>
@@ -941,7 +942,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             <div className="space-y-1.5">
               <Label>Amount *</Label>
               <Input {...amountInputProps} value={advForm.amount || ''} onKeyDown={onEnterNext}
-                onChange={e => setAdvForm(prev => ({ ...prev, amount: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                onChange={e => setAdvForm(prev => ({ ...prev, amount: roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)) }))} />
             </div>
             <div className="space-y-1.5">
               <Label>Recovery Period</Label>
@@ -1003,7 +1004,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             <div className="space-y-1.5">
               <Label>Amount *</Label>
               <Input {...amountInputProps} value={expForm.amount || ''} onKeyDown={onEnterNext}
-                onChange={e => setExpForm(prev => ({ ...prev, amount: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                onChange={e => setExpForm(prev => ({ ...prev, amount: roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)) }))} />
             </div>
             <div className="space-y-1.5">
               <Label>Receipt Reference</Label>
@@ -1042,7 +1043,7 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
             <div className="space-y-1.5">
               <Label>Total Flexi Budget (₹) *</Label>
               <Input {...amountInputProps} value={flexiTotal || ''} onKeyDown={onEnterNext}
-                onChange={e => setFlexiTotal(parseFloat(e.target.value.replace(/,/g,'')) || 0)} />
+                onChange={e => setFlexiTotal(roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)))} />
             </div>
             <Separator />
             <p className="text-sm font-semibold">Component Allocations</p>
