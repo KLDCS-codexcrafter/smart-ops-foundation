@@ -144,11 +144,13 @@ export function TransactionTemplatesPanel() {
 
   const orgDepts: { id: string; name: string }[] = useMemo(() => {
     try {
-      // [JWT] GET /api/foundation/departments
-      const raw = localStorage.getItem('erp_departments');
+      // [JWT] GET /api/foundation/departments?entityCode={entityCode}
+      // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      const scopedRaw = localStorage.getItem(departmentsKey(entityCode));
+      const raw = scopedRaw ?? localStorage.getItem('erp_departments');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, []);
+  }, [entityCode]);
 
   const renderTable = () => (
     <Table>
