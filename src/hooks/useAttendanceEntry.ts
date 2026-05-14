@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import type { AttendanceRecord, RegularizationRequest, GeoFence,
   BiometricPunch, BiometricDaySummary } from '@/types/attendance-entry';
 import { ATTENDANCE_RECORDS_KEY, REGULARIZATION_KEY, GEO_FENCES_KEY } from '@/types/attendance-entry';
+import { dSub, roundTo, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 // ── Loaders ───────────────────────────────────────────────────────
 const loadRecords = (): AttendanceRecord[] => {

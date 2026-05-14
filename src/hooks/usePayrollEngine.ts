@@ -21,7 +21,7 @@ import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCH
   from '@/data/payroll-statutory-seed-data';
 import { journalKey } from '@/lib/fincore-engine';
 import type { JournalEntry } from '@/types/voucher';
-import { dSub, dMul, dPct, dAdd, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { dSub, dPct, dAdd, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 // PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that
 // have not yet migrated to the entity-scoped helpers. New reads/writes use
