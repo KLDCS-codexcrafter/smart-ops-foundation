@@ -107,11 +107,14 @@ export function getOperatorContext(
   const ctx: OperatorContext = { entity_id: entityId };
   if (voucherDepartmentId) {
     ctx.department_id = voucherDepartmentId;
-    // Lookup department → division via existing erp_departments hierarchy.
+    // Lookup department → division via entity-scoped erp_departments_{entity} hierarchy
+    // (Hardening-A · Block A · falls back to legacy global key when entityId empty).
     try {
-      // [JWT] GET /api/foundation/departments
+      // [JWT] GET /api/foundation/departments?entityCode={entityId}
+      const scopedRaw = localStorage.getItem(departmentsKey(entityId));
+      const legacyRaw = scopedRaw ?? localStorage.getItem('erp_departments');
       const depts: Array<{ id: string; division_id?: string | null }> =
-        JSON.parse(localStorage.getItem('erp_departments') ?? '[]');
+        JSON.parse(legacyRaw ?? '[]');
       const dept = depts.find(d => d.id === voucherDepartmentId);
       if (dept?.division_id) ctx.division_id = dept.division_id;
     } catch {
