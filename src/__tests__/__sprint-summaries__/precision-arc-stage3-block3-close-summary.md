@@ -105,7 +105,7 @@ While editing the 6 in-scope files, the following adjacent `parseFloat` sites we
 | `…/EmployeeMaster.tsx:1448` | `medicalRembCap` — **money** | Adjacent money site, not in Appendix A. |
 | `src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:1053` | `flexiComponents[comp]` (with strip) — **money** | Adjacent money site, not in Appendix A. |
 
-**Disposition:** none touched. The 5 money-adjacent sites (`EmployeeMaster.tsx:1227, 1432, 1433, 1448`, `EmployeeFinance.tsx:1053`) and the generic `PayslipGeneration.tsx:654` look like legitimate Pattern 2 candidates that may have been missed at sweep time. Recommend founder ruling: either fold into Block 3-T1 if scope expansion is approved, or formally classify under Stage 2 audit table.
+**Disposition:** none touched. Correction to earlier wording: at least 2 of the flagged adjacents — `PayslipGeneration.tsx:654` and `EmployeeMaster.tsx:1432` — are **already in the Stage 2 parked needs-founder-ruling set (the 248)**. They were swept at Stage 2 and parked, NOT missed. The remaining adjacents (`EmployeeMaster.tsx:1227, 1433, 1448`, `EmployeeFinance.tsx:1053`, plus the percentage sites `:1204, :1311, :1312`) are flagged here for founder ruling: confirm whether each is parked-already or a true sweep-miss, then either fold into a future block or formally classify under the Stage 2 audit table.
 
 ---
 
