@@ -8,23 +8,23 @@ import { applications } from '@/components/operix-core/applications';
 
 describe('Status flip ceremony · ServiceDesk → active · MOAT #24', () => {
   it('servicedesk has status: active (post-flip)', () => {
-    const sd = OPERIX_APPLICATIONS.find((a) => a.id === 'servicedesk');
+    const sd = applications.find((a) => a.id === 'servicedesk');
     expect(sd).toBeDefined();
     expect(sd?.status).toBe('active');
   });
 
   it('ACTIVE roster count = 25 (was 24 · +1 servicedesk)', () => {
-    const active = OPERIX_APPLICATIONS.filter((a) => a.status === 'active');
+    const active = applications.filter((a) => a.status === 'active');
     expect(active.length).toBe(25);
   });
 
   it('servicedesk route remains /erp/servicedesk', () => {
-    const sd = OPERIX_APPLICATIONS.find((a) => a.id === 'servicedesk');
+    const sd = applications.find((a) => a.id === 'servicedesk');
     expect(sd?.route).toBe('/erp/servicedesk');
   });
 
   it('servicedesk description references Smartpower-type institutional foreshadowing', () => {
-    const sd = OPERIX_APPLICATIONS.find((a) => a.id === 'servicedesk');
+    const sd = applications.find((a) => a.id === 'servicedesk');
     expect(sd?.description.toLowerCase()).toContain('smartpower');
   });
 });
