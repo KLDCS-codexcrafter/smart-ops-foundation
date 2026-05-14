@@ -29,6 +29,7 @@ import { useVoucherEntityGuard } from '@/hooks/useVoucherEntityGuard';
 import { useTenantConfig } from '@/hooks/useTenantConfig';
 import { mapSACtoTDSSection } from '@/lib/sacTdsMap';
 import { computeTDS } from '@/lib/tds-engine';
+import { roundTo, dPct } from '@/lib/decimal-helpers';
 import { TDS_SECTIONS } from '@/data/compliance-seed-data';
 import type { Voucher, BillReference } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
@@ -534,7 +535,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
                 <Input type="number" value={tdsRate || ''} onChange={e => {
                   const r = parseFloat(e.target.value) || 0;
                   setTdsRate(r);
-                  setTdsAmount(Math.round(amount * r / 100));
+                  setTdsAmount(roundTo(dPct(amount, r), 0));
                 }} onKeyDown={onEnterNext} className="text-xs" />
               </div>
               <div>
