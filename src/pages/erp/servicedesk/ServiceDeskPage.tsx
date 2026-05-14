@@ -43,6 +43,19 @@ import { ServiceAvailedTracker } from './customer-hub/ServiceAvailedTracker';
 import { CustomerCommLog } from './customer-hub/CustomerCommLog';
 import { PromisedVsActualVariance } from './reports/PromisedVsActualVariance';
 import { AMCProfitabilityPerCustomer } from './reports/AMCProfitabilityPerCustomer';
+import { EngineerMarketplace } from './marketplace/EngineerMarketplace';
+import { CustomerPnLReport } from './reports/CustomerPnLReport';
+import { RefurbishedUnitLifecycle } from './refurbished/RefurbishedUnitLifecycle';
+import { RefurbSpareInventoryTier } from './refurbished/RefurbSpareInventoryTier';
+import { EngineerBurnoutDashboard } from './engineers/EngineerBurnoutDashboard';
+import { ServiceQuoteOptimizer } from './quote-optimizer/ServiceQuoteOptimizer';
+import { VoiceOfCustomerAggregation } from './reports/VoiceOfCustomerAggregation';
+import { PSUGovServiceContract } from './phase2-preview/PSUGovServiceContract';
+import { MultiCurrencyExportService } from './phase2-preview/MultiCurrencyExportService';
+import { IoTReadyFoundation } from './phase2-preview/IoTReadyFoundation';
+import { ServicePerformanceBenchmark } from './phase2-preview/ServicePerformanceBenchmark';
+import { EngineerReputationRating } from './phase2-preview/EngineerReputationRating';
+import { FutureTaskRegisterViewer } from './future-task-register/FutureTaskRegisterViewer';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
@@ -181,6 +194,39 @@ export default function ServiceDeskPage(): JSX.Element {
         return <PromisedVsActualVariance />;
       case 'amc-profitability-per-customer':
         return <AMCProfitabilityPerCustomer />;
+      // C.1f · Tier 2 + Tier 3 OOBs + Future Task Register
+      case 'engineer-marketplace':
+        return <EngineerMarketplace />;
+      case 'engineer-list':
+        return <EngineerMarketplace defaultTab="employee" />;
+      case 'engineer-roster':
+        return <EngineerMarketplace defaultTab="all" />;
+      case 'engineer-capacity':
+        return <EngineerMarketplace defaultTab="all" showCapacityOnly />;
+      case 'customer-pnl-report':
+        return <CustomerPnLReport />;
+      case 'refurbished-units':
+        return <RefurbishedUnitLifecycle />;
+      case 'refurb-spare-tier':
+        return <RefurbSpareInventoryTier />;
+      case 'engineer-burnout':
+        return <EngineerBurnoutDashboard />;
+      case 'service-quote-optimizer':
+        return <ServiceQuoteOptimizer />;
+      case 'voice-of-customer':
+        return <VoiceOfCustomerAggregation />;
+      case 'psu-gov-contract':
+        return <PSUGovServiceContract />;
+      case 'multi-currency-export':
+        return <MultiCurrencyExportService />;
+      case 'iot-foundation':
+        return <IoTReadyFoundation />;
+      case 'service-benchmark':
+        return <ServicePerformanceBenchmark />;
+      case 'engineer-reputation':
+        return <EngineerReputationRating />;
+      case 'future-task-register':
+        return <FutureTaskRegisterViewer />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }

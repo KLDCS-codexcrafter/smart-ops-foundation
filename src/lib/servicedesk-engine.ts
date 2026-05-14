@@ -1640,3 +1640,334 @@ export function computeRemainingServices(
   const availed = listServiceAvailedForAMC(amc_record_id, entity_id).length;
   return { included, availed, remaining: Math.max(0, included - availed) };
 }
+
+// ============================================================================
+// C.1f · BLOCK B · Tier 2/3 OOBs + Future Task Register
+// ============================================================================
+import type { EngineerMarketplaceProfile, EngagementType } from '@/types/engineer-marketplace';
+import { engineerMarketplaceKey } from '@/types/engineer-marketplace';
+import type { RefurbishedUnit, RefurbStatus, RefurbGrade } from '@/types/refurbished-unit';
+import { refurbishedUnitKey } from '@/types/refurbished-unit';
+import type { FutureTaskEntry, FTStatus } from '@/types/future-task-register';
+import { futureTaskKey } from '@/types/future-task-register';
+import type { SparesIssueRecord as _SparesIssueRecord } from '@/types/spares-issue';
+import { sparesIssueKey as _sparesIssueKeyC1f } from '@/types/spares-issue';
+import { getSLAMatrixSettings } from './cc-compliance-settings';
+
+// --- B.1 EngineerMarketplace CRUD (S27) ---
+export function registerEngineerMarketplaceProfile(
+  input: Omit<EngineerMarketplaceProfile, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>,
+): EngineerMarketplaceProfile {
+  // [JWT] POST /api/servicedesk/engineer-marketplace
+  const now = nowIso();
+  const profile: EngineerMarketplaceProfile = {
+    ...input,
+    id: newId('eng_mkt'),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: 'system', action: `marketplace_registered_${input.engagement_type}` }],
+  };
+  const list = readJson<EngineerMarketplaceProfile>(engineerMarketplaceKey(input.entity_id));
+  writeJson(engineerMarketplaceKey(input.entity_id), [...list, profile]);
+  return profile;
+}
+
+export function listEngineerMarketplaceProfiles(filters?: {
+  entity_id?: string;
+  engagement_type?: EngagementType;
+}): EngineerMarketplaceProfile[] {
+  // [JWT] GET /api/servicedesk/engineer-marketplace
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<EngineerMarketplaceProfile>(engineerMarketplaceKey(entity)).filter((p) =>
+    !filters?.engagement_type || p.engagement_type === filters.engagement_type,
+  );
+}
+
+export function listAvailableEngineers(filters?: {
+  entity_id?: string;
+  engagement_type?: EngagementType;
+  skill_tag?: string;
+}): EngineerMarketplaceProfile[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<EngineerMarketplaceProfile>(engineerMarketplaceKey(entity)).filter((p) => {
+    if (!p.is_available) return false;
+    if (filters?.engagement_type && p.engagement_type !== filters.engagement_type) return false;
+    if (filters?.skill_tag && !p.skill_tags.includes(filters.skill_tag)) return false;
+    return true;
+  });
+}
+
+export function matchEngineerToTicket(
+  required_skills: string[],
+  entity_id: string = DEFAULT_ENTITY,
+): EngineerMarketplaceProfile[] {
+  return listAvailableEngineers({ entity_id })
+    .filter((e) => required_skills.some((s) => e.skill_tags.includes(s)))
+    .sort((a, b) => b.capacity_hours_per_week - a.capacity_hours_per_week);
+}
+
+// --- B.2 RefurbishedUnit CRUD + 4-state machine (S29 ⭐) ---
+export function createRefurbishedUnit(
+  input: Omit<RefurbishedUnit, 'id' | 'created_at' | 'updated_at' | 'audit_trail' | 'margin_paise' | 'status' | 'sold_at' | 'sold_to_customer_id' | 'recycled_at'>,
+): RefurbishedUnit {
+  // [JWT] POST /api/servicedesk/refurbished-units
+  const now = nowIso();
+  const unit: RefurbishedUnit = {
+    ...input,
+    id: newId('refurb'),
+    margin_paise: input.resale_price_paise - input.refurb_cost_paise,
+    status: 'in_refurb',
+    sold_at: null,
+    sold_to_customer_id: null,
+    recycled_at: null,
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: 'system', action: `refurb_grade_${input.refurb_grade}_acquired_${input.acquired_via}` }],
+  };
+  const list = readJson<RefurbishedUnit>(refurbishedUnitKey(input.entity_id));
+  writeJson(refurbishedUnitKey(input.entity_id), [...list, unit]);
+  return unit;
+}
+
+function transitionRefurb(
+  id: string, to: RefurbStatus, actor: string, patch: Partial<RefurbishedUnit>, entity_id: string = DEFAULT_ENTITY,
+): RefurbishedUnit {
+  const list = readJson<RefurbishedUnit>(refurbishedUnitKey(entity_id));
+  const idx = list.findIndex((u) => u.id === id);
+  if (idx === -1) throw new Error(`RefurbishedUnit ${id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    ...patch,
+    status: to,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, `refurb_transition_to_${to}`),
+  };
+  writeJson(refurbishedUnitKey(entity_id), list);
+  return list[idx];
+}
+
+export function markRefurbReady(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+  return transitionRefurb(id, 'ready', actor, {}, entity_id);
+}
+
+export function markRefurbSold(id: string, actor: string, customer_id: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+  return transitionRefurb(id, 'sold', actor, { sold_at: nowIso(), sold_to_customer_id: customer_id }, entity_id);
+}
+
+export function markRefurbRecycled(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+  return transitionRefurb(id, 'recycled', actor, { recycled_at: nowIso() }, entity_id);
+}
+
+export function listRefurbishedUnits(filters?: {
+  entity_id?: string;
+  status?: RefurbStatus;
+  refurb_grade?: RefurbGrade;
+}): RefurbishedUnit[] {
+  // [JWT] GET /api/servicedesk/refurbished-units
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<RefurbishedUnit>(refurbishedUnitKey(entity)).filter((u) => {
+    if (filters?.status && u.status !== filters.status) return false;
+    if (filters?.refurb_grade && u.refurb_grade !== filters.refurb_grade) return false;
+    return true;
+  });
+}
+
+export function computeRefurbMarginByGrade(
+  entity_id: string = DEFAULT_ENTITY,
+): Record<RefurbGrade, { count: number; total_margin: number }> {
+  const list = readJson<RefurbishedUnit>(refurbishedUnitKey(entity_id)).filter((u) => u.status === 'sold');
+  const result: Record<RefurbGrade, { count: number; total_margin: number }> = {
+    A: { count: 0, total_margin: 0 },
+    B: { count: 0, total_margin: 0 },
+    C: { count: 0, total_margin: 0 },
+  };
+  for (const u of list) {
+    result[u.refurb_grade].count++;
+    result[u.refurb_grade].total_margin += u.margin_paise;
+  }
+  return result;
+}
+
+// --- B.3 FutureTaskEntry CRUD + 5 seeded entries ---
+const SEEDED_FT_ENTRIES: Omit<FutureTaskEntry, 'id' | 'created_at' | 'updated_at' | 'audit_trail'>[] = [
+  { ft_code: 'FT-SDESK-001', title: 'Real OEM API integration', description: 'Replace Procure360 stub consumer with real OEM portal API integration · Voltas/Daikin/Bluestar starter', status: 'planned', priority: 'p1', target_phase: 'phase_2', estimated_loc: 800, unblock_dependencies: [], parent_card_id: 'servicedesk' },
+  { ft_code: 'FT-SDESK-002', title: 'SMS gateway integration for Ch2/Ch3 + reminders', description: 'Wire real SMS provider (Twilio/MSG91) for HappyCode Ch2 + reminder fire channels', status: 'planned', priority: 'p1', target_phase: 'phase_2', estimated_loc: 400, unblock_dependencies: [], parent_card_id: 'servicedesk' },
+  { ft_code: 'FT-SDESK-003', title: 'Real JWT backend for HappyCode Ch2', description: 'Replace Phase 1 btoa() token with real JWT (HS256 signing · server-issued · revocation list)', status: 'planned', priority: 'p1', target_phase: 'phase_2', estimated_loc: 300, unblock_dependencies: [], parent_card_id: 'servicedesk' },
+  { ft_code: 'FT-SDESK-004', title: 'ML-powered Service Quote Optimizer', description: 'Upgrade S32 rule-based optimizer to ML model trained on historical ticket/quote/win data', status: 'planned', priority: 'p2', target_phase: 'phase_2', estimated_loc: 600, unblock_dependencies: ['FT-SDESK-001'], parent_card_id: 'servicedesk' },
+  { ft_code: 'FT-SDESK-005', title: 'NLP for Voice-of-Customer', description: 'Upgrade S35 keyword-frequency to real NLP (sentiment + topic extraction + trend detection)', status: 'planned', priority: 'p2', target_phase: 'phase_2', estimated_loc: 500, unblock_dependencies: [], parent_card_id: 'servicedesk' },
+];
+
+export function seedFutureTaskRegister(entity_id: string = DEFAULT_ENTITY): FutureTaskEntry[] {
+  // [JWT] POST /api/servicedesk/future-task-register/seed
+  const existing = readJson<FutureTaskEntry>(futureTaskKey(entity_id));
+  if (existing.length > 0) return existing;
+  const now = nowIso();
+  const entries: FutureTaskEntry[] = SEEDED_FT_ENTRIES.map((e) => ({
+    ...e,
+    id: newId('ft'),
+    created_at: now,
+    updated_at: now,
+    audit_trail: [{ at: now, by: 'system', action: 'ft_seeded' }],
+  }));
+  writeJson(futureTaskKey(entity_id), entries);
+  return entries;
+}
+
+export function listFutureTasks(filters?: { entity_id?: string; status?: FTStatus }): FutureTaskEntry[] {
+  const entity = filters?.entity_id ?? DEFAULT_ENTITY;
+  return readJson<FutureTaskEntry>(futureTaskKey(entity)).filter((t) =>
+    !filters?.status || t.status === filters.status,
+  );
+}
+
+export function updateFutureTaskStatus(
+  id: string, status: FTStatus, actor: string, entity_id: string = DEFAULT_ENTITY,
+): FutureTaskEntry {
+  const list = readJson<FutureTaskEntry>(futureTaskKey(entity_id));
+  const idx = list.findIndex((t) => t.id === id);
+  if (idx === -1) throw new Error(`FutureTaskEntry ${id} not found`);
+  const now = nowIso();
+  list[idx] = {
+    ...list[idx],
+    status,
+    updated_at: now,
+    audit_trail: appendAudit(list[idx].audit_trail, actor, `ft_status_${status}`),
+  };
+  writeJson(futureTaskKey(entity_id), list);
+  return list[idx];
+}
+
+// --- B.4 S30 / S31 / S32 helpers ---
+export function listSparesByTier(
+  tier: 'A' | 'B' | 'C',
+  entity_id: string = DEFAULT_ENTITY,
+): _SparesIssueRecord[] {
+  return readJson<_SparesIssueRecord>(_sparesIssueKeyC1f(entity_id))
+    .filter((s) => {
+      const notes = (s as unknown as { notes?: string }).notes ?? '';
+      return notes.includes(`[TIER:${tier}]`);
+    });
+}
+
+export interface EngineerBurnoutFlag {
+  engineer_id: string;
+  tickets_this_week: number;
+  is_burnout_flag: boolean;
+  computed_at: string;
+}
+
+export function detectEngineerBurnout(entity_id: string = DEFAULT_ENTITY): EngineerBurnoutFlag[] {
+  const oneWeekAgo = new Date(Date.now() - 7 * 86400 * 1000).toISOString();
+  const tickets = listServiceTickets({ entity_id }).filter(
+    (t) => t.created_at >= oneWeekAgo && t.assigned_engineer_id,
+  );
+  const counts = new Map<string, number>();
+  for (const t of tickets) {
+    const eid = t.assigned_engineer_id as string;
+    counts.set(eid, (counts.get(eid) ?? 0) + 1);
+  }
+  const now = nowIso();
+  return Array.from(counts.entries()).map(([engineer_id, count]) => ({
+    engineer_id,
+    tickets_this_week: count,
+    is_burnout_flag: count > 15,
+    computed_at: now,
+  }));
+}
+
+export interface QuoteSuggestion {
+  call_type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  suggested_response_hours: number;
+  suggested_resolution_hours: number;
+  suggested_charge_paise: number;
+  confidence: 'low' | 'medium' | 'high';
+}
+
+export function suggestServiceQuote(
+  call_type: string,
+  severity: 'low' | 'medium' | 'high' | 'critical',
+  entity_id: string = DEFAULT_ENTITY,
+): QuoteSuggestion {
+  const matrix = getSLAMatrixSettings(entity_id);
+  const sevMap = { low: 'sev4_low', medium: 'sev3_medium', high: 'sev2_high', critical: 'sev1_critical' } as const;
+  const cell = matrix.matrix.find(
+    (c) => c.call_type_code === call_type && c.severity === sevMap[severity],
+  );
+  const severityMultiplier: Record<typeof severity, number> = {
+    low: 1, medium: 1.5, high: 2.5, critical: 4,
+  };
+  return {
+    call_type,
+    severity,
+    suggested_response_hours: cell?.response_hours ?? 24,
+    suggested_resolution_hours: cell?.resolution_hours ?? 72,
+    suggested_charge_paise: Math.round(500 * 100 * severityMultiplier[severity]),
+    confidence: cell ? 'high' : 'low',
+  };
+}
+
+// --- B.5 S35 Voice-of-Customer keyword aggregation ---
+const STOP_WORDS = new Set([
+  'the','and','for','was','with','that','this','have','has','had','not','but','from','are','were',
+  'you','your','our','can','will','they','them','its','it','is','of','to','in','on','a','an','at',
+  'as','or','be','by','if','no','so','do','i','we','my','me','too','very','more','any','all','one',
+]);
+
+export interface KeywordFrequency { keyword: string; count: number }
+
+export function aggregateVoiceOfCustomerKeywords(
+  entity_id: string = DEFAULT_ENTITY,
+  topK: number = 50,
+): KeywordFrequency[] {
+  const feedback = listHappyCodeFeedback({ entity_id });
+  const tokens = new Map<string, number>();
+  const harvest = (text: string | null | undefined): void => {
+    if (!text) return;
+    const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    for (const w of words) {
+      if (w.length < 3 || STOP_WORDS.has(w)) continue;
+      tokens.set(w, (tokens.get(w) ?? 0) + 1);
+    }
+  };
+  for (const f of feedback) {
+    const fb = f as unknown as Record<string, unknown>;
+    harvest(fb.channel_1_comment as string | undefined);
+    harvest(fb.channel_2_comment as string | undefined);
+    harvest(fb.channel_3_comment as string | undefined);
+    harvest(fb.comment as string | undefined);
+  }
+  return Array.from(tokens.entries())
+    .map(([keyword, count]) => ({ keyword, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, topK);
+}
+
+// --- B.6 S28 Customer P&L aggregator ---
+export interface CustomerPnLRow {
+  customer_id: string;
+  revenue_paise: number;
+  cost_paise: number;
+  margin_paise: number;
+  margin_pct: number;
+}
+
+export function computeCustomerPnL(entity_id: string = DEFAULT_ENTITY): CustomerPnLRow[] {
+  const amcs = listAMCRecords({ entity_id });
+  const map = new Map<string, CustomerPnLRow>();
+  for (const amc of amcs) {
+    const prof = computeAMCProfitability(amc.id, entity_id);
+    if (!prof) continue;
+    const cur = map.get(amc.customer_id) ?? {
+      customer_id: amc.customer_id, revenue_paise: 0, cost_paise: 0, margin_paise: 0, margin_pct: 0,
+    };
+    cur.revenue_paise += prof.revenue_paise;
+    cur.cost_paise += prof.cost_paise;
+    map.set(amc.customer_id, cur);
+  }
+  return Array.from(map.values()).map((r) => {
+    const margin = r.revenue_paise - r.cost_paise;
+    return { ...r, margin_paise: margin, margin_pct: r.revenue_paise > 0 ? Math.round((margin / r.revenue_paise) * 100) : 0 };
+  });
+}
