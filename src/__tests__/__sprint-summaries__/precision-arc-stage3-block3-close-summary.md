@@ -40,7 +40,7 @@
 | 17 | `…/SalaryStructureMaster.tsx:409` | `previewCTC` (preview computation input) | **MIGRATE** | 2 |
 | 18 | `src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1408` | `principalAmount` (loan) | **MIGRATE** | 2 |
 | 19 | `…/EmployeeMaster.tsx:1409` | `emiAmount` (loan) | **MIGRATE** | 2 |
-| 20 | `…/EmployeeMaster.tsx:1444` | `elOpeningBalance` (carry-forward money) | **MIGRATE** | 2 |
+| 20 | `…/EmployeeMaster.tsx:1444` | `elOpeningBalance` (leave-days quantity — uses `resolveQtyPrecision`) | **MIGRATE** | 2 |
 | 21 | `…/EmployeeMaster.tsx:1462` | `prevEmp.grossSalary` | **MIGRATE** | 2 |
 | 22 | `…/EmployeeMaster.tsx:1463` | `prevEmp.tdsDeducted` | **MIGRATE** | 2 |
 | 23 | `…/EmployeeMaster.tsx:1494` | `hourly_rate_production` (₹/hr) | **MIGRATE** | 2 |
@@ -95,17 +95,17 @@ While editing the 6 in-scope files, the following adjacent `parseFloat` sites we
 
 | File:Line | Field | Notes |
 |-----------|-------|-------|
-| `src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654` | `duf(key, parseFloat(e.target.value) || 0)` (generic key inside a map over `Section80CKeys`) | Adjacent to migrated 80C inputs but not in Appendix A. May represent the same logical field set already covered indirectly, or an oversight at sweep time — flagging for founder ruling. |
+| `src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654` | `duf(key, parseFloat(e.target.value) || 0)` (generic key inside a map over `Section80CKeys`) | Adjacent to migrated 80C inputs but not in Appendix A. **Already in the parked needs-founder-ruling set (the 248)** — swept and parked at Stage 2, not missed. |
 | `src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1204` | `vpfPercentage` (percentage, not money) | Likely Class C (percentage); not in Appendix A. |
 | `…/EmployeeMaster.tsx:1227` | `annualCTC` (with `.replace(/,/g,'')` strip) — **money** | Adjacent money site, not in Appendix A. |
 | `…/EmployeeMaster.tsx:1311` | `pfNomineePct` (percentage) | Likely Class C. |
 | `…/EmployeeMaster.tsx:1312` | `gratuityNomineePct` (percentage) | Likely Class C. |
-| `…/EmployeeMaster.tsx:1432` | `lp.premiumAnnual` (LIC) — **money** | Adjacent money site, not in Appendix A. |
+| `…/EmployeeMaster.tsx:1432` | `lp.premiumAnnual` (LIC) — **money** | Adjacent money site, not in Appendix A. **Already in the parked needs-founder-ruling set (the 248)** — swept and parked at Stage 2, not missed. |
 | `…/EmployeeMaster.tsx:1433` | `lp.sumAssured` (LIC) — **money** | Adjacent money site, not in Appendix A. |
 | `…/EmployeeMaster.tsx:1448` | `medicalRembCap` — **money** | Adjacent money site, not in Appendix A. |
 | `src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:1053` | `flexiComponents[comp]` (with strip) — **money** | Adjacent money site, not in Appendix A. |
 
-**Disposition:** none touched. The 5 money-adjacent sites (`EmployeeMaster.tsx:1227, 1432, 1433, 1448`, `EmployeeFinance.tsx:1053`) and the generic `PayslipGeneration.tsx:654` look like legitimate Pattern 2 candidates that may have been missed at sweep time. Recommend founder ruling: either fold into Block 3-T1 if scope expansion is approved, or formally classify under Stage 2 audit table.
+**Disposition:** none touched. Correction to earlier wording: at least 2 of the flagged adjacents — `PayslipGeneration.tsx:654` and `EmployeeMaster.tsx:1432` — are **already in the Stage 2 parked needs-founder-ruling set (the 248)**. They were swept at Stage 2 and parked, NOT missed. The remaining adjacents (`EmployeeMaster.tsx:1227, 1433, 1448`, `EmployeeFinance.tsx:1053`, plus the percentage sites `:1204, :1311, :1312`) are flagged here for founder ruling: confirm whether each is parked-already or a true sweep-miss, then either fold into a future block or formally classify under the Stage 2 audit table.
 
 ---
 
@@ -150,3 +150,22 @@ All existing pay-hub suites remain green (1099 → 1105 total, +6 from this bloc
 ---
 
 **HALT for §2.4 Real Git Clone Audit. Block 4 NOT started. No self-certification.**
+
+---
+
+## T1 — Semantic Correction
+
+Scope: 2 files (`EmployeeMaster.tsx` + this summary). Zero behavior change.
+
+1. **`EmployeeMaster.tsx:1445` — `elOpeningBalance` resolver swap (money → qty).**
+   The field's UI label is "EL Opening Balance (days)" — it is a leave-DAYS quantity, not money. Block 3 mis-classified it as carry-forward money and migrated it with `resolveMoneyPrecision(null, null)`. Corrected to `resolveQtyPrecision(undefined)`.
+   - **Runtime impact: zero.** `resolveMoneyPrecision(null, null) === resolveQtyPrecision(undefined) === 2`. The `roundTo(..., 2)` math is identical; only the semantic intent (and the resolver invoked) changes.
+   - Import in `EmployeeMaster.tsx` updated: `resolveQtyPrecision` added alongside `resolveMoneyPrecision` (the other 5 Block 3 sites in this file remain genuine money and continue to use `resolveMoneyPrecision`).
+   - Verdict table row #20 updated to reflect leave-days quantity classification.
+
+2. **§5 disposition wording correction.**
+   §5 previously speculated the flagged adjacent sites "may have been missed at sweep time." At least 2 of them — `PayslipGeneration.tsx:654` and `EmployeeMaster.tsx:1432` — are in the Stage 2 parked needs-founder-ruling set (the 248). They were swept and parked, not missed. §5 reworded accordingly.
+
+3. **Nothing else touched.** Triple Gate held at the c667a31 baseline (TSC 0 · ESLint 0/10 · Vitest 1105/155 · Build clean). `decimal-helpers.ts` 0-diff. Protected zones 0-diff. Existing Block 3 EmployeeMaster test still passes (both resolvers return 2 — math unchanged).
+
+**HALT for §2.4 re-audit. Block 4 NOT started. No self-certification.**

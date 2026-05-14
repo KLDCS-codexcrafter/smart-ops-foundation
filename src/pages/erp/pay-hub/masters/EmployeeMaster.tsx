@@ -27,7 +27,7 @@ import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/i
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
@@ -1442,7 +1442,7 @@ export function EmployeeMasterPanel() {
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label className="text-xs">EL Opening Balance (days)</Label>
-              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
+              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', roundTo(parseFloat(e.target.value) || 0, resolveQtyPrecision(undefined)))} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">Medical Reimb Cap (₹/year)</Label>
