@@ -231,7 +231,7 @@ export function StorageMatrixPanel(){
     </div>
     <Separator/>
     <div className='grid grid-cols-2 gap-4'>
-      <div className='space-y-1.5'><Label>Total Capacity</Label><Input type='number' value={gf.total_capacity||''} onChange={e=>setGf(f=>({...f,total_capacity:parseFloat(e.target.value)||null}))}/></div>
+      <div className='space-y-1.5'><Label>Total Capacity</Label><Input type='number' value={gf.total_capacity||''} onChange={e=>{const v=parseFloat(e.target.value); setGf(f=>({...f,total_capacity:isNaN(v)?null:roundTo(v,resolveQtyPrecision(undefined))}));}}/></div>
       <div className='space-y-1.5'><Label>Unit</Label><Select value={gf.capacity_unit} onValueChange={v=>setGf(f=>({...f,capacity_unit:v}))}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['sqft','sqm','cubic_meter','pallets','quintals','MT'].map(u=><SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select></div>
     </div>
     </TabsContent>
