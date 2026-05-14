@@ -32,6 +32,7 @@
 
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShellThemeProvider } from './ShellThemeProvider';
@@ -39,6 +40,7 @@ import { ShellSidebar } from './sidebar/ShellSidebar';
 import { ShellHeader } from './header/ShellHeader';
 import { filterSidebarByMatrix } from './utils/filterSidebarByMatrix';
 import { filterChipsByMatrix } from './utils/filterChipsByMatrix';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { ShellConfig, SidebarItem } from './types';
 import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
 import type { UserEntitlementProfile, CardEntitlement } from '@/types/card-entitlement';
@@ -80,6 +82,11 @@ export function Shell({
     contextFlags,
   );
 
+  // [Hardening-A · Block B] Per-card boundary · key tied to route resets state on navigation.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const cardName = config.product.name || config.product.id || 'this card';
+
   return (
     <ShellThemeProvider
       accent={config.theme.accent}
@@ -96,7 +103,13 @@ export function Shell({
               lastEntryLabel={lastEntryLabel}
             />
             <ScrollArea className="flex-1">
-              {children}
+              <ErrorBoundary
+                key={location.pathname}
+                cardName={cardName}
+                onReset={() => navigate('/erp/dashboard')}
+              >
+                {children}
+              </ErrorBoundary>
             </ScrollArea>
           </SidebarInset>
         </div>
