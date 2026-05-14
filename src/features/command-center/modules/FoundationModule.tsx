@@ -10,6 +10,9 @@ import { cn } from '@/lib/utils';
 import type { BranchOffice } from '@/types/branch-office';
 // [T-T8.0-OrgTagFoundation] Org-Tag Coverage badge · derived metadata table (D-128 preserved).
 import { getOrgTagCoverage } from '@/lib/voucher-org-tag-engine';
+// [Hardening-A · Block A] Entity-scoped key helpers for divisions/departments.
+import { divisionsKey, departmentsKey } from '@/types/org-structure';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
@@ -74,14 +77,20 @@ function StatCard({ icon, title, value, status, href, description }: StatCardPro
 
 export function FoundationModule() {
   const stats = useFoundationStats();
+  // [Hardening-A · Block A] entity-scoped reads · empty entityCode falls back to legacy global key.
+  const { entityCode } = useEntityCode();
 
   const divCount = (() => { try {
-    // [JWT] GET /api/foundation/org-structure/divisions
+    // [JWT] GET /api/foundation/org-structure/divisions?entityCode={e}
+    const scoped = JSON.parse(localStorage.getItem(divisionsKey(entityCode)) || '[]').length;
+    if (scoped > 0 || !entityCode) return scoped;
     return JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
   } catch { return 0; } })();
 
   const deptCount = (() => { try {
-    // [JWT] GET /api/foundation/org-structure/departments
+    // [JWT] GET /api/foundation/org-structure/departments?entityCode={e}
+    const scoped = JSON.parse(localStorage.getItem(departmentsKey(entityCode)) || '[]').length;
+    if (scoped > 0 || !entityCode) return scoped;
     return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
   } catch { return 0; } })();
 
