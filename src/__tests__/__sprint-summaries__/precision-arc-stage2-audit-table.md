@@ -446,8 +446,8 @@ Rubric (unchanged from Stage 2 / T1):
 | src/hooks/usePayrollEngine.ts:76 | Math.round | `val = Math.round(val);` | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:225 | Math.round | `return Math.round(lop * 2) / 2;` | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:238 | Math.round | `const reduced = Math.round(l.monthly * (1 - deductFactor));` | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:306 | Math.round | `surcharge: Math.round(surcharge),` | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:308 | Math.round | `rebate87A: Math.round(rebate87A),` | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | `surcharge: Math.round(surcharge),` | money math in engine/hook — RESOLVED: migrated in Stage 3 Block 2, founder-ratified (Option 2) |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | `rebate87A: Math.round(rebate87A),` | money math in engine/hook — RESOLVED: migrated in Stage 3 Block 2, founder-ratified (Option 2) |
 | src/hooks/usePayrollEngine.ts:385 | Math.round | `const empPF = employee.pfApplicable ? Math.round(pfWage * 0.12) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:386 | Math.round | `const erEPF = employee.pfApplicable ? Math.round(pfWage * 0.0367) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:387 | Math.round | `const erEPS = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.0833), 1250) : 0;` | money math in engine/hook or money-keyword — needs-founder-ruling |
@@ -1340,8 +1340,8 @@ Post-T2 audited rows (after non-production noise purge): **1265**.
 | src/hooks/usePayrollEngine.ts:76 | Math.round | applied in place → Class D |
 | src/hooks/usePayrollEngine.ts:225 | Math.round | applied in place → Class D |
 | src/hooks/usePayrollEngine.ts:238 | Math.round | applied in place → Class D |
-| src/hooks/usePayrollEngine.ts:306 | Math.round | applied in place → Class D |
-| src/hooks/usePayrollEngine.ts:308 | Math.round | applied in place → Class D |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | applied in place → Class D · migrated Block 2 · founder-ratified |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | applied in place → Class D · migrated Block 2 · founder-ratified |
 | src/hooks/usePayrollEngine.ts:385 | Math.round | applied in place → Class D |
 | src/hooks/usePayrollEngine.ts:386 | Math.round | applied in place → Class D |
 | src/hooks/usePayrollEngine.ts:387 | Math.round | applied in place → Class D |
@@ -1816,8 +1816,8 @@ All 458 Class D rows. Authoritative Stage 3 migration input.
 | src/hooks/usePayrollEngine.ts:76 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:225 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:238 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:306 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:308 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:306 | Math.round | money math in engine/hook — RESOLVED: migrated in Stage 3 Block 2, founder-ratified (Option 2) |
+| src/hooks/usePayrollEngine.ts:308 | Math.round | money math in engine/hook — RESOLVED: migrated in Stage 3 Block 2, founder-ratified (Option 2) |
 | src/hooks/usePayrollEngine.ts:385 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:386 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:387 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
@@ -1848,7 +1848,7 @@ All 458 Class D rows. Authoritative Stage 3 migration input.
 
 ## NEEDS-FOUNDER-RULING SUB-LIST
 
-250 of 458 Class D rows carry the `needs-founder-ruling` flag. Founder reviews this list before Stage 3 planning.
+248 of 458 Class D rows carry the `needs-founder-ruling` flag (was 250; usePayrollEngine.ts:306 & :308 migrated early in Stage 3 Block 2 and founder-ratified under Option 2 — see Block 2 close summary). High-confidence (non-needs-founder-ruling) Class D rows: 210 (was 208). FINAL D LIST total unchanged at 458. Founder reviews this list before Stage 3 planning.
 
 | file:line | pattern | reason |
 |---|---|---|
@@ -2073,8 +2073,6 @@ All 458 Class D rows. Authoritative Stage 3 migration input.
 | src/hooks/usePayrollEngine.ts:76 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:225 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:238 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:306 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
-| src/hooks/usePayrollEngine.ts:308 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:385 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:386 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/hooks/usePayrollEngine.ts:387 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
