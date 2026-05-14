@@ -15,6 +15,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { stockLedgerKey } from '@/lib/fincore-engine';
 import { onEnterNext } from '@/lib/keyboard';
+import { dMul, dAdd, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 const IKEY = 'erp_inventory_items';
 // [JWT] GET /api/entity/storage/:key
