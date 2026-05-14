@@ -48,3 +48,12 @@ export interface Department {
 
 export const DIVISIONS_KEY   = 'erp_divisions';
 export const DEPARTMENTS_KEY = 'erp_departments';
+
+// [Hardening-A · Block A] Entity-scoped helpers · matches employeesKey/attendanceRecordsKey pattern.
+// Empty entityCode falls back to legacy global key for safe one-cycle migration.
+// [JWT] GET/POST /api/foundation/divisions?entityCode={e}
+export const divisionsKey = (e: string): string =>
+  e ? `erp_divisions_${e}` : 'erp_divisions';
+// [JWT] GET/POST /api/foundation/departments?entityCode={e}
+export const departmentsKey = (e: string): string =>
+  e ? `erp_departments_${e}` : 'erp_departments';
