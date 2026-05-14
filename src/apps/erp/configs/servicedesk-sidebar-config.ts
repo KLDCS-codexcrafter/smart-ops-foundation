@@ -17,6 +17,8 @@ import {
   Settings,
   ClipboardCheck,
   Wrench,
+  Package,
+  Rocket,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -81,9 +83,34 @@ export const servicedeskSidebarItems: SidebarItem[] = [
     label: 'Service Engineers',
     icon: Users,
     children: [
-      { id: 'engineer-list', type: 'item', label: 'Engineer List', moduleId: 'engineer-list', requiredCards: ['servicedesk'], keyboard: 'd e l', comingSoon: true },
-      { id: 'engineer-roster', type: 'item', label: 'Roster', moduleId: 'engineer-roster', requiredCards: ['servicedesk'], keyboard: 'd e r', comingSoon: true },
-      { id: 'engineer-capacity', type: 'item', label: 'Capacity', moduleId: 'engineer-capacity', requiredCards: ['servicedesk'], keyboard: 'd e c', comingSoon: true },
+      { id: 'engineer-list', type: 'item', label: 'Engineer List', moduleId: 'engineer-list', requiredCards: ['servicedesk'], keyboard: 'd e l' },
+      { id: 'engineer-roster', type: 'item', label: 'Roster', moduleId: 'engineer-roster', requiredCards: ['servicedesk'], keyboard: 'd e r' },
+      { id: 'engineer-capacity', type: 'item', label: 'Capacity', moduleId: 'engineer-capacity', requiredCards: ['servicedesk'], keyboard: 'd e c' },
+      { id: 'engineer-burnout', type: 'item', label: 'Burnout Dashboard', moduleId: 'engineer-burnout', requiredCards: ['servicedesk'], keyboard: 'd e b' },
+    ],
+  },
+  {
+    id: 'marketplace-refurb-group',
+    type: 'group',
+    label: 'Marketplace + Refurbished',
+    icon: Package,
+    children: [
+      { id: 'engineer-marketplace', type: 'item', label: 'Engineer Marketplace', moduleId: 'engineer-marketplace', requiredCards: ['servicedesk'], keyboard: 'd m e' },
+      { id: 'refurbished-units', type: 'item', label: 'Refurbished Units', moduleId: 'refurbished-units', requiredCards: ['servicedesk'], keyboard: 'd m r' },
+      { id: 'refurb-spare-tier', type: 'item', label: 'Refurb Spare Tier', moduleId: 'refurb-spare-tier', requiredCards: ['servicedesk'], keyboard: 'd m s' },
+    ],
+  },
+  {
+    id: 'phase2-preview-group',
+    type: 'group',
+    label: 'Phase 2 Preview',
+    icon: Rocket,
+    children: [
+      { id: 'psu-gov-contract', type: 'item', label: 'PSU/Gov Contract', moduleId: 'psu-gov-contract', requiredCards: ['servicedesk'], keyboard: 'd p2 p' },
+      { id: 'multi-currency-export', type: 'item', label: 'Multi-Currency Export', moduleId: 'multi-currency-export', requiredCards: ['servicedesk'], keyboard: 'd p2 c' },
+      { id: 'iot-foundation', type: 'item', label: 'IoT Foundation', moduleId: 'iot-foundation', requiredCards: ['servicedesk'], keyboard: 'd p2 i' },
+      { id: 'service-benchmark', type: 'item', label: 'Service Benchmark', moduleId: 'service-benchmark', requiredCards: ['servicedesk'], keyboard: 'd p2 b' },
+      { id: 'engineer-reputation', type: 'item', label: 'Engineer Reputation', moduleId: 'engineer-reputation', requiredCards: ['servicedesk'], keyboard: 'd p2 r' },
     ],
   },
   {

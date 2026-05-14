@@ -58,4 +58,20 @@ export type ServiceDeskModule =
   | 'renewal-cascade-settings'
   | 'email-templates'
   | 'tellicaller-triggers'
-  | 'call-type-master';
+  | 'call-type-master'
+  // C.1f · Tier 2 OOBs NEW
+  | 'engineer-marketplace'
+  | 'customer-pnl-report'
+  | 'refurbished-units'
+  | 'refurb-spare-tier'
+  | 'engineer-burnout'
+  | 'service-quote-optimizer'
+  | 'voice-of-customer'
+  // C.1f · Tier 3 stubs NEW
+  | 'psu-gov-contract'
+  | 'multi-currency-export'
+  | 'iot-foundation'
+  | 'service-benchmark'
+  | 'engineer-reputation'
+  // C.1f · Future Task Register NEW
+  | 'future-task-register';
