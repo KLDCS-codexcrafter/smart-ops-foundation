@@ -21,6 +21,8 @@ import { TEMPLATE_VARIABLES, PREVIEW_VARS, VOUCHER_TYPE_NAMES,
   applyVariables } from '@/types/transaction-template';
 import { cn } from '@/lib/utils';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { departmentsKey } from '@/types/org-structure';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 const DEPT_LABELS = ['Sales','Purchase','Accounts','Stores','HR','Admin','Universal'];
 
