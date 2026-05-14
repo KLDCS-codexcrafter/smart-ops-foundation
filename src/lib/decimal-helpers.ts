@@ -94,3 +94,37 @@ export const dSum = <T>(
     : (acc: Decimal, item: T) => acc.plus(new Decimal((item as unknown as number) ?? 0));
   return arr.reduce(reducer, new Decimal(0)).toNumber();
 };
+
+// ── PRECISION RESOLVERS (Precision Arc · Stage 1) ─────────────────────
+/**
+ * Resolve money decimal-places per RC-2 option (c):
+ *   entity override (if non-null) → base currency decimal_places → fallback 2.
+ * @param entityOverride  CompanySettings.money_decimal_places (number | null)
+ * @param baseCurrencyDecimalPlaces  Currency.decimal_places of the entity's base currency
+ */
+export const resolveMoneyPrecision = (
+  entityOverride: number | null | undefined,
+  baseCurrencyDecimalPlaces: number | null | undefined,
+): number => {
+  if (typeof entityOverride === 'number') return entityOverride;
+  if (typeof baseCurrencyDecimalPlaces === 'number') return baseCurrencyDecimalPlaces;
+  return 2;
+};
+
+/**
+ * Resolve quantity decimal-places from a UoM's decimal_precision.
+ * @param uomDecimalPrecision  UnitOfMeasure.decimal_precision
+ */
+export const resolveQtyPrecision = (
+  uomDecimalPrecision: number | null | undefined,
+): number => (typeof uomDecimalPrecision === 'number' ? uomDecimalPrecision : 2);
+
+/**
+ * Precision-aware rounding using RBI banker's rounding (ROUND_HALF_UP).
+ * The precision-contract-driven sibling of round2: round2(n) === roundTo(n, 2).
+ * Feed `places` from resolveMoneyPrecision / resolveQtyPrecision.
+ * USE FOR: final monetary/quantity output before storage, where precision
+ *          comes from the master contract rather than a hardcoded 2.
+ */
+export const roundTo = (n: number, places: number): number =>
+  new Decimal(n ?? 0).toDecimalPlaces(places, Decimal.ROUND_HALF_UP).toNumber();

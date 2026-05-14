@@ -25,6 +25,7 @@ export function useCompanySettings() {
       mrp_tax_treatment_label: 'Tax Inclusive (MRP includes GST)',
       rate_change_requires_reason: true,
       base_currency: 'INR',
+      money_decimal_places: null,
       default_costing_method: 'weighted_avg',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

@@ -278,3 +278,22 @@ export function getAttendanceTypeSeeds(): AttendanceType[] {
  * Rationale: statutory + company-wide catalogs apply to all entities.
  * Audited: 2026-05-01 · Bucket A — TRULY GLOBAL.
  */
+
+// ── PAYROLL PRECISION CONTRACT (Precision Arc · Stage 1) ──────────────
+/**
+ * [Precision Arc · Stage 1] Payroll precision contract.
+ * Covers BOTH money amounts and payroll units (days/hours), per founder
+ * instruction: payroll units need decimals too — not only money.
+ * money_decimal_places: null = inherit from entity money contract.
+ * unit_decimal_places: precision for attendance-derived quantities
+ *   (present days, LOP days, OT hours) that feed pay math.
+ */
+export interface PayrollPrecisionConfig {
+  money_decimal_places: number | null;   // null = inherit entity contract
+  unit_decimal_places: number;            // days/hours precision (e.g. 2 → 0.5 day, 1.25 hrs)
+}
+
+export const DEFAULT_PAYROLL_PRECISION: PayrollPrecisionConfig = {
+  money_decimal_places: null,   // inherit from entity
+  unit_decimal_places: 2,
+};
