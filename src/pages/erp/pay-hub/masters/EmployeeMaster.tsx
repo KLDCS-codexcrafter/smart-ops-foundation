@@ -1442,7 +1442,7 @@ export function EmployeeMasterPanel() {
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label className="text-xs">EL Opening Balance (days)</Label>
-              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
+              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', roundTo(parseFloat(e.target.value) || 0, resolveQtyPrecision(undefined)))} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">Medical Reimb Cap (₹/year)</Label>
