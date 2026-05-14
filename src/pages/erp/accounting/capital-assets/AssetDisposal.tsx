@@ -4,6 +4,7 @@
  * [JWT] Replace with GET/POST /api/fixed-assets/*
  */
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -165,7 +166,7 @@ export function AssetDisposalPanel({ entityCode }: Props) {
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Sale Price</Label>
-              <Input type="number" value={salePrice || ''} onChange={e => setSalePrice(parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+              <Input type="number" value={salePrice || ''} onChange={e => setSalePrice(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Buyer (Ledger)</Label>

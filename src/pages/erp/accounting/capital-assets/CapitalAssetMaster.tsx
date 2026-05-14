@@ -5,6 +5,7 @@
  * [JWT] Replace with GET/POST /api/fixed-assets/*
  */
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -289,17 +290,17 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Invoice Amount (Total)</Label>
-                <Input type="number" value={cpInvoiceAmount || ''} onChange={e => setCpInvoiceAmount(parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+                <Input type="number" value={cpInvoiceAmount || ''} onChange={e => setCpInvoiceAmount(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Asset Cost (Ex-GST) *</Label>
-                <Input type="number" value={cpAssetCost || ''} onChange={e => setCpAssetCost(parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+                <Input type="number" value={cpAssetCost || ''} onChange={e => setCpAssetCost(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs">GST Amount</Label>
-                <Input type="number" value={cpGstAmount || ''} onChange={e => setCpGstAmount(parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+                <Input type="number" value={cpGstAmount || ''} onChange={e => setCpGstAmount(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Narration</Label>
