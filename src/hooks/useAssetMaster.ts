@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 import type { Asset, AssetAssignment, AssetCondition } from '@/types/asset-master';
 import { ASSETS_KEY } from '@/types/asset-master';
 import type { Employee } from '@/types/employee';
-import { EMPLOYEES_KEY } from '@/types/employee';
+import { EMPLOYEES_KEY, employeesKey } from '@/types/employee';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 const loadAssets = (): Asset[] => {
   try {
@@ -24,18 +25,30 @@ const saveAssets = (items: Asset[]) => {
   localStorage.setItem(ASSETS_KEY, JSON.stringify(items));
 };
 
-const loadEmployees = (): Employee[] => {
+// [Hardening-A · Block A] Entity-scoped employees access · one-time read-old→write-scoped migration.
+const employeesScopedKey = (entityCode: string) => employeesKey(entityCode);
+const migrateEmployeesIfNeeded = (entityCode: string): void => {
+  if (!entityCode) return;
+  const scoped = employeesScopedKey(entityCode);
+  if (localStorage.getItem(scoped) !== null) return;
+  const legacy = localStorage.getItem(EMPLOYEES_KEY);
+  if (legacy === null) return;
+  // [JWT] POST /api/pay-hub/employees (one-time migration)
+  localStorage.setItem(scoped, legacy);
+};
+const loadEmployees = (entityCode: string): Employee[] => {
   try {
-    // [JWT] GET /api/pay-hub/employees
-    const raw = localStorage.getItem(EMPLOYEES_KEY);
+    migrateEmployeesIfNeeded(entityCode);
+    // [JWT] GET /api/pay-hub/employees?entityCode={entityCode}
+    const raw = localStorage.getItem(employeesScopedKey(entityCode));
     if (raw) return JSON.parse(raw);
   } catch { /* ignore */ }
   return [];
 };
 
-const saveEmployees = (items: Employee[]) => {
-  // [JWT] PUT /api/pay-hub/employees
-  localStorage.setItem(EMPLOYEES_KEY, JSON.stringify(items));
+const saveEmployees = (entityCode: string, items: Employee[]) => {
+  // [JWT] PUT /api/pay-hub/employees?entityCode={entityCode}
+  localStorage.setItem(employeesScopedKey(entityCode), JSON.stringify(items));
 };
 
 const genCode = (all: Asset[]) => 'AST-' + String(all.length + 1).padStart(6, '0');
