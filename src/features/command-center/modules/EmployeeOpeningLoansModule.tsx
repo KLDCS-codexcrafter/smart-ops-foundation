@@ -6,6 +6,7 @@
  * [JWT] All localStorage keys are entity-scoped via useOpeningBalances hook.
  */
 import { useMemo, useState } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -237,11 +238,11 @@ function EmployeeOpeningLoansInner({ entityCode }: { entityCode: string }) {
                           </Select>
                         </TableCell>
                         <TableCell><SmartDateInput value={l.disbursement_date} onChange={(v) => updateLoan(l.id, 'disbursement_date', v)} className="w-32" /></TableCell>
-                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.original_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'original_amount', parseFloat(e.target.value) || 0)} /></TableCell>
-                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.recovered_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'recovered_amount', parseFloat(e.target.value) || 0)} /></TableCell>
+                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.original_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'original_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} /></TableCell>
+                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.recovered_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'recovered_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} /></TableCell>
                         <TableCell className="text-right font-mono font-semibold">₹ {toIndianFormat(l.outstanding_amount)}</TableCell>
                         <TableCell><Input type="number" className="h-8 w-20 text-right font-mono" defaultValue={l.interest_rate || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'interest_rate', parseFloat(e.target.value) || 0)} /></TableCell>
-                        <TableCell><Input {...amountInputProps} className="h-8 w-24 text-right font-mono" defaultValue={l.emi_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'emi_amount', parseFloat(e.target.value) || 0)} /></TableCell>
+                        <TableCell><Input {...amountInputProps} className="h-8 w-24 text-right font-mono" defaultValue={l.emi_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'emi_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} /></TableCell>
                         <TableCell><SmartDateInput value={l.next_emi_date || ''} onChange={(v) => updateLoan(l.id, 'next_emi_date', v)} className="w-32" /></TableCell>
                         <TableCell><Input type="number" className="h-8 w-16 text-right font-mono" defaultValue={l.remaining_tenure_months || ''} onBlur={(e) => updateLoan(l.id, 'remaining_tenure_months', parseInt(e.target.value) || 0)} /></TableCell>
                         <TableCell>
@@ -300,8 +301,8 @@ function EmployeeOpeningLoansInner({ entityCode }: { entityCode: string }) {
                           </Select>
                         </TableCell>
                         <TableCell><SmartDateInput value={l.disbursement_date} onChange={(v) => updateLoan(l.id, 'disbursement_date', v)} className="w-32" /></TableCell>
-                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.original_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'original_amount', parseFloat(e.target.value) || 0)} /></TableCell>
-                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.recovered_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'recovered_amount', parseFloat(e.target.value) || 0)} /></TableCell>
+                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.original_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'original_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} /></TableCell>
+                        <TableCell><Input {...amountInputProps} className="h-8 w-28 text-right font-mono" defaultValue={l.recovered_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'recovered_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} /></TableCell>
                         <TableCell className="text-right font-mono font-semibold">₹ {toIndianFormat(l.outstanding_amount)}</TableCell>
                         <TableCell><Input className="h-8" defaultValue={l.loan_type_name || ''} placeholder="Purpose" onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'loan_type_name', e.target.value)} /></TableCell>
                         <TableCell>

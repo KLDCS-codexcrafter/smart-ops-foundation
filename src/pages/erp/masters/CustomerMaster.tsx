@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -776,7 +777,7 @@ export function CustomerMasterPanel() {
           <Label className="text-xs">Opening Balance</Label>
           <div className="flex gap-2 items-center">
             <Input value={form.openingBalance || ''}
-              onChange={e => setForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))}
+              onChange={e => setForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
               onKeyDown={onEnterNext} {...amountInputProps} className="flex-1" />
             <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/30 text-[10px] shrink-0">
               Dr
@@ -979,7 +980,7 @@ export function CustomerMasterPanel() {
             <Label className="text-xs">Opening Balance</Label>
             <div className="flex gap-2 items-center">
               <Input value={form.openingBalance || ''}
-                onChange={e => setForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))}
+                onChange={e => setForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
                 onKeyDown={onEnterNext} {...amountInputProps} className="flex-1" />
               <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/30 text-[10px] shrink-0">Dr</Badge>
             </div>
@@ -987,7 +988,7 @@ export function CustomerMasterPanel() {
           <div>
             <Label className="text-xs">Credit Limit (Hard Stop)</Label>
             <Input value={form.creditLimit || ''}
-              onChange={e => setForm(f => ({ ...f, creditLimit: parseFloat(e.target.value) || 0 }))}
+              onChange={e => setForm(f => ({ ...f, creditLimit: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
               onKeyDown={onEnterNext} {...amountInputProps} />
           </div>
           <div>
@@ -1238,7 +1239,7 @@ export function CustomerMasterPanel() {
                 <Label className="text-xs">Agreed Rate</Label>
                 <div className="flex gap-2 items-center">
                   <Input value={form.agreedFreightRate || ''}
-                    onChange={e => setForm(f => ({ ...f, agreedFreightRate: parseFloat(e.target.value) || 0 }))}
+                    onChange={e => setForm(f => ({ ...f, agreedFreightRate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
                     onKeyDown={onEnterNext} {...amountInputProps} className="flex-1" />
                   <span className="text-[10px] text-muted-foreground shrink-0">
                     {form.agreedFreightBasis === 'percent_invoice' ? '% of invoice' : form.agreedFreightBasis ? ` / ${form.agreedFreightBasis.replace('per_', '')}` : ''}

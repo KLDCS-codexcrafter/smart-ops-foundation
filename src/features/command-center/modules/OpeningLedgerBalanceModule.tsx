@@ -5,6 +5,7 @@
  * [JWT] All localStorage keys are entity-scoped via useOpeningBalances hook.
  */
 import { useMemo, useState, useEffect, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -429,7 +430,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
                               defaultValue={drVal || ''}
                               onKeyDown={onEnterNext}
                               onBlur={(e) => {
-                                const v = parseFloat(e.target.value) || 0;
+                                const v = roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null));
                                 if (v !== drVal) updateLedger(inst.id, v, 0, '');
                               }}
                             />
@@ -441,7 +442,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
                               defaultValue={crVal || ''}
                               onKeyDown={onEnterNext}
                               onBlur={(e) => {
-                                const v = parseFloat(e.target.value) || 0;
+                                const v = roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null));
                                 if (v !== crVal) updateLedger(inst.id, 0, v, '');
                               }}
                             />
@@ -551,7 +552,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
                           <TableCell>
                             <Input {...amountInputProps} className="h-8 text-right font-mono" defaultValue={b.amount || ''}
                               onKeyDown={onEnterNext}
-                              onBlur={(e) => updateBill(b.id, 'amount', parseFloat(e.target.value) || 0)} />
+                              onBlur={(e) => updateBill(b.id, 'amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} />
                           </TableCell>
                           <TableCell>
                             <Select value={b.dr_cr} onValueChange={(v) => updateBill(b.id, 'dr_cr', v as 'Dr' | 'Cr')}>
@@ -600,7 +601,7 @@ function OpeningLedgerBalanceInner({ entityCode }: { entityCode: string }) {
                             {b.tds_applicable && (
                               <Input {...amountInputProps} className="h-8 w-24 text-right font-mono"
                                 defaultValue={b.tds_amount || ''} onKeyDown={onEnterNext}
-                                onBlur={(e) => updateBill(b.id, 'tds_amount', parseFloat(e.target.value) || 0)} />
+                                onBlur={(e) => updateBill(b.id, 'tds_amount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} />
                             )}
                           </TableCell>
                           <TableCell>
