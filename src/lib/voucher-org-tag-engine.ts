@@ -10,6 +10,7 @@
 
 import type { VoucherOrgTag } from '@/types/voucher-org-tag';
 import { VOUCHER_ORG_TAGS_KEY } from '@/types/voucher-org-tag';
+import { departmentsKey } from '@/types/org-structure';
 import { getCurrentUserId } from '@/lib/auth-helpers';
 
 // ── Internal storage helpers ───────────────────────────────────────────
