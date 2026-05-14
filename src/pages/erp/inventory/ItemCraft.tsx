@@ -27,6 +27,7 @@ import type { ItemQCParam } from '@/types/item-qc-param';
 import type { ItemPartyCode } from '@/types/item-party-code';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 import { onEnterNext } from '@/lib/keyboard';
+import { roundTo, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 /* ─── constants ─── */
 const ITEM_TYPES: ItemType[] = [
