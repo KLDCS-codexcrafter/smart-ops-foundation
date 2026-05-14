@@ -75,7 +75,7 @@ export function SampleOutwardIssuePanel({ entityCode }: Props) {
   const brokers  = useMemo(() => samPersons.filter(p => p.person_type === 'broker'   && p.is_active), [samPersons]);
 
   // [JWT] GET /api/hr/employees
-  const employees = useMemo(() => ls<Employee>(`erp_employees_${entityCode}`).length ? ls<Employee>(`erp_employees_${entityCode}`) : ls<Employee>('erp_employees'), []);
+  const employees = useMemo(() => ls<Employee>(`erp_employees_${entityCode}`).length ? ls<Employee>(`erp_employees_${entityCode}`) : ls<Employee>('erp_employees'), [entityCode]);
 
   // [JWT] GET /api/inventory/godowns
   const godowns = useMemo(() => ls<Godown>('erp_godowns'), []);
