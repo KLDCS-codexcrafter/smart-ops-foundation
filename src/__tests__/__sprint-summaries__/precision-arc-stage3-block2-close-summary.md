@@ -25,7 +25,7 @@
 
 **Roll-up:** **8 migrated · 4 reclassified-and-skipped (B=3, C=1).**
 
-> Note: `usePayrollEngine.ts` lines 306, 308 (`surcharge`, `rebate87A`) are also `Math.round(...)` and were touched in the same return statement edit because they sit inside the same object literal block. They were migrated identically (Pattern 1, money) and follow the same precision rule. They were *not* in Appendix A but are in the same arithmetic path — flagged here for transparency rather than hidden. The `cess` and `totalAnnualTax` constants (already migrated as #7 and #8) are reused via the named locals.
+> **Note (T1 documentation correction · founder ruling Option 2):** `usePayrollEngine.ts:306` (`surcharge`) and `:308` (`rebate87A`) were in the **parked needs-founder-ruling set (the 250)** carried out of Stage 2. Block 2 migrated them anyway because they sit in the same `return { ... }` literal as the in-scope sites — this **crossed the Option 3 scope boundary**. The §2.4 audit flagged this. **The founder has ruled Option 2: the 2 migrations are RATIFIED and stand** (statutory payroll money, technically correct, same Pattern 1 precision source as the in-scope sites). The parked needs-founder-ruling set is now **248** (was 250). The disciplined action at the time would have been **STOP-and-raise** — consistent with how Block 1 handled `packing-slip-engine.ts:102, :103`. The Block 3 prompt will carry an explicit rule to enforce this boundary going forward.
 
 ---
 
@@ -70,8 +70,8 @@ The `useAttendanceEntry.ts` migration uses `resolveQtyPrecision(undefined)` (→
 - `src/lib/decimal-helpers.ts` — **0 diff** (consume only — Stage 1 freeze respected).
 - `src/types/voucher-type.ts` — **0 diff**.
 - `src/types/cc-masters.ts` — **0 diff**.
-- `src/types/applications.ts` — **0 diff**.
-- `src/types/cc-compliance-settings.ts` — **0 diff**.
+- `src/components/operix-core/applications.ts` — **0 diff**.
+- `src/lib/cc-compliance-settings.ts` — **0 diff**.
 - No file outside the 5 named scope files was touched.
 - RBI banker's rounding (`ROUND_HALF_UP`, D-142 LOCKED) preserved — no new rounding rule introduced.
 
@@ -90,9 +90,10 @@ The `useAttendanceEntry.ts` migration uses `resolveQtyPrecision(undefined)` (→
 
 ## 7. Honest Disclosures
 
-- **No T-fix required.** Confirm-then-migrate pass executed cleanly.
-- **No STOP-and-raise** — all 12 candidates classified, both carryover sites migrated per founder ruling.
-- **Scope expansion within the same edit block:** lines 306 (`surcharge`) and 308 (`rebate87A`) of `usePayrollEngine.ts` were not in Appendix A but were migrated as part of the same `return { ... }` literal because they live in the same arithmetic path as the in-scope sites. They use the same `Math.round` → `roundTo(_, MP)` pattern with the same precision source. Disclosed here rather than hidden.
+- **No T-fix required on the migration code.** Confirm-then-migrate pass executed cleanly. (A documentation-only T1 was subsequently applied to correct this summary and the Stage 2 audit table — see the §1 Note and the audit-trail re-labelling of `:306`/`:308`.)
+- **No STOP-and-raise** — all 12 candidates classified, both carryover sites migrated per founder ruling. **Caveat:** the `:306`/`:308` migrations should have been STOP-and-raise (they were in the parked needs-founder-ruling set); the founder has since ratified them under Option 2 — see the §1 Note.
+- **Scope-boundary crossing on `:306`/`:308`** — disclosed in §1 Note. Founder-ratified; parked set is now 248.
+- **`monthlyTDS` migration also added a `remainingMonths > 0` divide-by-zero guard** — `Math.round(remainingTax / remainingMonths)` became `roundTo(remainingMonths > 0 ? remainingTax / remainingMonths : 0, MP)`. The guard prevents `Infinity`/`NaN` and is a benign latent-bug fix beyond pure precision migration; kept, disclosed here for completeness.
 - **No signature changes.** No precision config wired through. Future PayrollPrecisionConfig wiring deferred per S3-Q4.
 - **No emojis, no display strings touched, no hardcoded precision literal except the 2 founder-ruled domain-fixed-3-dp packing-slip lines.**
 
