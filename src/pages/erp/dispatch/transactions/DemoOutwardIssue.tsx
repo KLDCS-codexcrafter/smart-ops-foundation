@@ -73,7 +73,7 @@ export function DemoOutwardIssuePanel({ entityCode }: Props) {
   const agents   = useMemo(() => samPersons.filter(p => p.person_type === 'agent'    && p.is_active), [samPersons]);
   const brokers  = useMemo(() => samPersons.filter(p => p.person_type === 'broker'   && p.is_active), [samPersons]);
 
-  const employees = useMemo(() => ls<Employee>('erp_employees'), []);
+  const employees = useMemo(() => ls<Employee>(`erp_employees_${entityCode}`).length ? ls<Employee>(`erp_employees_${entityCode}`) : ls<Employee>('erp_employees'), []);
   const godowns = useMemo(() => ls<Godown>('erp_godowns'), []);
   const samplesGodown = useMemo(
     () => godowns.find(g => g.name === SAMPLES_GODOWN_NAME) ?? null,
