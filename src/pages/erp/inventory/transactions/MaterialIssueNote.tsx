@@ -840,7 +840,7 @@ export function MaterialIssueNotePanel() {
               <div>
                 <Label className="text-xs">Rate (₹)</Label>
                 <Input type="number" min={0} step="0.01" value={draftLine.rate}
-                  onChange={e => setDraftLine(d => ({ ...d, rate: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
               <div>
                 <Label className="text-xs">UOM</Label>
