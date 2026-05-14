@@ -535,7 +535,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
                 <Input type="number" value={tdsRate || ''} onChange={e => {
                   const r = parseFloat(e.target.value) || 0;
                   setTdsRate(r);
-                  setTdsAmount(Math.round(amount * r / 100));
+                  setTdsAmount(roundTo(dPct(amount, r), 0));
                 }} onKeyDown={onEnterNext} className="text-xs" />
               </div>
               <div>
