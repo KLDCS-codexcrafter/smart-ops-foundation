@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -625,7 +626,7 @@ export function VendorMasterPanel() {
           <Label className="text-xs">Opening Balance</Label>
           <div className="flex gap-2 items-center">
             <Input value={form.openingBalance || ''}
-              onChange={e => setForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))}
+              onChange={e => setForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
               onKeyDown={onEnterNext} {...amountInputProps} className="flex-1" />
             <Badge variant="outline" className="bg-rose-500/10 text-rose-700 border-rose-500/30 text-[10px] shrink-0">
               Cr
@@ -799,7 +800,7 @@ export function VendorMasterPanel() {
             <Label className="text-xs">Opening Balance</Label>
             <div className="flex gap-2 items-center">
               <Input value={form.openingBalance || ''}
-                onChange={e => setForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))}
+                onChange={e => setForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))}
                 onKeyDown={onEnterNext} {...amountInputProps} className="flex-1" />
               <Badge variant="outline" className="bg-rose-500/10 text-rose-700 border-rose-500/30 text-[10px] shrink-0">Cr</Badge>
             </div>

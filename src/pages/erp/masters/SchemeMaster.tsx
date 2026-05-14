@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import {
   Plus, Save, Trash2, Search, Sparkles, Copy,
 } from 'lucide-react';
@@ -412,7 +413,7 @@ export function SchemeMasterPanel() {
                       <Input
                         type="number"
                         value={(selected.scope.min_order_value_paise ?? 0) / 100}
-                        onChange={e => update({ scope: { ...selected.scope, min_order_value_paise: Math.round((Number(e.target.value) || 0) * 100) } })}
+                        onChange={e => update({ scope: { ...selected.scope, min_order_value_paise: roundTo(dMul(Number(e.target.value) || 0, 100), 0) } })}
                         className="text-xs h-8"
                       />
                     </div>
@@ -529,7 +530,7 @@ function PayloadEditor({ scheme, onChange }: { scheme: Scheme; onChange: (p: Sch
         <div>
           <Label className="text-xs">Discount (₹)</Label>
           <Input type="number" value={p.discount_paise / 100}
-            onChange={e => onChange({ discount_paise: Math.round((Number(e.target.value) || 0) * 100) })}
+            onChange={e => onChange({ discount_paise: roundTo(dMul(Number(e.target.value) || 0, 100), 0) })}
             className="text-xs h-8 w-32" />
         </div>
       );
@@ -582,7 +583,7 @@ function PayloadEditor({ scheme, onChange }: { scheme: Scheme; onChange: (p: Sch
           <div>
             <Label className="text-xs">Bundle Price (₹)</Label>
             <Input type="number" value={p.bundle_price_paise / 100}
-              onChange={e => onChange({ ...p, bundle_price_paise: Math.round((Number(e.target.value) || 0) * 100) })}
+              onChange={e => onChange({ ...p, bundle_price_paise: roundTo(dMul(Number(e.target.value) || 0, 100), 0) })}
               className="text-xs h-8 w-32" />
           </div>
         </div>
@@ -603,7 +604,7 @@ function PayloadEditor({ scheme, onChange }: { scheme: Scheme; onChange: (p: Sch
           <div>
             <Label className="text-xs">Min Purchase (₹)</Label>
             <Input type="number" value={p.min_purchase_value_paise / 100}
-              onChange={e => onChange({ ...p, min_purchase_value_paise: Math.round((Number(e.target.value) || 0) * 100) })}
+              onChange={e => onChange({ ...p, min_purchase_value_paise: roundTo(dMul(Number(e.target.value) || 0, 100), 0) })}
               className="text-xs h-8" />
           </div>
         </div>
