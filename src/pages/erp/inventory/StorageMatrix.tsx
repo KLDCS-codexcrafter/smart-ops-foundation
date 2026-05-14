@@ -248,7 +248,7 @@ export function StorageMatrixPanel(){
     <Separator/>
     <div className='grid grid-cols-3 gap-4'>
       <div className='space-y-1.5'><Label>Monthly Rent (₹)</Label>
-        <Input type='number' value={af.monthly_rent||''} onChange={e=>{const r=parseFloat(e.target.value)||null;setAf(f=>({...f,monthly_rent:r}));checkTDS(r);}}/></div>
+        <Input type='number' value={af.monthly_rent||''} onChange={e=>{const r=roundTo(parseFloat(e.target.value),resolveMoneyPrecision(null,null))||null;setAf(f=>({...f,monthly_rent:r}));checkTDS(r);}}/></div>
       <div className='space-y-1.5'><Label>Security Deposit (₹)</Label><Input type='number' value={af.security_deposit||''} onChange={e=>setAf(f=>({...f,security_deposit:parseFloat(e.target.value)||null}))}/></div>
       <div className='space-y-1.5'><Label>Billing Cycle</Label><Select value={af.billing_cycle} onValueChange={v=>setAf(f=>({...f,billing_cycle:v as typeof f.billing_cycle}))}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['monthly','quarterly','annual'].map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
       <div className='space-y-1.5'><Label>Escalation %/Year</Label><Input type='number' placeholder='5' value={af.escalation_rate||''} onChange={e=>setAf(f=>({...f,escalation_rate:parseFloat(e.target.value)||null}))}/></div>
