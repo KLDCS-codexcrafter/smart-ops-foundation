@@ -85,10 +85,11 @@ function VendorAnalyticsPanel({ entityCode, entityId }: PanelProps) {
     readJSON<BranchOffice[]>('erp_branch_offices', []), []);
   const businessUnits = useMemo(() =>
     readJSON<BUSummary[]>('erp_group_business_unit_master', []), []);
+  // [Hardening-A · Block A] Entity-scoped divisions/departments · empty entity falls back to legacy global key.
   const divisions = useMemo(() =>
-    readJSON<Division[]>('erp_divisions', []), []);
+    readJSON<Division[]>(divisionsKey(entityCode), readJSON<Division[]>('erp_divisions', [])), [entityCode]);
   const departments = useMemo(() =>
-    readJSON<Department[]>('erp_departments', []), []);
+    readJSON<Department[]>(departmentsKey(entityCode), readJSON<Department[]>('erp_departments', [])), [entityCode]);
 
   const slice: VendorSlice = useMemo(() => ({
     entity_id: entityId,
