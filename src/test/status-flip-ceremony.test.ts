@@ -4,7 +4,7 @@
  * @sprint      T-Phase-1.C.2 · Block F.2
  */
 import { describe, it, expect } from 'vitest';
-import { OPERIX_APPLICATIONS } from '@/components/operix-core/applications';
+import { applications } from '@/components/operix-core/applications';
 
 describe('Status flip ceremony · ServiceDesk → active · MOAT #24', () => {
   it('servicedesk has status: active (post-flip)', () => {
